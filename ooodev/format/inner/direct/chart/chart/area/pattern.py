@@ -18,7 +18,7 @@ from ooodev.utils import lo as mLo
 
 class Pattern(FillPattern):
     """
-    Class for Chart Title Area Fill Pattern.
+    Class for Chart Area Fill Pattern.
 
     .. versionadded:: 0.9.4
     """
@@ -28,8 +28,8 @@ class Pattern(FillPattern):
 
     def __init__(
         self,
-        *,
         chart_doc: XChartDocument,
+        *,
         bitmap: XBitmap | None = None,
         name: str = "",
         tile: bool = True,

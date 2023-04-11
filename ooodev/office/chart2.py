@@ -486,7 +486,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
         """
         try:
             # return XTilte so it may have futher styles applied
@@ -544,7 +544,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
         """
         return cls._create_title(title, 14, styles)
 
@@ -616,7 +616,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
         """
         try:
             diagram = chart_doc.getFirstDiagram()
@@ -1423,6 +1423,13 @@ class Chart2:
         Returns:
             None:
 
+        Hint:
+            Styles that can be applied are found in:
+
+            - :py:mod:`ooodev.format.chart.direct.area`
+            - :py:mod:`ooodev.format.chart.direct.borders`
+            - :py:mod:`ooodev.format.chart.direct.transparent`
+
         .. versionadded:: 0.9.0
         """
         bg_ps = chart_doc.getPageBackground()
@@ -1440,6 +1447,9 @@ class Chart2:
 
         Returns:
             None:
+
+        Hint:
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.wall`.
 
         .. versionadded:: 0.9.0
         """
@@ -1500,7 +1510,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
 
         .. versionadded:: 0.9.4
         """
@@ -1522,7 +1532,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
 
         .. versionadded:: 0.9.4
         """
@@ -1544,7 +1554,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
 
         .. versionadded:: 0.9.4
         """
@@ -1566,7 +1576,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
 
         .. versionadded:: 0.9.4
         """
@@ -1588,7 +1598,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
 
         .. versionadded:: 0.9.4
         """
@@ -1610,7 +1620,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be supplied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
 
         .. versionadded:: 0.9.4
         """

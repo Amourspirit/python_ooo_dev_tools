@@ -32,18 +32,31 @@ from ooodev.format.chart.direct.title.area import (
 )
 from ooodev.format.chart.direct.title.font import Font as TitleFont
 from ooodev.format.chart.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
-from ooodev.format.chart.direct import LineProperties as ChartLineProperties
-from ooodev.format.chart.direct import Color as ChartColor
-from ooodev.format.chart.direct import Gradient as ChartGradient
-from ooodev.format.chart.direct import Hatch as ChartHatch
-from ooodev.format.chart.direct import Img as ChartImg
-from ooodev.format.chart.direct import Pattern as ChartPattern
+from ooodev.format.chart.direct.borders import LineProperties as ChartLineProperties
+from ooodev.format.chart.direct.area import Color as ChartColor
+from ooodev.format.chart.direct.area import Gradient as ChartGradient
+from ooodev.format.chart.direct.area import Hatch as ChartHatch
+from ooodev.format.chart.direct.area import Img as ChartImg
+from ooodev.format.chart.direct.area import Pattern as ChartPattern
+from ooodev.format.chart.direct.transparency import Transparency as ChartTransparency
+from ooodev.format.chart.direct.transparency import Gradient as ChartGradientTransparency, IntensityRange
+
+
+from ooodev.format.chart.direct.wall.borders import LineProperties as WallLineProperties
+from ooodev.format.chart.direct.wall.area import Color as WallColor
+from ooodev.format.chart.direct.wall.area import Gradient as WallGradient
+from ooodev.format.chart.direct.wall.area import Hatch as WallHatch
+from ooodev.format.chart.direct.wall.area import Img as WallImg
+from ooodev.format.chart.direct.wall.area import Pattern as WallPattern
+from ooodev.format.chart.direct.wall.transparency import Transparency as WallTransparency
+from ooodev.format.chart.direct.wall.transparency import Gradient as WallGradientTransparency
+
 
 from ooodev.utils.color import CommonColor, StandardColor
 from ooodev.utils.info import Info
 from ooodev.format.chart.direct.title.alignment import Orientation as TitleOrientation
 from ooodev.format.chart.direct.title.alignment import Direction as TitleDirection, DirectionModeKind
-
+from ooodev.utils.data_type.angle import Angle
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Title
@@ -283,7 +296,94 @@ def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:
 
         chart_pattern = ChartPattern.from_preset(chart_doc, PresetPatternKind.HORIZONTAL_BRICK)
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_pattern])
+
+        chart_transparency = ChartTransparency(value=50)
+        Chart2.style_background(chart_doc=chart_doc, styles=[chart_color, chart_transparency])
         bg_ps = chart_doc.getPageBackground()
+        assert bg_ps.FillTransparence == 50
+
+        # ChartTransparencyGradient 1
+        chart_grad_transparent = ChartGradientTransparency(
+            chart_doc=chart_doc, angle=Angle(30), grad_intensity=IntensityRange(0, 100)
+        )
+        Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad_transparent])
+        bg_ps = chart_doc.getPageBackground()
+        assert bg_ps.FillTransparenceGradientName.startswith("ChartTransparencyGradient")
+
+        Lo.delay(delay)
+    finally:
+        Lo.close_doc(doc)
+
+
+def test_calc_set_styles_wall_chart(loader, copy_fix_calc) -> None:
+    if Info.version_info < (7, 5):
+        pytest.skip("Not supported in this version, Requires LibreOffice 7.5 or higher.")
+
+    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    from ooodev.office.calc import Calc
+
+    fix_path = cast(Path, copy_fix_calc("chartsData.ods"))
+
+    doc = Calc.open_doc(fix_path)
+    try:
+        sheet = Calc.get_sheet(doc)
+        if not Lo.bridge_connector.headless:
+            GUI.set_visible()
+            Lo.delay(500)
+            Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+
+        rng_data = Calc.get_range_obj("A2:B8")
+        chart_doc = Chart2.insert_chart(
+            cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
+        )
+        Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))
+
+        Chart2.set_subtitle(chart_doc=chart_doc, subtitle="Sales by month")
+
+        Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A2"))
+        Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B2"))
+        Chart2.set_background_colors(
+            chart_doc=chart_doc, bg_color=StandardColor.BLUE_LIGHT1, wall_color=StandardColor.BLUE_LIGHT2
+        )
+
+        Calc.goto_cell(cell_name="A1", doc=doc)
+
+        chart_color = WallColor(color=StandardColor.GREEN_LIGHT2)
+        chart_bdr_line = WallLineProperties(color=StandardColor.GREEN_DARK3, width=0.7)
+        Chart2.style_wall(chart_doc=chart_doc, styles=[chart_color, chart_bdr_line])
+        wall = chart_doc.getFirstDiagram().getWall()
+        assert wall.FillColor == StandardColor.GREEN_LIGHT2
+
+        chart_grad = WallGradient.from_preset(chart_doc, PresetGradientKind.NEON_LIGHT)
+        Chart2.style_wall(chart_doc=chart_doc, styles=[chart_grad])
+        wall = chart_doc.getFirstDiagram().getWall()
+        assert wall.FillGradientName == PresetGradientKind.NEON_LIGHT.value
+
+        chart_hatch = WallHatch.from_preset(chart_doc, PresetHatchKind.GREEN_30_DEGREES)
+        Chart2.style_wall(chart_doc=chart_doc, styles=[chart_hatch])
+        wall = chart_doc.getFirstDiagram().getWall()
+        assert wall.FillHatchName == chart_hatch.prop_hatch_name
+
+        chart_img = WallImg.from_preset(chart_doc, PresetImageKind.ICE_LIGHT)
+        Chart2.style_wall(chart_doc=chart_doc, styles=[chart_img])
+        wall = chart_doc.getFirstDiagram().getWall()
+        assert wall.FillBitmapName == str(PresetImageKind.ICE_LIGHT)
+
+        chart_pattern = WallPattern.from_preset(chart_doc, PresetPatternKind.HORIZONTAL_BRICK)
+        Chart2.style_wall(chart_doc=chart_doc, styles=[chart_pattern])
+
+        chart_transparency = WallTransparency(value=50)
+        Chart2.style_wall(chart_doc=chart_doc, styles=[chart_color, chart_transparency])
+        wall = chart_doc.getFirstDiagram().getWall()
+        assert wall.FillTransparence == 50
+
+        # ChartTransparencyGradient 1
+        chart_grad_transparent = WallGradientTransparency(
+            chart_doc=chart_doc, angle=Angle(30), grad_intensity=IntensityRange(0, 100)
+        )
+        Chart2.style_wall(chart_doc=chart_doc, styles=[chart_grad_transparent])
+        wall = chart_doc.getFirstDiagram().getWall()
+        assert wall.FillTransparenceGradientName.startswith("ChartTransparencyGradient")
 
         Lo.delay(delay)
     finally:

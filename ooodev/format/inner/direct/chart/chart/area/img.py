@@ -25,7 +25,7 @@ from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
 class Img(FillImg):
     """
-    Class for Chart Title Area Fill Image.
+    Class for Chart Area Fill Image.
 
     .. versionadded:: 0.9.4
     """
@@ -34,8 +34,8 @@ class Img(FillImg):
 
     def __init__(
         self,
-        *,
         chart_doc: XChartDocument,
+        *,
         bitmap: XBitmap | None = None,
         name: str = "",
         mode: ImgStyleKind = ImgStyleKind.TILED,

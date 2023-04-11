@@ -48,6 +48,7 @@ Submodules
    ooodev.format.inner.common.props.struct_table_border_distances_props
    ooodev.format.inner.common.props.table_borders_props
    ooodev.format.inner.common.props.table_properties_props
+   ooodev.format.inner.common.props.title_alignment_orientation_props
    ooodev.format.inner.common.props.transparent_gradient_props
    ooodev.format.inner.common.props.transparent_transparency_props
 

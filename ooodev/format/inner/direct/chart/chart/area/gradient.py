@@ -1,9 +1,10 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Tuple, overload, TYPE_CHECKING
 import uno
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.chart2 import XChartDocument
+
 
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
@@ -23,6 +24,9 @@ from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as Fill
 from ooodev.meta.deleted_attrib import DeletedAttrib
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 
+if TYPE_CHECKING:
+    from ooo.dyn.awt.gradient import Gradient as UNOGradient
+
 # endregion Import
 
 
@@ -33,7 +37,7 @@ class _TitleGradidentStruct(GradientStruct):
 
 class Gradient(FillGradient):
     """
-    Style for Chart Title Area Fill Gradient.
+    Style for Chart Area Fill Gradient.
 
     .. versionadded:: 0.9.4
     """
@@ -42,15 +46,15 @@ class Gradient(FillGradient):
 
     def __init__(
         self,
-        *,
         chart_doc: XChartDocument,
+        *,
         style: GradientStyle = GradientStyle.LINEAR,
         step_count: int = 0,
-        offset: Offset = ...,
+        offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
         border: Intensity | int = 0,
-        grad_color: ColorRange = ...,
-        grad_intensity: IntensityRange = ...,
+        grad_color: ColorRange = ColorRange(Color(0), Color(16777215)),
+        grad_intensity: IntensityRange = IntensityRange(100, 100),
         name: str = "",
     ) -> None:
         self._chart_doc = chart_doc
@@ -104,6 +108,9 @@ class Gradient(FillGradient):
         return cp
 
     # endregion copy()
+
+    def _get_gradient_from_uno_struct(self, uno_struct: UNOGradient, **kwargs) -> _TitleGradidentStruct:
+        _TitleGradidentStruct.from_uno_struct(uno_struct, **kwargs)
 
     def _get_inner_class(
         self,

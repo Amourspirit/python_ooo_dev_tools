@@ -31,8 +31,8 @@ class Hatch(StyleMulti):
 
     def __init__(
         self,
-        *,
         chart_doc: XChartDocument,
+        *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
         space: float | UnitObj = 0,

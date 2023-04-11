@@ -98,12 +98,18 @@ class Gradient(StyleMulti):
             self._set_style("fill_style", fill_struct, *fill_struct.get_attrs())
 
     # region Internal Methods
+    def _container_get_default_name() -> str:
+        return "Gradient"
+
     def _get_gradient_struct_cattrib(self) -> dict:
         return {
             "_property_name": "FillGradient",
             "_supported_services_values": self._supported_services(),
             "_format_kind_prop": self.prop_format_kind,
         }
+
+    def _get_gradient_from_uno_struct(self, value: UNOGradient, **kwargs) -> GradientStruct:
+        return GradientStruct.from_uno_struct(value, **kwargs)
 
     def _get_fill_struct(self, fill_struct: GradientStruct | None, name: str, auto_name: bool) -> GradientStruct:
         # if the name passed in already exist in the Gradient Table then it is returned.
@@ -117,7 +123,7 @@ class Gradient(StyleMulti):
                 return fill_struct
         else:
             auto_name = True
-            name = "Gradient"
+            name = self._container_get_default_name()
         nc = self._container_get_inst()
         if auto_name:
             name = name.rstrip() + " "  # add a space after name before getting unique name
@@ -125,13 +131,13 @@ class Gradient(StyleMulti):
 
         grad = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if not grad is None:
-            return GradientStruct.from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
+            return self._get_gradient_from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
         if fill_struct is None:
             raise ValueError(
                 f'No Gradient could be found in container for "{name}". In this case a Gradient is required.'
             )
         self._container_add_value(name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=nc)
-        return GradientStruct.from_uno_struct(
+        return self._get_gradient_from_uno_struct(
             self._container_get_value(self._name, nc),
             _cattribs=self._get_gradient_struct_cattrib(),
         )

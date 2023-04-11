@@ -13,7 +13,7 @@ from ooodev.utils.data_type.intensity import Intensity
 
 
 class LineProperties(StyleBase):
-    """This class represents the line properties of a chart title borders line properties."""
+    """This class represents the line properties of a chart borders line properties."""
 
     def __init__(
         self,

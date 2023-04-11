@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.inner.preset.preset_border_line
    ooodev.format.inner.preset.preset_gradient
    ooodev.format.inner.preset.preset_hatch
    ooodev.format.inner.preset.preset_image
