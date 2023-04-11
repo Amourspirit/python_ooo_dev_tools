@@ -143,12 +143,12 @@ class Gradient(StyleMulti):
     def _container_get_default_name(self) -> str:
         return "Transparency"
 
-    def _get_gradient_from_uno_struct(self, value: UNOGradient, **kwargs) -> GradientStruct:
+    def _get_gradient_from_uno_struct(self, value: "UNOGradient", **kwargs) -> GradientStruct:
         return GradientStruct.from_uno_struct(value, **kwargs)
 
     def _get_fill_tp(self, fill_tp: GradientStruct, name: str) -> GradientStruct:
         # if the name passed in already exist in the TransparencyGradientTable Table then it is returned.
-        # Otherwise, the struc is added to the TransparencyGradientTable Table and then returned.
+        # Otherwise, the struct is added to the TransparencyGradientTable Table and then returned.
         # after struct is added to table all other subsequent call of this name will return
         # that struc from the Table. Except auto_name which will force a new entry
         # into the Table each time.
@@ -269,7 +269,7 @@ class Gradient(StyleMulti):
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        grad_fill = cast(UNOGradient, mProps.Props.get(obj, nu._props.struct_prop))
+        grad_fill = cast("UNOGradient", mProps.Props.get(obj, nu._props.struct_prop))
         fill_gradient_name = cast(str, mProps.Props.get(obj, nu._props.name, ""))
         if grad_fill.Angle == 0:
             angle = 0

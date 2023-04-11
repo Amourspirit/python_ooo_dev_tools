@@ -98,7 +98,7 @@ class Gradient(StyleMulti):
             self._set_style("fill_style", fill_struct, *fill_struct.get_attrs())
 
     # region Internal Methods
-    def _container_get_default_name() -> str:
+    def _container_get_default_name(self) -> str:
         return "Gradient"
 
     def _get_gradient_struct_cattrib(self) -> dict:
