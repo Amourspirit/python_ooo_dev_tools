@@ -19,20 +19,20 @@ except ImportError:
 
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.format.chart.direct.wall.area import (
+from ooodev.format.chart2.direct.wall.area import (
     PresetGradientKind,
     PresetHatchKind,
     PresetImageKind,
     PresetPatternKind,
 )
-from ooodev.format.chart.direct.wall.borders import LineProperties as WallLineProperties
-from ooodev.format.chart.direct.wall.area import Color as WallColor
-from ooodev.format.chart.direct.wall.area import Gradient as WallGradient, IntensityRange
-from ooodev.format.chart.direct.wall.area import Hatch as WallHatch
-from ooodev.format.chart.direct.wall.area import Img as WallImg
-from ooodev.format.chart.direct.wall.area import Pattern as WallPattern
-from ooodev.format.chart.direct.wall.transparency import Transparency as WallTransparency
-from ooodev.format.chart.direct.wall.transparency import Gradient as WallGradientTransparency
+from ooodev.format.chart2.direct.wall.borders import LineProperties as WallLineProperties
+from ooodev.format.chart2.direct.wall.area import Color as WallColor
+from ooodev.format.chart2.direct.wall.area import Gradient as WallGradient, IntensityRange
+from ooodev.format.chart2.direct.wall.area import Hatch as WallHatch
+from ooodev.format.chart2.direct.wall.area import Img as WallImg
+from ooodev.format.chart2.direct.wall.area import Pattern as WallPattern
+from ooodev.format.chart2.direct.wall.transparency import Transparency as WallTransparency
+from ooodev.format.chart2.direct.wall.transparency import Gradient as WallGradientTransparency
 
 from ooodev.utils.color import StandardColor
 from ooodev.utils.info import Info

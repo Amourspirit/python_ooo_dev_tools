@@ -19,7 +19,7 @@ except ImportError:
 
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.format.chart.direct.title.area import (
+from ooodev.format.chart2.direct.title.area import (
     Color as ChartTitleBgColor,
     Gradient as ChartTitleBgGradient,
     Hatch as ChartTitleBgHatch,
@@ -30,8 +30,8 @@ from ooodev.format.chart.direct.title.area import (
     PresetImageKind,
     PresetPatternKind,
 )
-from ooodev.format.chart.direct.title.font import Font as TitleFont
-from ooodev.format.chart.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
+from ooodev.format.chart2.direct.title.font import Font as TitleFont
+from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
 
 
 from ooodev.utils.color import CommonColor, StandardColor

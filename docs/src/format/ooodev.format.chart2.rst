@@ -1,5 +1,5 @@
-ooodev.format.chart package
-===========================
+ooodev.format.chart2 package
+============================
 
 Subpackages
 -----------
@@ -7,12 +7,12 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   ooodev.format.chart.direct
+   ooodev.format.chart2.direct
 
 Module contents
 ---------------
 
-.. automodule:: ooodev.format.chart
+.. automodule:: ooodev.format.chart2
    :members:
    :undoc-members:
    :show-inheritance:

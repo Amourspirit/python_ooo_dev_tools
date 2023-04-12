@@ -486,7 +486,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart2.direct.title`.
         """
         try:
             # return XTilte so it may have futher styles applied
@@ -544,7 +544,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart2.direct.title`.
         """
         return cls._create_title(title, 14, styles)
 
@@ -616,7 +616,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :py:mod:`ooodev.format.chart2.direct.title`.
         """
         try:
             diagram = chart_doc.getFirstDiagram()
@@ -1426,9 +1426,9 @@ class Chart2:
         Hint:
             Styles that can be applied are found in the following subpackages:
 
-            - :doc:`ooodev.format.chart.direct.area </src/format/ooodev.format.chart.direct.area>` subpackages.
-            - :doc:`ooodev.format.chart.direct.borders </src/format/ooodev.format.chart.direct.borders>` subpackages.
-            - :doc:`ooodev.format.chart.direct.transparency </src/format/ooodev.format.chart.direct.transparency>` subpackages.
+            - :doc:`ooodev.format.chart2.direct.area </src/format/ooodev.format.chart2.direct.area>` subpackages.
+            - :doc:`ooodev.format.chart2.direct.borders </src/format/ooodev.format.chart2.direct.borders>` subpackages.
+            - :doc:`ooodev.format.chart2.direct.transparency </src/format/ooodev.format.chart2.direct.transparency>` subpackages.
 
         .. versionadded:: 0.9.0
         """
@@ -1449,7 +1449,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.wall </src/format/ooodev.format.chart.direct.wall>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
 
         .. versionadded:: 0.9.0
         """
@@ -1477,9 +1477,9 @@ class Chart2:
         Hint:
             Styles that can be applied are found in the following packages.
 
-                - :doc:`ooodev.format.chart.direct.series.area </src/format/ooodev.format.chart.direct.series.area>`
-                - :doc:`ooodev.format.chart.direct.series.line </src/format/ooodev.format.chart.direct.series.borders>`
-                - :doc:`ooodev.format.chart.direct.series.transparency </src/format/ooodev.format.chart.direct.series.transparency>`
+                - :doc:`ooodev.format.chart2.direct.series.area </src/format/ooodev.format.chart2.direct.series.area>`
+                - :doc:`ooodev.format.chart2.direct.series.line </src/format/ooodev.format.chart2.direct.series.borders>`
+                - :doc:`ooodev.format.chart2.direct.series.transparency </src/format/ooodev.format.chart2.direct.series.transparency>`
 
         .. versionadded:: 0.9.0
         """
@@ -1504,7 +1504,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.series </src/format/ooodev.format.chart.direct.series>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.series </src/format/ooodev.format.chart2.direct.series>` subpackages.
 
 
         .. versionadded:: 0.9.4
@@ -1554,7 +1554,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1576,7 +1576,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1598,7 +1598,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1620,7 +1620,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1642,7 +1642,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1664,7 +1664,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
 
         .. versionadded:: 0.9.4

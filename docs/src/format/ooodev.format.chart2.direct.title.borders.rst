@@ -1,10 +1,10 @@
-ooodev.format.chart.direct.series.borders package
+ooodev.format.chart2.direct.title.borders package
 =================================================
 
 Module contents
 ---------------
 
-.. automodule:: ooodev.format.chart.direct.series.borders
+.. automodule:: ooodev.format.chart2.direct.title.borders
    :members:
    :undoc-members:
    :show-inheritance:

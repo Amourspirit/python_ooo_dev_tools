@@ -1,10 +1,10 @@
-ooodev.format.chart.direct.series.area package
+ooodev.format.chart2.direct.title.area package
 ==============================================
 
 Module contents
 ---------------
 
-.. automodule:: ooodev.format.chart.direct.series.area
+.. automodule:: ooodev.format.chart2.direct.title.area
    :members:
    :undoc-members:
    :show-inheritance:

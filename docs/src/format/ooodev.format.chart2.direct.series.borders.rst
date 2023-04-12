@@ -1,10 +1,10 @@
-ooodev.format.chart.direct.title.alignment package
+ooodev.format.chart2.direct.series.borders package
 ==================================================
 
 Module contents
 ---------------
 
-.. automodule:: ooodev.format.chart.direct.title.alignment
+.. automodule:: ooodev.format.chart2.direct.series.borders
    :members:
    :undoc-members:
    :show-inheritance:
