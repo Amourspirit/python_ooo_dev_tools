@@ -780,12 +780,16 @@ class Props:
                     ps.setPropertyValue(cargs.key, cargs.value)
             except AttributeError as e:
                 # handle a LibreOffice bug
-                if not cls._set_by_attribute(obj, cargs.key, cargs.value):
-                    errs.append(
-                        mEx.UnKnownError(
-                            f'Something went wrong. Could not find setPropertyValue attribute on property set. Tried setting "{key}" manually but failed'
+                try:
+                    if not cls._set_by_attribute(obj, cargs.key, cargs.value):
+                        errs.append(
+                            mEx.UnKnownError(
+                                f'Something went wrong. Could not find setPropertyValue attribute on property set. Tried setting "{key}" manually but failed'
+                            )
                         )
-                    )
+                        has_error = True
+                        errs.append(e)
+                except Exception as e:
                     has_error = True
                     errs.append(e)
 

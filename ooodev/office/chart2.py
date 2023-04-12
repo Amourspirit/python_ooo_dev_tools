@@ -1424,11 +1424,11 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in:
+            Styles that can be applied are found in the following subpackages:
 
-            - :py:mod:`ooodev.format.chart.direct.area`
-            - :py:mod:`ooodev.format.chart.direct.borders`
-            - :py:mod:`ooodev.format.chart.direct.transparent`
+            - :doc:`ooodev.format.chart.direct.area </src/format/ooodev.format.chart.direct.area>` subpackages.
+            - :doc:`ooodev.format.chart.direct.borders </src/format/ooodev.format.chart.direct.borders>` subpackages.
+            - :doc:`ooodev.format.chart.direct.transparency </src/format/ooodev.format.chart.direct.transparency>` subpackages.
 
         .. versionadded:: 0.9.0
         """
@@ -1449,7 +1449,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.wall`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.wall </src/format/ooodev.format.chart.direct.wall>` subpackages.
 
         .. versionadded:: 0.9.0
         """
@@ -1474,6 +1474,13 @@ class Chart2:
         Returns:
             None:
 
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+                - :doc:`ooodev.format.chart.direct.series.area </src/format/ooodev.format.chart.direct.series.area>`
+                - :doc:`ooodev.format.chart.direct.series.line </src/format/ooodev.format.chart.direct.series.borders>`
+                - :doc:`ooodev.format.chart.direct.series.transparency </src/format/ooodev.format.chart.direct.series.transparency>`
+
         .. versionadded:: 0.9.0
         """
 
@@ -1495,6 +1502,10 @@ class Chart2:
 
         Returns:
             None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.series </src/format/ooodev.format.chart.direct.series>` subpackages.
+
 
         .. versionadded:: 0.9.4
         """
@@ -1543,7 +1554,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1565,7 +1576,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1587,7 +1598,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1609,7 +1620,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1631,7 +1642,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
 
         .. versionadded:: 0.9.4
         """
@@ -1653,7 +1664,8 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart.direct.title </src/format/ooodev.format.chart.direct.title>` subpackages.
+
 
         .. versionadded:: 0.9.4
         """
@@ -2120,6 +2132,10 @@ class Chart2:
         Returns:
             List[XPropertySet]: Property set list.
         """
+        # BUG: there is a bug in the API, getDataPointByIndex() is suppose to return XPropertySet,
+        #   which is does, however, it does not properly implement the XPropertySet interface.
+        #   setPropertyValue() and getPropertyValue() are not implemented.
+        #   The Props.set() method can handle this because is has a fallback to set attributes using the setattr() method of python.
         data_series_arr = cls.get_data_series(chart_doc=chart_doc)
         if idx < 0 or idx >= len(data_series_arr):
             raise IndexError(f"Index value of {idx} is out of of range")
@@ -2137,8 +2153,8 @@ class Chart2:
 
             if props is None:
                 break
-        if len(props_lst) > 0:
-            mLo.Lo.print(f"No Series at index {idx}")
+        if len(props_lst) == 0:
+            mLo.Lo.print(f"No Data Series at index {idx}")
         return props_lst
 
     @classmethod
@@ -2173,7 +2189,9 @@ class Chart2:
             return props.pop()
 
         if idx < 0 or idx >= len(props):
-            raise IndexError(f"Index value of {idx} is out of of range")
+            raise IndexError(
+                f"Index value of {idx} is out of of range; use 0 to {len(props) - 1} or -1 for last item."
+            )
 
         return props[idx]
 

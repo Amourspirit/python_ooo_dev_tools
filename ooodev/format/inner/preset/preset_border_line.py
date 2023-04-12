@@ -1,4 +1,5 @@
 from __future__ import annotations
+import typing
 
 import uno
 from ooo.dyn.drawing.line_joint import LineJoint
@@ -12,19 +13,21 @@ from typing import NamedTuple
 
 
 class BorderLineProps(NamedTuple):
+    # use Union here for Sphinx autodoc and python < 3.10
     line_cap: LineCap
-    line_dash_name: str | None
-    line_dash: str | None
+    line_dash_name: typing.Union[str, None]
+    line_dash: typing.Union[str, None]
     line_joint: LineJoint
-    line_style: LineStyle | None
+    line_style: typing.Union[LineStyle, None]
 
 
 class BorderLineSeriesProps(NamedTuple):
+    # use Union here for Sphinx autodoc and python < 3.10
     border_name: str
     border_style: LineStyle
     line_cap: LineCap
     line_dash: LineDash
-    line_dash_name: str | None
+    line_dash_name: typing.Union[str, None]
     line_style: LineStyle
 
 
@@ -411,7 +414,7 @@ def _get_series_line_kind_none() -> BorderLineSeriesProps:
         border_style=LineStyle.NONE,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="",
         line_style=LineStyle.SOLID,
     )
 
@@ -422,7 +425,7 @@ def _get_series_line_kind_continiuous() -> BorderLineSeriesProps:
         border_style=LineStyle.SOLID,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dot (Rounded)",
         line_style=LineStyle.SOLID,
     )
 
@@ -444,7 +447,7 @@ def _get_series_line_kind_dot_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dot",
         line_style=LineStyle.DASH,
     )
 
@@ -455,7 +458,7 @@ def _get_series_line_kind_long_dot() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Long Dot",
         line_style=LineStyle.DASH,
     )
 
@@ -466,7 +469,7 @@ def _get_series_line_kind_long_dot_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Long Dot (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -477,7 +480,7 @@ def _get_series_line_kind_dash() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dash",
         line_style=LineStyle.DASH,
     )
 
@@ -488,7 +491,7 @@ def _get_series_line_kind_dash_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dash (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -499,7 +502,7 @@ def _get_series_line_kind_long_dash() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Long Dash",
         line_style=LineStyle.DASH,
     )
 
@@ -510,7 +513,7 @@ def _get_series_line_kind_long_dash_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Long Dash (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -521,7 +524,7 @@ def _get_series_line_kind_double_dash() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Double Dash",
         line_style=LineStyle.DASH,
     )
 
@@ -532,7 +535,7 @@ def _get_series_line_kind_double_dash_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Double Dash (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -543,7 +546,7 @@ def _get_series_line_kind_dash_dot() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dash Dot",
         line_style=LineStyle.DASH,
     )
 
@@ -554,7 +557,7 @@ def _get_series_line_kind_dash_dot_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dash Dot (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -565,7 +568,7 @@ def _get_series_line_kind_long_dash_dot() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Long Dash Dot",
         line_style=LineStyle.DASH,
     )
 
@@ -576,7 +579,7 @@ def _get_series_line_kind_long_dash_dot_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Long Dash Dot (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -587,7 +590,7 @@ def _get_series_line_kind_double_dash_dot() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Double Dash Dot",
         line_style=LineStyle.DASH,
     )
 
@@ -598,7 +601,7 @@ def _get_series_line_kind_double_dash_dot_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Double Dash Dot (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -609,7 +612,7 @@ def _get_series_line_kind_dash_dot_dot() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dash Dot Dot",
         line_style=LineStyle.DASH,
     )
 
@@ -620,7 +623,7 @@ def _get_series_line_kind_dash_dot_dot_rounded() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dash Dot Dot (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -631,7 +634,7 @@ def _get_series_line_kind_double_dash_dot_dot() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Double Dash Dot Dot",
         line_style=LineStyle.DASH,
     )
 
@@ -642,7 +645,7 @@ def _get_series_line_kind_double_dash_dot_dot_rounded() -> BorderLineSeriesProps
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Double Dash Dot Dot (Rounded)",
         line_style=LineStyle.DASH,
     )
 
@@ -653,7 +656,7 @@ def _get_series_line_kind_ultra_fine_dotted() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Ultrafine Dotted (var)",
         line_style=LineStyle.DASH,
     )
 
@@ -664,7 +667,7 @@ def _get_series_line_kind_fine_dotted() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Fine Dotted",
         line_style=LineStyle.DASH,
     )
 
@@ -675,7 +678,7 @@ def _get_series_line_kind_ultra_fine_dashed() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Ultrafine Dashed",
         line_style=LineStyle.DASH,
     )
 
@@ -686,7 +689,7 @@ def _get_series_line_kind_fine_dashed() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Fine Dashed",
         line_style=LineStyle.DASH,
     )
 
@@ -697,7 +700,7 @@ def _get_series_line_kind_dashed() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Dashed (var)",
         line_style=LineStyle.DASH,
     )
 
@@ -708,7 +711,7 @@ def _get_series_line_kind_line_style_09() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Line Style 9",
         line_style=LineStyle.DASH,
     )
 
@@ -719,7 +722,7 @@ def _get_series_line_kind_dashes_3_dots_3() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="3 Dashes 3 Dots (var)",
         line_style=LineStyle.DASH,
     )
 
@@ -730,7 +733,7 @@ def _get_series_line_kind_ultra_fine_dots_2_dashes_3() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Ultrafine 2 Dots 3 Dashes",
         line_style=LineStyle.DASH,
     )
 
@@ -741,7 +744,7 @@ def _get_series_line_kind_dots_2_dash_1() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="2 Dots 1 Dash",
         line_style=LineStyle.DASH,
     )
 
@@ -752,7 +755,7 @@ def _get_series_line_kind_line_with_fine_dots() -> BorderLineSeriesProps:
         border_style=LineStyle.DASH,
         line_cap=LineCap.BUTT,
         line_dash=_get_default_line_dash(),
-        line_dash_name=None,
+        line_dash_name="Line with Fine Dots",
         line_style=LineStyle.DASH,
     )
 

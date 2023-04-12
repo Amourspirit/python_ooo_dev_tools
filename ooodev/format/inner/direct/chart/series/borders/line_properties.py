@@ -59,7 +59,7 @@ class LineProperties(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.chart2.DataSeries",)
+            self._supported_services_values = ("com.sun.star.chart2.DataSeries", "com.sun.star.chart2.DataPoint")
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:

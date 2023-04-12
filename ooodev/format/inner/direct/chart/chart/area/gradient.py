@@ -79,6 +79,7 @@ class Gradient(FillGradient):
                 "com.sun.star.chart2.PageBackground",
                 "com.sun.star.chart2.Title",
                 "com.sun.star.chart2.DataSeries",
+                "com.sun.star.chart2.DataPoint",
             )
         return self._supported_services_values
 
