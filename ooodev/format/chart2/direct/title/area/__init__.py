@@ -6,11 +6,11 @@ from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
-from ooodev.format.inner.direct.chart.title.area.color import Color as Color
-from ooodev.format.inner.direct.chart.title.area.gradient import Gradient as Gradient
-from ooodev.format.inner.direct.chart.title.area.hatch import Hatch as Hatch
-from ooodev.format.inner.direct.chart.title.area.img import Img as Img
-from ooodev.format.inner.direct.chart.title.area.pattern import Pattern as Pattern
+from ooodev.format.inner.direct.chart2.title.area.color import Color as Color
+from ooodev.format.inner.direct.chart2.title.area.gradient import Gradient as Gradient
+from ooodev.format.inner.direct.chart2.title.area.hatch import Hatch as Hatch
+from ooodev.format.inner.direct.chart2.title.area.img import Img as Img
+from ooodev.format.inner.direct.chart2.title.area.pattern import Pattern as Pattern
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
 from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind

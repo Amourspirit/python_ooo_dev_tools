@@ -1,4 +1,4 @@
-ooodev.format.inner.direct.chart.chart.borders package
+ooodev.format.inner.direct.chart2.wall.borders package
 ======================================================
 
 Submodules
@@ -7,12 +7,12 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   ooodev.format.inner.direct.chart.chart.borders.line_properties
+   ooodev.format.inner.direct.chart2.wall.borders.line_properties
 
 Module contents
 ---------------
 
-.. automodule:: ooodev.format.inner.direct.chart.chart.borders
+.. automodule:: ooodev.format.inner.direct.chart2.wall.borders
    :members:
    :undoc-members:
    :show-inheritance:

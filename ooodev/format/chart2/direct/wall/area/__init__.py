@@ -19,11 +19,11 @@ from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
 
-from ooodev.format.inner.direct.chart.wall.area.color import Color as Color
-from ooodev.format.inner.direct.chart.wall.area.gradient import Gradient as Gradient
-from ooodev.format.inner.direct.chart.wall.area.hatch import Hatch as Hatch
-from ooodev.format.inner.direct.chart.wall.area.img import Img as Img
-from ooodev.format.inner.direct.chart.wall.area.pattern import Pattern as Pattern
+from ooodev.format.inner.direct.chart2.wall.area.color import Color as Color
+from ooodev.format.inner.direct.chart2.wall.area.gradient import Gradient as Gradient
+from ooodev.format.inner.direct.chart2.wall.area.hatch import Hatch as Hatch
+from ooodev.format.inner.direct.chart2.wall.area.img import Img as Img
+from ooodev.format.inner.direct.chart2.wall.area.pattern import Pattern as Pattern
 
 
 __all__ = ["Color", "Gradient", "Hatch", "Img", "Pattern"]
