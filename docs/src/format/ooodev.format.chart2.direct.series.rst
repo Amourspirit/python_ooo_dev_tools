@@ -9,6 +9,7 @@ Subpackages
 
    ooodev.format.chart2.direct.series.area
    ooodev.format.chart2.direct.series.borders
+   ooodev.format.chart2.direct.series.options
    ooodev.format.chart2.direct.series.transparency
 
 Module contents

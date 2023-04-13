@@ -926,9 +926,16 @@ class Props:
                 ps = mLo.Lo.qi(XPropertySet, obj, True)
             try:
                 val = ps.getPropertyValue(name)
-            except AttributeError as e:
+            except (AttributeError, UnknownPropertyException) as e:
                 # handle a LibreOffice bug
-                success, val = cls._get_by_attribute(ps, name)
+                success = False
+                try:
+                    success, val = cls._get_by_attribute(ps, name)
+                except Exception as e:
+                    raise mEx.UnKnownError(
+                        f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
+                    ) from e
+
                 if not success:
                     raise mEx.UnKnownError(
                         f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
