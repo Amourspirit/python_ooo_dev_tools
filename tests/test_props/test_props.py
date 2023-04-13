@@ -5,7 +5,6 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 
-# region    Sheet Methods
 def test_show_indexed_props(loader, capsys: pytest.CaptureFixture) -> None:
     from ooodev.utils.props import Props
     from ooodev.utils.lo import Lo

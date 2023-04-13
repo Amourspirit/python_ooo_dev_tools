@@ -931,12 +931,16 @@ class Props:
                 success = False
                 try:
                     success, val = cls._get_by_attribute(ps, name)
-                except Exception as e:
+                except Exception as ex:
+                    if type(e).__name__ == "com.sun.star.beans.UnknownPropertyException":
+                        raise e
                     raise mEx.UnKnownError(
                         f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
-                    ) from e
+                    ) from ex
 
                 if not success:
+                    if type(e).__name__ == "com.sun.star.beans.UnknownPropertyException":
+                        raise e
                     raise mEx.UnKnownError(
                         f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
                     )
@@ -951,10 +955,10 @@ class Props:
             raise mEx.PropertyNotFoundError(name)
         except mEx.UnKnownError:
             raise
-        except Exception as e:
+        except Exception as exx:
             if default is not gUtil.NULL_OBJ:
                 return default
-            raise mEx.PropertyError(f'Error getting property: "{name}"') from e
+            raise mEx.PropertyError(f'Error getting property: "{name}"') from exx
 
     # endregion get()
 
