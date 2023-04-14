@@ -1407,6 +1407,28 @@ class Chart2:
         except Exception as e:
             raise mEx.ChartError("Error while setting legend visibility") from e
 
+    @staticmethod
+    def get_legend(chart_doc: XChartDocument) -> XLegend | None:
+        """
+        Gets chart legend.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            XLegend: Legend object or ``None`` if no legend exists.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            diagram = chart_doc.getFirstDiagram()
+            return diagram.getLegend()
+        except Exception as e:
+            raise mEx.ChartError("Error while getting legend") from e
+
     # endregion legend
 
     # region Styles
@@ -1523,6 +1545,28 @@ class Chart2:
             itm = series[idx]
             for style in styles:
                 style.apply(itm)
+
+    @classmethod
+    def style_legend(cls, chart_doc: XChartDocument, styles: Iterable[StyleObj]) -> None:
+        """
+        Styles legend of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Iterable[StyleObj]): One or more styles to apply chart legend.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.legend </src/format/ooodev.format.chart2.direct.legend>` subpackages.
+
+        .. versionadded:: 0.9.0
+        """
+        legend = cls.get_legend(chart_doc=chart_doc)
+        if legend:
+            for style in styles:
+                style.apply(legend)
 
     @classmethod
     def _style_title(cls, xtitle: XTitle, styles: Iterable[StyleObj]) -> None:

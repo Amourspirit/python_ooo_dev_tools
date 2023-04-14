@@ -57,7 +57,7 @@ class Direction(AbstractWritingMode):
         Constructor
 
         Args:
-            mode (DirectionModeKind, optional): Determines the writing direction
+            mode (DirectionModeKind, optional): Specifies the writing direction.
 
         Returns:
             None:

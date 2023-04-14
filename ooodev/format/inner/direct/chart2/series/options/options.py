@@ -256,7 +256,10 @@ class Options(StyleBase):
     @property
     def prop_hide_legend(self) -> bool | None:
         """Gets or sets whether the legend is hidden."""
-        return self._get(self._props.show_legend)
+        pv = self._get(self._props.show_legend)
+        if pv is None:
+            return None
+        return not pv
 
     @prop_hide_legend.setter
     def prop_hide_legend(self, value: bool | None) -> None:

@@ -20,6 +20,7 @@ class Transparency(WriteTransparency):
                 "com.sun.star.chart2.PageBackground",
                 "com.sun.star.chart2.DataSeries",
                 "com.sun.star.chart2.DataPoint",
+                "com.sun.star.chart2.Legend",
             )
         return self._supported_services_values
 

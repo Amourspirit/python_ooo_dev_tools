@@ -91,6 +91,7 @@ class Img(FillImg):
                 "com.sun.star.chart2.Title",
                 "com.sun.star.chart2.DataSeries",
                 "com.sun.star.chart2.DataPoint",
+                "com.sun.star.chart2.Legend",
             )
         return self._supported_services_values
 

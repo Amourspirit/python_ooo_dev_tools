@@ -157,6 +157,7 @@ class FontEffects(StyleBase):
                 "com.sun.star.style.CharacterStyle",
                 "com.sun.star.style.ParagraphStyle",
                 "com.sun.star.drawing.ControlShape",
+                "com.sun.star.chart2.Legend",
             )
         return self._supported_services_values
 
