@@ -36,6 +36,15 @@ class UnitMM100(BaseIntValue):
         except Exception as e:
             return False
 
+    def get_value_cm(self) -> float:
+        """
+        Gets instance value converted to ``cm`` units.
+
+        Returns:
+            int: Value in ``cm`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM100, to=UnitLength.CM)
+
     def get_value_mm(self) -> float:
         """
         Gets instance value converted to ``mm`` units.
@@ -114,7 +123,7 @@ class UnitMM100(BaseIntValue):
             UnitMM100:
         """
         inst = super(UnitMM100, cls).__new__(cls)
-        inst.__init__(value)
+        inst.__init__(int(value))
         return inst
 
     @classmethod
@@ -205,4 +214,19 @@ class UnitMM100(BaseIntValue):
         """
         inst = super(UnitMM100, cls).__new__(cls)
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.MM100)))
+        return inst
+
+    @classmethod
+    def from_cm(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
+        """
+        Get instance from ``cm`` value.
+
+        Args:
+            value (int): ``cm`` value.
+
+        Returns:
+            UnitMM100:
+        """
+        inst = super(UnitMM100, cls).__new__(cls)
+        inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.MM100)))
         return inst

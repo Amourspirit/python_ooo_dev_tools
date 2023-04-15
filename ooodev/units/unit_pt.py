@@ -22,6 +22,15 @@ class UnitPT(BaseFloatValue):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
 
+    def get_value_cm(self) -> float:
+        """
+        Gets instance value converted to ``cm`` units.
+
+        Returns:
+            int: Value in ``cm`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.CM)
+
     def get_value_mm(self) -> float:
         """
         Gets instance value converted to ``mm`` units.
@@ -182,4 +191,19 @@ class UnitPT(BaseFloatValue):
         """
         inst = super(UnitPT, cls).__new__(cls)
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.PT))
+        return inst
+
+    @classmethod
+    def from_cm(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
+        """
+        Get instance from ``cm`` value.
+
+        Args:
+            value (int): ``cm`` value.
+
+        Returns:
+            UnitPT:
+        """
+        inst = super(UnitPT, cls).__new__(cls)
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.PT))
         return inst
