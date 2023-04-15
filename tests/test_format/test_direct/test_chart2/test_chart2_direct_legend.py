@@ -38,6 +38,8 @@ from ooodev.format.chart2.direct.legend.font import Font as LegendFont
 from ooodev.format.chart2.direct.legend.font import FontEffects as LegendFontEffects, FontStrikeoutEnum
 from ooodev.format.chart2.direct.legend.font import FontOnly as LegendFontOnly
 
+from ooodev.format.chart2.direct.position_size import Position as ChartShapePosition
+
 from ooodev.format.chart2.direct.legend.position import (
     Position as ChartLegendPosition,
     LegendPosition,
@@ -147,6 +149,9 @@ def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
         assert legend.AnchorPosition == LegendPosition.PAGE_END
         assert legend.Overlay == False
         assert legend.WritingMode == DirectionModeKind.LR_TB.value
+
+        pos_shape_style = ChartShapePosition(pos_x=71.2, pos_y=16.3)
+        Chart2.style_legend(chart_doc=chart_doc, styles=[pos_shape_style])
 
         Lo.delay(delay)
     finally:

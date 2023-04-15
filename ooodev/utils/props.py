@@ -778,27 +778,25 @@ class Props:
                     if cargs.key == "":
                         continue
                     ps.setPropertyValue(cargs.key, cargs.value)
-            except AttributeError as e:
+            except (AttributeError, UnknownPropertyException) as e:
                 # handle a LibreOffice bug
                 try:
                     if not cls._set_by_attribute(obj, cargs.key, cargs.value):
+                        raise e
+                except Exception as ex:
+                    has_error = True
+                    if type(ex).__name__ == "com.sun.star.beans.UnknownPropertyException":
+                        errs.append(mEx.PropertyNotFoundError(key, ex))
+                    else:
                         errs.append(
                             mEx.UnKnownError(
                                 f'Something went wrong. Could not find setPropertyValue attribute on property set. Tried setting "{key}" manually but failed'
                             )
                         )
-                        has_error = True
-                        errs.append(e)
-                except Exception as e:
-                    has_error = True
-                    errs.append(e)
 
             except PropertyVetoException as e:
                 has_error = True
                 errs.append(mEx.PropertySetError(f'Could not set readonly-property "{key}"', e))
-            except UnknownPropertyException as e:
-                has_error = True
-                errs.append(mEx.PropertyNotFoundError(key, e))
             except Exception as e:
                 has_error = True
                 errs.append(Exception(f'Could not set property "{key}"', e))

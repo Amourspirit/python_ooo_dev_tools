@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Tuple, Type, cast, overload, TypeVar
 
-from ooo.dyn.awt.size import Size
+from ooo.dyn.awt.point import Point
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
@@ -15,12 +15,12 @@ from .struct_base import StructBase
 
 # endregion Import
 
-_TSizeStruct = TypeVar(name="_TSizeStruct", bound="SizeStruct")
+_TPointStruct = TypeVar(name="_TPointStruct", bound="PointStruct")
 
 
-class SizeStruct(StructBase):
+class PointStruct(StructBase):
     """
-    Size struct.
+    Point struct.
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -29,27 +29,17 @@ class SizeStruct(StructBase):
 
     # region init
 
-    def __init__(
-        self,
-        width: float | UnitObj = 0.0,
-        height: float | UnitObj = 0.0,
-        all: float | UnitObj = None,
-    ) -> None:
+    def __init__(self, x: int = 0, y: int = 0) -> None:
         """
         Constructor
 
         Args:
-            width (float, UnitObj, optional): Specifies width crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            height (float, UnitObj, optional): Specifies height crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            all (float, UnitObj, optional): Specifies ``width`` and ``height`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
+            x (int, optional): Specifies X coordinate. Default ``0``.
+            y (int, optional): Specifies Y coordinate. Default ``0``.
         """
         super().__init__()
-        if not all is None:
-            self.prop_left = all
-            self.prop_right = all
-        else:
-            self.prop_left = width
-            self.prop_right = height
+        self.prop_x = x
+        self.prop_y = y
 
     # endregion init
 
@@ -58,7 +48,7 @@ class SizeStruct(StructBase):
         try:
             return self._property_name
         except AttributeError:
-            self._property_name = "Size"
+            self._property_name = "Position"
         return self._property_name
 
     # endregion internal methods
@@ -66,26 +56,28 @@ class SizeStruct(StructBase):
     # region dunder methods
     def __eq__(self, oth: object) -> bool:
         obj2 = None
-        if isinstance(oth, SizeStruct):
+        if isinstance(oth, PointStruct):
             obj2 = oth.get_uno_struct()
-        if getattr(oth, "typeName", None) == "com.sun.star.awt.Size":
-            obj2 = cast(Size, oth)
+        if getattr(oth, "typeName", None) == "com.sun.star.awt.Point":
+            obj2 = cast(PointStruct, oth)
         if obj2:
             obj1 = self.get_uno_struct()
-            return obj1.Width == obj2.Width and obj1.Height == obj2.Height
+            return obj1.X == obj2.X and obj1.Y == obj2.Y
         return NotImplemented
 
     # endregion dunder methods
 
     # region methods
-    def get_uno_struct(self) -> Size:
+    def get_uno_struct(self) -> Point:
         """
-        Gets UNO ``Size`` from instance.
+        Gets UNO ``Point`` from instance.
 
         Returns:
-            Size: ``Size`` instance
+            Point: ``Point`` instance
         """
-        inst = Size(Width=self._get(self._props.width), Height=self._get(self._props.height))
+        x = self._get(self._props.width)
+        y = self._get(self._props.height)
+        inst = Point(X=x, Y=y)
         return inst
 
     # endregion methods
@@ -96,7 +88,7 @@ class SizeStruct(StructBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextGraphicObjects",)
+            self._supported_services_values = ("com.sun.star.drawing.Shape",)
         return self._supported_services_values
 
     # region apply()
@@ -122,8 +114,8 @@ class SizeStruct(StructBase):
             self._print_not_valid_srv("apply")
             return
 
-        grad = self.get_uno_struct()
-        props = {name: grad}
+        struct = self.get_uno_struct()
+        props = {name: struct}
         super().apply(obj=obj, override_dv=props)
 
     # endregion apply()
@@ -135,24 +127,24 @@ class SizeStruct(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TSizeStruct], value: Size) -> _TSizeStruct:
+    def from_uno_struct(cls: Type[_TPointStruct], value: Point) -> _TPointStruct:
         ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TSizeStruct], value: Size, **kwargs) -> _TSizeStruct:
+    def from_uno_struct(cls: Type[_TPointStruct], value: Point, **kwargs) -> _TPointStruct:
         ...
 
     @classmethod
-    def from_uno_struct(cls: Type[_TSizeStruct], value: Size, **kwargs) -> _TSizeStruct:
+    def from_uno_struct(cls: Type[_TPointStruct], value: Point, **kwargs) -> _TPointStruct:
         """
-        Converts a ``Size`` instance to a ``SizeStruct``.
+        Converts a ``Point`` instance to a ``PointStruct``.
 
         Args:
-            value (Size): UNO ``Size``.
+            value (Point): UNO ``Point``.
 
         Returns:
-            SizeStruct: ``SizeStruct`` set with ``Size`` properties.
+            PointStruct: ``PointStruct`` set with ``Point`` properties.
         """
         inst = cls(**kwargs)
         inst._set(inst._props.height, value.Height)
@@ -164,16 +156,16 @@ class SizeStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: object) -> _TSizeStruct:
+    def from_obj(cls: Type[_TPointStruct], obj: object) -> _TPointStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: object, **kwargs) -> _TSizeStruct:
+    def from_obj(cls: Type[_TPointStruct], obj: object, **kwargs) -> _TPointStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: object, **kwargs) -> _TSizeStruct:
+    def from_obj(cls: Type[_TPointStruct], obj: object, **kwargs) -> _TPointStruct:
         """
         Gets instance from object
 
@@ -184,65 +176,65 @@ class SizeStruct(StructBase):
             PropertyNotFoundError: If ``obj`` does not have required property
 
         Returns:
-            SizeStruct: ``SizeStruct`` instance that represents ``obj`` Size properties.
+            PointStruct: ``PointStruct`` instance that represents ``obj`` Point properties.
         """
         # this nu is only used to get Property Name
         nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         try:
-            size = cast(SizeStruct, mProps.Props.get(obj, prop_name))
+            point = cast(PointStruct, mProps.Props.get(obj, prop_name))
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        return cls.from_uno_struct(size, **kwargs)
+        return cls.from_uno_struct(point, **kwargs)
 
     # endregion from_obj()
 
     # endregion static methods
 
     # region Style methods
-    def fmt_all(self: _TSizeStruct, value: float | UnitObj) -> _TSizeStruct:
+    def fmt_all(self: _TPointStruct, value: int) -> _TPointStruct:
         """
         Gets copy of instance with width and height set.
 
         Args:
-            value (float, UnitObj): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitObj): Specifies ``x`` and ``y`` values.
 
         Returns:
-            SizeStruct: Border Table
+            PointStruct: Border Table
         """
         cp = self.copy()
-        cp.prop_width = value
-        cp.prop_height = value
+        cp.prop_y = value
+        cp.prop_x = value
         return cp
 
-    def fmt_height(self: _TSizeStruct, value: float | UnitObj) -> _TSizeStruct:
+    def fmt_x(self: _TPointStruct, value: int) -> _TPointStruct:
         """
         Gets a copy of instance with height set.
 
         Args:
-            value (float, UnitObj): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitObj): Specifies ``x`` value.
 
         Returns:
-            SizeStruct:
+            PointStruct:
         """
         cp = self.copy()
-        cp.prop_height = value
+        cp.prop_x = value
         return cp
 
-    def fmt_width(self: _TSizeStruct, value: float | UnitObj) -> _TSizeStruct:
+    def fmt_y(self: _TPointStruct, value: int) -> _TPointStruct:
         """
         Gets a copy of instance with width set.
 
         Args:
-            value (float, UnitObj): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitObj): Specifies ``y`` value.
 
         Returns:
-            SizeStruct:
+            PointStruct:
         """
         cp = self.copy()
-        cp.prop_width = value
+        cp.prop_y = value
         return cp
 
     # endregion Style methods
@@ -259,37 +251,29 @@ class SizeStruct(StructBase):
         return self._format_kind_prop
 
     @property
-    def prop_height(self) -> UnitMM:
-        """Gets/Sets height value in ``mm`` units."""
-        pv = self._get(self._props.height)
-        return UnitMM.from_mm100(pv)
+    def prop_x(self) -> int:
+        """Gets/Sets x value"""
+        return self._get(self._props.width)
 
-    @prop_height.setter
-    def prop_height(self, value: float | UnitObj) -> None:
-        try:
-            self._set(self._props.height, value.get_value_mm100())
-        except AttributeError:
-            self._set(self._props.height, UnitConvert.convert_mm_mm100(value))
+    @prop_x.setter
+    def prop_x(self, value: int) -> None:
+        self._set(self._props.width, value)
 
     @property
-    def prop_width(self) -> UnitMM:
-        """Gets/Sets width value in ``mm`` units."""
-        pv = self._get(self._props.width)
-        return UnitMM.from_mm100(pv)
+    def prop_y(self) -> int:
+        """Gets/Sets y value."""
+        return self._get(self._props.height)
 
-    @prop_width.setter
-    def prop_width(self, value: float | UnitObj) -> None:
-        try:
-            self._set(self._props.width, value.get_value_mm100())
-        except AttributeError:
-            self._set(self._props.width, UnitConvert.convert_mm_mm100(value))
+    @prop_y.setter
+    def prop_y(self, value: int) -> None:
+        self._set(self._props.height, value)
 
     @property
     def _props(self) -> StructSizeProps:
         try:
             return self._props_internal_attributes
         except AttributeError:
-            self._props_internal_attributes = StructSizeProps(width="Width", height="Height")
+            self._props_internal_attributes = StructSizeProps(width="X", height="Y")
         return self._props_internal_attributes
 
     # endregion Properties

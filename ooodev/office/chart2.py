@@ -1563,10 +1563,21 @@ class Chart2:
 
         .. versionadded:: 0.9.0
         """
+        legend_shape = None
+        for style in styles:
+            if style.support_service("com.sun.star.drawing.Shape"):
+                legend_shape = chart_doc.getLegend()
+                break
+        if legend_shape:
+            for style in styles:
+                if style.support_service("com.sun.star.drawing.Shape"):
+                    style.apply(legend_shape)
+
         legend = cls.get_legend(chart_doc=chart_doc)
         if legend:
             for style in styles:
-                style.apply(legend)
+                if not style.support_service("com.sun.star.drawing.Shape"):
+                    style.apply(legend)
 
     @classmethod
     def _style_title(cls, xtitle: XTitle, styles: Iterable[StyleObj]) -> None:

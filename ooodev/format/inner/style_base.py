@@ -431,7 +431,6 @@ class StyleBase(metaclass=MetaStyle):
                 events = Events(source=self)
                 events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
                 events.on(PropsNamedEvent.PROP_SET, _on_props_set)
-                # mProps.Props.set(obj, **dv)
                 self._props_set(obj, **dv)
                 events = None
                 eargs = EventArgs.from_args(cargs)
