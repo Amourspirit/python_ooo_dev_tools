@@ -1,47 +1,48 @@
 from __future__ import annotations
 from typing import Any, Tuple, overload
 import uno
-from ooo.dyn.awt.point import Point as UnoPoint
+from ooo.dyn.awt.size import Size as UnoSize
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitObj, UnitConvert, UnitMM
+from ooodev.format.inner.direct.structs.size_struct import SizeStruct
 
 
-class Position(StyleBase):
+class Size(StyleBase):
     """
-    Positions a shape.
+    Size of a shape.
 
     .. versionadded:: 0.9.4
     """
 
     def __init__(
         self,
-        pos_x: float | UnitObj,
-        pos_y: float | UnitObj,
+        width: float | UnitObj,
+        height: float | UnitObj,
     ) -> None:
         """
         Constructor
 
         Args:
-            pos_x (float | UnitObj): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
-            pos_y (float | UnitObj): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            width (float | UnitObj): Specifies the width of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            height (float | UnitObj): Specifies the height of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
         """
         super().__init__()
         # self._chart_doc = chart_doc
         try:
-            self._pos_x = pos_x.get_value_mm100()
+            self._width = width.get_value_mm100()
         except AttributeError:
-            self._pos_x = UnitConvert.convert_mm_mm100(pos_x)
+            self._width = UnitConvert.convert_mm_mm100(width)
         try:
-            self._pos_y = pos_y.get_value_mm100()
+            self._height = height.get_value_mm100()
         except AttributeError:
-            self._pos_y = UnitConvert.convert_mm_mm100(pos_y)
+            self._height = UnitConvert.convert_mm_mm100(height)
 
     def _get_property_name(self) -> str:
-        return "Position"
+        return "Size"
 
     # region Overridden Methods
     def apply(self, obj: object, **kwargs) -> None:
@@ -57,10 +58,8 @@ class Position(StyleBase):
         name = self._get_property_name()
         if not name:
             return
-        struct = UnoPoint(X=self._pos_x, Y=self._pos_y)
-        props = kwargs.pop("override_dv", {})
-        props.update({name: struct})
-        # props[name] = struct
+        struct = UnoSize(Width=self._width, Height=self._height)
+        props = {name: struct}
         super().apply(obj=obj, override_dv=props)
 
     def _supported_services(self) -> Tuple[str, ...]:
@@ -80,14 +79,14 @@ class Position(StyleBase):
 
     # region copy()
     @overload
-    def copy(self) -> Position:
+    def copy(self) -> Size:
         ...
 
     @overload
-    def copy(self, **kwargs) -> Position:
+    def copy(self, **kwargs) -> Size:
         ...
 
-    def copy(self, **kwargs) -> Position:
+    def copy(self, **kwargs) -> Size:
         """
         Copy the current instance.
 
@@ -95,8 +94,8 @@ class Position(StyleBase):
             Position: The copied instance.
         """
         cp = super().copy(**kwargs)
-        cp._pos_x = self._pos_x
-        cp._pos_y = self._pos_y
+        cp._width = self._width
+        cp._height = self._height
         return cp
 
     # endregion copy()
@@ -113,27 +112,27 @@ class Position(StyleBase):
         return self._format_kind_prop
 
     @property
-    def prop_pos_x(self) -> UnitMM:
-        """Gets or sets the x-coordinate of the position of the shape (in ``mm`` units)."""
-        return UnitMM.from_mm100(self._pos_x)
+    def prop_width(self) -> UnitMM:
+        """Gets or sets the width of the shape (in ``mm`` units)."""
+        return UnitMM.from_mm100(self._width)
 
-    @prop_pos_x.setter
-    def prop_pos_x(self, value: float | UnitObj) -> None:
+    @prop_width.setter
+    def prop_width(self, value: float | UnitObj) -> None:
         try:
-            self._pos_x = value.get_value_mm100()
+            self._width = value.get_value_mm100()
         except AttributeError:
-            self._pos_x = UnitConvert.convert_mm_mm100(value)
+            self._width = UnitConvert.convert_mm_mm100(value)
 
     @property
-    def prop_pos_y(self) -> UnitMM:
-        """Gets or sets the y-coordinate of the position of the shape (in ``mm`` units)."""
-        return UnitMM.from_mm100(self._pos_y)
+    def prop_height(self) -> UnitMM:
+        """Gets or sets the height of the shape (in ``mm`` units)."""
+        return UnitMM.from_mm100(self._height)
 
-    @prop_pos_y.setter
-    def prop_pos_y(self, value: float | UnitObj) -> None:
+    @prop_height.setter
+    def prop_height(self, value: float | UnitObj) -> None:
         try:
-            self._pos_y = value.get_value_mm100()
+            self._height = value.get_value_mm100()
         except AttributeError:
-            self._pos_y = UnitConvert.convert_mm_mm100(value)
+            self._height = UnitConvert.convert_mm_mm100(value)
 
     # endregion Properties

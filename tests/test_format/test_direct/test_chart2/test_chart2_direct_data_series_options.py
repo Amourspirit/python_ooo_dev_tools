@@ -126,6 +126,11 @@ def test_calc_chart_data_series(loader, copy_fix_calc) -> None:
         assert diagram.HasYAxis == True
         assert diagram.HasSecondaryYAxis == False
 
+        if not Lo.bridge_connector.headless:
+            # The chart does not always update correctly after style changes.
+            # To refresh the chart, we can do a recalculation by calling the dispatch_recalculate() method.
+            Calc.dispatch_recalculate()
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

@@ -32,9 +32,11 @@ from ooodev.format.chart2.direct.title.area import (
 )
 from ooodev.format.chart2.direct.title.font import Font as TitleFont
 from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
+from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
 
 from ooodev.utils.color import CommonColor, StandardColor
 from ooodev.utils.info import Info
+from ooodev.units import UnitMM100
 from ooodev.format.chart2.direct.title.alignment import Orientation as TitleOrientation
 from ooodev.format.chart2.direct.title.alignment import Direction as TitleDirection, DirectionModeKind
 
@@ -47,7 +49,7 @@ def test_calc_set_styles_title(loader, copy_fix_calc) -> None:
     if Info.version_info < (7, 5):
         pytest.skip("Not supported in this version, Requires LibreOffice 7.5 or higher.")
 
-    delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
+    delay = 0
     from ooodev.office.calc import Calc
 
     fix_path = cast(Path, copy_fix_calc("chartsData.ods"))
@@ -129,6 +131,19 @@ def test_calc_set_styles_title(loader, copy_fix_calc) -> None:
 
         # chart_doc_ms_factory = Lo.qi(XMultiServiceFactory, chart_doc)
         # container = Lo.create_instance_msf(XNameContainer, "com.sun.star.drawing.HatchTable", msf=chart_doc_ms_factory)
+
+        pos_x = UnitMM100.from_cm(3.94)
+        pos_y = UnitMM100.from_cm(1.79)
+        title_pos = TitlePosition(pos_x=pos_x, pos_y=pos_y)
+        Chart2.style_title(chart_doc=chart_doc, styles=[title_pos])
+        subtitle_shape = chart_doc.getTitle()
+        shape_pos = subtitle_shape.getPosition()
+        assert shape_pos.X in range(pos_x.value - 2, pos_x.value + 3)  # +/- 2 mm100 tolerance
+
+        if not Lo.bridge_connector.headless:
+            # The chart does not always update correctly after style changes.
+            # To refresh the chart, we can do a recalculation by calling the dispatch_recalculate() method.
+            Calc.dispatch_recalculate()
 
         Lo.delay(delay)
     finally:

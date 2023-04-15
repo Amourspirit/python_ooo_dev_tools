@@ -33,9 +33,11 @@ from ooodev.format.chart2.direct.title.area import (
 from ooodev.format.chart2.direct.title.font import Font as TitleFont
 from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
 
+from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
 
 from ooodev.utils.color import CommonColor, StandardColor
 from ooodev.utils.info import Info
+from ooodev.units import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Title
@@ -120,6 +122,19 @@ def test_calc_set_styles_subtitle(loader, copy_fix_calc) -> None:
         subtitle = cast("Title", Chart2.get_subtitle(chart_doc=chart_doc))
         assert subtitle.FillBitmapName == str(PresetPatternKind.DIAGONAL_BRICK)
         assert subtitle.LineStyle is None
+
+        pos_x = UnitMM100.from_cm(3.94)
+        pos_y = UnitMM100.from_cm(1.79)
+        subtitle_pos = TitlePosition(pos_x=pos_x, pos_y=pos_y)
+        Chart2.style_subtitle(chart_doc=chart_doc, styles=[subtitle_pos])
+        subtitle_shape = chart_doc.getSubTitle()
+        shape_pos = subtitle_shape.getPosition()
+        assert shape_pos.X in range(pos_x.value - 2, pos_x.value + 3)  # +/- 2 mm100 tolerance
+
+        if not Lo.bridge_connector.headless:
+            # The chart does not always update correctly after style changes.
+            # To refresh the chart, we can do a recalculation by calling the dispatch_recalculate() method.
+            Calc.dispatch_recalculate()
 
         Lo.delay(delay)
     finally:

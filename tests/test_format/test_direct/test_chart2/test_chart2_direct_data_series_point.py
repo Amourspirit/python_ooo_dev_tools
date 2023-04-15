@@ -121,6 +121,11 @@ def test_calc_chart_data_series(loader, copy_fix_calc) -> None:
         Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=-1, styles=[grad_transparent])
         assert pp.FillTransparenceGradientName.startswith("ChartTransparencyGradient")
 
+        if not Lo.bridge_connector.headless:
+            # The chart does not always update correctly after style changes.
+            # To refresh the chart, we can do a recalculation by calling the dispatch_recalculate() method.
+            Calc.dispatch_recalculate()
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

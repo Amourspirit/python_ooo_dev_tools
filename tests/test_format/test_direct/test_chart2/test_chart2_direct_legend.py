@@ -1,6 +1,6 @@
 from __future__ import annotations
 import pytest
-from typing import cast
+from typing import cast, TYPE_CHECKING
 from pathlib import Path
 
 if __name__ == "__main__":
@@ -39,12 +39,17 @@ from ooodev.format.chart2.direct.legend.font import FontEffects as LegendFontEff
 from ooodev.format.chart2.direct.legend.font import FontOnly as LegendFontOnly
 
 from ooodev.format.chart2.direct.position_size import Position as ChartShapePosition
+from ooodev.format.chart2.direct.position_size import Size as ChartShapeSize
 
 from ooodev.format.chart2.direct.legend.position import (
     Position as ChartLegendPosition,
     LegendPosition,
     DirectionModeKind,
 )
+
+if TYPE_CHECKING:
+    from com.sun.star.awt import Size as UnoSize
+    from ooo.dyn.awt.point import Point as UnoPoint
 
 
 def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
@@ -65,6 +70,7 @@ def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
 
         range_addr = Calc.get_address(sheet=sheet, range_name="E2:F8")
+        chart_name = "MyChart"
         chart_doc = Chart2.insert_chart(
             sheet=sheet,
             cells_range=range_addr,
@@ -72,6 +78,7 @@ def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
             width=12,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_3D.PIE_3D,
+            chart_name=chart_name,
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -150,8 +157,27 @@ def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
         assert legend.Overlay == False
         assert legend.WritingMode == DirectionModeKind.LR_TB.value
 
-        pos_shape_style = ChartShapePosition(pos_x=71.2, pos_y=16.3)
+        pos_x100 = UnitMM100.from_cm(7.12)
+        pos_y100 = UnitMM100.from_cm(1.63)
+        pos_shape_style = ChartShapePosition(pos_x=pos_x100, pos_y=pos_y100)
         Chart2.style_legend(chart_doc=chart_doc, styles=[pos_shape_style])
+        legend_point = cast("UnoPoint", chart_doc.Legend.Position)
+        assert legend_point.X in range(pos_x100.value - 2, pos_x100.value + 3)  # +/- 2mm100
+        assert legend_point.Y in range(pos_y100.value - 2, pos_y100.value + 3)  # +/- 2mm100
+
+        width_100 = UnitMM100.from_cm(4.1)
+        height_100 = UnitMM100.from_cm(3.5)
+        size_shape_style = ChartShapeSize(width=width_100, height=height_100)
+        Chart2.style_legend(chart_doc=chart_doc, styles=[size_shape_style])
+
+        legend_size = cast("UnoSize", chart_doc.Legend.Size)
+        assert legend_size.Width in range(width_100.value - 2, width_100.value + 3)  # +/- 2mm100
+        assert legend_size.Height in range(height_100.value - 2, height_100.value + 3)  # +/- 2mm100
+
+        if not Lo.bridge_connector.headless:
+            # The chart does not always update correctly after style changes.
+            # To refresh the chart, we can do a recalculation by calling the dispatch_recalculate() method.
+            Calc.dispatch_recalculate()
 
         Lo.delay(delay)
     finally:

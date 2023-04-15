@@ -11,6 +11,7 @@ Subpackages
    ooodev.format.chart2.direct.title.area
    ooodev.format.chart2.direct.title.borders
    ooodev.format.chart2.direct.title.font
+   ooodev.format.chart2.direct.title.position_size
 
 Module contents
 ---------------

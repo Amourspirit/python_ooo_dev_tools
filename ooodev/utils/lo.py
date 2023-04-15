@@ -2066,11 +2066,17 @@ class Lo(metaclass=StaticProperty):
             | ``DISPATCHING`` Event args data contains any properties passed in via ``props``.
             | ``DISPATCHED`` Event args data contains any results from the dispatch commands.
 
+        Attention:
+            Dispatching does not work in headless mode. Therefore this method will return immediately if headless mode is enabled.
 
         See Also:
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
+        if cls.bridge_connector.headless:
+            # dispatching does not work in headless mode.
+            return None
+
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
         try:

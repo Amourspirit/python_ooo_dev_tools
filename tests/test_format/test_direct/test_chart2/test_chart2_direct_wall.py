@@ -109,6 +109,11 @@ def test_calc_set_styles_wall_chart(loader, copy_fix_calc) -> None:
         wall = chart_doc.getFirstDiagram().getWall()
         assert wall.FillTransparenceGradientName.startswith("ChartTransparencyGradient")
 
+        if not Lo.bridge_connector.headless:
+            # The chart does not always update correctly after style changes.
+            # To refresh the chart, we can do a recalculation by calling the dispatch_recalculate() method.
+            Calc.dispatch_recalculate()
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc)

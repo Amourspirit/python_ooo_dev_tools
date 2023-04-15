@@ -15,8 +15,6 @@ from ooodev.format.inner.direct.chart2.legend.font.font_effects import FontEffec
 from ooodev.format.inner.direct.chart2.legend.font.font_only import FontOnly as FontOnly
 from ooodev.format.inner.direct.write.char.font.font_effects import FontLine as FontLine
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
-from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
-from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as FontOnly
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 
 __all__ = ["Font", "FontEffects", "FontOnly"]

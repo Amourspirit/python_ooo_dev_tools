@@ -6,7 +6,7 @@ from __future__ import annotations
 from enum import IntEnum, IntFlag, Enum
 import numbers
 import re
-from typing import Any, Iterable, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
 # from ..mock import mock_g
@@ -2227,7 +2227,7 @@ class Calc:
     # region --------------- set/get values in cells -------------------
     # region    set_val()
     @staticmethod
-    def _set_val_by_cell(value: object, cell: XCell, styles: Iterable[StyleObj] = None) -> None:
+    def _set_val_by_cell(value: object, cell: XCell, styles: Sequence[StyleObj] = None) -> None:
         if isinstance(value, numbers.Number):
             cell.setValue(float(value))
         elif isinstance(value, str):
@@ -2249,14 +2249,14 @@ class Calc:
 
     @classmethod
     def _set_val_by_cell_name(
-        cls, value: object, sheet: XSpreadsheet, cell_name: str, styles: Iterable[StyleObj] = None
+        cls, value: object, sheet: XSpreadsheet, cell_name: str, styles: Sequence[StyleObj] = None
     ) -> None:
         pos = cls.get_cell_position(cell_name)
         cls._set_val_by_col_row(value=value, sheet=sheet, col=pos.X, row=pos.Y, styles=styles)
 
     @classmethod
     def _set_val_by_col_row(
-        cls, value: object, sheet: XSpreadsheet, col: int, row: int, styles: Iterable[StyleObj] = None
+        cls, value: object, sheet: XSpreadsheet, col: int, row: int, styles: Sequence[StyleObj] = None
     ) -> None:
         cell = cls.get_cell(sheet=sheet, col=col, row=row)
         cls._set_val_by_cell(value=value, cell=cell, styles=styles)
@@ -2268,7 +2268,7 @@ class Calc:
 
     @overload
     @classmethod
-    def set_val(cls, value: object, cell: XCell, *, styles: Iterable[StyleObj]) -> None:
+    def set_val(cls, value: object, cell: XCell, *, styles: Sequence[StyleObj]) -> None:
         ...
 
     @overload
@@ -2278,7 +2278,7 @@ class Calc:
 
     @overload
     @classmethod
-    def set_val(cls, value: object, sheet: XSpreadsheet, cell_name: str, *, styles: Iterable[StyleObj]) -> None:
+    def set_val(cls, value: object, sheet: XSpreadsheet, cell_name: str, *, styles: Sequence[StyleObj]) -> None:
         ...
 
     @overload
@@ -2289,7 +2289,7 @@ class Calc:
     @overload
     @classmethod
     def set_val(
-        cls, value: object, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Iterable[StyleObj]
+        cls, value: object, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
@@ -2300,7 +2300,7 @@ class Calc:
 
     @overload
     @classmethod
-    def set_val(cls, value: object, sheet: XSpreadsheet, col: int, row: int, *, styles: Iterable[StyleObj]) -> None:
+    def set_val(cls, value: object, sheet: XSpreadsheet, col: int, row: int, *, styles: Sequence[StyleObj]) -> None:
         ...
 
     @classmethod
@@ -2315,7 +2315,7 @@ class Calc:
             cell_name (str): Name of cell to set value of such as 'B4'
             col (int): Cell column as zero-based integer
             row (int): Cell row as zero-based integer
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell.
 
         Returns:
             None:
@@ -2758,7 +2758,7 @@ class Calc:
     # region    set_array()
     @classmethod
     def _set_array_doc_addr(
-        cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress, styles: Iterable[StyleObj] = None
+        cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress, styles: Sequence[StyleObj] = None
     ) -> None:
         v_len = len(values)
         if v_len == 0:
@@ -2779,7 +2779,7 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array(cls, values: Table, cell_range: XCellRange, *, styles: Iterable[StyleObj]) -> None:
+    def set_array(cls, values: Table, cell_range: XCellRange, *, styles: Sequence[StyleObj]) -> None:
         ...
 
     @overload
@@ -2789,7 +2789,7 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array(cls, values: Table, sheet: XSpreadsheet, name: str, *, styles: Iterable[StyleObj]) -> None:
+    def set_array(cls, values: Table, sheet: XSpreadsheet, name: str, *, styles: Sequence[StyleObj]) -> None:
         ...
 
     @overload
@@ -2800,7 +2800,7 @@ class Calc:
     @overload
     @classmethod
     def set_array(
-        cls, values: Table, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, *, styles: Iterable[StyleObj]
+        cls, values: Table, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
@@ -2812,7 +2812,7 @@ class Calc:
     @overload
     @classmethod
     def set_array(
-        cls, values: Table, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Iterable[StyleObj]
+        cls, values: Table, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
@@ -2824,7 +2824,7 @@ class Calc:
     @overload
     @classmethod
     def set_array(
-        cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress, *, styles: Iterable[StyleObj]
+        cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
@@ -2852,7 +2852,7 @@ class Calc:
         col_end: int,
         row_end: int,
         *,
-        styles: Iterable[StyleObj],
+        styles: Sequence[StyleObj],
     ) -> None:
         ...
 
@@ -2874,7 +2874,7 @@ class Calc:
             row_start (int): Zero-base Start Row
             col_end (int): Zero-base End Column
             row_end (int): Zero-base End Row
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
 
         Returns:
             None:
@@ -2973,7 +2973,7 @@ class Calc:
 
     @classmethod
     def _set_array_range(
-        cls, sheet: XSpreadsheet, range_name: str | mRngObj.RangeObj, values: Table, styles: Iterable[StyleObj] = None
+        cls, sheet: XSpreadsheet, range_name: str | mRngObj.RangeObj, values: Table, styles: Sequence[StyleObj] = None
     ) -> None:
         """
         Inserts array of data into spreadsheet
@@ -2982,7 +2982,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             range_name (str): Range to insert data such as 'A1:E12'
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
 
         Returns:
             None:
@@ -3002,7 +3002,7 @@ class Calc:
     @overload
     @classmethod
     def set_array_range(
-        cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Iterable[StyleObj]
+        cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
@@ -3014,7 +3014,7 @@ class Calc:
     @overload
     @classmethod
     def set_array_range(
-        cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, values: Table, *, styles: Iterable[StyleObj]
+        cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, values: Table, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
@@ -3028,7 +3028,7 @@ class Calc:
             range_name (str): Range to insert data such as 'A1:E12'
             range_obj (RangeObj): Range Object
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
 
         Returns:
             None:
@@ -3077,18 +3077,18 @@ class Calc:
 
     @overload
     @staticmethod
-    def set_cell_range_array(cell_range: XCellRange, values: Table, styles: Iterable[StyleObj]) -> None:
+    def set_cell_range_array(cell_range: XCellRange, values: Table, styles: Sequence[StyleObj]) -> None:
         ...
 
     @staticmethod
-    def set_cell_range_array(cell_range: XCellRange, values: Table, styles: Iterable[StyleObj] = None) -> None:
+    def set_cell_range_array(cell_range: XCellRange, values: Table, styles: Sequence[StyleObj] = None) -> None:
         """
         Inserts array of data into spreadsheet
 
         Args:
             cell_range (XCellRange): Cell Range
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
 
         Returns:
             None:
@@ -3125,7 +3125,7 @@ class Calc:
 
     @classmethod
     def _set_array_cell(
-        cls, sheet: XSpreadsheet, cell_name: str | mCellObj.CellObj, values: Table, styles: Iterable[StyleObj] = None
+        cls, sheet: XSpreadsheet, cell_name: str | mCellObj.CellObj, values: Table, styles: Sequence[StyleObj] = None
     ) -> None:
         """
         Inserts array of data into spreadsheet
@@ -3134,7 +3134,7 @@ class Calc:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str): Cell Name such as 'A1'
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
         """
         v_len = len(values)
         if v_len == 0:
@@ -3156,14 +3156,14 @@ class Calc:
     @overload
     @classmethod
     def set_array_cell(
-        cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Iterable[StyleObj]
+        cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
     @overload
     @classmethod
     def set_array_cell(
-        cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table, *, styles: Iterable[StyleObj]
+        cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table, *, styles: Sequence[StyleObj]
     ) -> None:
         ...
 
@@ -3182,7 +3182,7 @@ class Calc:
             range_name (str): Range to insert data such as 'A1:E12'
             cell_obj (CellObj): Range Object
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
 
         .. versionchanged:: 0.9.1
             Added overloads for styles.
@@ -7818,33 +7818,33 @@ class Calc:
     # region set_style_range()
     @overload
     @classmethod
-    def set_style_range(cls, sheet: XSpreadsheet, range_name: str, *, styles: Iterable[StyleObj]) -> XCellRange:
+    def set_style_range(cls, sheet: XSpreadsheet, range_name: str, *, styles: Sequence[StyleObj]) -> XCellRange:
         ...
 
     @overload
     @classmethod
     def set_style_range(
-        cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, *, styles: Iterable[StyleObj]
+        cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, *, styles: Sequence[StyleObj]
     ) -> XCellRange:
         ...
 
     @overload
     @classmethod
     def set_style_range(
-        cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Iterable[StyleObj]
+        cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleObj]
     ) -> XCellRange:
         ...
 
     @overload
     @classmethod
     def set_style_range(
-        cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, *, styles: Iterable[StyleObj]
+        cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, *, styles: Sequence[StyleObj]
     ) -> XCellRange:
         ...
 
     @overload
     @classmethod
-    def set_style_range(cls, cell_range: XCellRange, *, styles: Iterable[StyleObj]) -> XCellRange:
+    def set_style_range(cls, cell_range: XCellRange, *, styles: Sequence[StyleObj]) -> XCellRange:
         ...
 
     @overload
@@ -7857,7 +7857,7 @@ class Calc:
         col_end: int,
         row_end: int,
         *,
-        styles: Iterable[StyleObj],
+        styles: Sequence[StyleObj],
     ) -> XCellRange:
         ...
 
@@ -7877,14 +7877,14 @@ class Calc:
             row_start (int): Start Row
             col_end (int): End Column
             row_end (int): End Row
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
 
         Returns:
             None:
 
         .. versionadded:: 0.9.2
         """
-        styles = cast(Iterable[StyleObj], kwargs.pop("styles", None))
+        styles = cast(Sequence[StyleObj], kwargs.pop("styles", None))
         if styles is None:
             return
         cell_range = cls.get_cell_range(*args, **kwargs)
@@ -7905,32 +7905,32 @@ class Calc:
     # region set_style_cell()
     @overload
     @classmethod
-    def set_style_cell(cls, sheet: XSpreadsheet, addr: CellAddress, *, styles: Iterable[StyleObj]) -> XCell:
+    def set_style_cell(cls, sheet: XSpreadsheet, addr: CellAddress, *, styles: Sequence[StyleObj]) -> XCell:
         ...
 
     @overload
     @classmethod
-    def set_style_cell(cls, sheet: XSpreadsheet, cell_name: str, *, styles: Iterable[StyleObj]) -> XCell:
+    def set_style_cell(cls, sheet: XSpreadsheet, cell_name: str, *, styles: Sequence[StyleObj]) -> XCell:
         ...
 
     @overload
     @classmethod
-    def set_style_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Iterable[StyleObj]) -> XCell:
+    def set_style_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleObj]) -> XCell:
         ...
 
     @overload
     @classmethod
-    def set_style_cell(cls, sheet: XSpreadsheet, col: int, row: int, *, styles: Iterable[StyleObj]) -> XCell:
+    def set_style_cell(cls, sheet: XSpreadsheet, col: int, row: int, *, styles: Sequence[StyleObj]) -> XCell:
         ...
 
     @overload
     @classmethod
-    def set_style_cell(cls, cell_range: XCellRange, *, styles: Iterable[StyleObj]) -> XCell:
+    def set_style_cell(cls, cell_range: XCellRange, *, styles: Sequence[StyleObj]) -> XCell:
         ...
 
     @overload
     @classmethod
-    def set_style_cell(cls, cell_range: XCellRange, col: int, row: int, *, styles: Iterable[StyleObj]) -> XCell:
+    def set_style_cell(cls, cell_range: XCellRange, col: int, row: int, *, styles: Sequence[StyleObj]) -> XCell:
         ...
 
     @classmethod
@@ -7946,14 +7946,14 @@ class Calc:
             cell_range (XCellRange): Cell Range
             col (int): Cell column
             row (int): cell row
-            styles (Iterable[StyleObj], optional): One or more styles to apply to cell range.
+            styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
 
         Returns:
             None:
 
         .. versionadded:: 0.9.2
         """
-        styles = cast(Iterable[StyleObj], kwargs.pop("styles", None))
+        styles = cast(Sequence[StyleObj], kwargs.pop("styles", None))
         if styles is None:
             return
         cell = cls.get_cell(*args, **kwargs)
@@ -7971,3 +7971,15 @@ class Calc:
 
     # endregion set_style_cell()
     # endregion ------------ styles ------------------------------------
+
+    # region --------------- dispatch ----------------------------------
+    @staticmethod
+    def dispatch_recalculate() -> None:
+        """
+        Dispatches recalculate command to the current sheet.
+
+        .. versionadded:: 0.9.4
+        """
+        mLo.Lo.dispatch_cmd("Calculate")
+
+    # endregion ------------ dispatch ----------------------------------

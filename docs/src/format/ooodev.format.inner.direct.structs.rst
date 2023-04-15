@@ -14,6 +14,7 @@ Submodules
    ooodev.format.inner.direct.structs.hatch_struct
    ooodev.format.inner.direct.structs.line_spacing_struct
    ooodev.format.inner.direct.structs.locale_struct
+   ooodev.format.inner.direct.structs.point_struct
    ooodev.format.inner.direct.structs.shadow_struct
    ooodev.format.inner.direct.structs.side
    ooodev.format.inner.direct.structs.size_struct
