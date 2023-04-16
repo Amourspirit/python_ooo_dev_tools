@@ -1,7 +1,7 @@
 # region Imports
 from __future__ import annotations
 from random import random
-from typing import Iterable, List, Sequence, Tuple, cast, overload, TYPE_CHECKING
+from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 
@@ -44,8 +44,13 @@ from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
 from com.sun.star.util import XNumberFormatsSupplier
 
+from ooodev.events.event_singleton import _Events
+
 
 from . import calc as mCalc
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.args.event_args import EventArgs
+from ..events.chart2_named_event import Chart2NamedEvent
 from ..exceptions import ex as mEx
 from ..proto.style_obj import StyleObj
 from ..utils import color as mColor
@@ -1973,7 +1978,7 @@ class Chart2:
             if coord_sys:
                 if len(coord_sys) > 1:
                     mLo.Lo.print(f"No. of coord systems: {len(coord_sys)}; using first.")
-            return coord_sys[0]  # will raise error if coord_sys is empyt or none
+            return coord_sys[0]  # will raise error if coord_sys is empty or none
         except Exception as e:
             raise mEx.ChartError("Error unable to get coord_system") from e
 
@@ -2499,7 +2504,8 @@ class Chart2:
         try:
             xfs = mLo.Lo.qi(XNumberFormatsSupplier, chart_doc, True)
             n_formats = xfs.getNumberFormats()
-            key = int(n_formats.queryKey(nf_str, Locale("en", "us", ""), False))
+            # locale = Locale("en", "us", "")
+            key = int(n_formats.queryKey(nf_str, mInfo.Info.language_locale, False))
             if key == -1:
                 mLo.Lo.print(f'Could not access key for number format: "{nf_str}"')
             return key
@@ -2916,5 +2922,122 @@ class Chart2:
 
     # endregion chart shape and image
 
+    # region Lock Controllers
 
-__all__ = ("Chart2",)
+    @classmethod
+    def lock_controllers(cls, chart_doc: XChartDocument) -> bool:
+        """
+        Suspends some notifications to the controllers which are used for display updates.
+
+        The calls to :py:meth:`~.chart2.Chart2.lock_controllers` and :py:meth:`~.chart2.Chart2.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcast.
+
+        Returns:
+            bool: False if ``CONTROLERS_LOCKING`` event is canceled; Otherwise, True
+
+         :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_LOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_LOCKED` :eventref:`src-docs-event`
+
+        See Also:
+
+            - :py:class:`.chart2.Chart2ControllerLock`
+            - :py:meth:`~.chart2.Chart2.unlock_controllers`
+
+        .. versionadded:: 0.9.4
+        """
+        # much faster updates as screen is basically suspended
+        cargs = CancelEventArgs(Chart2.lock_controllers.__qualname__)
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_LOCKING, cargs)
+        if cargs.cancel:
+            return False
+        chart_doc.lockControllers()
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_LOCKED, EventArgs(cls))
+        return True
+
+    @staticmethod
+    def unlock_controllers(chart_doc: XChartDocument) -> bool:
+        """
+        Resumes the notifications which were suspended by :py:meth:`~.chart2.Chart2.lock_controllers`.
+
+        The calls to :py:meth:`~.chart2.Chart2.lock_controllers` and :py:meth:`~.chart2.Chart2.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcast.
+
+        Returns:
+            bool: False if ``CONTROLERS_UNLOCKING`` event is canceled; Otherwise, True
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_UNLOCKED` :eventref:`src-docs-event`
+
+        See Also:
+
+            - :py:class:`.chart2.Chart2ControllerLock`
+            - :py:meth:`~.chart2.Chart2.lock_controllers`
+
+        .. versionadded:: 0.9.4
+        """
+        cargs = CancelEventArgs(Chart2.unlock_controllers.__qualname__)
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_UNLOCKING, cargs)
+        if cargs.cancel:
+            return False
+        if chart_doc.hasControllersLocked():
+            chart_doc.unlockControllers()
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_UNLOCKED, EventArgs.from_args(cargs))
+        return True
+
+    # endregion Lock Controllers
+
+
+class Chart2ControllerLock:
+    """
+    Context manager for Locking Chart2 Controller
+
+    In the following example ControllerLock is called using ``with``.
+
+    All code inside the ``with Chart2ControllerLock.ControllerLock(chart_doc)`` block is updated
+    with controller locked. This means the ui will not update chart until the block is done.
+    A soon as the block is processed the controller is unlocked and the ui is updated.
+
+    Example:
+
+        .. code::
+
+            from ooodev.utils.color import CommonColor
+            from ooodev.office.chart2 import Chart2
+            from ooodev.office.chart2 import Chart2ControllerLock
+            from ooodev.format.chart2.direct.title.area import Color as ChartTitleBgColor
+            from ooodev.format.chart2.direct.title.font import Font as TitleFont
+            from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
+            # ... other imports
+
+            with Chart2ControllerLock.ControllerLock(chart_doc):
+                title_area_bg_color = ChartTitleBgColor(CommonColor.LIGHT_YELLOW)
+                title_font = TitleFont(b=True, size=14, color=CommonColor.DARK_GREEN)
+                title_border = TitleBorderLineProperties(style=BorderLineKind.DASH_DOT, width=1.0, color=CommonColor.DARK_RED)
+                Chart2.style_title(chart_doc=chart_doc, styles=[title_area_bg_color, title_font, title_border])
+                # ... other code
+
+    .. versionadded:: 0.9.4
+    """
+
+    def __init__(self, chart_doc: XChartDocument):
+        self._chart_doc = chart_doc
+        Chart2.lock_controllers(chart_doc=self._chart_doc)
+
+    def __enter__(self) -> XChartDocument:
+        return self._chart_doc
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        Chart2.unlock_controllers(self._chart_doc)
+
+
+__all__ = ("Chart2", "Chart2ControllerLock")

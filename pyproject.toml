@@ -54,6 +54,7 @@ lo-dev-search = {version = ">=2.0.2", platform = "linux"}
 ruff = ">=0.0.254"
 black = {extras = ["d"], version = ">=23.1.0"}
 oooenv = ">=0.1.1"
+pytest-mock = ">=3.10"
 
 
 [tool.poetry.group.docs.dependencies]
