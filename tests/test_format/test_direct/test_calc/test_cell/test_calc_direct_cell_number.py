@@ -1,20 +1,15 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
 from ooodev.format.calc.direct.cell.numbers import Numbers, NumberFormatEnum, NumberFormatIndexEnum
-from ooodev.format import CommonColor, Styler
+from ooodev.format import Styler
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.units import UnitCM
-
-if TYPE_CHECKING:
-    from com.sun.star.table import CellProperties  # service
-    from com.sun.star.table import CellRange  # service
 
 
 def test_calc_number(loader) -> None:

@@ -3,22 +3,20 @@ from __future__ import annotations
 from typing import overload
 from typing import Any, Tuple, Type, TypeVar
 import uno
+from com.sun.star.beans import XPropertySet
 from com.sun.star.lang import XComponent
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
-from com.sun.star.beans import XPropertySet
 
 from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
-
-# com.sun.star.util.NumberFormat
-from ooo.dyn.util.number_format import NumberFormatEnum
 from ooo.dyn.lang.locale import Locale
+from ooo.dyn.util.number_format import NumberFormatEnum
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
-from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
+from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
 
 # com.sun.star.i18n.NumberFormatIndex
 # endregion Import
