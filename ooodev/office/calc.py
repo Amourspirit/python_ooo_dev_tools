@@ -91,6 +91,8 @@ from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 from ..exceptions import ex as mEx
 from ..formatters.formatter_table import FormatterTable
 from ..proto.style_obj import StyleObj
+from ..units import UnitObj
+from ..units import UnitConvert
 from ..utils import gui as mGui
 from ..utils import info as mInfo
 from ..utils import lo as mLo
@@ -6991,13 +6993,13 @@ class Calc:
     # endregion highlight_range()
 
     @classmethod
-    def set_col_width(cls, sheet: XSpreadsheet, width: int, idx: int) -> XCellRange:
+    def set_col_width(cls, sheet: XSpreadsheet, width: int | UnitObj, idx: int) -> XCellRange:
         """
         Sets column width. width is in ``mm``, e.g. 6
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            width (int): Width in mm
+            width (int, UnitObj): Width in ``mm`` units or :ref:`proto_unit_obj`.
             idx (int): Index of column
 
         Raises:
@@ -7013,20 +7015,28 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_WIDTH_SET` :eventref:`src-docs-sheet-event-col-width-set`
 
         Note:
-            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``width`` value.
+            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``width`` value (``mm100`` units).
+
+        .. versionchanged:: 0.9.4
+            width can now also be ``UnitObj``
         """
+        try:
+            col_width = width.get_value_mm100()
+        except AttributeError:
+            col_width = UnitConvert.convert_mm_mm100(width)
         cargs = SheetCancelArgs(Calc.set_col_width.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
-        cargs.event_data = width
+        cargs.event_data = col_width
         _Events().trigger(CalcNamedEvent.SHEET_COL_WIDTH_SETTING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        if width <= 0:
+        col_width = cargs.event_data
+        if col_width <= 0:
             mLo.Lo.print("Width must be greater then 0")
             return None
         cell_range = cls.get_col_range(sheet=cargs.sheet, idx=cargs.index)
-        mProps.Props.set(cell_range, Width=(width * 100))
+        mProps.Props.set(cell_range, Width=col_width)
         _Events().trigger(CalcNamedEvent.SHEET_COL_WIDTH_SET, SheetArgs.from_args(cargs))
         return cell_range
 
@@ -7034,7 +7044,7 @@ class Calc:
     def set_row_height(
         cls,
         sheet: XSpreadsheet,
-        height: int,
+        height: int | UnitObj,
         idx: int,
     ) -> XCellRange:
         """
@@ -7042,7 +7052,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            height (int): Width in mm
+            height (int, UnitObj): Width in ``mm`` units or :ref:`proto_unit_obj`.
             idx (int): Index of Row
 
         Raises:
@@ -7058,23 +7068,30 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_HEIGHT_SET` :eventref:`src-docs-sheet-event-row-height-set`
 
         Note:
-            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``height`` value.
+            Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``height`` value (``mm100`` units).
+
+        .. versionchanged:: 0.9.4
+            width can now also be ``UnitObj``
         """
+        try:
+            row_height = height.get_value_mm100()
+        except AttributeError:
+            row_height = UnitConvert.convert_mm_mm100(height)
         cargs = SheetCancelArgs(Calc.set_row_height.__qualname__)
         cargs.sheet = sheet
         cargs.index = idx
-        cargs.event_data = height
+        cargs.event_data = row_height
         _Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SETTING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         idx = cargs.index
-        height = cargs.event_data
-        if height <= 0:
+        row_height = cargs.event_data
+        if row_height <= 0:
             mLo.Lo.print("Height must be greater then 0")
             return None
         cell_range = cls.get_row_range(sheet=cargs.sheet, idx=idx)
         # mInfo.Info.show_services(obj_name="Cell range for a row", obj=cell_range)
-        mProps.Props.set(cell_range, Height=(height * 100))
+        mProps.Props.set(cell_range, Height=row_height)
         _Events().trigger(CalcNamedEvent.SHEET_ROW_HEIGHT_SET, SheetArgs.from_args(cargs))
         return cell_range
 
