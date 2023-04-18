@@ -25,5 +25,8 @@ class FontEffects(CharFontEffects):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.beans.PropertySet",)
+            self._supported_services_values = (
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.CharacterProperties",
+            )
         return self._supported_services_values

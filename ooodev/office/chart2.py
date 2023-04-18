@@ -74,7 +74,6 @@ from ooo.dyn.chart.error_bar_style import ErrorBarStyle
 from ooo.dyn.chart2.axis_orientation import AxisOrientation
 from ooo.dyn.chart2.axis_type import AxisTypeEnum as AxisTypeKind
 from ooo.dyn.chart2.data_point_geometry3_d import DataPointGeometry3DEnum as DataPointGeometry3DEnum
-from ooo.dyn.chart2.data_point_label import DataPointLabel
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 from ooo.dyn.drawing.line_style import LineStyle as LineStyle
 from ooo.dyn.lang.locale import Locale
@@ -83,6 +82,7 @@ from ooo.dyn.table.cell_range_address import CellRangeAddress
 if TYPE_CHECKING:
     from ooo.lo.chart2.data_point_properties import DataPointProperties
     from com.sun.star.drawing import OLE2Shape
+    from com.sun.star.chart2 import DataPointLabel
 # endregion Imports
 
 
@@ -133,6 +133,9 @@ class Chart2:
         Note:
             **Keyword Arguments** are to mostly be ignored.
             If finer control over chart creation is needed then **Keyword Arguments** can be used.
+
+        Note:
+            See **Open Office Wiki** - `The Structure of Charts <https://wiki.openoffice.org/wiki/Documentation/BASIC_Guide/Structure_of_Charts>`__ for more information.
 
         See Also:
             :py:class:`~.color.CommonColor`
@@ -1478,8 +1481,31 @@ class Chart2:
         .. versionadded:: 0.9.0
         """
         wall = chart_doc.getFirstDiagram().getWall()
-        for style in styles:
-            style.apply(wall)
+        if wall:
+            for style in styles:
+                style.apply(wall)
+
+    @staticmethod
+    def style_floor(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles Floor of 3D chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart floor.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        floor = chart_doc.getFirstDiagram().getFloor()
+        if floor:
+            for style in styles:
+                style.apply(floor)
 
     @classmethod
     def style_data_point(
@@ -2310,7 +2336,7 @@ class Chart2:
         try:
             data_series_arr = cls.get_data_series(chart_doc=chart_doc)
             for data_series in data_series_arr:
-                dp_label = cast(DataPointLabel, mProps.Props.get_property(data_series, "Label"))
+                dp_label = cast("DataPointLabel", mProps.Props.get_property(data_series, "Label"))
                 dp_label.ShowNumber = False
                 dp_label.ShowCategoryName = False
                 dp_label.ShowLegendSymbol = False
@@ -2448,19 +2474,25 @@ class Chart2:
             raise mEx.ChartError("Error creating curve") from e
 
     @classmethod
-    def draw_regression_curve(cls, chart_doc: XChartDocument, curve_kind: CurveKind) -> None:
+    def draw_regression_curve(
+        cls, chart_doc: XChartDocument, curve_kind: CurveKind, styles: Sequence[StyleObj] | None = None
+    ) -> XPropertySet:
         """
         Draws a regression curve.
 
         Args:
             chart_doc (XChartDocument): Chart Document
             curve_kind (CurveKind): Curve kind.
+            styles (Sequence[StyleObj], optional): Styles to apply to the curve. Defaults to ``None``.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
-            None:
+            XPropertySet: Regression curve property set.
+
+        .. versionchanged:: 0.9.4
+            Added ``styles`` argument, and now returns the regression curve property set.
         """
         try:
             data_series_arr = cls.get_data_series(chart_doc=chart_doc)
@@ -2469,12 +2501,23 @@ class Chart2:
             rc_con.addRegressionCurve(curve)
 
             ps = curve.getEquationProperties()
-            mProps.Props.set_property(ps, "ShowCorrelationCoefficient", True)
-            mProps.Props.set_property(ps, "ShowEquation", True)
+            mProps.Props.set(ps, ShowCorrelationCoefficient=True, ShowEquation=True)
 
             key = cls.get_number_format_key(chart_doc=chart_doc, nf_str="0.00")  # 2 dp
             if key != -1:
-                mProps.Props.set_property(ps, "NumberFormat", key)
+                mProps.Props.set(ps, NumberFormat=key)
+            if styles:
+                supported = (
+                    "com.sun.star.chart2.RegressionEquation",
+                    "com.sun.star.drawing.FillProperties",
+                    "com.sun.star.drawing.LineProperties",
+                    "com.sun.star.style.CharacterProperties",
+                )
+
+                for style in styles:
+                    if style.support_service(*supported):
+                        style.apply(ps)
+            return ps
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -2505,7 +2548,9 @@ class Chart2:
             xfs = mLo.Lo.qi(XNumberFormatsSupplier, chart_doc, True)
             n_formats = xfs.getNumberFormats()
             # locale = Locale("en", "us", "")
-            key = int(n_formats.queryKey(nf_str, mInfo.Info.language_locale, False))
+            # locale = mInfo.Info.language_locale
+            # note the empty locale for default locale
+            key = int(n_formats.queryKey(nf_str, Locale(), False))
             if key == -1:
                 mLo.Lo.print(f'Could not access key for number format: "{nf_str}"')
             return key
@@ -2945,7 +2990,7 @@ class Chart2:
 
         See Also:
 
-            - :py:class:`.chart2.Chart2ControllerLock`
+            - :py:class:`~.chart2.Chart2ControllerLock`
             - :py:meth:`~.chart2.Chart2.unlock_controllers`
 
         .. versionadded:: 0.9.4
@@ -2980,7 +3025,7 @@ class Chart2:
 
         See Also:
 
-            - :py:class:`.chart2.Chart2ControllerLock`
+            - :py:class:`~.chart2.Chart2ControllerLock`
             - :py:meth:`~.chart2.Chart2.lock_controllers`
 
         .. versionadded:: 0.9.4

@@ -44,13 +44,13 @@ class Numbers(StyleBase):
         Constructor
 
         Args:
-            num_format (NumberFormatEnum | int, optional): Type of a number format.
+            num_format (NumberFormatEnum, int, optional): Type of a number format.
                 Use this to select a defatult format. Defaults to 0 (General Format).
                 Only used if ``num_format_index`` is ``-1`` (omitted).
             num_format_index (NumberFormatIndexEnum | int, optional): Index of a number format.
                 The enumeration values represent the built-in number formats. Defaults to ``-1``.
-            lang_locale (Locale | None, optional): Locale of the number format. Defaults to ``None`` which used current Locale.
-            component (XComponent | None, optional): Document such as Spreadsheet or Chart. If Omittet, the current document is used. Defaults to ``None``.
+            lang_locale (Locale, optional): Locale of the number format. Defaults to ``None`` which used current Locale.
+            component (XComponent, optional): Document such as Spreadsheet or Chart. If Omittet, the current document is used. Defaults to ``None``.
         """
         super().__init__()
         if lang_locale is None:
@@ -286,7 +286,6 @@ class Numbers(StyleBase):
 
     # region Instance Properties
 
-    # endregion Instance Properties
     @property
     def general(self: _TNumbers) -> _TNumbers:
         """Gets general format"""
@@ -361,6 +360,8 @@ class Numbers(StyleBase):
         return self.__class__(
             num_format=NumberFormatEnum.LOGICAL, lang_locale=self._lang_locale, component=self._component
         )
+
+    # endregion Instance Properties
 
     # region Properties
 

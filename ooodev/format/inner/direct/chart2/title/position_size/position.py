@@ -26,8 +26,7 @@ class Position(ChartShapePosition):
             None:
         """
         props = kwargs.pop("override_dv", {})
-        # props["AutomaticPosition"] = False
-        props.update({self._get_property_name(): None, "AutomaticPosition": False})
+        props.update({"AutomaticPosition": False})
         super().apply(obj=obj, override_dv=props)
 
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:

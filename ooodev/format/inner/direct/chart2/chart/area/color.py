@@ -16,11 +16,12 @@ class Color(FillColor):
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = (
+                "com.sun.star.chart2.DataPoint",
+                "com.sun.star.chart2.DataSeries",
+                "com.sun.star.chart2.Legend",
                 "com.sun.star.chart2.PageBackground",
                 "com.sun.star.chart2.Title",
-                "com.sun.star.chart2.DataSeries",
-                "com.sun.star.chart2.DataPoint",
-                "com.sun.star.chart2.Legend",
+                "com.sun.star.drawing.FillProperties",
             )
         return self._supported_services_values
 
