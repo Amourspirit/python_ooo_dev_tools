@@ -2,7 +2,7 @@
 from __future__ import annotations
 import uno
 
-from ...chart.transparent.gradient import Gradient as ChartTransparentGradient
+from ....chart.transparent.gradient import Gradient as ChartTransparentGradient
 
 # endregion Import
 

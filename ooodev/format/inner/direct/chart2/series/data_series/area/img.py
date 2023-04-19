@@ -3,7 +3,7 @@ from __future__ import annotations
 import uno
 
 
-from ...chart.area.img import Img as ChartImg
+from ....chart.area.img import Img as ChartImg
 
 # endregion Imports
 

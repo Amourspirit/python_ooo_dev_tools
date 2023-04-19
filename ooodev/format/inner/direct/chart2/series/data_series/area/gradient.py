@@ -1,7 +1,7 @@
 # region Import
 from __future__ import annotations
 import uno
-from ...chart.area.gradient import Gradient as ChartAreaGradient
+from ....chart.area.gradient import Gradient as ChartAreaGradient
 
 # endregion Import
 

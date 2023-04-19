@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Tuple, Type, cast, overload, TypeVar
 
+import uno
 from ooo.dyn.awt.point import Point
 
 from ooodev.exceptions import ex as mEx

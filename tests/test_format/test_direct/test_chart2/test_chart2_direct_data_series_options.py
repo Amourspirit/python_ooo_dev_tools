@@ -19,12 +19,12 @@ except ImportError:
     # handle LibreOffice 7.4 bug
     Chart2 = None
 
-from ooodev.format.chart2.direct.series.options import AlignSeries as SeriesOptAlignSeries
-from ooodev.format.chart2.direct.series.options import Plot as SeriesOptPlot
-from ooodev.format.chart2.direct.series.options import Settings as SeriesOptSettings
-from ooodev.format.chart2.direct.series.options import LegendEntry as SeriesOptLegendEntry
-from ooodev.format.chart2.direct.series.options import MissingValueKind
-from ooodev.format.chart2.direct.series.options import Orientation
+from ooodev.format.chart2.direct.series.data_series.options import AlignSeries as SeriesOptAlignSeries
+from ooodev.format.chart2.direct.series.data_series.options import Plot as SeriesOptPlot
+from ooodev.format.chart2.direct.series.data_series.options import Settings as SeriesOptSettings
+from ooodev.format.chart2.direct.series.data_series.options import LegendEntry as SeriesOptLegendEntry
+from ooodev.format.chart2.direct.series.data_series.options import MissingValueKind
+from ooodev.format.chart2.direct.series.data_series.options import Orientation
 from ooodev.utils.data_type.angle import Angle
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI

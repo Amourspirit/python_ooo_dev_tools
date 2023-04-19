@@ -1,7 +1,7 @@
 from __future__ import annotations
 import uno
 
-from ...chart.area.pattern import Pattern as ChartPattern
+from ....chart.area.pattern import Pattern as ChartPattern
 
 
 class Pattern(ChartPattern):

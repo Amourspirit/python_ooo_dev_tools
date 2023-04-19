@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...chart.area.color import Color as ChartColor
+from ....chart.area.color import Color as ChartColor
 
 
 class Color(ChartColor):

@@ -17,16 +17,19 @@ try:
 except ImportError:
     Chart2 = None
 
-from ooodev.format.chart2.direct.series.area import Color as SeriesAreaColor
-from ooodev.format.chart2.direct.series.area import Gradient as SeriesAreaGradient, PresetGradientKind
-from ooodev.format.chart2.direct.series.area import Hatch as SeriesAreaHatch, PresetHatchKind
-from ooodev.format.chart2.direct.series.area import Img as SeriesAreaImg, PresetImageKind
-from ooodev.format.chart2.direct.series.area import Pattern as SeriesAreaPattern, PresetPatternKind
+from ooodev.format.chart2.direct.series.data_series.area import Color as SeriesAreaColor
+from ooodev.format.chart2.direct.series.data_series.area import Gradient as SeriesAreaGradient, PresetGradientKind
+from ooodev.format.chart2.direct.series.data_series.area import Hatch as SeriesAreaHatch, PresetHatchKind
+from ooodev.format.chart2.direct.series.data_series.area import Img as SeriesAreaImg, PresetImageKind
+from ooodev.format.chart2.direct.series.data_series.area import Pattern as SeriesAreaPattern, PresetPatternKind
 
-from ooodev.format.chart2.direct.series.borders import LineProperties as SeriesBorderLineProperties, BorderLineKind
+from ooodev.format.chart2.direct.series.data_series.borders import (
+    LineProperties as SeriesBorderLineProperties,
+    BorderLineKind,
+)
 
-from ooodev.format.chart2.direct.series.transparency import Transparency as SeriesTransparency
-from ooodev.format.chart2.direct.series.transparency import (
+from ooodev.format.chart2.direct.series.data_series.transparency import Transparency as SeriesTransparency
+from ooodev.format.chart2.direct.series.data_series.transparency import (
     Gradient as SeriesGradientTransparency,
     IntensityRange,
     Angle,

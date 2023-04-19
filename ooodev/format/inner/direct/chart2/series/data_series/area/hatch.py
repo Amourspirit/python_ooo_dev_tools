@@ -1,7 +1,7 @@
 from __future__ import annotations
 import uno
 
-from ...chart.area.hatch import Hatch as ChartHatch
+from ....chart.area.hatch import Hatch as ChartHatch
 
 
 class Hatch(ChartHatch):
