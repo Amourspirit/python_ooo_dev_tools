@@ -39,7 +39,7 @@ from ooodev.utils.info import Info
 from ooodev.utils.data_type.angle import Angle
 
 
-def test_calc_set_styles_wall_chart(loader, copy_fix_calc) -> None:
+def test_calc_set_styles_floor_chart(loader, copy_fix_calc) -> None:
     if Info.version_info < (7, 5):
         pytest.skip("Not supported in this version, Requires LibreOffice 7.5 or higher.")
 

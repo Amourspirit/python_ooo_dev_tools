@@ -41,7 +41,7 @@ from ooodev.format.chart2.direct.legend.font import FontOnly as LegendFontOnly
 from ooodev.format.chart2.direct.position_size import Position as ChartShapePosition
 from ooodev.format.chart2.direct.position_size import Size as ChartShapeSize
 
-from ooodev.format.chart2.direct.legend.position import (
+from ooodev.format.chart2.direct.legend.position_size import (
     Position as ChartLegendPosition,
     LegendPosition,
     DirectionModeKind,

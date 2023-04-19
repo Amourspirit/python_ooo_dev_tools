@@ -9,6 +9,7 @@ Subpackages
 
    ooodev.format.inner.direct.chart2.chart.area
    ooodev.format.inner.direct.chart2.chart.borders
+   ooodev.format.inner.direct.chart2.chart.numbers
    ooodev.format.inner.direct.chart2.chart.transparent
 
 Module contents

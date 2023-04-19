@@ -1889,7 +1889,7 @@
 </node>
 </node>
 </node>
-<node TEXT="chart" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1924986449" CREATED="1675146098865" MODIFIED="1675146157173">
+<node TEXT="chart2" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1924986449" CREATED="1675146098865" MODIFIED="1681921780691">
 <node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1930219027" CREATED="1675146113825" MODIFIED="1675146166462">
 <node TEXT="area" ID="ID_1671089924" CREATED="1675065864419" MODIFIED="1676330994472">
 <icon BUILTIN="checked"/>
@@ -1997,7 +1997,7 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="position" ID="ID_99788115" CREATED="1681812848249" MODIFIED="1681812863761">
+<node TEXT="position_size" ID="ID_99788115" CREATED="1681812848249" MODIFIED="1681839585972">
 <icon BUILTIN="checked"/>
 <node TEXT="Position" ID="ID_494578263" CREATED="1681812657833" MODIFIED="1681812673521">
 <icon BUILTIN="checked"/>
@@ -2047,7 +2047,9 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1681813036478"><richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1681921759366">
+<icon BUILTIN="checked"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
     
@@ -2057,11 +2059,46 @@
       May Change with different types of charts.
     </p>
   </body>
-</html>
-</richcontent>
-<node TEXT="Options" ID="ID_1786659310" CREATED="1681812996825" MODIFIED="1681813006495">
+</html></richcontent>
+<node TEXT="AlignSeries" ID="ID_485145973" CREATED="1681921659089" MODIFIED="1681921711658">
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="LegendEntry" ID="ID_1616067693" CREATED="1681921668314" MODIFIED="1681921711660">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Orientation" ID="ID_1108640920" CREATED="1681921643265" MODIFIED="1681921711660">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Plot" ID="ID_1288825919" CREATED="1681921676321" MODIFIED="1681921711661">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="PlotSimple" ID="ID_1648305024" CREATED="1681921689201" MODIFIED="1681921711661">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Settings" ID="ID_699012602" CREATED="1681921695073" MODIFIED="1681921711661">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Orientation" ID="ID_1638430240" CREATED="1681921700697" MODIFIED="1681921753926">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      For Pie and Donut charts only.
+    </p>
+  </body>
+</html>
+</richcontent>
 </node>
 </node>
 <node TEXT="transparency" ID="ID_374121481" CREATED="1681812690769" MODIFIED="1681812895205">
@@ -2197,8 +2234,7 @@
       Floor is formatted by using wall styles.
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 </node>
 </node>
 </node>

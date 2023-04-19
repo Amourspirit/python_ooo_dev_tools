@@ -351,7 +351,12 @@ class StyleBase(metaclass=MetaStyle):
     def _props_set(self, obj: object, **kwargs: Any) -> None:
         # set properties. Can be overriden in child classes
         # may be usful to wrap in try statements in child classes
-        mProps.Props.set(obj, **kwargs)
+        try:
+            mProps.Props.set(obj, **kwargs)
+        except mEx.MultiError as e:
+            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
+            for err in e.errors:
+                mLo.Lo.print(f"  {err}")
 
     def _copy_missing_attribs(self, src: TStyleBase, dst: TStyleBase, *args: str) -> None:
         """
@@ -407,6 +412,7 @@ class StyleBase(metaclass=MetaStyle):
 
         Keyword Arguments:
             override_dv (Dic[str, Any], optional): if passed in this dictionary is used to set properties instead of internal dictionary of property values.
+            validate (bool, optional): if ``False`` then ``obj`` is not validated. Defaults to ``True``.
 
         :events:
             .. cssclass:: lo_event
@@ -416,13 +422,17 @@ class StyleBase(metaclass=MetaStyle):
 
         Returns:
             None:
+
+        .. versionchanged:: 0.9.4
+            Added ``validate`` keyword arguments.
         """
+        validate = bool(kwargs.get("validate", True))
         if "override_dv" in kwargs:
             dv = kwargs["override_dv"]
         else:
             dv = self._get_properties()
         if len(dv) > 0:
-            if self._is_valid_obj(obj):
+            if validate is False or self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
                 cargs.event_data = self
                 self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)

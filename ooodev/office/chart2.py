@@ -85,6 +85,7 @@ if TYPE_CHECKING:
     from com.sun.star.chart2 import DataPointLabel
 # endregion Imports
 
+# https://wiki.documentfoundation.org/Documentation/DevGuide/Charts
 
 class Chart2:
     """Chart 2 Class"""
