@@ -49,7 +49,7 @@ def test_calc_chart_data_series(loader, copy_fix_calc) -> None:
     delay = 0
     from ooodev.office.calc import Calc
 
-    fix_path = cast(Path, copy_fix_calc("chartsData.ods"))
+    fix_path = cast(Path, copy_fix_calc("col_chart.ods"))
 
     doc = Calc.open_doc(fix_path)
     try:
@@ -59,21 +59,8 @@ def test_calc_chart_data_series(loader, copy_fix_calc) -> None:
             Lo.delay(500)
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
 
-        rng_data = Calc.get_range_obj("A2:B8")
-        chart_doc = Chart2.insert_chart(
-            cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
-        )
-        Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))
-
-        Chart2.set_subtitle(chart_doc=chart_doc, subtitle="Sales by month")
-
-        Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A2"))
-        Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B2"))
-        Chart2.set_background_colors(
-            chart_doc=chart_doc, bg_color=StandardColor.BLUE_LIGHT1, wall_color=StandardColor.BLUE_LIGHT2
-        )
-
         Calc.goto_cell(cell_name="A1", doc=doc)
+        chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
 
         opt_plot = SeriesOptPlot(chart_doc=chart_doc, missing_values=MissingValueKind.LEAVE_GAP)
         opt_settings = SeriesOptSettings(chart_doc=chart_doc, spacing=111, overlap=22)
