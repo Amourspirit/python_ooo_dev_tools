@@ -1,6 +1,6 @@
 from __future__ import annotations
 import uno
-from typing import Any, Tuple, cast, overload
+from typing import Any, Tuple, cast, overload, NamedTuple
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props
@@ -10,6 +10,14 @@ from ooodev.units import UnitObj
 from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
+
+
+class _LinePropertiesProps(NamedTuple):
+    color1: str
+    color2: str
+    width: str
+    transparency1: str
+    transparency2: str
 
 
 class LineProperties(StyleBase):
@@ -62,14 +70,6 @@ class LineProperties(StyleBase):
             self._supported_services_values = ("com.sun.star.chart2.DataSeries", "com.sun.star.chart2.DataPoint")
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"LineProperties.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
-
     # region copy()
     @overload
     def copy(self) -> LineProperties:
@@ -107,18 +107,19 @@ class LineProperties(StyleBase):
     @property
     def prop_color(self) -> Color:
         """Gets/Sets the color."""
-        return self._get("LineColor")
+        return self._get(self._props.color1)
 
     @prop_color.setter
     def prop_color(self, value: Color):
         if value < 0:
             value = 0
-        self._set("LineColor", value)
-        self._set("BorderColor", value)
+        self._set(self._props.color1, value)
+        if self._props.color2:
+            self._set(self._props.color2, value)
 
     @property
     def prop_width(self) -> UnitMM:
-        pv = cast(int, self._get("BorderWidth"))
+        pv = cast(int, self._get(self._props.width))
         return UnitMM.from_mm100(pv)
 
     @prop_width.setter
@@ -130,7 +131,7 @@ class LineProperties(StyleBase):
             val = UnitConvert.convert_mm_mm100(value)
         if val < 0:
             val = 0
-        self._set("BorderWidth", val)
+        self._set(self._props.width, val)
 
     @property
     def prop_style(self) -> BorderLineKind:
@@ -146,13 +147,28 @@ class LineProperties(StyleBase):
     @property
     def prop_transparency(self) -> Intensity:
         """Gets/Sets the transparency."""
-        pv = cast(int, self._get("LineTransparence"))
+        pv = cast(int, self._get(self._props.transparency1))
         return Intensity(pv)
 
     @prop_transparency.setter
     def prop_transparency(self, value: int | Intensity) -> None:
         val = Intensity(int(value))
-        self._set("LineTransparence", val.value)
-        self._set("BorderTransparency", val.value)
+        self._set(self._props.transparency1, val.value)
+        if self._props.transparency2:
+            self._set(self._props.transparency2, val.value)
+
+    @property
+    def _props(self) -> _LinePropertiesProps:
+        try:
+            return self._props_internal_attributes
+        except AttributeError:
+            self._props_internal_attributes = _LinePropertiesProps(
+                color1="BorderColor",
+                color2="LineColor",
+                width="BorderWidth",
+                transparency1="BorderTransparency",
+                transparency2="LineTransparence",
+            )
+        return self._props_internal_attributes
 
     # endregion Properties

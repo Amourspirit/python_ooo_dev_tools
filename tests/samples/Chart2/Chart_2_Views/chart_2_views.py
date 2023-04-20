@@ -155,6 +155,7 @@ class Chart2View:
             width=15,
             height=11,
             diagram_name=ChartTypes.Column.TEMPLATE_STACKED.COLUMN,
+            chart_name="col_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -178,6 +179,7 @@ class Chart2View:
             width=20,
             height=11,
             diagram_name=d_name,
+            chart_name="multi_col_chart",
         )
         ChartTypes.Column.TEMPLATE_STACKED.COLUMN
         Calc.goto_cell(cell_name="A13", doc=doc)
@@ -205,6 +207,7 @@ class Chart2View:
             width=20,
             height=11,
             diagram_name=ChartTypes.ColumnAndLine.TEMPLATE_STACKED.COLUMN_WITH_LINE,
+            chart_name="col_chart",
         )
         Calc.goto_cell(cell_name="A13", doc=doc)
 
@@ -225,6 +228,7 @@ class Chart2View:
             width=15,
             height=11,
             diagram_name=ChartTypes.Bar.TEMPLATE_STACKED.BAR,
+            chart_name="bar_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -246,6 +250,7 @@ class Chart2View:
             width=12,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_DONUT.PIE,
+            chart_name="pie_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -265,6 +270,7 @@ class Chart2View:
             width=12,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_3D.PIE_3D,
+            chart_name="pie_chart_3d",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -309,6 +315,7 @@ class Chart2View:
             width=15,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_DONUT.DONUT,
+            chart_name="donut_chart",
         )
         Calc.goto_cell(cell_name="A48", doc=doc)
 
@@ -331,6 +338,7 @@ class Chart2View:
             width=16,
             height=11,
             diagram_name=ChartTypes.Area.TEMPLATE_STACKED.AREA,
+            chart_name="area_chart",
         )
         Calc.goto_cell(cell_name="A43", doc=doc)
 
@@ -352,6 +360,7 @@ class Chart2View:
             width=16,
             height=9,
             diagram_name=ChartTypes.Line.TEMPLATE_SYMBOL.LINE_SYMBOL,
+            chart_name="line_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -370,6 +379,7 @@ class Chart2View:
             width=22,
             height=11,
             diagram_name=ChartTypes.Line.TEMPLATE_SYMBOL.LINE_SYMBOL,
+            chart_name="lines_chart",
         )
         Calc.goto_cell(cell_name="A39", doc=doc)
 
@@ -393,6 +403,7 @@ class Chart2View:
             width=16,
             height=11,
             diagram_name=ChartTypes.XY.TEMPLATE_LINE.SCATTER_SYMBOL,
+            chart_name="scatter_chart",
         )
         Calc.goto_cell(cell_name="A104", doc=doc)
 
@@ -417,6 +428,7 @@ class Chart2View:
             width=20,
             height=11,
             diagram_name=ChartTypes.XY.TEMPLATE_LINE.SCATTER_LINE_SYMBOL,
+            chart_name="scatter_line_log_chart",
         )
         Calc.goto_cell(cell_name="A121", doc=doc)
 
@@ -445,6 +457,7 @@ class Chart2View:
             width=14,
             height=16,
             diagram_name=ChartTypes.XY.TEMPLATE_LINE.SCATTER_LINE_SYMBOL,
+            chart_name="scatter_line_error_chart",
         )
         Calc.goto_cell(cell_name="A123", doc=doc)
 
@@ -471,6 +484,7 @@ class Chart2View:
             width=18,
             height=11,
             diagram_name=ChartTypes.Bubble.TEMPLATE_BUBBLE.BUBBLE,
+            chart_name="labeled_bubble_chart",
         )
         Calc.goto_cell(cell_name="A62", doc=doc)
 
@@ -509,6 +523,7 @@ class Chart2View:
             width=16,
             height=11,
             diagram_name=ChartTypes.Net.TEMPLATE_LINE.NET_LINE,
+            chart_name="net_chart",
         )
         Calc.goto_cell(cell_name="E55", doc=doc)
 
@@ -536,6 +551,7 @@ class Chart2View:
             width=25,
             height=14,
             diagram_name=ChartTypes.Stock.TEMPLATE_VOLUME.STOCK_VOLUME_OPEN_LOW_HIGH_CLOSE,
+            chart_name="happy_stock_chart",
         )
         Calc.goto_cell(cell_name="A105", doc=doc)
         with Chart2ControllerLock(chart_doc=chart_doc):
@@ -598,6 +614,7 @@ class Chart2View:
             width=12,
             height=11,
             diagram_name=ChartTypes.Stock.TEMPLATE_VOLUME.STOCK_OPEN_LOW_HIGH_CLOSE,
+            chart_name="stock_prices_chart",
         )
         Calc.goto_cell(cell_name="A139", doc=doc)
 
@@ -622,7 +639,7 @@ class Chart2View:
 
         # uses "Sneakers Sold this Month" table
         _ = Calc.set_selected_addr(doc=doc, sheet=sheet, range_name="A2:B8")
-        chart_doc = Chart2.insert_chart()
+        chart_doc = Chart2.insert_chart(chart_name="defaut_chart")
         # Calc.goto_cell(cell_name="A1", doc=doc)
 
         Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))
