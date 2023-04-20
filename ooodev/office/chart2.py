@@ -87,6 +87,7 @@ if TYPE_CHECKING:
 
 # https://wiki.documentfoundation.org/Documentation/DevGuide/Charts
 
+
 class Chart2:
     """Chart 2 Class"""
 
@@ -1528,9 +1529,10 @@ class Chart2:
         Hint:
             Styles that can be applied are found in the following packages.
 
-                - :doc:`ooodev.format.chart2.direct.series.area </src/format/ooodev.format.chart2.direct.series.area>`
-                - :doc:`ooodev.format.chart2.direct.series.line </src/format/ooodev.format.chart2.direct.series.borders>`
-                - :doc:`ooodev.format.chart2.direct.series.transparency </src/format/ooodev.format.chart2.direct.series.transparency>`
+                - :doc:`ooodev.format.chart2.direct.series.data_labels </src/format/ooodev.format.chart2.direct.series.data_labels>`
+                - :doc:`ooodev.format.chart2.direct.series.data_series.area </src/format/ooodev.format.chart2.direct.series.data_series.area>`
+                - :doc:`ooodev.format.chart2.direct.series.data_series.line </src/format/ooodev.format.chart2.direct.series.data_series.borders>`
+                - :doc:`ooodev.format.chart2.direct.series.data_series.transparency </src/format/ooodev.format.chart2.direct.series.data_series.transparency>`
 
         .. versionadded:: 0.9.0
         """
@@ -1555,7 +1557,10 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.series </src/format/ooodev.format.chart2.direct.series>` subpackages.
+            Styles that can be applied are found in the following packages.
+
+                - :doc:`ooodev.format.chart2.direct.series.data_series </src/format/ooodev.format.chart2.direct.series.data_series>`
+                - :doc:`ooodev.format.chart2.direct.series.data_labels </src/format/ooodev.format.chart2.direct.series.data_labels>`
 
         .. versionadded:: 0.9.4
         """

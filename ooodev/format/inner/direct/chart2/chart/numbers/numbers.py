@@ -10,7 +10,6 @@ from ooo.dyn.util.number_format import NumberFormatEnum
 from ooodev.format.inner.direct.calc.numbers.numbers import Numbers as CalcNumbers
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 
 _TNumbers = TypeVar(name="_TNumbers", bound="Numbers")

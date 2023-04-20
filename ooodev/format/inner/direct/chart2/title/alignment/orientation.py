@@ -24,6 +24,13 @@ class Orientation(StyleBase):
     """
 
     def __init__(self, angle: int | Angle = None, vertical: bool = None) -> None:
+        """
+        Constructor
+
+        Args:
+            angle (int, Angle, optional): Rotation in degrees of the text.
+            vertical (bool, optional): Specifies if the text is vertically stacked.
+        """
         super().__init__()
         self.prop_angle = angle
         self.prop_vertical = vertical
@@ -66,14 +73,6 @@ class Orientation(StyleBase):
         except AttributeError:
             self._supported_services_values = ("com.sun.star.chart2.Title",)
         return self._supported_services_values
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"Hatch.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     # endregion overrides
 

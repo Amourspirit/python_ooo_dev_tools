@@ -15,6 +15,8 @@ class PropsNamedEvent(NamedTuple):
     """Prop setting command see :py:meth:`Props.set() <.utils.props.Props.set>`"""
     PROP_SET = "props_set"
     """Prop set command see :py:meth:`Props.set() <.utils.props.Props.set>`"""
+    PROP_SET_ERROR = "props_set_error"
+    """Prop set command see :py:meth:`Props.set() <.utils.props.Props.set>`"""
 
     PROP_DEFAULT_SETTING = "props_default_setting"
     """Prop setting default command see :py:meth:`Props.set_default() <.utils.props.Props.set_default>`"""

@@ -2115,6 +2115,31 @@
 </node>
 </node>
 </node>
+<node TEXT="data_labels" ID="ID_1369009468" CREATED="1681945027399" MODIFIED="1681945032771">
+<node TEXT="data_labels" ID="ID_1033990878" CREATED="1681945034638" MODIFIED="1681945090341">
+<icon BUILTIN="checked"/>
+<node TEXT="AttribOptions" ID="ID_189408235" CREATED="1681945051566" MODIFIED="1681945085653">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="NumberFormat" ID="ID_1897538878" CREATED="1681945054646" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Orientation" ID="ID_566788292" CREATED="1681945060734" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="PercentFormat" ID="ID_223178391" CREATED="1681945072614" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="TextAttribs" ID="ID_1047434092" CREATED="1681945078318" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
 </node>
 <node TEXT="title" ID="ID_1565209223" CREATED="1681813071201" MODIFIED="1681813072903">
 <node TEXT="alignment" ID="ID_1539080277" CREATED="1681813087241" MODIFIED="1681813117588">

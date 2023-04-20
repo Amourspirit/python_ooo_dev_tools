@@ -742,6 +742,7 @@ class Props:
 
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SETTING` :eventref:`src-docs-props-event-setting`
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET` :eventref:`src-docs-props-event-set`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET_ERROR` :eventref:`src-docs-props-event-set-error`
 
         Note:
             If a Event is canceled then that property is not set. No error occurs.
@@ -751,11 +752,17 @@ class Props:
 
             If ``KeyValCancelArgs.default`` is set to true then property is set to Default
 
+        Note:
+            If an error occurs a ``PROP_SET_ERROR`` is raised. If the event args are set to ``cancel`` or ``handled`` then the error is ignored.
+
         See Also:
             :py:meth:`~.props.Props.set_default`
 
         .. versionchanged:: 0.9.0
             Setting ``KeyValCancelArgs.default=False`` will set a property to its default.
+
+        .. versionchanged:: 0.9.4
+            Now event is raised if a property fails to set.
         """
         if len(kwargs) == 0:
             return
@@ -800,7 +807,16 @@ class Props:
             except Exception as e:
                 has_error = True
                 errs.append(Exception(f'Could not set property "{key}"', e))
-            if not has_error:
+            if has_error:
+                error_args = KeyValCancelArgs.from_args(cargs)
+                error_args.cancel = False
+                error_args.handled = False
+                _Events().trigger(PropsNamedEvent.PROP_SET_ERROR, error_args)
+                if error_args.handled or error_args.cancel:
+                    # remove the last error
+                    if errs:
+                        _ = errs.pop()
+            else:
                 _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
@@ -1476,7 +1492,12 @@ class Props:
         prop_set = mLo.Lo.qi(XPropertySet, obj)
         if prop_set is None:
             return False
-        return prop_set.getPropertySetInfo().hasPropertyByName(name)
+        try:
+            return prop_set.getPropertySetInfo().hasPropertyByName(name)
+        except AttributeError:
+            # some object such as a chart data point seem to not properly implement XPropertySet
+            # and does not have a getPropertySetInfo() method
+            return hasattr(obj, name)
 
     has_property = has
 

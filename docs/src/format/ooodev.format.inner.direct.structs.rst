@@ -9,6 +9,7 @@ Submodules
 
    ooodev.format.inner.direct.structs.cell_protection_struct
    ooodev.format.inner.direct.structs.crop_struct
+   ooodev.format.inner.direct.structs.data_point_label_struct
    ooodev.format.inner.direct.structs.drop_cap_struct
    ooodev.format.inner.direct.structs.gradient_struct
    ooodev.format.inner.direct.structs.hatch_struct

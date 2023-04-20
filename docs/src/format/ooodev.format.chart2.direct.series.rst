@@ -7,10 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   ooodev.format.chart2.direct.series.area
-   ooodev.format.chart2.direct.series.borders
-   ooodev.format.chart2.direct.series.options
-   ooodev.format.chart2.direct.series.transparency
+   ooodev.format.chart2.direct.series.data_labels
+   ooodev.format.chart2.direct.series.data_series
 
 Module contents
 ---------------

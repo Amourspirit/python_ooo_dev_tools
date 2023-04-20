@@ -138,19 +138,26 @@ class Numbers(StyleBase):
             obj (object): UNO Object that styles are to be applied.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
+        Keyword Args:
+            format_key (Any, optional): NumberFormat key, overrides ``prop_format_key`` property value.
+
         Returns:
             None:
         """
         # key = self._get_by_key_props(self._num_cat)
-        key = self.prop_format_key
-
+        key = kwargs.pop("format_key", -1)
+        # key may be none.
+        # This is fine for some child classes.
         if key == -1:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property. NumberFormat not found")
-            return
+            key = self.prop_format_key
 
-        props = kwargs.get("override_dv", {})
+            if key == -1:
+                mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property. NumberFormat not found")
+                return
+
+        props = kwargs.pop("override_dv", {})
         props.update({self._get_property_name(): key})
-        super().apply(obj, override_dv=props)
+        super().apply(obj, override_dv=props, **kwargs)
 
     # endregion apply()
     # region Copy()

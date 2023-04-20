@@ -441,6 +441,7 @@ class StyleBase(metaclass=MetaStyle):
                 events = Events(source=self)
                 events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
                 events.on(PropsNamedEvent.PROP_SET, _on_props_set)
+                events.on(PropsNamedEvent.PROP_SET_ERROR, _on_props_set_error)
                 self._props_set(obj, **dv)
                 events = None
                 eargs = EventArgs.from_args(cargs)
@@ -639,7 +640,18 @@ class StyleBase(metaclass=MetaStyle):
 
     def on_property_set(self, source: Any, event_args: KeyValArgs) -> None:
         """
-        Triggers for each property that is set
+        Triggers for each property that is set.
+
+        Args:
+            source (Any): Event Source.
+            event_args (KeyValArgs): Event Args
+        """
+        # can be overriden in child classes.
+        pass
+
+    def on_property_set_error(self, source: Any, event_args: KeyValCancelArgs) -> None:
+        """
+        Triggers for each property that fails to set.
 
         Args:
             source (Any): Event Source.
@@ -650,7 +662,7 @@ class StyleBase(metaclass=MetaStyle):
 
     def on_property_backing_up(self, source: Any, event_args: KeyValCancelArgs) -> None:
         """
-        Triggers before each property that is about to be backup up during backup
+        Triggers before each property that is about to be backup up during backup.
 
         Args:
             source (Any): Event Source.
@@ -1537,6 +1549,12 @@ def _on_props_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_set(source, event_args)
     instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_APPLIED, event_args)
+
+
+def _on_props_set_error(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+    instance = cast(StyleBase, event_args.event_source)
+    instance.on_property_set_error(source, event_args)
+    instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_ERROR, event_args)
 
 
 def _on_props_restore_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
