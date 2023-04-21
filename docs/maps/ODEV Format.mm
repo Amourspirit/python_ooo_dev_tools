@@ -1933,6 +1933,13 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
+<node TEXT="line" ID="ID_931864241" CREATED="1682040312952" MODIFIED="1682040334926">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_624615965" CREATED="1682040321632" MODIFIED="1682040326370">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
 </node>
 <node TEXT="borders" ID="ID_1558795769" CREATED="1681812570753" MODIFIED="1681812639019">
 <icon BUILTIN="checked"/>

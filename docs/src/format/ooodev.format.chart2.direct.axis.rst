@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.chart2.direct.axis.font
+   ooodev.format.chart2.direct.axis.label
    ooodev.format.chart2.direct.axis.line
    ooodev.format.chart2.direct.axis.numbers
 
