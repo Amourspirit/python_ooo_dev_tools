@@ -1,11 +1,11 @@
 # region Imports
 from __future__ import annotations
 from random import random
-from typing import List, Tuple, cast, overload, TYPE_CHECKING
+from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 
-# XChartTypeTemplate import error in LO 7.4.0 to 7.4.3
+# XChartTypeTemplate import error in LO 7.4.0 to 7.4.3, Corrected in Lo 7.5
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart2 import XAxis
 from com.sun.star.chart2 import XChartDocument
@@ -44,8 +44,13 @@ from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
 from com.sun.star.util import XNumberFormatsSupplier
 
+from ooodev.events.event_singleton import _Events
+
 
 from . import calc as mCalc
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.args.event_args import EventArgs
+from ..events.chart2_named_event import Chart2NamedEvent
 from ..exceptions import ex as mEx
 from ..proto.style_obj import StyleObj
 from ..utils import color as mColor
@@ -69,7 +74,6 @@ from ooo.dyn.chart.error_bar_style import ErrorBarStyle
 from ooo.dyn.chart2.axis_orientation import AxisOrientation
 from ooo.dyn.chart2.axis_type import AxisTypeEnum as AxisTypeKind
 from ooo.dyn.chart2.data_point_geometry3_d import DataPointGeometry3DEnum as DataPointGeometry3DEnum
-from ooo.dyn.chart2.data_point_label import DataPointLabel
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 from ooo.dyn.drawing.line_style import LineStyle as LineStyle
 from ooo.dyn.lang.locale import Locale
@@ -77,8 +81,11 @@ from ooo.dyn.table.cell_range_address import CellRangeAddress
 
 if TYPE_CHECKING:
     from ooo.lo.chart2.data_point_properties import DataPointProperties
-
+    from com.sun.star.drawing import OLE2Shape
+    from com.sun.star.chart2 import DataPointLabel
 # endregion Imports
+
+# https://wiki.documentfoundation.org/Documentation/DevGuide/Charts
 
 
 class Chart2:
@@ -128,6 +135,9 @@ class Chart2:
         Note:
             **Keyword Arguments** are to mostly be ignored.
             If finer control over chart creation is needed then **Keyword Arguments** can be used.
+
+        Note:
+            See **Open Office Wiki** - `The Structure of Charts <https://wiki.openoffice.org/wiki/Documentation/BASIC_Guide/Structure_of_Charts>`__ for more information.
 
         See Also:
             :py:class:`~.color.CommonColor`
@@ -466,13 +476,14 @@ class Chart2:
 
     # region titles
     @classmethod
-    def set_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
         """
         Sets the title of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title as string
+            title (str): Title as string.
+            styles (Sequence[StyleObj], optional): Styles to apply to title.
 
         Raises:
             ChartError: If error occurs.
@@ -481,49 +492,69 @@ class Chart2:
             XTitle: Title Object
 
         Note:
-            The title is set to a font size of ``14`` and the font applied is
-            the font returned by :py:meth:`.Info.get_font_general_name`
+            The title has a default font size of ``14`` and the font name applied is
+            the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            The returned Title object can be passed to :py:meth:`~.Chart2.set_x_title_font` to
-            change default font.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
         """
         try:
             # return XTilte so it may have futher styles applied
             titled = mLo.Lo.qi(XTitled, chart_doc, True)
-            xtitle = cls.create_title(title)
+            xtitle = cls._create_title(title, 14, styles)
             titled.setTitleObject(xtitle)
-            fname = mInfo.Info.get_font_general_name()
-            cls.set_x_title_font(xtitle, fname, 14)
+
             return xtitle
         except Exception as e:
             raise mEx.ChartError("Error setting title for chart") from e
 
-    @staticmethod
-    def create_title(title: str) -> XTitle:
-        """
-        Creates a title object
-
-        Args:
-            title (str): Title text.
-
-        Raises:
-            ChartError: If error occurs.
-
-        Returns:
-            XTitle: Title object.
-        """
+    @classmethod
+    def _create_title(cls, title: str, font_size: int, styles: Sequence[StyleObj] = None) -> XTitle:
         try:
             xtitle = mLo.Lo.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
             xtitle_str = mLo.Lo.create_instance_mcf(
                 XFormattedString, "com.sun.star.chart2.FormattedString", raise_err=True
             )
             xtitle_str.setString(title)
+
+            # set default font. Styles can override the default.
+            fname = mInfo.Info.get_font_general_name()
+            cls.set_x_title_font(xtitle, fname, font_size)
+
             title_arr = (xtitle_str,)
             xtitle.setText(title_arr)
+            # Shape style will not be applied. Need to use style_title() after title is created.
+            if styles:
+                title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
+                cls._style_title(xtitle=xtitle, styles=title_styles)
+
             return xtitle
         except Exception as e:
             raise mEx.ChartError(f'Error creating title for: "{title}"') from e
+
+    @classmethod
+    def create_title(cls, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
+        """
+        Creates a title object
+
+        Args:
+            title (str): Title text.
+            styles (Sequence[StyleObj], optional): Styles to apply to title.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            XTitle: Title object.
+
+        Note:
+            The title has a default font size of ``14`` and the font name applied is
+            the font returned by :py:meth:`.Info.get_font_general_name`.
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+        """
+        return cls._create_title(title, 14, styles)
 
     @staticmethod
     def set_x_title_font(xtitle: XTitle, font_name: str, pt_size: int) -> None:
@@ -573,13 +604,14 @@ class Chart2:
             raise mEx.ChartError("Error getting title from chart") from e
 
     @classmethod
-    def set_subtitle(cls, chart_doc: XChartDocument, subtitle: str) -> XTitle:
+    def set_subtitle(cls, chart_doc: XChartDocument, subtitle: str, styles: Sequence[StyleObj] = None) -> XTitle:
         """
         Gets subtitle
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             subtitle (str): Subtitle text.
+            styles (Sequence[StyleObj], optional): Styles to apply to subtitle.
 
         Raises:
             ChartError: If error occurs
@@ -592,16 +624,13 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`
 
         Hint:
-            The returned Title object can be passed to :py:meth:`~.Chart2.set_x_title_font` to
-            change default font.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
         """
         try:
             diagram = chart_doc.getFirstDiagram()
             titled = mLo.Lo.qi(XTitled, diagram, True)
-            title = cls.create_title(subtitle)
+            title = cls._create_title(title=subtitle, font_size=12, styles=styles)
             titled.setTitleObject(title)
-            fname = mInfo.Info.get_font_general_name()
-            cls.set_x_title_font(title, fname, 12)
             return title
         except mEx.ChartError:
             raise
@@ -736,7 +765,9 @@ class Chart2:
         return cls.get_axis(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1)
 
     @classmethod
-    def set_axis_title(cls, chart_doc: XChartDocument, title: str, axis_val: AxisKind, idx: int) -> XTitle:
+    def set_axis_title(
+        cls, chart_doc: XChartDocument, title: str, axis_val: AxisKind, idx: int, styles: Sequence[StyleObj] = None
+    ) -> XTitle:
         """
         Sets axis title.
 
@@ -745,6 +776,7 @@ class Chart2:
             title (str): Title text.
             axis_val (AxisKind): Axis kind.
             idx (int): Index
+            styles (Sequence[StyleObj], optional): Styles to apply to title.
 
         Raises:
             ChartError: If error occurs.
@@ -757,8 +789,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`
 
         Hint:
-            The returned Title object can be passed to :py:meth:`~.Chart2.set_x_title_font` to
-            change default font.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         See Also:
             :py:meth:`~.Chart2.get_axis`
@@ -766,7 +797,7 @@ class Chart2:
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
             titled_axis = mLo.Lo.qi(XTitled, axis, True)
-            xtitle = cls.create_title(title)
+            xtitle = cls._create_title(title=title, font_size=12, styles=styles)
             titled_axis.setTitleObject(xtitle)
             fname = mInfo.Info.get_font_general_name()
             cls.set_x_title_font(xtitle, fname, 12)
@@ -777,72 +808,88 @@ class Chart2:
             raise mEx.ChartError(f'Error setting axis tile: "{title}" for chart') from e
 
     @classmethod
-    def set_x_axis_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_x_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
         """
         Sets X axis Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Sequence[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=0)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=0, styles=styles)
 
     @classmethod
-    def set_y_axis_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_y_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
         """
         Sets Y axis Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Sequence[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=0)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=0, styles=styles)
 
     @classmethod
-    def set_x_axis2_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_x_axis2_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
         """
         Sets X axis2 Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Sequence[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=1)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=1, styles=styles)
 
     @classmethod
-    def set_y_axis2_title(cls, chart_doc: XChartDocument, title: str) -> XTitle:
+    def set_y_axis2_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
         """
         Sets Y axis2 Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            title (str): Title Text
+            title (str): Title Text.
+            styles (Sequence[StyleObj], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
-        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=1)
+        return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=1, styles=styles)
 
     @classmethod
     def get_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XTitle:
@@ -952,7 +999,7 @@ class Chart2:
         return cls.get_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1)
 
     @classmethod
-    def rotate_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, angle: Angle) -> None:
+    def rotate_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, angle: Angle | int) -> None:
         """
         Rotates axis title.
 
@@ -960,7 +1007,7 @@ class Chart2:
             chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis kind.
             idx (int): Index
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -969,21 +1016,22 @@ class Chart2:
             None:
         """
         try:
+            rotation = Angle(int(angle))
             xtitle = cls.get_axis_title(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
-            mProps.Props.set(xtitle, TextRotation=angle.value)
+            mProps.Props.set(xtitle, TextRotation=rotation.value)
         except mEx.ChartError:
             raise
         except Exception as e:
             raise mEx.ChartError("Error while trying to rotate axis title") from e
 
     @classmethod
-    def rotate_x_axis_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_x_axis_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates X axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -997,13 +1045,13 @@ class Chart2:
         cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0, angle=angle)
 
     @classmethod
-    def rotate_y_axis_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_y_axis_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates Y axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1017,13 +1065,13 @@ class Chart2:
         cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0, angle=angle)
 
     @classmethod
-    def rotate_x_axis2_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_x_axis2_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates X axis2 title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1037,13 +1085,13 @@ class Chart2:
         cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=1, angle=angle)
 
     @classmethod
-    def rotate_y_axis2_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_y_axis2_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates Y axis2 title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1317,30 +1365,53 @@ class Chart2:
 
     @overload
     @classmethod
+    def set_grid_lines(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, *, styles: Sequence[StyleObj]
+    ) -> XPropertySet:
+        ...
+
+    @overload
+    @classmethod
     def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XPropertySet:
         ...
 
+    @overload
     @classmethod
-    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0) -> XPropertySet:
+    def set_grid_lines(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, styles: Sequence[StyleObj]
+    ) -> XPropertySet:
+        ...
+
+    @classmethod
+    def set_grid_lines(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0, styles: Sequence[StyleObj] = None
+    ) -> XPropertySet:
         """
         Set the grid lines for a chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis kind.
-            idx (int, optional): Index. Defaults to 0.
+            idx (int, optional): Index. Defaults to ``0``.
+            styles (Sequence[StyleObj], optional): Styles to apply.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
             XPropertySet: Property Set of Grid Properties.
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
         """
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
             props = axis.getGridProperties()
             mProps.Props.set_property(props, "LineStyle", LineStyle.DASH)
             mProps.Props.set_property(props, "LineDashName", str(LineStyleNameKind.FINE_DOTTED))
+            if styles:
+                for style in styles:
+                    style.apply(props)
             return props
         except mEx.ChartError:
             raise
@@ -1379,21 +1450,76 @@ class Chart2:
         except Exception as e:
             raise mEx.ChartError("Error while setting legend visibility") from e
 
+    @staticmethod
+    def get_legend(chart_doc: XChartDocument) -> XLegend | None:
+        """
+        Gets chart legend.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            XLegend: Legend object or ``None`` if no legend exists.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            diagram = chart_doc.getFirstDiagram()
+            return diagram.getLegend()
+        except Exception as e:
+            raise mEx.ChartError("Error while getting legend") from e
+
     # endregion legend
 
     # region Styles
+    @classmethod
+    def style_grid(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, styles: Sequence[StyleObj], idx: int = 0
+    ) -> None:
+        """
+        Style Grid
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            axis_val (AxisKind): Axis kind.
+            styles (Sequence[StyleObj]): Styles to apply.
+            idx (int, optional): Index. Defaults to ``0``.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
+        """
+        try:
+            axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
+            props = axis.getGridProperties()
+
+            if props is None:
+                return
+
+            for style in styles:
+                style.apply(props)
+        except Exception as e:
+            pass
 
     @staticmethod
-    def style_background(chart_doc: XChartDocument, *styles: StyleObj) -> None:
+    def style_background(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
         """
         Styles background of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles: Expandable list of styles to apply to chart background
+            styles (Sequence[StyleObj]): One or more styles to apply chart background.
 
         Returns:
             None:
+
+        Hint:
+            Styles that can be applied are found in the :doc:`ooodev.format.chart2.direct.general </src/format/ooodev.format.chart2.direct.general>` subpackages.
 
         .. versionadded:: 0.9.0
         """
@@ -1402,25 +1528,53 @@ class Chart2:
             style.apply(bg_ps)
 
     @staticmethod
-    def style_wall(chart_doc: XChartDocument, *styles: StyleObj) -> None:
+    def style_wall(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
         """
         Styles Wall of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles: Expandable list of styles to apply to chart background
+            styles (Sequence[StyleObj]): One or more styles to apply chart wall.
 
         Returns:
             None:
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
+
         .. versionadded:: 0.9.0
         """
         wall = chart_doc.getFirstDiagram().getWall()
-        for style in styles:
-            style.apply(wall)
+        if wall:
+            for style in styles:
+                style.apply(wall)
 
     @staticmethod
-    def style_data_point(chart_doc: XChartDocument, series_idx: int, idx: int, *styles: StyleObj) -> None:
+    def style_floor(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles Floor of 3D chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart floor.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        floor = chart_doc.getFirstDiagram().getFloor()
+        if floor:
+            for style in styles:
+                style.apply(floor)
+
+    @classmethod
+    def style_data_point(
+        cls, chart_doc: XChartDocument, series_idx: int, idx: int, styles: Sequence[StyleObj]
+    ) -> None:
         """
         Styles a data point of chart
 
@@ -1429,18 +1583,384 @@ class Chart2:
             series_idx (int): Series Index.
             idx (int): Index to extract from the datapoints data.
                 If ``idx=-1`` then the last data point is styled.
-            styles: Expandable list of styles to apply to chart background
+            styles (Sequence[StyleObj]): One or more styles to apply chart data point.
 
         Returns:
             None:
 
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+                - :doc:`ooodev.format.chart2.direct.series.data_series </src/format/ooodev.format.chart2.direct.series.data_series>`
+                - :doc:`ooodev.format.chart2.direct.series.data_labels </src/format/ooodev.format.chart2.direct.series.data_labels>`
+
         .. versionadded:: 0.9.0
         """
 
-        pp = Chart2.get_data_point_props(chart_doc=chart_doc, series_idx=series_idx, idx=idx)
+        pp = cls.get_data_point_props(chart_doc=chart_doc, series_idx=series_idx, idx=idx)
 
         for style in styles:
             style.apply(pp)
+
+    @classmethod
+    def style_data_series(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj], idx: int = -1) -> None:
+        """
+        Styles one or more data series of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart data series.
+            idx (int, optional): Zero based series index. If value is ``-1`` then styles all data series are styled,
+                Otherwise only data series specified by index is styled. Defaults to ``-1``.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+                - :doc:`ooodev.format.chart2.direct.series.data_series </src/format/ooodev.format.chart2.direct.series.data_series>`
+                - :doc:`ooodev.format.chart2.direct.series.data_labels </src/format/ooodev.format.chart2.direct.series.data_labels>`
+
+        .. versionadded:: 0.9.4
+        """
+        if idx < 0:
+            idx = -1
+
+        series = cls.get_data_series(chart_doc=chart_doc)
+        if idx == -1:
+            for itm in series:
+                for style in styles:
+                    style.apply(itm)
+        else:
+            if idx < 0 or idx >= len(series):
+                raise IndexError(f"Index value of {idx} is out of of range")
+            itm = series[idx]
+            for style in styles:
+                style.apply(itm)
+
+    @classmethod
+    def style_legend(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles legend of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart legend.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+                - :doc:`ooodev.format.chart2.direct.legend </src/format/ooodev.format.chart2.direct.legend>`
+                - :doc:`ooodev.format.chart2.direct.general.position_size </src/format/ooodev.format.chart2.direct.general.position_size>`
+
+        .. versionadded:: 0.9.0
+        """
+        applied_styles = 0
+        legend_shape = None
+        for style in styles:
+            if style.support_service("com.sun.star.drawing.Shape"):
+                legend_shape = chart_doc.getLegend()
+                break
+        if legend_shape:
+            for style in styles:
+                if style.support_service("com.sun.star.drawing.Shape"):
+                    style.apply(legend_shape)
+                    applied_styles += 1
+        if len(styles) == applied_styles:
+            return
+        legend = cls.get_legend(chart_doc=chart_doc)
+        if legend:
+            for style in styles:
+                if not style.support_service("com.sun.star.drawing.Shape"):
+                    style.apply(legend)
+
+    @classmethod
+    def _style_title(cls, xtitle: XTitle, styles: Sequence[StyleObj]) -> None:
+        title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
+        applied_styles = 0
+        if title_styles:
+            for style in title_styles:
+                if style.support_service("com.sun.star.chart2.Title"):
+                    style.apply(xtitle)
+                    applied_styles += 1
+            if len(title_styles) == applied_styles:
+                return
+            fo_strs = xtitle.getText()
+            if fo_strs:
+                fo_first = fo_strs[0]
+                for style in title_styles:
+                    if not style.support_service("com.sun.star.chart2.Title"):
+                        style.apply(fo_first)
+
+    @classmethod
+    def style_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
+        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
+        if shape_styles:
+            title_shape = chart_doc.getTitle()
+            if title_shape:
+                for style in shape_styles:
+                    style.apply(title_shape)
+
+        if title_styles:
+            xtitle = cls.get_title(chart_doc=chart_doc)
+            if xtitle is None:
+                return
+            cls._style_title(xtitle=xtitle, styles=title_styles)
+
+    @classmethod
+    def style_subtitle(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles subtitle of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart subtitle.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
+        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
+        if shape_styles:
+            subtitle_shape = chart_doc.getSubTitle()
+            if subtitle_shape:
+                for style in shape_styles:
+                    style.apply(subtitle_shape)
+
+        if title_styles:
+            xtitle = cls.get_subtitle(chart_doc=chart_doc)
+            if xtitle:
+                cls._style_title(xtitle=xtitle, styles=title_styles)
+
+    @classmethod
+    def style_x_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart X axis.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_x_axis(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
+    def style_x_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis2 of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart X axis2.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_x_axis2(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
+    def style_y_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles Y axis of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_y_axis(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
+    def style_y_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles Y axis2 of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis2.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_y_axis2(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
+    def style_x_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart X axis title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
+        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
+        if shape_styles:
+            diagram = chart_doc.getDiagram()
+            title_shape = diagram.getXAxisTitle()
+            if title_shape:
+                for style in shape_styles:
+                    style.apply(title_shape)
+        if title_styles:
+            xtitle = cls.get_x_axis_title(chart_doc=chart_doc)
+            if xtitle:
+                cls._style_title(xtitle=xtitle, styles=title_styles)
+
+    @classmethod
+    def style_y_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+
+        title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
+        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
+        if shape_styles:
+            diagram = chart_doc.getDiagram()
+            title_shape = diagram.getYAxisTitle()
+            if title_shape:
+                for style in shape_styles:
+                    style.apply(title_shape)
+        if title_styles:
+            xtitle = cls.get_y_axis_title(chart_doc=chart_doc)
+            if xtitle:
+                cls._style_title(xtitle=xtitle, styles=title_styles)
+
+    @classmethod
+    def style_x_axis2_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis2 title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart X axis2 title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_x_axis2_title(chart_doc=chart_doc)
+        if xtitle is None:
+            return
+        cls._style_title(xtitle=xtitle, styles=styles)
+
+    @classmethod
+    def style_y_axis2_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis2 title of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis2 title.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        xtitle = cls.get_y_axis2_title(chart_doc=chart_doc)
+        if xtitle is None:
+            return
+        cls._style_title(xtitle=xtitle, styles=styles)
 
     # endregion Styles
 
@@ -1649,7 +2169,7 @@ class Chart2:
             if coord_sys:
                 if len(coord_sys) > 1:
                     mLo.Lo.print(f"No. of coord systems: {len(coord_sys)}; using first.")
-            return coord_sys[0]  # will raise error if coord_sys is empyt or none
+            return coord_sys[0]  # will raise error if coord_sys is empty or none
         except Exception as e:
             raise mEx.ChartError("Error unable to get coord_system") from e
 
@@ -1900,6 +2420,10 @@ class Chart2:
         Returns:
             List[XPropertySet]: Property set list.
         """
+        # BUG: there is a bug in the API, getDataPointByIndex() is suppose to return XPropertySet,
+        #   which is does, however, it does not properly implement the XPropertySet interface.
+        #   setPropertyValue() and getPropertyValue() are not implemented.
+        #   The Props.set() method can handle this because is has a fallback to set attributes using the setattr() method of python.
         data_series_arr = cls.get_data_series(chart_doc=chart_doc)
         if idx < 0 or idx >= len(data_series_arr):
             raise IndexError(f"Index value of {idx} is out of of range")
@@ -1917,8 +2441,8 @@ class Chart2:
 
             if props is None:
                 break
-        if len(props_lst) > 0:
-            mLo.Lo.print(f"No Series at index {idx}")
+        if len(props_lst) == 0:
+            mLo.Lo.print(f"No Data Series at index {idx}")
         return props_lst
 
     @classmethod
@@ -1953,7 +2477,9 @@ class Chart2:
             return props.pop()
 
         if idx < 0 or idx >= len(props):
-            raise IndexError(f"Index value of {idx} is out of of range")
+            raise IndexError(
+                f"Index value of {idx} is out of of range; use 0 to {len(props) - 1} or -1 for last item."
+            )
 
         return props[idx]
 
@@ -1975,7 +2501,7 @@ class Chart2:
         try:
             data_series_arr = cls.get_data_series(chart_doc=chart_doc)
             for data_series in data_series_arr:
-                dp_label = cast(DataPointLabel, mProps.Props.get_property(data_series, "Label"))
+                dp_label = cast("DataPointLabel", mProps.Props.get_property(data_series, "Label"))
                 dp_label.ShowNumber = False
                 dp_label.ShowCategoryName = False
                 dp_label.ShowLegendSymbol = False
@@ -2113,19 +2639,31 @@ class Chart2:
             raise mEx.ChartError("Error creating curve") from e
 
     @classmethod
-    def draw_regression_curve(cls, chart_doc: XChartDocument, curve_kind: CurveKind) -> None:
+    def draw_regression_curve(
+        cls, chart_doc: XChartDocument, curve_kind: CurveKind, styles: Sequence[StyleObj] | None = None
+    ) -> XPropertySet:
         """
         Draws a regression curve.
 
         Args:
             chart_doc (XChartDocument): Chart Document
             curve_kind (CurveKind): Curve kind.
+            styles (Sequence[StyleObj], optional): Styles to apply to the curve. Defaults to ``None``.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
-            None:
+            XPropertySet: Regression curve property set.
+
+        Hint:
+            Styles that can be applied are found in the following subpackages:
+
+                - :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>`
+                - :doc:`ooodev.format.chart2.direct.general.numbers </src/format/ooodev.format.chart2.direct.general.numbers>`
+
+        .. versionchanged:: 0.9.4
+            Added ``styles`` argument, and now returns the regression curve property set.
         """
         try:
             data_series_arr = cls.get_data_series(chart_doc=chart_doc)
@@ -2134,12 +2672,23 @@ class Chart2:
             rc_con.addRegressionCurve(curve)
 
             ps = curve.getEquationProperties()
-            mProps.Props.set_property(ps, "ShowCorrelationCoefficient", True)
-            mProps.Props.set_property(ps, "ShowEquation", True)
+            mProps.Props.set(ps, ShowCorrelationCoefficient=True, ShowEquation=True)
 
             key = cls.get_number_format_key(chart_doc=chart_doc, nf_str="0.00")  # 2 dp
             if key != -1:
-                mProps.Props.set_property(ps, "NumberFormat", key)
+                mProps.Props.set(ps, NumberFormat=key)
+            if styles:
+                supported = (
+                    "com.sun.star.chart2.RegressionEquation",
+                    "com.sun.star.drawing.FillProperties",
+                    "com.sun.star.drawing.LineProperties",
+                    "com.sun.star.style.CharacterProperties",
+                )
+
+                for style in styles:
+                    if style.support_service(*supported):
+                        style.apply(ps)
+            return ps
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -2169,7 +2718,10 @@ class Chart2:
         try:
             xfs = mLo.Lo.qi(XNumberFormatsSupplier, chart_doc, True)
             n_formats = xfs.getNumberFormats()
-            key = int(n_formats.queryKey(nf_str, Locale("en", "us", ""), False))
+            # locale = Locale("en", "us", "")
+            # locale = mInfo.Info.language_locale
+            # note the empty locale for default locale
+            key = int(n_formats.queryKey(nf_str, Locale(), False))
             if key == -1:
                 mLo.Lo.print(f'Could not access key for number format: "{nf_str}"')
             return key
@@ -2449,12 +3001,13 @@ class Chart2:
 
     # region chart shape and image
     @staticmethod
-    def get_chart_shape(sheet: XSpreadsheet) -> XShape:
+    def get_chart_shape(sheet: XSpreadsheet, chart_name: str = "") -> XShape:
         """
         Gets chart shape
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
+            chart_name (str, optional): Chart name. Defaults to "". If ``""`` then first chart is returned.
 
         Raises:
             ShapeMissingError: If shape is ``None``.
@@ -2462,8 +3015,13 @@ class Chart2:
 
         Returns:
             XShape: Shape object.
+
+        .. versionchanged:: 0.9.4
+            Added chart_name parameter.
         """
         shape = None
+        if chart_name:
+            chart_name = chart_name.casefold()
         try:
             page_supp = mLo.Lo.qi(XDrawPageSupplier, sheet, True)
             draw_page = page_supp.getDrawPage()
@@ -2471,10 +3029,14 @@ class Chart2:
             chart_classid = mLo.Lo.CLSID.CHART.value
             for i in range(num_shapes):
                 try:
-                    shape = mLo.Lo.qi(XShape, draw_page.getByIndex(i), True)
+                    shape = cast("OLE2Shape", mLo.Lo.qi(XShape, draw_page.getByIndex(i), True))
                     classid = str(mProps.Props.get(shape, "CLSID")).lower()
-                    if classid == chart_classid:
-                        break
+                    if chart_name:
+                        if classid == chart_classid and chart_name == shape.PersistName.casefold():
+                            break
+                    else:
+                        if classid == chart_classid:
+                            break
                 except Exception:
                     shape = None
                     # continue on, just because got an error does not mean shape will not be found
@@ -2485,22 +3047,26 @@ class Chart2:
         return shape
 
     @classmethod
-    def copy_chart(cls, ssdoc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
+    def copy_chart(cls, ssdoc: XSpreadsheetDocument, sheet: XSpreadsheet, chart_name: str = "") -> None:
         """
         Copies a chart using a dispatch command.
 
         Args:
-            ssdoc (XSpreadsheetDocument): Spreadsheet Document
-            sheet (XSpreadsheet): Spreadsheet
+            ssdoc (XSpreadsheetDocument): Spreadsheet Document.
+            sheet (XSpreadsheet): Spreadsheet.
+            chart_name (str, optional): Chart name. Defaults to "". If ``""`` then first chart is copied.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
             None:
+
+        .. versionchanged:: 0.9.4
+            Added chart_name parameter.
         """
         try:
-            chart_shape = cls.get_chart_shape(sheet=sheet)
+            chart_shape = cls.get_chart_shape(sheet=sheet, chart_name=chart_name)
             doc = mLo.Lo.qi(XComponent, ssdoc, True)
             supp = mGui.GUI.get_selection_supplier(doc)
             supp.select(chart_shape)
@@ -2509,21 +3075,25 @@ class Chart2:
             raise mEx.ChartError("Error in attempt to copy chart") from e
 
     @classmethod
-    def get_chart_draw_page(cls, sheet: XSpreadsheet) -> XDrawPage:
+    def get_chart_draw_page(cls, sheet: XSpreadsheet, chart_name: str = "") -> XDrawPage:
         """
         Gets chart draw page.
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
+            chart_name (str, optional): Chart name. Defaults to "". If ``""`` then first chart Draw Page is returned.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
             XDrawPage: Draw Page object
+
+        .. versionchanged:: 0.9.4
+            Added chart_name parameter.
         """
         try:
-            chart_shape = cls.get_chart_shape(sheet)
+            chart_shape = cls.get_chart_shape(sheet=sheet, chart_name=chart_name)
             embedded_chart = mLo.Lo.qi(XEmbeddedObject, mProps.Props.get_property(chart_shape, "EmbeddedObject"), True)
             comp_supp = mLo.Lo.qi(XComponentSupplier, embedded_chart, True)
             xclosable = comp_supp.getComponent()
@@ -2536,21 +3106,25 @@ class Chart2:
             raise mEx.ChartError("Error getting chart draw page") from e
 
     @classmethod
-    def get_chart_image(cls, sheet: XSpreadsheet) -> XGraphic:
+    def get_chart_image(cls, sheet: XSpreadsheet, chart_name: str = "") -> XGraphic:
         """
         Get chart image as ``XGraphic``.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
+            sheet (XSpreadsheet): Spreadsheet.
+            chart_name (str, optional): Chart name. Defaults to "". If ``""`` then first chart image is returned.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
             XGraphic: Graphic object
+
+        .. versionchanged:: 0.9.4
+            Added chart_name parameter.
         """
         try:
-            chart_shape = cls.get_chart_shape(sheet)
+            chart_shape = cls.get_chart_shape(sheet=sheet, chart_name=chart_name)
 
             graphic = mLo.Lo.qi(XGraphic, mProps.Props.get(chart_shape, "Graphic"), True)
 
@@ -2564,5 +3138,122 @@ class Chart2:
 
     # endregion chart shape and image
 
+    # region Lock Controllers
 
-__all__ = ("Chart2",)
+    @classmethod
+    def lock_controllers(cls, chart_doc: XChartDocument) -> bool:
+        """
+        Suspends some notifications to the controllers which are used for display updates.
+
+        The calls to :py:meth:`~.chart2.Chart2.lock_controllers` and :py:meth:`~.chart2.Chart2.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcast.
+
+        Returns:
+            bool: False if ``CONTROLERS_LOCKING`` event is canceled; Otherwise, True
+
+         :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_LOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_LOCKED` :eventref:`src-docs-event`
+
+        See Also:
+
+            - :py:class:`~.chart2.Chart2ControllerLock`
+            - :py:meth:`~.chart2.Chart2.unlock_controllers`
+
+        .. versionadded:: 0.9.4
+        """
+        # much faster updates as screen is basically suspended
+        cargs = CancelEventArgs(Chart2.lock_controllers.__qualname__)
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_LOCKING, cargs)
+        if cargs.cancel:
+            return False
+        chart_doc.lockControllers()
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_LOCKED, EventArgs(cls))
+        return True
+
+    @staticmethod
+    def unlock_controllers(chart_doc: XChartDocument) -> bool:
+        """
+        Resumes the notifications which were suspended by :py:meth:`~.chart2.Chart2.lock_controllers`.
+
+        The calls to :py:meth:`~.chart2.Chart2.lock_controllers` and :py:meth:`~.chart2.Chart2.unlock_controllers`
+        may be nested and even overlapping, but they must be in pairs.
+        While there is at least one lock remaining, some notifications for
+        display updates are not broadcast.
+
+        Returns:
+            bool: False if ``CONTROLERS_UNLOCKING`` event is canceled; Otherwise, True
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_UNLOCKED` :eventref:`src-docs-event`
+
+        See Also:
+
+            - :py:class:`~.chart2.Chart2ControllerLock`
+            - :py:meth:`~.chart2.Chart2.lock_controllers`
+
+        .. versionadded:: 0.9.4
+        """
+        cargs = CancelEventArgs(Chart2.unlock_controllers.__qualname__)
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_UNLOCKING, cargs)
+        if cargs.cancel:
+            return False
+        if chart_doc.hasControllersLocked():
+            chart_doc.unlockControllers()
+        _Events().trigger(Chart2NamedEvent.CONTROLERS_UNLOCKED, EventArgs.from_args(cargs))
+        return True
+
+    # endregion Lock Controllers
+
+
+class Chart2ControllerLock:
+    """
+    Context manager for Locking Chart2 Controller
+
+    In the following example ControllerLock is called using ``with``.
+
+    All code inside the ``with Chart2ControllerLock.ControllerLock(chart_doc)`` block is updated
+    with controller locked. This means the ui will not update chart until the block is done.
+    A soon as the block is processed the controller is unlocked and the ui is updated.
+
+    Example:
+
+        .. code::
+
+            from ooodev.utils.color import CommonColor
+            from ooodev.office.chart2 import Chart2
+            from ooodev.office.chart2 import Chart2ControllerLock
+            from ooodev.format.chart2.direct.title.area import Color as ChartTitleBgColor
+            from ooodev.format.chart2.direct.title.font import Font as TitleFont
+            from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
+            # ... other imports
+
+            with Chart2ControllerLock.ControllerLock(chart_doc):
+                title_area_bg_color = ChartTitleBgColor(CommonColor.LIGHT_YELLOW)
+                title_font = TitleFont(b=True, size=14, color=CommonColor.DARK_GREEN)
+                title_border = TitleBorderLineProperties(style=BorderLineKind.DASH_DOT, width=1.0, color=CommonColor.DARK_RED)
+                Chart2.style_title(chart_doc=chart_doc, styles=[title_area_bg_color, title_font, title_border])
+                # ... other code
+
+    .. versionadded:: 0.9.4
+    """
+
+    def __init__(self, chart_doc: XChartDocument):
+        self._chart_doc = chart_doc
+        Chart2.lock_controllers(chart_doc=self._chart_doc)
+
+    def __enter__(self) -> XChartDocument:
+        return self._chart_doc
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        Chart2.unlock_controllers(self._chart_doc)
+
+
+__all__ = ("Chart2", "Chart2ControllerLock")

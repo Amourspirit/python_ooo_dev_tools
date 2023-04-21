@@ -13,6 +13,7 @@ Submodules
    ooodev.format.inner.common.abstract.abstract_line_number
    ooodev.format.inner.common.abstract.abstract_padding
    ooodev.format.inner.common.abstract.abstract_sides
+   ooodev.format.inner.common.abstract.abstract_writing_mode
 
 Module contents
 ---------------

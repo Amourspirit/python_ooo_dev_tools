@@ -1,8 +1,3 @@
-"""
-Module for Image Crop (``GraphicCrop``) struct
-
-.. versionadded:: 0.9.0
-"""
 # region Import
 from __future__ import annotations
 from typing import Tuple, Type, cast, overload, TypeVar
@@ -120,12 +115,15 @@ class SizeStruct(StructBase):
         Returns:
             None:
         """
-        if not mProps.Props.has(obj, self._get_property_name()):
+        name = self._get_property_name()
+        if not name:
+            return
+        if not mProps.Props.has(obj, name):
             self._print_not_valid_srv("apply")
             return
 
         grad = self.get_uno_struct()
-        props = {self._get_property_name(): grad}
+        props = {name: grad}
         super().apply(obj=obj, override_dv=props)
 
     # endregion apply()

@@ -1,6 +1,7 @@
 {
     "terminal.integrated.shellIntegration.enabled": true,
     "python.formatting.provider": "black",
+    "testExplorer.useNativeTesting": false,
     "restructuredtext.preview.scrollPreviewWithEditor": false,
     "restructuredtext.preview.scrollEditorWithPreview": false,
     "[python]": {

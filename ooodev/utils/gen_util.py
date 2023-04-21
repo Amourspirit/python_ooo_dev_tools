@@ -2,7 +2,7 @@
 """General Utilities"""
 from __future__ import annotations
 import re
-from typing import Iterable, Iterator, NamedTuple, Any
+from typing import Iterable, Iterator, NamedTuple, Any, Type, TypeVar
 from inspect import isclass
 
 # match:
@@ -13,6 +13,8 @@ _REG_LETTER_AFTER_NUMBER = re.compile(r"(?<=\d)(?=[a-zA-Z])")
 
 NULL_OBJ = object()
 """Null Object uses with None is not an option"""
+
+TNullObj = TypeVar("TNullObj", bound=object)
 
 
 class ArgsHelper:

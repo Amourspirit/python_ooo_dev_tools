@@ -22,6 +22,15 @@ class UnitInch100(BaseFloatValue):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
 
+    def get_value_cm(self) -> float:
+        """
+        Gets instance value converted to ``cm`` units.
+
+        Returns:
+            int: Value in ``cm`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.IN100, to=UnitLength.CM)
+
     def get_value_mm(self) -> float:
         """
         Gets instance value converted to Size in ``mm`` units.
@@ -161,4 +170,19 @@ class UnitInch100(BaseFloatValue):
         """
         inst = super(UnitInch100, cls).__new__(cls)
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.IN100))
+        return inst
+
+    @classmethod
+    def from_cm(cls: Type[_TUnitInch100], value: float) -> _TUnitInch100:
+        """
+        Get instance from ``cm`` value.
+
+        Args:
+            value (float): ``cm`` value.
+
+        Returns:
+            UnitInch100:
+        """
+        inst = super(UnitInch100, cls).__new__(cls)
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.IN100))
         return inst

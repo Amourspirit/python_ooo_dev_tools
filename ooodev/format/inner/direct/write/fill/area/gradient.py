@@ -22,7 +22,9 @@ from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRa
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_gradient
-from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
+from ooodev.format.inner.preset.preset_gradient import (
+    PresetGradientKind as PresetGradientKind,
+)
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
@@ -69,7 +71,7 @@ class Gradient(StyleMulti):
                 gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
         """
-        fs = GradientStruct(
+        fs = self._get_inner_class(
             style=style,
             step_count=step_count,
             x_offset=offset.x,
@@ -80,7 +82,6 @@ class Gradient(StyleMulti):
             start_intensity=grad_intensity.start,
             end_color=grad_color.end,
             end_intensity=grad_intensity.end,
-            _cattribs=self._get_gradient_struct_cattrib(),
         )
         super().__init__()
         self._name = name
@@ -96,12 +97,19 @@ class Gradient(StyleMulti):
             self._set(self._props.name, self._name)
             self._set_style("fill_style", fill_struct, *fill_struct.get_attrs())
 
+    # region Internal Methods
+    def _container_get_default_name(self) -> str:
+        return "Gradient"
+
     def _get_gradient_struct_cattrib(self) -> dict:
         return {
             "_property_name": "FillGradient",
             "_supported_services_values": self._supported_services(),
             "_format_kind_prop": self.prop_format_kind,
         }
+
+    def _get_gradient_from_uno_struct(self, value: UNOGradient, **kwargs) -> GradientStruct:
+        return GradientStruct.from_uno_struct(value, **kwargs)
 
     def _get_fill_struct(self, fill_struct: GradientStruct | None, name: str, auto_name: bool) -> GradientStruct:
         # if the name passed in already exist in the Gradient Table then it is returned.
@@ -115,7 +123,7 @@ class Gradient(StyleMulti):
                 return fill_struct
         else:
             auto_name = True
-            name = "Gradient"
+            name = self._container_get_default_name()
         nc = self._container_get_inst()
         if auto_name:
             name = name.rstrip() + " "  # add a space after name before getting unique name
@@ -123,16 +131,48 @@ class Gradient(StyleMulti):
 
         grad = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if not grad is None:
-            return GradientStruct.from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
+            return self._get_gradient_from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
         if fill_struct is None:
             raise ValueError(
                 f'No Gradient could be found in container for "{name}". In this case a Gradient is required.'
             )
         self._container_add_value(name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=nc)
-        return GradientStruct.from_uno_struct(
-            self._container_get_value(self._name, nc), _cattribs=self._get_gradient_struct_cattrib()
+        return self._get_gradient_from_uno_struct(
+            self._container_get_value(self._name, nc),
+            _cattribs=self._get_gradient_struct_cattrib(),
         )
 
+    def _get_inner_class(
+        self,
+        style: GradientStyle,
+        step_count: int,
+        x_offset: Intensity | int,
+        y_offset: Intensity | int,
+        angle: Angle | int,
+        border: Intensity | int,
+        start_color: Color,
+        start_intensity: Intensity | int,
+        end_color: Color,
+        end_intensity: Intensity | int,
+    ) -> GradientStruct:
+        fs = GradientStruct(
+            style=style,
+            step_count=step_count,
+            x_offset=x_offset,
+            y_offset=y_offset,
+            angle=angle,
+            border=border,
+            start_color=start_color,
+            start_intensity=start_intensity,
+            end_color=end_color,
+            end_intensity=end_intensity,
+            _cattribs=self._get_gradient_struct_cattrib(),
+        )
+        return fs
+
+    # endregion Internal Methods
+
+    # region override methods
     def _container_get_service_name(self) -> str:
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
         return "com.sun.star.drawing.GradientTable"
@@ -142,6 +182,7 @@ class Gradient(StyleMulti):
             return self._supported_services_values
         except AttributeError:
             self._supported_services_values = (
+                "com.sun.star.beans.PropertySet",
                 "com.sun.star.drawing.FillProperties",
                 "com.sun.star.style.PageStyle",
                 "com.sun.star.style.ParagraphStyle",
@@ -173,6 +214,10 @@ class Gradient(StyleMulti):
         return cp
 
     # endregion copy()
+    # endregion override methods
+
+    # region Static Methods
+
     # region from_obj()
     @overload
     @classmethod
@@ -187,7 +232,7 @@ class Gradient(StyleMulti):
     @classmethod
     def from_obj(cls: Type[_TGradient], obj: object, **kwargs) -> _TGradient:
         """
-        Gets instance from object
+        Gets instance from object.
 
         Args:
             obj (object): UNO object.
@@ -273,6 +318,8 @@ class Gradient(StyleMulti):
         return cls(**args)
 
     # endregion from_preset()
+
+    # endregion Static Methods
 
     @property
     def prop_format_kind(self) -> FormatKind:

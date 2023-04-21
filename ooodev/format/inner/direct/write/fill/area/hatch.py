@@ -64,15 +64,7 @@ class Hatch(StyleMulti):
             None:
         """
 
-        hatch = HatchStruct(
-            style=style,
-            color=color,
-            distance=space,
-            angle=angle,
-            _cattribs=self._get_hatch_cattribs(),
-        )
-        hatch._prop_parent = self
-        # hatch._struct_property_name = self._props.hatch_prop
+        hatch = self._get_inner_class(style=style, color=color, distance=space, angle=angle)
 
         # create event just to listen to fill color init
         bk_color = FillColor(color=bg_color, _cattribs=self._get_fill_color_cattribs())
@@ -147,6 +139,17 @@ class Hatch(StyleMulti):
     # endregion Overrides
 
     # region Internal Methods
+    def _get_inner_class(self, style, color, distance, angle) -> HatchStruct:
+        hatch = HatchStruct(
+            style=style,
+            color=color,
+            distance=distance,
+            angle=angle,
+            _cattribs=self._get_hatch_cattribs(),
+        )
+        hatch._prop_parent = self
+        return hatch
+
     def _get_hatch_cattribs(self) -> dict:
         return {
             "_supported_services_values": self._supported_services(),
@@ -198,7 +201,7 @@ class Hatch(StyleMulti):
         Gets an instance from a preset.
 
         Args:
-            preset (PresetHatchKind): Preset.
+            preset (~.format.inner.preset.preset_hatch.PresetHatchKind): Preset.
 
         Returns:
             Hatch: Instance from preset.
@@ -245,6 +248,7 @@ class Hatch(StyleMulti):
             angle = round(hatch.Angle / 10)
         else:
             angle = 0
+
         return cls(
             style=hatch.Style,
             color=hatch.Color,

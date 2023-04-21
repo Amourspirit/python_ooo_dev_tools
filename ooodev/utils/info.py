@@ -34,6 +34,7 @@ if TYPE_CHECKING:
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from ooo.dyn.beans.the_introspection import theIntrospection
+from ooo.dyn.lang.locale import Locale  # struct
 
 from . import date_time_util as mDate
 from . import file_io as mFileIO
@@ -2233,24 +2234,85 @@ class Info(metaclass=StaticProperty):
             return obj.__pyunointerface__
         return None
 
+    @classmethod
+    def parse_languange_code(cls, lang_code: str) -> Locale:
+        """
+        Parses a language code into a ``Locale`` object.
+
+        Args:
+            lang_code (str): Language code such as ``"en-US"``
+
+        Returns:
+            Locale: ``Locale`` object
+
+        Raises:
+            ValueError: If ``lang_code`` is not valid.
+        """
+        if not lang_code:
+            raise ValueError("lang_code cannot be empty")
+        lang_code = lang_code.lower()
+        if "-" in lang_code:
+            parts = lang_code.split("-", maxsplit=2)
+            if len(parts) == 2:
+                lang, country = parts
+                variant = ""
+            elif len(parts) == 3:
+                lang, country, variant = parts
+        else:
+            lang = lang_code
+            country = ""
+            variant = ""
+        if len(lang) != 2:
+            raise ValueError(f"Invalid language code: {lang_code}")
+        if country and len(country) != 2:
+            raise ValueError(f"Invalid country code: {lang_code}")
+        return Locale(lang, country.upper(), variant)
+
     @classproperty
     def language(cls) -> str:
         """
         Gets the Current Language of the LibreOffice Instance
 
         Returns:
-            str: First two chars of language in lower case such as 'en-US'
+            str: Language string such as 'en-US'
         """
 
         try:
             return cls._language
         except AttributeError:
-            lang = cls.get_config(node_str="ooLocale")
+            lang = cls.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N")
+            if not lang:
+                lang = cls.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
+            if not lang:
+                # default to en-us
+                lang = "en-US"
             cls._language = str(lang)
         return cls._language
 
     @language.setter
     def language(cls, value) -> None:
+        # raise error on set. Not really necessary but gives feedback.
+        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+
+    @classproperty
+    def language_locale(cls) -> Locale:
+        """
+        Gets the Current Language ``Locale`` of the LibreOffice Instance.
+
+        Returns:
+            Locale: ``Locale`` object.
+
+        .. versionadded:: 0.9.4
+        """
+
+        try:
+            return cls._language_locale
+        except AttributeError:
+            cls._language_locale = cls.parse_languange_code(cls.language)
+        return cls._language_locale
+
+    @language_locale.setter
+    def language_locale(cls, value) -> None:
         # raise error on set. Not really necessary but gives feedback.
         raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
@@ -2306,7 +2368,7 @@ class Info(metaclass=StaticProperty):
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    dattrs = ("_language", "_version", "_version_info")
+    dattrs = ("_language", "_language_locale", "_version", "_version_info")
     for attr in dattrs:
         if hasattr(Info, attr):
             delattr(Info, attr)

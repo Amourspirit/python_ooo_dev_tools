@@ -1,0 +1,152 @@
+# region Import
+from __future__ import annotations
+from typing import Tuple, cast
+import uno
+from ooodev.format.inner.direct.write.char.font.font import Font as CharFont
+
+from ooo.dyn.awt.char_set import CharSetEnum
+from ooo.dyn.awt.font_family import FontFamilyEnum
+from ooo.dyn.awt.font_slant import FontSlant
+from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
+from ooo.dyn.awt.font_weight import FontWeightEnum
+from ooo.dyn.table.shadow_format import ShadowFormat
+
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
+from ooodev.utils.color import Color
+from ooodev.utils.data_type.angle import Angle
+from ooodev.units import UnitObj
+from ooodev.units import UnitPT
+from ooodev.units import UnitConvert
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.direct.write.char.font.font import FontLine
+from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
+
+# endregion Import
+
+
+class Font(CharFont):
+    """
+    Character Font for a chart title.
+
+    Any properties starting with ``prop_`` set or get current instance values.
+
+    All methods starting with ``fmt_`` can be used to chain together font properties.
+
+    Many properties such as ``bold``, ``italic``, ``underline`` can be chained together.
+
+    .. versionadded:: 0.9.4
+    """
+
+    def __init__(
+        self,
+        *,
+        b: bool | None = None,
+        i: bool | None = None,
+        u: bool | None = None,
+        bg_color: Color | None = None,
+        bg_transparent: bool | None = None,
+        charset: CharSetEnum | None = None,
+        color: Color | None = None,
+        family: FontFamilyEnum | None = None,
+        name: str | None = None,
+        overline: FontLine | None = None,
+        rotation: int | Angle | None = None,
+        shadow_fmt: ShadowFormat | None = None,
+        shadowed: bool | None = None,
+        size: int | UnitObj | None = None,
+        slant: FontSlant | None = None,
+        spacing: CharSpacingKind | float | UnitObj | None = None,
+        strike: FontStrikeoutEnum | None = None,
+        subscript: bool | None = None,
+        superscript: bool | None = None,
+        underline: FontLine | None = None,
+        weight: FontWeightEnum | None = None,
+        word_mode: bool | None = None,
+    ) -> None:
+        """
+        Font options used in styles.
+
+        Args:
+            b (bool, optional): Shortcut to set ``weight`` to bold.
+            i (bool, optional): Shortcut to set ``slant`` to italic.
+            u (bool, optional): Shortcut ot set ``underline`` to underline.
+            bg_color (:py:data:`~.utils.color.Color`, optional): The value of the text background color.
+            bg_transparent (bool, optional): Determines if the text background color is set to transparent.
+            charset (CharSetEnum, optional): The text encoding of the font.
+            color (:py:data:`~.utils.color.Color`, optional): The value of the text color. Setting to ``-1`` will cause automatic color.
+            family (FontFamilyEnum, optional): Font Family.
+            name (str, optional): This property specifies the name of the font style.
+                It may contain more than one name separated by comma.
+            overline (FontLine, optional): Character overline values.
+            rotation (int, Angle, optional): Specifies the rotation of a character in degrees.
+                Depending on the implementation only certain values may be allowed.
+            shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
+            shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
+            size (int, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units
+                or :ref:`proto_unit_obj`.
+            slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
+            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units
+                or :ref:`proto_unit_obj`.
+            strike (FontStrikeoutEnum, optional): Determines the type of the strike out of the character.
+            subscript (bool, optional): Subscript option.
+            superscript (bool, optional): Superscript option.
+            underline (FontLine, optional): Character underline values.
+            weight (FontWeightEnum, optional): The value of the font weight.
+            word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to
+                white spaces.
+        """
+        super().__init__(
+            b=b,
+            i=i,
+            u=u,
+            bg_color=bg_color,
+            bg_transparent=bg_transparent,
+            charset=charset,
+            color=color,
+            family=family,
+            name=name,
+            overline=overline,
+            rotation=rotation,
+            shadow_fmt=shadow_fmt,
+            shadowed=shadowed,
+            size=size,
+            slant=slant,
+            spacing=spacing,
+            strike=strike,
+            subscript=subscript,
+            superscript=superscript,
+            underline=underline,
+            weight=weight,
+            word_mode=word_mode,
+        )
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.CharacterProperties",
+            )
+        return self._supported_services_values
+
+    @property
+    def prop_size(self) -> UnitPT | None:
+        """This value contains the size of the characters in ``pt`` (point) units."""
+        # for chart title this value is an int.
+        pv = cast(int, self._get("CharHeight"))
+        if pv is None:
+            return None
+        return UnitPT(pv)
+
+    @prop_size.setter
+    def prop_size(self, value: int | UnitObj | None) -> None:
+        if value is None:
+            self._remove("CharHeight")
+            return
+        try:
+            self._set("CharHeight", round(value.get_value_pt()))
+        except AttributeError:
+            self._set("CharHeight", round(value))

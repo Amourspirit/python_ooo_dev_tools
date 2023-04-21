@@ -180,6 +180,9 @@ class GradientStruct(StructBase):
             None:
         """
         # override_dv
+        p_name = self._get_property_name()
+        if not p_name:
+            return
         if not mProps.Props.has(obj, self._get_property_name()):
             self._print_not_valid_srv("apply")
             return

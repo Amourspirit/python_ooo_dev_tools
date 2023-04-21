@@ -1358,15 +1358,23 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="numbers" ID="ID_1300470284" CREATED="1675066778488" MODIFIED="1675080792406">
-<icon BUILTIN="unchecked"/>
+<node TEXT="numbers" ID="ID_1300470284" CREATED="1675066778488" MODIFIED="1681764471999">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_696530582" CREATED="1681764344457" MODIFIED="1681764351237">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 </node>
 </node>
 <node TEXT="modify" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1443253044" CREATED="1675144680753" MODIFIED="1675144685362">
 <node TEXT="cell" ID="ID_1159489426" CREATED="1675066927073" MODIFIED="1675066930044">
-<node TEXT="numbers" ID="ID_1565352658" CREATED="1675066941937" MODIFIED="1675081113137">
-<icon BUILTIN="unchecked"/>
+<node TEXT="numbers" ID="ID_1565352658" CREATED="1675066941937" MODIFIED="1681768137808">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_1496845843" CREATED="1681764344457" MODIFIED="1681764351237">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
 </node>
 <node TEXT="font" ID="ID_100055580" CREATED="1675066945337" MODIFIED="1679352416857">
 <icon BUILTIN="checked"/>
@@ -1548,7 +1556,7 @@
 </node>
 </node>
 </node>
-<node TEXT="draw" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1996085128" CREATED="1675067263059" MODIFIED="1675069724091">
+<node TEXT="draw" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" FOLDED="true" ID="ID_1996085128" CREATED="1675067263059" MODIFIED="1675069724091">
 <node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_937191284" CREATED="1675068166255" MODIFIED="1675069731685" HGAP_QUANTITY="18.5 pt" VSHIFT_QUANTITY="-0.75 pt">
 <node TEXT="pos_size" ID="ID_1254289340" CREATED="1675068359393" MODIFIED="1675068365691">
 <node TEXT="pos_size" ID="ID_1494893041" CREATED="1675068366184" MODIFIED="1675081145307">
@@ -1720,7 +1728,7 @@
 </node>
 </node>
 </node>
-<node TEXT="impress" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1657171700" CREATED="1675068524258" MODIFIED="1675069543238">
+<node TEXT="impress" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" FOLDED="true" ID="ID_1657171700" CREATED="1675068524258" MODIFIED="1675069543238">
 <node TEXT="modify" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1752722778" CREATED="1675068539778" MODIFIED="1675146411398">
 <node TEXT="background" ID="ID_70997322" CREATED="1675068551274" MODIFIED="1675068554461">
 <node TEXT="area" ID="ID_1363804148" CREATED="1675065864419" MODIFIED="1675065866525">
@@ -1881,8 +1889,483 @@
 </node>
 </node>
 </node>
-<node TEXT="chart" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1924986449" CREATED="1675146098865" MODIFIED="1675146157173">
-<node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1930219027" CREATED="1675146113825" MODIFIED="1675146166462"/>
+<node TEXT="chart2" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1924986449" CREATED="1675146098865" MODIFIED="1681921780691">
+<node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1930219027" CREATED="1675146113825" MODIFIED="1675146166462">
+<node TEXT="axis" ID="ID_1558240492" CREATED="1682038206089" MODIFIED="1682097798177">
+<icon BUILTIN="unchecked"/>
+<node TEXT="numbers" ID="ID_1748384165" CREATED="1681812612361" MODIFIED="1681812635121">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_1770617570" CREATED="1681812625234" MODIFIED="1681812630191">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="font" ID="ID_1240580439" CREATED="1681812800265" MODIFIED="1681812832841">
+<icon BUILTIN="checked"/>
+<node TEXT="FontEffects" ID="ID_714612706" CREATED="1681812817473" MODIFIED="1681812828398">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontOnly" ID="ID_728866821" CREATED="1681812822481" MODIFIED="1681812828395">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="line" ID="ID_931864241" CREATED="1682040312952" MODIFIED="1682040334926">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_624615965" CREATED="1682040321632" MODIFIED="1682040326370">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="positioning" ID="ID_290538694" CREATED="1682097725187" MODIFIED="1682097767705">
+<icon BUILTIN="checked"/>
+<node TEXT="AxisLine" ID="ID_1394882173" CREATED="1682097732727" MODIFIED="1682097762959">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="IntervalMarks" ID="ID_506744404" CREATED="1682097740043" MODIFIED="1682097762959">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="LabelPosition" ID="ID_1232909202" CREATED="1682097746114" MODIFIED="1682097762959">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="PositionAxis" ID="ID_1474983392" CREATED="1682097752053" MODIFIED="1682097762955">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="scale" ID="ID_229694505" CREATED="1682084867130" MODIFIED="1682097801533">
+<icon BUILTIN="unchecked"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      There can be different kinds of scale.
+    </p>
+    <p>
+      These dialog are complex. It will take some study to create all the classes for this.
+    </p>
+    <p>
+      See <a href="https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1chart2_1_1AxisType.html">AxisType</a>
+    </p>
+    <p>
+      See the source code for happy stock char.
+    </p>
+  </body>
+</html>
+</richcontent>
+</node>
+</node>
+<node TEXT="general" ID="ID_1813859981" CREATED="1682111781892" MODIFIED="1682111815535">
+<icon BUILTIN="checked"/>
+<node TEXT="area" ID="ID_1671089924" CREATED="1675065864419" MODIFIED="1676330994472">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_19993581" CREATED="1675065870452" MODIFIED="1676720888944">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Gradient" ID="ID_894919747" CREATED="1675065876260" MODIFIED="1676720889618">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Img" ID="ID_1501373618" CREATED="1675065884307" MODIFIED="1676720890264">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Pattern" ID="ID_1843340973" CREATED="1675065889707" MODIFIED="1676720890921">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Hatch" ID="ID_1626593329" CREATED="1675065896029" MODIFIED="1676720891553">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="borders" ID="ID_1558795769" CREATED="1681812570753" MODIFIED="1681812639019">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1611838943" CREATED="1681812583066" MODIFIED="1681812591161">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="position_size" ID="ID_1503399079" CREATED="1681812653113" MODIFIED="1681812677253">
+<icon BUILTIN="checked"/>
+<node TEXT="Position" ID="ID_648983647" CREATED="1681812657833" MODIFIED="1681812673521">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Size" ID="ID_111816655" CREATED="1681812664041" MODIFIED="1681812673519">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="transparency" ID="ID_127597809" CREATED="1681812690769" MODIFIED="1681812889651">
+<icon BUILTIN="checked"/>
+<node TEXT="Gradient" ID="ID_855611566" CREATED="1681812697529" MODIFIED="1681812714915">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Transparency" ID="ID_1382587922" CREATED="1681812703841" MODIFIED="1681812720391">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="numbers" ID="ID_204092762" CREATED="1681812612361" MODIFIED="1681812635121">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_795043322" CREATED="1681812625234" MODIFIED="1681812630191">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
+<node TEXT="grid" ID="ID_1875038185" CREATED="1682111843218" MODIFIED="1682111859239">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1285354221" CREATED="1682111851065" MODIFIED="1682111856098">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="legend" ID="ID_525619061" CREATED="1681812745017" MODIFIED="1681812912345">
+<icon BUILTIN="checked"/>
+<node TEXT="area" ID="ID_1739311968" CREATED="1675065864419" MODIFIED="1676330994472">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_1300191999" CREATED="1675065870452" MODIFIED="1676720888944">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Gradient" ID="ID_1537548645" CREATED="1675065876260" MODIFIED="1676720889618">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Img" ID="ID_2327675" CREATED="1675065884307" MODIFIED="1676720890264">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Pattern" ID="ID_682709680" CREATED="1675065889707" MODIFIED="1676720890921">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Hatch" ID="ID_1238264079" CREATED="1675065896029" MODIFIED="1676720891553">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="borders" ID="ID_270538584" CREATED="1681812570753" MODIFIED="1681812639019">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1026877463" CREATED="1681812583066" MODIFIED="1681812591161">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="font" ID="ID_74275197" CREATED="1681812800265" MODIFIED="1681812832841">
+<icon BUILTIN="checked"/>
+<node TEXT="Font" ID="ID_1070136806" CREATED="1681812802929" MODIFIED="1681812828397">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontEffects" ID="ID_152556585" CREATED="1681812817473" MODIFIED="1681812828398">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontOnly" ID="ID_1483329770" CREATED="1681812822481" MODIFIED="1681812828395">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="position_size" ID="ID_99788115" CREATED="1681812848249" MODIFIED="1681839585972">
+<icon BUILTIN="checked"/>
+<node TEXT="Position" ID="ID_494578263" CREATED="1681812657833" MODIFIED="1681812673521">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="transparency" ID="ID_865307522" CREATED="1681812690769" MODIFIED="1681812895205">
+<icon BUILTIN="checked"/>
+<node TEXT="Gradient" ID="ID_1105155592" CREATED="1681812697529" MODIFIED="1681812714915">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Transparency" ID="ID_1224873546" CREATED="1681812703841" MODIFIED="1681812720391">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
+<node TEXT="series" ID="ID_325684732" CREATED="1681812935409" MODIFIED="1682022495482">
+<icon BUILTIN="checked"/>
+<node TEXT="data_series" ID="ID_1828713434" CREATED="1681931207572" MODIFIED="1681931230110">
+<icon BUILTIN="checked"/>
+<node TEXT="area" ID="ID_53139705" CREATED="1675065864419" MODIFIED="1676330994472">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_1134255286" CREATED="1675065870452" MODIFIED="1676720888944">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Gradient" ID="ID_1032209717" CREATED="1675065876260" MODIFIED="1676720889618">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Img" ID="ID_616126063" CREATED="1675065884307" MODIFIED="1676720890264">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Pattern" ID="ID_374699450" CREATED="1675065889707" MODIFIED="1676720890921">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Hatch" ID="ID_631056466" CREATED="1675065896029" MODIFIED="1676720891553">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="borders" ID="ID_1031696297" CREATED="1681812570753" MODIFIED="1681812639019">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1142873175" CREATED="1681812583066" MODIFIED="1681812591161">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1681921759366">
+<icon BUILTIN="checked"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      May Change with different types of charts.
+    </p>
+  </body>
+</html></richcontent>
+<node TEXT="AlignSeries" ID="ID_485145973" CREATED="1681921659089" MODIFIED="1681921711658">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="LegendEntry" ID="ID_1616067693" CREATED="1681921668314" MODIFIED="1681921711660">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Orientation" ID="ID_1108640920" CREATED="1681921643265" MODIFIED="1681921711660">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Plot" ID="ID_1288825919" CREATED="1681921676321" MODIFIED="1681921711661">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="PlotSimple" ID="ID_1648305024" CREATED="1681921689201" MODIFIED="1681921711661">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Settings" ID="ID_699012602" CREATED="1681921695073" MODIFIED="1681921711661">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Orientation" ID="ID_1638430240" CREATED="1681921700697" MODIFIED="1681921753926">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      For Pie and Donut charts only.
+    </p>
+  </body>
+</html></richcontent>
+</node>
+</node>
+<node TEXT="transparency" ID="ID_374121481" CREATED="1681812690769" MODIFIED="1681812895205">
+<icon BUILTIN="checked"/>
+<node TEXT="Gradient" ID="ID_37464580" CREATED="1681812697529" MODIFIED="1681812714915">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Transparency" ID="ID_1483147463" CREATED="1681812703841" MODIFIED="1681812720391">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
+<node TEXT="data_labels" ID="ID_1369009468" CREATED="1681945027399" MODIFIED="1682022487560">
+<icon BUILTIN="checked"/>
+<node TEXT="data_labels" ID="ID_1033990878" CREATED="1681945034638" MODIFIED="1681945090341">
+<icon BUILTIN="checked"/>
+<node TEXT="AttribOptions" ID="ID_189408235" CREATED="1681945051566" MODIFIED="1681945085653">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="NumberFormat" ID="ID_1897538878" CREATED="1681945054646" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Orientation" ID="ID_566788292" CREATED="1681945060734" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="PercentFormat" ID="ID_223178391" CREATED="1681945072614" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="TextAttribs" ID="ID_1047434092" CREATED="1681945078318" MODIFIED="1681945085655">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="borders" ID="ID_138277937" CREATED="1681812570753" MODIFIED="1681812639019">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1377741107" CREATED="1681812583066" MODIFIED="1681812591161">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="font" ID="ID_800546028" CREATED="1681812800265" MODIFIED="1681812832841">
+<icon BUILTIN="checked"/>
+<node TEXT="FontEffects" ID="ID_1810266221" CREATED="1681812817473" MODIFIED="1681812828398">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontOnly" ID="ID_1178392321" CREATED="1681812822481" MODIFIED="1681812828395">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
+</node>
+<node TEXT="title" ID="ID_1565209223" CREATED="1681813071201" MODIFIED="1682022503950">
+<icon BUILTIN="checked"/>
+<node TEXT="alignment" ID="ID_1539080277" CREATED="1681813087241" MODIFIED="1681813117588">
+<icon BUILTIN="checked"/>
+<node TEXT="Direction" ID="ID_66565150" CREATED="1681813094225" MODIFIED="1681813104189">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Orientation" ID="ID_1239881483" CREATED="1681813108881" MODIFIED="1681813113283">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="area" ID="ID_1955966092" CREATED="1675065864419" MODIFIED="1676330994472">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_1887074084" CREATED="1675065870452" MODIFIED="1676720888944">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Gradient" ID="ID_810754227" CREATED="1675065876260" MODIFIED="1676720889618">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Img" ID="ID_1501940463" CREATED="1675065884307" MODIFIED="1676720890264">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Pattern" ID="ID_808268208" CREATED="1675065889707" MODIFIED="1676720890921">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Hatch" ID="ID_1877554399" CREATED="1675065896029" MODIFIED="1676720891553">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="borders" ID="ID_98146095" CREATED="1681812570753" MODIFIED="1681812639019">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1628772314" CREATED="1681812583066" MODIFIED="1681812591161">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="font" ID="ID_1604436235" CREATED="1681812800265" MODIFIED="1681812832841">
+<icon BUILTIN="checked"/>
+<node TEXT="Font" ID="ID_1510748951" CREATED="1681812802929" MODIFIED="1681812828397">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontEffects" ID="ID_561245440" CREATED="1681812817473" MODIFIED="1681812828398">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontOnly" ID="ID_938331424" CREATED="1681812822481" MODIFIED="1681812828395">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="position_size" ID="ID_949252208" CREATED="1681812653113" MODIFIED="1681812677253">
+<icon BUILTIN="checked"/>
+<node TEXT="Position" ID="ID_634688530" CREATED="1681812657833" MODIFIED="1681812673521">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
+<node TEXT="wall" ID="ID_144711709" CREATED="1681813228473" MODIFIED="1681815703706">
+<icon BUILTIN="checked"/>
+<node TEXT="area" ID="ID_1618650196" CREATED="1675065864419" MODIFIED="1676330994472">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_691951747" CREATED="1675065870452" MODIFIED="1676720888944">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Gradient" ID="ID_986471261" CREATED="1675065876260" MODIFIED="1676720889618">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Img" ID="ID_106136796" CREATED="1675065884307" MODIFIED="1676720890264">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Pattern" ID="ID_74985560" CREATED="1675065889707" MODIFIED="1676720890921">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Hatch" ID="ID_1302190177" CREATED="1675065896029" MODIFIED="1676720891553">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="borders" ID="ID_738566088" CREATED="1681812570753" MODIFIED="1681812639019">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_518031705" CREATED="1681812583066" MODIFIED="1681812591161">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="transparency" ID="ID_526272009" CREATED="1681812690769" MODIFIED="1681812895205">
+<icon BUILTIN="checked"/>
+<node TEXT="Gradient" ID="ID_1247487925" CREATED="1681812697529" MODIFIED="1681812714915">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Transparency" ID="ID_1477325580" CREATED="1681812703841" MODIFIED="1681812720391">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
+<node TEXT="floor" ID="ID_750243005" CREATED="1681814792417" MODIFIED="1681815748733">
+<icon BUILTIN="checked"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      Floor is formatted by using wall styles.
+    </p>
+  </body>
+</html></richcontent>
+</node>
+</node>
 </node>
 </node>
 </node>

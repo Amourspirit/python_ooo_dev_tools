@@ -30,6 +30,7 @@ def args_add(parser: argparse.ArgumentParser) -> None:
 def main() -> int:
     if len(sys.argv) == 1:
         sys.argv.append("-k")
+        # sys.argv.append("scatter")
     # create parser to read terminal input
     parser = argparse.ArgumentParser(description="main")
 

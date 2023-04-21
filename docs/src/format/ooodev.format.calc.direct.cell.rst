@@ -12,6 +12,7 @@ Subpackages
    ooodev.format.calc.direct.cell.borders
    ooodev.format.calc.direct.cell.cell_protection
    ooodev.format.calc.direct.cell.font
+   ooodev.format.calc.direct.cell.numbers
 
 Module contents
 ---------------
