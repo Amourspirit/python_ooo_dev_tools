@@ -373,7 +373,7 @@ mindmap
                 id{{Cell}}
                 id{{Page}}
         chart2
-            [[direct]]
+            [direct]
                 axis
                     numbers
                         id{{Numbers}}
