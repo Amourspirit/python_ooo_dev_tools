@@ -36,7 +36,7 @@ from ooodev.format.chart2.direct.title.area import (
 from ooodev.format.chart2.direct.title.font import Font as TitleFont
 from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
 from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
-from ooodev.format.chart2.direct.numbers import Numbers, NumberFormatIndexEnum
+from ooodev.format.chart2.direct.general.numbers import Numbers, NumberFormatIndexEnum
 
 from ooodev.utils.color import CommonColor, StandardColor
 from ooodev.utils.info import Info

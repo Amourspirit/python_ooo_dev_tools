@@ -14,7 +14,6 @@ except ImportError:
     # handle LibreOffice 7.4 bug
     Chart2 = None
 
-from ooodev.format.chart2.direct.axis.font import FontOnly
 from ooodev.format.chart2.direct.grid import LineProperties as GridLineProperties, BorderLineKind
 
 from ooodev.utils.color import StandardColor

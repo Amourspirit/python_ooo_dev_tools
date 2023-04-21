@@ -19,20 +19,20 @@ except ImportError:
 
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.format.chart2.direct.area import (
+from ooodev.format.chart2.direct.general.area import (
     PresetGradientKind,
     PresetHatchKind,
     PresetImageKind,
     PresetPatternKind,
 )
-from ooodev.format.chart2.direct.borders import LineProperties as ChartLineProperties
-from ooodev.format.chart2.direct.area import Color as ChartColor
-from ooodev.format.chart2.direct.area import Gradient as ChartGradient
-from ooodev.format.chart2.direct.area import Hatch as ChartHatch
-from ooodev.format.chart2.direct.area import Img as ChartImg
-from ooodev.format.chart2.direct.area import Pattern as ChartPattern
-from ooodev.format.chart2.direct.transparency import Transparency as ChartTransparency
-from ooodev.format.chart2.direct.transparency import Gradient as ChartGradientTransparency, IntensityRange
+from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
+from ooodev.format.chart2.direct.general.area import Color as ChartColor
+from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
+from ooodev.format.chart2.direct.general.area import Hatch as ChartHatch
+from ooodev.format.chart2.direct.general.area import Img as ChartImg
+from ooodev.format.chart2.direct.general.area import Pattern as ChartPattern
+from ooodev.format.chart2.direct.general.transparency import Transparency as ChartTransparency
+from ooodev.format.chart2.direct.general.transparency import Gradient as ChartGradientTransparency, IntensityRange
 
 from ooodev.utils.color import StandardColor
 from ooodev.utils.info import Info

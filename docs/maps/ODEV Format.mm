@@ -1891,29 +1891,6 @@
 </node>
 <node TEXT="chart2" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1924986449" CREATED="1675146098865" MODIFIED="1681921780691">
 <node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1930219027" CREATED="1675146113825" MODIFIED="1675146166462">
-<node TEXT="area" ID="ID_1671089924" CREATED="1675065864419" MODIFIED="1676330994472">
-<icon BUILTIN="checked"/>
-<node TEXT="Color" ID="ID_19993581" CREATED="1675065870452" MODIFIED="1676720888944">
-<icon BUILTIN="checked"/>
-<icon BUILTIN="links/code/file_Python"/>
-</node>
-<node TEXT="Gradient" ID="ID_894919747" CREATED="1675065876260" MODIFIED="1676720889618">
-<icon BUILTIN="checked"/>
-<icon BUILTIN="links/code/file_Python"/>
-</node>
-<node TEXT="Img" ID="ID_1501373618" CREATED="1675065884307" MODIFIED="1676720890264">
-<icon BUILTIN="checked"/>
-<icon BUILTIN="links/code/file_Python"/>
-</node>
-<node TEXT="Pattern" ID="ID_1843340973" CREATED="1675065889707" MODIFIED="1676720890921">
-<icon BUILTIN="checked"/>
-<icon BUILTIN="links/code/file_Python"/>
-</node>
-<node TEXT="Hatch" ID="ID_1626593329" CREATED="1675065896029" MODIFIED="1676720891553">
-<icon BUILTIN="checked"/>
-<icon BUILTIN="links/code/file_Python"/>
-</node>
-</node>
 <node TEXT="axis" ID="ID_1558240492" CREATED="1682038206089" MODIFIED="1682097798177">
 <icon BUILTIN="unchecked"/>
 <node TEXT="numbers" ID="ID_1748384165" CREATED="1681812612361" MODIFIED="1681812635121">
@@ -1985,16 +1962,34 @@
 </richcontent>
 </node>
 </node>
-<node TEXT="borders" ID="ID_1558795769" CREATED="1681812570753" MODIFIED="1681812639019">
+<node TEXT="general" ID="ID_1813859981" CREATED="1682111781892" MODIFIED="1682111815535">
 <icon BUILTIN="checked"/>
-<node TEXT="LineProperties" ID="ID_1611838943" CREATED="1681812583066" MODIFIED="1681812591161">
+<node TEXT="area" ID="ID_1671089924" CREATED="1675065864419" MODIFIED="1676330994472">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_19993581" CREATED="1675065870452" MODIFIED="1676720888944">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Gradient" ID="ID_894919747" CREATED="1675065876260" MODIFIED="1676720889618">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Img" ID="ID_1501373618" CREATED="1675065884307" MODIFIED="1676720890264">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Pattern" ID="ID_1843340973" CREATED="1675065889707" MODIFIED="1676720890921">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="Hatch" ID="ID_1626593329" CREATED="1675065896029" MODIFIED="1676720891553">
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="numbers" ID="ID_204092762" CREATED="1681812612361" MODIFIED="1681812635121">
+<node TEXT="borders" ID="ID_1558795769" CREATED="1681812570753" MODIFIED="1681812639019">
 <icon BUILTIN="checked"/>
-<node TEXT="Numbers" ID="ID_795043322" CREATED="1681812625234" MODIFIED="1681812630191">
+<node TEXT="LineProperties" ID="ID_1611838943" CREATED="1681812583066" MODIFIED="1681812591161">
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>
@@ -2017,6 +2012,21 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 <node TEXT="Transparency" ID="ID_1382587922" CREATED="1681812703841" MODIFIED="1681812720391">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="numbers" ID="ID_204092762" CREATED="1681812612361" MODIFIED="1681812635121">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_795043322" CREATED="1681812625234" MODIFIED="1681812630191">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
+<node TEXT="grid" ID="ID_1875038185" CREATED="1682111843218" MODIFIED="1682111859239">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1285354221" CREATED="1682111851065" MODIFIED="1682111856098">
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>

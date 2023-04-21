@@ -496,7 +496,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart2.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
         """
         try:
             # return XTilte so it may have futher styles applied
@@ -525,7 +525,8 @@ class Chart2:
             xtitle.setText(title_arr)
             # Shape style will not be applied. Need to use style_title() after title is created.
             if styles:
-                cls._style_title(xtitle=xtitle, styles=styles)
+                title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
+                cls._style_title(xtitle=xtitle, styles=title_styles)
 
             return xtitle
         except Exception as e:
@@ -551,7 +552,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart2.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
         """
         return cls._create_title(title, 14, styles)
 
@@ -623,7 +624,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`
 
         Hint:
-            Styles that can be applied are found in :py:mod:`ooodev.format.chart2.direct.title`.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
         """
         try:
             diagram = chart_doc.getFirstDiagram()
@@ -788,8 +789,7 @@ class Chart2:
             the font returned by :py:meth:`.Info.get_font_general_name`
 
         Hint:
-            The returned Title object can be passed to :py:meth:`~.Chart2.set_x_title_font` to
-            change default font.
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         See Also:
             :py:meth:`~.Chart2.get_axis`
@@ -820,6 +820,9 @@ class Chart2:
         Returns:
             XTitle: Title object
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
@@ -837,6 +840,9 @@ class Chart2:
 
         Returns:
             XTitle: Title object
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
@@ -856,6 +862,9 @@ class Chart2:
         Returns:
             XTitle: Title object
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
         """
@@ -873,6 +882,9 @@ class Chart2:
 
         Returns:
             XTitle: Title object
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
         See Also:
             :py:meth:`~.Chart2.set_axis_title`
@@ -987,7 +999,7 @@ class Chart2:
         return cls.get_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=1)
 
     @classmethod
-    def rotate_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, angle: Angle) -> None:
+    def rotate_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, angle: Angle | int) -> None:
         """
         Rotates axis title.
 
@@ -995,7 +1007,7 @@ class Chart2:
             chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis kind.
             idx (int): Index
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1004,21 +1016,22 @@ class Chart2:
             None:
         """
         try:
+            rotation = Angle(int(angle))
             xtitle = cls.get_axis_title(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
-            mProps.Props.set(xtitle, TextRotation=angle.value)
+            mProps.Props.set(xtitle, TextRotation=rotation.value)
         except mEx.ChartError:
             raise
         except Exception as e:
             raise mEx.ChartError("Error while trying to rotate axis title") from e
 
     @classmethod
-    def rotate_x_axis_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_x_axis_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates X axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1032,13 +1045,13 @@ class Chart2:
         cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=0, angle=angle)
 
     @classmethod
-    def rotate_y_axis_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_y_axis_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates Y axis title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1052,13 +1065,13 @@ class Chart2:
         cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0, angle=angle)
 
     @classmethod
-    def rotate_x_axis2_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_x_axis2_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates X axis2 title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1072,13 +1085,13 @@ class Chart2:
         cls.rotate_axis_title(chart_doc=chart_doc, axis_val=AxisKind.X, idx=1, angle=angle)
 
     @classmethod
-    def rotate_y_axis2_title(cls, chart_doc: XChartDocument, angle: Angle) -> None:
+    def rotate_y_axis2_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates Y axis2 title.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            angle (Angle): Angle
+            angle (Angle, int): Angle
 
         Raises:
             ChartError: If error occurs.
@@ -1506,11 +1519,7 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in the following subpackages:
-
-            - :doc:`ooodev.format.chart2.direct.area </src/format/ooodev.format.chart2.direct.area>` subpackages.
-            - :doc:`ooodev.format.chart2.direct.borders </src/format/ooodev.format.chart2.direct.borders>` subpackages.
-            - :doc:`ooodev.format.chart2.direct.transparency </src/format/ooodev.format.chart2.direct.transparency>` subpackages.
+            Styles that can be applied are found in the :doc:`ooodev.format.chart2.direct.general </src/format/ooodev.format.chart2.direct.general>` subpackages.
 
         .. versionadded:: 0.9.0
         """
@@ -1646,7 +1655,7 @@ class Chart2:
             Styles that can be applied are found in the following packages.
 
                 - :doc:`ooodev.format.chart2.direct.legend </src/format/ooodev.format.chart2.direct.legend>`
-                - :doc:`ooodev.format.chart2.direct.position_size </src/format/ooodev.format.chart2.direct.position_size>`
+                - :doc:`ooodev.format.chart2.direct.general.position_size </src/format/ooodev.format.chart2.direct.general.position_size>`
 
         .. versionadded:: 0.9.0
         """
@@ -1945,7 +1954,6 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
-
 
         .. versionadded:: 0.9.4
         """
@@ -2647,6 +2655,12 @@ class Chart2:
 
         Returns:
             XPropertySet: Regression curve property set.
+
+        Hint:
+            Styles that can be applied are found in the following subpackages:
+
+                - :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>`
+                - :doc:`ooodev.format.chart2.direct.general.numbers </src/format/ooodev.format.chart2.direct.general.numbers>`
 
         .. versionchanged:: 0.9.4
             Added ``styles`` argument, and now returns the regression curve property set.
