@@ -299,14 +299,25 @@ mindmap
                 id{{Para}}
         calc
             [direct]
-                borders
-                    id{{Borders}}
-                    id{{Padding}}
-                    id{{Shadow}}
-                font
-                    id{{Font}}
-                    id{{FontOnly}}
-                    id{{FontEffects}}
+                cell
+                    alignment
+                        id{{TextAlign}}
+                        id{{TextOrientation}}
+                        id{{Properties}}
+                    borders
+                        id{{Borders}}
+                        id{{Padding}}
+                        id{{Shadow}}
+                    font
+                        id{{Font}}
+                        id{{FontOnly}}
+                        id{{FontEffects}}
+                    background
+                        id{{Color}}
+                    cell_protection
+                        id{{CellProtection}}
+                    numbers
+                        id{{Numbers}}
             [modify]
                 cell
                     alignment
@@ -320,6 +331,8 @@ mindmap
                     font
                         id{{FontOnly}}
                         id{{FontEffects}}
+                    numbers
+                        id{{Numbers}}
                 page
                     background
                         id{{Color}}
@@ -359,6 +372,121 @@ mindmap
             [style]
                 id{{Cell}}
                 id{{Page}}
+        chart2
+            [[direct]]
+                axis
+                    numbers
+                        id{{Numbers}}
+                    font
+                        id{{FontEffects}}
+                        id{{FontOnly}}
+                    line
+                        id{{LineProperties}}
+                    positioning
+                        id{{AxisLine}}
+                        id{{IntervalMarks}}
+                        id{{LabelPosition}}
+                        id{{PositionAxis}}
+                general
+                    area
+                        id{{Color}}
+                        id{{Gradient}}
+                        id{{Img}}
+                        id{{Pattern}}
+                        id{{Hatch}}
+                    borders
+                        id{{LineProperties}}
+                    position_size
+                        id{{Position}}
+                        id{{Size}}
+                    transparency
+                        id{{Gradient}}
+                        id{{Transparency}}
+                    numbers
+                        id{{Numbers}}
+                grid
+                    id{{LineProperties}}
+                legend
+                    area
+                        id{{Color}}
+                        id{{Gradient}}
+                        id{{Img}}
+                        id{{Pattern}}
+                        id{{Hatch}}
+                    borders
+                        id{{LineProperties}}
+                    font
+                        id{{Font}}
+                        id{{FontEffects}}
+                        id{{FontOnly}}
+                    position_size
+                        id{{Position}}
+                    transparency
+                        id{{Gradient}}
+                        id{{Transparency}}
+                series
+                    data_series
+                        area
+                            id{{Color}}
+                            id{{Gradient}}
+                            id{{Img}}
+                            id{{Pattern}}
+                            id{{Hatch}}
+                        borders
+                            id{{LineProperties}}
+                        options
+                            id{{AlignSeries}}
+                            id{{LegendEntry}}
+                            id{{Orientation}}
+                            id{{Plot}}
+                            id{{PlotSimple}}
+                            id{{Settings}}
+                            id{{Orientation}}
+                        transparency
+                            id{{Gradient}}
+                            id{{Transparency}}
+                    data_labels
+                        data_labels
+                            id{{AttribOptions}}
+                            id{{NumberFormat}}
+                            id{{Orientation}}
+                            id{{PercentFormat}}
+                            id{{TextAttribs}}
+                        borders
+                            id{{LineProperties}}
+                        font
+                            id{{FontEffects}}
+                            id{{FontOnly}}
+                title
+                    alignment
+                        id{{Direction}}
+                        id{{Orientation}}
+                    area
+                        id{{Color}}
+                        id{{Gradient}}
+                        id{{Img}}
+                        id{{Pattern}}
+                        id{{Hatch}}
+                    borders
+                        id{{LineProperties}}
+                    font
+                        id{{Font}}
+                        id{{FontEffects}}
+                        id{{FontOnly}}
+                    position_size
+                        id{{Position}}
+                wall
+                    area
+                        id{{Color}}
+                        id{{Gradient}}
+                        id{{Img}}
+                        id{{Pattern}}
+                        id{{Hatch}}
+                    borders
+                        id{{LineProperties}}
+                    transparency
+                        id{{Gradient}}
+                        id{{Transparency}}
         draw
             [direct]
                 area
