@@ -63,16 +63,9 @@ class LineProperties(StyleBase):
                 "com.sun.star.chart2.PageBackground",
                 "com.sun.star.chart2.Title",
                 "com.sun.star.drawing.LineProperties",
+                "com.sun.star.chart2.Axis",
             )
         return self._supported_services_values
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"LineProperties.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     # region copy()
     @overload

@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.chart2.direct.area
+   ooodev.format.chart2.direct.axis
    ooodev.format.chart2.direct.borders
    ooodev.format.chart2.direct.legend
    ooodev.format.chart2.direct.numbers

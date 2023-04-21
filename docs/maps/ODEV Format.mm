@@ -1914,6 +1914,26 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
+<node TEXT="axis" ID="ID_1558240492" CREATED="1682038206089" MODIFIED="1682038209722">
+<node TEXT="numbers" ID="ID_1748384165" CREATED="1681812612361" MODIFIED="1681812635121">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_1770617570" CREATED="1681812625234" MODIFIED="1681812630191">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="font" ID="ID_1240580439" CREATED="1681812800265" MODIFIED="1681812832841">
+<icon BUILTIN="checked"/>
+<node TEXT="FontEffects" ID="ID_714612706" CREATED="1681812817473" MODIFIED="1681812828398">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="FontOnly" ID="ID_728866821" CREATED="1681812822481" MODIFIED="1681812828395">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+</node>
 <node TEXT="borders" ID="ID_1558795769" CREATED="1681812570753" MODIFIED="1681812639019">
 <icon BUILTIN="checked"/>
 <node TEXT="LineProperties" ID="ID_1611838943" CREATED="1681812583066" MODIFIED="1681812591161">

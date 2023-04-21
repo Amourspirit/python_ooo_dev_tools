@@ -55,7 +55,7 @@ class Numbers(CalcNumbers):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.chart2.RegressionEquation",)
+            self._supported_services_values = ("com.sun.star.chart2.RegressionEquation", "com.sun.star.chart2.Axis")
         return self._supported_services_values
 
     # region Copy()

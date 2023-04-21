@@ -1696,6 +1696,106 @@ class Chart2:
                 cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
+    def style_x_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart X axis.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_x_axis(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
+    def style_x_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles X axis2 of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart X axis2.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_x_axis2(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
+    def style_y_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles Y axis of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_y_axis(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
+    def style_y_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+        """
+        Styles Y axis2 of chart.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis2.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        .. versionadded:: 0.9.4
+        """
+        try:
+            axis = cls.get_y_axis2(chart_doc=chart_doc)
+        except mEx.ChartError:
+            return
+
+        for style in styles:
+            style.apply(axis)
+
+    @classmethod
     def style_x_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
         """
         Styles X axis title of chart.
