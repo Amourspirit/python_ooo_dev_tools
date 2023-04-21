@@ -842,30 +842,46 @@ class Props:
 
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_DEFAULT_SETTING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_DEFAULT_SET` :eventref:`src-docs-event`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET_DEFAULT_ERROR` :eventref:`src-docs-event-cancel`
 
         Note:
+            Event data  is a dictionary of ``{"obj": obj, "name": name}`` with name being the property name currently being set.
+
             If a Event is canceled then that property is not set. No error occurs.
 
             If ``MultiError`` occurs only the properties that raised an error is part of the error object.
             The remaining properties will still be set to default.
 
         .. versionadded:: 0.9.0
+
+        .. versionchanged:: 0.9.4
+            Now event is raised if a property fails to set default.
         """
         ps = mLo.Lo.qi(XPropertyState, obj, True)
         errs = []
         for name in prop_names:
             has_error = False
             cargs = CancelEventArgs(Props.set.__qualname__)
-            cargs.event_data = name
+            cargs.event_data = {"obj": obj, "name": name}
             _Events().trigger(PropsNamedEvent.PROP_DEFAULT_SETTING, cargs)
             if cargs.cancel:
                 continue
+            prop_name = cargs.event_data["name"]
             try:
-                ps.setPropertyToDefault(name)
+                ps.setPropertyToDefault(prop_name)
             except Exception as e:
                 has_error = True
-                errs.append(Exception(f'Could not set property Default "{name}"', e))
-            if not has_error:
+                errs.append(Exception(f'Could not set property Default "{prop_name}"', e))
+            if has_error:
+                error_args = CancelEventArgs.from_args(cargs)
+                cargs.cancel = False
+                cargs.handled = False
+                _Events().trigger(PropsNamedEvent.PROP_SET_DEFAULT_ERROR, error_args)
+                if error_args.handled or error_args.cancel:
+                    # remove the last error
+                    if errs:
+                        _ = errs.pop()
+            else:
                 _Events().trigger(PropsNamedEvent.PROP_DEFAULT_SET, EventArgs.from_args(cargs))
         if len(errs) > 0:
             raise mEx.MultiError(errs)

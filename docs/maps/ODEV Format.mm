@@ -1914,7 +1914,8 @@
 <icon BUILTIN="links/code/file_Python"/>
 </node>
 </node>
-<node TEXT="axis" ID="ID_1558240492" CREATED="1682038206089" MODIFIED="1682038209722">
+<node TEXT="axis" ID="ID_1558240492" CREATED="1682038206089" MODIFIED="1682097798177">
+<icon BUILTIN="unchecked"/>
 <node TEXT="numbers" ID="ID_1748384165" CREATED="1681812612361" MODIFIED="1681812635121">
 <icon BUILTIN="checked"/>
 <node TEXT="Numbers" ID="ID_1770617570" CREATED="1681812625234" MODIFIED="1681812630191">
@@ -1939,6 +1940,49 @@
 <icon BUILTIN="checked"/>
 <icon BUILTIN="links/code/file_Python"/>
 </node>
+</node>
+<node TEXT="positioning" ID="ID_290538694" CREATED="1682097725187" MODIFIED="1682097767705">
+<icon BUILTIN="checked"/>
+<node TEXT="AxisLine" ID="ID_1394882173" CREATED="1682097732727" MODIFIED="1682097762959">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="IntervalMarks" ID="ID_506744404" CREATED="1682097740043" MODIFIED="1682097762959">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="LabelPosition" ID="ID_1232909202" CREATED="1682097746114" MODIFIED="1682097762959">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+<node TEXT="PositionAxis" ID="ID_1474983392" CREATED="1682097752053" MODIFIED="1682097762955">
+<icon BUILTIN="checked"/>
+<icon BUILTIN="links/code/file_Python"/>
+</node>
+</node>
+<node TEXT="scale" ID="ID_229694505" CREATED="1682084867130" MODIFIED="1682097801533">
+<icon BUILTIN="unchecked"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      There can be different kinds of scale.
+    </p>
+    <p>
+      These dialog are complex. It will take some study to create all the classes for this.
+    </p>
+    <p>
+      See <a href="https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1chart2_1_1AxisType.html">AxisType</a>
+    </p>
+    <p>
+      See the source code for happy stock char.
+    </p>
+  </body>
+</html>
+</richcontent>
 </node>
 </node>
 <node TEXT="borders" ID="ID_1558795769" CREATED="1681812570753" MODIFIED="1681812639019">
@@ -2127,8 +2171,7 @@
       For Pie and Donut charts only.
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 </node>
 </node>
 <node TEXT="transparency" ID="ID_374121481" CREATED="1681812690769" MODIFIED="1681812895205">

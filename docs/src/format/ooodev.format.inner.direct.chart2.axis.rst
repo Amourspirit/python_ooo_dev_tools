@@ -11,6 +11,7 @@ Subpackages
    ooodev.format.inner.direct.chart2.axis.label
    ooodev.format.inner.direct.chart2.axis.line
    ooodev.format.inner.direct.chart2.axis.numbers
+   ooodev.format.inner.direct.chart2.axis.positioning
 
 Module contents
 ---------------
