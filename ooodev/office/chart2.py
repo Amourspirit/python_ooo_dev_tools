@@ -1352,30 +1352,53 @@ class Chart2:
 
     @overload
     @classmethod
+    def set_grid_lines(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, *, styles: Sequence[StyleObj]
+    ) -> XPropertySet:
+        ...
+
+    @overload
+    @classmethod
     def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XPropertySet:
         ...
 
+    @overload
     @classmethod
-    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0) -> XPropertySet:
+    def set_grid_lines(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, styles: Sequence[StyleObj]
+    ) -> XPropertySet:
+        ...
+
+    @classmethod
+    def set_grid_lines(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0, styles: Sequence[StyleObj] = None
+    ) -> XPropertySet:
         """
         Set the grid lines for a chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis kind.
-            idx (int, optional): Index. Defaults to 0.
+            idx (int, optional): Index. Defaults to ``0``.
+            styles (Sequence[StyleObj], optional): Styles to apply.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
             XPropertySet: Property Set of Grid Properties.
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
         """
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
             props = axis.getGridProperties()
             mProps.Props.set_property(props, "LineStyle", LineStyle.DASH)
             mProps.Props.set_property(props, "LineDashName", str(LineStyleNameKind.FINE_DOTTED))
+            if styles:
+                for style in styles:
+                    style.apply(props)
             return props
         except mEx.ChartError:
             raise
@@ -1439,6 +1462,36 @@ class Chart2:
     # endregion legend
 
     # region Styles
+    @classmethod
+    def style_grid(
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, styles: Sequence[StyleObj], idx: int = 0
+    ) -> None:
+        """
+        Style Grid
+
+        Args:
+            chart_doc (XChartDocument): Chart Document.
+            axis_val (AxisKind): Axis kind.
+            styles (Sequence[StyleObj]): Styles to apply.
+            idx (int, optional): Index. Defaults to ``0``.
+
+        Returns:
+            None:
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
+        """
+        try:
+            axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
+            props = axis.getGridProperties()
+
+            if props is None:
+                return
+
+            for style in styles:
+                style.apply(props)
+        except Exception as e:
+            pass
 
     @staticmethod
     def style_background(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:

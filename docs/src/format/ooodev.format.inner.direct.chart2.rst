@@ -9,6 +9,7 @@ Subpackages
 
    ooodev.format.inner.direct.chart2.axis
    ooodev.format.inner.direct.chart2.chart
+   ooodev.format.inner.direct.chart2.grid
    ooodev.format.inner.direct.chart2.legend
    ooodev.format.inner.direct.chart2.position_size
    ooodev.format.inner.direct.chart2.wall

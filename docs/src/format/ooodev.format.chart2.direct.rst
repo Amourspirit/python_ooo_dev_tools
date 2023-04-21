@@ -10,6 +10,7 @@ Subpackages
    ooodev.format.chart2.direct.area
    ooodev.format.chart2.direct.axis
    ooodev.format.chart2.direct.borders
+   ooodev.format.chart2.direct.grid
    ooodev.format.chart2.direct.legend
    ooodev.format.chart2.direct.numbers
    ooodev.format.chart2.direct.position_size

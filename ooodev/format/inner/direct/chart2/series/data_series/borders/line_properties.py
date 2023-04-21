@@ -7,7 +7,6 @@ from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_pr
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitConvert, UnitMM
 from ooodev.units import UnitObj
-from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
