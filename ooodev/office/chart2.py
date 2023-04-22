@@ -1519,7 +1519,11 @@ class Chart2:
             None:
 
         Hint:
-            Styles that can be applied are found in the :doc:`ooodev.format.chart2.direct.general </src/format/ooodev.format.chart2.direct.general>` subpackages.
+            Styles that can be applied are found in the following:
+
+                - :doc:`ooodev.format.chart2.direct.general.area </src/format/ooodev.format.chart2.direct.general.area>`
+                - :doc:`ooodev.format.chart2.direct.general.borders </src/format/ooodev.format.chart2.direct.general.borders>`
+                - :doc:`ooodev.format.chart2.direct.general.transparency </src/format/ooodev.format.chart2.direct.general.transparency>`
 
         .. versionadded:: 0.9.0
         """
