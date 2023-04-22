@@ -62,17 +62,22 @@ class Pattern(StyleBase):
 
         init_vals = {}
         # if bitmap or name is passed in then get the bitmap
-        init_vals[self._props.tile] = tile
-        init_vals[self._props.stretch] = stretch
+        if self._props.tile:
+            init_vals[self._props.tile] = tile
+        if self._props.stretch:
+            init_vals[self._props.stretch] = stretch
         bmap = None
         try:
             bmap = self._get_bitmap(bitmap, name, auto_name)
         except Exception:
             pass
         if not bmap is None:
-            init_vals[self._props.bitmap] = bmap
-            init_vals[self._props.name] = self._name
-            init_vals[self._props.style] = FillStyle.BITMAP
+            if self._props.bitmap:
+                init_vals[self._props.bitmap] = bmap
+            if self._props.name:
+                init_vals[self._props.name] = self._name
+            if self._props.style:
+                init_vals[self._props.style] = FillStyle.BITMAP
 
         super().__init__(**init_vals)
 
@@ -154,7 +159,7 @@ class Pattern(StyleBase):
         Returns:
             None:
         """
-        if not self._has(self._props.bitmap):
+        if self._props.bitmap and not self._has(self._props.bitmap):
             mLo.Lo.print("Pattern.apply(): There is nothing to apply.")
             return
         super().apply(obj, **kwargs)
@@ -198,7 +203,7 @@ class Pattern(StyleBase):
         Gets an instance from a preset.
 
         Args:
-            preset (PresetPatternKind): Preset.
+            preset (~.preset.preset_pattern.PresetPatternKind): Preset.
 
         Returns:
             Pattern: ``Pattern`` instance from preset.
@@ -245,6 +250,8 @@ class Pattern(StyleBase):
 
         def set_prop(key: str, fp: Pattern):
             nonlocal obj
+            if not key:
+                return
             val = mProps.Props.get(obj, key, None)
             if not val is None:
                 fp._set(key, val)

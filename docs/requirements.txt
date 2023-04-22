@@ -1,9 +1,10 @@
-sphinx==5.3.0
-sphinx-rtd-dark-mode
-sphinx-autodoc-typehints
-sphinx-toolbox
-sphinx_design
-typing_extensions
 ooouno
+sphinx==5.3.0
+sphinx_design
+sphinx-autodoc-typehints
+sphinx-rtd-dark-mode
+sphinx-substitution-extensions
+sphinx-tabs
+sphinx-toolbox
 sphinxcontrib-spelling
-Sphinx-Substitution-Extensions
+typing_extensions

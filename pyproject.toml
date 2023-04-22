@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.9.3"
+version = "0.9.4"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -54,6 +54,7 @@ lo-dev-search = {version = ">=2.0.2", platform = "linux"}
 ruff = ">=0.0.254"
 black = {extras = ["d"], version = ">=23.1.0"}
 oooenv = ">=0.1.1"
+pytest-mock = ">=3.10"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -67,7 +68,7 @@ sphinx_design = ">=0.3.0"
 sphinxcontrib-apidoc = ">=0.3.0"
 esbonio = ">=0.16.1"
 # pygls = {version = ">=0.12.4,<1.0", python = ">=3.7,<3.12"}
-sphinx-substitution-extensions = "^2022.2.16"
+sphinx-substitution-extensions = ">=2022.2.16"
 
 [tool.pytest.ini_options]
 testpaths = [

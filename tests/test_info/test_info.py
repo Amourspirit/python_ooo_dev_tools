@@ -1,4 +1,7 @@
 import pytest
+from unittest.mock import patch
+import uno
+
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
@@ -6,7 +9,6 @@ if __name__ == "__main__":
 
 
 def test_get_doc_type(loader, fix_writer_path) -> None:
-
     from ooodev.utils.lo import Lo
     from ooodev.utils.info import Info
 
@@ -16,7 +18,6 @@ def test_get_doc_type(loader, fix_writer_path) -> None:
 
 
 def test_get_available_services(loader, copy_fix_writer) -> None:
-
     from ooodev.utils.lo import Lo
     from ooodev.utils.info import Info
 
@@ -30,7 +31,6 @@ def test_get_available_services(loader, copy_fix_writer) -> None:
 
 
 def test_get_interfaces(loader, copy_fix_writer) -> None:
-
     from ooodev.utils.lo import Lo
     from ooodev.utils.info import Info
 
@@ -51,7 +51,6 @@ def test_get_methods(loader) -> None:
 
 
 def test_get_methods_obj(loader) -> None:
-
     from ooodev.utils.lo import Lo
     from ooodev.utils.info import Info
     from ooodev.office.write import Write
@@ -72,7 +71,6 @@ def test_get_methods_obj(loader) -> None:
 
 
 def test_identify(loader) -> None:
-
     from ooodev.utils.lo import Lo
     from ooodev.utils.info import Info
     from ooodev.office.write import Write
@@ -122,3 +120,60 @@ def test_info_theme(loader) -> None:
     if ver >= (7, 4, 0, 0):
         assert len(theme) > 0
     assert isinstance(theme, str)
+
+
+def test_info_language(loader) -> None:
+    from ooodev.utils.info import Info
+
+    lang = Info.language
+    assert len(lang) > 4  # "en-US" or similar
+
+
+def test_info_language_locale() -> None:
+    from ooodev.utils.info import Info
+
+    # mocker.patch("ooodev.utils.info.Info.get_config", return_value="en-US")
+    # mocker.patch("ooodev.utils.info.Info._language", return_value="en-US")
+    with patch("ooodev.utils.info.Info._language", "en-US", create=True):
+        lang = Info.language_locale
+        assert lang.Language == "en"
+        assert lang.Country == "US"
+
+
+# write a test for Info.parse_languange_code()
+def test_parse_languange_code() -> None:
+    from ooodev.utils.info import Info
+
+    lang = Info.parse_languange_code("en-US")
+    assert lang.Language == "en"
+    assert lang.Country == "US"
+    assert lang.Variant == ""
+    lang = Info.parse_languange_code("en-GB")
+    assert lang.Language == "en"
+    assert lang.Country == "GB"
+    assert lang.Variant == ""
+    lang = Info.parse_languange_code("en-gb")
+    assert lang.Language == "en"
+    assert lang.Country == "GB"
+    assert lang.Variant == ""
+    lang = Info.parse_languange_code("en-GB-oxendict")
+    assert lang.Language == "en"
+    assert lang.Country == "GB"
+    assert lang.Variant == "oxendict"
+    lang = Info.parse_languange_code("en--oxendict")
+    assert lang.Language == "en"
+    assert lang.Country == ""
+    assert lang.Variant == "oxendict"
+    lang = Info.parse_languange_code("en-GB-oxendict-this-that")
+    assert lang.Language == "en"
+    assert lang.Country == "GB"
+    assert lang.Variant == "oxendict-this-that"
+
+
+def test_parese_language_code_error() -> None:
+    from ooodev.utils.info import Info
+
+    with pytest.raises(ValueError):
+        _ = Info.parse_languange_code("en_GB")
+    with pytest.raises(ValueError):
+        _ = Info.parse_languange_code("-GB")

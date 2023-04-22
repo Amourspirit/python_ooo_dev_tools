@@ -24,6 +24,11 @@ class FormatNamedEvent:
     Style Property Applied. Event when property has been applied to an object.
     Triggers for each property that has been set on an UNO Object.
     """
+    STYLE_PROPERTY_ERROR = "format_style_prop_error"
+    """
+    Style Property Error. Event when property has failed to be applied for an object.
+    Triggers for each property that has been set on an UNO Object.
+    """
     STYLE_BACKING_UP = "format_style_backing_up"
     """Style Backing up"""
     STYLE_BACKED_UP = "format_style_backed_up"

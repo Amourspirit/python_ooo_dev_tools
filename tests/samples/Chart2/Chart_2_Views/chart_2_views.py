@@ -8,7 +8,15 @@ from com.sun.star.sheet import XSpreadsheetDocument
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.calc import Calc
-from ooodev.office.chart2 import Chart2, Angle, DataPointLabelTypeKind, DataPointGeometry3DEnum, CurveKind, mEx
+from ooodev.office.chart2 import (
+    Chart2,
+    Chart2ControllerLock,
+    Angle,
+    DataPointLabelTypeKind,
+    DataPointGeometry3DEnum,
+    CurveKind,
+    mEx,
+)
 from ooodev.utils.color import CommonColor
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
@@ -147,6 +155,7 @@ class Chart2View:
             width=15,
             height=11,
             diagram_name=ChartTypes.Column.TEMPLATE_STACKED.COLUMN,
+            chart_name="col_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -170,6 +179,7 @@ class Chart2View:
             width=20,
             height=11,
             diagram_name=d_name,
+            chart_name="multi_col_chart",
         )
         ChartTypes.Column.TEMPLATE_STACKED.COLUMN
         Calc.goto_cell(cell_name="A13", doc=doc)
@@ -197,6 +207,7 @@ class Chart2View:
             width=20,
             height=11,
             diagram_name=ChartTypes.ColumnAndLine.TEMPLATE_STACKED.COLUMN_WITH_LINE,
+            chart_name="col_chart",
         )
         Calc.goto_cell(cell_name="A13", doc=doc)
 
@@ -217,6 +228,7 @@ class Chart2View:
             width=15,
             height=11,
             diagram_name=ChartTypes.Bar.TEMPLATE_STACKED.BAR,
+            chart_name="bar_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -238,6 +250,7 @@ class Chart2View:
             width=12,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_DONUT.PIE,
+            chart_name="pie_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -257,6 +270,7 @@ class Chart2View:
             width=12,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_3D.PIE_3D,
+            chart_name="pie_chart_3d",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -301,6 +315,7 @@ class Chart2View:
             width=15,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_DONUT.DONUT,
+            chart_name="donut_chart",
         )
         Calc.goto_cell(cell_name="A48", doc=doc)
 
@@ -323,6 +338,7 @@ class Chart2View:
             width=16,
             height=11,
             diagram_name=ChartTypes.Area.TEMPLATE_STACKED.AREA,
+            chart_name="area_chart",
         )
         Calc.goto_cell(cell_name="A43", doc=doc)
 
@@ -344,6 +360,7 @@ class Chart2View:
             width=16,
             height=9,
             diagram_name=ChartTypes.Line.TEMPLATE_SYMBOL.LINE_SYMBOL,
+            chart_name="line_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -362,8 +379,9 @@ class Chart2View:
             width=22,
             height=11,
             diagram_name=ChartTypes.Line.TEMPLATE_SYMBOL.LINE_SYMBOL,
+            chart_name="lines_chart",
         )
-        Calc.goto_cell(cell_name="A26", doc=doc)
+        Calc.goto_cell(cell_name="A39", doc=doc)
 
         Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="E26"))
         Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="E27"))
@@ -385,6 +403,7 @@ class Chart2View:
             width=16,
             height=11,
             diagram_name=ChartTypes.XY.TEMPLATE_LINE.SCATTER_SYMBOL,
+            chart_name="scatter_chart",
         )
         Calc.goto_cell(cell_name="A104", doc=doc)
 
@@ -396,7 +415,7 @@ class Chart2View:
         Chart2.calc_regressions(chart_doc)
 
         Chart2.draw_regression_curve(chart_doc=chart_doc, curve_kind=CurveKind.LINEAR)
-        return XChartDocument
+        return chart_doc
 
     def _scatter_line_log_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
         # draw a x-y scatter chart using log scaling
@@ -409,6 +428,7 @@ class Chart2View:
             width=20,
             height=11,
             diagram_name=ChartTypes.XY.TEMPLATE_LINE.SCATTER_LINE_SYMBOL,
+            chart_name="scatter_line_log_chart",
         )
         Calc.goto_cell(cell_name="A121", doc=doc)
 
@@ -437,6 +457,7 @@ class Chart2View:
             width=14,
             height=16,
             diagram_name=ChartTypes.XY.TEMPLATE_LINE.SCATTER_LINE_SYMBOL,
+            chart_name="scatter_line_error_chart",
         )
         Calc.goto_cell(cell_name="A123", doc=doc)
 
@@ -463,6 +484,7 @@ class Chart2View:
             width=18,
             height=11,
             diagram_name=ChartTypes.Bubble.TEMPLATE_BUBBLE.BUBBLE,
+            chart_name="labeled_bubble_chart",
         )
         Calc.goto_cell(cell_name="A62", doc=doc)
 
@@ -501,18 +523,20 @@ class Chart2View:
             width=16,
             height=11,
             diagram_name=ChartTypes.Net.TEMPLATE_LINE.NET_LINE,
+            chart_name="net_chart",
         )
         Calc.goto_cell(cell_name="E55", doc=doc)
 
-        Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A55"))
-        Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
-        Chart2.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.NONE)
+        with Chart2ControllerLock(chart_doc=chart_doc):
+            Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A55"))
+            Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
+            Chart2.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.NONE)
 
-        # reverse x-axis so days increase clockwise around net
-        x_axis = Chart2.get_x_axis(chart_doc)
-        sd = x_axis.getScaleData()
-        sd.Orientation = AxisOrientation.REVERSE
-        x_axis.setScaleData(sd)
+            # reverse x-axis so days increase clockwise around net
+            x_axis = Chart2.get_x_axis(chart_doc)
+            sd = x_axis.getScaleData()
+            sd.Orientation = AxisOrientation.REVERSE
+            x_axis.setScaleData(sd)
         return chart_doc
 
     def _happy_stock_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
@@ -527,56 +551,57 @@ class Chart2View:
             width=25,
             height=14,
             diagram_name=ChartTypes.Stock.TEMPLATE_VOLUME.STOCK_VOLUME_OPEN_LOW_HIGH_CLOSE,
+            chart_name="happy_stock_chart",
         )
         Calc.goto_cell(cell_name="A105", doc=doc)
+        with Chart2ControllerLock(chart_doc=chart_doc):
+            Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A85"))
+            Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A86"))
+            Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B86"))
+            Chart2.rotate_y_axis_title(chart_doc=chart_doc, angle=Angle(90))
+            Chart2.set_y_axis2_title(chart_doc=chart_doc, title="Stock Value")
+            Chart2.rotate_y_axis2_title(chart_doc=chart_doc, angle=Angle(90))
 
-        Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A85"))
-        Chart2.set_x_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A86"))
-        Chart2.set_y_axis_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="B86"))
-        Chart2.rotate_y_axis_title(chart_doc=chart_doc, angle=Angle(90))
-        Chart2.set_y_axis2_title(chart_doc=chart_doc, title="Stock Value")
-        Chart2.rotate_y_axis2_title(chart_doc=chart_doc, angle=Angle(90))
+            Chart2.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.NONE)
+            # Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
 
-        Chart2.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.NONE)
-        # Chart2.view_legend(chart_doc=chart_doc, is_visible=True)
+            # change 2nd y-axis min and max; default is poor ($0 - $20)
+            y_axis2 = Chart2.get_y_axis2(chart_doc)
+            sd = y_axis2.getScaleData()
+            # Chart2.print_scale_data("Secondary Y-Axis", sd)
+            sd.Minimum = 83
+            sd.Maximum = 103
+            y_axis2.setScaleData(sd)
 
-        # change 2nd y-axis min and max; default is poor ($0 - $20)
-        y_axis2 = Chart2.get_y_axis2(chart_doc)
-        sd = y_axis2.getScaleData()
-        # Chart2.print_scale_data("Secondary Y-Axis", sd)
-        sd.Minimum = 83
-        sd.Maximum = 103
-        y_axis2.setScaleData(sd)
+            # change x-axis type from number to date
+            x_axis = Chart2.get_x_axis(chart_doc)
+            sd = x_axis.getScaleData()
+            sd.AxisType = AxisType.DATE
 
-        # change x-axis type from number to date
-        x_axis = Chart2.get_x_axis(chart_doc)
-        sd = x_axis.getScaleData()
-        sd.AxisType = AxisType.DATE
+            # set major increment to 3 days
+            ti = TimeInterval(Number=3, TimeUnit=TimeUnit.DAY)
+            tc = TimeIncrement()
+            tc.MajorTimeInterval = ti
+            sd.TimeIncrement = tc
+            x_axis.setScaleData(sd)
 
-        # set major increment to 3 days
-        ti = TimeInterval(Number=3, TimeUnit=TimeUnit.DAY)
-        tc = TimeIncrement()
-        tc.MajorTimeInterval = ti
-        sd.TimeIncrement = tc
-        x_axis.setScaleData(sd)
+            # rotate the axis labels by 45 degrees
+            # x_axis = Chart2.get_x_axis(chart_doc)
+            # Props.set(x_axis, TextRotation=45)
 
-        # rotate the axis labels by 45 degrees
-        # x_axis = Chart2.get_x_axis(chart_doc)
-        # Props.set(x_axis, TextRotation=45)
+            # Chart2.print_chart_types(chart_doc)
 
-        # Chart2.print_chart_types(chart_doc)
+            # change color of "WhiteDay" and "BlackDay" block colors
+            ct = ChartTypes.Stock.NAMED.CANDLE_STICK_CHART
+            candle_ct = Chart2.find_chart_type(chart_doc=chart_doc, chart_type=ct)
+            # Props.show_obj_props("Stock chart", candle_ct)
+            Chart2.color_stock_bars(ct=candle_ct, w_day_color=CommonColor.GREEN, b_day_color=CommonColor.RED)
 
-        # change color of "WhiteDay" and "BlackDay" block colors
-        ct = ChartTypes.Stock.NAMED.CANDLE_STICK_CHART
-        candle_ct = Chart2.find_chart_type(chart_doc=chart_doc, chart_type=ct)
-        # Props.show_obj_props("Stock chart", candle_ct)
-        Chart2.color_stock_bars(ct=candle_ct, w_day_color=CommonColor.GREEN, b_day_color=CommonColor.RED)
-
-        # thicken the high-low line; make it yellow
-        ds = Chart2.get_data_series(chart_doc=chart_doc, chart_type=ct)
-        Lo.print(f"No. of data series in candle stick chart: {len(ds)}")
-        # Props.show_obj_props("Candle Stick", ds[0])
-        Props.set(ds[0], LineWidth=120, Color=CommonColor.YELLOW)  # LineWidth in 1/100 mm
+            # thicken the high-low line; make it yellow
+            ds = Chart2.get_data_series(chart_doc=chart_doc, chart_type=ct)
+            Lo.print(f"No. of data series in candle stick chart: {len(ds)}")
+            # Props.show_obj_props("Candle Stick", ds[0])
+            Props.set(ds[0], LineWidth=120, Color=CommonColor.YELLOW)  # LineWidth in 1/100 mm
         return chart_doc
 
     def _stock_prices_chart(self, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> XChartDocument:
@@ -589,6 +614,7 @@ class Chart2View:
             width=12,
             height=11,
             diagram_name=ChartTypes.Stock.TEMPLATE_VOLUME.STOCK_OPEN_LOW_HIGH_CLOSE,
+            chart_name="stock_prices_chart",
         )
         Calc.goto_cell(cell_name="A139", doc=doc)
 
@@ -613,7 +639,7 @@ class Chart2View:
 
         # uses "Sneakers Sold this Month" table
         _ = Calc.set_selected_addr(doc=doc, sheet=sheet, range_name="A2:B8")
-        chart_doc = Chart2.insert_chart()
+        chart_doc = Chart2.insert_chart(chart_name="defaut_chart")
         # Calc.goto_cell(cell_name="A1", doc=doc)
 
         Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))

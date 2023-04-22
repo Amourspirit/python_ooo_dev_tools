@@ -157,6 +157,7 @@ class FontEffects(StyleBase):
                 "com.sun.star.style.CharacterStyle",
                 "com.sun.star.style.ParagraphStyle",
                 "com.sun.star.drawing.ControlShape",
+                "com.sun.star.chart2.Legend",
             )
         return self._supported_services_values
 
@@ -181,14 +182,6 @@ class FontEffects(StyleBase):
             None:
         """
         super().apply(obj, **kwargs)
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"Font.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     # endregion apply()
     # region from_obj()
