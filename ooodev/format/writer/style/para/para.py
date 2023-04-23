@@ -19,10 +19,27 @@ class Para(StyleName):
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_style_para`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: StyleParaKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (StyleCharKind, str, optional): Style Name. Defaults to "Standard".
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_style_para`
+        """
         if name == "":
             name = Para.default.prop_name
         super().__init__(name=name)

@@ -14,6 +14,7 @@ from ooo.dyn.style.tab_stop import TabStop
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.meta.static_prop import static_prop
+from ooodev.units.unit_obj import UnitObj
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
@@ -32,8 +33,46 @@ class Tabs(TabStopStruct):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_tabs`
+
     .. versionadded:: 0.9.0
     """
+
+    def __init__(
+        self,
+        *,
+        position: float | UnitObj = 0.0,
+        align: TabAlign = TabAlign.LEFT,
+        decimal_char: str = ".",
+        fill_char: FillCharKind | str = FillCharKind.NONE,
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            position (float, UnitObj, optional): Specifies the position of the tabulator in relation to the left border (in ``mm`` units) or :ref:`proto_unit_obj`.
+                Defaults to ``0.0``
+            align (TabAlign, optional): Specifies the alignment of the text range before the tabulator. Defaults to ``TabAlign.LEFT``
+            decimal_char (str, optional): Specifies which delimiter is used for the decimal.
+                Argument is expected to be a single character string.
+                This argument is only used when ``align`` is set to ``TabAlign.DECIMAL``.
+            fill_char (FillCharKind, str, optional): specifies the character that is used to fill up the space between the text in the text range and the tabulators.
+                If string value then argument is expected to be a single character string.
+                Defaults to ``FillCharKind.NONE``
+
+        Returns:
+            None:
+
+        Note:
+            If argument ``type`` is ``None`` then all other argument are ignored
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_tabs`
+        """
+        super().__init__(position=position, align=align, decimal_char=decimal_char, fill_char=fill_char)
 
     # region methods
     def _supported_services(self) -> Tuple[str, ...]:

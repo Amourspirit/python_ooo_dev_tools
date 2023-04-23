@@ -32,7 +32,7 @@ def enforce_types(callable):
                     continue
                 # In Python 3.8 one would replace the try/except with
                 # actual_type = typing.get_origin(type_hint) or type_hint
-                if sys.version_info > (3, 7):
+                if sys.version_info >= (3, 8):
                     actual_type = typing.get_origin(type_hint) or type_hint
                 else:
                     try:

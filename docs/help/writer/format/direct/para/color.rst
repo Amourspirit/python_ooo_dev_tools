@@ -168,3 +168,4 @@ The fill color can be cleared by using :py:attr:`ParaStyle.default <ooodev.forma
         - :ref:`help_writer_format_style_para_reset_default`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.para.area.Color`

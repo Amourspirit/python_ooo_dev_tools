@@ -172,3 +172,15 @@ Set Breaks
         :figclass: align-center
 
         Writer Style Inspector with the paragraph text flow settings.
+
+.. seealso::
+
+   .. cssclass:: ul-list
+
+        - :ref:`help_format_format_kinds`
+        - :ref:`help_format_coding_style`
+        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.para.text_flow.Breaks`
+        - :py:class:`ooodev.format.writer.direct.para.text_flow.FlowOptions`
+        - :py:class:`ooodev.format.writer.direct.para.text_flow.Hyphenation`

@@ -1,6 +1,10 @@
 """
 Module for handling character highlight.
 
+.. seealso::
+
+    :ref:`help_writer_format_direct_char_highlight`
+
 .. versionadded:: 0.9.0
 """
 # region Import
@@ -35,6 +39,10 @@ class Highlight(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_highlight`
         """
         init_vals = {}
         if color >= 0:
