@@ -29,6 +29,10 @@ class LineSpacing(StyleMulti):
     Paragraph Line Spacing
 
     Any properties starting with ``prop_`` set or get current instance values.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_indent_spacing`
     """
 
     # region init
@@ -59,6 +63,10 @@ class LineSpacing(StyleMulti):
 
             If ``ModeKind`` is ``PROPORTIONAL`` then value is an int representing percentage.
             For example ``95`` equals ``95%``, ``130`` equals ``130%``
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_indent_spacing`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         super().__init__()

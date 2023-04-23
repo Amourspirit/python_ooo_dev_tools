@@ -31,6 +31,10 @@ class Borders(StyleMulti):
 
     All methods starting with ``fmt_`` can be used to chain together Borders properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -61,6 +65,13 @@ class Borders(StyleMulti):
             shadow (BorderShadow, None, optional): Character Shadow
             padding (BorderPadding, None, optional): Character padding
             merge (bool, None, optional): Merge with next paragraph
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_borders`
         """
         init_vals = {}
 

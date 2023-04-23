@@ -864,3 +864,6 @@ Multiple Styles
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_borders`
+        - :py:class:`ooodev.format.calc.direct.cell.borders.Borders`
+        - :py:class:`ooodev.format.calc.direct.cell.borders.Padding`
+        - :py:class:`ooodev.format.calc.direct.cell.borders.Shadow`

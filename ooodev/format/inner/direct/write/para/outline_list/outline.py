@@ -1,6 +1,10 @@
 """
 Module for managing paragraph Outline.
 
+.. seealso::
+
+    - :ref:`help_writer_format_direct_para_outline_and_list`
+
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
@@ -41,6 +45,10 @@ class Outline(StyleBase):
 
     All methods starting with ``style_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_outline_and_list`
+
     .. versionadded:: 0.9.0
     """
 
@@ -55,6 +63,10 @@ class Outline(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_outline_and_list`
         """
         super().__init__(OutlineLevel=level.value)
 

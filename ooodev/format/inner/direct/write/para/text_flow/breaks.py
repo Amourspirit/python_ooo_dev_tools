@@ -27,6 +27,10 @@ class Breaks(StyleBase):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_text_flow`
+
     .. versionadded:: 0.9.0
     """
 
@@ -46,6 +50,10 @@ class Breaks(StyleBase):
 
         Note:
             If argument ``type`` is ``None`` then all other argument are ignored
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_text_flow`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         # Default for writer is BreakType.NONE

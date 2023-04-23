@@ -282,3 +282,6 @@ as seen in :ref:`help_writer_format_style_para_reset_default`.
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.para.indent_space.Indent`
+        - :py:class:`ooodev.format.writer.direct.para.indent_space.Spacing`
+        - :py:class:`ooodev.format.writer.direct.para.indent_space.LineSpacing`

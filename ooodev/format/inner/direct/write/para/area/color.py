@@ -17,8 +17,28 @@ class Color(AbstractColor):
     """
     Paragraph Fill Coloring
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_color`
+
     .. versionadded:: 0.9.0
     """
+
+    def __init__(self, color: Color = -1) -> None:
+        """
+        Constructor
+
+        Args:
+            color (:py:data:`~.utils.color.Color`, optional): FillColor Color.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_color`
+        """
+        super().__init__(color)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
