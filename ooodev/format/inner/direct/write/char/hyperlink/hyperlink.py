@@ -1,6 +1,10 @@
 """
 Module for creating hyperlinks
 
+.. seealso::
+
+    :ref:`help_writer_format_direct_char_hyperlink`
+
 .. versionadded:: 0.9.0
 """
 # region Import
@@ -48,6 +52,10 @@ class Hyperlink(LinkTo):
 
         Returns:
             None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_hyperlink`
         """
 
         super().__init__(name=name, url=url, target=target)

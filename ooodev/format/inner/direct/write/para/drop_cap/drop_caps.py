@@ -28,6 +28,10 @@ class DropCaps(StyleMulti):
     """
     Paragraph Drop Caps
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_drop_caps`
+
     .. versionadded:: 0.9.0
     """
 
@@ -59,6 +63,10 @@ class DropCaps(StyleMulti):
             If ``count==-1`` then only ``style`` can be updated.
             If ``count==0`` then all other arguments are ignored and instance set to remove drop caps when
             ``apply()`` is called.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_drop_caps`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 

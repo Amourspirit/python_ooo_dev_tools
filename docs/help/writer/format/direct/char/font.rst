@@ -206,3 +206,4 @@ Text with hyperlink and superscript
         - :ref:`help_writer_format_direct_char_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.char.font.Font`

@@ -241,6 +241,7 @@ This can be used to reset the paragraph style to the default style.
         - :py:mod:`ooodev.utils.color`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.style.Para`
 
 .. |story_creator| replace:: Story Creator
 .. _story_creator: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_story_creator

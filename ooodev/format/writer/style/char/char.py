@@ -19,10 +19,27 @@ class Char(StyleName):
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_style_char`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: StyleCharKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (StyleCharKind, str, optional): Style Name. Defaults to "Standard".
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_style_char`
+        """
         if name == "":
             name = Char.default.prop_name
         super().__init__(name=name)

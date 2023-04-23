@@ -52,6 +52,10 @@ class Font(StyleBase):
 
             ft_color = Font().style_color(CommonColor.GREEN).style_bg_color(CommonColor.LIGHT_BLUE)
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_char_font`
+
     .. versionadded:: 0.9.0
     """
 
@@ -112,6 +116,13 @@ class Font(StyleBase):
             weight (FontWeightEnum, optional): The value of the font weight.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to
                 white spaces.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_font`
         """
         # could not find any documentation in the API or elsewhere online for Overline
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html

@@ -65,6 +65,10 @@ class FontPosition(StyleBase):
 
     Many properties can be chained together.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_char_font_position`
+
     .. versionadded:: 0.9.0
     """
 
@@ -97,6 +101,13 @@ class FontPosition(StyleBase):
             spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_font_position`
         """
 
         super().__init__()
@@ -351,25 +362,31 @@ class FontPosition(StyleBase):
 
     # region Style Properties
     @property
-    def script_kind_normal(self: _TFontPosition) -> _TFontPosition:
+    def normal(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance set to Position Normal"""
         ft = self.copy()
         ft.prop_script_kind = FontScriptKind.NORMAL
         return ft
 
+    script_kind_normal = normal
+
     @property
-    def script_kind_superscript(self: _TFontPosition) -> _TFontPosition:
+    def superscript(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance set to Position Superscript"""
         ft = self.copy()
         ft.prop_script_kind = FontScriptKind.SUPERSCRIPT
         return ft
 
+    script_kind_superscript = superscript
+
     @property
-    def script_kind_subscript(self: _TFontPosition) -> _TFontPosition:
+    def subscript(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance set to Position Subscript"""
         ft = self.copy()
         ft.prop_script_kind = FontScriptKind.SUBSCRIPT
         return ft
+
+    script_kind_subscript = subscript
 
     @property
     def raise_lower_auto(self: _TFontPosition) -> _TFontPosition:

@@ -332,7 +332,7 @@ def test_font_position_super_sub_cursor(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-        fp = FontPosition().script_kind_superscript
+        fp = FontPosition().superscript
         cursor = Write.get_cursor(doc)
         Write.append(cursor, "hello")
         Write.style(pos=0, length=1, styles=(fp,), cursor=cursor)
@@ -342,7 +342,7 @@ def test_font_position_super_sub_cursor(loader) -> None:
         assert cp.CharEscapement == FontScriptKind.SUPERSCRIPT.value
         assert cp.CharEscapementHeight == FontPosition._DEFAULT_SUPER_SUB_HEIGHT
 
-        fp = fp.script_kind_subscript
+        fp = fp.subscript
         Write.style(pos=4, length=1, styles=(fp,), cursor=cursor)
         cursor.goLeft(1, True)
         assert cp.CharEscapement == FontScriptKind.SUBSCRIPT.value
@@ -360,7 +360,7 @@ def test_font_position_super_sub_cursor(loader) -> None:
         assert cp.CharEscapement == -47
         assert cp.CharEscapementHeight == FontPosition._DEFAULT_SUPER_SUB_HEIGHT
 
-        fp = fp.script_kind_superscript
+        fp = fp.superscript
         fp.prop_rel_size = 45
         Write.style(pos=pos + 4, length=1, styles=(fp,), cursor=cursor)
         cursor.gotoEnd(False)
@@ -370,7 +370,7 @@ def test_font_position_super_sub_cursor(loader) -> None:
         cursor.gotoEnd(False)
         Write.end_paragraph(cursor)
 
-        fp = fp.script_kind_normal
+        fp = fp.normal
         pos = Write.get_position(cursor)
         Write.append(cursor, "hello")
         Write.style(pos=pos, length=1, styles=(fp,), cursor=cursor)

@@ -134,3 +134,6 @@ The paragraph cursor is then used to get the style.
         - :ref:`help_writer_format_direct_char_font`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.char.font.FontEffects`
+        - :py:class:`ooodev.format.writer.direct.char.font.FontOnly`
+        - :py:class:`ooodev.format.writer.direct.char.font.FontLine`
