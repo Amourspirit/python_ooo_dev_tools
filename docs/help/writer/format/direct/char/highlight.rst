@@ -3,6 +3,13 @@
 Write Direct Character Highlight Class
 ======================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
+The :py:class:`ooodev.format.writer.direct.char.highlight.Highlight` is used to set the highlight of one or more characters.
+
 Setting the style
 -----------------
 
@@ -137,3 +144,4 @@ Remove Highlighting
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.char.highlight.Highlight`

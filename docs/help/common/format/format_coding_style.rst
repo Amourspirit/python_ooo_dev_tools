@@ -3,6 +3,11 @@
 Format Coding Style
 ===================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 1
+
 The :py:mod:`~ooodev.format` module constains hundreds of classes.
 The following coding style is used to make the code more usable.
 

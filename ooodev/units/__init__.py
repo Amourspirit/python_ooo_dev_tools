@@ -10,6 +10,7 @@ from .unit_mm10 import UnitMM10 as UnitMM10
 from .unit_mm100 import UnitMM100 as UnitMM100
 from .unit_pt import UnitPT as UnitPT
 from .unit_px import UnitPX as UnitPX
+from .unit_cm import UnitCM as UnitCM
 
 __all__ = [
     "UnitConvert",
@@ -24,4 +25,5 @@ __all__ = [
     "UnitMM100",
     "UnitPT",
     "UnitPX",
+    "UnitCM",
 ]

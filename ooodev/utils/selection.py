@@ -196,7 +196,6 @@ class Selection(metaclass=StaticProperty):
         l_cursor = cls.get_left_cursor(o_sel=o_sel, o_text=o_text)
         r_cursor = cls.get_right_cursor(o_sel=o_sel, o_text=o_text)
         if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
-
             while cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) != cls.CompareEnum.EQUAL:
                 l_cursor.goRight(1, False)
                 i += 1
@@ -661,12 +660,11 @@ class Selection(metaclass=StaticProperty):
             word_type = WordTypeEnum.WORD_COUNT
         # https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=82678
         next_wd = Boundary()
-        local = Locale()
-        # local.Language = "en"
-        if locale_lang is None:
-            local.Language = mInfo.Info.language
+        if locale_lang:
+            local = mInfo.Info.parse_languange_code(locale_lang)
         else:
-            local.Language = locale_lang
+            local = mInfo.Info.language_locale
+
         num_words = 0
         start_pos = 0
         if word_type > WordTypeEnum.ANY_WORD:

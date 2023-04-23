@@ -12,6 +12,7 @@ Subpackages
    :maxdepth: 3
 
    ooodev.format.calc
+   ooodev.format.chart2
    ooodev.format.draw
    ooodev.format.impress
    ooodev.format.inner

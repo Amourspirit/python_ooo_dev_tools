@@ -3,6 +3,11 @@
 Write Direct Paragraph Area Color Class
 =======================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Overview
 --------
 
@@ -54,8 +59,8 @@ General function used to run these examples.
 Examples
 --------
 
-Fill Color a Paragraph
-^^^^^^^^^^^^^^^^^^^^^^
+Fill Color a single Paragraph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 
@@ -163,3 +168,4 @@ The fill color can be cleared by using :py:attr:`ParaStyle.default <ooodev.forma
         - :ref:`help_writer_format_style_para_reset_default`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.para.area.Color`

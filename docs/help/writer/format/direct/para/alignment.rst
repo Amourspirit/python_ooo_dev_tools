@@ -3,6 +3,11 @@
 Write Direct Paragraph Alignment
 ================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Overview
 --------
 
@@ -342,3 +347,4 @@ The paragraph cursor is then used to get the style.
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.para.alignment.Alignment`

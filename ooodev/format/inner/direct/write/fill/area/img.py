@@ -10,25 +10,25 @@ from enum import Enum
 
 from com.sun.star.awt import XBitmap
 
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 from ooo.dyn.drawing.bitmap_mode import BitmapMode
+from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ooodev.units.unit_convert import UnitConvert
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.preset import preset_image as mImage
-from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
 from ooodev.format.inner.common.props.area_img_props import AreaImgProps
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.preset import preset_image as mImage
+from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.style_base import StyleBase
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
 # endregion Imports
 
@@ -112,8 +112,9 @@ class Img(StyleBase):
             bmap = self._get_bitmap(bitmap, name, auto_name)
         except Exception:
             pass
-        if not bmap is None:
-            init_vals[self._props.bitmap] = bmap
+        if bmap is not None:
+            if self._props.bitmap:
+                init_vals[self._props.bitmap] = bmap
             init_vals[self._props.name] = self._name
             init_vals[self._props.style] = FillStyle.BITMAP
 
@@ -205,7 +206,8 @@ class Img(StyleBase):
         Returns:
             None:
         """
-        if not self._has(self._props.bitmap):
+
+        if self._props.bitmap and not self._has(self._props.bitmap):
             mLo.Lo.print("Img.apply(): There is nothing to apply.")
             return
         super().apply(obj, **kwargs)
@@ -221,7 +223,7 @@ class Img(StyleBase):
     # endregion apply()
 
     def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
-        if event_args.key == self._props.bitmap:
+        if self._props.bitmap and event_args.key == self._props.bitmap:
             if event_args.value is None:
                 event_args.default = True
         elif event_args.key == self._props.name:
@@ -249,7 +251,7 @@ class Img(StyleBase):
         Gets an instance from a preset.
 
         Args:
-            preset (PresetImageKind): Preset.
+            preset (~.preset.preset_image.PresetImageKind): Preset.
 
         Returns:
             Img: Instance from preset.
@@ -319,7 +321,8 @@ class Img(StyleBase):
         name = mProps.Props.get(obj, inst._props.name)
         inst._name = name
         inst._set(inst._props.name, name)
-        set_prop(inst._props.bitmap, inst)
+        if inst._props.bitmap:
+            set_prop(inst._props.bitmap, inst)
         set_prop(inst._props.mode, inst)
         set_prop(inst._props.offset_x, inst)
         set_prop(inst._props.offset_y, inst)
@@ -352,6 +355,8 @@ class Img(StyleBase):
     @property
     def prop_bitmap(self) -> XBitmap | None:
         """Gets bitmap"""
+        if not self._props.bitmap:
+            return None
         pv = self._get(self._props.bitmap)
         if pv is None:
             return None

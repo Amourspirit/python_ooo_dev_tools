@@ -3,6 +3,11 @@
 Write Style Para Class
 ======================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Overview
 --------
 
@@ -10,8 +15,8 @@ The :py:class:`ooodev.format.writer.style.Para` class is used to set the paragra
 
 :ref:`ch06` has more information on paragraph styles.
 
-Setting the style
------------------
+Setup
+-----
 
 General function used to run these examples.
 
@@ -25,7 +30,6 @@ General function used to run these examples.
         .. code-block:: python
             :substitutions:
 
-            import sys
             import uno
             from com.sun.star.text import XTextDocument
 
@@ -102,7 +106,7 @@ General function used to run these examples.
 
 
             if __name__ == "__main__":
-                sys.exit(main())
+                SystemExit(main())
 
     .. only:: html
 
@@ -194,16 +198,50 @@ This can be used to reset the paragraph style to the default style.
 
         Paragraph style reset to default.
 
+Getting style from paragraph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By accessing the static property :py:attr:`Para.default <ooodev.format.writer.style.Para.default>` the default paragraph style can be accessed
+which is a default style that is set to default values.
+
+This can be used to reset the paragraph style to the default style.
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.format.writer.style import Para as StylePara
+        # ... other code
+
+        para_cursor = Write.get_paragraph_cursor(cursor)
+        para_cursor.gotoPreviousParagraph(False)
+        para_cursor.gotoEndOfParagraph(True)
+        para_style = StylePara.from_obj(para_cursor)
+        # assert name of paragraph style is CoolParagraph
+        assert para_style.prop_name == new_style_name
+
+        # ... other code
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 .. seealso::
 
     .. cssclass:: ul-list
 
         - :ref:`ch06`
+        - :ref:`help_format_format_kinds`
+        - :ref:`help_format_coding_style`
         - |story_creator|_
         - :py:class:`~ooodev.units.UnitMM`
         - :py:mod:`ooodev.utils.color`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.style.Para`
 
 .. |story_creator| replace:: Story Creator
 .. _story_creator: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_story_creator

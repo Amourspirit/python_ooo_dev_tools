@@ -35,7 +35,14 @@ _TFontLang = TypeVar(name="_TFontLang", bound="FontLang")
 
 
 class FontLang(LocaleStruct):
-    """Class for Character Language"""
+    """
+    Class for Character Language
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_char_font_only`
+        - :ref:`help_writer_format_direct_char_font_effects`
+    """
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -130,6 +137,11 @@ class FontOnly(StyleMulti):
 
     All methods starting with ``fmt_`` can be used to chain together font properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_char_font_only`
+        - :ref:`help_writer_format_direct_char_font_effects`
+
     .. versionadded:: 0.9.0
     """
 
@@ -151,6 +163,14 @@ class FontOnly(StyleMulti):
                 or :ref:`proto_unit_obj`.
             font_style (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_font_only`
+            - :ref:`help_writer_format_direct_char_font_effects`
         """
         init_vals = {}
         if name is not None:
@@ -205,14 +225,6 @@ class FontOnly(StyleMulti):
             None:
         """
         super().apply(obj, **kwargs)
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"FontOnly.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     # endregion apply()
 

@@ -3,6 +3,11 @@
 Write Direct Paragraph Outline & List
 =====================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Overview
 --------
 
@@ -463,3 +468,15 @@ In this example the paragraph line number start value is set to ``0`` (include).
         :width: 450px
 
         Paragraph Outline & List dialog.
+
+.. seealso::
+
+   .. cssclass:: ul-list
+
+        - :ref:`help_format_format_kinds`
+        - :ref:`help_format_coding_style`
+        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.para.outline_list.Outline`
+        - :py:class:`ooodev.format.writer.direct.para.outline_list.LineNum`
+        - :py:class:`ooodev.format.writer.direct.para.outline_list.ListStyle`

@@ -23,6 +23,10 @@ class TextFlow(StyleMulti):
     """
     Paragraph Text Flow
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_text_flow`
+
     .. versionadded:: 0.9.0
     """
 
@@ -69,6 +73,10 @@ class TextFlow(StyleMulti):
             Arguments starting with ``bk_`` are for Breaks
 
             Arguments starting with ``op_`` are for Flow options
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_text_flow`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}

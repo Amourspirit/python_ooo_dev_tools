@@ -1,6 +1,7 @@
 {
     "terminal.integrated.shellIntegration.enabled": true,
     "python.formatting.provider": "black",
+    "testExplorer.useNativeTesting": false,
     "restructuredtext.preview.scrollPreviewWithEditor": false,
     "restructuredtext.preview.scrollEditorWithPreview": false,
     "[python]": {
@@ -25,7 +26,7 @@
         }
     },
     "workbench.colorTheme": "Monokai",
-    "esbonio.sphinx.confDir": "${workspaceFolder}/docs",
+    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
     "esbonio.server.enabled": true,
     "python.testing.pytestArgs": [
         "tests"

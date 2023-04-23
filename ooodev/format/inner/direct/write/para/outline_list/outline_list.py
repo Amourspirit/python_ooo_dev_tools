@@ -1,6 +1,10 @@
 """
 Module for managing paragraph Outline and List.
 
+.. seealso::
+
+    - :ref:`help_writer_format_direct_para_outline_and_list`
+
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
@@ -20,6 +24,10 @@ _TOutlineList = TypeVar(name="_TOutlineList", bound="OutlineList")
 class OutlineList(StyleMulti):
     """
     Paragraph Outline and List
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_outline_and_list`
 
     .. versionadded:: 0.9.0
     """
@@ -57,6 +65,10 @@ class OutlineList(StyleMulti):
             Arguments that start with ``ls_`` set List Style.
 
             Arguments that start with ``ln_`` set Line Spacing.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_outline_and_list`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 

@@ -3,6 +3,11 @@
 Calc Direct Cell Font Class
 ===========================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 2
+
 Setup
 -----
 
@@ -136,3 +141,4 @@ Set Font based upon values
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_font`
+        - :py:class:`ooodev.format.calc.direct.cell.font.Font`

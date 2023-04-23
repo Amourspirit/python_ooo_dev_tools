@@ -28,6 +28,10 @@ class FlowOptions(StyleBase):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_text_flow`
+
     .. versionadded:: 0.9.0
     """
 
@@ -54,6 +58,10 @@ class FlowOptions(StyleBase):
 
         Note:
             When ``orphans`` or ``Windows`` argument is present then the ``no_split`` has no effect.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_text_flow`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}

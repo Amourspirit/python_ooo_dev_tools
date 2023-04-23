@@ -18,10 +18,30 @@ class BulletList(StyleName):
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_style_bullet_list`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: StyleListKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (Any): Style Name.
+
+        Raises:
+            ValueError: If Name is ``None`` or empty string.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_style_bullet_list`
+        """
         super().__init__(name=name)
 
     # region Overrides

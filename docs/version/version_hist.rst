@@ -2,6 +2,24 @@
 Version History
 ***************
 
+Version 0.9.4
+=============
+
+Added more than five dozen new classes in ``ooodev.format.chart2.direct`` for formatting ``Chart2`` charts.
+
+Added ``ooodev.office.chart2.Chart2ControllerLock`` class that can be used to lock and unlock ``Chart2`` charts for faster updating.
+
+Added ``ooodev.format.calc.direct.cell.numbers.Numbers`` class that can be used to format numbers styles in ``Calc`` cells and ranges.
+
+Added new event to ``ooodev.utils.props.Props.set()``. Now subscribers can be notified when a property set error occurs and handle the error if needed.
+
+Added new event to ``ooodev.utils.props.Props.set_default()``. Now subscribers can be notified when a property set default error occurs and handle the error if needed.
+
+Version 0.9.3
+=============
+
+Minor revisons and updates.
+
 Version 0.9.2
 =============
 

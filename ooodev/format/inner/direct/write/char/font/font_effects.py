@@ -36,6 +36,13 @@ class FontLine:
         Args:
             line (FontUnderlineEnum, optional): Font Line kind.
             color (:py:data:`~.utils.color.Color`, optional): Line color. If value is ``-1`` the automatic color is applied.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_font_effects`
         """
         self._line = line
         self._color = color
@@ -119,6 +126,13 @@ class FontEffects(StyleBase):
             outline (bool, optional): Specifies if the font is outlined.
             hidden (bool, optional): Specifies if the font is hidden.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_font_effects`
         """
         # could not find any documentation in the API or elsewhere online for Overline
         # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1CharacterProperties.html
@@ -157,6 +171,7 @@ class FontEffects(StyleBase):
                 "com.sun.star.style.CharacterStyle",
                 "com.sun.star.style.ParagraphStyle",
                 "com.sun.star.drawing.ControlShape",
+                "com.sun.star.chart2.Legend",
             )
         return self._supported_services_values
 
@@ -181,14 +196,6 @@ class FontEffects(StyleBase):
             None:
         """
         super().apply(obj, **kwargs)
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"Font.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     # endregion apply()
     # region from_obj()

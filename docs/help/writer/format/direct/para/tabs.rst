@@ -3,6 +3,11 @@
 Write Direct Paragraph Tabs
 ===========================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: none
+    :depth: 3
+
 Overview
 --------
 
@@ -271,3 +276,13 @@ Or :py:meth:`Tabs.remove <ooodev.format.writer.direct.para.tabs.Tabs.remove>` wh
         :width: 450px
 
         Writer Paragraph Tabs dialog.
+
+.. seealso::
+
+   .. cssclass:: ul-list
+
+        - :ref:`help_format_format_kinds`
+        - :ref:`help_format_coding_style`
+        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`ooodev.format.writer.direct.para.tabs.Tabs`

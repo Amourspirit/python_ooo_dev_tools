@@ -5,9 +5,8 @@ Module for Fill Gradient Color.
 """
 # region Import
 from __future__ import annotations
-from typing import Any, Tuple, cast, Type, TypeVar, overload
+from typing import Any, Tuple, cast, Type, TypeVar, overload, TYPE_CHECKING
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
-from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
@@ -23,6 +22,9 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps
+
+if TYPE_CHECKING:
+    from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 # endregion Import
 
@@ -75,7 +77,7 @@ class Gradient(StyleMulti):
         # start_color = 4144959
         # end_color = 16777215
 
-        fs = GradientStruct(
+        fs = self._get_inner_class(
             style=style,
             step_count=0,
             x_offset=offset.x,
@@ -86,7 +88,6 @@ class Gradient(StyleMulti):
             start_intensity=grad_intensity.start,
             end_color=end_color,
             end_intensity=grad_intensity.end,
-            _cattribs=self._get_inner_cattribs(),
         )
 
         super().__init__()
@@ -97,6 +98,34 @@ class Gradient(StyleMulti):
         self._set(self._props.transparence, 0)
 
     # region Internal Methods
+    def _get_inner_class(
+        self,
+        style: GradientStyle,
+        step_count: int,
+        x_offset: Intensity | int,
+        y_offset: Intensity | int,
+        angle: Angle | int,
+        border: Intensity | int,
+        start_color: int,
+        start_intensity: Intensity | int,
+        end_color: int,
+        end_intensity: Intensity | int,
+    ) -> GradientStruct:
+        fs = GradientStruct(
+            style=style,
+            step_count=step_count,
+            x_offset=x_offset,
+            y_offset=y_offset,
+            angle=angle,
+            border=border,
+            start_color=start_color,
+            start_intensity=start_intensity,
+            end_color=end_color,
+            end_intensity=end_intensity,
+            _cattribs=self._get_inner_cattribs(),
+        )
+        return fs
+
     def _get_inner_cattribs(self) -> dict:
         return {
             "_supported_services_values": self._supported_services(),
@@ -111,9 +140,15 @@ class Gradient(StyleMulti):
         self._set(self._props.name, self._name)
         self._set_style("fill_style", fs, *fs.get_attrs())
 
+    def _container_get_default_name(self) -> str:
+        return "Transparency"
+
+    def _get_gradient_from_uno_struct(self, value: "UNOGradient", **kwargs) -> GradientStruct:
+        return GradientStruct.from_uno_struct(value, **kwargs)
+
     def _get_fill_tp(self, fill_tp: GradientStruct, name: str) -> GradientStruct:
         # if the name passed in already exist in the TransparencyGradientTable Table then it is returned.
-        # Otherwise, the struc is added to the TransparencyGradientTable Table and then returned.
+        # Otherwise, the struct is added to the TransparencyGradientTable Table and then returned.
         # after struct is added to table all other subsequent call of this name will return
         # that struc from the Table. Except auto_name which will force a new entry
         # into the Table each time.
@@ -123,16 +158,17 @@ class Gradient(StyleMulti):
             struct = self._container_get_value(name, nc)  # raises value error if name is empty
             if struct is not None:
                 self._name = name
-                return GradientStruct.from_uno_struct(value=struct, _cattribs=self._get_inner_cattribs())
+                return self._get_gradient_from_uno_struct(value=struct, _cattribs=self._get_inner_cattribs())
 
-        name = "Transparency "
+        name = self._container_get_default_name()
+        name = name.strip() + " "
         self._name = self._container_get_unique_el_name(name, nc)
         struct = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if struct is not None:
-            return GradientStruct.from_uno_struct(value=struct, _cattribs=self._get_inner_cattribs())
+            return self._get_gradient_from_uno_struct(value=struct, _cattribs=self._get_inner_cattribs())
         struct = fill_tp.get_uno_struct()
         self._container_add_value(name=self._name, obj=struct, allow_update=False, nc=nc)
-        return GradientStruct.from_uno_struct(
+        return self._get_gradient_from_uno_struct(
             value=self._container_get_value(self._name, nc), _cattribs=self._get_inner_cattribs()
         )
 
@@ -233,7 +269,7 @@ class Gradient(StyleMulti):
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        grad_fill = cast(UNOGradient, mProps.Props.get(obj, nu._props.struct_prop))
+        grad_fill = cast("UNOGradient", mProps.Props.get(obj, nu._props.struct_prop))
         fill_gradient_name = cast(str, mProps.Props.get(obj, nu._props.name, ""))
         if grad_fill.Angle == 0:
             angle = 0

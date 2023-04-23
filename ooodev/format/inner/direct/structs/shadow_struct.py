@@ -1,8 +1,3 @@
-"""
-Module for Shadow format (``ShadowFormat``) struct.
-
-.. versionadded:: 0.9.0
-"""
 # region Import
 from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar

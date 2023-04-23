@@ -2066,11 +2066,11 @@ class Lo(metaclass=StaticProperty):
             | ``DISPATCHING`` Event args data contains any properties passed in via ``props``.
             | ``DISPATCHED`` Event args data contains any results from the dispatch commands.
 
-
         See Also:
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
+
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
         try:
@@ -2565,7 +2565,7 @@ class Lo(metaclass=StaticProperty):
         return True
 
     @classmethod
-    def unlock_controllers(cls) -> uno.Bool:
+    def unlock_controllers(cls) -> bool:
         """
         Resumes the notifications which were suspended by :py:meth:`~.lo.Lo.lock_controllers`.
 
@@ -2578,7 +2578,7 @@ class Lo(metaclass=StaticProperty):
             MissingInterfaceError: If unable to obtain XModel interface.
 
         Returns:
-            bool: False if CONTROLERS_UNLOCKING event is canceled; Otherwise, True
+            bool: False if ``CONTROLERS_UNLOCKING`` event is canceled; Otherwise, True
 
         :events:
             .. cssclass:: lo_event

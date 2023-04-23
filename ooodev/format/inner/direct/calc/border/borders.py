@@ -36,6 +36,10 @@ class Borders(StyleMulti):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -73,6 +77,13 @@ class Borders(StyleMulti):
             diagonal_up (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from bottom-left to top-right diagonal.
             shadow (~ooodev.format.inner.direct.calc.border.shadow.Shadow, optional): Cell Shadow.
             padding (padding, optional): Cell padding.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_calc_format_direct_cell_borders`
         """
         init_vals = {}
 

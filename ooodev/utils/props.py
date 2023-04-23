@@ -742,6 +742,7 @@ class Props:
 
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SETTING` :eventref:`src-docs-props-event-setting`
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET` :eventref:`src-docs-props-event-set`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET_ERROR` :eventref:`src-docs-props-event-set-error`
 
         Note:
             If a Event is canceled then that property is not set. No error occurs.
@@ -751,11 +752,17 @@ class Props:
 
             If ``KeyValCancelArgs.default`` is set to true then property is set to Default
 
+        Note:
+            If an error occurs a ``PROP_SET_ERROR`` is raised. If the event args are set to ``cancel`` or ``handled`` then the error is ignored.
+
         See Also:
             :py:meth:`~.props.Props.set_default`
 
         .. versionchanged:: 0.9.0
             Setting ``KeyValCancelArgs.default=False`` will set a property to its default.
+
+        .. versionchanged:: 0.9.4
+            Now event is raised if a property fails to set.
         """
         if len(kwargs) == 0:
             return
@@ -778,27 +785,38 @@ class Props:
                     if cargs.key == "":
                         continue
                     ps.setPropertyValue(cargs.key, cargs.value)
-            except AttributeError as e:
+            except (AttributeError, UnknownPropertyException) as e:
                 # handle a LibreOffice bug
-                if not cls._set_by_attribute(obj, cargs.key, cargs.value):
-                    errs.append(
-                        mEx.UnKnownError(
-                            f'Something went wrong. Could not find setPropertyValue attribute on property set. Tried setting "{key}" manually but failed'
-                        )
-                    )
+                try:
+                    if not cls._set_by_attribute(obj, cargs.key, cargs.value):
+                        raise e
+                except Exception as ex:
                     has_error = True
-                    errs.append(e)
+                    if type(ex).__name__ == "com.sun.star.beans.UnknownPropertyException":
+                        errs.append(mEx.PropertyNotFoundError(key, ex))
+                    else:
+                        errs.append(
+                            mEx.UnKnownError(
+                                f'Something went wrong. Could not find setPropertyValue attribute on property set. Tried setting "{key}" manually but failed'
+                            )
+                        )
 
             except PropertyVetoException as e:
                 has_error = True
                 errs.append(mEx.PropertySetError(f'Could not set readonly-property "{key}"', e))
-            except UnknownPropertyException as e:
-                has_error = True
-                errs.append(mEx.PropertyNotFoundError(key, e))
             except Exception as e:
                 has_error = True
                 errs.append(Exception(f'Could not set property "{key}"', e))
-            if not has_error:
+            if has_error:
+                error_args = KeyValCancelArgs.from_args(cargs)
+                error_args.cancel = False
+                error_args.handled = False
+                _Events().trigger(PropsNamedEvent.PROP_SET_ERROR, error_args)
+                if error_args.handled or error_args.cancel:
+                    # remove the last error
+                    if errs:
+                        _ = errs.pop()
+            else:
                 _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
@@ -824,30 +842,46 @@ class Props:
 
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_DEFAULT_SETTING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_DEFAULT_SET` :eventref:`src-docs-event`
+                - :py:attr:`~.events.props_named_event.PropsNamedEvent.PROP_SET_DEFAULT_ERROR` :eventref:`src-docs-event-cancel`
 
         Note:
+            Event data  is a dictionary of ``{"obj": obj, "name": name}`` with name being the property name currently being set.
+
             If a Event is canceled then that property is not set. No error occurs.
 
             If ``MultiError`` occurs only the properties that raised an error is part of the error object.
             The remaining properties will still be set to default.
 
         .. versionadded:: 0.9.0
+
+        .. versionchanged:: 0.9.4
+            Now event is raised if a property fails to set default.
         """
         ps = mLo.Lo.qi(XPropertyState, obj, True)
         errs = []
         for name in prop_names:
             has_error = False
             cargs = CancelEventArgs(Props.set.__qualname__)
-            cargs.event_data = name
+            cargs.event_data = {"obj": obj, "name": name}
             _Events().trigger(PropsNamedEvent.PROP_DEFAULT_SETTING, cargs)
             if cargs.cancel:
                 continue
+            prop_name = cargs.event_data["name"]
             try:
-                ps.setPropertyToDefault(name)
+                ps.setPropertyToDefault(prop_name)
             except Exception as e:
                 has_error = True
-                errs.append(Exception(f'Could not set property Default "{name}"', e))
-            if not has_error:
+                errs.append(Exception(f'Could not set property Default "{prop_name}"', e))
+            if has_error:
+                error_args = CancelEventArgs.from_args(cargs)
+                cargs.cancel = False
+                cargs.handled = False
+                _Events().trigger(PropsNamedEvent.PROP_SET_DEFAULT_ERROR, error_args)
+                if error_args.handled or error_args.cancel:
+                    # remove the last error
+                    if errs:
+                        _ = errs.pop()
+            else:
                 _Events().trigger(PropsNamedEvent.PROP_DEFAULT_SET, EventArgs.from_args(cargs))
         if len(errs) > 0:
             raise mEx.MultiError(errs)
@@ -922,10 +956,21 @@ class Props:
                 ps = mLo.Lo.qi(XPropertySet, obj, True)
             try:
                 val = ps.getPropertyValue(name)
-            except AttributeError as e:
+            except (AttributeError, UnknownPropertyException) as e:
                 # handle a LibreOffice bug
-                success, val = cls._get_by_attribute(ps, name)
+                success = False
+                try:
+                    success, val = cls._get_by_attribute(ps, name)
+                except Exception as ex:
+                    if type(e).__name__ == "com.sun.star.beans.UnknownPropertyException":
+                        raise e
+                    raise mEx.UnKnownError(
+                        f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
+                    ) from ex
+
                 if not success:
+                    if type(e).__name__ == "com.sun.star.beans.UnknownPropertyException":
+                        raise e
                     raise mEx.UnKnownError(
                         f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
                     )
@@ -940,10 +985,10 @@ class Props:
             raise mEx.PropertyNotFoundError(name)
         except mEx.UnKnownError:
             raise
-        except Exception as e:
+        except Exception as exx:
             if default is not gUtil.NULL_OBJ:
                 return default
-            raise mEx.PropertyError(f'Error getting property: "{name}"') from e
+            raise mEx.PropertyError(f'Error getting property: "{name}"') from exx
 
     # endregion get()
 
@@ -1463,7 +1508,12 @@ class Props:
         prop_set = mLo.Lo.qi(XPropertySet, obj)
         if prop_set is None:
             return False
-        return prop_set.getPropertySetInfo().hasPropertyByName(name)
+        try:
+            return prop_set.getPropertySetInfo().hasPropertyByName(name)
+        except AttributeError:
+            # some object such as a chart data point seem to not properly implement XPropertySet
+            # and does not have a getPropertySetInfo() method
+            return hasattr(obj, name)
 
     has_property = has
 
