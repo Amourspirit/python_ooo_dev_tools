@@ -38,6 +38,10 @@ class Gradient(StyleMulti):
     """
     Paragraph Gradient Color
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_gradient`
+
     .. versionadded:: 0.9.0
     """
 
@@ -70,6 +74,13 @@ class Gradient(StyleMulti):
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the
                 gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_gradient`
         """
         fs = self._get_inner_class(
             style=style,
@@ -256,6 +267,7 @@ class Gradient(StyleMulti):
         inst._set(inst._props.step_count, grad_fill.StepCount)
         inst._set(inst._props.name, fill_gradient_name)
         inst._set_style("fill_style", gs, *gs.get_attrs())
+        inst._name = fill_gradient_name
         return inst
 
     # endregion from_obj()
