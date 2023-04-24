@@ -20,6 +20,7 @@ class Shadow(ShadowStruct):
     .. seealso::
 
         - :ref:`help_calc_format_direct_cell_borders`
+        - :ref:`help_writer_format_direct_table_borders`
 
     .. versionadded:: 0.9.0
     """
@@ -51,6 +52,7 @@ class Shadow(ShadowStruct):
 
         See Also:
             - :ref:`help_calc_format_direct_cell_borders`
+            - :ref:`help_writer_format_direct_table_borders`
         """
         super().__init__(location=location, color=color, transparent=transparent, width=width)
 

@@ -893,6 +893,11 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
 
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+            - :doc:`ooodev.format.writer.direct.char </src/format/ooodev.format.writer.direct.char>`
+
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
 
@@ -1044,6 +1049,9 @@ class Write(mSel.Selection):
             text (str, optional): Text to append
             styles (Sequence[StyleObj]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
 
+        Returns:
+            None:
+
         :events:
             If using styles then the following events are triggered for each style.
 
@@ -1051,6 +1059,12 @@ class Write(mSel.Selection):
 
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+            - :doc:`ooodev.format.writer.direct.char </src/format/ooodev.format.writer.direct.char>`
+            - :doc:`ooodev.format.writer.direct.para </src/format/ooodev.format.writer.direct.para>`
 
         .. versionchanged:: 0.9.0
             Added overload ``append_para(cursor: XTextCursor, text: str, styles: Sequence[StyleObj])``.
@@ -2333,6 +2347,11 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.FORMULA_ADDING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.FORMULA_ADDED` :eventref:`src-docs-event`
 
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+            - :doc:`ooodev.format.writer.direct.obj </src/format/ooodev.format.writer.direct.obj>`
+
         Note:
            Event args ``event_data`` is a dictionary containing ``formula`` and ``cursor``.
 
@@ -2548,6 +2567,9 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.TEXT_FRAME_ADDING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.TEXT_FRAME_ADDED` :eventref:`src-docs-event`
 
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.writer.direct.frame </src/format/ooodev.format.writer.direct.frame>` subpackages.
+
         Note:
            Event args ``event_data`` is a dictionary containing all method args.
 
@@ -2759,9 +2781,13 @@ class Write(mSel.Selection):
            Event args ``event_data`` is a dictionary containing all method args.
 
         See Also:
+            - :ref:`help_writer_format_direct_table`
             - :py:class:`~.utils.color.CommonColor`
             - :py:meth:`~.utils.table_helper.TableHelper.table_2d_to_dict`
             - :py:meth:`~.utils.table_helper.TableHelper.table_dict_to_table`
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.writer.direct.table </src/format/ooodev.format.writer.direct.table>` subpackages.
 
         .. versionchanged:: 0.9.0
             Now returns added table instead of bool value.
@@ -3000,6 +3026,11 @@ class Write(mSel.Selection):
 
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.IMAGE_LNIK_ADDING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.IMAGE_LNIK_ADDED` :eventref:`src-docs-event`
+
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+            - :doc:`ooodev.format.writer.direct.image </src/format/ooodev.format.writer.direct.image>`
 
         Note:
            Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.

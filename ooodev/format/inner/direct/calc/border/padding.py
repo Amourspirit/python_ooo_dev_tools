@@ -31,6 +31,7 @@ class Padding(AbstractPadding):
     .. seealso::
 
         - :ref:`help_calc_format_direct_cell_borders`
+        - :ref:`help_writer_format_direct_table_borders`
     """
 
     def __init__(
@@ -62,6 +63,7 @@ class Padding(AbstractPadding):
         See Also:
 
             - :ref:`help_calc_format_direct_cell_borders`
+            - :ref:`help_writer_format_direct_table_borders`
         """
         super().__init__(left=left, right=right, top=top, bottom=bottom, all=all)
 

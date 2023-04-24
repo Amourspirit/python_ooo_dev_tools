@@ -1,7 +1,9 @@
-.. _help_writer_format_direct_para_area_pattern:
+.. _help_writer_format_direct_para_transparency:
 
-Write Direct Paragraph Area Pattern Class
-=========================================
+Write Direct Paragraph Transparency Transparency Class
+======================================================
+
+.. This file can also include Gradient if and when it is implemented.
 
 .. contents:: Table of Contents
     :local:
@@ -13,20 +15,17 @@ Overview
 
 Writer has an Area Pattern dialog section.
 
-The :py:class:`ooodev.format.writer.direct.para.area.Pattern` class is used to set the paragraph background pattern.
+The :py:class:`ooodev.format.writer.direct.para.transparency.Transparency` class is used to set the paragraph background transparency.
 
 .. cssclass:: screen_shot
 
-    .. _ss_writer_dialog_para_area_pattern:
-    .. figure:: https://user-images.githubusercontent.com/4193389/233867486-6746cf77-c164-4add-819a-bec376920402.png
-        :alt: Writer Paragraph Area Pattern dialog
+    .. _ss_writer_dialog_para_transparency:
+    .. figure:: https://user-images.githubusercontent.com/4193389/233992459-220ac38d-cb9e-4c5f-8321-82a65224e839.png
+        :alt: Writer Paragraph Transparency dialog
         :figclass: align-center
         :width: 450px
 
-        Writer Paragraph Area Pattern dialog
-
-There are many presets for image available.
-Using the :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` enum, you can set the pattern to one of the presets.
+        Writer Paragraph Transparency dialog
 
 
 Setup
@@ -44,10 +43,12 @@ General function used to run these examples:
         .. code-block:: python
             :substitutions:
 
-            from ooodev.format.writer.direct.para.area import Pattern, PresetPatternKind
+            from ooodev.format.writer.direct.para.area import Color
+            from ooodev.format.writer.direct.para.transparency import Transparency
             from ooodev.office.write import Write
             from ooodev.utils.gui import GUI
             from ooodev.utils.lo import Lo
+            from ooodev.utils.color import StandardColor
 
 
             def main() -> int:
@@ -62,8 +63,10 @@ General function used to run these examples:
                     GUI.zoom(GUI.ZoomEnum.ZOOM_100_PERCENT)
                     cursor = Write.get_cursor(doc)
 
-                    pattern_style = Pattern.from_preset(PresetPatternKind.HORIZONTAL_BRICK)
-                    Write.append_para(cursor=cursor, text=p_txt, styles=[pattern_style])
+                    color_style = Color(StandardColor.LIME)
+                    t_style = Transparency(52)
+
+                    Write.append_para(cursor=cursor, text=p_txt, styles=[color_style, t_style])
 
                     para_cursor = Write.get_paragraph_cursor(cursor)
                     para_cursor.gotoPreviousParagraph(False)
@@ -71,8 +74,8 @@ General function used to run these examples:
 
                     text_para = cast("TextRangeContentProperties", para_cursor)
 
-                    para_img = Pattern.from_obj(text_para.TextParagraph)
-                    assert para_img is not None
+                    para_t = Transparency.from_obj(text_para.TextParagraph)
+                    assert para_t is not None
 
                     para_cursor.gotoEnd(False)
                     Lo.delay(1_000)
@@ -93,10 +96,13 @@ General function used to run these examples:
 Examples
 --------
 
-Apply Pattern
-^^^^^^^^^^^^^
+Apply Transparency to Paragraph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Create a pattern for the paragraph background.
+In this example we will apply a transparency to a paragraph background color.
+The transparency needs to be applied after the paragraph color as the transparency is applied to the color.
+This means the order ``[color_style, t_style]`` is important.
+The transparency is set to 52% in this example.
 
 .. tabs::
 
@@ -106,8 +112,10 @@ Create a pattern for the paragraph background.
 
         cursor = Write.get_cursor(doc)
 
-        pattern_style = Pattern.from_preset(PresetPatternKind.HORIZONTAL_BRICK)
-        Write.append_para(cursor=cursor, text=p_txt, styles=[pattern_style])
+        color_style = Color(StandardColor.LIME)
+        t_style = Transparency(52)
+
+        Write.append_para(cursor=cursor, text=p_txt, styles=[color_style, t_style])
 
     .. only:: html
 
@@ -117,16 +125,16 @@ Create a pattern for the paragraph background.
 
 .. cssclass:: screen_shot
 
-    .. _233867593-a1a78f33-b099-4e1b-a50d-3a960dd67b55:
-    .. figure:: https://user-images.githubusercontent.com/4193389/233867593-a1a78f33-b099-4e1b-a50d-3a960dd67b55.png
-        :alt: Writer Paragraph Area Pattern
+    .. _233993401-2201b7eb-b28e-4f57-923c-ca0bc30d28b4:
+    .. figure:: https://user-images.githubusercontent.com/4193389/233993401-2201b7eb-b28e-4f57-923c-ca0bc30d28b4.png
+        :alt: Writer Paragraph Color and Transparency
         :figclass: align-center
         :width: 520px
 
-        Writer Paragraph Area Pattern
+        Writer Paragraph Color and Transparency
 
-Get Pattern from Paragraph
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Get Transparency from Paragraph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 
@@ -142,8 +150,8 @@ Get Pattern from Paragraph
 
         text_para = cast("TextRangeContentProperties", para_cursor)
 
-        para_img = Pattern.from_obj(text_para.TextParagraph)
-        assert para_img is not None
+        para_t = Transparency.from_obj(text_para.TextParagraph)
+        assert para_t is not None
 
         para_cursor.gotoEnd(False)
 
@@ -163,4 +171,4 @@ Get Pattern from Paragraph
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`ooodev.format.writer.direct.para.area.Pattern`
+        - :py:class:`ooodev.format.writer.direct.para.transparency.Transparency`

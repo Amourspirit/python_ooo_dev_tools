@@ -21,6 +21,10 @@ class Transparency(StyleBase):
     """
     Fill Transparency
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_transparency`
+
     .. versionadded:: 0.9.0
     """
 
@@ -30,6 +34,13 @@ class Transparency(StyleBase):
 
         Args:
             value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_transparency`
         """
         super().__init__()
         self.prop_value = value
