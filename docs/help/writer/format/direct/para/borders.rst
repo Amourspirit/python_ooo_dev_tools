@@ -59,25 +59,25 @@ General function used to run these examples:
                     |short_ptext|
                 )
 
-            with Lo.Loader(Lo.ConnectSocket()):
-                doc = Write.create_doc()
-                GUI.set_visible(True, doc)
-                Lo.delay(500)
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                with Lo.Loader(Lo.ConnectSocket()):
+                    doc = Write.create_doc()
+                    GUI.set_visible(True, doc)
+                    Lo.delay(500)
+                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                cursor = Write.get_cursor(doc)
-                bdr = Borders(
-                    all=Side(line=BorderLineKind.DASH_DOT, color=CommonColor.BLUE_VIOLET),
-                    shadow=Shadow(),
-                    padding=Padding(all=1.7),
-                    merge=False,
-                )
-                Write.append_para(cursor=cursor, text=p_txt, styles=[bdr])
-                StylePara.default.apply(cursor)
-                Write.append_para(cursor=cursor, text=p_txt)
-                Lo.delay(1_000)
-                Lo.close_doc(doc)
-            return 0
+                    cursor = Write.get_cursor(doc)
+                    bdr = Borders(
+                        all=Side(line=BorderLineKind.DASH_DOT, color=CommonColor.BLUE_VIOLET),
+                        shadow=Shadow(),
+                        padding=Padding(all=1.7),
+                        merge=False,
+                    )
+                    Write.append_para(cursor=cursor, text=p_txt, styles=[bdr])
+                    StylePara.default.apply(cursor)
+                    Write.append_para(cursor=cursor, text=p_txt)
+                    Lo.delay(1_000)
+                    Lo.close_doc(doc)
+                return 0
 
 
             if __name__ == "__main__":
@@ -340,6 +340,7 @@ The paragraph cursor is then used to get the style.
 
    .. cssclass:: ul-list
 
+        - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_writer_format_style_para`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`

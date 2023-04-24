@@ -211,27 +211,27 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="area" ID="ID_906636024" CREATED="1675065864419" MODIFIED="1682196183125">
-<icon BUILTIN="unchecked"/>
+<node TEXT="area" ID="ID_906636024" CREATED="1675065864419" MODIFIED="1682286051106">
+<icon BUILTIN="checked"/>
 <node TEXT="Color" ID="ID_1512421671" CREATED="1675065870452" MODIFIED="1682196382713">
 <icon BUILTIN="links/code/file_Python"/>
 <icon BUILTIN="checked"/>
 </node>
-<node TEXT="Gradient" ID="ID_1280407630" CREATED="1675065876260" MODIFIED="1682196183125">
+<node TEXT="Gradient" ID="ID_1280407630" CREATED="1675065876260" MODIFIED="1682268074771">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Hatch" ID="ID_117152202" CREATED="1675065896029" MODIFIED="1682196183125">
+<node TEXT="Hatch" ID="ID_117152202" CREATED="1675065896029" MODIFIED="1682282941558">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Img" ID="ID_1250621375" CREATED="1675065884307" MODIFIED="1682196183125">
+<node TEXT="Img" ID="ID_1250621375" CREATED="1675065884307" MODIFIED="1682284977311">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Pattern" ID="ID_458289859" CREATED="1675065889707" MODIFIED="1682196183125">
+<node TEXT="Pattern" ID="ID_458289859" CREATED="1675065889707" MODIFIED="1682286046574">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="transparency" ID="ID_1907010860" CREATED="1675065904948" MODIFIED="1676047919429">

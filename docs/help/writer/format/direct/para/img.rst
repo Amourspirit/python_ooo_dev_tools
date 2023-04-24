@@ -1,7 +1,7 @@
-.. _help_writer_format_direct_para_area_gradient:
+.. _help_writer_format_direct_para_area_img:
 
-Write Direct Paragraph Area Gradient Class
-==========================================
+Write Direct Paragraph Area Img Class
+=====================================
 
 .. contents:: Table of Contents
     :local:
@@ -11,22 +11,23 @@ Write Direct Paragraph Area Gradient Class
 Overview
 --------
 
-Writer has an Area Gradient dialog section.
+Writer has an Area Hatch dialog section.
 
-The :py:class:`ooodev.format.writer.direct.para.area.Gradient` class is used to set the paragraph background gradient.
+The :py:class:`ooodev.format.writer.direct.para.area.Img` class is used to set the paragraph background image.
 
 .. cssclass:: screen_shot
 
-    .. _ss_writer_dialog_para_area_gradient:
-    .. figure:: https://user-images.githubusercontent.com/4193389/233850124-2fc250c2-efb9-40b5-b6d9-278e389bfe58.png
-        :alt: Writer Paragraph Area Gradient dialog
+    .. _ss_writer_dialog_para_area_image:
+    .. figure:: https://user-images.githubusercontent.com/4193389/233866224-5c75d4bd-6916-46f6-bfa8-a9f8244f7778.png
+        :alt: Writer Paragraph Area Image dialog
         :figclass: align-center
         :width: 450px
 
-        Writer Paragraph Area Gradient dialog
+        Writer Paragraph Area Image dialog
 
-There are many presets for gradient available.
-Using the :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` enum, you can set the gradient to one of the presets.
+There are many presets for image available.
+Using the :py:class:`~ooodev.format.inner.preset.preset_image.PresetImageKind` enum, you can set the image to one of the presets.
+
 
 Setup
 -----
@@ -43,14 +44,10 @@ General function used to run these examples:
         .. code-block:: python
             :substitutions:
 
-            from typing import TYPE_CHECKING, cast
-            from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
+            from ooodev.format.writer.direct.para.area import Img, PresetImageKind
             from ooodev.office.write import Write
             from ooodev.utils.gui import GUI
             from ooodev.utils.lo import Lo
-            
-            if TYPE_CHECKING:
-                from com.sun.star.text import TextRangeContentProperties  # service
 
 
             def main() -> int:
@@ -58,16 +55,26 @@ General function used to run these examples:
                     |short_ptext|
                 )
 
-                with Lo.Loader(Lo.ConnectSocket()):
+                with Lo.Loader(Lo.ConnectPipe()):
                     doc = Write.create_doc()
                     GUI.set_visible(doc)
                     Lo.delay(300)
                     GUI.zoom(GUI.ZoomEnum.ZOOM_100_PERCENT)
                     cursor = Write.get_cursor(doc)
 
-                    gradient_style = Gradient.from_preset(PresetGradientKind.MAHOGANY)
-                    Write.append_para(cursor=cursor, text=p_txt, styles=[gradient_style])
+                    image_style = Img.from_preset(PresetImageKind.FENCE)
+                    Write.append_para(cursor=cursor, text=p_txt, styles=[image_style])
 
+                    para_cursor = Write.get_paragraph_cursor(cursor)
+                    para_cursor.gotoPreviousParagraph(False)
+                    para_cursor.gotoEndOfParagraph(True)
+
+                    text_para = cast("TextRangeContentProperties", para_cursor)
+
+                    para_img = Img.from_obj(text_para.TextParagraph)
+                    assert para_img is not None
+
+                    para_cursor.gotoEnd(False)
                     Lo.delay(1_000)
                     Lo.close_doc(doc)
                 return 0
@@ -86,10 +93,10 @@ General function used to run these examples:
 Examples
 --------
 
-Apply Gradient Color
-^^^^^^^^^^^^^^^^^^^^
+Apply Image
+^^^^^^^^^^^
 
-Create a gradient for the paragraph background.
+Create a image for the paragraph background.
 
 .. tabs::
 
@@ -98,8 +105,9 @@ Create a gradient for the paragraph background.
         # ... other code
 
         cursor = Write.get_cursor(doc)
-        gradient_style = Gradient.from_preset(PresetGradientKind.MAHOGANY)
-        Write.append_para(cursor=cursor, text=p_txt, styles=[gradient_style])
+
+        image_style = Img.from_preset(PresetImageKind.FENCE)
+        Write.append_para(cursor=cursor, text=p_txt, styles=[image_style])
 
     .. only:: html
 
@@ -109,16 +117,16 @@ Create a gradient for the paragraph background.
 
 .. cssclass:: screen_shot
 
-    .. _233850291-c58c312c-8d6e-4a7f-b6ca-51d1c307622d:
-    .. figure:: https://user-images.githubusercontent.com/4193389/233850291-c58c312c-8d6e-4a7f-b6ca-51d1c307622d.png
-        :alt: Writer Paragraph Area Gradient
+    .. _233866774-2acf6d1b-5e5b-4e4c-8018-b72cc07c7970:
+    .. figure:: https://user-images.githubusercontent.com/4193389/233866774-2acf6d1b-5e5b-4e4c-8018-b72cc07c7970.png
+        :alt: Writer Paragraph Area Image
         :figclass: align-center
         :width: 520px
 
-        Writer Paragraph Area Gradient
+        Writer Paragraph Area Image
 
-Get Gradient from Paragraph
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Get Image from Paragraph
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 
@@ -126,8 +134,7 @@ Get Gradient from Paragraph
 
         # ... other code
         cursor = Write.get_cursor(doc)
-        gradient_style = Gradient.from_preset(PresetGradientKind.MAHOGANY)
-        Write.append_para(cursor=cursor, text=p_txt, styles=[gradient_style])
+        # ... other code
 
         para_cursor = Write.get_paragraph_cursor(cursor)
         para_cursor.gotoPreviousParagraph(False)
@@ -135,8 +142,10 @@ Get Gradient from Paragraph
 
         text_para = cast("TextRangeContentProperties", para_cursor)
 
-        para_gradient = Gradient.from_obj(text_para.TextParagraph)
-        para_gradient.prop_name == str(PresetGradientKind.MAHOGANY)
+        para_img = Img.from_obj(text_para.TextParagraph)
+        assert para_img is not None
+
+        para_cursor.gotoEnd(False)
 
     .. only:: html
 
@@ -154,4 +163,4 @@ Get Gradient from Paragraph
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`ooodev.format.writer.direct.para.area.Gradient`
+        - :py:class:`ooodev.format.writer.direct.para.area.Img`

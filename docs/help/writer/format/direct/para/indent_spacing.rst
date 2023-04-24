@@ -51,19 +51,19 @@ General function used to run these examples.
                     |short_ptext|
                 )
 
-            with Lo.Loader(Lo.ConnectSocket()):
-                doc = Write.create_doc()
-                GUI.set_visible(True, doc)
-                Lo.delay(500)
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                with Lo.Loader(Lo.ConnectSocket()):
+                    doc = Write.create_doc()
+                    GUI.set_visible(True, doc)
+                    Lo.delay(500)
+                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                cursor = Write.get_cursor(doc)
-                indent = Indent(before=22.0, after=20.0, first=8.0)
-                Write.append_para(cursor=cursor, text=p_txt, styles=[indent])
-                Write.append_para(cursor=cursor, text=p_txt)
-                Lo.delay(1_000)
-                Lo.close_doc(doc)
-            return 0
+                    cursor = Write.get_cursor(doc)
+                    indent = Indent(before=22.0, after=20.0, first=8.0)
+                    Write.append_para(cursor=cursor, text=p_txt, styles=[indent])
+                    Write.append_para(cursor=cursor, text=p_txt)
+                    Lo.delay(1_000)
+                    Lo.close_doc(doc)
+                return 0
 
 
             if __name__ == "__main__":
