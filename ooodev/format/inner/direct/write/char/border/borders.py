@@ -29,6 +29,10 @@ class Borders(StyleMulti):
 
     All methods starting with ``fmt_`` can be used to chain together Borders properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_char_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -56,6 +60,13 @@ class Borders(StyleMulti):
             all (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             shadow (BorderShadow | None, optional): Character Shadow
             padding (Padding | None, optional): Character padding
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_char_borders`
         """
         init_vals = {}
 

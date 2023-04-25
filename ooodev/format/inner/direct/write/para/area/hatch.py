@@ -29,9 +29,29 @@ PARA_BACK_COLOR_FLAGS = 0x7F000000
 _THatch = TypeVar(name="_THatch", bound="Hatch")
 
 
+class _HatchStruct(HatchStruct):
+    """Hatch Struct for para Hatch"""
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
+
+
 class Hatch(StyleMulti):
     """
     Class for Fill Properties Fill Hatch.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_hatch`
 
     .. versionadded:: 0.9.0
     """
@@ -60,10 +80,14 @@ class Hatch(StyleMulti):
             bg_color(:py:data:`~.utils.color.Color`, optional): Specifies the background Color.
                 Set this ``-1`` (default) for no background color.
             name (str, optional): Specifies the Hatch Name.
-            auto_name (bool, optional): Specifies if Hatch is give an auto name such as ``Hatch ``. Default ``False``.
+            auto_name (bool, optional): Specifies if Hatch is give an auto name such as ``Hatch``. Default ``False``.
 
         Returns:
             None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_hatch`
         """
         self._auto_name = auto_name
         self._name = name  # this may change in _set_fill_hatch()
@@ -83,12 +107,15 @@ class Hatch(StyleMulti):
 
         super().__init__(**init_vals)
         self._set_bg_color(color)
-        in_hatch = HatchStruct(style=style, color=color, distance=space, angle=angle)
+        in_hatch = self._get_inner_hatch()(style=style, color=color, distance=space, angle=angle)
         self._set_fill_hatch(in_hatch, False)
 
         self._set_style("fill_color", bk_color, *bk_color.get_attrs())
 
     # region Internal Methods
+    def _get_inner_hatch(self) -> Type[HatchStruct]:
+        return _HatchStruct
+
     def _set_bg_color(self, color: int) -> None:
         # Writer stores ParaBackColor as flag values when there is no background color
         # When there is background color then ParaBackColor contains the actual color.
@@ -165,11 +192,11 @@ class Hatch(StyleMulti):
             self._name = name
         hatch = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if not hatch is None:
-            return HatchStruct.from_uno_struct(hatch)
+            return self._get_inner_hatch().from_uno_struct(hatch)
 
         self._container_add_value(name=self._name, obj=hatch_struct.get_uno_struct(), allow_update=False, nc=nc)
         hatch = self._container_get_value(self._name, nc)
-        return HatchStruct.from_uno_struct(hatch)
+        return self._get_inner_hatch().from_uno_struct(hatch)
 
     def _on_hatch_property_change(self) -> None:
         if self._is_preset:
@@ -333,6 +360,11 @@ class Hatch(StyleMulti):
         except AttributeError:
             self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.FILL | FormatKind.PARA
         return self._format_kind_prop
+
+    @property
+    def prop_name(self) -> str:
+        """Gets the name of the hatch."""
+        return self._name
 
     @property
     def prop_bg_color(self) -> Color:

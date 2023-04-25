@@ -32,6 +32,16 @@ _TImg = TypeVar(name="_TImg", bound="Img")
 
 
 class Img(StyleMulti):
+    """
+    Paragraph Area Image Style
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_img`
+
+    .. versionadded:: 0.9.0
+    """
+
     def __init__(
         self,
         *,
@@ -63,6 +73,10 @@ class Img(StyleMulti):
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
             All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_img`
         """
 
         fimg = InnerImg(

@@ -37,6 +37,10 @@ class Borders(StyleMulti):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_table_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -72,6 +76,12 @@ class Borders(StyleMulti):
             shadow (Shadow, optional): Cell Shadow.
             padding (BorderPadding, optional): Cell padding.
             merge_adjacent (bool, optional): Specifies if adjacent line style are to be merged.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_writer_format_direct_table_borders`
         """
         super().__init__()
 

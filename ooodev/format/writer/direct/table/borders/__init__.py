@@ -10,4 +10,4 @@ from ooodev.format.inner.direct.calc.border.padding import Padding as Padding
 from ooodev.format.inner.direct.calc.border.shadow import Shadow as Shadow
 from ooodev.format.inner.direct.write.table.borders.borders import Borders as Borders
 
-__all__ = ["BorderLineKind", "LineSize", "Side", "Padding", "Shadow", "Borders"]
+__all__ = ["Borders"]

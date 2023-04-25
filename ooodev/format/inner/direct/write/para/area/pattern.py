@@ -18,6 +18,16 @@ _TPattern = TypeVar(name="_TPattern", bound="Pattern")
 
 
 class Pattern(StyleMulti):
+    """
+    Class for Para Fill Pattern.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_pattern`
+
+    .. versionadded:: 0.9.0
+    """
+
     def __init__(
         self,
         *,
@@ -45,6 +55,10 @@ class Pattern(StyleMulti):
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
             All subsequent call of the same name will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_pattern`
         """
 
         fp = InnerPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
