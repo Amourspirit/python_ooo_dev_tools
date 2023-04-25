@@ -20,54 +20,48 @@ General function used to run these examples:
 
 .. tabs::
 
-    .. group-tab:: Python
+    .. code-tab:: python
+        :emphasize-lines: 16, 17, 18, 19, 20, 21, 22, 23, 24
 
-        .. code-block:: python
-            :substitutions:
+        from ooodev.format.writer.modify.para.alignment import Alignment, StyleParaKind
+        from ooodev.format.writer.modify.para.alignment import ParagraphAdjust, ParagraphVertAlignEnum
+        from ooodev.format.writer.modify.para.alignment import WritingMode, WritingMode2Enum
+        from ooodev.format.writer.modify.para.alignment import LastLineKind
+        from ooodev.office.write import Write
+        from ooodev.utils.gui import GUI
+        from ooodev.utils.lo import Lo
 
-            from ooodev.format.writer.modify.para.alignment import Alignment, StyleParaKind
-            from ooodev.format.writer.modify.para.alignment import ParagraphAdjust, ParagraphVertAlignEnum
-            from ooodev.format.writer.modify.para.alignment import WritingMode, WritingMode2Enum
-            from ooodev.format.writer.modify.para.alignment import LastLineKind
-            from ooodev.office.write import Write
-            from ooodev.utils.gui import GUI
-            from ooodev.utils.lo import Lo
-            
-            def main() -> int:
-                p_txt = (
-                    |short_ptext|
+        def main() -> int:
+            with Lo.Loader(Lo.ConnectPipe()):
+                doc = Write.create_doc()
+                GUI.set_visible(doc)
+                Lo.delay(300)
+                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+
+                shadow_style = Alignment(
+                    align=ParagraphAdjust.BLOCK,
+                    align_vert=ParagraphVertAlignEnum.TOP,
+                    txt_direction=WritingMode(WritingMode2Enum.LR_TB),
+                    expand_single_word=True,
+                    align_last=LastLineKind.JUSTIFY,
+                    style_name=StyleParaKind.STANDARD,
                 )
+                shadow_style.apply(doc)
 
-                with Lo.Loader(Lo.ConnectPipe()):
-                    doc = Write.create_doc()
-                    GUI.set_visible(doc)
-                    Lo.delay(300)
-                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                cursor = Write.get_cursor(doc)
+                Write.append_para(cursor=cursor, text=p_txt)
 
-                    shadow_style = Alignment(
-                        align=ParagraphAdjust.BLOCK,
-                        align_vert=ParagraphVertAlignEnum.TOP,
-                        txt_direction=WritingMode(WritingMode2Enum.LR_TB),
-                        expand_single_word=True,
-                        align_last=LastLineKind.JUSTIFY,
-                        style_name=StyleParaKind.STANDARD,
-                    )
-                    shadow_style.apply(doc)
+                style_obj = Alignment.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+                assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+                Lo.delay(1_000)
 
-                    cursor = Write.get_cursor(doc)
-                    Write.append_para(cursor=cursor, text=p_txt)
+                Lo.close_doc(doc)
 
-                    style_obj = Alignment.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-                    assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
-                    Lo.delay(1_000)
-
-                    Lo.close_doc(doc)
-
-                return 0
+            return 0
 
 
-            if __name__ == "__main__":
-                SystemExit(main())
+        if __name__ == "__main__":
+            sys.exit(main())
 
     .. only:: html
 

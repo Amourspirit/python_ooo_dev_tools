@@ -24,6 +24,10 @@ class Hatch(ParaStyleBaseMulti):
     """
     Paragraph Style Gradient Color
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_hatch`
+
     .. versionadded:: 0.9.0
     """
 
@@ -60,6 +64,9 @@ class Hatch(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_hatch`
         """
 
         direct = InnerHatch(
