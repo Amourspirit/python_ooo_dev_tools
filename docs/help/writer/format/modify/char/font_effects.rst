@@ -19,6 +19,7 @@ Before Settings
     .. figure:: https://user-images.githubusercontent.com/4193389/234149112-0424e8b3-edf8-4ca8-9be4-d695dee658e2.png
         :alt: Writer dialog Character font effects default
         :figclass: align-center
+        :width: 450px
 
         Writer dialog Character font effects default
 
@@ -74,6 +75,7 @@ After applying the font effects.
     .. figure:: https://user-images.githubusercontent.com/4193389/234149201-4d2a2df8-2610-4268-a76b-757a2eab5569.png
         :alt: Writer dialog character font style changed
         :figclass: align-center
+        :width: 450px
 
         Writer dialog character font style changed
 

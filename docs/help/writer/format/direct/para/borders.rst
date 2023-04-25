@@ -345,6 +345,7 @@ The paragraph cursor is then used to get the style.
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_direct_cell_borders`
+        - :ref:`help_writer_format_modify_para_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.borders.Borders`

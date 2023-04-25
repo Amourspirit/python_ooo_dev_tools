@@ -1,6 +1,6 @@
-.. _help_writer_format_modify_char_borders:
+.. _help_writer_format_modify_para_borders:
 
-Write Modify Character Borders
+Write Modify Paragraph Borders
 ==============================
 
 
@@ -9,21 +9,21 @@ Write Modify Character Borders
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.writer.modify.char.borders.Sides`, :py:class:`ooodev.format.writer.modify.char.borders.Padding`, and :py:class:`ooodev.format.writer.modify.char.borders.Shadow`
-classes are used to modify the border values seen in :numref:`234261424-2e08754e-8bb5-4a4a-ab9f-180137f5b50a` of a character border style.
+The :py:class:`ooodev.format.writer.modify.para.borders.Sides`, :py:class:`ooodev.format.writer.modify.char.borders.Padding`, and :py:class:`ooodev.format.writer.modify.para.borders.Shadow`
+classes are used to modify the border values seen in :numref:`234408779-4e2e1ee9-6582-41df-b702-f4353ca8d8e2` of a character border style.
 
 
-Default Character Borders Style Dialog
+Default Paragraph Borders Style Dialog
 
 .. cssclass:: screen_shot
 
-    .. _234261424-2e08754e-8bb5-4a4a-ab9f-180137f5b50a:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234261424-2e08754e-8bb5-4a4a-ab9f-180137f5b50a.png
-        :alt: Writer dialog Character Borders default
+    .. _234408779-4e2e1ee9-6582-41df-b702-f4353ca8d8e2:
+    .. figure:: https://user-images.githubusercontent.com/4193389/234408779-4e2e1ee9-6582-41df-b702-f4353ca8d8e2.png
+        :alt: Writer dialog Paragraph Borders default
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Character Borders default
+        Writer dialog Paragraph Borders default
 
 
 Setup
@@ -35,11 +35,9 @@ General function used to run these examples.
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.char.borders import Sides, Padding, Shadow
-        from ooodev.format.writer.modify.char.borders import Side
-        from ooodev.format.writer.modify.char.borders import StyleCharKind
-        from ooodev.format.writer.modify.char.borders import BorderLineKind
-        from ooodev.format.writer.modify.char.borders import LineSize
+        from ooodev.format.writer.modify.para.borders import Padding, Shadow, Sides
+        from ooodev.format.writer.modify.para.borders import BorderLineKind, LineSize
+        from ooodev.format.writer.modify.para.borders import StyleParaKind, Side
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
         from ooodev.utils.lo import Lo
@@ -53,15 +51,17 @@ General function used to run these examples.
                 GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
 
                 side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED, width=LineSize.MEDIUM)
-                sides_style = Sides(border_side=side, style_name=StyleCharKind.EXAMPLE)
+                sides_style = Sides(all=side, style_name=StyleParaKind.STANDARD)
                 sides_style.apply(doc)
 
-                style_obj = Sides.from_style(doc=doc, style_name=StyleCharKind.EXAMPLE)
-                assert style_obj.prop_style_name == str(StyleCharKind.EXAMPLE)
+                cursor = Write.get_cursor(doc)
+                Write.append(cursor, p_txt)
+
+                style_obj = Sides.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+                assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
                 Lo.delay(1_000)
 
                 Lo.close_doc(doc)
-
             return 0
 
         if __name__ == "__main__":
@@ -86,7 +86,7 @@ Setting Border Sides
         # ... other code
 
         side = Side(line=BorderLineKind.DOUBLE, color=StandardColor.RED, width=LineSize.MEDIUM)
-        sides_style = Sides(border_side=side, style_name=StyleCharKind.EXAMPLE)
+        sides_style = Sides(all=side, style_name=StyleParaKind.STANDARD)
         sides_style.apply(doc)
 
     .. only:: html
@@ -99,13 +99,13 @@ Style results.
 
 .. cssclass:: screen_shot
 
-    .. _234265196-7a12435d-f3f8-4d70-99bb-d2485bf54622:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234265196-7a12435d-f3f8-4d70-99bb-d2485bf54622.png
-        :alt: Writer dialog Character Borders style sides changed
+    .. _234409135-3e1cd6d5-f1e9-4d2f-bb86-b51bdf1fb486:
+    .. figure:: https://user-images.githubusercontent.com/4193389/234409135-3e1cd6d5-f1e9-4d2f-bb86-b51bdf1fb486.png
+        :alt: Writer dialog Paragraph Borders style sides changed
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Character Borders style sides changed
+        Writer dialog Paragraph Borders style sides changed
 
 
 Getting border sides from a style
@@ -119,8 +119,8 @@ We can get the border sides from the document.
 
         # ... other code
 
-        style_obj = Sides.from_style(doc=doc, style_name=StyleCharKind.EXAMPLE)
-        assert style_obj.prop_style_name == str(StyleCharKind.EXAMPLE)
+        style_obj = Sides.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html
 
@@ -140,7 +140,7 @@ Setting Border Padding
 
         # ... other code
 
-        padding_style = Padding(left=5, right=5, top=3, bottom=3, style_name=StyleCharKind.EXAMPLE)
+        padding_style = Padding(left=5, right=5, top=3, bottom=3, style_name=StyleParaKind.STANDARD)
         padding_style.apply(doc)
 
     .. only:: html
@@ -153,13 +153,13 @@ Style results.
 
 .. cssclass:: screen_shot
 
-    .. _234267649-bbf10ef2-2b78-4ca8-9c93-5fe4a0248edc:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234267649-bbf10ef2-2b78-4ca8-9c93-5fe4a0248edc.png
-        :alt: Writer dialog Character Borders style padding changed
+    .. _234410090-e24a79d7-c2f5-460b-b229-02daf243710f:
+    .. figure:: https://user-images.githubusercontent.com/4193389/234410090-e24a79d7-c2f5-460b-b229-02daf243710f.png
+        :alt: Writer dialog Paragraph Borders style padding changed
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Character Borders style padding changed
+        Writer dialog Paragraph Borders style padding changed
 
 Getting border padding from a style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -172,8 +172,8 @@ We can get the border padding from the document.
 
         # ... other code
 
-        style_obj = Padding.from_style(doc=doc, style_name=StyleCharKind.EXAMPLE)
-        assert style_obj.prop_style_name == str(StyleCharKind.EXAMPLE)
+        style_obj = Padding.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html
 
@@ -193,7 +193,7 @@ Setting Border Shadow
 
         # ... other code
 
-        shadow_style = Shadow(color=StandardColor.BLUE_DARK2, width=1.5, style_name=StyleCharKind.EXAMPLE)
+        shadow_style = Shadow(color=StandardColor.BLUE_DARK2, width=1.5, style_name=StyleParaKind.STANDARD)
         shadow_style.apply(doc)
 
     .. only:: html
@@ -206,13 +206,13 @@ Style results.
 
 .. cssclass:: screen_shot
 
-    .. _234269140-625bab3f-9e92-444a-a9e2-2f1c16fb1918:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234269140-625bab3f-9e92-444a-a9e2-2f1c16fb1918.png
-        :alt: Writer dialog Character Borders style shadow changed
+    .. _234410957-55eedfcc-9032-48b1-a660-7dffa5eb5d8f:
+    .. figure:: https://user-images.githubusercontent.com/4193389/234410957-55eedfcc-9032-48b1-a660-7dffa5eb5d8f.png
+        :alt: Writer dialog Paragraph Borders style shadow changed
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Character Borders style shadow changed
+        Writer dialog Paragraph Borders style shadow changed
 
 Getting border shadow from a style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -225,8 +225,8 @@ We can get the border shadow from the document.
 
         # ... other code
 
-        style_obj = Shadow.from_style(doc=doc, style_name=StyleCharKind.EXAMPLE)
-        assert style_obj.prop_style_name == str(StyleCharKind.EXAMPLE)
+        style_obj = Shadow.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html
 
@@ -240,9 +240,9 @@ We can get the border shadow from the document.
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_writer_format_direct_char_borders`
+        - :ref:`help_writer_format_direct_para_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`ooodev.format.writer.modify.char.borders.Padding`
-        - :py:class:`ooodev.format.writer.modify.char.borders.Sides`
-        - :py:class:`ooodev.format.writer.modify.char.borders.Shaodow`
+        - :py:class:`ooodev.format.writer.modify.para.borders.Padding`
+        - :py:class:`ooodev.format.writer.modify.para.borders.Sides`
+        - :py:class:`ooodev.format.writer.modify.para.borders.Shaodow`

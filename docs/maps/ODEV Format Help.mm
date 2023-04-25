@@ -1092,11 +1092,11 @@
 <icon BUILTIN="unchecked"/>
 </node>
 </node>
-<node TEXT="alignment" ID="ID_1229014690" CREATED="1675065798819" MODIFIED="1682196183146">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Alignment" ID="ID_1095220305" CREATED="1676047723715" MODIFIED="1682196183146">
+<node TEXT="alignment" ID="ID_1229014690" CREATED="1675065798819" MODIFIED="1682457013242">
+<icon BUILTIN="checked"/>
+<node TEXT="Alignment" ID="ID_1095220305" CREATED="1676047723715" MODIFIED="1682457013244">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="text_flow" ID="ID_488693114" CREATED="1675065813611" MODIFIED="1682196183146">
@@ -1166,23 +1166,19 @@
 <icon BUILTIN="unchecked"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_897959802" CREATED="1675065853459" MODIFIED="1682196183148">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Borders" ID="ID_424262202" CREATED="1676312621003" MODIFIED="1682196183148">
+<node TEXT="borders" ID="ID_897959802" CREATED="1675065853459" MODIFIED="1682459685172">
+<icon BUILTIN="checked"/>
+<node TEXT="Padding" ID="ID_782165211" CREATED="1676048206589" MODIFIED="1682459685168">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Padding" ID="ID_782165211" CREATED="1676048206589" MODIFIED="1682196183148">
+<node TEXT="Sides" ID="ID_1710591926" CREATED="1676048214517" MODIFIED="1682459685171">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Sides" ID="ID_1710591926" CREATED="1676048214517" MODIFIED="1682196183148">
+<node TEXT="Shadow" ID="ID_316857150" CREATED="1676048222709" MODIFIED="1682459685172">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="Shadow" ID="ID_316857150" CREATED="1676048222709" MODIFIED="1682196183148">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="outline_list" ID="ID_514385231" CREATED="1675065823851" MODIFIED="1682196183148">

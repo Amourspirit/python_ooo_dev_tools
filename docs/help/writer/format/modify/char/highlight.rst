@@ -20,6 +20,7 @@ Before Settings
     .. figure:: https://user-images.githubusercontent.com/4193389/234257852-37671950-e1eb-4f16-a87c-0bd00bb11248.png
         :alt: Writer dialog Character highlight default
         :figclass: align-center
+        :width: 450px
 
         Writer dialog Character highlight default
 
@@ -73,6 +74,7 @@ After applying the font highlight.
     .. figure:: https://user-images.githubusercontent.com/4193389/234259234-f3a57507-bd10-4256-8e08-090a8c4cdc6d.png
         :alt: Writer dialog character highlight style changed
         :figclass: align-center
+        :width: 450px
 
         Writer dialog character highlight style changed
 

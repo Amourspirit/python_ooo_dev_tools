@@ -1,6 +1,6 @@
-.. _help_writer_format_direct_para:
+.. _help_writer_format_modify_para:
 
-Writer Format Direct Paragraph
+Writer Format Modify Paragraph
 ==============================
 
 .. toctree::

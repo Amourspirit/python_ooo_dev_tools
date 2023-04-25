@@ -91,6 +91,7 @@ Fill Color a single Paragraph
     .. figure:: https://user-images.githubusercontent.com/4193389/212850105-ab0afde4-ff6f-42e1-ac54-78c0ad4cae04.png
         :alt: Paragraph area color dialog
         :figclass: align-center
+        :width: 450px
 
         Paragraph area color dialog.
 

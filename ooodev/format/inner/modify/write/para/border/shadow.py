@@ -18,6 +18,10 @@ class Shadow(ParaStyleBaseMulti):
     """
     Paragraph Style Shadow
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -47,6 +51,9 @@ class Shadow(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_borders`
         """
 
         direct = InnerShadow(location=location, color=color, transparent=transparent, width=width)
