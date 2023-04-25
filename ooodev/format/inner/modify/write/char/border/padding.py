@@ -14,6 +14,10 @@ class Padding(CharStyleBaseMulti):
     """
     Character Style Border padding.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -42,6 +46,9 @@ class Padding(CharStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_borders`
         """
 
         direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=all)

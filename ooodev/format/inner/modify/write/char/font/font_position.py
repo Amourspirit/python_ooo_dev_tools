@@ -19,6 +19,10 @@ class FontPosition(CharStyleBaseMulti):
     """
     Character Style Font Effects
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_font_position`
+
     .. versionadded:: 0.9.0
     """
 
@@ -53,6 +57,9 @@ class FontPosition(CharStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_font_position`
         """
 
         direct = InnerFontPosition(

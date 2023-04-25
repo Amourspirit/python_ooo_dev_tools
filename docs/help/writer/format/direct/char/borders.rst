@@ -154,6 +154,7 @@ Running the above code will produce the following output in :numref:`233846091-f
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_char_borders`
         - :ref:`help_calc_format_direct_cell_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`

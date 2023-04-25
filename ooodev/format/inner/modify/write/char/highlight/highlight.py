@@ -15,6 +15,10 @@ class Highlight(CharStyleBaseMulti):
     """
     Character Style Highlight.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_highlight`
+
     .. versionadded:: 0.9.0
     """
 
@@ -60,6 +64,9 @@ class Highlight(CharStyleBaseMulti):
 
         Returns:
             Highlight: ``Highlight`` instance from document properties.
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_highlight`
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerHighlight.from_obj(inst.get_style_props(doc))
