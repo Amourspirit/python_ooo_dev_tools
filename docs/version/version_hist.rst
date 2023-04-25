@@ -2,6 +2,16 @@
 Version History
 ***************
 
+Version 0.9.6
+=============
+
+Minor bug fixes and updates.
+
+Version 0.9.5
+=============
+
+Minor bug fixes and updates.
+
 Version 0.9.4
 =============
 

@@ -50,22 +50,22 @@ Setup
                     |short_ptext|
                 )
 
-            with Lo.Loader(Lo.ConnectSocket()):
-                doc = Write.create_doc()
-                GUI.set_visible(True, doc)
-                Lo.delay(500)
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                with Lo.Loader(Lo.ConnectSocket()):
+                    doc = Write.create_doc()
+                    GUI.set_visible(True, doc)
+                    Lo.delay(500)
+                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                cursor = Write.get_cursor(doc)
-                Write.append_para(
-                    cursor=cursor, text=p_txt, styles=[Outline(LevelKind.LEVEL_01)]
-                )
-                Write.append_para(
-                    cursor=cursor, text=p_txt, styles=[Outline(LevelKind.TEXT_BODY)]
-                )
-                Lo.delay(1_000)
-                Lo.close_doc(doc)
-            return 0
+                    cursor = Write.get_cursor(doc)
+                    Write.append_para(
+                        cursor=cursor, text=p_txt, styles=[Outline(LevelKind.LEVEL_01)]
+                    )
+                    Write.append_para(
+                        cursor=cursor, text=p_txt, styles=[Outline(LevelKind.TEXT_BODY)]
+                    )
+                    Lo.delay(1_000)
+                    Lo.close_doc(doc)
+                return 0
 
 
             if __name__ == "__main__":

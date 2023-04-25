@@ -57,6 +57,9 @@ class ShadowStruct(StructBase):
 
         Raises:
             ValueError: If ``color`` or ``width`` are less than zero.
+
+        Returns:
+            None:
         """
         super().__init__()
 

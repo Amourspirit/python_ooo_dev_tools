@@ -6,3 +6,4 @@ Direct
 
     char/index
     para/index
+    table/index

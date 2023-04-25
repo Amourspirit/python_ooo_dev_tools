@@ -112,11 +112,11 @@ class _TblAuto(AbstractDocument):
         Constructor
 
         Args:
-            width (float, UnitObj, optional): Table width value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            left (float, UnitObj, optional): Spacing Left value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            right (float, UnitObj, optional): Spacing Right value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            above (float, UnitObj, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            below (float, UnitObj, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            width (TblAbsUnit, optional): Table width value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            left (TblAbsUnit, optional): Spacing Left value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            right (TblAbsUnit, optional): Spacing Right value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            above (TblAbsUnit, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            below (TblAbsUnit, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
         """
         # only Above and Below properties are used in this class
         super().__init__()
@@ -1821,11 +1821,11 @@ class TableProperties(StyleMulti):
 
         Args:
             name (str, optional): Specifies frame name. Space are NOT allowed in names
-            width (RelativeSize, AbsoluteSize, optional): Specifies table Width.
-            left (RelativeSize, AbsoluteSize, optional): Specifies table Left.
-            right (RelativeSize, AbsoluteSize, optional): Specifies table Right.
-            above (RelativeSize, AbsoluteSize, optional): Specifies table spacing above.
-            below (RelativeSize, AbsoluteSize, optional): Specifies table spacing below.
+            width (TblAbsUnit, TblRelUnit, optional): Specifies table Width.
+            left (TblAbsUnit, TblRelUnit, optional): Specifies table Left.
+            right (TblAbsUnit, TblRelUnit, optional): Specifies table Right.
+            above (TblAbsUnit, TblRelUnit, optional): Specifies table spacing above.
+            below (TblAbsUnit, TblRelUnit, optional): Specifies table spacing below.
             align (TableAlignKind, optional): Specifies table alignment.
             relative (bool, optional): Specifies if table horizontal values are in percentages or ``mm`` units.
 
