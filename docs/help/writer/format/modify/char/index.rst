@@ -1,6 +1,6 @@
-.. _help_writer_format_direct_char:
+.. _help_writer_format_modify_char:
 
-Writer Format Direct Character
+Writer Format Modify Character
 ==============================
 
 .. toctree::

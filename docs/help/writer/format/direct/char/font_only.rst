@@ -28,7 +28,6 @@ Setting the font name and size
 
     .. code-tab:: python
 
-        import sys
         from ooodev.format.writer.direct.char.font import FontOnly
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
@@ -52,7 +51,7 @@ Setting the font name and size
             return 0
 
         if __name__ == "__main__":
-            sys.exit(main())
+            SystemExit(main())
 
     .. only:: html
 
@@ -124,6 +123,7 @@ The paragraph cursor is then used to get the font style.
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_font_effects`
         - :ref:`help_writer_format_direct_char_font`
+        - :ref:`help_writer_format_modify_char_font_only`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontOnly`

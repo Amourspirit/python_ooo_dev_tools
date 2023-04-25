@@ -16,6 +16,10 @@ class FontOnly(CharStyleBaseMulti):
     """
     Character Style Font
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_font_only`
+
     .. versionadded:: 0.9.0
     """
 
@@ -43,6 +47,9 @@ class FontOnly(CharStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_font_only`
         """
 
         direct = InnerFontOnly(name=name, size=size, font_style=font_style_name, lang=lang)

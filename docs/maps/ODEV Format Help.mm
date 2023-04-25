@@ -1219,43 +1219,43 @@
 </node>
 </node>
 </node>
-<node TEXT="char" ID="ID_1818495355" CREATED="1675145568949" MODIFIED="1682196183149">
-<icon BUILTIN="unchecked"/>
-<node TEXT="font" ID="ID_1541240606" CREATED="1675145584118" MODIFIED="1682196183149">
-<icon BUILTIN="unchecked"/>
-<node TEXT="FontOnly" ID="ID_434927050" CREATED="1676235452422" MODIFIED="1682196183149">
+<node TEXT="char" ID="ID_1818495355" CREATED="1675145568949" MODIFIED="1682424641053">
+<icon BUILTIN="checked"/>
+<node TEXT="font" ID="ID_1541240606" CREATED="1675145584118" MODIFIED="1682424633438">
+<icon BUILTIN="checked"/>
+<node TEXT="FontOnly" ID="ID_434927050" CREATED="1676235452422" MODIFIED="1682418867973">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontPosition" ID="ID_218500479" CREATED="1676235458606" MODIFIED="1682196183149">
+<node TEXT="FontPosition" ID="ID_218500479" CREATED="1676235458606" MODIFIED="1682424633436">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontEffects" ID="ID_152283874" CREATED="1676235470766" MODIFIED="1682196183149">
+<node TEXT="FontEffects" ID="ID_152283874" CREATED="1676235470766" MODIFIED="1682418872706">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="highlight" ID="ID_1370947834" CREATED="1675145603270" MODIFIED="1682196183149">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Highlight" ID="ID_22571729" CREATED="1676243077018" MODIFIED="1682196183149">
+<node TEXT="highlight" ID="ID_1370947834" CREATED="1675145603270" MODIFIED="1682421287888">
+<icon BUILTIN="checked"/>
+<node TEXT="Highlight" ID="ID_22571729" CREATED="1676243077018" MODIFIED="1682421282833">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_721808962" CREATED="1675145618830" MODIFIED="1682196183149">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Padding" ID="ID_1508469011" CREATED="1676239284569" MODIFIED="1682196183149">
+<node TEXT="borders" ID="ID_721808962" CREATED="1675145618830" MODIFIED="1682424611338">
+<icon BUILTIN="checked"/>
+<node TEXT="Padding" ID="ID_1508469011" CREATED="1676239284569" MODIFIED="1682424594827">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Sides" ID="ID_663688548" CREATED="1676238549457" MODIFIED="1682196183149">
+<node TEXT="Sides" ID="ID_663688548" CREATED="1676238549457" MODIFIED="1682424611336">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Shadow" ID="ID_956230356" CREATED="1676240941442" MODIFIED="1682196183149">
+<node TEXT="Shadow" ID="ID_956230356" CREATED="1676240941442" MODIFIED="1682424611338">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>

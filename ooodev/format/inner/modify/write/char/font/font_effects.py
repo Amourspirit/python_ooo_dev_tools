@@ -22,6 +22,10 @@ class FontEffects(CharStyleBaseMulti):
     """
     Character Style Font Effects
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_font_effects`
+
     .. versionadded:: 0.9.0
     """
 
@@ -63,6 +67,9 @@ class FontEffects(CharStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_font_effects`
         """
 
         direct = InnerFontEffects(
