@@ -13,7 +13,7 @@ The :py:class:`ooodev.format.writer.modify.para.indent_space.Indent`, :py:class:
 and :py:class:`ooodev.format.writer.modify.para.indent_space.Spacing` classes are used to set the Indent & Spacing style of a paragraph.
 
 
-Default Paragraph Outline & List Style Dialog
+Default Paragraph Indent & Spacing Style Dialog
 
 .. cssclass:: screen_shot
 
@@ -158,8 +158,6 @@ Style results.
 Getting spacing from a style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can get the border padding from the document.
-
 .. tabs::
 
     .. code-tab:: python
@@ -212,8 +210,6 @@ Style results.
 
 Getting line spacing from a style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-We can get the border shadow from the document.
 
 .. tabs::
 

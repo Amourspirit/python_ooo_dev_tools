@@ -14,6 +14,10 @@ class Hyphenation(ParaStyleBaseMulti):
     """
     Paragraph Style Hyphenation
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_text_flow`
+
     .. versionadded:: 0.9.0
     """
 
@@ -43,6 +47,9 @@ class Hyphenation(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_text_flow`
         """
 
         direct = InnerHyphenation(auto=auto, no_caps=no_caps, start_chars=start_chars, end_chars=end_chars, max=max)
