@@ -475,6 +475,7 @@ In this example the paragraph line number start value is set to ``0`` (include).
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_para_outline_and_list`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.outline_list.Outline`

@@ -16,6 +16,10 @@ class Outline(ParaStyleBaseMulti):
     """
     Paragraph Style Outline
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_outline_and_list`
+
     .. versionadded:: 0.9.0
     """
 
@@ -37,6 +41,9 @@ class Outline(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_outline_and_list`
         """
 
         direct = InnerOutline(level=level)

@@ -23,6 +23,10 @@ class Gradient(ParaStyleBaseMulti):
     """
     Paragraph Style Gradient Color
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_gradient`
+
     .. versionadded:: 0.9.0
     """
 
@@ -63,6 +67,9 @@ class Gradient(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_gradient`
         """
 
         direct = InnerGradient(

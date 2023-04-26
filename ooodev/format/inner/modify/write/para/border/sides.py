@@ -15,6 +15,10 @@ class Sides(ParaStyleBaseMulti):
     """
     Paragraph Style Sides (lines)
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -45,6 +49,9 @@ class Sides(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_borders`
         """
 
         direct = InnerSides(left=left, right=right, top=top, bottom=bottom, all=all)

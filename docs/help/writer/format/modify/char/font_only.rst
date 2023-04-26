@@ -19,6 +19,7 @@ Before Settings
     .. figure:: https://user-images.githubusercontent.com/4193389/234142867-3b8878ea-3542-47e2-bf97-2b82c9300743.png
         :alt: Writer dialog Character font default
         :figclass: align-center
+        :width: 450px
 
         Writer dialog Character font default
 
@@ -72,6 +73,7 @@ After appling the font name and size
     .. figure:: https://user-images.githubusercontent.com/4193389/234143029-420b616b-d028-4691-884f-e6cbbc08535d.png
         :alt: Writer dialog character font style changed
         :figclass: align-center
+        :width: 450px
 
         Writer dialog character font style changed
 
@@ -95,8 +97,6 @@ We can get the font name and size from the document.
         .. cssclass:: tab-none
 
             .. group-tab:: None
-
-
 
 .. seealso::
 

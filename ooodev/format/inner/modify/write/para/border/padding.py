@@ -15,6 +15,10 @@ class Padding(ParaStyleBaseMulti):
     """
     Paragraph Style Padding
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -45,6 +49,9 @@ class Padding(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_borders`
         """
 
         direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=all)

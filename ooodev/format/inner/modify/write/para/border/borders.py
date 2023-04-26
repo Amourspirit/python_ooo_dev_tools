@@ -4,8 +4,8 @@ from typing import cast
 import uno
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
-from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
-from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding
+from ooodev.format.inner.direct.write.para.border.shadow import Shadow
+from ooodev.format.inner.direct.write.para.border.padding import Padding
 from ooodev.format.inner.direct.write.para.border.borders import Borders as InnerBorders
 from ..para_style_base_multi import ParaStyleBaseMulti
 
@@ -15,6 +15,10 @@ from ..para_style_base_multi import ParaStyleBaseMulti
 class Borders(ParaStyleBaseMulti):
     """
     Paragraph Style Borders
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_borders`
 
     .. versionadded:: 0.9.0
     """
@@ -27,8 +31,8 @@ class Borders(ParaStyleBaseMulti):
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
-        shadow: InnerShadow | None = None,
-        padding: InnerPadding | None = None,
+        shadow: Shadow | None = None,
+        padding: Padding | None = None,
         merge: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -52,6 +56,9 @@ class Borders(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_borders`
         """
 
         direct = InnerBorders(
