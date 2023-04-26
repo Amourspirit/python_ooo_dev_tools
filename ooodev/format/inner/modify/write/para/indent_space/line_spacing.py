@@ -16,6 +16,10 @@ class LineSpacing(ParaStyleBaseMulti):
     """
     Paragraph Style Line Spacing
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_indent_spacing`
+
     .. versionadded:: 0.9.0
     """
 
@@ -51,6 +55,9 @@ class LineSpacing(ParaStyleBaseMulti):
 
             If ``ModeKind`` is ``PROPORTIONAL`` then value is an int representing percentage.
             For example ``95`` equals ``95%``, ``130`` equals ``130%``
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_indent_spacing`
         """
 
         direct = InnerLineSpacing(mode=mode, value=value, active_ln_spacing=active_ln_spacing)

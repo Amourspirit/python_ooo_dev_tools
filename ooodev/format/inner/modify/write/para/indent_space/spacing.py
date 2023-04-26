@@ -15,6 +15,10 @@ class Spacing(ParaStyleBaseMulti):
     """
     Paragraph Style Spacing
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_indent_spacing`
+
     .. versionadded:: 0.9.0
     """
 
@@ -42,6 +46,9 @@ class Spacing(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_indent_spacing`
         """
 
         direct = InnerSpacing(above=above, below=below, style_no_space=style_no_space)
