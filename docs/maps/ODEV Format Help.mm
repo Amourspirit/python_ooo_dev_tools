@@ -1114,19 +1114,19 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="font" ID="ID_1243036033" CREATED="1675145395669" MODIFIED="1682196183147">
-<icon BUILTIN="unchecked"/>
-<node TEXT="FontOnly" ID="ID_1027622809" CREATED="1675363804181" MODIFIED="1682196183147">
+<node TEXT="font" ID="ID_1243036033" CREATED="1675145395669" MODIFIED="1682548057694">
+<icon BUILTIN="checked"/>
+<node TEXT="FontOnly" ID="ID_1027622809" CREATED="1675363804181" MODIFIED="1682548057690">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontPosition" ID="ID_187615634" CREATED="1675065678026" MODIFIED="1682196183147">
+<node TEXT="FontPosition" ID="ID_187615634" CREATED="1675065678026" MODIFIED="1682548057694">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontEffects" ID="ID_230137211" CREATED="1675363944768" MODIFIED="1682196183147">
+<node TEXT="FontEffects" ID="ID_230137211" CREATED="1675363944768" MODIFIED="1682548057694">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="tabs" ID="ID_1706858053" CREATED="1675065835291" MODIFIED="1682196183147">

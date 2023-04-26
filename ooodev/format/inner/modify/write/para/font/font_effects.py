@@ -21,6 +21,10 @@ class FontEffects(ParaStyleBaseMulti):
     """
     Style Font Effects
 
+    .. seealos::
+
+        - :ref:`help_writer_format_modify_para_font_effects`
+
     .. versionadded:: 0.9.0
     """
 
@@ -64,6 +68,9 @@ class FontEffects(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_font_effects`
         """
 
         direct = InnerFontEffects(
