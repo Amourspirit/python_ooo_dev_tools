@@ -19,6 +19,7 @@ Before Settings
     .. figure:: https://user-images.githubusercontent.com/4193389/234252792-f4eaab74-7279-43f6-80d9-16f9407304c0.png
         :alt: Writer dialog Character font position default
         :figclass: align-center
+        :width: 450px
 
         Writer dialog Character font position default
 
@@ -79,6 +80,7 @@ After applying the font position.
     .. figure:: https://user-images.githubusercontent.com/4193389/234254594-a4e7d9f0-d358-4ba7-97d7-cf59c181035c.png
         :alt: Writer dialog character font position changed
         :figclass: align-center
+        :width: 450px
 
         Writer dialog character font position changed
 

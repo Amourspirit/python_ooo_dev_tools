@@ -14,6 +14,10 @@ class Color(ParaStyleBaseMulti):
     """
     Paragraph Style Fill Coloring
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_color`
+
     .. versionadded:: 0.9.0
     """
 
@@ -35,6 +39,9 @@ class Color(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_color`
         """
 
         direct = InnerColor(color=color)

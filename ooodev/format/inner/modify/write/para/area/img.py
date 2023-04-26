@@ -26,6 +26,10 @@ class Img(ParaStyleBaseMulti):
     """
     Paragraph Style Fill Coloring
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_image`
+
     .. versionadded:: 0.9.0
     """
 
@@ -54,6 +58,9 @@ class Img(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_image`
         """
 
         direct = InnerImg(

@@ -9,4 +9,4 @@ from ooodev.format.inner.modify.write.para.align.alignment import Alignment as A
 from ooodev.format.inner.modify.write.para.align.alignment import InnerAlignment as InnerAlignment
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 
-__all__ = ["LastLineKind", "WritingMode", "Alignment", "InnerAlignment"]
+__all__ = ["Alignment"]

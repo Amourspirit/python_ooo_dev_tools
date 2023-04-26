@@ -21,6 +21,10 @@ class Pattern(ParaStyleBaseMulti):
     """
     Paragraph Style Gradient Color
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_pattern`
+
     .. versionadded:: 0.9.0
     """
 
@@ -52,6 +56,9 @@ class Pattern(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_pattern`
         """
 
         direct = InnerPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)

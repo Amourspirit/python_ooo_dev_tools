@@ -20,6 +20,10 @@ class Alignment(ParaStyleBaseMulti):
 
     Any properties starting with ``prop_`` set or get current instance values.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -53,6 +57,9 @@ class Alignment(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_alignment`
         """
 
         direct = InnerAlignment(
