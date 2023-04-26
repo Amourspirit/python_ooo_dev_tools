@@ -16,7 +16,7 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 10, 11
+        :emphasize-lines: 10, 11, 12, 13
 
         from ooodev.format.writer.modify.para.area import Color as ParaStyleColor, StyleParaKind
 
@@ -27,7 +27,9 @@ Setup
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
 
-                para_area_color_style = ParaStyleColor(color=StandardColor.GREEN_LIGHT2, style_name=StyleParaKind.STANDARD)
+                para_area_color_style = ParaStyleColor(
+                    color=StandardColor.GREEN_LIGHT2, style_name=StyleParaKind.STANDARD
+                )
                 para_area_color_style.apply(doc)
 
                 style_obj = ParaStyleColor.from_style(doc=doc, style_name=StyleParaKind.STANDARD)

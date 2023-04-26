@@ -16,9 +16,10 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 10, 11, 12, 13
+        :emphasize-lines: 11, 12, 13, 14
 
-        from ooodev.format.writer.modify.para.area import Gradient as ParaStyleGradient, StyleParaKind, PresetGradientKind
+        from ooodev.format.writer.modify.para.area import Gradient as ParaStyleGradient, StyleParaKind
+        from ooodev.format.writer.modify.para.area import PresetGradientKind
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):

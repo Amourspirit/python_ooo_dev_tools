@@ -1181,19 +1181,19 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="outline_list" ID="ID_514385231" CREATED="1675065823851" MODIFIED="1682196183148">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Outline" ID="ID_1057057405" CREATED="1676048092741" MODIFIED="1682196183148">
+<node TEXT="outline_list" ID="ID_514385231" CREATED="1675065823851" MODIFIED="1682469461136">
+<icon BUILTIN="checked"/>
+<node TEXT="Outline" ID="ID_1057057405" CREATED="1676048092741" MODIFIED="1682469461133">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="LineNum" ID="ID_1495322942" CREATED="1676048099548" MODIFIED="1682196183148">
+<node TEXT="LineNum" ID="ID_1495322942" CREATED="1676048099548" MODIFIED="1682469461136">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="ListStyle" ID="ID_1056243596" CREATED="1676048104972" MODIFIED="1682196183148">
+<node TEXT="ListStyle" ID="ID_1056243596" CREATED="1676048104972" MODIFIED="1682469461136">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="transparency" ID="ID_1954191666" CREATED="1675065904948" MODIFIED="1682196183149">

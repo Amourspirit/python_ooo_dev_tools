@@ -34,6 +34,10 @@ class LineNum(ParaStyleBaseMulti):
     """
     Paragraph Style Line Number
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_outline_and_list`
+
     .. versionadded:: 0.9.0
     """
 
@@ -58,6 +62,9 @@ class LineNum(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_outline_and_list`
         """
 
         direct = InnerLineNum(num_start=num_start)
