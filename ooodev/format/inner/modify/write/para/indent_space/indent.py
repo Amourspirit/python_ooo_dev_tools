@@ -14,6 +14,10 @@ class Indent(ParaStyleBaseMulti):
     """
     Paragraph Style Indent
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_indent_spacing`
+
     .. versionadded:: 0.9.0
     """
 
@@ -44,6 +48,9 @@ class Indent(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_indent_spacing`
         """
 
         direct = InnerIndent(before=before, after=after, first=first, auto=auto)

@@ -8,4 +8,4 @@ from ooodev.format.inner.modify.write.para.indent_space.spacing import InnerSpac
 from ooodev.format.inner.modify.write.para.indent_space.spacing import Spacing as Spacing
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 
-__all__ = ["ModeKind", "Indent", "InnerIndent", "InnerLineSpacing", "LineSpacing", "InnerSpacing", "Spacing"]
+__all__ = ["Indent", "LineSpacing", "Spacing"]

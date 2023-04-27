@@ -180,6 +180,7 @@ Set Breaks
         - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_para_text_flow`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.text_flow.Breaks`

@@ -14,6 +14,10 @@ class FlowOptions(ParaStyleBaseMulti):
     """
     Paragraph Style Flow Options
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_text_flow`
+
     .. versionadded:: 0.9.0
     """
 
@@ -41,6 +45,9 @@ class FlowOptions(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_text_flow`
         """
 
         direct = InnerFlowOptions(orphans=orphans, widows=widows, keep=keep, no_split=no_split)

@@ -1,7 +1,7 @@
 .. _help_writer_format_direct_para_transparency:
 
-Write Direct Paragraph Transparency Transparency Class
-======================================================
+Write Direct Paragraph Transparency
+===================================
 
 .. This file can also include Gradient if and when it is implemented.
 
@@ -169,6 +169,7 @@ Get Transparency from Paragraph
         - :ref:`help_writer_format_style_para`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_para_transparency`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.transparency.Transparency`

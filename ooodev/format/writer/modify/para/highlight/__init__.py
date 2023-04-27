@@ -2,4 +2,4 @@ from ooodev.format.inner.modify.write.para.highlight.highlight import InnerHighl
 from ooodev.format.inner.modify.write.para.highlight.highlight import Highlight as Highlight
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 
-__all__ = ["InnerHighlight", "Highlight"]
+__all__ = ["Highlight"]

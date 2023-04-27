@@ -4,4 +4,4 @@ from ooodev.format.inner.modify.write.para.drop_cap.drop_caps import InnerDropCa
 from ooodev.format.writer.style.char.kind import StyleCharKind as StyleCharKind
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 
-__all__ = ["DropCaps", "InnerDropCaps"]
+__all__ = ["DropCaps"]
