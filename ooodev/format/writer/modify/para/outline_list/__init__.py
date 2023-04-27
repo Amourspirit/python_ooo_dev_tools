@@ -9,4 +9,4 @@ from ooodev.format.inner.modify.write.para.outline_list.outline import Outline a
 from ooodev.format.writer.style.lst import StyleListKind as StyleListKind
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 
-__all__ = ["LevelKind", "InnerLineNum", "LineNum", "InnerListStyle", "ListStyle", "InnerOutline", "Outline"]
+__all__ = ["LineNum", "ListStyle", "Outline"]

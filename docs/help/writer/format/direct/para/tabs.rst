@@ -283,6 +283,7 @@ Or :py:meth:`Tabs.remove <ooodev.format.writer.direct.para.tabs.Tabs.remove>` wh
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_para_tabs`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.tabs.Tabs`

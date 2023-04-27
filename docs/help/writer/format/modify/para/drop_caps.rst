@@ -1,6 +1,6 @@
-.. _help_writer_format_modify_para_color:
+.. _help_writer_format_modify_para_drop_caps:
 
-Write Modify Paragraph Area Color
+Write Modify Paragraph Drops Caps
 =================================
 
 .. contents:: Table of Contents
@@ -8,7 +8,7 @@ Write Modify Paragraph Area Color
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.writer.modify.para.area.Color` class is used to modify the values seen in :numref:`234414996-29658481-e0e6-4d6f-9f46-bd645e21da64` of a paragraph style.
+The :py:class:`ooodev.format.writer.modify.para.drop_caps.DropCaps` class is used to modify the values seen in :numref:`234729276-17e99b85-3e71-44d4-896f-d75563705088` of a paragraph style.
 
 Setup
 -----
@@ -16,9 +16,9 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 13, 14, 15, 15, 16
+        :emphasize-lines: 13, 14, 15, 16
 
-        from ooodev.format.writer.modify.para.area import Color as ParaStyleColor, StyleParaKind
+        from ooodev.format.writer.modify.para.drop_caps import DropCaps, StyleParaKind, StyleCharKind
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
         from ooodev.utils.lo import Lo
@@ -30,12 +30,12 @@ Setup
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
 
-                para_area_color_style = ParaStyleColor(
-                    color=StandardColor.GREEN_LIGHT2, style_name=StyleParaKind.STANDARD
+                para_dc_style = DropCaps(
+                    count=4, style=StyleCharKind.DROP_CAPS, spaces=5.0, style_name=StyleParaKind.STANDARD
                 )
-                para_area_color_style.apply(doc)
+                para_dc_style.apply(doc)
 
-                style_obj = ParaStyleColor.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+                style_obj = DropCaps.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
                 assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
                 Lo.delay(1_000)
 
@@ -53,21 +53,21 @@ Setup
 
             .. group-tab:: None
 
-Apply alignment to a style
---------------------------
+Apply Drops Caps to a style
+---------------------------
 
 Before applying Style
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. cssclass:: screen_shot
 
-    .. _234414996-29658481-e0e6-4d6f-9f46-bd645e21da64:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234414996-29658481-e0e6-4d6f-9f46-bd645e21da64.png
-        :alt: Writer dialog Paragraph Area Color style default
+    .. _234729276-17e99b85-3e71-44d4-896f-d75563705088:
+    .. figure:: https://user-images.githubusercontent.com/4193389/234729276-17e99b85-3e71-44d4-896f-d75563705088.png
+        :alt: Writer dialog Paragraph Drop Caps style default
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Paragraph Area Color style default
+        Writer dialog Paragraph Drop Caps style default
 
 Apply style
 ^^^^^^^^^^^
@@ -78,10 +78,10 @@ Apply style
 
         # ... other code
 
-        para_area_color_style = ParaStyleColor(
-            color=StandardColor.GREEN_LIGHT2, style_name=StyleParaKind.STANDARD
+        para_dc_style = DropCaps(
+            count=4, style=StyleCharKind.DROP_CAPS, spaces=5.0, style_name=StyleParaKind.STANDARD
         )
-        para_area_color_style.apply(doc)
+        para_dc_style.apply(doc)
 
     .. only:: html
 
@@ -95,13 +95,13 @@ After appling style
 
 .. cssclass:: screen_shot
 
-    .. _234415852-4f17c6b9-0379-445f-83a5-d8c3c184beeb:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234415852-4f17c6b9-0379-445f-83a5-d8c3c184beeb.png
-        :alt: Writer dialog Paragraph Area Color style changed
+    .. _234729668-176ce8e4-a2b6-475f-9fb5-cad05d713e11:
+    .. figure:: https://user-images.githubusercontent.com/4193389/234729668-176ce8e4-a2b6-475f-9fb5-cad05d713e11.png
+        :alt: Writer dialog Paragraph Drops Caps style changed
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Paragraph Area Color style changed
+        Writer dialog Paragraph Drops Caps style changed
 
 
 Getting the area color from a style
@@ -115,7 +115,7 @@ We can get the area color from the document.
 
         # ... other code
 
-        style_obj = ParaStyleColor.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+        style_obj = DropCaps.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
         assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html
@@ -130,7 +130,7 @@ We can get the area color from the document.
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_writer_format_direct_para_area_color`
+        - :ref:`help_writer_format_direct_para_drop_caps`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`ooodev.format.writer.modify.para.area.Color`
+        - :py:class:`ooodev.format.writer.modify.para.drop_caps.DropCaps`

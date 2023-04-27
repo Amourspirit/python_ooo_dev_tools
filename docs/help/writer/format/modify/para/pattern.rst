@@ -51,8 +51,8 @@ Setup
 
             .. group-tab:: None
 
-Apply image to a style
-----------------------
+Apply pattern to a style
+------------------------
 
 Before applying Style
 ^^^^^^^^^^^^^^^^^^^^^
@@ -103,7 +103,7 @@ After appling style
 
 
 Getting the area pattern from a style
------------------------------------
+-------------------------------------
 
 We can get the area pattern from the document.
 

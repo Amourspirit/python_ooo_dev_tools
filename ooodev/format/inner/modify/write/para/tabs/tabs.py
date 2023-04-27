@@ -17,6 +17,10 @@ class Tabs(ParaStyleBaseMulti):
     """
     Paragraph Style Breaks
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_tabs`
+
     .. versionadded:: 0.9.0
     """
 
@@ -51,6 +55,9 @@ class Tabs(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_tabs`
         """
 
         direct = InnerTabs(position=position, align=align, decimal_char=decimal_char, fill_char=fill_char)

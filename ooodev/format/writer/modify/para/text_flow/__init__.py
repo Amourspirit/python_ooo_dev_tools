@@ -9,4 +9,4 @@ from ooodev.format.inner.modify.write.para.text_flow.hyphenation import Hyphenat
 from ooodev.format.inner.modify.write.para.text_flow.hyphenation import InnerHyphenation as InnerHyphenation
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 
-__all__ = ["Breaks", "InnerBreaks", "FlowOptions", "InnerFlowOptions", "Hyphenation", "InnerHyphenation"]
+__all__ = ["Breaks", "FlowOptions", "Hyphenation"]

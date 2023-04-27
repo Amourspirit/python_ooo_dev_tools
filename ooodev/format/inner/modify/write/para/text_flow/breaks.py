@@ -15,6 +15,10 @@ class Breaks(ParaStyleBaseMulti):
     """
     Paragraph Style Breaks
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_text_flow`
+
     .. versionadded:: 0.9.0
     """
 
@@ -40,6 +44,9 @@ class Breaks(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_text_flow`
         """
 
         direct = InnerBreaks(type=type, style=style, num=num)

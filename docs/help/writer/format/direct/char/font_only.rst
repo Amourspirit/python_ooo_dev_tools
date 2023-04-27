@@ -126,6 +126,7 @@ The paragraph cursor is then used to get the font style.
         - :ref:`help_writer_format_direct_char_font_effects`
         - :ref:`help_writer_format_direct_char_font`
         - :ref:`help_writer_format_modify_char_font_only`
+        - :ref:`help_writer_format_modify_para_font_only`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontOnly`

@@ -186,6 +186,10 @@ class ListStyle(ParaStyleBaseMulti):
     """
     Paragraph List Style
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_outline_and_list`
+
     .. versionadded:: 0.9.0
     """
 
@@ -207,6 +211,9 @@ class ListStyle(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_outline_and_list`
         """
 
         direct = InnerListStyle(list_style=list_style)

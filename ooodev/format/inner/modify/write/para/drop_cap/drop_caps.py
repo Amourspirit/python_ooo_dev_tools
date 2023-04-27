@@ -16,6 +16,10 @@ class DropCaps(ParaStyleBaseMulti):
     """
     Paragraph Style Drop Caps
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_drop_caps`
+
     .. versionadded:: 0.9.0
     """
 
@@ -46,6 +50,9 @@ class DropCaps(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_drop_caps`
         """
 
         direct = InnerDropCaps(count=count, spaces=spaces, lines=lines, style=style, whole_word=whole_word)

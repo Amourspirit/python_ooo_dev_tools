@@ -132,7 +132,9 @@ Setting List Style
 
         # ... other code
 
-        para_liststyle_style = ListStyle(list_style=StyleListKind.NUM_123, style_name=StyleParaKind.STANDARD)
+        para_liststyle_style = ListStyle(
+            list_style=StyleListKind.NUM_123, style_name=StyleParaKind.STANDARD
+        )
         para_liststyle_style.apply(doc)
 
     .. only:: html
