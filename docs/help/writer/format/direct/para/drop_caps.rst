@@ -220,6 +220,7 @@ The paragraph cursor is then used to get the style.
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`ch02`
+        - :ref:`help_writer_format_modify_para_drop_caps`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.drop_caps.DropCaps`

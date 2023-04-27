@@ -19,15 +19,4 @@ from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 
 
-__all__ = [
-    "FontLine",
-    "FontLang",
-    "CharSpacingKind",
-    "FontScriptKind",
-    "FontEffects",
-    "InnerFontEffects",
-    "FontOnly",
-    "InnerFontOnly",
-    "FontPosition",
-    "InnerFontPosition",
-]
+__all__ = ["FontEffects", "FontOnly", "FontPosition"]

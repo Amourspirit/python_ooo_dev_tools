@@ -108,6 +108,7 @@ We can get the highlight from the document.
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_highlight`
+        - :ref:`help_writer_format_modify_para_highlight`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.char.highlight.Highlight`

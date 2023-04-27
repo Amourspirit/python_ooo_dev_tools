@@ -1,7 +1,7 @@
 .. _help_writer_format_modify_para_font_only:
 
-Write Modify Paragraph Font Effects
-===================================
+Write Modify Paragraph Font
+===========================
 
 .. contents:: Table of Contents
     :local:
@@ -52,6 +52,8 @@ Setting the font
                 style_obj = FontOnly.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
                 assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
                 Lo.delay(1_000)
+
+                Lo.close_doc(doc)
             return 0
 
         if __name__ == "__main__":

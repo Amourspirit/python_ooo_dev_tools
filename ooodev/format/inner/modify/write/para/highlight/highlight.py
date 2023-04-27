@@ -15,6 +15,10 @@ class Highlight(ParaStyleBaseMulti):
     """
     Paragraph Style Highlight
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_highlight`
+
     .. versionadded:: 0.9.0
     """
 
@@ -36,6 +40,9 @@ class Highlight(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_highlight`
         """
 
         direct = InnerHighlight(color=color)

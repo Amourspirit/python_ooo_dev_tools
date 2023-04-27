@@ -143,6 +143,7 @@ Remove Highlighting
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_char_highlight`
+        - :ref:`help_writer_format_modify_para_highlight`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.char.highlight.Highlight`
