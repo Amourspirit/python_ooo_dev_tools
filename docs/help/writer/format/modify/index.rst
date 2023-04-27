@@ -8,3 +8,4 @@ Modify
 
     char/index
     para/index
+    page/index
