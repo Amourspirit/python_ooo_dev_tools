@@ -6,4 +6,4 @@ from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind a
 from ooodev.format.inner.direct.write.para.align.alignment import Alignment as Alignment
 from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode as WritingMode
 
-__all__ = ["LastLineKind", "Alignment", "WritingMode"]
+__all__ = ["Alignment", "WritingMode"]

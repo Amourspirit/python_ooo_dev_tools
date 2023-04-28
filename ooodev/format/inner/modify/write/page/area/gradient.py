@@ -22,6 +22,10 @@ class Gradient(PageStyleBaseMulti):
     """
     Page Style Gradient
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -62,6 +66,9 @@ class Gradient(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_area`
         """
 
         direct = InnerGradient(

@@ -23,6 +23,10 @@ class Img(PageStyleBaseMulti):
     """
     Page Style Image
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -61,6 +65,9 @@ class Img(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_area`
         """
 
         direct = InnerImg(

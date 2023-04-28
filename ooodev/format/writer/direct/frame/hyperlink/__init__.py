@@ -2,4 +2,4 @@ from ooodev.format.inner.direct.write.frame.hyperlink.image_map_options import I
 from ooodev.format.inner.direct.write.frame.hyperlink.link_to import TargetKind as TargetKind
 from ooodev.format.inner.direct.write.frame.hyperlink.link_to import LinkTo as LinkTo
 
-__all__ = ["ImageMapOptions", "TargetKind", "LinkTo"]
+__all__ = ["ImageMapOptions", "LinkTo"]

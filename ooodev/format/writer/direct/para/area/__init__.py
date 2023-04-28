@@ -24,10 +24,4 @@ from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRo
 from ooodev.format.inner.direct.write.para.area.img import Img as Img
 from ooodev.format.inner.direct.write.para.area.hatch import Hatch as Hatch
 
-__all__ = [
-    "Color",
-    "Gradient",
-    "Pattern",
-    "Img",
-    "Hatch",
-]
+__all__ = ["Color", "Gradient", "Pattern", "Img", "Hatch"]

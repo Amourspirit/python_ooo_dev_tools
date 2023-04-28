@@ -10,15 +10,6 @@ from ooodev.format.inner.modify.write.page.page.paper_format import InnerPaperFo
 from ooodev.format.inner.modify.write.page.page.paper_format import PaperFormat as PaperFormat
 from ooodev.format.inner.preset.preset_paper_format import PaperFormatKind as PaperFormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
-__all__ = [
-    "InnerLayoutSettings",
-    "LayoutSettings",
-    "InnerMargins",
-    "Margins",
-    "InnerPaperFormat",
-    "PaperFormat",
-    "PaperFormatKind",
-]
+__all__ = ["LayoutSettings", "Margins", "PaperFormat"]

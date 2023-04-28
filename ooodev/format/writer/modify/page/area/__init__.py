@@ -29,13 +29,4 @@ from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRa
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
-__all__ = [
-    "Color",
-    "InnerColor",
-    "Gradient",
-    "Hatch",
-    "Img",
-    "InnerImg",
-    "InnerPattern",
-    "Pattern",
-]
+__all__ = ["Color", "Gradient", "Hatch", "Img", "Pattern"]

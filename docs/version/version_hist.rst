@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.9.7
+=============
+
+Fix ``ooodev.utils.data_type.size_mm.SizeMM`` constructor to accept ``UnitObj`` as well as ``float``.
+
+Minor bug fixes and updates.
+
 Version 0.9.6
 =============
 

@@ -9,4 +9,4 @@ from ooodev.format.inner.modify.write.frame.wrap.spacing import InnerSpacing as 
 from ooodev.format.inner.modify.write.frame.wrap.spacing import Spacing as Spacing
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 
-__all__ = ["InnerOptions", "Options", "InnerSettings", "Settings", "InnerSpacing", "Spacing"]
+__all__ = ["Options", "Settings", "Spacing"]

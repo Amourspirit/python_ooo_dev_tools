@@ -14,6 +14,10 @@ class PaperFormat(PageStyleBaseMulti):
     """
     Page Style Paper Format
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_page`
+
     .. versionadded:: 0.9.0
     """
 
@@ -35,6 +39,9 @@ class PaperFormat(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_page`
         """
 
         direct = InnerPaperFormat(size=size)
