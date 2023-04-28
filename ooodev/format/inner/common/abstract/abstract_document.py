@@ -1,8 +1,10 @@
 # region Import
 from __future__ import annotations
 
+import uno
 from com.sun.star.text import XTextDocument
 from com.sun.star.container import XNameAccess
+from com.sun.star.beans import XPropertySet
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
@@ -114,5 +116,16 @@ class AbstractDocument(StyleBase):
         """
         # return mLo.Lo.this_component.TextFrames
         return mWrite.Write.get_text_frames(mWrite.Write.active_doc)
+
+    def get_doc_settings(self) -> XPropertySet:
+        """
+        Gets the document settings
+
+        Returns:
+            XPropertySet: Properties
+
+        .. versionadded:: 0.9.7
+        """
+        return mWrite.Write.get_doc_settings()
 
     # endregion methods
