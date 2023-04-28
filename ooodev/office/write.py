@@ -648,6 +648,21 @@ class Write(mSel.Selection):
 
     # endregion open_flat_doc_using_text_template()
 
+    @staticmethod
+    def get_doc_settings() -> XPropertySet:
+        """
+        Gets Text Document Settings
+
+        Returns:
+            XPropertySet: Settings
+
+        See Also:
+            `API DocumentSettings Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1text_1_1DocumentSettings.html>`__
+        
+        .. versionadded:: 0.9.7
+        """
+        return mLo.Lo.create_instance_msf(XPropertySet, "com.sun.star.text.DocumentSettings", raise_err=True)
+
     # endregion ---------- doc / open / close /create/ etc -------------
 
     # region ------------- page methods --------------------------------

@@ -9,8 +9,8 @@ import uno
 from com.sun.star.accessibility import XAccessible
 from com.sun.star.accessibility import XAccessibleContext
 from com.sun.star.awt import PosSize  # const
-from com.sun.star.awt import WindowAttribute  # const
 from com.sun.star.awt import VclWindowPeerAttribute  # const
+from com.sun.star.awt import WindowAttribute  # const
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XMenuBar
 from com.sun.star.awt import XMessageBox
@@ -25,19 +25,21 @@ from com.sun.star.awt import XWindowPeer
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexContainer
 from com.sun.star.frame import XDispatchProviderInterception
-from com.sun.star.frame import XLayoutManager
 from com.sun.star.frame import XFrame
 from com.sun.star.frame import XFrame2
 from com.sun.star.frame import XFramesSupplier
+from com.sun.star.frame import XLayoutManager
 from com.sun.star.frame import XModel
 from com.sun.star.lang import SystemDependent  # const
 from com.sun.star.lang import XComponent
-from com.sun.star.view import XControlAccess
-from com.sun.star.view import XSelectionSupplier
 from com.sun.star.ui import UIElementType  # const
 from com.sun.star.ui import XImageManager
-from com.sun.star.ui import XUIConfigurationManagerSupplier
+from com.sun.star.ui import XModuleUIConfigurationManagerSupplier
 from com.sun.star.ui import XUIConfigurationManager
+from com.sun.star.ui import XUIConfigurationManagerSupplier
+from com.sun.star.view import XControlAccess
+from com.sun.star.view import XSelectionSupplier
+
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XController
@@ -1247,12 +1249,12 @@ class GUI:
         """
         doc_type = mInfo.Info.doc_type_service(doc)
 
-        xmodel = mLo.Lo.qi(XModel, doc)
-        if xmodel is None:
-            raise mEx.MissingInterfaceError(XModel)
-        xsupplier = mLo.Lo.qi(XUIConfigurationManagerSupplier, xmodel)
-        if xsupplier is None:
-            raise mEx.MissingInterfaceError(XUIConfigurationManagerSupplier)
+        xsupplier = mLo.Lo.create_instance_mcf(
+            XModuleUIConfigurationManagerSupplier,
+            "com.sun.star.ui.ModuleUIConfigurationManagerSupplier",
+            raise_err=True,
+        )
+
         try:
             return xsupplier.getUIConfigurationManager(str(doc_type))
         except Exception as e:
@@ -1346,7 +1348,7 @@ class GUI:
                 val = mProps.Props.get_value(name="CommandURL", props=setting_props)
                 print(f"{i}) {mProps.Props.prop_value_to_string(val)}")
             print()
-        except exception as e:
+        except Exception as e:
             print(e)
 
     @classmethod
