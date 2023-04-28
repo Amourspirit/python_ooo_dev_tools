@@ -16,21 +16,4 @@ from ooodev.format.inner.modify.write.frame.frame_type.size import InnerSize as 
 from ooodev.format.inner.modify.write.frame.frame_type.size import Size as Size
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 
-__all__ = [
-    "AnchorKind",
-    "HoriOrient",
-    "Horizontal",
-    "RelHoriOrient",
-    "RelVertOrient",
-    "Vertical",
-    "VertOrient",
-    "AbsoluteSize",
-    "RelativeKind",
-    "RelativeSize",
-    "Anchor",
-    "InnerAnchor",
-    "InnerPosition",
-    "Position",
-    "InnerSize",
-    "Size",
-]
+__all__ = ["Anchor", "Position", "Size"]

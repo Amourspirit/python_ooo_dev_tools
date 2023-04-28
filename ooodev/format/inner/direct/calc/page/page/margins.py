@@ -50,10 +50,14 @@ class Margins(StyleBase):
         self.prop_bottom = bottom
 
     # region Internal Methods
-    def _check(self, value: float | None, name: str) -> None:
+    def _check(self, value: float | UnitObj | None, name: str) -> None:
         if value is None:
             return
-        if value < 0.0:
+        try:
+            val = value.get_value_mm()
+        except AttributeError:
+            val = float(value)
+        if val < 0.0:
             raise ValueError(f'"{name}" parameter must be a positive value')
 
     # endregion Internal Methods

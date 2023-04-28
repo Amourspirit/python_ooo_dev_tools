@@ -16,6 +16,10 @@ class Pattern(PageStyleBaseMulti):
     """
     Page Style Pattern
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -47,6 +51,9 @@ class Pattern(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_area`
         """
 
         direct = InnerPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)

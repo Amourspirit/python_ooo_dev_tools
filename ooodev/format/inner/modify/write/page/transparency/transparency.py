@@ -14,6 +14,10 @@ class Transparency(PageStyleBaseMulti):
     """
     Page Style Transparency.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_transparency`
+
     .. versionadded:: 0.9.0
     """
 
@@ -35,6 +39,9 @@ class Transparency(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_transparency`
         """
 
         direct = InnerTransparency(value=value)

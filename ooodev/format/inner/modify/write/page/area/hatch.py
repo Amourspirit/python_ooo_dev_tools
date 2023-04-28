@@ -19,6 +19,10 @@ class Hatch(PageStyleBaseMulti):
     """
     Page Style Pattern
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -51,6 +55,9 @@ class Hatch(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_area`
         """
 
         direct = InnerHatch(style=style, color=color, space=space, angle=angle, bg_color=bg_color)

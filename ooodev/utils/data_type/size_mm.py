@@ -13,11 +13,14 @@ class SizeMM:
         Constructor
 
         Args:
-            width (float, UnitObj, optional): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
-            height (float, UnitObj, optional): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
+            width (float, UnitObj): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
+            height (float, UnitObj): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
+
+        Returns:
+            None:
         """
-        self.width = round(width, 2)
-        self.height = round(height, 2)
+        self.width = width
+        self.height = height
 
     def get_size_mm100(self) -> Size:
         """

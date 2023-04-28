@@ -13,6 +13,10 @@ class Margins(PageStyleBaseMulti):
     """
     Page Style Margins
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_page`
+
     .. versionadded:: 0.9.0
     """
 
@@ -42,6 +46,9 @@ class Margins(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_page`
         """
 
         direct = InnerMargins(left=left, right=right, top=top, bottom=bottom, gutter=gutter)
