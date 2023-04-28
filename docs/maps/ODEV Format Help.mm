@@ -807,15 +807,15 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="transparency" ID="ID_408564795" CREATED="1675144924010" MODIFIED="1682196183141">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Gradient" ID="ID_621394220" CREATED="1676508317470" MODIFIED="1682196183141">
+<node TEXT="transparency" ID="ID_408564795" CREATED="1675144924010" MODIFIED="1682697592291">
+<icon BUILTIN="checked"/>
+<node TEXT="Gradient" ID="ID_621394220" CREATED="1676508317470" MODIFIED="1682697592288">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Transparency" ID="ID_460572269" CREATED="1676507476838" MODIFIED="1682196183141">
+<node TEXT="Transparency" ID="ID_460572269" CREATED="1676507476838" MODIFIED="1682697592291">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="header" ID="ID_857851636" CREATED="1675144966508" MODIFIED="1682196183141">

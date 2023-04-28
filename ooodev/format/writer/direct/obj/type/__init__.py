@@ -12,18 +12,4 @@ from ooodev.format.inner.direct.write.frame.frame_type.position import Position 
 from ooodev.format.inner.direct.write.frame.frame_type.anchor import AnchorKind as AnchorKind
 from ooodev.format.inner.direct.write.frame.frame_type.anchor import Anchor as Anchor
 
-__all__ = [
-    "RelativeKind",
-    "RelativeSize",
-    "AbsoluteSize",
-    "Size",
-    "HoriOrient",
-    "VertOrient",
-    "RelHoriOrient",
-    "RelVertOrient",
-    "Horizontal",
-    "Vertical",
-    "Position",
-    "AnchorKind",
-    "Anchor",
-]
+__all__ = ["Size", "Position", "Anchor"]

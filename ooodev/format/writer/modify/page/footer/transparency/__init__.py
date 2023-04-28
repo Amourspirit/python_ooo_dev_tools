@@ -13,4 +13,4 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 
-__all__ = ["Gradient", "Transparency", "InnerGradient", "InnerTransparency"]
+__all__ = ["Gradient", "Transparency"]
