@@ -35,7 +35,8 @@ General function used to run these examples.
     .. code-tab:: python
 
         from ooodev.format.writer.modify.page.page import LayoutSettings, Margins, PaperFormat
-        from ooodev.format.writer.modify.page.page import PageStyleLayout, NumberingTypeEnum, PaperFormatKind, StyleParaKind
+        from ooodev.format.writer.modify.page.page import PageStyleLayout, NumberingTypeEnum
+        from ooodev.format.writer.modify.page.page import PaperFormatKind, StyleParaKind
         from ooodev.utils.data_type.size_mm import SizeMM
         from ooodev.units import UnitInch
         from ooodev.office.write import Write
@@ -258,10 +259,8 @@ Style results.
 
         Writer dialog Page margins style set using inches
 
-Getting border padding from a style
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-We can get the border padding from the document.
+Getting margins from a style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 
@@ -269,7 +268,7 @@ We can get the border padding from the document.
 
         # ... other code
 
-        style_obj = Padding.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+        style_obj = Margins.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
         assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html
@@ -278,11 +277,11 @@ We can get the border padding from the document.
 
             .. group-tab:: None
 
-Border Shadow
--------------
+Page Layout
+-----------
 
-Setting Border Shadow
-^^^^^^^^^^^^^^^^^^^^^
+Setting Page Layout
+^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 
@@ -290,8 +289,15 @@ Setting Border Shadow
 
         # ... other code
 
-        shadow_style = Shadow(color=StandardColor.BLUE_DARK2, width=1.5, style_name=StyleParaKind.STANDARD)
-        shadow_style.apply(doc)
+        layout_style = LayoutSettings(
+            layout=PageStyleLayout.MIRRORED,
+            numbers=NumberingTypeEnum.CHARS_UPPER_LETTER,
+            ref_style=StyleParaKind.SUBTITLE,
+            right_gutter=True,
+            gutter_pos_left=False,
+            style_name=StyleParaKind.STANDARD,
+        )
+        layout_style.apply(doc)
 
     .. only:: html
 
@@ -303,18 +309,17 @@ Style results.
 
 .. cssclass:: screen_shot
 
-    .. _234410957-55eedfcc-9032-48b1-a660-7dffa5eb5d8f:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234410957-55eedfcc-9032-48b1-a660-7dffa5eb5d8f.png
-        :alt: Writer dialog Paragraph Borders style shadow changed
+    .. _235153674-56569ad7-6e77-4e42-9ef4-ab362582eda5:
+    .. figure:: https://user-images.githubusercontent.com/4193389/235153674-56569ad7-6e77-4e42-9ef4-ab362582eda5.png
+        :alt: Writer dialog Page Layout style changed
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Paragraph Borders style shadow changed
+        Writer dialog Page Layout style changed
 
-Getting border shadow from a style
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Getting layout from a style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can get the border shadow from the document.
 
 .. tabs::
 
@@ -322,7 +327,7 @@ We can get the border shadow from the document.
 
         # ... other code
 
-        style_obj = Shadow.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+        style_obj = LayoutSettings.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
         assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html
@@ -337,7 +342,6 @@ We can get the border shadow from the document.
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_writer_format_direct_para_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.page.page.PaperFormat`

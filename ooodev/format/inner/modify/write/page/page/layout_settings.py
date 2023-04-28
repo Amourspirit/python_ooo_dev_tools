@@ -71,6 +71,10 @@ class LayoutSettings(PageStyleBaseMulti):
     """
     Page Layout Setting style
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_page`
+
     .. versionadded:: 0.9.0
 
     .. versionchanged:: 0.9.7
@@ -104,6 +108,9 @@ class LayoutSettings(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_page`
         """
 
         direct = InnerLayoutSettings(layout=layout, numbers=numbers, ref_style=ref_style, right_gutter=right_gutter)
