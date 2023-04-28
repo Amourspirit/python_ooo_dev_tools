@@ -283,6 +283,9 @@ Page Layout
 Setting Page Layout
 ^^^^^^^^^^^^^^^^^^^
 
+The :py:class:`~ooodev.format.writer.modify.page.page.LayoutSettings` class is used to modify the layout of a page style.
+The result are seen in :numref:`235153674-56569ad7-6e77-4e42-9ef4-ab362582eda5`.
+
 .. tabs::
 
     .. code-tab:: python

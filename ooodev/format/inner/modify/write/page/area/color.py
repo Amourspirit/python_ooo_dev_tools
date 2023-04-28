@@ -16,6 +16,10 @@ class InnerColor(AbstractColor):
     """
     Page Style Color.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -48,6 +52,10 @@ class Color(PageStyleBaseMulti):
     """
     Page Style Color.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -69,6 +77,9 @@ class Color(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_area`
         """
 
         direct = InnerColor(color=color)

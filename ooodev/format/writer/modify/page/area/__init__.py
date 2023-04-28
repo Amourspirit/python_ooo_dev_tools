@@ -22,6 +22,7 @@ from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHat
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -29,13 +30,4 @@ from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRa
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
-__all__ = [
-    "Color",
-    "InnerColor",
-    "Gradient",
-    "Hatch",
-    "Img",
-    "InnerImg",
-    "InnerPattern",
-    "Pattern",
-]
+__all__ = ["Color", "Gradient", "Hatch", "Img", "Pattern"]

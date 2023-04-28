@@ -769,65 +769,42 @@
 <node TEXT="modify" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_812110493" CREATED="1675144703961" MODIFIED="1679353417518">
 <node TEXT="page" ID="ID_69204529" CREATED="1675144727321" MODIFIED="1676721246711">
 <icon BUILTIN="unchecked"/>
-<node TEXT="page" ID="ID_1578419059" CREATED="1675144849866" MODIFIED="1682196183139">
-<icon BUILTIN="unchecked"/>
-<node TEXT="LayoutSettings" ID="ID_682323984" CREATED="1676427803497" MODIFIED="1682196183139">
+<node TEXT="page" ID="ID_1578419059" CREATED="1675144849866" MODIFIED="1682687523543">
+<icon BUILTIN="checked"/>
+<node TEXT="LayoutSettings" ID="ID_682323984" CREATED="1676427803497" MODIFIED="1682687523538">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Margins" ID="ID_210903801" CREATED="1676398907537" MODIFIED="1682196183139">
+<node TEXT="Margins" ID="ID_210903801" CREATED="1676398907537" MODIFIED="1682687523542">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="PaperFormat" ID="ID_1920333686" CREATED="1676410990745" MODIFIED="1682196183139">
+<node TEXT="PaperFormat" ID="ID_1920333686" CREATED="1676410990745" MODIFIED="1682687523543">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="area" ID="ID_1803385726" CREATED="1675065864419" MODIFIED="1682196183140">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Color" ID="ID_730566707" CREATED="1675065870452" MODIFIED="1682196183140">
+<node TEXT="area" ID="ID_1803385726" CREATED="1675065864419" MODIFIED="1682694265092">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_730566707" CREATED="1675065870452" MODIFIED="1682694265090">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Gradient" ID="ID_378395295" CREATED="1675065876260" MODIFIED="1682196183140">
+<node TEXT="Gradient" ID="ID_378395295" CREATED="1675065876260" MODIFIED="1682694265090">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Hatch" ID="ID_946604473" CREATED="1675065896029" MODIFIED="1682196183140">
+<node TEXT="Hatch" ID="ID_946604473" CREATED="1675065896029" MODIFIED="1682694265090">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Img" ID="ID_579583365" CREATED="1675065884307" MODIFIED="1682196183140">
+<node TEXT="Img" ID="ID_579583365" CREATED="1675065884307" MODIFIED="1682694265090">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Pattern" ID="ID_1362723685" CREATED="1675065889707" MODIFIED="1682196183140">
+<node TEXT="Pattern" ID="ID_1362723685" CREATED="1675065889707" MODIFIED="1682694265088">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="area" ID="ID_474630515" CREATED="1675065864419" MODIFIED="1682196183140">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Color" ID="ID_691159485" CREATED="1675065870452" MODIFIED="1682196183140">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="Gradient" ID="ID_875065403" CREATED="1675065876260" MODIFIED="1682196183140">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="Hatch" ID="ID_295506108" CREATED="1675065896029" MODIFIED="1682196183141">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="Img" ID="ID_1093485548" CREATED="1675065884307" MODIFIED="1682196183141">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="Pattern" ID="ID_1172274492" CREATED="1675065889707" MODIFIED="1682196183141">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="transparency" ID="ID_408564795" CREATED="1675144924010" MODIFIED="1682196183141">

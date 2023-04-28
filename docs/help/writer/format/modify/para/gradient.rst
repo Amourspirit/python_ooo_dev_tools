@@ -129,6 +129,7 @@ We can get the area gradient from the document.
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_area_gradient`
+        - :ref:`help_writer_format_modify_page_area`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.para.area.Gradient`
