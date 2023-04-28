@@ -38,7 +38,7 @@ General function used to run these examples.
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.area import Color as PageAreaColor, StyleParaKind
+        from ooodev.format.writer.modify.page.area import Color as PageAreaColor, WriterStylePageKind
         from ooodev.utils.color import StandardColor
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
@@ -51,11 +51,13 @@ General function used to run these examples.
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                color_style = PageAreaColor(color=StandardColor.BLUE_LIGHT3, style_name=StyleParaKind.STANDARD)
+                color_style = PageAreaColor(
+                    color=StandardColor.BLUE_LIGHT3, style_name=WriterStylePageKind.STANDARD
+                )
                 color_style.apply(doc)
 
-                style_obj = PageAreaColor.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-                assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+                style_obj = PageAreaColor.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+                assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
                 Lo.delay(1_000)
 
@@ -74,7 +76,7 @@ General function used to run these examples.
 Area Color
 ----------
 
-The :py:class:`~ooodev.format.writer.modify.page.area.Color` class is uset to modify the area color of a page style.
+The :py:class:`~ooodev.format.writer.modify.page.area.Color` class is used to modify the area color of a page style.
 The result are seen in :numref:`235160627-5e2c7367-481d-4465-9402-408f204f0156`.
 
 Setting Area Color
@@ -84,10 +86,10 @@ Setting Area Color
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.area import Color as PageAreaColor, StyleParaKind
+        from ooodev.format.writer.modify.page.area import Color as PageAreaColor, WriterStylePageKind
         # ... other code
 
-        color_style = PageAreaColor(color=StandardColor.BLUE_LIGHT3, style_name=StyleParaKind.STANDARD)
+        color_style = PageAreaColor(color=StandardColor.BLUE_LIGHT3, style_name=WriterStylePageKind.STANDARD)
         color_style.apply(doc)
 
     .. only:: html
@@ -111,16 +113,14 @@ Style results.
 Getting color from a style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can get the border sides from the document.
-
 .. tabs::
 
     .. code-tab:: python
 
         # ... other code
 
-        style_obj = PageAreaColor.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = PageAreaColor.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 
@@ -143,11 +143,11 @@ The :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` c
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.area import Gradient, PresetGradientKind, StyleParaKind
+        from ooodev.format.writer.modify.page.area import Gradient, PresetGradientKind, WriterStylePageKind
         # ... other code
 
         gradient_style = Gradient.from_preset(
-            preset=PresetGradientKind.DEEP_OCEAN, style_name=StyleParaKind.STANDARD
+            preset=PresetGradientKind.DEEP_OCEAN, style_name=WriterStylePageKind.STANDARD
         )
         gradient_style.apply(doc)
 
@@ -178,8 +178,8 @@ Getting gradient from a style
 
         # ... other code
 
-        style_obj = Gradient.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = Gradient.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 
@@ -202,11 +202,11 @@ The :py:class:`~ooodev.format.inner.preset.preset_image.PresetImageKind` class i
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.area import Img as PageAreaImg, PresetImageKind, StyleParaKind
+        from ooodev.format.writer.modify.page.area import Img as PageAreaImg, PresetImageKind, WriterStylePageKind
         # ... other code
 
         img_style = PageAreaImg.from_preset(
-            preset=PresetImageKind.COLOR_STRIPES, style_name=StyleParaKind.STANDARD
+            preset=PresetImageKind.COLOR_STRIPES, style_name=WriterStylePageKind.STANDARD
         )
         img_style.apply(doc)
 
@@ -237,8 +237,8 @@ Getting image from a style
 
         # ... other code
 
-        style_obj = PageAreaImg .from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = PageAreaImg .from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 
@@ -262,11 +262,11 @@ The :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` cla
     .. code-tab:: python
 
         from ooodev.format.writer.modify.page.area import Pattern as PageStylePattern
-        from ooodev.format.writer.modify.page.area import PresetPatternKind, StyleParaKind
+        from ooodev.format.writer.modify.page.area import PresetPatternKind, WriterStylePageKind
         # ... other code
 
         pattern_style = PageStylePattern.from_preset(
-            preset=PresetPatternKind.HORIZONTAL_BRICK, style_name=StyleParaKind.STANDARD
+            preset=PresetPatternKind.HORIZONTAL_BRICK, style_name=WriterStylePageKind.STANDARD
         )
         pattern_style.apply(doc)
 
@@ -297,8 +297,8 @@ Getting pattern from a style
 
         # ... other code
 
-        style_obj = PageStylePattern .from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = PageStylePattern .from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 
@@ -322,11 +322,11 @@ The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` class i
     .. code-tab:: python
 
         from ooodev.format.writer.modify.page.area import Hatch as PageStyleHatch
-        from ooodev.format.writer.modify.page.area import PresetHatchKind, StyleParaKind
+        from ooodev.format.writer.modify.page.area import PresetHatchKind, WriterStylePageKind
         # ... other code
 
         hatch_style = PageStyleHatch.from_preset(
-            preset=PresetHatchKind.RED_45_DEGREES_NEG_TRIPLE, style_name=StyleParaKind.STANDARD
+            preset=PresetHatchKind.RED_45_DEGREES_NEG_TRIPLE, style_name=WriterStylePageKind.STANDARD
         )
         hatch_style.apply(doc)
 
@@ -357,8 +357,8 @@ Getting hatch from a style
 
         # ... other code
 
-        style_obj = PageStyleHatch .from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = PageStyleHatch .from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 

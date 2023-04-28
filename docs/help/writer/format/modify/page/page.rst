@@ -36,7 +36,7 @@ General function used to run these examples.
 
         from ooodev.format.writer.modify.page.page import LayoutSettings, Margins, PaperFormat
         from ooodev.format.writer.modify.page.page import PageStyleLayout, NumberingTypeEnum
-        from ooodev.format.writer.modify.page.page import PaperFormatKind, StyleParaKind
+        from ooodev.format.writer.modify.page.page import PaperFormatKind, WriterStylePageKind
         from ooodev.utils.data_type.size_mm import SizeMM
         from ooodev.units import UnitInch
         from ooodev.office.write import Write
@@ -53,13 +53,13 @@ General function used to run these examples.
                 layout_style = LayoutSettings(
                     layout=PageStyleLayout.MIRRORED,
                     numbers=NumberingTypeEnum.CHARS_UPPER_LETTER,
-                    ref_style=StyleParaKind.TEXT_BODY,
-                    style_name=StyleParaKind.STANDARD,
+                    ref_style=WriterStylePageKind.TEXT_BODY,
+                    style_name=WriterStylePageKind.STANDARD,
                 )
                 layout_style.apply(doc)
 
-                style_obj = LayoutSettings.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-                assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+                style_obj = LayoutSettings.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+                assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
                 Lo.delay(1_000)
 
                 Lo.close_doc(doc)
@@ -91,7 +91,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_paper_format.PaperFormatKind` 
         # ... other code
 
         paper_fmt_style = PaperFormat.from_preset(
-            preset=PaperFormatKind.A3, landscape=True, style_name=StyleParaKind.STANDARD
+            preset=PaperFormatKind.A3, landscape=True, style_name=WriterStylePageKind.STANDARD
         )
         paper_fmt_style.apply(doc)
 
@@ -131,7 +131,7 @@ If the ``width`` is greater than the ``height`` then the page is set to landscap
 
         paper_fmt_style = PaperFormat(
             size=SizeMM(width=UnitInch(11), height=UnitInch(8.5)),
-            style_name=StyleParaKind.STANDARD,
+            style_name=WriterStylePageKind.STANDARD,
         )
         paper_fmt_style.apply(doc)
 
@@ -165,8 +165,8 @@ We can get the border sides from the document.
 
         # ... other code
 
-        style_obj = PaperFormat.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = PaperFormat.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 
@@ -196,7 +196,7 @@ The result are seen in :numref:`234916023-c12a16b9-02d2-420f-8da5-c4a6a5bb597b`.
             top=35,
             bottom=15,
             gutter=10,
-            style_name=StyleParaKind.STANDARD,
+            style_name=WriterStylePageKind.STANDARD,
         )
         margin_style.apply(doc)
 
@@ -237,7 +237,7 @@ The result are seen in :numref:`234917591-f9e4deb2-e4b0-4f42-832f-fb43222c7635`.
             top=UnitInch(1.5),
             bottom=UnitInch(0.75),
             gutter=UnitInch(0.5),
-            style_name=StyleParaKind.STANDARD,
+            style_name=WriterStylePageKind.STANDARD,
         )
         margin_style.apply(doc)
 
@@ -268,8 +268,8 @@ Getting margins from a style
 
         # ... other code
 
-        style_obj = Margins.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = Margins.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 
@@ -295,10 +295,10 @@ The result are seen in :numref:`235153674-56569ad7-6e77-4e42-9ef4-ab362582eda5`.
         layout_style = LayoutSettings(
             layout=PageStyleLayout.MIRRORED,
             numbers=NumberingTypeEnum.CHARS_UPPER_LETTER,
-            ref_style=StyleParaKind.SUBTITLE,
+            ref_style=WriterStylePageKind.SUBTITLE,
             right_gutter=True,
             gutter_pos_left=False,
-            style_name=StyleParaKind.STANDARD,
+            style_name=WriterStylePageKind.STANDARD,
         )
         layout_style.apply(doc)
 
@@ -330,8 +330,8 @@ Getting layout from a style
 
         # ... other code
 
-        style_obj = LayoutSettings.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        style_obj = LayoutSettings.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
+        assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
 
     .. only:: html
 

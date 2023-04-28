@@ -13,7 +13,7 @@ Write Direct Paragraph Transparency
 Overview
 --------
 
-Writer has an Area Pattern dialog section.
+Writer has an Transparency dialog section.
 
 The :py:class:`ooodev.format.writer.direct.para.transparency.Transparency` class is used to set the paragraph background transparency.
 
