@@ -30,7 +30,8 @@ Note that in order to apply a style, the document header must be turned on as se
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.header.area import Color as PageAreaColor, WriterStylePageKind
+        from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
+        from ooodev.format.writer.modify.page.header.area import Color as PageAreaColor
         from ooodev.format import Styler
         from ooodev.office.write import Write
         from ooodev.utils.color import StandardColor
@@ -90,7 +91,7 @@ Setting Area Color
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.header.area import Color as HeaderAreaColor, WriterStylePageKind
+        from ooodev.format.writer.modify.page.header.area import Color as HeaderAreaColor
         # ... other code
 
         header_color_style = HeaderAreaColor(
@@ -416,6 +417,7 @@ Getting hatch from a style
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_page_footer_area`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.page.header.area.Color`

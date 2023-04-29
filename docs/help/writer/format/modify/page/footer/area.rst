@@ -30,7 +30,8 @@ Note that in order to apply a style, the document footer must be turned on as se
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.area import Color as PageAreaColor, WriterStylePageKind
+        from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
+        from ooodev.format.writer.modify.page.area import Color as FooterAreaColor
         from ooodev.format import Styler
         from ooodev.office.write import Write
         from ooodev.utils.color import StandardColor
@@ -44,7 +45,7 @@ Note that in order to apply a style, the document footer must be turned on as se
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                header_style = Footer(
+                footer_style = Footer(
                     on=True,
                     shared_first=True,
                     shared=True,
@@ -55,10 +56,10 @@ Note that in order to apply a style, the document footer must be turned on as se
                     margin_right=2.0,
                     style_name=WriterStylePageKind.STANDARD,
                 )
-                header_color_style = HeaderAreaColor(
-                    color=StandardColor.GOLD_LIGHT2, style_name=header_style.prop_style_name
+                footer_color_style = HeaderAreaColor(
+                    color=StandardColor.GOLD_LIGHT2, style_name=footer_style.prop_style_name
                 )
-                Styler.apply(doc, header_style, header_color_style)
+                Styler.apply(doc, footer_style, footer_color_style)
 
                 style_obj = HeaderAreaColor.from_style(doc=doc, style_name=WriterStylePageKind.STANDARD)
                 assert style_obj.prop_style_name == str(WriterStylePageKind.STANDARD)
@@ -90,7 +91,7 @@ Setting Area Color
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.page.footer.area import Color as FooterAreaColor, WriterStylePageKind
+        from ooodev.format.writer.modify.page.footer.area import Color as FooterAreaColor
         # ... other code
 
         footer_color_style = FooterAreaColor(
@@ -416,6 +417,7 @@ Getting hatch from a style
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_page_header_area`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.page.footer.area.Color`

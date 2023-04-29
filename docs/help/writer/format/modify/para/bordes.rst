@@ -54,9 +54,6 @@ General function used to run these examples.
                 sides_style = Sides(all=side, style_name=StyleParaKind.STANDARD)
                 sides_style.apply(doc)
 
-                cursor = Write.get_cursor(doc)
-                Write.append(cursor, p_txt)
-
                 style_obj = Sides.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
                 assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
                 Lo.delay(1_000)
