@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 import uno
 from ooodev.utils import color as mColor
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
@@ -49,6 +49,10 @@ class Color(PageStyleBaseMulti):
     """
     Page Header Color
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -63,13 +67,16 @@ class Color(PageStyleBaseMulti):
         Constructor
 
         Args:
-            color (:py:data:`~.utils.color.Color`, optional): FillColor Color.
+            color (:py:data:`~.utils.color.Color`, optional): Header Area Color.
             style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_area`
         """
 
         direct = InnerColor(color=color, _cattribs=self._get_inner_cattribs())

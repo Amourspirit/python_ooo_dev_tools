@@ -22,6 +22,11 @@ _THatch = TypeVar(name="_THatch", bound="Hatch")
 class Hatch(PageStyleBaseMulti):
     """
     Page Footer Hatch
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -54,6 +59,9 @@ class Hatch(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_area`
         """
 
         direct = InnerHatch(

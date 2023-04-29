@@ -19,6 +19,11 @@ _TPattern = TypeVar(name="_TPattern", bound="Pattern")
 class Pattern(PageStyleBaseMulti):
     """
     Page Footer Pattern
+
+    .. Seeealso::
+
+        - :ref:`help_writer_format_modify_page_header_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -50,6 +55,9 @@ class Pattern(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_area`
         """
 
         direct = InnerPattern(
