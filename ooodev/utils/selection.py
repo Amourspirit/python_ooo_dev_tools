@@ -627,10 +627,10 @@ class Selection(metaclass=StaticProperty):
         try:
             return Selection._text_range_compare
         except AttributeError:
-            doc = mLo.Lo.XSCRIPTCONTEXT.getDocument()
+            doc = mLo.Lo.xscript_context.getDocument()
             text = doc.getText()
             Selection._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
-        return cls._text_range_compare
+        return Selection._text_range_compare
 
     @text_range_compare.setter
     def text_range_compare(cls, value) -> None:

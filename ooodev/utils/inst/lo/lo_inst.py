@@ -5,7 +5,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
 from urllib.parse import urlparse
 import uno
 
@@ -27,6 +27,7 @@ from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.lo_events import Events
+from ooodev.events.event_singleton import _Events
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_named_event import LoNamedEvent
 from ooodev.exceptions import ex as mEx
@@ -103,7 +104,8 @@ class LoInst:
     _disposed = True
 
     def __init__(self, opt: LoOptions | None = None) -> None:
-        self._events = Events(self)
+        # self._events = Events(self)
+        self._events = _Events()
 
         if opt is None:
             self._opt = LoOptions()
@@ -112,9 +114,10 @@ class LoInst:
 
         self._allow_print = opt.verbose
 
-    def _init_from_ctx(self, script_ctx: XScriptContext) -> None:
+    def _init_from_ctx(self, script_ctx: XScriptContext, connector: LoBridgeCommon) -> None:
         self._disposed = False
-        self._xcc = self._lo_inst = script_ctx.getComponentContext()
+        self._lo_inst = connector
+        self._xcc = self._lo_inst.ctx
         self._mc_factory = self._xcc.getServiceManager()
         if self._mc_factory is None:
             raise RuntimeError("Could not get service manager from component context")
@@ -489,7 +492,6 @@ class LoInst:
     def open_doc(self, fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XComponent:
         ...
 
-    @classmethod
     def open_doc(
         self,
         fnm: PathOrStr,
@@ -1101,7 +1103,6 @@ class LoInst:
     def dispatch_cmd(self, cmd: str, *, frame: XFrame) -> Any:
         ...
 
-    @classmethod
     def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> Any:
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
@@ -1429,9 +1430,8 @@ class LoInst:
         cls, script_ctx: XScriptContext, connector: LoBridgeCommon, opt: LoOptions | None = None
     ) -> LoInst:
         inst = LoInst(opt=opt)
-        inst._lo_inst = connector
+        inst._init_from_ctx(script_ctx, connector)
         inst._xscript_context = script_ctx
-        inst._init_from_ctx(script_ctx)
         return inst
 
     # endregion static methods

@@ -1715,7 +1715,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True if component contains all supplied interfaces; Otherwise, False
         """
-        return cls._lo_inst.is_uno_interfaces(component=component, *args)
+        return cls._lo_inst.is_uno_interfaces(component, *args)
 
     @classmethod
     def get_frame(cls) -> XFrame:
@@ -1973,10 +1973,11 @@ class _LoManager(metaclass=StaticProperty):
 
     @staticmethod
     def on_loading(source: Any, event: CancelEventArgs) -> None:
-        try:
-            Lo.bridge.removeEventListener(_LoManager.event_adapter)
-        except Exception:
-            pass
+        pass
+        # try:
+        #     Lo.bridge.removeEventListener(_LoManager.event_adapter)
+        # except Exception:
+        #     pass
 
     @staticmethod
     def on_loaded(source: Any, event: EventObject) -> None:
