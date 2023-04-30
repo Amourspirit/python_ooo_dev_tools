@@ -6,7 +6,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import time
 import types
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
 import uno
 from enum import Enum
 
@@ -17,11 +17,10 @@ from .inst.lo.lo_inst import LoInst
 # https://stackoverflow.com/questions/22187279/python-circular-importing
 from ..conn import cache as mCache
 from ..conn import connectors
-from ..conn.connect import ConnectBase, LoBridgeCommon
+from ..conn.connect import LoBridgeCommon
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.event_args import EventArgs
 from ..events.event_singleton import _Events
-from ..events.gbl_named_event import GblNamedEvent
 from ..events.lo_named_event import LoNamedEvent
 from ..formatters.formatter_table import FormatterTable
 from ..listeners.x_event_adapter import XEventAdapter
@@ -1940,65 +1939,22 @@ class Lo(metaclass=StaticProperty):
         """
         return cls._lo_inst.bridge_connector
 
-
-class _LoManager(metaclass=StaticProperty):
-    """Manages clearing and resetting for Lo static class"""
-
-    @staticmethod
-    def del_cache_attrs(source: object, event: EventArgs) -> None:
-        # clears Lo Attributes that are dynamically created
-        pass
-        # dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "__null_date")
-        # for attr in dattrs:
-        #     if hasattr(Lo, attr):
-        #         delattr(Lo, attr)
-
-    @staticmethod
-    def disposing_bridge(src: XEventAdapter, event: EventObject) -> None:
-        # do not try and exit script here.
-        # for some reason when office triggers this method calls such as:
-        # raise SystemExit(1)
-        # does not exit the script
-        _Events().trigger(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(_LoManager.disposing_bridge.__qualname__))
-
-    @staticmethod
-    def on_disposed(source: Any, event: EventObject) -> None:
-        Lo.print("Office bridge has gone!!")
-        # dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop", "_loader")
-        # dvals = (None, None, None, None, None, None, None)
-        # for attr, val in zip(dattrs, dvals):
-        #     setattr(Lo, attr, val)
-        # setattr(Lo, "_disposed", True)
-        setattr(Lo, "_lo_inst", None)
-
-    @staticmethod
-    def on_loading(source: Any, event: CancelEventArgs) -> None:
-        pass
-        # try:
-        #     Lo.bridge.removeEventListener(_LoManager.event_adapter)
-        # except Exception:
-        #     pass
-
-    @staticmethod
-    def on_loaded(source: Any, event: EventObject) -> None:
-        if Lo.bridge is not None:
-            Lo.bridge.addEventListener(_LoManager.event_adapter)
-
     @classproperty
-    def event_adapter(cls) -> XEventAdapter:
-        try:
-            return cls._event_adapter
-        except AttributeError:
-            bridge_listen = XEventAdapter()
-            bridge_listen.disposing = types.MethodType(cls.disposing_bridge, bridge_listen)
-            cls._event_adapter = bridge_listen
-        return cls._event_adapter
+    def options(cls) -> LoOptions:
+        """
+        Gets the current options.
+
+        Returns:
+            LoOptions: Options
+        """
+        return cls._lo_inst._opt
 
 
-_Events().on(LoNamedEvent.RESET, _LoManager.del_cache_attrs)
-_Events().on(LoNamedEvent.OFFICE_LOADING, _LoManager.on_loading)
-_Events().on(LoNamedEvent.OFFICE_LOADED, _LoManager.on_loaded)
-_Events().on(LoNamedEvent.BRIDGE_DISPOSED, _LoManager.on_disposed)
+def _on_bridge_disposed(source: Any, event: EventObject) -> None:
+    setattr(Lo, "_lo_inst", None)
+
+
+_Events().on(LoNamedEvent.BRIDGE_DISPOSED, _on_bridge_disposed)
 
 
 __all__ = ("Lo",)

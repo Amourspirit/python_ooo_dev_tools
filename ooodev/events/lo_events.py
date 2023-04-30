@@ -222,6 +222,22 @@ class LoEvents(_event_base):
                     _ = self._observers.pop(i)
 
 
+class DummEvents:
+    """Dummy events class for ignoring events."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        pass
+
+    def on(self, event_name: str, callback: EventCallback):
+        pass
+
+    def remove(self, event_name: str, callback: EventCallback) -> bool:
+        pass
+
+    def trigger(self, event_name: str, event_args: EventArgs, *args, **kwargs):
+        pass
+
+
 @contextlib.contextmanager
 def event_ctx(*args: EventArg) -> Generator[event_observer.EventObserver, None, None]:
     """

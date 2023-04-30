@@ -15,6 +15,7 @@ from tests.fixtures.image import __test__path__ as img_fixture_path
 from tests.fixtures.presentation import __test__path__ as pres_fixture_path
 from ooodev.utils.lo import Lo as mLo
 from ooodev.utils import paths as mPaths
+from ooodev.utils.inst.lo.options import Options as LoOptions
 
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
@@ -110,7 +111,7 @@ def loader(tmp_path_session, run_headless, soffice_path):
     loader = mLo.load_office(
         connector=mLo.ConnectPipe(headless=run_headless, soffice=soffice_path),
         cache_obj=mCache.Cache(working_dir=tmp_path_session),
-        opt=mLo.Options(verbose=True),
+        opt=LoOptions(verbose=True),
     )
     # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True, soffice=soffice_path), cache_obj=mCache.Cache(working_dir=tmp_path_session))
     yield loader

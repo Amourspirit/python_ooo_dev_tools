@@ -5,7 +5,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
 
@@ -26,7 +26,6 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
 from ooodev.events.args.event_args import EventArgs
-from ooodev.events.lo_events import Events
 from ooodev.events.event_singleton import _Events
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_named_event import LoNamedEvent
@@ -35,6 +34,7 @@ from ooodev.formatters.formatter_table import FormatterTable
 from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
 from ooodev.utils.inst.lo.options import Options as LoOptions
 from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
+from ooodev.adapter.lang.event_listener import EventListener
 
 from com.sun.star.lang import XComponent
 
@@ -70,7 +70,7 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
-
+    from com.sun.star.lang import EventObject
 
 from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
 from ooo.dyn.lang.disposed_exception import DisposedException
@@ -82,37 +82,100 @@ from ooo.dyn.util.close_veto_exception import CloseVetoException
 
 
 class LoInst:
-    ConnectPipe = connectors.ConnectPipe
-    """Alias of connectors.ConnectPipe"""
-    ConnectSocket = connectors.ConnectSocket
-    """Alias of connectors.ConnectSocket"""
-
-    _xcc: XComponentContext = None
-    _doc: XComponent = None
-    """remote component context"""
-    _xdesktop: XDesktop = None
-    """remote desktop UNO service"""
-
-    _mc_factory: XMultiComponentFactory = None
-    _ms_factory: XMultiServiceFactory = None
-
-    _is_office_terminated: bool = False
-
-    _lo_inst: ConnectBase = None
-
-    _loader = None
-    _disposed = True
+    """Lo instance class. This is the main class for interacting with LO."""
 
     def __init__(self, opt: LoOptions | None = None) -> None:
         # self._events = Events(self)
-        self._events = _Events()
+        self._xcc: XComponentContext = None
+        self._doc: XComponent = None
+        """remote component context"""
+        self._xdesktop: XDesktop = None
+        """remote desktop UNO service"""
+        self._mc_factory: XMultiComponentFactory = None
+        self._ms_factory: XMultiServiceFactory = None
+        self._is_office_terminated: bool = False
+        self._lo_inst: ConnectBase = None
+        self._loader = None
+        self._disposed = True
 
         if opt is None:
             self._opt = LoOptions()
         else:
             self._opt = opt
 
+        self._events = _Events()
+
         self._allow_print = opt.verbose
+        self._set_lo_events()
+
+    # region Events
+    def _set_lo_events(self) -> None:
+        def _on_lo_del_cache_attrs(source: object, event: EventArgs) -> None:
+            self.on_lo_del_cache_attrs(source, event)
+
+        def _on_lo_loading(source: Any, event: CancelEventArgs) -> None:
+            self.on_lo_loading(source, event)
+
+        def _on_lo_loaded(source: Any, event: EventObject) -> None:
+            self.on_lo_loaded(source, event)
+
+        def _on_lo_disposed(source: Any, event: EventObject) -> None:
+            self.on_lo_disposed(source, event)
+
+        def _on_lo_disposing_bridge(src: EventListener, event: EventObject) -> None:
+            self.on_lo_disposing_bridge(src, event)
+
+        self._fn_on_lo_del_cache_attrs = _on_lo_del_cache_attrs
+        self._fn_on_lo_loading = _on_lo_loading
+        self._fn_on_lo_loaded = _on_lo_loaded
+        self._fn_on_lo_disposed = _on_lo_disposed
+        self._fn_on_lo_disposing_bridge = _on_lo_disposing_bridge
+
+        self._event_listener = EventListener()
+        self._event_listener.on("disposing", _on_lo_disposing_bridge)
+
+        _Events().on(LoNamedEvent.RESET, _on_lo_del_cache_attrs)
+        _Events().on(LoNamedEvent.OFFICE_LOADING, _on_lo_loading)
+        _Events().on(LoNamedEvent.OFFICE_LOADED, _on_lo_loaded)
+        _Events().on(LoNamedEvent.BRIDGE_DISPOSED, _on_lo_disposed)
+
+    def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:
+        # clears Lo Attributes that are dynamically created
+        dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "_null_date")
+        for attr in dattrs:
+            if hasattr(self, attr):
+                delattr(self, attr)
+
+    def on_lo_disposing_bridge(self, src: EventListener, event: EventObject) -> None:
+        _Events().trigger(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(self.on_lo_disposing_bridge.__qualname__))
+
+    def on_lo_disposed(self, source: Any, event: EventObject) -> None:
+        self.print("Office bridge has gone!!")
+        dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop", "_loader")
+        dvals = (None, None, None, None, None, None, None)
+        for attr, val in zip(dattrs, dvals):
+            setattr(self, attr, val)
+        setattr(self, "_disposed", True)
+
+    def on_lo_loaded(self, source: Any, event: EventObject) -> None:
+        if self.bridge is not None:
+            self.bridge.addEventListener(self._event_listener)
+
+    def on_lo_loading(self, source: Any, event: CancelEventArgs) -> None:
+        try:
+            if hasattr(self, "_bridge_component") and self.bridge is not None:
+                self.bridge.removeEventListener(self._event_listener)
+        except Exception:
+            pass
+
+    def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:
+        # clears Attributes that are dynamically created
+        dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "__null_date")
+        for attr in dattrs:
+            if hasattr(self, attr):
+                delattr(self, attr)
+
+    # endregion Events
 
     def _init_from_ctx(self, script_ctx: XScriptContext, connector: LoBridgeCommon) -> None:
         self._disposed = False
@@ -1440,19 +1503,19 @@ class LoInst:
     def null_date(self) -> datetime:
         # https://tinyurl.com/2pdrt5z9#NullDate
         try:
-            return self.__null_date
+            return self._null_date
         except AttributeError:
-            self.__null_date = datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
+            self._null_date = datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
             if self._doc is None:
-                return self.__null_date
+                return self._null_date
             n_supplier = self.qi(XNumberFormatsSupplier, self._doc)
             if n_supplier is None:
                 # this is not always a XNumberFormatsSupplier such as *.odp documents
-                return self.__null_date
+                return self._null_date
             number_settings = n_supplier.getNumberFormatSettings()
             d = number_settings.getPropertyValue("NullDate")
-            self.__null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
-        return self.__null_date
+            self._null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
+        return self._null_date
 
     @property
     def is_loaded(self) -> bool:
@@ -1542,6 +1605,10 @@ class LoInst:
     @property
     def bridge_connector(self) -> LoBridgeCommon:
         return self._lo_inst
+
+    @property
+    def options(self) -> LoOptions:
+        return self._opt
 
 
 __all__ = ("LoInst",)
