@@ -77,3 +77,8 @@ class LoNamedEvent:
     """Event when Bridge Component is disposed"""
 
     RESET = "lo_reset"
+
+    COMPONENT_LOADING = "lo_component_loading"
+    """LoInst loading component see :py:meth:`LoInst.load_component() <.utils.inst.lo.lo_inst.LoInst.load_component>`"""
+    COMPONENT_LOADED = "lo_component_loaded"
+    """LoInst loaded component see :py:meth:`LoInst.load_component() <.utils.inst.lo.lo_inst.LoInst.load_component>`"""

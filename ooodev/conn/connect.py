@@ -91,6 +91,11 @@ class ConnectBase(ABC):
         """For compatibility. Returns ``False``"""
         return False
 
+    @property
+    def has_connection(self) -> bool:
+        """Returns ``True`` if a connection to soffice has been established"""
+        return self._ctx is not None
+
 
 class LoBridgeCommon(ConnectBase):
     """Base Abstract Class for LoSocketStart and LoPipeStart"""

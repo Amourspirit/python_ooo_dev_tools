@@ -119,7 +119,7 @@ class LoInst:
         else:
             self._events = events
 
-        self._allow_print = opt.verbose
+        self._allow_print = self._opt.verbose
         self._set_lo_events()
 
     # region Events
@@ -190,20 +190,6 @@ class LoInst:
                 delattr(self, attr)
 
     # endregion Events
-
-    def _init_from_ctx(self, script_ctx: XScriptContext, connector: LoBridgeCommon) -> None:
-        self._disposed = False
-        self._lo_inst = connector
-        self._xcc = self._lo_inst.ctx
-        self._mc_factory = self._xcc.getServiceManager()
-        if self._mc_factory is None:
-            raise RuntimeError("Could not get service manager from component context")
-        self._xdesktop = script_ctx.getDesktop()
-        if self._xdesktop is None:
-            raise RuntimeError("Could not get desktop from script context")
-        self._loader = self.qi(XComponentLoader, self._xdesktop)
-        if self._loader is None:
-            raise RuntimeError("Could not get loader from desktop")
 
     # region    qi()
 
@@ -371,10 +357,62 @@ class LoInst:
 
     def load_office(
         self,
-        connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None,
+        connector: connectors.ConnectPipe | connectors.ConnectSocket | ConnectBase | None = None,
         cache_obj: mCache.Cache | None = None,
         opt: LoOptions | None = None,
     ) -> XComponentLoader:
+        """
+        Loads Office
+
+        Not available in a macro.
+
+        If running outside of office then a bridge is created that connects to office.
+
+        If running from inside of office e.g. in a macro, then ``Lo.XSCRIPTCONTEXT`` is used.
+        ``using_pipes`` is ignored with running inside office.
+
+        Args:
+            connector (connectors.ConnectPipe, connectors.ConnectSocket, ConnectBase, None): Connection information. Ignore for macros.
+            cache_obj (Cache, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
+                Ignore for macros. Defaults to None.
+            opt (Options, optional): Extra Load options.
+
+        Returns:
+            XComponentLoader: component loader
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_LOADING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_LOADED` :eventref:`src-docs-event`
+
+        Note:
+           Event args ``event_data`` is a dictionary containing all method parameters.
+
+        Note:
+            When using this class to connect to a running office instance,  the ``connector`` parameter should be set to ``Lo.bridge_connector``, the existing bridge connecton.
+
+            The following example creates a new instance, connects to a running office instance and creates a new calc document.
+
+            .. code-block:: pyhon
+
+                lo = LoInst()
+                lo.load_office(Lo.bridge_connector)
+                lo_doc = lo.create_doc(DocTypeStr.CALC)
+
+        See Also:
+            - :ref:`ch02`
+            - :py:meth:`open_doc`
+            - :py:class:`~ooodev.utils.lo.Lo`
+            - :py:class:`~ooodev.utils.lo.Lo.Loader`
+
+
+        .. versionchanged:: 0.6.10
+            Added ``opt`` parameter.
+
+        .. versionchanged:: 0.9.8
+            connector can now also be ``ConnectBase`` to allow for existing connections.
+        """
         if mock_g.DOCS_BUILDING:
             # some component call this method and are triggered during docs building.
             # by adding this block this method will be exited if docs are building.
@@ -415,7 +453,9 @@ class LoInst:
                     "Office context could not be created. A connector must be supplied if not running as a macro"
                 )
                 self.print(f"    {e}")
-                raise SystemExit(1)
+                raise mEx.ConnectionError(
+                    "Office context could not be created. A connector must be supplied if not running as a macro"
+                ) from e
         elif isinstance(b_connector, connectors.ConnectPipe):
             try:
                 self._lo_inst = LoPipeStart(connector=b_connector, cache_obj=cache_obj)
@@ -423,7 +463,7 @@ class LoInst:
             except Exception as e:
                 self.print("Office context could not be created")
                 self.print(f"    {e}")
-                raise SystemExit(1)
+                raise mEx.ConnectionError("Office context could not be created") from e
         elif isinstance(b_connector, connectors.ConnectSocket):
             try:
                 self._lo_inst = LoSocketStart(connector=b_connector, cache_obj=cache_obj)
@@ -431,25 +471,32 @@ class LoInst:
             except Exception as e:
                 self.print("Office context could not be created")
                 self.print(f"    {e}")
-                raise SystemExit(1)
+                raise mEx.ConnectionError("Office context could not be created") from e
+        elif isinstance(b_connector, ConnectBase):
+            self._lo_inst = b_connector
+            if not self._lo_inst.has_connection:
+                try:
+                    self._lo_inst.connect()
+                except Exception as e:
+                    raise mEx.ConnectionError("Office context could not be created") from e
         else:
             self.print("Invalid Connector type. Fatal Error.")
-            raise SystemExit(1)
+            raise mEx.NotSupportedError("Invalid Connector type. Fatal Error.")
         self._disposed = False
         self._xcc = self._lo_inst.ctx
         self._mc_factory = self._xcc.getServiceManager()
         if self._mc_factory is None:
             self.print("Office Service Manager is unavailable")
-            raise SystemExit(1)
+            raise mEx.LoadingError("Office Service Manager is unavailable")
         self._xdesktop = self.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if self._xdesktop is None:
             # OPTIMIZE: Perhaps system exit is not the best what to handle no desktop service
             self.print("Could not create a desktop service")
-            raise SystemExit(1)
+            raise mEx.LoadingError("Could not create a desktop service")
         self._loader = self.qi(XComponentLoader, self._xdesktop)
         if self._loader is None:
             self.print("Unable to access XComponentLoader")
-            SystemExit(1)
+            raise mEx.LoadingError("Unable to access XComponentLoader")
 
         self._events.trigger(LoNamedEvent.OFFICE_LOADED, eargs)
         return self._loader
@@ -527,6 +574,35 @@ class LoInst:
     # endregion office shutdown
 
     # region document opening
+
+    def load_component(self, component: XComponent) -> None:
+        """
+        Loads a component, can be a document or a sub-component such as a database sub-form
+
+        Args:
+            component (XComponent): Component to load
+
+        Returns:
+            None:
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.COMPONENT_LOADING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.COMPONENT_LOADED` :eventref:`src-docs-event`
+
+        .. versionadded:: 0.9.8
+        """
+        cargs = CancelEventArgs(self.open_doc.__qualname__)
+        cargs.event_data = component
+        self._events.trigger(LoNamedEvent.COMPONENT_LOADING, cargs)
+        if cargs.cancel:
+            return
+        eargs = EventArgs.from_args(cargs)
+        self._events.trigger(LoNamedEvent.RESET, eargs)
+        self._ms_factory = self.qi(XMultiServiceFactory, component)
+        self._doc = component
+        self._events.trigger(LoNamedEvent.COMPONENT_LOADED, eargs)
 
     # region open_flat_doc()
     @overload
@@ -616,7 +692,7 @@ class LoInst:
             if self._doc is None:
                 raise mEx.NoneError("loadComponentFromURL() returned None")
             self._events.trigger(LoNamedEvent.DOC_OPENED, eargs)
-            return doc
+            return self._doc
         except Exception as e:
             raise Exception("Unable to open the document") from e
 
@@ -736,9 +812,7 @@ class LoInst:
         self.print(f"Creating Office document {dtype}")
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, props)
-            self._ms_factory = self.qi(XMultiServiceFactory, doc)
-            if self._ms_factory is None:
-                raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
             self._doc = doc
             self._events.trigger(LoNamedEvent.DOC_CREATED, eargs)
             return self._doc
@@ -1500,36 +1574,6 @@ class LoInst:
         if cargs.cancel:
             return
         print(*args, **kwargs)
-
-    # region static methods
-    @classmethod
-    def from_existing(
-        cls,
-        script_ctx: XScriptContext,
-        connector: LoBridgeCommon,
-        opt: LoOptions | None = None,
-        events: EventObserver | None = None,
-    ) -> LoInst:
-        """
-        Creates a new instance of LoInst from an existing ``XScriptContext`` and Bridge connector.
-
-        Generally, this method is used when workin with sub-components such as a database form.
-
-        Args:
-            script_ctx (XScriptContext): Exising ``XScriptContext`` such as ``Lo.XSCRIPTCONTEXT``
-            connector (LoBridgeCommon): Existing Bridge connector such as ``Lo.bridge_connector``
-            events (EventObserver, optional): Event observer
-            opt (LoOptions, optional): Options to use.
-
-        Returns:
-            LoInst: New instance of ``LoInst``
-        """
-        inst = LoInst(opt=opt, events=events)
-        inst._init_from_ctx(script_ctx, connector)
-        inst._xscript_context = script_ctx
-        return inst
-
-    # endregion static methods
 
     @property
     def null_date(self) -> datetime:

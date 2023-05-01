@@ -1,6 +1,6 @@
 Class Service
 =============
 
-.. autoclass:: ooodev.inst.lo.service.Service
+.. autoclass:: ooodev.utils.inst.lo.service.Service
     :members:
     :undoc-members:

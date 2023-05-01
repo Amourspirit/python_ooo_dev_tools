@@ -462,15 +462,10 @@ class Lo(metaclass=StaticProperty):
         ``using_pipes`` is ignored with running inside office.
 
         Args:
-            connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
-            cache_obj (Cache | None, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
+            connector (connectors.ConnectPipe, connectors.ConnectSocket, optional): Connection information. Ignore for macros.
+            cache_obj (Cache, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
                 Ignore for macros. Defaults to None.
             opt (Options, optional): Extra Load options.
-
-        Raises:
-            CancelEventError: If office_loading event is canceled
-            Exception: If run outside a macro
-            Exception: If unable to get access to XComponentLoader.
 
         Returns:
             XComponentLoader: component loader
@@ -514,7 +509,10 @@ class Lo(metaclass=StaticProperty):
         # xcc, mcFactory, and xDesktop are stored as static globals.
 
         cls._lo_inst = LoInst(opt=opt, events=_Events())
-        return cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
+        try:
+            return cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
+        except Exception:
+            raise SystemExit(1)
 
     # endregion Start Office
 
