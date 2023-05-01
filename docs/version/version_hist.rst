@@ -1,6 +1,13 @@
 ***************
 Version History
 ***************
+Version 0.9.8
+=============
+
+Created :ref:`ns_inst_lo` that also contains ``LoInst`` class. This class can create a new LibreOffice instance and connect to it and/or
+connect to an existing LibreOffice instance and be used for sub-components. This class is for advanced usage.
+The ``Lo`` class is still the recommended way to connect to LibreOffice and under the hood it uses ``LoInst``.
+
 
 Version 0.9.7
 =============

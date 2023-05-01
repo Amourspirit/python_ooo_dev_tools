@@ -3,6 +3,8 @@ from enum import Enum, IntEnum
 
 
 class DocType(IntEnum):
+    """Document Type"""
+
     UNKNOWN = 0
     WRITER = 1
     BASE = 2
@@ -16,6 +18,8 @@ class DocType(IntEnum):
 
 
 class DocTypeStr(str, Enum):
+    """Document Type as string"""
+
     UNKNOWN = "unknown"
     WRITER = "swriter"
     BASE = "sbase"

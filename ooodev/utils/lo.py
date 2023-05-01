@@ -3,13 +3,24 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
-from datetime import datetime, timezone
+from datetime import datetime
 import time
-import types
 from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
-import uno
-from enum import Enum
 
+import uno
+from com.sun.star.beans import XPropertySet
+from com.sun.star.frame import XDesktop
+from com.sun.star.lang import XMultiServiceFactory
+from com.sun.star.util import XCloseable
+from com.sun.star.frame import XComponentLoader
+from com.sun.star.frame import XModel
+from com.sun.star.frame import XStorable
+
+
+# if not mock_g.DOCS_BUILDING:
+# not importing for doc building just result in short import name for
+# args that use these.
+# this is also true becuase docs/conf.py ignores com import for autodoc
 from ..mock import mock_g
 from .inst.lo.lo_inst import LoInst
 
@@ -18,30 +29,17 @@ from .inst.lo.lo_inst import LoInst
 from ..conn import cache as mCache
 from ..conn import connectors
 from ..conn.connect import LoBridgeCommon
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.args.event_args import EventArgs
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
 from ..formatters.formatter_table import FormatterTable
-from ..listeners.x_event_adapter import XEventAdapter
 from ..meta.static_meta import StaticProperty, classproperty
 from .type_var import PathOrStr, UnoInterface, T, Table
 from ooodev.utils.inst.lo.options import Options as LoOptions
 from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
+from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.utils.inst.lo.clsid import CLSID as LoClsid
 
 from com.sun.star.lang import XComponent
-
-# if not mock_g.DOCS_BUILDING:
-# not importing for doc building just result in short import name for
-# args that use these.
-# this is also true becuase docs/conf.py ignores com import for autodoc
-from com.sun.star.beans import XPropertySet
-from com.sun.star.frame import XDesktop
-from com.sun.star.lang import XMultiServiceFactory
-from com.sun.star.util import XCloseable
-from com.sun.star.frame import XComponentLoader
-from com.sun.star.frame import XModel
-from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     try:
@@ -146,63 +144,13 @@ class Lo(metaclass=StaticProperty):
         def __exit__(self, exc_type, exc_val, exc_tb):
             Lo.close_office()
 
-    # region docType ints
+    # region aliases
     DocType = LoDocType
-
-    # endregion docType ints
-
-    # region docType strings
     DocTypeStr = LoDocTypeStr
+    Service = LoService
+    CLSID = LoClsid
 
-    # endregion docType strings
-
-    # region docType service names
-    class Service(str, Enum):
-        UNKNOWN = "com.sun.frame.XModel"
-        WRITER = "com.sun.star.text.TextDocument"
-        BASE = "com.sun.star.sdb.OfficeDatabaseDocument"
-        CALC = "com.sun.star.sheet.SpreadsheetDocument"
-        DRAW = "com.sun.star.drawing.DrawingDocument"
-        IMPRESS = "com.sun.star.presentation.PresentationDocument"
-        MATH = "com.sun.star.formula.FormulaProperties"
-
-        def __str__(self) -> str:
-            return self.value
-
-    # endregion docType service names
-
-    # region CLSIDs for Office documents
-    # defined in https://github.com/LibreOffice/core/blob/master/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
-    # https://opengrok.libreoffice.org/xref/core/officecfg/registry/data/org/openoffice/Office/Embedding.xcu
-    class CLSID(str, Enum):
-        # in lower case by design.
-        WRITER = "8bc6b165-b1b2-4edd-aa47-dae2ee689dd6"
-        CALC = "47bbb4cb-ce4c-4e80-a591-42d9ae74950f"
-        DRAW = "4bab8970-8a3b-45b3-991c-cbeeac6bd5e3"
-        IMPRESS = "9176e48a-637a-4d1f-803b-99d9bfac1047"
-        MATH = "078b7aba-54fc-457f-8551-6147e776a997"
-        CHART = "12dcae26-281f-416f-a234-c3086127382e"
-
-        def __str__(self) -> str:
-            return self.value
-
-    # unsure about these:
-    #
-    # chart2 "80243D39-6741-46C5-926E-069164FF87BB"
-    #       service: com.sun.star.chart2.ChartDocument
-
-    #  applet "970B1E81-CF2D-11CF-89CA-008029E4B0B1"
-    #       service: com.sun.star.comp.sfx2.AppletObject
-
-    #  plug-in "4CAA7761-6B8B-11CF-89CA-008029E4B0B1"
-    #        service: com.sun.star.comp.sfx2.PluginObject
-
-    #  frame "1A8A6701-DE58-11CF-89CA-008029E4B0B1"
-    #        service: com.sun.star.comp.sfx2.IFrameObject
-
-    #  XML report chart "D7896D52-B7AF-4820-9DFE-D404D015960F"
-    #        service: com.sun.star.report.ReportDefinition
-    # endregion CLSIDs for Office documents
+    # endregion aliases
 
     # region port connect to locally running Office via port 8100
     # endregion port
@@ -565,7 +513,7 @@ class Lo(metaclass=StaticProperty):
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
 
-        cls._lo_inst = LoInst(opt=opt)
+        cls._lo_inst = LoInst(opt=opt, events=_Events())
         return cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
 
     # endregion Start Office

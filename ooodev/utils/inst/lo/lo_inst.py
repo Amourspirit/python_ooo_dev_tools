@@ -5,20 +5,36 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
 from urllib.parse import urlparse
 import uno
+from com.sun.star.beans import XIntrospection
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XNamed
+from com.sun.star.frame import XComponentLoader
+from com.sun.star.frame import XDesktop
+from com.sun.star.frame import XDispatchHelper
+from com.sun.star.frame import XModel
+from com.sun.star.frame import XStorable
+from com.sun.star.io import IOException
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import XMultiServiceFactory
+from com.sun.star.util import XCloseable
+from com.sun.star.util import XNumberFormatsSupplier
 
+from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
+from ooo.dyn.lang.disposed_exception import DisposedException
+from ooo.dyn.util.close_veto_exception import CloseVetoException
+
+# if not mock_g.DOCS_BUILDING:
+# not importing for doc building just result in short import name for
+# args that use these.
+# this is also true becuase docs/conf.py ignores com import for autodoc
 from ooodev.mock import mock_g
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
-from ooodev.utils import file_io as mFileIO
-from ooodev.utils import info as mInfo
-from ooodev.utils import props as mProps
-from ooodev.utils import script_context
-from ooodev.utils import table_helper as mThelper
-from ooodev.utils import xml_util as mXML
+from ooodev.adapter.lang.event_listener import EventListener
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
 from ooodev.conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart, LoBridgeCommon
@@ -26,34 +42,22 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
 from ooodev.events.args.event_args import EventArgs
-from ooodev.events.event_singleton import _Events
 from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.events.lo_events import Events
 from ooodev.events.lo_named_event import LoNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.formatters.formatter_table import FormatterTable
-from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
-from ooodev.utils.inst.lo.options import Options as LoOptions
+from ooodev.proto.event_observer import EventObserver
+from ooodev.utils import file_io as mFileIO
+from ooodev.utils import info as mInfo
+from ooodev.utils import props as mProps
+from ooodev.utils import script_context
+from ooodev.utils import table_helper as mThelper
+from ooodev.utils import xml_util as mXML
 from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
-from ooodev.adapter.lang.event_listener import EventListener
+from ooodev.utils.inst.lo.options import Options as LoOptions
+from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
 
-from com.sun.star.lang import XComponent
-
-# if not mock_g.DOCS_BUILDING:
-# not importing for doc building just result in short import name for
-# args that use these.
-# this is also true becuase docs/conf.py ignores com import for autodoc
-from com.sun.star.beans import XPropertySet
-from com.sun.star.beans import XIntrospection
-from com.sun.star.container import XNamed
-from com.sun.star.frame import XDesktop
-from com.sun.star.frame import XDispatchHelper
-from com.sun.star.lang import XMultiServiceFactory
-from com.sun.star.io import IOException
-from com.sun.star.util import XCloseable
-from com.sun.star.util import XNumberFormatsSupplier
-from com.sun.star.frame import XComponentLoader
-from com.sun.star.frame import XModel
-from com.sun.star.frame import XStorable
 
 if TYPE_CHECKING:
     try:
@@ -64,27 +68,34 @@ if TYPE_CHECKING:
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
+    from com.sun.star.lang import EventObject
+    from com.sun.star.lang import XComponent
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XTypeProvider
-    from com.sun.star.lang import XComponent
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
-    from com.sun.star.lang import EventObject
-
-from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
-from ooo.dyn.lang.disposed_exception import DisposedException
-from ooo.dyn.util.close_veto_exception import CloseVetoException
-
-
-# PathOrStr = type_var.PathOrStr
-# """Path like object or string"""
 
 
 class LoInst:
-    """Lo instance class. This is the main class for interacting with LO."""
+    """
+    Lo instance class. This is the main class for interacting with LO.
 
-    def __init__(self, opt: LoOptions | None = None) -> None:
+    This class is of advanced usage and is not intended for general use.
+
+    In most cases, you should use the :py:class:`~ooodev.utils.lo.Lo` stactic class instead.
+
+    This class mirrors the properties and methods of the ``Lo`` class so for documentation see :py:class:`ooodev.utils.lo.Lo`,
+    """
+
+    def __init__(self, opt: LoOptions | None = None, events: EventObserver | None = None) -> None:
+        """
+        Constructor
+
+        Args:
+            opt (LoOptions, optional): Options
+            events (EventObserver, optional): Event observer
+        """
         # self._events = Events(self)
         self._xcc: XComponentContext = None
         self._doc: XComponent = None
@@ -103,7 +114,10 @@ class LoInst:
         else:
             self._opt = opt
 
-        self._events = _Events()
+        if events is None:
+            self._events = Events()
+        else:
+            self._events = events
 
         self._allow_print = opt.verbose
         self._set_lo_events()
@@ -134,10 +148,10 @@ class LoInst:
         self._event_listener = EventListener()
         self._event_listener.on("disposing", _on_lo_disposing_bridge)
 
-        _Events().on(LoNamedEvent.RESET, _on_lo_del_cache_attrs)
-        _Events().on(LoNamedEvent.OFFICE_LOADING, _on_lo_loading)
-        _Events().on(LoNamedEvent.OFFICE_LOADED, _on_lo_loaded)
-        _Events().on(LoNamedEvent.BRIDGE_DISPOSED, _on_lo_disposed)
+        self._events.on(LoNamedEvent.RESET, self._fn_on_lo_del_cache_attrs)
+        self._events.on(LoNamedEvent.OFFICE_LOADING, self._fn_on_lo_loading)
+        self._events.on(LoNamedEvent.OFFICE_LOADED, self._fn_on_lo_loaded)
+        self._events.on(LoNamedEvent.BRIDGE_DISPOSED, self._fn_on_lo_disposed)
 
     def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:
         # clears Lo Attributes that are dynamically created
@@ -147,7 +161,7 @@ class LoInst:
                 delattr(self, attr)
 
     def on_lo_disposing_bridge(self, src: EventListener, event: EventObject) -> None:
-        _Events().trigger(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(self.on_lo_disposing_bridge.__qualname__))
+        self._events.trigger(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(self.on_lo_disposing_bridge.__qualname__))
 
     def on_lo_disposed(self, source: Any, event: EventObject) -> None:
         self.print("Office bridge has gone!!")
@@ -1490,9 +1504,27 @@ class LoInst:
     # region static methods
     @classmethod
     def from_existing(
-        cls, script_ctx: XScriptContext, connector: LoBridgeCommon, opt: LoOptions | None = None
+        cls,
+        script_ctx: XScriptContext,
+        connector: LoBridgeCommon,
+        opt: LoOptions | None = None,
+        events: EventObserver | None = None,
     ) -> LoInst:
-        inst = LoInst(opt=opt)
+        """
+        Creates a new instance of LoInst from an existing ``XScriptContext`` and Bridge connector.
+
+        Generally, this method is used when workin with sub-components such as a database form.
+
+        Args:
+            script_ctx (XScriptContext): Exising ``XScriptContext`` such as ``Lo.XSCRIPTCONTEXT``
+            connector (LoBridgeCommon): Existing Bridge connector such as ``Lo.bridge_connector``
+            events (EventObserver, optional): Event observer
+            opt (LoOptions, optional): Options to use.
+
+        Returns:
+            LoInst: New instance of ``LoInst``
+        """
+        inst = LoInst(opt=opt, events=events)
         inst._init_from_ctx(script_ctx, connector)
         inst._xscript_context = script_ctx
         return inst
@@ -1609,6 +1641,10 @@ class LoInst:
     @property
     def options(self) -> LoOptions:
         return self._opt
+
+    @property
+    def events(self) -> EventObserver:
+        return self._events
 
 
 __all__ = ("LoInst",)
