@@ -105,3 +105,27 @@ class _Events(object):
             self._observers = []
         for observer in args:
             self._observers.append(ref(observer))
+
+    def remove(self, event_name: str, callback: type_var.EventCallback) -> bool:
+        """
+        Removes an event callback
+
+        Args:
+            event_name (str): Unique event name
+            callback (Callable[[object, EventArgs], None]): Callback function
+
+        Returns:
+            bool: True if callback has been removed; Otherwise, False.
+            False means the callback was not found.
+        """
+        if self._callbacks is None:
+            return False
+        result = False
+        if event_name in self._callbacks:
+            # cb = cast(Dict[str, List[EventCallback]], self._callbacks)
+            try:
+                self._callbacks[event_name].remove(ref(callback))
+                result = True
+            except ValueError:
+                pass
+        return result

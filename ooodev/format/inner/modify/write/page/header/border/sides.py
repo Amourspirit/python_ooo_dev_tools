@@ -61,6 +61,10 @@ class Sides(PageStyleBaseMulti):
     """
     Page Header Style Border Sides.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -91,6 +95,9 @@ class Sides(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_borders`
         """
 
         direct = InnerSides(

@@ -28,6 +28,10 @@ class Img(PageStyleBaseMulti):
     """
     Page Footer Background Image
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_area`
+
     .. versionadded:: 0.9.0
     """
 
@@ -66,6 +70,9 @@ class Img(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_area`
         """
 
         direct = InnerImg(
