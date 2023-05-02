@@ -301,6 +301,26 @@ class LoNotLoadedError(Exception):
     pass
 
 
+class LoadingError(Exception):
+    """
+    Generic Loading Error
+
+    .. versionchanged:: 0.9.8
+    """
+
+    pass
+
+
+class ConnectionError(Exception):
+    """
+    Generic Connection Error
+
+    .. versionchanged:: 0.9.8
+    """
+
+    pass
+
+
 class ChartError(Exception):
     """Generic Chart Error"""
 

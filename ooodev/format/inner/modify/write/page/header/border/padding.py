@@ -65,6 +65,10 @@ class Padding(PageStyleBaseMulti):
     """
     Page Style Header Border Padding.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -95,6 +99,9 @@ class Padding(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_borders`
         """
 
         direct = InnerPadding(

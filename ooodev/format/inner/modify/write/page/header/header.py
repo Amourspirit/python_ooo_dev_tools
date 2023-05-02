@@ -59,6 +59,10 @@ class Header(PageStyleBaseMulti):
     """
     Page Header Settings
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_header`
+
     .. versionadded:: 0.9.0
     """
 
@@ -81,7 +85,7 @@ class Header(PageStyleBaseMulti):
         Constructor
 
         Args:
-            on (bool | None, optional): Specifics if Footer is on.
+            on (bool | None, optional): Specifics if Header is on.
             shared (bool | None, optional): Specifies if same contents left and right.
             shared_first (bool | None, optional): Specifies if same contents on first page.
             margin_left (float | None, optional): Specifies Left Margin in ``mm`` units.
@@ -96,6 +100,9 @@ class Header(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_header`
         """
 
         direct = InnerStyle(
