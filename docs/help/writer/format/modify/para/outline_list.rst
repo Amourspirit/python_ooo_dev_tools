@@ -200,7 +200,7 @@ Style results.
 
 .. cssclass:: screen_shot
 
-    .. _234410957-55eedfcc-9032-48b1-a660-7dffa5eb5d8f:
+    .. _234435651-fb052287-3f55-42ae-8e0f-b53a35499565:
     .. figure:: https://user-images.githubusercontent.com/4193389/234435651-fb052287-3f55-42ae-8e0f-b53a35499565.png
         :alt: Writer dialog Paragraph Outline & List style changed
         :figclass: align-center

@@ -150,7 +150,7 @@ Style results.
 
 .. cssclass:: screen_shot
 
-    .. _234616355-8c595049-ac4b-4b27-a3b6-c9cbff24b6c4:
+    .. _234626344-4a168449-92a5-4e70-b6e2-97926f1c8c91:
     .. figure:: https://user-images.githubusercontent.com/4193389/234626344-4a168449-92a5-4e70-b6e2-97926f1c8c91.png
         :alt: Writer dialog Paragraph Text Flow style changed flow options
         :figclass: align-center

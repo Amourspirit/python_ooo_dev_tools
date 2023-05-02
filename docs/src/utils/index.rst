@@ -7,5 +7,6 @@ utils
 
     data_type/index
     dispatch/index
+    inst/index
     kind/index
     *

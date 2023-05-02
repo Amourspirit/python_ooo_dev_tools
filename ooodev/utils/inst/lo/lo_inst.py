@@ -394,7 +394,7 @@ class LoInst:
 
             The following example creates a new instance, connects to a running office instance and creates a new calc document.
 
-            .. code-block:: pyhon
+            .. code-block:: python
 
                 lo = LoInst()
                 lo.load_office(Lo.bridge_connector)

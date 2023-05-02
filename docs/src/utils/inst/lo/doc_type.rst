@@ -1,5 +1,5 @@
-ooodev.inst.lo.doc_type package
-===============================
+Module doc_type
+===============
 
 Module contents
 ---------------

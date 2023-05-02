@@ -73,8 +73,8 @@ Running the above code will produce the following results in the Writer dialog.
 
 .. cssclass:: screen_shot
 
-    .. _234708184-72e9ad07-1bc2-4200-8857-513743318a50:
-    .. figure:: https://user-images.githubusercontent.com/4193389/234708184-72e9ad07-1bc2-4200-8857-513743318a50.png
+    .. _235550243-87c843e4-3747-4471-99e4-34962f47cddc:
+    .. figure:: https://user-images.githubusercontent.com/4193389/235550243-87c843e4-3747-4471-99e4-34962f47cddc.png
         :alt: Writer dialog Paragraph Position style changed
         :figclass: align-center
         :width: 450px
