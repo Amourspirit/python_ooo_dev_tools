@@ -509,6 +509,7 @@ class Lo(metaclass=StaticProperty):
         # xcc, mcFactory, and xDesktop are stored as static globals.
 
         cls._lo_inst = lo_inst.LoInst(opt=opt, events=_Events())
+
         try:
             return cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
         except Exception:
