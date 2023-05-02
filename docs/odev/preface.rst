@@ -5,8 +5,8 @@ Preface
 .. image:: https://user-images.githubusercontent.com/4193389/177222844-cf92599a-2fca-4d67-931b-e237f04a3817.png
     :alt: Header Image
 
-Star Basic is the native language of Star Office which has been incorporated by OpenOffice and LibreOffice.
-This means that all other supported languages must negotiate a UNO (Universal Network Objects) bridge.
+Scripting support for any programming language is implemented in LibreOffice and OpenOffice using respective UNO (Universal Network Objects) bridges.
+This means that other supported languages, including python, must negotiate a UNO bridge.
 
 This `comment <https://stackoverflow.com/a/64517979/>`__ from Dan Dascalescu offers a challenge to the community:
 
