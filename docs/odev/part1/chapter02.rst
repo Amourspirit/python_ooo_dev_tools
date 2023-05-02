@@ -140,7 +140,7 @@ Below is a simplified version of :py:meth:`.Lo.load_office`, that show the princ
 
     .. cssclass:: src-link
 
-        - :odev_src_lo_meth:`load_office`
+        - :odev_src_loinst_meth:`load_office`
 
 
 There is also :py:class:`.Lo.Loader` context manager that allows for automatic closing of office.

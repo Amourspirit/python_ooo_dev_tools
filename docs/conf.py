@@ -272,8 +272,8 @@ extlinks = {
     "odev_src_info_meth": (odev_src_root + "/utils/info.html#Info.%s", "Info.%s()"),
     "odev_src_props_meth": (odev_src_root + "/utils/props.html#Props.%s", "Props.%s()"),
     "odev_src_fileio_meth": (odev_src_root + "/utils/file_io.html#FileIO.%s", "FileIO.%s()"),
+    "odev_src_loinst_meth": (odev_src_root + "/utils/inst/lo/lo_inst.html#LoInst.%s", "LoInst.%s()"),
 }
-
 # endregion sphinx.ext.extlinks – Markup to shorten external links
 
 # region intersphinx

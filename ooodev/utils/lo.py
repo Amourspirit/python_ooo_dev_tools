@@ -22,7 +22,7 @@ from com.sun.star.frame import XStorable
 # args that use these.
 # this is also true becuase docs/conf.py ignores com import for autodoc
 from ..mock import mock_g
-from .inst.lo.lo_inst import LoInst
+from .inst.lo import lo_inst
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
@@ -160,7 +160,7 @@ class Lo(metaclass=StaticProperty):
     ConnectSocket = connectors.ConnectSocket
     """Alias of connectors.ConnectSocket"""
 
-    _lo_inst: LoInst = None
+    _lo_inst: lo_inst.LoInst = None
 
     # region    qi()
 
@@ -508,7 +508,8 @@ class Lo(metaclass=StaticProperty):
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
 
-        cls._lo_inst = LoInst(opt=opt, events=_Events())
+        cls._lo_inst = lo_inst.LoInst(opt=opt, events=_Events())
+
         try:
             return cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
         except Exception:
