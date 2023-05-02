@@ -402,10 +402,10 @@ class LoInst:
 
         See Also:
             - :ref:`ch02`
+            - :ref:`ch02_multiple_docs`
             - :py:meth:`open_doc`
             - :py:class:`~ooodev.utils.lo.Lo`
             - :py:class:`~ooodev.utils.lo.Lo.Loader`
-
 
         .. versionchanged:: 0.6.10
             Added ``opt`` parameter.

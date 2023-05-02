@@ -13,7 +13,6 @@ ooodev
    exceptions/index
    format/index
    formatters/index
-   inst/index
    listeners/index
    office/index
    proto/index

@@ -4,15 +4,15 @@ from typing import cast, Type, TypeVar
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
+from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps
+from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ...page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps
-from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
+from ...page_style_base_multi import PageStyleBaseMulti
 
 # endregion Import
 
@@ -22,6 +22,10 @@ _TGradient = TypeVar(name="_TGradient", bound="Gradient")
 class Gradient(PageStyleBaseMulti):
     """
     Page Header Transparent Gradient
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_transparency`
 
     .. versionadded:: 0.9.0
     """
@@ -50,12 +54,15 @@ class Gradient(PageStyleBaseMulti):
                 Defaults to ``0``.
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the
                 gradient. Defaults to ``IntensityRange(0, 0)``.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_transparency`
         """
 
         direct = InnerGradient(
