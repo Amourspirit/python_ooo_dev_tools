@@ -18,6 +18,10 @@ class Transparency(PageStyleBaseMulti):
     """
     Header Transparent Transparency
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_transparency`
+
     .. versionadded:: 0.9.0
     """
 
@@ -33,12 +37,15 @@ class Transparency(PageStyleBaseMulti):
 
         Args:
             value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
-            style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+            style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_transparency`
         """
 
         direct = InnerTransparency(value=value, _cattribs=self._get_inner_cattribs())

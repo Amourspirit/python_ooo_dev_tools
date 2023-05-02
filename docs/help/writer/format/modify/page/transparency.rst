@@ -16,11 +16,11 @@ The :py:class:`ooodev.format.writer.modify.page.transparency.Transparency` and :
 
     .. _235186880-68dd0cdc-8221-40f5-907a-940ec4ef155f:
     .. figure:: https://user-images.githubusercontent.com/4193389/235186880-68dd0cdc-8221-40f5-907a-940ec4ef155f.png
-        :alt: Writer dialog Area default
+        :alt: Writer dialog Transparency default
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Area default
+        Writer dialog Transparency default
 
 Default Page Style Dialog
 
@@ -87,7 +87,7 @@ Setting Transparency
 
 In this example we will apply a transparency to the page style background color.
 The transparency needs to be applied after the page style color as the transparency is applied to the color.
-This means the order ``[color_style, transparency_style]`` is important.
+This means the order ``Styler.apply(doc, color_style, transparency_style)`` is important.
 The transparency is set to 85% in this example.
 
 .. tabs::
@@ -148,7 +148,7 @@ The result are seen in :numref:`235193804-5d196f94-e80a-4d10-b3f0-625eb7a5880c`.
 
 In this example we will apply a transparency to the page style background color.
 The transparency needs to be applied after the page style color as the transparency is applied to the color.
-This means the order ``[color_style, para_gradient_style]`` is important.
+This means the order ``Styler.apply(doc, color_style, para_gradient_style)`` is important.
 
 .. tabs::
 
