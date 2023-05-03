@@ -19,10 +19,26 @@ class Frame(StyleName):
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_style_frame`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: StyleFrameKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (StyleFrameKind, str, optional): Style Name. Defaults to "Frame".
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_writer_format_style_frame`
+        """
         if name == "":
             name = Frame.default.prop_name
         super().__init__(name=name)

@@ -21,14 +21,14 @@ def test_write(loader, para_text) -> None:
     if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
-        GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
+        GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
-        cursor = Write.get_cursor(doc)
-
+        # the style technically could be applied to the cursor and still work.
+        pg_cursor = Write.get_page_cursor(doc)
         style = Page(name=WriterStylePageKind.FIRST_PAGE)
-        # style.apply(cursor)
-        Write.append_para(cursor=cursor, text=para_text, styles=(style,))
+        style.apply(pg_cursor)
 
+        cursor = Write.get_cursor(doc)
         f_style = Page.from_obj(cursor)
         assert f_style.prop_name == style.prop_name
         assert f_style.prop_name == str(WriterStylePageKind.FIRST_PAGE)
@@ -38,6 +38,8 @@ def test_write(loader, para_text) -> None:
         xprops.setPropertyValue("BackColor", CommonColor.CORAL)
         val = cast(int, xprops.getPropertyValue("BackColor"))
         assert val == CommonColor.CORAL
+
+        Write.append_para(cursor=cursor, text=para_text)
 
         Lo.delay(delay)
     finally:
