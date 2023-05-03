@@ -17,6 +17,10 @@ class Page(StyleName):
     """
     Page Style.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_style_page`
+
     .. versionadded:: 0.9.0
     """
 
@@ -32,6 +36,12 @@ class Page(StyleName):
 
         Args:
             name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_writer_format_style_page`
         """
         if name == "":
             name = Page.default.prop_name
