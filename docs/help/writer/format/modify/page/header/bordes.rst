@@ -13,7 +13,7 @@ The :py:class:`ooodev.format.writer.modify.page.header.borders.Sides`, :py:class
 classes are used to modify the border values seen in :numref:`235311718-e3290dbc-73b5-4555-ad52-5c9be611a7a9` of a character border style.
 
 
-Default Paragraph Borders Style Dialog
+Default Page Header Borders Style Dialog
 
 .. cssclass:: screen_shot
 
@@ -264,9 +264,10 @@ We can get the border shadow from the document.
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_borders`
         - :ref:`help_writer_format_modify_para_borders`
+        - :ref:`help_writer_format_modify_page_borders`
         - :ref:`help_writer_format_modify_page_footer_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.page.header.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.page.header.borders.Sides`
-        - :py:class:`ooodev.format.writer.modify.page.header.borders.Shaodow`
+        - :py:class:`ooodev.format.writer.modify.page.header.borders.Shadow`

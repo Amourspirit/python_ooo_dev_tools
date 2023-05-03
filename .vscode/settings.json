@@ -181,5 +181,11 @@
     "restructuredtext.preview.name": "sphinx",
     "restructuredtext.linter.disabledLinters": [
         "doc8"
+    ],
+    "cSpell.words": [
+        "cssclass",
+        "numref",
+        "ooodev",
+        "ypos"
     ]
 }
