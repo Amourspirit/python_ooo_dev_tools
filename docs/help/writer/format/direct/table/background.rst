@@ -199,6 +199,9 @@ Getting Background Image Object
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

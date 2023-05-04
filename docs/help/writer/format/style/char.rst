@@ -118,6 +118,9 @@ Get Style from Cursor
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

@@ -145,6 +145,9 @@ We can get the alignment from the document.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

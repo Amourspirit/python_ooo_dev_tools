@@ -14,6 +14,9 @@ Modify formatting applies changes to a style in the document. Such a character s
 
 Style formatting applies changes to a style of an object. Such as setting a character style to Drop Caps.
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

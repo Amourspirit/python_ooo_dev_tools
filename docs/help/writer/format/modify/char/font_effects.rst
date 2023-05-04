@@ -100,7 +100,8 @@ We can get the font effects from the document.
 
             .. group-tab:: None
 
-
+Related Topics
+--------------
 
 .. seealso::
 
@@ -110,6 +111,7 @@ We can get the font effects from the document.
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_char_font_only`
         - :ref:`help_writer_format_direct_char_font_effects`
+        - :ref:`help_calc_format_direct_cell_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.char.font.FontEffects`

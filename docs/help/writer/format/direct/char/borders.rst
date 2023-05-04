@@ -148,6 +148,9 @@ Running the above code will produce the following output in :numref:`233846091-f
 
         Character Borders with shadow
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

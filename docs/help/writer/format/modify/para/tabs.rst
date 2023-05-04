@@ -96,6 +96,8 @@ Getting tabs from a style
 
             .. group-tab:: None
 
+Related Topics
+--------------
 
 .. seealso::
 

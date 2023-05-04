@@ -334,7 +334,8 @@ The paragraph cursor is then used to get the style.
 
             .. group-tab:: None
 
-
+Related Topics
+--------------
 
 .. seealso::
 

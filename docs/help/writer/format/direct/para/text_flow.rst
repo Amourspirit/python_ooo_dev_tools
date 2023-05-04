@@ -173,6 +173,9 @@ Set Breaks
 
         Writer Style Inspector with the paragraph text flow settings.
 
+Related Topics
+--------------
+
 .. seealso::
 
    .. cssclass:: ul-list

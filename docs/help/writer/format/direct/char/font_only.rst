@@ -115,7 +115,8 @@ The paragraph cursor is then used to get the font style.
 
             .. group-tab:: None
 
-
+Related Topics
+--------------
 
 .. seealso::
 

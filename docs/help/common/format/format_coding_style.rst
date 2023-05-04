@@ -91,6 +91,9 @@ and the property value can be retreived using ``spc_font.prop_spacing``.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

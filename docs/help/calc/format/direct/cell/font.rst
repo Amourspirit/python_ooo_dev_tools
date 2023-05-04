@@ -134,11 +134,15 @@ Set Font based upon values
 
         Styled array
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_writer_format_direct_char_font`
+        - :ref:`help_calc_format_direct_cell_font_only`
+        - :ref:`help_calc_format_direct_cell_font_effects`
         - :py:class:`ooodev.format.calc.direct.cell.font.Font`

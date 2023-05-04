@@ -229,6 +229,9 @@ This can be used to reset the paragraph style to the default style.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

@@ -204,9 +204,8 @@ class FontOnly(StyleMulti):
         return super()._on_modifying(source, event)
 
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
-        if event_args.key == self._props.style_name:
-            if not event_args.value:
-                event_args.default = True
+        if event_args.key == self._props.style_name and not event_args.value:
+            event_args.default = True
         return super().on_property_setting(source, event_args)
 
     # region apply()

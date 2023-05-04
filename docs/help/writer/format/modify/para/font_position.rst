@@ -36,7 +36,7 @@ Setting the font effects
         from ooodev.utils.lo import Lo
 
         def main() -> int:
-           with Lo.Loader(Lo.ConnectPipe()):
+            with Lo.Loader(Lo.ConnectPipe()):
                 doc = Write.create_doc()
                 GUI.set_visible(doc)
                 Lo.delay(300)
@@ -100,6 +100,8 @@ Getting font position from a style
 
             .. group-tab:: None
 
+Related Topics
+--------------
 
 .. seealso::
 

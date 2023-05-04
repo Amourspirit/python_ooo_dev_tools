@@ -98,6 +98,8 @@ Getting font from a style
 
             .. group-tab:: None
 
+Related Topics
+--------------
 
 .. seealso::
 
