@@ -969,7 +969,7 @@ class Calc:
             - :py:meth:`~.calc.Calc.is_sheet_protected`
             - :ref:`help_calc_format_direct_cell_cell_protection`
 
-        .. versionadded:: 0.9.9
+        .. versionadded:: 0.10.000
         """
         pro = mLo.Lo.qi(XProtectable, sheet, True)
         if not pro.isProtected():
@@ -998,7 +998,7 @@ class Calc:
             - :py:meth:`~.calc.Calc.is_sheet_protected`
             - :ref:`help_calc_format_direct_cell_cell_protection`
 
-        .. versionadded:: 0.9.9
+        .. versionadded:: 0.10.0
         """
         pro = mLo.Lo.qi(XProtectable, sheet, True)
         if pro.isProtected():
@@ -1024,7 +1024,7 @@ class Calc:
             - :py:meth:`~.calc.Calc.unprotect_sheet`
             - :ref:`help_calc_format_direct_cell_cell_protection`
 
-        .. versionadded:: 0.9.9
+        .. versionadded:: 0.10.0
         """
         pro = mLo.Lo.qi(XProtectable, sheet, True)
         return pro.isProtected()
@@ -4289,7 +4289,7 @@ class Calc:
         Note:
             if ``cell`` is passed, it is returned verbatim.
 
-        .. versionchanged:: 0.9.9
+        .. versionchanged:: 0.10.0
             Added overload for ``cell`` argument.
         """
         cell = kwargs.pop("cell", None)
@@ -4868,7 +4868,7 @@ class Calc:
             - :py:meth:`~.calc.Calc.protect_sheet`
             - :ref:`help_calc_format_direct_cell_cell_protection`
 
-        .. versionadded:: 0.9.9
+        .. versionadded:: 0.10.0
         """
         cell = cls.get_cell(*args, **kwargs)
         props = mLo.Lo.qi(XPropertySet, cell, True)
@@ -4927,7 +4927,7 @@ class Calc:
             - :py:meth:`~.calc.Calc.protect_sheet`
             - :ref:`help_calc_format_direct_cell_cell_protection`
 
-        .. versionadded:: 0.9.9
+        .. versionadded:: 0.10.0
         """
         cp = cls.get_cell_protection(*args, **kwargs)
         return cp.IsLocked

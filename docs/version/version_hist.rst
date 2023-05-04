@@ -2,8 +2,10 @@
 Version History
 ***************
 
-Version 0.9.9
-=============
+Version 0.10.0
+==============
+
+Support dropped for Python ``3.7``. Now supporting Python ``3.8`` and up.
 
 Added Calc methods ``get_cell_protection()``, ``is_cell_protected()``, ``protect_sheet()``, ``unprotect_sheet()`` and ``is_sheet_protected()``. 
 

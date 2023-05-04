@@ -327,7 +327,7 @@ If you want to actually stop the user from changing the spreadsheet, then it mus
 
 .. note::
 
-    As of version ``0.9.9`` :py:class:`~.calc.Calc` has several methods related to cell protection and sheet protection.
+    As of version ``0.10.0`` :py:class:`~.calc.Calc` has several methods related to cell protection and sheet protection.
 
     - :py:meth:`Calc.get_cell_protection() <ooodev.office.calc.Calc.get_cell_protection>`
     - :py:meth:`Calc.is_cell_protected() <ooodev.office.calc.Calc.is_cell_protected>`
