@@ -1,5 +1,5 @@
 ooouno
-sphinx==5.3.0
+sphinx==6.2.1
 sphinx_design
 sphinx-autodoc-typehints
 sphinx-rtd-dark-mode
