@@ -4,6 +4,11 @@
 Chapter 6. Text Styles
 **********************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 1
+
 .. topic:: Overview
 
     Five Style Families; Properties; Listing Styles; Creating a Style; Applying Styles;

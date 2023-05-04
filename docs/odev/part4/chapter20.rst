@@ -3,6 +3,10 @@
 ***********************************************
 Chapter 20. Spreadsheet Displaying and Creation
 ***********************************************
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
 
 .. topic:: Overview
 
@@ -16,11 +20,6 @@ This chapter looks at two main topics: the display of an existing spreadsheet do
 As part of displaying a document, we'll look at describing how to use read-only and protected viewing, change the active sheet, use sheet names, and adjust the window view size by zooming.
 
 Document creation illustrates the use of cell names and ranges, the setting of cell data using arrays, rows, and columns, and adding a picture and a chart to a sheet.
-
-.. contents:: Table of Contents
-    :local:
-    :backlinks: top
-    :depth: 3
 
 .. _ch20_display_doc:
 

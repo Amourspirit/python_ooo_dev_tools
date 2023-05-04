@@ -4,6 +4,11 @@
 Chapter 5. Text API Overview
 ****************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     API Overview; Text Cursors; Extracting Text; Cursor Iteration;
@@ -29,6 +34,7 @@ The guide's text programming examples are in |txt_java|_.
 Although the code is long, it's well-organized. Some smaller text processing examples are available at https://api.libreoffice.org/examples/examples.html#Java_examples.
 
 This chapter (and later ones) assume that you're familiar with Writer, including text concepts such as paragraph styles. If you're not, then I recommend the |write_guide|_, user manual.
+
 
 .. _ch05_overview_api:
 

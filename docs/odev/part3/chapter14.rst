@@ -4,6 +4,11 @@
 Chapter 14. Animation
 *********************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     Circle Movement; Line Rotation; Animating an Image; The Gallery Module.

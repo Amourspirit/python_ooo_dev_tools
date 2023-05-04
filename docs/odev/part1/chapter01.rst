@@ -4,6 +4,11 @@
 Chapter 1. LibreOffice API Concepts
 ***********************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: History
 
     Some History; Help and Examples for the LibreOffice SDK (``lodoc``, ``loguide``);

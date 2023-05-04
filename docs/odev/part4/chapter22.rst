@@ -4,6 +4,11 @@
 Chapter 22. Styles
 ******************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     Obtaining Style Information: the TableCellStyle_ and TablePageStyle_ Services; Creating and Using a New Style; Adding Borders

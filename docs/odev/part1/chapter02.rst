@@ -4,6 +4,10 @@
 Chapter 2. Starting and Stopping
 ********************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
 
 .. topic:: Starting Office
 

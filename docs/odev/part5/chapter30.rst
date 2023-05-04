@@ -4,6 +4,11 @@
 Chapter 30. Bar, Pie, Area, Line Charts
 ***************************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     The Bar Chart; The Pie Chart; 3D Pie; Donuts; The Area Chart; The Line Chart: multiple lines
