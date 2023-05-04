@@ -1325,11 +1325,11 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="cell_protection" ID="ID_353166445" CREATED="1675066825600" MODIFIED="1682196183151">
-<icon BUILTIN="unchecked"/>
-<node TEXT="CellProtection" ID="ID_396507649" CREATED="1679017780504" MODIFIED="1682196183151">
+<node TEXT="cell_protection" ID="ID_353166445" CREATED="1675066825600" MODIFIED="1683227391218">
+<icon BUILTIN="checked"/>
+<node TEXT="CellProtection" ID="ID_396507649" CREATED="1679017780504" MODIFIED="1683227391214">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="background" ID="ID_1482147292" CREATED="1675066818817" MODIFIED="1682196183151">

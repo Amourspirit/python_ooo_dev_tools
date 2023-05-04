@@ -14,7 +14,8 @@ import uno
 # if not mock_g.DOCS_BUILDING:
 # not importing for doc building just result in short import name for
 # args that use these.
-# this is also true becuase docs/conf.py ignores com import for autodoc
+# this is also true because docs/conf.py ignores com import for autodoc
+from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
 from com.sun.star.frame import XModel
@@ -49,6 +50,7 @@ from com.sun.star.sheet import XViewPane
 from com.sun.star.style import XStyle
 from com.sun.star.table import BorderLine2  # struct
 from com.sun.star.table import TableBorder2  # struct
+from com.sun.star.table import XCell
 from com.sun.star.table import XCellRange
 from com.sun.star.table import XColumnRowRange
 from com.sun.star.text import XSimpleText
@@ -57,9 +59,9 @@ from com.sun.star.util import NumberFormat  # const
 from com.sun.star.util import XMergeable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
+from com.sun.star.util import XProtectable
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import XPropertySet
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XController
     from com.sun.star.frame import XFrame
@@ -71,13 +73,14 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XSolver
     from com.sun.star.table import CellAddress
     from com.sun.star.table import CellRangeAddress
-    from com.sun.star.table import XCell
     from com.sun.star.text import XText
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
+    from com.sun.star.util import CellProtection
 
 from ooo.dyn.awt.point import Point
 from ooo.dyn.beans.property_value import PropertyValue
+from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
 from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
@@ -207,9 +210,9 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
-           If ``fnm`` is omitted then ``DOC_OPENED`` event will not be raised.
+            If ``fnm`` is omitted then ``DOC_OPENED`` event will not be raised.
         """
         cargs = CancelEventArgs(Calc.open_doc.__qualname__)
         cargs.event_data = {"fnm": fnm, "loader": loader}
@@ -915,7 +918,7 @@ class Calc:
             if kargs_len == 0:
                 return ka
             valid_keys = ("sheet", "name")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("set_sheet_name() got an unexpected keyword argument")
             keys = ("sheet", "name")
@@ -925,10 +928,10 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            ka[2] = ka.get("name", None)
+            ka[2] = ka.get("name")
             return ka
 
-        if not count in (1, 2):
+        if count not in (1, 2):
             raise TypeError("set_sheet_name() got an invalid number of arguments")
 
         kargs = get_kwargs()
@@ -948,6 +951,83 @@ class Calc:
             return False
         xnamed.setName(name)
         return True
+
+    @staticmethod
+    def protect_sheet(sheet: XSpreadsheet, password: str) -> bool:
+        """
+        Protects a Spreadsheet
+
+        Args:
+            sheet (XSpreadsheet): Sheet to protect.
+            password (str): Password to protect sheet with.
+
+        Returns:
+            bool: ``True`` on success; Otherwise, ``False``
+
+        See Also:
+            - :py:meth:`~.calc.Calc.unprotect_sheet`
+            - :py:meth:`~.calc.Calc.is_sheet_protected`
+            - :ref:`help_calc_format_direct_cell_cell_protection`
+
+        .. versionadded:: 0.9.9
+        """
+        pro = mLo.Lo.qi(XProtectable, sheet, True)
+        if not pro.isProtected():
+            pro.protect(password)
+            return True
+        return False
+
+    @staticmethod
+    def unprotect_sheet(sheet: XSpreadsheet, password: str) -> bool:
+        """
+        Unprotect a Spreadsheet.
+
+        If sheet is not protected, this method will still return ``True``.
+
+        If incorrect password is provided, this method will return ``False``.
+
+        Args:
+            sheet (XSpreadsheet): Sheet to unprotect.
+            password (str): Password to unprotect sheet with.
+
+        Returns:
+            bool: ``True`` on success; Otherwise, ``False``
+
+        See Also:
+            - :py:meth:`~.calc.Calc.protect_sheet`
+            - :py:meth:`~.calc.Calc.is_sheet_protected`
+            - :ref:`help_calc_format_direct_cell_cell_protection`
+
+        .. versionadded:: 0.9.9
+        """
+        pro = mLo.Lo.qi(XProtectable, sheet, True)
+        if pro.isProtected():
+            try:
+                pro.unprotect(password)
+            except IllegalArgumentException:
+                return False
+        return pro.isProtected()
+
+    @staticmethod
+    def is_sheet_protected(sheet: XSpreadsheet) -> bool:
+        """
+        Gets whether a sheet is protected
+
+        Args:
+            sheet (XSpreadsheet): Sheet to check
+
+        Returns:
+            bool: True if protected; Otherwise, False
+
+        See Also:
+            - :py:meth:`~.calc.Calc.protect_sheet`
+            - :py:meth:`~.calc.Calc.unprotect_sheet`
+            - :ref:`help_calc_format_direct_cell_cell_protection`
+
+        .. versionadded:: 0.9.9
+        """
+        pro = mLo.Lo.qi(XProtectable, sheet, True)
+        return pro.isProtected()
 
     # endregion --------------------- sheet methods -------------------------
 
@@ -1016,11 +1096,11 @@ class Calc:
         def zoom_val(value: int) -> None:
             mProps.Props.set(ctrl, ZoomType=mGui.GUI.ZoomEnum.BY_VALUE.value, ZoomValue=value)
 
-        if (
-            type == mGui.GUI.ZoomEnum.ENTIRE_PAGE
-            or type == mGui.GUI.ZoomEnum.OPTIMAL
-            or type == mGui.GUI.ZoomEnum.PAGE_WIDTH
-            or type == mGui.GUI.ZoomEnum.PAGE_WIDTH_EXACT
+        if type in (
+            mGui.GUI.ZoomEnum.ENTIRE_PAGE,
+            mGui.GUI.ZoomEnum.OPTIMAL,
+            mGui.GUI.ZoomEnum.PAGE_WIDTH,
+            mGui.GUI.ZoomEnum.PAGE_WIDTH_EXACT,
         ):
             mProps.Props.set(ctrl, ZoomType=type.value)
         elif type == mGui.GUI.ZoomEnum.ZOOM_200_PERCENT:
@@ -1051,8 +1131,7 @@ class Calc:
         Returns:
             XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None
         """
-        sv = mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc), True)
-        return sv
+        return mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc), True)
 
     @classmethod
     def set_active_sheet(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
@@ -2358,7 +2437,7 @@ class Calc:
             return ka
 
         if not count in (2, 3, 4):
-            raise TypeError("set_val() got an invalid numer of arguments")
+            raise TypeError("set_val() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -4156,6 +4235,11 @@ class Calc:
 
     @overload
     @classmethod
+    def get_cell(cls, cell: XCell) -> XCell:
+        ...
+
+    @overload
+    @classmethod
     def get_cell(cls, sheet: XSpreadsheet, addr: CellAddress) -> XCell:
         ...
 
@@ -4197,10 +4281,21 @@ class Calc:
             cell_range (XCellRange): Cell Range
             col (int): Cell column
             row (int): cell row
+            cell (XCell): Cell
 
         Returns:
             XCell: cell
+
+        Note:
+            if ``cell`` is passed, it is returned verbatim.
+
+        .. versionchanged:: 0.9.9
+            Added overload for ``cell`` argument.
         """
+        cell = kwargs.pop("cell", None)
+        if cell is not None:
+            return cell
+
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -4210,7 +4305,7 @@ class Calc:
             if kargs_len == 0:
                 return ka
             valid_keys = ("sheet", "cell_range", "addr", "col", "cell_name", "cell_obj", "row")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_cell() got an unexpected keyword argument")
             keys = ("sheet", "cell_range")
@@ -4230,7 +4325,7 @@ class Calc:
             ka[3] = kwargs.get("row", None)
             return ka
 
-        if not count in (1, 2, 3):
+        if count not in (1, 2, 3):
             raise TypeError("get_cell() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -4239,10 +4334,13 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 1:
+            cell_obj = kargs[1]
+            if mLo.Lo.is_uno_interfaces(cell_obj, XCell):
+                return cell_obj
             # get_cell(cell_range: XCellRange)
             # cell range is relative position.
             # if a range is C4:E9 then Cell range at col=0 ,row=0 is C4
-            return cls._get_cell_cell_rng(cell_range=kargs[1], col=0, row=0)
+            return cls._get_cell_cell_rng(cell_range=cell_obj, col=0, row=0)
 
         elif count == 2:
             if isinstance(kargs[2], (str, mCellObj.CellObj)):
@@ -4415,6 +4513,13 @@ class Calc:
         Returns:
             XCellRange: Cell range
         """
+        cell_rng = kwargs.pop("cell_range", None)
+        if cell_rng is not None:
+            try:
+                return mLo.Lo.qi(cell_rng, XCellRange, True)
+            except Exception as e:
+                raise TypeError(f"Expected XCellRange but got {type(kargs[1]).__name__}") from e
+
         ordered_keys = (1, 2, 3, 4, 5)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -4431,7 +4536,6 @@ class Calc:
                 "range_name",
                 "range_obj",
                 "cell_obj",
-                "cell_range",
                 "start_col",
                 "col_start",
                 "start_row",
@@ -4441,10 +4545,10 @@ class Calc:
                 "end_row",
                 "row_end",
             )
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_cell_range() got an unexpected keyword argument")
-            keys = ("sheet", "cell_range")
+            keys = ("sheet",)
             for key in keys:
                 if key in kwargs:
                     ka[1] = kwargs[key]
@@ -4463,7 +4567,7 @@ class Calc:
             ka[5] = kwargs.get("end_row", None) if kwargs.get("row_end", None) is None else kwargs.get("row_end")
             return ka
 
-        if not count in (1, 2, 5):
+        if count not in (1, 2, 5):
             raise TypeError("get_cell_range() got an invalid numer of arguments")
 
         kargs = get_kwargs()
@@ -4703,9 +4807,136 @@ class Calc:
             raise mEx.MissingInterfaceError(XCellRange, f"Could not access range for row position: {idx}")
         return cell_range
 
+    # region get_cell_protection()
+    @overload
+    @classmethod
+    def get_cell_protection(cls, cell: XCell) -> CellProtection:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_protection(cls, sheet: XSpreadsheet, addr: CellAddress) -> CellProtection:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_protection(cls, sheet: XSpreadsheet, cell_name: str) -> CellProtection:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_protection(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> CellProtection:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_protection(cls, sheet: XSpreadsheet, col: int, row: int) -> CellProtection:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_protection(cls, cell_range: XCellRange) -> CellProtection:
+        ...
+
+    @overload
+    @classmethod
+    def get_cell_protection(cls, cell_range: XCellRange, col: int, row: int) -> CellProtection:
+        ...
+
+    @classmethod
+    def get_cell_protection(cls, *args, **kwargs) -> CellProtection:
+        """
+        Gets cell protection.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            addr (CellAddress): Cell Address
+            cell_name (str): Cell Name such as 'A1'
+            cell_obj: (CellObj): Cell object
+            cell_range (XCellRange): Cell Range
+            col (int): Cell column
+            row (int): cell row
+            cell (XCell): Cell
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection
+
+        Warning:
+            Cell Protection is only valid after the current sheet has been protected.
+
+        See Also:
+            - :py:meth:`~.calc.Calc.protect_sheet`
+            - :ref:`help_calc_format_direct_cell_cell_protection`
+
+        .. versionadded:: 0.9.9
+        """
+        cell = cls.get_cell(*args, **kwargs)
+        props = mLo.Lo.qi(XPropertySet, cell, True)
+        return cast("CellProtection", props.getPropertyValue("CellProtection"))
+
+    # endregion get_cell_protection()
+
+    # region is_cell_protected()
+    @overload
+    @classmethod
+    def is_cell_protected(cls, cell: XCell) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_cell_protected(cls, sheet: XSpreadsheet, addr: CellAddress) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_cell_protected(cls, sheet: XSpreadsheet, cell_name: str) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_cell_protected(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_cell_protected(cls, sheet: XSpreadsheet, col: int, row: int) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_cell_protected(cls, cell_range: XCellRange) -> bool:
+        ...
+
+    @overload
+    @classmethod
+    def is_cell_protected(cls, cell_range: XCellRange, col: int, row: int) -> bool:
+        ...
+
+    @classmethod
+    def is_cell_protected(cls, *args, **kwargs) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+
+        Warning:
+            Cell Protection is only valid after the current sheet has been protected.
+
+        See Also:
+            - :py:meth:`~.calc.Calc.protect_sheet`
+            - :ref:`help_calc_format_direct_cell_cell_protection`
+
+        .. versionadded:: 0.9.9
+        """
+        cp = cls.get_cell_protection(*args, **kwargs)
+        return cp.IsLocked
+
+    # endregion is_cell_protected()
+
     # endregion ------------ get XCell and XCellRange methods ----------
 
-    # region --------------- convert cell/cellrange names to positions -
+    # region --------------- convert cell/cell range names to positions -
 
     # region get_cell_range_positions()
     @overload
@@ -4849,7 +5080,7 @@ class Calc:
             mLo.Lo.print(f"Incorrect format for {row_str}")
         return 0
 
-    # endregion ----------- convert cell/cellrange names to positions --
+    # endregion ----------- convert cell/cell range names to positions --
 
     # region --------------- get cell and cell range addresses ---------
 

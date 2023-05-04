@@ -11,12 +11,16 @@ Chapter 20. Spreadsheet Displaying and Creation
 
     Examples: |build_tbl|_ and |show_sheet|_.
 
-
 This chapter looks at two main topics: the display of an existing spreadsheet document, and the creation of a new document, based around two examples.
 
 As part of displaying a document, we'll look at describing how to use read-only and protected viewing, change the active sheet, use sheet names, and adjust the window view size by zooming.
 
 Document creation illustrates the use of cell names and ranges, the setting of cell data using arrays, rows, and columns, and adding a picture and a chart to a sheet.
+
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 3
 
 .. _ch20_display_doc:
 
@@ -28,13 +32,13 @@ If the program is called with a filename argument, then the document is saved to
 The extension of the output filename is used to determine the exported file type.
 For example:
 
-::
+.. code-block:: text
 
     python start.py --show --file "totals.ods" --out "tmp/totals.pdf"
 
 displays the ``totals.ods`` spreadsheet, and saves it as a PDF file. Alternatively:
 
-::
+.. code-block:: text
 
     python start.py --show --file "sorted.csv" --out "totals.html"
 
@@ -292,7 +296,7 @@ Nevertheless, the code is short:
 
     .. code-tab:: python
 
-        # Commeted out in show_sheet.py
+        # Commented out in show_sheet.py
         doc = Lo.open_readonly_doc(fnm=self._input_fnm, loader=loader)
         doc = Calc.get_ss_doc(doc)
 
@@ -321,6 +325,18 @@ Nevertheless, the code is short:
             .. group-tab:: None
 
 If you want to actually stop the user from changing the spreadsheet, then it must be protected, using the XProtectable_ interface:
+
+.. note::
+
+    As of version ``0.9.9`` :py:class:`~.calc.Calc` has several methods related to cell protection and sheet protection.
+
+    - :py:meth:`Calc.get_cell_protection() <ooodev.office.calc.Calc.get_cell_protection>`
+    - :py:meth:`Calc.is_cell_protected() <ooodev.office.calc.Calc.is_cell_protected>`
+    - :py:meth:`Calc.protect_sheet() <ooodev.office.calc.Calc.protect_sheet>`
+    - :py:meth:`Calc.unprotect_sheet() <ooodev.office.calc.Calc.unprotect_sheet>`
+    - :py:meth:`Calc.is_sheet_protected() <ooodev.office.calc.Calc.is_sheet_protected>`
+
+    Also see :ref:`help_calc_format_direct_cell_cell_protection` for more information on cell protection.
 
 .. tabs::
 
@@ -408,6 +424,7 @@ As a fallback :py:meth:`.GUI.get_password` will attempt to build a dialog using 
         - :ref:`class_msg_box`
         - :ref:`class_dialog_input`
         - :ref:`dialog_tk_input`
+        - :ref:`help_calc_format_direct_cell_cell_protection`
 
 .. _ch20_change_active_sheet:
 
@@ -615,14 +632,14 @@ The ``main()`` method of |build_tbl_py|_ is:
             try:
                 doc = Calc.create_doc(loader)
 
-                GUI.set_visible(is_visible=True, odoc=doc)
+                GUI.set_visible(is_visible=True, doc=doc)
 
                 sheet = Calc.get_sheet(doc=doc, index=0)
 
                 self._convert_addresses(sheet)
 
                 # other possible build methods
-                # self._buld_cells(sheet)
+                # self._build_cells(sheet)
                 # self._build_rows(sheet)
                 # self._build_cols(sheet)
 
@@ -690,7 +707,7 @@ it's still sometimes necessary to convert between the different formats. ``_conv
         def _convert_addresses(self, sheet: XSpreadsheet) -> None:
             # cell name <--> position
             pos = Calc.get_cell_position(cell_name="AA2")
-            print(f"Positon of AA2: ({pos.X}, {pos.Y})")
+            print(f"Position of AA2: ({pos.X}, {pos.Y})")
 
             cell = Calc.get_cell(sheet=sheet, col=pos.X, row=pos.Y)
             Calc.print_cell_address(cell)
@@ -722,9 +739,9 @@ it's still sometimes necessary to convert between the different formats. ``_conv
 
 ``_convert_addresses()`` prints the following:
 
-::
+.. code-block:: text
 
-    Positon of AA2: (26, 1)
+    Position of AA2: (26, 1)
     Cell: Sheet1.AA2
     AA2: AA2
 
@@ -946,7 +963,7 @@ Both methods store a number or a string in a cell, by processing the input value
 
     .. code-tab:: python
 
-        # in Calc class (overload methods, simpilified)
+        # in Calc class (overload methods, simplified)
         @classmethod
         def set_val(cls, value: object, sheet: XSpreadsheet, cell_name: str) -> None:
             pos = cls.get_cell_position(cell_name)
@@ -1050,7 +1067,7 @@ This means that the call used above could be rewritten as:
 
     .. code-tab:: python
 
-        # in Calc class (overload methid, simpilified)
+        # in Calc class (overload method, simplified)
         @classmethod
         def set_array(cls, values: Table, sheet: XSpreadsheet, name: str) -> None:
                 # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str)
@@ -1155,7 +1172,7 @@ XCellRange_ is converted into XCellRangeData_ which has a ``setDataArray()`` met
 
     .. code-tab:: python
 
-        # in Calc class (overload method, simpilified)
+        # in Calc class (overload method, simplified)
         @classmethod
         def set_row(cls, sheet: XSpreadsheet, values: Row, cell_name: str) -> None:
             pos = cls.get_cell_position(cell_name)

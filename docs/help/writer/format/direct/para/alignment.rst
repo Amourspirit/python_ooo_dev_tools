@@ -343,7 +343,7 @@ Related Topics
 
 .. seealso::
 
-   .. cssclass:: ul-list
+    .. cssclass:: ul-list
 
         - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_writer_format_style_para`

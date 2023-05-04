@@ -1,6 +1,14 @@
 ***************
 Version History
 ***************
+
+Version 0.9.9
+=============
+
+Added Calc methods ``get_cell_protection()``, ``is_cell_protected()``, ``protect_sheet()``, ``unprotect_sheet()`` and ``is_sheet_protected()``. 
+
+Other Minor Calc tweaks.
+
 Version 0.9.8
 =============
 
@@ -43,7 +51,7 @@ Added new event to ``ooodev.utils.props.Props.set_default()``. Now subscribers c
 Version 0.9.3
 =============
 
-Minor revisons and updates.
+Minor revisions and updates.
 
 Version 0.9.2
 =============
@@ -127,7 +135,7 @@ Added overload to ``Calc.get_sheet_names()``
 
 Added overload to ``Calc.set_sheet_name()``
 
-Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calcget_sheet(doc: XSpreadsheetDocument, idx: int)``.
+Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.get_sheet(doc: XSpreadsheetDocument, idx: int)``.
 ``index`` will still work but is not documented.
 
 Changed ``Calc.remove_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.remove_sheet(doc: XSpreadsheetDocument, idx: int)``
@@ -392,9 +400,10 @@ Version 0.5.0
 =============
 
 New modules
- - Draw
- - Chart
- - Chart2
+
+- Draw
+- Chart
+- Chart2
 
 Added ``utils.dispatch`` which as several new classes for looking up dispatch values.
 
@@ -513,7 +522,7 @@ Some methods were expecting string but got Path object.
 Version 0.4.0
 =============
 
-New more flexable and robust way of connecting to office.
+New more flexible and robust way of connecting to office.
 
 This update change :py:meth:`.Lo.load_office` method
 
