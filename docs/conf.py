@@ -252,8 +252,10 @@ with open("roles/theme_color_roles.txt", "r") as file:
 
 rst_prolog += "\n" + "\n".join(rst_prolog_lst)
 
-# set if figures can be referenced as numers. Default is False
+# set if figures can be referenced as numbers. Default is False
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-numfig
 numfig = True
+# numfig_secnum_depth = 1
 
 # set is todo's will show up.
 # a master list of todo's will be on bottom of main page.

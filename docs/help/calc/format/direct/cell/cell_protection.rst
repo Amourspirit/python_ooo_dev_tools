@@ -1,7 +1,7 @@
 .. _help_calc_format_direct_cell_cell_protection:
 
-Calc Direct Cell Cell Protection
-================================
+Calc Direct Cell Protection
+===========================
 
 .. contents:: Table of Contents
     :local:
