@@ -418,8 +418,8 @@ General setup for the examples in this section.
 Apply to a cell
 ^^^^^^^^^^^^^^^
 
-Setting the text options
-""""""""""""""""""""""""
+Setting the text properties
+"""""""""""""""""""""""""""
 
 .. tabs::
 
@@ -477,8 +477,8 @@ Getting the text properties from a cell
 Apply to a range
 ^^^^^^^^^^^^^^^^
 
-Setting the text options
-""""""""""""""""""""""""
+Setting the text properties
+"""""""""""""""""""""""""""
 
 .. tabs::
 
@@ -543,6 +543,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_alignment`
+        - :ref:`help_calc_format_modify_cell_alignment`
         - :py:class:`ooodev.format.calc.direct.cell.alignment.TextAlign`
         - :py:class:`ooodev.format.calc.direct.cell.alignment.TextOrientation`
         - :py:class:`ooodev.format.calc.direct.cell.alignment.Properties`

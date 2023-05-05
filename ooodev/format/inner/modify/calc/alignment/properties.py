@@ -15,6 +15,10 @@ class Properties(CellStyleBaseMulti):
     """
     Cell Style Properties.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -43,6 +47,9 @@ class Properties(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_alignment`
         """
 
         direct = InnerProperties(
