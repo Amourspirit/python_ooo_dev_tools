@@ -251,6 +251,7 @@ Related Topics
         - :ref:`help_writer_format_modify_para_font_effects`
         - :ref:`help_calc_format_direct_cell_font_only`
         - :ref:`help_calc_format_direct_cell_font`
+        - :ref:`help_calc_format_modify_cell_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.calc.direct.cell.font.FontEffects`

@@ -16,6 +16,7 @@ Before Settings
 .. cssclass:: screen_shot
 
     .. _234142867-3b8878ea-3542-47e2-bf97-2b82c9300743:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234142867-3b8878ea-3542-47e2-bf97-2b82c9300743.png
         :alt: Writer dialog Character font default
         :figclass: align-center
@@ -65,11 +66,12 @@ Setting the font name and size
 
             .. group-tab:: None
 
-After appling the font name and size
+After applying the font name and size
 
 .. cssclass:: screen_shot
 
     .. _234143029-420b616b-d028-4691-884f-e6cbbc08535d:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234143029-420b616b-d028-4691-884f-e6cbbc08535d.png
         :alt: Writer dialog character font style changed
         :figclass: align-center

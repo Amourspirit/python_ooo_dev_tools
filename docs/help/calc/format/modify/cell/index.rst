@@ -1,6 +1,6 @@
-.. _help_calc_format_direct_cell:
+.. _help_calc_format_modify_cell:
 
-Calc Format Direct Cell
+Calc Format Modify Cell
 =======================
 
 .. toctree::
