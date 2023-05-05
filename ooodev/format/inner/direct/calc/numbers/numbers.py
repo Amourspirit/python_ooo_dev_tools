@@ -30,6 +30,10 @@ class Numbers(StyleBase):
     """
     Calc Numbers format.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_numbers`
+
     .. versionadded:: 0.9.4
     """
 
@@ -45,12 +49,18 @@ class Numbers(StyleBase):
 
         Args:
             num_format (NumberFormatEnum, int, optional): Type of a number format.
-                Use this to select a defatult format. Defaults to 0 (General Format).
+                Use this to select a default format. Defaults to 0 (General Format).
                 Only used if ``num_format_index`` is ``-1`` (omitted).
             num_format_index (NumberFormatIndexEnum | int, optional): Index of a number format.
                 The enumeration values represent the built-in number formats. Defaults to ``-1``.
             lang_locale (Locale, optional): Locale of the number format. Defaults to ``None`` which used current Locale.
-            component (XComponent, optional): Document such as Spreadsheet or Chart. If Omittet, the current document is used. Defaults to ``None``.
+            component (XComponent, optional): Document such as Spreadsheet or Chart. If Omitted, the current document is used. Defaults to ``None``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_direct_cell_numbers`
         """
         super().__init__()
         if lang_locale is None:
