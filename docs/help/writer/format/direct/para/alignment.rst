@@ -338,15 +338,19 @@ The paragraph cursor is then used to get the style.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
-   .. cssclass:: ul-list
+    .. cssclass:: ul-list
 
         - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_writer_format_style_para`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_para_alignment`
+        - :ref:`help_calc_format_direct_cell_alignment`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.alignment.Alignment`

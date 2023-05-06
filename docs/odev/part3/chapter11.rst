@@ -4,6 +4,11 @@
 Chapter 11. Draw/Impress APIs Overview
 **************************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 1
+
 .. topic:: Overview
 
     Draw Pages and Master Pages; Draw Page Details; API Hierarchy Code Examples; Shapes in a Drawing; Shapes in a Presentation ; The Slide Show APIs

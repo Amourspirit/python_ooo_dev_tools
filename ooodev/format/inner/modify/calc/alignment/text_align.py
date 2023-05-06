@@ -17,6 +17,10 @@ class TextAlign(CellStyleBaseMulti):
     """
     Cell Style Text Align.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -37,13 +41,16 @@ class TextAlign(CellStyleBaseMulti):
             hori_align (HoriAlignKind, optional): Specifies Horizontal Alignment.
             indent: (float, UnitObj, optional): Specifies indent in ``pt`` (point) units
                 or :ref:`proto_unit_obj`. Only used when ``hori_align`` is set to ``HoriAlignKind.LEFT``
-            vert_align (VertAdjustKindl, optional): Specifies Vertical Alignment.
+            vert_align (VertAdjustKind, optional): Specifies Vertical Alignment.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to.
                 Default is Default Cell Style.
             style_family (str, optional): Style family. Default ``CellStyles``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_alignment`
         """
 
         direct = InnerTextAlign(hori_align=hori_align, indent=indent, vert_align=vert_align)

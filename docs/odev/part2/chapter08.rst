@@ -4,6 +4,11 @@
 Chapter 8. Graphic Content
 **************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     Graphics; Linked Images/Shapes

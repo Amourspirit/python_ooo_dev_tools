@@ -55,6 +55,10 @@ class Properties(StyleBase):
     """
     Text Properties
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -80,6 +84,9 @@ class Properties(StyleBase):
 
         Note:
             When ``wrap_auto`` is ``True`` ``shrink_to_fit`` is not used.
+
+        See Also:
+            - :ref:`help_calc_format_direct_cell_alignment`
         """
 
         super().__init__()

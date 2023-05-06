@@ -168,7 +168,8 @@ Getting the Hyperlink from the text
 
             .. group-tab:: None
 
-
+Related Topics
+--------------
 
 .. seealso::
 

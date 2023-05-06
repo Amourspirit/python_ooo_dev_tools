@@ -272,6 +272,8 @@ as seen in :ref:`help_writer_format_style_para_reset_default`.
 
         Paragraph styles reset.
 
+Related Topics
+--------------
 
 .. seealso::
 

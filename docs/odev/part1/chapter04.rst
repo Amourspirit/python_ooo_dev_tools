@@ -4,6 +4,11 @@
 Chapter 4. Listening, and Other Techniques
 ******************************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Window Listeners;
 
     Window Listeners and |odev| Events.

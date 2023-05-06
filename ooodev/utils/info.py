@@ -131,12 +131,8 @@ class Info(metaclass=StaticProperty):
         if fds is None:
             return []
 
-        names_set = set()
-        for fd in fds:
-            names_set.add(fd.Name)
-        names = list(names_set)
-        names.sort()
-        return names
+        names_set = {fd.Name for fd in fds}
+        return sorted(names_set)
 
     @classmethod
     def get_font_descriptor(cls, name: str, style: str) -> FontDescriptor | None:

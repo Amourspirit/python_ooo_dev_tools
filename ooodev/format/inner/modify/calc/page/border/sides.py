@@ -22,6 +22,10 @@ class InnerSides(AbstractSides):
 
     All methods starting with ``fmt_`` can be used to chain together Sides properties.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -62,6 +66,10 @@ class Sides(CellStyleBaseMulti):
     """
     Page Style Border Sides.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -92,6 +100,9 @@ class Sides(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_borders`
         """
 
         direct = InnerSides(left=left, right=right, top=top, bottom=bottom, all=all)

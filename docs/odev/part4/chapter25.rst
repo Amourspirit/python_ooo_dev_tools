@@ -4,6 +4,11 @@
 Chapter 25. Monitoring Sheets
 *****************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     Listening for Document Modifications (XModifyListener_); Listening for Application Closing (XTopWindowListener_); Listening for Cell Selection (XSelectionChangeListener_)

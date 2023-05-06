@@ -4,6 +4,11 @@
 Chapter 27. Functions and Data Analysis
 ***************************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     Calling Calc Functions from Code; Pivot Tables; Goal Seek; Linear and Nonlinear Solving (using ``SCO``, ``DEPS``)

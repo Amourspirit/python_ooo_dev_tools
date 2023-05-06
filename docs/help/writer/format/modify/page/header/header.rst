@@ -27,7 +27,7 @@ General function used to run these examples.
         from ooodev.utils.lo import Lo
 
         def main() -> int:
-           with Lo.Loader(Lo.ConnectPipe()):
+            with Lo.Loader(Lo.ConnectPipe()):
                 doc = Write.create_doc()
                 GUI.set_visible(doc)
                 Lo.delay(300)
@@ -135,6 +135,9 @@ Getting the Header from a style
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+Related Topics
+--------------
 
 .. seealso::
 

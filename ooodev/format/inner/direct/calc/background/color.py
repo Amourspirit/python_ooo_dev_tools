@@ -25,6 +25,10 @@ class Color(StyleBase):
     """
     Class for Cell Properties Back Color.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_background`
+
     .. versionadded:: 0.9.0
     """
 
@@ -38,6 +42,9 @@ class Color(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_direct_cell_background`
         """
         super().__init__()
         self.prop_color = color

@@ -14,12 +14,4 @@ from ooodev.format.inner.modify.calc.font.font_effects import InnerFontEffects a
 from ooodev.format.inner.modify.calc.font.font_only import FontOnly as FontOnly
 from ooodev.format.inner.modify.calc.font.font_only import InnerFontOnly as InnerFontOnly
 
-__all__ = [
-    "FontLine",
-    "FontLang",
-    "FontScriptKind",
-    "FontEffects",
-    "InnerFontEffects",
-    "FontOnly",
-    "InnerFontOnly",
-]
+__all__ = ["FontEffects", "FontOnly"]

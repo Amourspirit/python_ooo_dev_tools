@@ -277,6 +277,9 @@ Or :py:meth:`Tabs.remove <ooodev.format.writer.direct.para.tabs.Tabs.remove>` wh
 
         Writer Paragraph Tabs dialog.
 
+Related Topics
+--------------
+
 .. seealso::
 
    .. cssclass:: ul-list

@@ -366,6 +366,9 @@ Getting hatch from a style
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list
