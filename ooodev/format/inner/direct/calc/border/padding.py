@@ -32,6 +32,8 @@ class Padding(AbstractPadding):
 
         - :ref:`help_calc_format_direct_cell_borders`
         - :ref:`help_writer_format_direct_table_borders`
+
+    .. versionadded:: 0.9.0
     """
 
     def __init__(

@@ -4,6 +4,11 @@
 Chapter 3. Examining
 ********************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Examining Office
 
     Examining Office; Getting and Setting Document Properties; Examining a Document for API Details; Examining a Document Using |devtools|_
@@ -13,6 +18,7 @@ A document will be examined in three different ways: the first retrieves propert
 and when it was last modified. The second and third approaches extract API details, such as what services and interfaces it uses.
 This can be done by calling functions in |odev| Utility classes or by utilizing the |devtools|_ built into Office.
 See :numref:`ch03fig_lo_devolp_tools`.
+
 
 .. _ch03_examine_office:
 

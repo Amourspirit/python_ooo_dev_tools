@@ -234,6 +234,9 @@ We can get the border shadow from the document.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list
@@ -245,4 +248,4 @@ We can get the border shadow from the document.
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.char.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.char.borders.Sides`
-        - :py:class:`ooodev.format.writer.modify.char.borders.Shaodow`
+        - :py:class:`ooodev.format.writer.modify.char.borders.Shadow`

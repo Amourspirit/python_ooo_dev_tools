@@ -6,3 +6,4 @@ Calc Formatting and Style
     :glob:
 
     direct/index
+    modify/index

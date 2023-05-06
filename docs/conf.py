@@ -36,6 +36,27 @@ odevgui_win_url = "https://ooo-dev-tools-gui-win.readthedocs.io/en/latest/"
 # The full version, including alpha/beta/rc tags
 release = __version__
 
+# region Configuration methods
+
+
+def get_active_branch_name():
+    head_dir = _ROOT_PATH / ".git" / "HEAD"
+    with head_dir.open("r") as f:
+        content = f.read().splitlines()
+
+    for line in content:
+        if line[:4] == "ref:":
+            return line.partition("refs/heads/")[2]
+
+
+def get_spell_dictionaries() -> list:
+    p = _DOCS_PATH.absolute().resolve() / "internal" / "dict"
+    dict_gen = p.glob("spelling_*.*")
+    return [str(d) for d in dict_gen if d.is_file()]
+
+
+# endregion Configuration methods
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -62,6 +83,7 @@ extensions = [
     "sphinx_tabs.tabs",
     "sphinx_design",
     "sphinxcontrib.spelling",
+    "sphinx-prompt",
     "sphinx_substitution_extensions",
 ]
 # "sphinx.ext.linkcode",
@@ -91,13 +113,6 @@ suppress_warnings = [
     "ref.python",
 ]
 
-
-def get_spell_dictionaries() -> list:
-    p = _DOCS_PATH.absolute().resolve() / "internal" / "dict"
-    dict_gen = p.glob("spelling_*.*")
-    return [str(d) for d in dict_gen if d.is_file()]
-
-
 spelling_word_list_filename = get_spell_dictionaries()
 
 spelling_show_suggestions = True
@@ -110,8 +125,8 @@ spelling_exclude_patterns = [".venv/"]
 
 # spell checking;
 #   run sphinx-build -b spelling . _build
-#       this will checkfor any spelling and create folders with *.spelling files if there are errors.
-#       open each *.spelling file and find any spelling errors and fix them in corrsponding files.
+#       this will check for any spelling and create folders with *.spelling files if there are errors.
+#       open each *.spelling file and find any spelling errors and fix them in corresponding files.
 #
 # spelling_book.txt contains all spelling exceptions related to book in /docs/odev
 # spelling_code.txt contains all spelling exceptions related to python doc strings.
@@ -159,7 +174,7 @@ napoleon_google_docstring = True
 napoleon_include_init_with_doc = True
 
 # https://fossies.org/linux/Sphinx/doc/usage/extensions/autodoc.rst
-# This value controls how to represent typehints. The setting takes the following values:
+# This value controls how to represent type hints. The setting takes the following values:
 autodoc_typehints = "description"
 
 # https://documentation.help/Sphinx/autodoc.html
@@ -168,7 +183,7 @@ autoclass_content = "init"
 
 # see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
 # see: https://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
-# on read the docs I was getting errros WARNING: autodoc: failed to import class - No module named 'uno'
+# on read the docs I was getting errors WARNING: autodoc: failed to import class - No module named 'uno'
 # solution autodoc_mock_imports, for some reason after adding uno, unohelper I also had to include com.
 # com.sun.star.__init__.py raises an Import error by design.
 autodoc_mock_imports = ["uno", "unohelper", "lxml", "com"]
@@ -218,7 +233,7 @@ autodoc_typehints_format = "short"
 # https://stackoverflow.com/questions/9698702/how-do-i-create-a-global-role-roles-in-sphinx
 # custom global roles or any other rst to include
 
-# sphonx includes s5defs.txt that has baked in roles but must be included.
+# sphinx includes s5defs.txt that has baked in roles but must be included.
 # style_custom.css contains the colors that match these roles
 # https://stackoverflow.com/questions/3702865/sphinx-restructuredtext-set-color-for-a-single-word/60991308#60991308
 
@@ -252,8 +267,10 @@ with open("roles/theme_color_roles.txt", "r") as file:
 
 rst_prolog += "\n" + "\n".join(rst_prolog_lst)
 
-# set if figures can be referenced as numers. Default is False
+# set if figures can be referenced as numbers. Default is False
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-numfig
 numfig = True
+# numfig_secnum_depth = 1
 
 # set is todo's will show up.
 # a master list of todo's will be on bottom of main page.
@@ -280,20 +297,3 @@ extlinks = {
 intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
 
 # endregion intersphinx
-
-# region Not currently Used
-
-# Add external links to source code
-
-
-def get_active_branch_name():
-    head_dir = _ROOT_PATH / ".git" / "HEAD"
-    with head_dir.open("r") as f:
-        content = f.read().splitlines()
-
-    for line in content:
-        if line[0:4] == "ref:":
-            return line.partition("refs/heads/")[2]
-
-
-# endregion Not currently Used

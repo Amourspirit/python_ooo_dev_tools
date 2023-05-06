@@ -16,6 +16,10 @@ class Color(CellStyleBaseMulti):
     """
     Cell Style Background Color.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_background`
+
     .. versionadded:: 0.9.0
     """
 
@@ -38,6 +42,9 @@ class Color(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_background`
         """
 
         direct = InnerColor(color=color)

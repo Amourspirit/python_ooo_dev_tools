@@ -80,6 +80,10 @@ class TextAlign(StyleBase):
     """
     Cell Text Alignment.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -101,13 +105,16 @@ class TextAlign(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_direct_cell_alignment`
         """
         super().__init__()
-        if not hori_align is None:
+        if hori_align is not None:
             self.prop_hori_align = hori_align
-        if not indent is None:
+        if indent is not None:
             self.prop_indent = indent
-        if not vert_align is None:
+        if vert_align is not None:
             self.prop_vert_align = vert_align
 
     # endregion Init

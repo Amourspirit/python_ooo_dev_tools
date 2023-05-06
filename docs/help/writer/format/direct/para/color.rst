@@ -162,6 +162,9 @@ The fill color can be cleared by using :py:attr:`ParaStyle.default <ooodev.forma
 
         Paragraph style reset.
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

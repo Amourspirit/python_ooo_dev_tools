@@ -363,6 +363,9 @@ Getting the Borders from the table
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

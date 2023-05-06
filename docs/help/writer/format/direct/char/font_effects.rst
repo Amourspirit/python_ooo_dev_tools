@@ -126,6 +126,9 @@ The paragraph cursor is then used to get the style.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list
@@ -136,6 +139,7 @@ The paragraph cursor is then used to get the style.
         - :ref:`help_writer_format_direct_char_font`
         - :ref:`help_writer_format_modify_char_font_effects`
         - :ref:`help_writer_format_modify_para_font_effects`
+        - :ref:`help_calc_format_direct_cell_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontEffects`

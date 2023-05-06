@@ -122,6 +122,9 @@ We can get the area pattern from the document.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

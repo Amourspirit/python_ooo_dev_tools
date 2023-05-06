@@ -34,6 +34,10 @@ class TextOrientation(StyleBase):
     """
     Text Rotation
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -53,6 +57,9 @@ class TextOrientation(StyleBase):
 
         Note:
             When ``vert_stack`` is ``True`` other parameters are not used.
+
+        See Also:
+            - :ref:`help_calc_format_direct_cell_alignment`
         """
         super().__init__()
         if vert_stack is not None:

@@ -34,8 +34,7 @@ def test_calc(loader) -> None:
         style = CellProtection(hide_all=False, hide_formula=False, protected=True, hide_print=True)
 
         Styler.apply(cell, style)
-        cp = cast("CellProperties", cell)
-        struct = cp.CellProtection
+        struct = Calc.get_cell_protection(cell)
         assert struct.IsLocked == True
         assert struct.IsFormulaHidden == False
         assert struct.IsHidden == False
@@ -54,8 +53,7 @@ def test_calc(loader) -> None:
         style = CellProtection().hide_formula.protected
 
         Styler.apply(cell, style)
-        cp = cast("CellProperties", cell)
-        struct = cp.CellProtection
+        struct = Calc.get_cell_protection(cell)
         assert struct.IsLocked == True
         assert struct.IsFormulaHidden == True
         assert struct.IsHidden == False

@@ -77,7 +77,7 @@ General function used to run these examples.
 Page Paper Format
 -----------------
 
-The :py:class:`~ooodev.format.writer.modify.page.page.PaperFormat` class is uset to modify the paper format of a page style.
+The :py:class:`~ooodev.format.writer.modify.page.page.PaperFormat` class is used to modify the paper format of a page style.
 
 Setting Paper Format from a preset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -338,6 +338,9 @@ Getting layout from a style
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+Related Topics
+--------------
 
 .. seealso::
 

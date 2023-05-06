@@ -11,17 +11,14 @@ Calc Direct Cell Borders
 Overview
 --------
 
-Specify Calc Cell/Range borders.
+Calc has a dialog, as seen in :numref:`ss_calc_format_cell_borders_dialog`, that sets cell borders. In this section we will look the various classes that set the same options.
 
-Writer has an Text Flow dialog tab.
-
-The :py:class:`ooodev.format.calc.direct.cell.borders.Borders`, :py:class:`ooodev.format.calc.direct.cell.borders.Padding`
-and :py:class:`ooodev.format.calc.direct.cell.borders.Shadow` classes is used to set the border values.
-
+The :py:class:`ooodev.format.calc.direct.cell.borders.Borders` class is used to set the border values.
 
 .. cssclass:: screen_shot
 
     .. _ss_calc_format_cell_borders_dialog:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/230220907-c5c5014c-e701-468b-b811-e7918ff329f6.png
         :alt: Calc Format Cells Borders dialog
         :figclass: align-center
@@ -81,7 +78,7 @@ Single Cell
 Default Border
 """"""""""""""
 
-Appling ``Border.default`` will create a default border for a cell or a range.
+Applying ``Border.default`` will create a default border for a cell or a range.
 
 .. tabs::
 
@@ -102,6 +99,7 @@ Appling ``Border.default`` will create a default border for a cell or a range.
 .. cssclass:: screen_shot
 
     .. _210101040-aa66cae1-323b-4fb0-b9c2-ac3a82a62403:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210101040-aa66cae1-323b-4fb0-b9c2-ac3a82a62403.png
         :alt: Cell with default border
         :figclass: align-center
@@ -152,6 +150,7 @@ Colored border
 .. cssclass:: screen_shot
 
     .. _210101175-74a38aa2-c77a-4f6c-ad76-3b3f2322c6d9:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210101175-74a38aa2-c77a-4f6c-ad76-3b3f2322c6d9.png
         :alt: Cell with colored border
         :figclass: align-center
@@ -185,6 +184,7 @@ In this case just pass in the ``left`` side.
 .. cssclass:: screen_shot
 
     .. _210101363-4288e162-2117-4b95-bed0-578a179b31f1:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210101363-4288e162-2117-4b95-bed0-578a179b31f1.png
         :alt: Cell with left colored border
         :figclass: align-center
@@ -217,6 +217,7 @@ Passing ``width`` argument to ``Side()`` controls border width.
 .. cssclass:: screen_shot
 
     .. _210101564-b76cd842-ed82-4fd9-85b6-16890cb80364:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210100564-b76cd842-ed82-4fd9-85b6-16890cb80364.png
         :alt: Cell with left and right colored border
         :figclass: align-center
@@ -253,6 +254,7 @@ Apply different top and side colors
 .. cssclass:: screen_shot
 
     .. _210102075-e8d7229b-b480-45cf-b8d2-5782d36ac6c8:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210102075-e8d7229b-b480-45cf-b8d2-5782d36ac6c8.png
         :alt: Cell with left and right colored border
         :figclass: align-center
@@ -286,6 +288,7 @@ Passing ``diagonal_up`` and ``diagonal_down`` arguments to :py:class:`~ooodev.fo
 .. cssclass:: screen_shot
 
     .. _210102706-ebe79c91-5e0a-4482-a58d-a797efa7ded9:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210102706-ebe79c91-5e0a-4482-a58d-a797efa7ded9.png
         :alt: Cell with diagonal up colored border
         :figclass: align-center
@@ -315,6 +318,7 @@ Passing ``diagonal_up`` and ``diagonal_down`` arguments to :py:class:`~ooodev.fo
 .. cssclass:: screen_shot
 
     .. _210102945-73b453d6-33f2-4582-a276-61fda1e5edbe:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210102945-73b453d6-33f2-4582-a276-61fda1e5edbe.png
         :alt: Cell with diagonal down colored border
         :figclass: align-center
@@ -324,7 +328,7 @@ Passing ``diagonal_up`` and ``diagonal_down`` arguments to :py:class:`~ooodev.fo
 Applying different style border
 """""""""""""""""""""""""""""""
 
-Using py:class:`~ooodev.format.inner.direct.structs.side.BorderLineKind` enumeration it is possible to change the border style to many different configurations.
+Using :py:class:`~ooodev.format.inner.direct.structs.side.BorderLineKind` enumeration it is possible to change the border style to many different configurations.
 
 In this example the border style is set to Dash-dot.
 
@@ -350,6 +354,7 @@ In this example the border style is set to Dash-dot.
 .. cssclass:: screen_shot
 
     .. _210103415-147a46c0-7d99-4cd4-b861-d46228a89c25:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210104415-147a46c0-7d99-4cd4-b861-d46228a89c25.png
         :alt: Cell with dash-dot colored border
         :figclass: align-center
@@ -384,6 +389,7 @@ In this example the default shadow is used.
 .. cssclass:: screen_shot
 
     .. _210104021-d272159c-141a-4925-9232-e5b7a9594b8a:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210104021-d272159c-141a-4925-9232-e5b7a9594b8a.png
         :alt: Cell with blue colored border and default shadow
         :figclass: align-center
@@ -416,6 +422,7 @@ Using the :py:class:`~ooodev.format.calc.direct.cell.borders.Padding` class it i
 .. cssclass:: screen_shot
 
     .. _210103438-0ddd7fa1-fd56-4caa-8d2b-209bf609adca:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210103438-0ddd7fa1-fd56-4caa-8d2b-209bf609adca.png
         :alt: Cell with blue colored border and left padding
         :figclass: align-center
@@ -425,6 +432,7 @@ Using the :py:class:`~ooodev.format.calc.direct.cell.borders.Padding` class it i
 .. cssclass:: screen_shot
 
     .. _230247760-76f6c21a-5dc8-476d-a4e7-9e6a8b6582ae:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/230247760-76f6c21a-5dc8-476d-a4e7-9e6a8b6582ae.png
         :alt: Calc Format Cells Borders dialog
         :width: 450px
@@ -461,6 +469,7 @@ Applying more then one border style to a cell keeps previous formatting.
 .. cssclass:: screen_shot
 
     .. _210104021-9a796bf4-75c5-4867-a4ad-10331380905e:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210105163-9a796bf4-75c5-4867-a4ad-10331380905e.png
         :alt: Cell with cumulative borders
         :figclass: align-center
@@ -492,6 +501,7 @@ Default Borders
 .. cssclass:: screen_shot
 
     .. _210106009-07a937e5-7d58-4329-85cf-e4e603f3e6f2:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210106009-07a937e5-7d58-4329-85cf-e4e603f3e6f2.png
         :alt: Range with default borders
         :figclass: align-center
@@ -502,7 +512,7 @@ Default Borders
 Removing Borders
 """"""""""""""""
 
-Appling ``Border().empty`` to a cell or a range will clear all formatting.
+Applying ``Border().empty`` to a cell or a range will clear all formatting.
 
 .. tabs::
 
@@ -543,6 +553,7 @@ Colored borders
 .. cssclass:: screen_shot
 
     .. _210106009-491db633-187c-42b7-a4ed-5ddd9e8a4a1e:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210112658-491db633-187c-42b7-a4ed-5ddd9e8a4a1e.png
         :alt: Range with colored borders
         :figclass: align-center
@@ -576,6 +587,7 @@ In this case just pass in the ``left`` side.
 .. cssclass:: screen_shot
 
     .. _210112804-00e54008-f2de-42d9-8a72-8ef7000c2b18:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210112804-00e54008-f2de-42d9-8a72-8ef7000c2b18.png
         :alt: Range with left colored border
         :figclass: align-center
@@ -608,6 +620,7 @@ Passing `width` argument to `Side()` controls border width.
 .. cssclass:: screen_shot
 
     .. _210112958-d25f44c0-75c5-49ef-bcaa-405f337e7878:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210112958-d25f44c0-5c9c-49ef-bcaa-405f337e7878.png
         :alt: Range with left and right colored border with increased width
         :figclass: align-center
@@ -643,6 +656,7 @@ Apply different top and side colors
 .. cssclass:: screen_shot
 
     .. _210113089-7c1e7a7e-2c1e-4645-a39f-5e2c80e4da0d:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210113089-cb1e7a7e-2c1e-4645-a39f-5e2c80e4da0d.png
         :alt: Range different top and bottom border colors
         :figclass: align-center
@@ -674,6 +688,7 @@ Apply Diagonal border
 .. cssclass:: screen_shot
 
     .. _210113314-f656de46-4273-a786-5c445d00fe1b:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210113314-f656de46-8fc6-4273-a786-5c445d00fe1b.png
         :alt: Range with diagonal up border
         :figclass: align-center
@@ -702,6 +717,7 @@ Apply Diagonal border
 .. cssclass:: screen_shot
 
     .. _210113401-1bca1147-76da-4df1-aabb-3f2cb856d66e:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210113401-1bca1147-76da-4df1-aabb-3f2cb856d66e.png
         :alt: Range with diagonal up border
         :figclass: align-center
@@ -712,7 +728,7 @@ Apply Diagonal border
 Applying different style border
 """""""""""""""""""""""""""""""
 
-Using py:class:`~ooodev.format.inner.direct.structs.side.BorderLineKind` enumeration it is possible to change the border style to many different configurations.
+Using :py:class:`~ooodev.format.inner.direct.structs.side.BorderLineKind` enumeration it is possible to change the border style to many different configurations.
 
 In this example the border style is set to Dash-dot.
 
@@ -737,6 +753,7 @@ In this example the border style is set to Dash-dot.
 .. cssclass:: screen_shot
 
     .. _210113504-7ea66848-9e8e-4048-9d3c-c7a3ef20d7d6:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210113504-7ea66848-c9e8-4048-9d3c-c7a3ef20d7d6.png
         :alt: Range with dash-dot border
         :figclass: align-center
@@ -769,6 +786,7 @@ In this example the default shadow is used.
 .. cssclass:: screen_shot
 
     .. _210113632-e69f8bb2-484b-42e2-bfd6-508195f78cf0:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210113632-e69f8bb2-484b-42e2-bfd6-508195f78cf0.png
         :alt: Range with border and shadow
         :figclass: align-center
@@ -805,6 +823,7 @@ Vertical lines are set to double with a color of red.
 .. cssclass:: screen_shot
 
     .. _210113923-b916b3df-491c-4a9f-1-949e550fc138:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210113923-b916b3df-d443-491c-a9f1-949e550fc138.png
         :alt: Range various border styles
         :figclass: align-center
@@ -850,12 +869,15 @@ Multiple Styles
 .. cssclass:: screen_shot
 
     .. _210114562-c0d096c7-74c5-4905-a822-e2e123a7c1a0:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210114562-c0d096c6-f74c-4905-a822-e2e123a7c1a0.png
         :alt: Range multiple border styles
         :figclass: align-center
 
         Range multiple border styles.
 
+Related Topics
+--------------
 
 .. seealso::
 
@@ -865,6 +887,7 @@ Multiple Styles
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_borders`
         - :ref:`help_writer_format_direct_table`
+        - :ref:`help_calc_format_modify_cell_borders`
         - :py:class:`ooodev.format.calc.direct.cell.borders.Borders`
         - :py:class:`ooodev.format.calc.direct.cell.borders.Padding`
         - :py:class:`ooodev.format.calc.direct.cell.borders.Shadow`

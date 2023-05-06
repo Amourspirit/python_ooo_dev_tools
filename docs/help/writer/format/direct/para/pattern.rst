@@ -153,6 +153,9 @@ Get Pattern from Paragraph
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
    .. cssclass:: ul-list

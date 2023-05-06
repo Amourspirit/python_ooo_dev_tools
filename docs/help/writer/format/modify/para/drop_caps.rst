@@ -124,6 +124,9 @@ We can get the area color from the document.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list

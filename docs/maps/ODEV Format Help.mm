@@ -1,4 +1,4 @@
-<map version="freeplane 1.9.13">
+<map version="freeplane 1.11.1">
 <!--To view this file, download free mind mapping software Freeplane from https://www.freeplane.org -->
 <node TEXT="ODEV Format Help" FOLDED="false" ID="ID_696401721" CREATED="1610381621824" MODIFIED="1682195325413" STYLE="oval">
 <font SIZE="18"/>
@@ -8,7 +8,7 @@
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24 pt">
 <font SIZE="24"/>
-<stylenode LOCALIZED_TEXT="styles.predefined" POSITION="right" STYLE="bubble">
+<stylenode LOCALIZED_TEXT="styles.predefined" POSITION="bottom_or_right" STYLE="bubble">
 <stylenode LOCALIZED_TEXT="default" ID="ID_271890427" ICON_SIZE="12 pt" COLOR="#000000" STYLE="fork">
 <arrowlink SHAPE="CUBIC_CURVE" COLOR="#000000" WIDTH="2" TRANSPARENCY="200" DASH="" FONT_SIZE="9" FONT_FAMILY="SansSerif" DESTINATION="ID_271890427" STARTARROW="NONE" ENDARROW="DEFAULT"/>
 <font NAME="SansSerif" SIZE="10" BOLD="false" ITALIC="false"/>
@@ -26,7 +26,7 @@
 </stylenode>
 <stylenode LOCALIZED_TEXT="defaultstyle.selection" BACKGROUND_COLOR="#afd3f7" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#afd3f7"/>
 </stylenode>
-<stylenode LOCALIZED_TEXT="styles.user-defined" POSITION="right" STYLE="bubble">
+<stylenode LOCALIZED_TEXT="styles.user-defined" POSITION="bottom_or_right" STYLE="bubble">
 <stylenode LOCALIZED_TEXT="styles.topic" COLOR="#18898b" STYLE="fork">
 <font NAME="Liberation Sans" SIZE="10" BOLD="true"/>
 </stylenode>
@@ -41,7 +41,7 @@
 <arrowlink COLOR="#003399" TRANSPARENCY="255" DESTINATION="ID_67550811"/>
 </stylenode>
 </stylenode>
-<stylenode LOCALIZED_TEXT="styles.AutomaticLayout" POSITION="right" STYLE="bubble">
+<stylenode LOCALIZED_TEXT="styles.AutomaticLayout" POSITION="bottom_or_right" STYLE="bubble">
 <stylenode LOCALIZED_TEXT="AutomaticLayout.level.root" COLOR="#000000" STYLE="oval" SHAPE_HORIZONTAL_MARGIN="10 pt" SHAPE_VERTICAL_MARGIN="10 pt">
 <font SIZE="18"/>
 </stylenode>
@@ -69,7 +69,7 @@
 </map_styles>
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="2" RULE="ON_BRANCH_CREATION"/>
-<node TEXT="Format" POSITION="right" ID="ID_1852756413" CREATED="1675057796555" MODIFIED="1675057800267">
+<node TEXT="Format" POSITION="bottom_or_right" ID="ID_1852756413" CREATED="1675057796555" MODIFIED="1675057800267">
 <edge COLOR="#ff0000"/>
 <node TEXT="writer" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" FOLDED="true" ID="ID_685049292" CREATED="1675065559834" MODIFIED="1675069468720">
 <node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1211874098" CREATED="1675065597002" MODIFIED="1675069680162">
@@ -1278,36 +1278,37 @@
 </node>
 </node>
 <node TEXT="calc" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" ID="ID_1405396387" CREATED="1675066735944" MODIFIED="1675069510411">
-<node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1508650966" CREATED="1675066746352" MODIFIED="1675069705607">
-<node TEXT="cell" ID="ID_1044932914" CREATED="1679185312032" MODIFIED="1679185462325">
-<node TEXT="font" ID="ID_1893488228" CREATED="1675066790120" MODIFIED="1682196183150">
-<icon BUILTIN="unchecked"/>
+<node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" FOLDED="true" ID="ID_1508650966" CREATED="1675066746352" MODIFIED="1675069705607">
+<node TEXT="cell" ID="ID_1044932914" CREATED="1679185312032" MODIFIED="1683250519593">
+<icon BUILTIN="checked"/>
+<node TEXT="font" ID="ID_1893488228" CREATED="1675066790120" MODIFIED="1683147119972">
+<icon BUILTIN="checked"/>
 <node TEXT="Font" ID="ID_567333893" CREATED="1675364911460" MODIFIED="1682196697271">
 <icon BUILTIN="links/code/file_Python"/>
 <icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontOnly" ID="ID_837003353" CREATED="1675364933860" MODIFIED="1682196183150">
+<node TEXT="FontOnly" ID="ID_837003353" CREATED="1675364933860" MODIFIED="1683147115362">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontEffects" ID="ID_441544126" CREATED="1675364914764" MODIFIED="1682196183150">
+<node TEXT="FontEffects" ID="ID_441544126" CREATED="1675364914764" MODIFIED="1683132208202">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="alignment" ID="ID_1709460140" CREATED="1675066792968" MODIFIED="1682196183150">
-<icon BUILTIN="unchecked"/>
-<node TEXT="TextAlign" ID="ID_257495496" CREATED="1679012791193" MODIFIED="1682196183150">
+<node TEXT="alignment" ID="ID_1709460140" CREATED="1675066792968" MODIFIED="1683165270537">
+<icon BUILTIN="checked"/>
+<node TEXT="TextAlign" ID="ID_257495496" CREATED="1679012791193" MODIFIED="1683165270541">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="TextOrientation" ID="ID_1315796765" CREATED="1679012805832" MODIFIED="1682196183150">
+<node TEXT="TextOrientation" ID="ID_1315796765" CREATED="1679012805832" MODIFIED="1683165270541">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Properties" ID="ID_1767064575" CREATED="1679012811910" MODIFIED="1682196183150">
+<node TEXT="Properties" ID="ID_1767064575" CREATED="1679012811910" MODIFIED="1683165270542">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="borders" ID="ID_114316726" CREATED="1675066812072" MODIFIED="1682196547567">
@@ -1325,100 +1326,101 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="cell_protection" ID="ID_353166445" CREATED="1675066825600" MODIFIED="1682196183151">
-<icon BUILTIN="unchecked"/>
-<node TEXT="CellProtection" ID="ID_396507649" CREATED="1679017780504" MODIFIED="1682196183151">
+<node TEXT="cell_protection" ID="ID_353166445" CREATED="1675066825600" MODIFIED="1683227391218">
+<icon BUILTIN="checked"/>
+<node TEXT="CellProtection" ID="ID_396507649" CREATED="1679017780504" MODIFIED="1683227391214">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="background" ID="ID_1482147292" CREATED="1675066818817" MODIFIED="1682196183151">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Color" ID="ID_1708565097" CREATED="1679012939871" MODIFIED="1682196183151">
+<node TEXT="background" ID="ID_1482147292" CREATED="1675066818817" MODIFIED="1683248612574">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_1708565097" CREATED="1679012939871" MODIFIED="1683248612570">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="numbers" ID="ID_1300470284" CREATED="1675066778488" MODIFIED="1682196183151">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Numbers" ID="ID_696530582" CREATED="1681764344457" MODIFIED="1682196183151">
+<node TEXT="numbers" ID="ID_1300470284" CREATED="1675066778488" MODIFIED="1683250469098">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_696530582" CREATED="1681764344457" MODIFIED="1683250469095">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>
 </node>
 <node TEXT="modify" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1443253044" CREATED="1675144680753" MODIFIED="1675144685362">
-<node TEXT="cell" ID="ID_1159489426" CREATED="1675066927073" MODIFIED="1675066930044">
-<node TEXT="numbers" ID="ID_1565352658" CREATED="1675066941937" MODIFIED="1682196183151">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Numbers" ID="ID_1496845843" CREATED="1681764344457" MODIFIED="1682196183151">
+<node TEXT="cell" ID="ID_1159489426" CREATED="1675066927073" MODIFIED="1683377874326">
+<icon BUILTIN="checked"/>
+<node TEXT="numbers" ID="ID_1565352658" CREATED="1675066941937" MODIFIED="1683377868243">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_1496845843" CREATED="1681764344457" MODIFIED="1683377868240">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="font" ID="ID_100055580" CREATED="1675066945337" MODIFIED="1682196183151">
-<icon BUILTIN="unchecked"/>
-<node TEXT="FontOnly" ID="ID_309016685" CREATED="1675364933860" MODIFIED="1682196183151">
+<node TEXT="font" ID="ID_100055580" CREATED="1675066945337" MODIFIED="1683286707902">
+<icon BUILTIN="checked"/>
+<node TEXT="FontOnly" ID="ID_309016685" CREATED="1675364933860" MODIFIED="1683286707901">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontEffects" ID="ID_1482167025" CREATED="1675364914764" MODIFIED="1682196183151">
+<node TEXT="FontEffects" ID="ID_1482167025" CREATED="1675364914764" MODIFIED="1683286707898">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="alignment" ID="ID_485006306" CREATED="1675066957121" MODIFIED="1682196183152">
-<icon BUILTIN="unchecked"/>
-<node TEXT="TextAlign" ID="ID_503246624" CREATED="1679012791193" MODIFIED="1682196183152">
+<node TEXT="alignment" ID="ID_485006306" CREATED="1675066957121" MODIFIED="1683289839061">
+<icon BUILTIN="checked"/>
+<node TEXT="TextAlign" ID="ID_503246624" CREATED="1679012791193" MODIFIED="1683289839056">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="TextOrientation" ID="ID_1587869969" CREATED="1679012805832" MODIFIED="1682196183152">
+<node TEXT="TextOrientation" ID="ID_1587869969" CREATED="1679012805832" MODIFIED="1683289839060">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Properties" ID="ID_497541030" CREATED="1679012811910" MODIFIED="1682196183152">
+<node TEXT="Properties" ID="ID_497541030" CREATED="1679012811910" MODIFIED="1683289839060">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_322717388" CREATED="1675066964545" MODIFIED="1682196183152">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Borders" ID="ID_983626793" CREATED="1679269437325" MODIFIED="1682196183152">
+<node TEXT="borders" ID="ID_322717388" CREATED="1675066964545" MODIFIED="1683314761595">
+<icon BUILTIN="checked"/>
+<node TEXT="Borders" ID="ID_983626793" CREATED="1679269437325" MODIFIED="1683314761598">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="background" ID="ID_1803684931" CREATED="1675066973698" MODIFIED="1682196183152">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Color" ID="ID_798961084" CREATED="1679267811336" MODIFIED="1682196183152">
+<node TEXT="background" ID="ID_1803684931" CREATED="1675066973698" MODIFIED="1683316666948">
+<icon BUILTIN="checked"/>
+<node TEXT="Color" ID="ID_798961084" CREATED="1679267811336" MODIFIED="1683316666950">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1682196183152">
-<icon BUILTIN="unchecked"/>
-<node TEXT="CellProtection" ID="ID_418881402" CREATED="1679017780504" MODIFIED="1682196183152">
+<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1683376617006">
+<icon BUILTIN="checked"/>
+<node TEXT="CellProtection" ID="ID_418881402" CREATED="1679017780504" MODIFIED="1683376617002">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>
 <node TEXT="page" ID="ID_226381545" CREATED="1675066930609" MODIFIED="1675066932244">
-<node TEXT="borders" ID="ID_1131843680" CREATED="1675067030906" MODIFIED="1682196183153">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Padding" ID="ID_1192297075" CREATED="1676503017275" MODIFIED="1682196183153">
+<node TEXT="borders" ID="ID_1131843680" CREATED="1675067030906" MODIFIED="1683381570924">
+<icon BUILTIN="checked"/>
+<node TEXT="Padding" ID="ID_1192297075" CREATED="1676503017275" MODIFIED="1683381570927">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Sides" ID="ID_1048288707" CREATED="1676502992851" MODIFIED="1682196183153">
+<node TEXT="Sides" ID="ID_1048288707" CREATED="1676502992851" MODIFIED="1683381570927">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Shadow" ID="ID_1039713720" CREATED="1676503005235" MODIFIED="1682196183153">
+<node TEXT="Shadow" ID="ID_1039713720" CREATED="1676503005235" MODIFIED="1683381570927">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="background" ID="ID_884553978" CREATED="1675067040433" MODIFIED="1682196183153">

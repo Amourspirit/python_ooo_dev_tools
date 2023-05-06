@@ -11,11 +11,4 @@ from ooodev.format.inner.modify.calc.page.border.sides import Sides as Sides
 from ooodev.format.inner.modify.calc.page.border.shadow import InnerShadow as InnerShadow
 from ooodev.format.inner.modify.calc.page.border.shadow import Shadow as Shadow
 
-__all__ = [
-    "InnerPadding",
-    "Padding",
-    "InnerSides",
-    "Sides",
-    "InnerShadow",
-    "Shadow",
-]
+__all__ = ["Padding", "Sides", "Shadow"]
