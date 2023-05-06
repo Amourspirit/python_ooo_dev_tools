@@ -530,8 +530,8 @@ If you start searching the forums, newsgroups, blogs, and web sites for Office e
 Python is not the language of choice for most Office programmers.
 Basic (sometimes called StarBasic, OpenOffice.org Basic, LibreOffice Basic, or even Visual Basic or VB by mistake) is the darling of the coding crowd.
 
-Python is flexible, can run outside of LibreOffice and connect via bridge, and or can be used as a macro.
-Python also has an advantage of using the many package on `PYPI <https://pypi.org/>`_.
+Python is flexible, can run outside of LibreOffice and connect via UNO bridge, and or can be used as a macro.
+Python also has an advantage of using the many packages on `PYPI <https://pypi.org/>`_.
 Python has an advantage in the area of source control and larger projects.
 
 This is understandable since Office (both LibreOffice and OpenOffice) includes an IDE for editing and debugging Basic macros.
