@@ -12,7 +12,7 @@ Calc Modify Page Background
 Overview
 --------
 
-The :py:class:`ooodev.format.calc.modify.page.area.Color` and :py:class:`ooodev.format.calc.modify.page.area.Img` classes sets the fill options for the Calc page.
+The :py:class:`ooodev.format.calc.modify.page.area.Color` and :py:class:`ooodev.format.calc.modify.page.area.Img` classes sets the background options for the Calc page.
 
 Setup
 -----
@@ -89,11 +89,11 @@ Style results.
     .. _236639347-f8ea096c-7f23-4d0c-a1f5-96d997c4727f:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236639347-f8ea096c-7f23-4d0c-a1f5-96d997c4727f.png
-        :alt: Calc dialog Page Style Background style color modified
+        :alt: Calc dialog Page Background style color modified
         :figclass: align-center
         :width: 450px
 
-        Calc dialog Page Style Background style color modified
+        Calc dialog Page Background style color modified
 
 
 Getting the background color from a style
@@ -142,11 +142,11 @@ Style results.
     .. _236640290-799efe37-4239-48e2-ab6a-8f6aed99f7c2:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236640290-799efe37-4239-48e2-ab6a-8f6aed99f7c2.png
-        :alt: Calc dialog Page Style Background style image modified
+        :alt: Calc dialog Page Background style image modified
         :figclass: align-center
         :width: 450px
 
-        Calc dialog Page Style Background style image modified
+        Calc dialog Page Background style image modified
 
 Related Topics
 --------------
