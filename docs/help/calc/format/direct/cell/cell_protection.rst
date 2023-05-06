@@ -31,6 +31,7 @@ as Calc's Cell Protection Dialog tab, but without the dialog. as seen in :numref
 .. cssclass:: screen_shot
 
     .. _236297706-04be0d71-adec-44a9-804b-7849fccca40b:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/236297706-04be0d71-adec-44a9-804b-7849fccca40b.png
         :alt: Calc Format Cell dialog Cell Protection
         :figclass: align-center
@@ -74,7 +75,6 @@ Setup
                 Lo.close_doc(doc)
             return 0
 
-
         if __name__ == "__main__":
             SystemExit(main())
 
@@ -106,6 +106,7 @@ Running the above code will produce the following output in :numref:`236298445-d
 .. cssclass:: screen_shot
 
     .. _236298445-d62faac5-62b8-4e2f-a669-bc8e1f94710b:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/236298445-d62faac5-62b8-4e2f-a669-bc8e1f94710b.png
         :alt: Calc Format Cell dialog Cell Protection set
         :figclass: align-center
@@ -213,6 +214,7 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_calc_format_modify_cell_protection`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`

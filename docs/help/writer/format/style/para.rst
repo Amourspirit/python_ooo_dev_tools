@@ -152,6 +152,7 @@ See :ref:`ch06_apply_style_para` for more information.
 .. cssclass:: screen_shot
 
     .. _229863228-43278981-f7d0-450b-9e0a-cff0f5e43915:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/229863228-43278981-f7d0-450b-9e0a-cff0f5e43915.png
         :alt: Newly styled paragraph
         :figclass: align-center

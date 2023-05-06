@@ -8,10 +8,10 @@ Calc Modify Cell Alignment
     :backlinks: none
     :depth: 2
 
-Introduction
-------------
+Overview
+--------
 
-Calc has a dialog, as seen in :numref:`236448968-810ad7cc-04f4-4a73-9d1d-ca6598eac073`, that sets cell alignment. In this section we will look the various classed that set the same options.
+Calc has a dialog, as seen in :numref:`236448968-810ad7cc-04f4-4a73-9d1d-ca6598eac073`, that sets cell alignment. In this section we will look the various classes that set the same options.
 
 .. cssclass:: screen_shot
 

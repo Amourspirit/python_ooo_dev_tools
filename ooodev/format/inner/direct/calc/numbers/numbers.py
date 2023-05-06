@@ -51,7 +51,7 @@ class Numbers(StyleBase):
             num_format (NumberFormatEnum, int, optional): Type of a number format.
                 Use this to select a default format. Defaults to 0 (General Format).
                 Only used if ``num_format_index`` is ``-1`` (omitted).
-            num_format_index (NumberFormatIndexEnum | int, optional): Index of a number format.
+            num_format_index (NumberFormatIndexEnum, int, optional): Index of a number format.
                 The enumeration values represent the built-in number formats. Defaults to ``-1``.
             lang_locale (Locale, optional): Locale of the number format. Defaults to ``None`` which used current Locale.
             component (XComponent, optional): Document such as Spreadsheet or Chart. If Omitted, the current document is used. Defaults to ``None``.
@@ -61,6 +61,8 @@ class Numbers(StyleBase):
 
         See Also:
             - :ref:`help_calc_format_direct_cell_numbers`
+            - `API NumberFormat <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1NumberFormat.html>`__
+            - `API NumberFormatIndex <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1i18n_1_1NumberFormatIndex.html>`__
         """
         super().__init__()
         if lang_locale is None:
@@ -69,8 +71,7 @@ class Numbers(StyleBase):
         if component is None:
             component = mLo.Lo.this_component
         self._num_cat = int(num_format)
-        if self._num_cat < 0:
-            self._num_cat = 0
+        self._num_cat = max(self._num_cat, 0)
         self._num_format_index = int(num_format_index)
         self._lang_locale = lang_locale
         self._component = component
@@ -89,14 +90,12 @@ class Numbers(StyleBase):
     def _query_key(self, nf_str: str) -> int:
         xfs = mLo.Lo.qi(XNumberFormatsSupplier, self._component, True)
         n_formats = xfs.getNumberFormats()
-        key = int(n_formats.queryKey(nf_str, self._lang_locale, False))
-        return key  # -1 means not found
+        return int(n_formats.queryKey(nf_str, self._lang_locale, False))
 
     def _get_by_key_props(self) -> XPropertySet:
         xfs = mLo.Lo.qi(XNumberFormatsSupplier, self._component, True)
         n_formats = xfs.getNumberFormats()
-        nf_props = n_formats.getByKey(self.prop_format_key)
-        return nf_props
+        return n_formats.getByKey(self.prop_format_key)
 
     def _get_format_index(self) -> int:
         xfs = mLo.Lo.qi(XNumberFormatsSupplier, self._component, True)
