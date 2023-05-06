@@ -19,6 +19,10 @@ class InnerNumbers(DirectNumbers):
     """
     Inner Number Format
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_numbers`
+
     .. versionadded:: 0.9.4
     """
 
@@ -42,6 +46,10 @@ class InnerNumbers(DirectNumbers):
 class Numbers(CellStyleBaseMulti):
     """
     Style Numbers Format.
+
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_numbers`
 
     .. versionadded:: 0.9.4
     """
@@ -70,6 +78,9 @@ class Numbers(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_numbers`
         """
 
         direct = self._get_inner_class_type()(

@@ -23,11 +23,11 @@ as seen dialog  shown in :numref:`236623260-28e5e54e-6fd8-4085-8605-ca72d310005c
     .. _236623260-28e5e54e-6fd8-4085-8605-ca72d310005c:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236623260-28e5e54e-6fd8-4085-8605-ca72d310005c.png
-        :alt: Calc Format Cell dialog Cell Protection
+        :alt: Calc Format Cell dialog Cell Style Protection
         :figclass: align-center
         :width: 450px
 
-        Calc Format Cell dialog Cell Protection
+        Calc Format Cell dialog Cell Style Protection
 
 
 Setup
@@ -107,14 +107,14 @@ Running the above code will produce the following output in :numref:`236623690-8
     .. _236623690-864f6a2f-600a-4e66-a5d5-54f855c9efc1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236623690-864f6a2f-600a-4e66-a5d5-54f855c9efc1.png
-        :alt: Calc Format Cell dialog Cell Protection set
+        :alt: Calc Format Cell dialog Cell Style Protection set
         :figclass: align-center
         :width: 450px
 
-        Calc Format Cell dialog Cell Protection set
+        Calc Format Cell dialog Cell Style Protection set
 
-Getting cell protection from a cell
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Getting cell protection from a style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 

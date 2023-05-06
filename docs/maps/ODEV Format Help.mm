@@ -1,4 +1,4 @@
-<map version="freeplane 1.9.13">
+<map version="freeplane 1.11.1">
 <!--To view this file, download free mind mapping software Freeplane from https://www.freeplane.org -->
 <node TEXT="ODEV Format Help" FOLDED="false" ID="ID_696401721" CREATED="1610381621824" MODIFIED="1682195325413" STYLE="oval">
 <font SIZE="18"/>
@@ -8,7 +8,7 @@
 <map_styles>
 <stylenode LOCALIZED_TEXT="styles.root_node" STYLE="oval" UNIFORM_SHAPE="true" VGAP_QUANTITY="24 pt">
 <font SIZE="24"/>
-<stylenode LOCALIZED_TEXT="styles.predefined" POSITION="right" STYLE="bubble">
+<stylenode LOCALIZED_TEXT="styles.predefined" POSITION="bottom_or_right" STYLE="bubble">
 <stylenode LOCALIZED_TEXT="default" ID="ID_271890427" ICON_SIZE="12 pt" COLOR="#000000" STYLE="fork">
 <arrowlink SHAPE="CUBIC_CURVE" COLOR="#000000" WIDTH="2" TRANSPARENCY="200" DASH="" FONT_SIZE="9" FONT_FAMILY="SansSerif" DESTINATION="ID_271890427" STARTARROW="NONE" ENDARROW="DEFAULT"/>
 <font NAME="SansSerif" SIZE="10" BOLD="false" ITALIC="false"/>
@@ -26,7 +26,7 @@
 </stylenode>
 <stylenode LOCALIZED_TEXT="defaultstyle.selection" BACKGROUND_COLOR="#afd3f7" BORDER_COLOR_LIKE_EDGE="false" BORDER_COLOR="#afd3f7"/>
 </stylenode>
-<stylenode LOCALIZED_TEXT="styles.user-defined" POSITION="right" STYLE="bubble">
+<stylenode LOCALIZED_TEXT="styles.user-defined" POSITION="bottom_or_right" STYLE="bubble">
 <stylenode LOCALIZED_TEXT="styles.topic" COLOR="#18898b" STYLE="fork">
 <font NAME="Liberation Sans" SIZE="10" BOLD="true"/>
 </stylenode>
@@ -41,7 +41,7 @@
 <arrowlink COLOR="#003399" TRANSPARENCY="255" DESTINATION="ID_67550811"/>
 </stylenode>
 </stylenode>
-<stylenode LOCALIZED_TEXT="styles.AutomaticLayout" POSITION="right" STYLE="bubble">
+<stylenode LOCALIZED_TEXT="styles.AutomaticLayout" POSITION="bottom_or_right" STYLE="bubble">
 <stylenode LOCALIZED_TEXT="AutomaticLayout.level.root" COLOR="#000000" STYLE="oval" SHAPE_HORIZONTAL_MARGIN="10 pt" SHAPE_VERTICAL_MARGIN="10 pt">
 <font SIZE="18"/>
 </stylenode>
@@ -69,7 +69,7 @@
 </map_styles>
 </hook>
 <hook NAME="AutomaticEdgeColor" COUNTER="2" RULE="ON_BRANCH_CREATION"/>
-<node TEXT="Format" POSITION="right" ID="ID_1852756413" CREATED="1675057796555" MODIFIED="1675057800267">
+<node TEXT="Format" POSITION="bottom_or_right" ID="ID_1852756413" CREATED="1675057796555" MODIFIED="1675057800267">
 <edge COLOR="#ff0000"/>
 <node TEXT="writer" LOCALIZED_STYLE_REF="AutomaticLayout.level,2" FOLDED="true" ID="ID_685049292" CREATED="1675065559834" MODIFIED="1675069468720">
 <node TEXT="direct" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1211874098" CREATED="1675065597002" MODIFIED="1675069680162">
@@ -1350,12 +1350,13 @@
 </node>
 </node>
 <node TEXT="modify" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1443253044" CREATED="1675144680753" MODIFIED="1675144685362">
-<node TEXT="cell" ID="ID_1159489426" CREATED="1675066927073" MODIFIED="1675066930044">
-<node TEXT="numbers" ID="ID_1565352658" CREATED="1675066941937" MODIFIED="1682196183151">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Numbers" ID="ID_1496845843" CREATED="1681764344457" MODIFIED="1682196183151">
+<node TEXT="cell" ID="ID_1159489426" CREATED="1675066927073" MODIFIED="1683377874326">
+<icon BUILTIN="checked"/>
+<node TEXT="numbers" ID="ID_1565352658" CREATED="1675066941937" MODIFIED="1683377868243">
+<icon BUILTIN="checked"/>
+<node TEXT="Numbers" ID="ID_1496845843" CREATED="1681764344457" MODIFIED="1683377868240">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="font" ID="ID_100055580" CREATED="1675066945337" MODIFIED="1683286707902">
@@ -1398,11 +1399,11 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1682196183152">
-<icon BUILTIN="unchecked"/>
-<node TEXT="CellProtection" ID="ID_418881402" CREATED="1679017780504" MODIFIED="1682196183152">
+<node TEXT="cell_protect" ID="ID_1080814476" CREATED="1675066984730" MODIFIED="1683376617006">
+<icon BUILTIN="checked"/>
+<node TEXT="CellProtection" ID="ID_418881402" CREATED="1679017780504" MODIFIED="1683376617002">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>
