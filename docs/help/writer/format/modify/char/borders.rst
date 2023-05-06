@@ -248,4 +248,4 @@ Related Topics
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.char.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.char.borders.Sides`
-        - :py:class:`ooodev.format.writer.modify.char.borders.Shaodow`
+        - :py:class:`ooodev.format.writer.modify.char.borders.Shadow`

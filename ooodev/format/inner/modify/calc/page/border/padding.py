@@ -63,6 +63,10 @@ class Padding(CellStyleBaseMulti):
     """
     Page Style Border Padding.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -93,6 +97,9 @@ class Padding(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_borders`
         """
 
         direct = InnerPadding(left=left, right=right, top=top, bottom=bottom, all=all)

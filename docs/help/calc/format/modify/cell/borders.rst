@@ -136,6 +136,7 @@ Related Topics
         - :ref:`help_writer_format_direct_para_borders`
         - :ref:`help_writer_format_direct_table`
         - :ref:`help_calc_format_direct_cell_borders`
+        - :ref:`help_calc_format_modify_page_borders`
         - :py:class:`ooodev.format.calc.modify.cell.borders.Borders`
         - :py:class:`ooodev.format.calc.modify.cell.borders.Padding`
         - :py:class:`ooodev.format.calc.modify.cell.borders.Shadow`

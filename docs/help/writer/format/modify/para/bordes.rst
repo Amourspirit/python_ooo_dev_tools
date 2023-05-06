@@ -35,6 +35,7 @@ General function used to run these examples.
 
     .. code-tab:: python
 
+        import uno
         from ooodev.format.writer.modify.para.borders import Padding, Shadow, Sides
         from ooodev.format.writer.modify.para.borders import BorderLineKind, LineSize
         from ooodev.format.writer.modify.para.borders import StyleParaKind, Side
@@ -97,12 +98,13 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234409135-3e1cd6d5-f1e9-4d2f-bb86-b51bdf1fb486:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234409135-3e1cd6d5-f1e9-4d2f-bb86-b51bdf1fb486.png
-        :alt: Writer dialog Paragraph Borders style sides changed
+        :alt: Writer dialog Paragraph Borders style sides modified
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Paragraph Borders style sides changed
+        Writer dialog Paragraph Borders style sides modified
 
 
 Getting border sides from a style
@@ -151,12 +153,13 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234410090-e24a79d7-c2f5-460b-b229-02daf243710f:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234410090-e24a79d7-c2f5-460b-b229-02daf243710f.png
-        :alt: Writer dialog Paragraph Borders style padding changed
+        :alt: Writer dialog Paragraph Borders style padding modified
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Paragraph Borders style padding changed
+        Writer dialog Paragraph Borders style padding modified
 
 Getting border padding from a style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -204,12 +207,13 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234410957-55eedfcc-9032-48b1-a660-7dffa5eb5d8f:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234410957-55eedfcc-9032-48b1-a660-7dffa5eb5d8f.png
-        :alt: Writer dialog Paragraph Borders style shadow changed
+        :alt: Writer dialog Paragraph Borders style shadow modified
         :figclass: align-center
         :width: 450px
 
-        Writer dialog Paragraph Borders style shadow changed
+        Writer dialog Paragraph Borders style shadow modified
 
 Getting border shadow from a style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -245,4 +249,4 @@ Related Topics
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.modify.para.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.para.borders.Sides`
-        - :py:class:`ooodev.format.writer.modify.para.borders.Shaodow`
+        - :py:class:`ooodev.format.writer.modify.para.borders.Shadow`

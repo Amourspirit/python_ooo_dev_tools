@@ -7,3 +7,4 @@ Modify
     :maxdepth: 2
 
     cell/index
+    page/index
