@@ -6,8 +6,11 @@ Calc Modify Page Borders
 
 .. contents:: Table of Contents
     :local:
-    :backlinks: none
+    :backlinks: top
     :depth: 2
+
+Overview
+--------
 
 The :py:class:`ooodev.format.calc.modify.page.borders.Sides`, :py:class:`ooodev.format.calc.modify.page.borders.Padding`, and :py:class:`ooodev.format.calc.modify.page.borders.Shadow`
 classes are used to modify the border values seen in :numref:`236626523-052afa19-3b16-4bda-a49b-01cda4256afe` of a character border style.

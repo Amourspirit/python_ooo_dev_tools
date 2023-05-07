@@ -16,6 +16,10 @@ class UnitObj(Protocol):
     """
     Protocol Class for units.
 
+    .. seealso::
+
+        :ref:`ns_units`
+
     .. _proto_unit_obj:
 
     UnitObj

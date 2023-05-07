@@ -15,6 +15,10 @@ class ScaleNumOfPages(CellStyleBase):
     """
     Page Style Shrink Page Range.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_sheet`
+
     .. versionadded:: 0.9.0
     """
 
@@ -36,6 +40,9 @@ class ScaleNumOfPages(CellStyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_sheet`
         """
 
         super().__init__(style_name=style_name, style_family=style_family)

@@ -19,7 +19,7 @@ Setup
         :emphasize-lines: 11, 12, 13, 14
 
         from ooodev.format.writer.modify.para.area import Gradient as ParaStyleGradient, StyleParaKind
-        from ooodev.format.writer.modify.para.area import PresetGradientKind
+        from ooodev.format.writer.modify.para.area import PresetImageKind
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):
@@ -60,6 +60,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234425427-ee1a2151-43ea-4954-ace6-2f872604363a:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234425427-ee1a2151-43ea-4954-ace6-2f872604363a.png
         :alt: Writer dialog Paragraph Area Image style default
         :figclass: align-center
@@ -88,12 +89,13 @@ Apply style
             .. group-tab:: None
 
 
-After appling style
-^^^^^^^^^^^^^^^^^^^
+After applying style
+^^^^^^^^^^^^^^^^^^^^
 
 .. cssclass:: screen_shot
 
     .. _234425641-e6893b4c-9c46-45ba-9852-b155a7a503dd:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234425641-e6893b4c-9c46-45ba-9852-b155a7a503dd.png
         :alt: Writer dialog Paragraph Area Image style changed
         :figclass: align-center
