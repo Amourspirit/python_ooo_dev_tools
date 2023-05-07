@@ -1511,19 +1511,19 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="page" ID="ID_577841582" CREATED="1675144849866" MODIFIED="1682196183155">
-<icon BUILTIN="unchecked"/>
-<node TEXT="LayoutSettings" ID="ID_836020930" CREATED="1676427803497" MODIFIED="1682196183155">
+<node TEXT="page" ID="ID_577841582" CREATED="1675144849866" MODIFIED="1683419103503">
+<icon BUILTIN="checked"/>
+<node TEXT="LayoutSettings" ID="ID_836020930" CREATED="1676427803497" MODIFIED="1683419103500">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Margins" ID="ID_1191907601" CREATED="1676398907537" MODIFIED="1682196183155">
+<node TEXT="Margins" ID="ID_1191907601" CREATED="1676398907537" MODIFIED="1683419103502">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="PaperFormat" ID="ID_1609620111" CREATED="1676410990745" MODIFIED="1682196183155">
+<node TEXT="PaperFormat" ID="ID_1609620111" CREATED="1676410990745" MODIFIED="1683419103503">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>

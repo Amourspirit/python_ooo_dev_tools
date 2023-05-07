@@ -6,7 +6,7 @@ Calc Modify Page Sheet
 
 .. contents:: Table of Contents
     :local:
-    :backlinks: none
+    :backlinks: top
     :depth: 3
 
 Overview
@@ -62,6 +62,8 @@ General function used to run these examples.
 Page Order
 ----------
 
+The :py:class:`~ooodev.format.calc.modify.page.sheet.Order` class sets the page order of the page sheet style.
+
 Setting the Page Order
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -114,6 +116,9 @@ Getting the page order from a style
 Print Options
 -------------
 
+The :py:class:`~ooodev.format.calc.modify.page.sheet.Printing` class sets the print options of the page sheet style.
+
+
 Setting the Page Print Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -152,11 +157,30 @@ Style results.
 
         Calc dialog Page Style Sheet Print Options style modified
 
+Getting the print options from a style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # .. other code
+        style_obj = Printing.from_style(doc=doc, style_name=CalcStylePageKind.DEFAULT)
+        assert style_obj.prop_style_name == str(CalcStylePageKind.DEFAULT)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 Scale Options
 -------------
 
 Reduce/Enlarge
 ^^^^^^^^^^^^^^^
+
+The :py:class:`~ooodev.format.calc.modify.page.sheet.ScaleReduceEnlarge` class sets the scale reduce/enlarge settings of the page sheet style.
 
 Setting the Page Scale Reduce/Enlarge
 """""""""""""""""""""""""""""""""""""
@@ -211,6 +235,8 @@ Getting the page scale reduce/enlarge from a style
 Width/Height
 ^^^^^^^^^^^^
 
+The :py:class:`~ooodev.format.calc.modify.page.sheet.ScalePagesWidthHeight` class sets the scale width/height settings of the page sheet style.
+
 Setting the Page Scale Width/Height
 """""""""""""""""""""""""""""""""""
 
@@ -262,6 +288,8 @@ Getting the page scale width/height from a style
 
 Number of Pages
 ^^^^^^^^^^^^^^^
+
+The :py:class:`~ooodev.format.calc.modify.page.sheet.ScaleNumOfPages` class sets the scale number of pages settings of the page sheet style.
 
 Setting the Page by Number of Pages
 """""""""""""""""""""""""""""""""""

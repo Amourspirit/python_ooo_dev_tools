@@ -6,7 +6,7 @@ Calc Modify Page Borders
 
 .. contents:: Table of Contents
     :local:
-    :backlinks: none
+    :backlinks: top
     :depth: 2
 
 Overview
