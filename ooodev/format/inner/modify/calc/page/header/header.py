@@ -68,6 +68,10 @@ class Header(CellStyleBaseMulti):
     """
     Page Header Settings
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_header`
+
     .. versionadded:: 0.9.0
     """
 
@@ -106,6 +110,9 @@ class Header(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_header_header`
         """
 
         direct = InnerStyle(

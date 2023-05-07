@@ -222,6 +222,7 @@
         "PYPI",
         "QUERYBOX",
         "RDPARTYFILTER",
+        "soffice",
         "sphinxcontrib",
         "spreadsheetview",
         "staticmethod",

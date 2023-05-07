@@ -10,6 +10,10 @@ class Footer(Header):
     """
     Page Footer Settings
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_footer_footer`
+
     .. versionadded:: 0.9.0
     """
 
@@ -45,6 +49,9 @@ class Footer(Header):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_footer_footer`
         """
         super().__init__(
             on=on,
