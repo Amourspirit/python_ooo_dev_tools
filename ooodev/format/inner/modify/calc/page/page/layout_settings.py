@@ -17,6 +17,10 @@ class LayoutSettings(CellStyleBaseMulti):
     """
     Page Layout Setting style
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_page`
+
     .. versionadded:: 0.9.0
     """
 
@@ -44,6 +48,9 @@ class LayoutSettings(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_page`
         """
 
         direct = InnerLayoutSettings(layout=layout, numbers=numbers, align_hori=align_hori, align_vert=align_vert)

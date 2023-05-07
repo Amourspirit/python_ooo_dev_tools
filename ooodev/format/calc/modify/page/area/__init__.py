@@ -14,9 +14,4 @@ from ooodev.format.inner.modify.calc.page.area.color import Color as Color
 from ooodev.format.inner.modify.calc.page.area.img import InnerImg as InnerImg
 from ooodev.format.inner.modify.calc.page.area.img import Img as Img
 
-__all__ = [
-    "InnerColor",
-    "Color",
-    "InnerImg",
-    "Img",
-]
+__all__ = ["Color", "Img"]

@@ -74,6 +74,10 @@ class Color(CellStyleBaseMulti):
     """
     Page Style Color.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_background`
+
     .. versionadded:: 0.9.0
     """
 
@@ -95,6 +99,9 @@ class Color(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_background`
         """
 
         direct = InnerColor(color=color)

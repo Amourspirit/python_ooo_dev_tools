@@ -13,6 +13,10 @@ class Margins(CellStyleBaseMulti):
     """
     Page Style Margins
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_page`
+
     .. versionadded:: 0.9.0
     """
 
@@ -40,6 +44,9 @@ class Margins(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_page`
         """
 
         direct = InnerMargins(left=left, right=right, top=top, bottom=bottom)
