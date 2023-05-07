@@ -187,6 +187,7 @@
         "autonamedtuple",
         "autoprotocol",
         "boxtype",
+        "cattribs",
         "cellrange",
         "classmethod",
         "cssclass",

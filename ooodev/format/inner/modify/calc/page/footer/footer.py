@@ -1,4 +1,6 @@
 from __future__ import annotations
+import uno
+from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.common.props.hf_props import HfProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ..header.header import Header
@@ -10,6 +12,52 @@ class Footer(Header):
 
     .. versionadded:: 0.9.0
     """
+
+    def __init__(
+        self,
+        *,
+        on: bool | None = None,
+        shared: bool | None = None,
+        shared_first: bool | None = None,
+        margin_left: float | None = None,
+        margin_right: float | None = None,
+        spacing: float | None = None,
+        height: float | None = None,
+        height_auto: bool | None = None,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
+        style_family: str = "PageStyles",
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            on (bool | None, optional): Specifics if Footer is on.
+            shared (bool | None, optional): Specifies if same contents left and right.
+            shared_first (bool | None, optional): Specifies if same contents on first page.
+            margin_left (float | None, optional): Specifies Left Margin in ``mm`` units.
+            margin_right (float | None, optional): Specifies Right Margin in ``mm`` units.
+            spacing (float | None, optional): Specifies Spacing in ``mm`` units.
+            height (float | None, optional): Specifies Height in ``mm`` units.
+            height_auto (bool | None, optional): Specifies if auto-fit height is used.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+                Default is Default Page Style.
+            style_family (str, optional): Style family. Default ``PageStyles``.
+
+        Returns:
+            None:
+        """
+        super().__init__(
+            on=on,
+            shared=shared,
+            shared_first=shared_first,
+            margin_left=margin_left,
+            margin_right=margin_right,
+            spacing=spacing,
+            height=height,
+            height_auto=height_auto,
+            style_name=style_name,
+            style_family=style_family,
+        )
 
     # region Internal Methods
     def _get_inner_props(self) -> HfProps:
