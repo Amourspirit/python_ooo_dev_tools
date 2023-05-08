@@ -19,10 +19,26 @@ class Cell(StyleName):
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_style_cell`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: StyleCellKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (StyleCellKind, str, optional): Cell Style. Defaults to ``Default``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+        """
         if name == "":
             name = Cell.default.prop_name
         super().__init__(name=name)

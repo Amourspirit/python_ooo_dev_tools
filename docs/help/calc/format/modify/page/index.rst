@@ -8,3 +8,5 @@ Calc Format Modify Page
     :glob:
 
     *
+    header/index
+    footer/index

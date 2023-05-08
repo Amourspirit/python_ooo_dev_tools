@@ -41,7 +41,6 @@ def test_calc(loader) -> None:
             shared=True,
             height=10.0,
             spacing=3.0,
-            spacing_dyn=True,
             margin_left=1.5,
             margin_right=2.0,
         )

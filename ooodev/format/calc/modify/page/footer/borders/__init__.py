@@ -12,8 +12,4 @@ from ooodev.format.inner.modify.calc.page.footer.border.sides import Sides as Si
 from ooodev.format.inner.modify.calc.page.header.border.shadow import InnerShadow as InnerShadow
 from ooodev.format.inner.modify.calc.page.footer.border.shadow import Shadow as Shadow
 
-__all__ = [
-    "Padding",
-    "Sides",
-    "Shadow",
-]
+__all__ = ["Padding", "Sides", "Shadow"]
