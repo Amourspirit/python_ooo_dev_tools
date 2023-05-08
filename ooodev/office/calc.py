@@ -8257,6 +8257,11 @@ class Calc:
         """
         Dispatches recalculate command to the current sheet.
 
+        Also useful when needing to refresh a chart.
+
+        Returns:
+            None:
+
         .. versionadded:: 0.9.4
         """
         mLo.Lo.dispatch_cmd("Calculate")

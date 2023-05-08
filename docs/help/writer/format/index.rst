@@ -1,3 +1,5 @@
+.. _help_writer_format:
+
 Write Formatting and Style
 ==========================
 

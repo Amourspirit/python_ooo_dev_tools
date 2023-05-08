@@ -1525,6 +1525,9 @@ class Chart2:
                 - :doc:`ooodev.format.chart2.direct.general.borders </src/format/ooodev.format.chart2.direct.general.borders>`
                 - :doc:`ooodev.format.chart2.direct.general.transparency </src/format/ooodev.format.chart2.direct.general.transparency>`
 
+        See Also:
+            - :ref:`help_chart2_format_direct_general_area`
+
         .. versionadded:: 0.9.0
         """
         bg_ps = chart_doc.getPageBackground()

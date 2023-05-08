@@ -13,7 +13,13 @@ from ooodev.utils.data_type.intensity import Intensity
 
 
 class LineProperties(StyleBase):
-    """This class represents the line properties of a chart borders line properties."""
+    """
+    This class represents the line properties of a chart borders line properties.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_general_borders`
+    """
 
     def __init__(
         self,
@@ -33,6 +39,9 @@ class LineProperties(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_general_borders`
         """
         super().__init__()
         self._prop_style = style

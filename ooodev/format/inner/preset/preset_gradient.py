@@ -6,6 +6,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils.data_type.offset import Offset
 from ooodev.utils.data_type.color_range import ColorRange
 from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.kind import kind_helper
 
 
 class PresetGradientKind(Enum):
@@ -64,6 +65,25 @@ class PresetGradientKind(Enum):
             p_name = PresetGradientKind._preset_names
 
         return name in p_name
+
+    @staticmethod
+    def from_str(s: str) -> PresetGradientKind:
+        """
+        Gets an ``PresetGradientKind`` instance from string.
+
+        Args:
+            s (str): String that represents the name of an enum Name.
+                ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
+                ``hyphen-case``, ``normal case``.
+
+        Raises:
+            ValueError: If input string is empty.
+            AttributeError: If unable to get ``PresetGradientKind`` instance.
+
+        Returns:
+            PresetGradientKind: Enum instance.
+        """
+        return kind_helper.enum_from_string(s, PresetGradientKind)
 
 
 def pastel_bouquet() -> Dict[str, Any]:

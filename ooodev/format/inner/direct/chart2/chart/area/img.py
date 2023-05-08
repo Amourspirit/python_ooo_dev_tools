@@ -27,6 +27,10 @@ class Img(FillImg):
     """
     Class for Chart Area Fill Image.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_general_area`
+
     .. versionadded:: 0.9.4
     """
 
@@ -68,6 +72,9 @@ class Img(FillImg):
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
             All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_general_area`
         """
         self._chart_doc = chart_doc
         super().__init__(
