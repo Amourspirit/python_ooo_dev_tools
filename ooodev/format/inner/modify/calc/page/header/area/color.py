@@ -16,6 +16,10 @@ class InnerColor(AbstractColor):
     """
     Page header Color.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_background`
+
     .. versionadded:: 0.9.0
     """
 
@@ -50,6 +54,10 @@ class Color(CellStyleBaseMulti):
     """
     Page Header Color
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_background`
+
     .. versionadded:: 0.9.0
     """
 
@@ -71,6 +79,9 @@ class Color(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_header_background`
         """
 
         direct = InnerColor(color=color, _cattribs=self._get_inner_cattribs())

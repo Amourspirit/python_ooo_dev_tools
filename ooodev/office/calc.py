@@ -2401,6 +2401,10 @@ class Calc:
         Returns:
             None:
 
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+            - :ref:`help_calc_format_direct_cell`
+
         .. versionchanged:: 0.9.1
             Added overloads for styles.
         """
@@ -2960,6 +2964,10 @@ class Calc:
         Returns:
             None:
 
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+            - :ref:`help_calc_format_direct_cell`
+
         .. versionchanged:: 0.9.1
             Added overloads for styles.
         """
@@ -3174,6 +3182,10 @@ class Calc:
         Returns:
             None:
 
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+            - :ref:`help_calc_format_direct_cell`
+
         .. versionchanged:: 0.9.1
             Added overloads for styles.
         """
@@ -3264,6 +3276,10 @@ class Calc:
             cell_obj (CellObj): Range Object
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             styles (Sequence[StyleObj], optional): One or more styles to apply to cell range.
+
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+            - :ref:`help_calc_format_direct_cell`
 
         .. versionchanged:: 0.9.1
             Added overloads for styles.
@@ -8050,6 +8066,13 @@ class Calc:
             hfc (XHeaderFooterContent): Content
             region (HeaderFooter): Region to set
             text (str): Text to set
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_header`
+            - :ref:`help_calc_format_modify_page_footer`
         """
         xtext = cls.get_region(hfc=hfc, region=region)
         if xtext is None:
@@ -8130,6 +8153,10 @@ class Calc:
         Returns:
             None:
 
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+            - :ref:`help_calc_format_direct_cell`
+
         .. versionadded:: 0.9.2
         """
         styles = cast(Sequence[StyleObj], kwargs.pop("styles", None))
@@ -8198,6 +8225,10 @@ class Calc:
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+            - :ref:`help_calc_format_direct_cell`
 
         .. versionadded:: 0.9.2
         """

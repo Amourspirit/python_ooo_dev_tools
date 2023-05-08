@@ -7,7 +7,7 @@ Calc Modify Page Style
 .. contents:: Table of Contents
     :local:
     :backlinks: top
-    :depth: 2
+    :depth: 3
 
 Overview
 --------

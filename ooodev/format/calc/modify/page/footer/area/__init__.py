@@ -14,7 +14,4 @@ from ooodev.format.inner.modify.calc.page.footer.area.color import InnerColor as
 from ooodev.format.inner.modify.calc.page.footer.area.color import Color as Color
 from ooodev.format.inner.modify.calc.page.footer.area.img import Img as Img
 
-__all__ = [
-    "Color",
-    "Img",
-]
+__all__ = ["Color", "Img"]

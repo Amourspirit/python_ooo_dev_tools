@@ -1,6 +1,7 @@
 # region Imports
 from __future__ import annotations
 from typing import Tuple, cast
+import uno
 from com.sun.star.awt import XBitmap
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -25,6 +26,10 @@ from ....cell_style_base_multi import CellStyleBaseMulti
 class InnerImg(TblImg):
     """
     Class for Style background image.
+
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_background`
 
     .. versionadded:: 0.9.0
     """
@@ -62,6 +67,10 @@ class InnerImg(TblImg):
 class Img(CellStyleBaseMulti):
     """
     Page Style Image
+
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_background`
 
     .. versionadded:: 0.9.0
     """
@@ -101,6 +110,9 @@ class Img(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_header_background`
         """
 
         direct = InnerImg(
