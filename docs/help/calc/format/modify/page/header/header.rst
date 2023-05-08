@@ -148,3 +148,4 @@ Related Topics
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.calc.modify.page.header.Header`
+        - :py:class:`Calc.set_head_foot() <ooodev.office.calc.Calc.set_head_foot>`

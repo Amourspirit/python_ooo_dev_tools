@@ -1530,13 +1530,13 @@
 </node>
 </node>
 <node TEXT="style" LOCALIZED_STYLE_REF="AutomaticLayout.level,3" ID="ID_1363747837" CREATED="1675066888632" MODIFIED="1675069722185">
-<node TEXT="Cell" ID="ID_1246596393" CREATED="1675066927073" MODIFIED="1682196183155">
+<node TEXT="Cell" ID="ID_1246596393" CREATED="1675066927073" MODIFIED="1683498865635">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Page" ID="ID_703636055" CREATED="1675066930609" MODIFIED="1682196183155">
+<node TEXT="Page" ID="ID_703636055" CREATED="1675066930609" MODIFIED="1683554725831">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>

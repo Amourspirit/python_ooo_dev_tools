@@ -7,3 +7,4 @@ Calc Formatting and Style
 
     direct/index
     modify/index
+    style/index
