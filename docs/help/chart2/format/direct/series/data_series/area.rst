@@ -404,4 +404,5 @@ Related Topics
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
+        - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`

@@ -217,4 +217,4 @@ Related Topics
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.general.transparency.Transparency`
-        :py:class:`ooodev.format.chart2.direct.general.transparency.Gradient`
+        - :py:class:`ooodev.format.chart2.direct.general.transparency.Gradient`

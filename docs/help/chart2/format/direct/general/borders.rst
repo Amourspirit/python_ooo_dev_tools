@@ -111,11 +111,11 @@ The results are seen in :numref:`236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c`
     .. _236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1.png
-        :alt: Chart Area Borders Default Dialog Modified
+        :alt: Chart Area Borders Default Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Borders Default Dialog Modified
+        Chart Area Borders Default Dialog
 
 Related Topics
 --------------

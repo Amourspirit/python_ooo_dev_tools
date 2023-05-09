@@ -2107,11 +2107,11 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_1031696297" CREATED="1681812570753" MODIFIED="1682196183159">
-<icon BUILTIN="unchecked"/>
-<node TEXT="LineProperties" ID="ID_1142873175" CREATED="1681812583066" MODIFIED="1682196183159">
+<node TEXT="borders" ID="ID_1031696297" CREATED="1681812570753" MODIFIED="1683664079806">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1142873175" CREATED="1681812583066" MODIFIED="1683664079803">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1682196183159">
