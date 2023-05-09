@@ -1403,6 +1403,9 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_grid_line_properties`
         """
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
@@ -1493,6 +1496,9 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_grid_line_properties`
         """
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
@@ -1526,7 +1532,9 @@ class Chart2:
                 - :doc:`ooodev.format.chart2.direct.general.transparency </src/format/ooodev.format.chart2.direct.general.transparency>`
 
         See Also:
+            - :ref:`help_chart2_format_direct_general_borders`
             - :ref:`help_chart2_format_direct_general_area`
+            - :ref:`help_chart2_format_direct_general_transparency`
 
         .. versionadded:: 0.9.0
         """

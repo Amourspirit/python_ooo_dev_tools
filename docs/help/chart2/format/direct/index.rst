@@ -7,3 +7,4 @@ Direct
     :titlesonly:
 
     general/index
+    grid/index

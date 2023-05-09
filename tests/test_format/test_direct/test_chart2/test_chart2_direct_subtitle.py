@@ -101,7 +101,7 @@ def test_calc_set_styles_subtitle(loader, copy_fix_calc) -> None:
             chart_doc=chart_doc, color=CommonColor.INDIGO, space=3, angle=40, bg_color=CommonColor.LIGHT_SKY_BLUE
         )
         subtitle_border = TitleBorderLineProperties(
-            style=BorderLineKind.CONTINUIOUS, width=0.5, color=CommonColor.BLUE_VIOLET, transparency=15
+            style=BorderLineKind.CONTINUOUS, width=0.5, color=CommonColor.BLUE_VIOLET, transparency=15
         )
         Chart2.style_subtitle(chart_doc=chart_doc, styles=[hatch, subtitle_border])
         subtitle = cast("Title", Chart2.get_subtitle(chart_doc=chart_doc))

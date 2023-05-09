@@ -7,10 +7,43 @@ from ooodev.format.inner.direct.chart2.series.data_series.borders.line_propertie
     LineProperties as SeriesLineProperties,
 )
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props
+from ooodev.utils.color import Color
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.units import UnitObj
 
 
 class LineProperties(SeriesLineProperties):
-    """This class represents the line properties of a chart grid line properties."""
+    """
+    This class represents the line properties of a chart grid line properties.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_grid_line_properties`
+    """
+
+    def __init__(
+        self,
+        style: BorderLineKind = BorderLineKind.CONTINUOUS,
+        color: Color = Color(0),
+        width: float | UnitObj = 0,
+        transparency: int | Intensity = 0,
+    ) -> None:
+        """
+        Constructor.
+
+        Args:
+            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
+            color (Color, optional): Line Color. Defaults to ``Color(0)``.
+            width (float | UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
+            transparency (int | Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_grid_line_properties`
+        """
+        super().__init__(style=style, color=color, width=width, transparency=transparency)
 
     def _set_line_style(self, style: BorderLineKind):
         props = get_preset_series_border_line_props(kind=style)

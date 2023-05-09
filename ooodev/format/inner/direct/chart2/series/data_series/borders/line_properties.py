@@ -24,7 +24,7 @@ class LineProperties(StyleBase):
 
     def __init__(
         self,
-        style: BorderLineKind = BorderLineKind.CONTINUIOUS,
+        style: BorderLineKind = BorderLineKind.CONTINUOUS,
         color: Color = Color(0),
         width: float | UnitObj = 0,
         transparency: int | Intensity = 0,
@@ -33,7 +33,7 @@ class LineProperties(StyleBase):
         Constructor.
 
         Args:
-            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUIOUS``.
+            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
             width (float | UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
             transparency (int | Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.

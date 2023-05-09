@@ -1,7 +1,7 @@
-.. _help_chart2_format_direct_general_borders:
+.. _help_chart2_format_direct_grid_line_properties:
 
-Chart2 Direct General Borders
-=============================
+Chart2 Direct Grid Line Properties
+==================================
 
 .. contents:: Table of Contents
     :local:
@@ -11,37 +11,28 @@ Chart2 Direct General Borders
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.general.borders.LineProperties` class gives the same options as the Chart Area Borders dialog
-as seen in :numref:`236867528-6d4b235a-7239-486b-9c61-63e9a5877e81`.
-
-
-.. cssclass:: screen_shot
-
-    .. _236867528-6d4b235a-7239-486b-9c61-63e9a5877e81:
-
-    .. figure:: https://user-images.githubusercontent.com/4193389/236867528-6d4b235a-7239-486b-9c61-63e9a5877e81.png
-        :alt: Chart Area Borders Default Dialog
-        :figclass: align-center
-        :width: 450px
-
-        Chart Area Borders Default Dialog
+The :py:class:`ooodev.format.chart2.direct.grid.LineProperties` class can be used to set the line properties of a chart grid.
 
 Setup
 -----
 
+General setup for examples.
+
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 22, 23
+        :emphasize-lines: 28,29,30,31
 
         import uno
+        from ooodev.format.chart2.direct.general.area import Color as ChartColor
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
+        from ooodev.format.chart2.direct.grid import BorderLineKind
+        from ooodev.format.chart2.direct.grid import LineProperties as GridLineProperties
         from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
+        from ooodev.office.chart2 import Chart2, AxisKind
         from ooodev.utils.color import StandardColor
         from ooodev.utils.gui import GUI
         from ooodev.utils.lo import Lo
-
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
@@ -55,13 +46,18 @@ Setup
                 Calc.goto_cell(cell_name="A1", doc=doc)
                 chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
 
-                chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=2.2)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_bdr_line])
+                chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_DARK2, width=0.7)
+                chart_color = ChartColor(color=StandardColor.DEFAULT_BLUE)
+                Chart2.style_background(chart_doc=chart_doc, styles=[chart_color, chart_bdr_line])
+
+                grid_style = GridLineProperties(
+                    style=BorderLineKind.CONTINUOUS, color=StandardColor.RED, width=0.5
+                )
+                Chart2.style_grid(chart_doc=chart_doc, axis_val=AxisKind.Y, styles=[grid_style])
 
                 Lo.delay(1_000)
                 Lo.close_doc(doc)
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -75,16 +71,19 @@ Setup
 Setting Line Properties
 -----------------------
 
-The :py:class:`~ooodev.format.chart2.direct.general.borders.LineProperties` class is used to set the border line properties.
+Before setting chart formatting is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
-Before setting the border line properties the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+The formatting is applied to the grid with a call to :py:meth:`Chart2.set_grid_lines() <ooodev.office.chart2.Chart2.set_grid_lines>`.
 
 .. tabs::
 
     .. code-tab:: python
 
-        chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=2.2)
-        Chart2.style_background(chart_doc=chart_doc, styles=[chart_bdr_line])
+        grid_style = GridLineProperties(
+            style=BorderLineKind.CONTINUOUS, color=StandardColor.RED, width=0.5
+        )
+        Chart2.style_grid(chart_doc=chart_doc, axis_val=AxisKind.Y, styles=[grid_style])
+
 
     .. only:: html
 
@@ -92,14 +91,14 @@ Before setting the border line properties the chart is seen in :numref:`23687476
 
             .. group-tab:: None
 
-The results are seen in :numref:`236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c` and :numref:`236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1`
+The results are seen in :numref:`236972816-9fe26f3f-2cc1-499b-9411-0fe8e8334140` and :numref:`236972933-34a2d2f1-4f10-499e-a598-ced11bef0d5a`
 
 
 .. cssclass:: screen_shot
 
-    .. _236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c:
+    .. _236972816-9fe26f3f-2cc1-499b-9411-0fe8e8334140:
 
-    .. figure:: https://user-images.githubusercontent.com/4193389/236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/236972816-9fe26f3f-2cc1-499b-9411-0fe8e8334140.png
         :alt: Chart with border set to green
         :figclass: align-center
         :width: 450px
@@ -108,9 +107,9 @@ The results are seen in :numref:`236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c`
 
 .. cssclass:: screen_shot
 
-    .. _236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1:
+    .. _236972933-34a2d2f1-4f10-499e-a598-ced11bef0d5a:
 
-    .. figure:: https://user-images.githubusercontent.com/4193389/236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1.png
+    .. figure:: https://user-images.githubusercontent.com/4193389/236972933-34a2d2f1-4f10-499e-a598-ced11bef0d5a.png
         :alt: Chart Area Borders Default Dialog Modified
         :figclass: align-center
         :width: 450px
@@ -127,8 +126,10 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
+        - :ref:`help_chart2_format_direct_general_area`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
+        - :py:meth:`Chart2.set_grid_lines() <ooodev.office.chart2.Chart2.set_grid_lines>`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`

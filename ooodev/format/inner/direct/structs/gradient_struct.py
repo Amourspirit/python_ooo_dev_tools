@@ -343,7 +343,6 @@ class GradientStruct(StructBase):
         grad_color = cast(ColorRange, args.pop("grad_color"))
         grad_intensity = cast(IntensityRange, args.pop("grad_intensity"))
 
-        args.update(kwargs)
         return cls(
             style=style,
             step_count=step_count,
