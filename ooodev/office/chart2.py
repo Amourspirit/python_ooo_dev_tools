@@ -1557,10 +1557,12 @@ class Chart2:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
 
+        See Also:
+            - :ref:`help_chart2_format_direct_wall_floor_area`
+
         .. versionadded:: 0.9.0
         """
-        wall = chart_doc.getFirstDiagram().getWall()
-        if wall:
+        if wall := chart_doc.getFirstDiagram().getWall():
             for style in styles:
                 style.apply(wall)
 
@@ -1579,10 +1581,12 @@ class Chart2:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
 
+        See Also:
+            - :ref:`help_chart2_format_direct_wall_floor_area`
+
         .. versionadded:: 0.9.4
         """
-        floor = chart_doc.getFirstDiagram().getFloor()
-        if floor:
+        if floor := chart_doc.getFirstDiagram().getFloor():
             for style in styles:
                 style.apply(floor)
 
@@ -1596,7 +1600,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document.
             series_idx (int): Series Index.
-            idx (int): Index to extract from the datapoints data.
+            idx (int): Index to extract from the data points data.
                 If ``idx=-1`` then the last data point is styled.
             styles (Sequence[StyleObj]): One or more styles to apply chart data point.
 

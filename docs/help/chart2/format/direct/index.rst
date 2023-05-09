@@ -8,3 +8,4 @@ Direct
 
     general/index
     grid/index
+    wall_floor/index

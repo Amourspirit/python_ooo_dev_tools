@@ -68,12 +68,15 @@ General setup for examples.
 
             .. group-tab:: None
 
-Setting Line Properties
------------------------
+Setting Grid Line Properties
+----------------------------
 
 Before setting chart formatting is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
-The formatting is applied to the grid with a call to :py:meth:`Chart2.set_grid_lines() <ooodev.office.chart2.Chart2.set_grid_lines>`.
+The formatting is applied to the y-axis (``axis_val=AxisKind.Y``) of the grid with a call to :py:meth:`Chart2.set_grid_lines() <ooodev.office.chart2.Chart2.set_grid_lines>`.
+The :py:class:`~ooodev.format.inner.preset.preset_border_line.BorderLineKind` enum is used to select the line style.
+The :py:class:`~ooodev.format.inner.preset.preset_color.StandardColor` enum is used to select the line color.
+The line width is set to ``0.5`` millimeters.
 
 .. tabs::
 
