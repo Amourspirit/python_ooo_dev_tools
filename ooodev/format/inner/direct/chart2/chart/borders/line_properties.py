@@ -1,13 +1,11 @@
 from __future__ import annotations
 import uno
 from typing import Any, Tuple, cast, overload
-from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_border_line_props
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitConvert, UnitMM
 from ooodev.units import UnitObj
-from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
@@ -117,8 +115,7 @@ class LineProperties(StyleBase):
 
     @prop_color.setter
     def prop_color(self, value: Color):
-        if value < 0:
-            value = 0
+        value = max(value, 0)
         self._set("LineColor", value)
 
     @property
@@ -133,8 +130,7 @@ class LineProperties(StyleBase):
             val = value.get_value_mm100()
         except AttributeError:
             val = UnitConvert.convert_mm_mm100(value)
-        if val < 0:
-            val = 0
+        val = max(val, 0)
         self._set("LineWidth", val)
 
     @property

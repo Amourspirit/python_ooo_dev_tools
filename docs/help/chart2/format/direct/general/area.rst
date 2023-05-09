@@ -34,7 +34,7 @@ General setup for examples.
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc(Path.cwd() / "tmp" / "col_chart.ods")
+                doc = Calc.open_doc("col_chart.ods")
                 GUI.set_visible(True, doc)
                 Lo.delay(500)
                 Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
@@ -475,6 +475,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
+        - :ref:`help_chart2_format_direct_wall_floor_area`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`

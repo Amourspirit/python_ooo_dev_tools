@@ -2290,8 +2290,8 @@
 </node>
 </node>
 </node>
-<node TEXT="wall" ID="ID_144711709" CREATED="1681813228473" MODIFIED="1682196183162">
-<icon BUILTIN="unchecked"/>
+<node TEXT="wall" ID="ID_144711709" CREATED="1681813228473" MODIFIED="1683647058647">
+<icon BUILTIN="checked"/>
 <node TEXT="area" ID="ID_1618650196" CREATED="1675065864419" MODIFIED="1683642209613">
 <icon BUILTIN="checked"/>
 <node TEXT="Color" ID="ID_691951747" CREATED="1675065870452" MODIFIED="1683642209616">
@@ -2315,27 +2315,27 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_738566088" CREATED="1681812570753" MODIFIED="1682196183163">
-<icon BUILTIN="unchecked"/>
-<node TEXT="LineProperties" ID="ID_518031705" CREATED="1681812583066" MODIFIED="1682196183163">
+<node TEXT="borders" ID="ID_738566088" CREATED="1681812570753" MODIFIED="1683643823269">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_518031705" CREATED="1681812583066" MODIFIED="1683643823272">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="transparency" ID="ID_526272009" CREATED="1681812690769" MODIFIED="1682196183163">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Gradient" ID="ID_1247487925" CREATED="1681812697529" MODIFIED="1682196183163">
+<node TEXT="transparency" ID="ID_526272009" CREATED="1681812690769" MODIFIED="1683647053478">
+<icon BUILTIN="checked"/>
+<node TEXT="Gradient" ID="ID_1247487925" CREATED="1681812697529" MODIFIED="1683647053475">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Transparency" ID="ID_1477325580" CREATED="1681812703841" MODIFIED="1682196183163">
+<node TEXT="Transparency" ID="ID_1477325580" CREATED="1681812703841" MODIFIED="1683647053478">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>
-<node TEXT="floor" ID="ID_750243005" CREATED="1681814792417" MODIFIED="1683642203497">
-<icon BUILTIN="unchecked"/>
+<node TEXT="floor" ID="ID_750243005" CREATED="1681814792417" MODIFIED="1683647063000">
+<icon BUILTIN="checked"/>
 <richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>

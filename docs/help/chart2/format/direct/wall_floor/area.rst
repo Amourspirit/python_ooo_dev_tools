@@ -24,7 +24,7 @@ General setup for examples.
     .. code-tab:: python
 
         import uno
-        from ooodev.format.chart2.direct.wall.area import Color as ChartColor
+        from ooodev.format.chart2.direct.wall.area import Color as WallColor
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
         from ooodev.office.calc import Calc
         from ooodev.office.chart2 import Chart2
@@ -47,7 +47,7 @@ General setup for examples.
                 chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_DARK1, width=1.0)
                 Chart2.style_background(chart_doc=chart_doc, styles=[chart_bdr_line])
 
-                wall_color = ChartColor(color=StandardColor.DEFAULT_BLUE)
+                wall_color = WallColor(color=StandardColor.DEFAULT_BLUE)
                 Chart2.style_wall(chart_doc=chart_doc, styles=[wall_color])
 
                 Lo.delay(1_000)
@@ -79,11 +79,11 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Color as ChartColor
+        from ooodev.format.chart2.direct.wall.area import Color as WallColor
         # ... other code
 
         # wall color
-        wall_color = ChartColor(color=StandardColor.DEFAULT_BLUE)
+        wall_color = WallColor(color=StandardColor.DEFAULT_BLUE)
         Chart2.style_wall(chart_doc=chart_doc, styles=[wall_color])
 
     .. only:: html
@@ -99,7 +99,7 @@ Apply to floor.
     .. code-tab:: python
 
         # floor color
-        floor_color = ChartColor(color=StandardColor.BLUE_DARK1)
+        floor_color = WallColor(color=StandardColor.BLUE_DARK1)
         Chart2.style_floor(chart_doc=chart_doc, styles=[floor_color])
 
     .. only:: html
@@ -154,10 +154,10 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Gradient as ChartGradient, PresetGradientKind
+        from ooodev.format.chart2.direct.wall.area import Gradient as WallGradient, PresetGradientKind
 
         # ... other code
-        wall_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.DEEP_OCEAN)
+        wall_grad = WallGradient.from_preset(chart_doc, PresetGradientKind.DEEP_OCEAN)
         Chart2.style_wall(chart_doc=chart_doc, styles=[wall_grad])
 
     .. only:: html
@@ -172,7 +172,7 @@ Apply to Floor.
 
     .. code-tab:: python
 
-        floor_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.MIDNIGHT)
+        floor_grad = WallGradient.from_preset(chart_doc, PresetGradientKind.MIDNIGHT)
         Chart2.style_floor(chart_doc=chart_doc, styles=[floor_grad])
 
     .. only:: html
@@ -221,11 +221,11 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Gradient as ChartGradient, GradientStyle
+        from ooodev.format.chart2.direct.wall.area import Gradient as WallGradient, GradientStyle
         from ooodev.format.chart2.direct.wall.area import ColorRange
 
         # ... other code
-        wall_grad = ChartGradient(
+        wall_grad = WallGradient(
             chart_doc=chart_doc,
             style=GradientStyle.LINEAR,
             angle=45,
@@ -245,7 +245,7 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_grad = ChartGradient(
+        floor_grad = WallGradient(
             chart_doc=chart_doc,
             style=GradientStyle.LINEAR,
             angle=-10,
@@ -277,7 +277,7 @@ The results are seen in :numref:`1790240c-ce82-4e42-b115-1a41bff70db7`
 Image
 -----
 
-The :py:class:`ooodev.format.chart2.wall.general.area.Img` class is used to set the background image of a Chart.
+The :py:class:`ooodev.format.chart2.direct.wall.area.Img` class is used to set the background image of the wall and floor.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -293,10 +293,10 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Img as ChartImg, PresetImageKind
+        from ooodev.format.chart2.direct.wall.area import Img as WallImg, PresetImageKind
         # ... other code
 
-        wall_img = ChartImg.from_preset(chart_doc, PresetImageKind.ICE_LIGHT)
+        wall_img = WallImg.from_preset(chart_doc, PresetImageKind.ICE_LIGHT)
         Chart2.style_wall(chart_doc=chart_doc, styles=[wall_img])
 
     .. only:: html
@@ -311,7 +311,7 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_img = ChartImg.from_preset(chart_doc, PresetImageKind.MARBLE)
+        floor_img = WallImg.from_preset(chart_doc, PresetImageKind.MARBLE)
         Chart2.style_floor(chart_doc=chart_doc, styles=[floor_img])
 
     .. only:: html
@@ -348,7 +348,7 @@ The results are seen in :numref:`17e4da98-46c0-47a0-84e0-6d5ba1f13a57` and :numr
 Pattern
 -------
 
-The :py:class:`ooodev.format.chart2.wall.general.area.Pattern` class is used to set the background pattern of a Chart.
+The :py:class:`ooodev.format.chart2.direct.wall.area.Pattern` class is used to set the background pattern of a Chart.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -364,10 +364,10 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Pattern as ChartPattern, PresetPatternKind
+        from ooodev.format.chart2.direct.wall.area import Pattern as WallPattern, PresetPatternKind
         # ... other code
 
-        wall_pattern = ChartPattern.from_preset(chart_doc, PresetPatternKind.ZIG_ZAG)
+        wall_pattern = WallPattern.from_preset(chart_doc, PresetPatternKind.ZIG_ZAG)
         Chart2.style_wall(chart_doc=chart_doc, styles=[wall_pattern])
 
 
@@ -383,7 +383,7 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_pattern = ChartPattern.from_preset(chart_doc, PresetPatternKind.PERCENT_20)
+        floor_pattern = WallPattern.from_preset(chart_doc, PresetPatternKind.PERCENT_20)
         Chart2.style_floor(chart_doc=chart_doc, styles=[floor_pattern])
 
 
@@ -438,10 +438,10 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Hatch as ChartHatch, PresetHatchKind
+        from ooodev.format.chart2.direct.wall.area import Hatch as WallHatch, PresetHatchKind
         # ... other code
 
-        wall_hatch = ChartHatch.from_preset(chart_doc, PresetHatchKind.BLUE_45_DEGREES_CROSSED)
+        wall_hatch = WallHatch.from_preset(chart_doc, PresetHatchKind.BLUE_45_DEGREES_CROSSED)
         Chart2.style_wall(chart_doc=chart_doc, styles=[wall_hatch])
 
     .. only:: html
@@ -456,7 +456,7 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_hatch = ChartHatch.from_preset(chart_doc, PresetHatchKind.BLUE_45_DEGREES)
+        floor_hatch = WallHatch.from_preset(chart_doc, PresetHatchKind.BLUE_45_DEGREES)
         Chart2.style_floor(chart_doc=chart_doc, styles=[floor_hatch])
 
     .. only:: html
@@ -501,6 +501,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
+        - :ref:`help_chart2_format_direct_general_area`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`

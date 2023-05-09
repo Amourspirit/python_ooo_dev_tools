@@ -127,8 +127,10 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
+        - :ref:`help_chart2_format_direct_wall_floor_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
+        - :py:class:`ooodev.format.chart2.direct.general.borders.LineProperties`
