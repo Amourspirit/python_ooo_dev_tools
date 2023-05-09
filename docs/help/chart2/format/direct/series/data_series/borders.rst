@@ -47,7 +47,7 @@ Setup
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc(Path.cwd() / "tmp" / "col_chart.ods")
+                doc = Calc.open_doc("col_chart.ods")
                 GUI.set_visible(True, doc)
                 Lo.delay(500)
                 Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
@@ -82,7 +82,7 @@ Setting Line Properties
 
 The :py:class:`~ooodev.format.chart2.direct.general.borders.LineProperties` class is used to set the data series border line properties.
 
-Before setting the border line properties the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
 .. tabs::
 

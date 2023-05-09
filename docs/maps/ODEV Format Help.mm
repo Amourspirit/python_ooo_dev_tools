@@ -2167,15 +2167,15 @@
 </html></richcontent>
 </node>
 </node>
-<node TEXT="transparency" ID="ID_374121481" CREATED="1681812690769" MODIFIED="1682196183160">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Gradient" ID="ID_37464580" CREATED="1681812697529" MODIFIED="1682196183160">
+<node TEXT="transparency" ID="ID_374121481" CREATED="1681812690769" MODIFIED="1683666055972">
+<icon BUILTIN="checked"/>
+<node TEXT="Gradient" ID="ID_37464580" CREATED="1681812697529" MODIFIED="1683666055970">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Transparency" ID="ID_1483147463" CREATED="1681812703841" MODIFIED="1682196183161">
+<node TEXT="Transparency" ID="ID_1483147463" CREATED="1681812703841" MODIFIED="1683666055972">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>

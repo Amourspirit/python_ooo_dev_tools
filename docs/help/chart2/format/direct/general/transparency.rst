@@ -115,11 +115,11 @@ The results can bee seen in :numref:`236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27
     .. _236953723-96edce28-2476-4abb-af3d-223723c4fd1a:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236953723-96edce28-2476-4abb-af3d-223723c4fd1a.png
-        :alt: Chart Area Transparency Dialog Modified
+        :alt: Chart Area Transparency Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Transparency Dialog Modified
+        Chart Area Transparency Dialog
 
 Getting the transparency from a Chart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -193,11 +193,11 @@ The results can bee seen in :numref:`236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131
     .. _236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84.png
-        :alt: Chart Area Transparency Dialog Modified
+        :alt: Chart Area Transparency Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Transparency Dialog Modified
+        Chart Area Transparency Dialog
 
 Related Topics
 --------------

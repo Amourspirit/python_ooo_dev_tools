@@ -20,7 +20,13 @@ class _LinePropertiesProps(NamedTuple):
 
 
 class LineProperties(StyleBase):
-    """This class represents the line properties of a chart data series borders line properties."""
+    """
+    This class represents the line properties of a chart data series borders line properties.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_borders`
+    """
 
     def __init__(
         self,
@@ -35,11 +41,14 @@ class LineProperties(StyleBase):
         Args:
             style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
-            width (float | UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
-            transparency (int | Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
+            width (float, UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
+            transparency (int, Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_borders`
         """
         super().__init__()
         self._prop_style = style

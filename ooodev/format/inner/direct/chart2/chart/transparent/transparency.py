@@ -31,7 +31,7 @@ class Transparency(WriteTransparency):
 
             - :ref:`help_chart2_format_direct_general_transparency`
         """
-        super().__init__(value)
+        super().__init__(value=value)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
