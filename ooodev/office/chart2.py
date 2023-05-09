@@ -1641,6 +1641,9 @@ class Chart2:
                 - :doc:`ooodev.format.chart2.direct.series.data_series </src/format/ooodev.format.chart2.direct.series.data_series>`
                 - :doc:`ooodev.format.chart2.direct.series.data_labels </src/format/ooodev.format.chart2.direct.series.data_labels>`
 
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series`
+
         .. versionadded:: 0.9.4
         """
         if idx < 0:

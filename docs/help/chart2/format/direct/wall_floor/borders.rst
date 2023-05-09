@@ -154,6 +154,7 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`part05`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

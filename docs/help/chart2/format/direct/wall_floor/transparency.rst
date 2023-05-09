@@ -115,7 +115,7 @@ The results can bee seen in :numref:`eceee99c-fa50-400f-a55c-343ee6966e6d` and :
 
 .. cssclass:: screen_shot
 
-    .. _236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27c11:
+    .. _eceee99c-fa50-400f-a55c-343ee6966e6d:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/eceee99c-fa50-400f-a55c-343ee6966e6d
         :alt: Chart with transparency applied to wall and floor
@@ -188,7 +188,7 @@ The results can bee seen in :numref:`689bf589-8de2-49a0-b260-9f94244aacde` and :
 
 .. cssclass:: screen_shot
 
-    .. _236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131baf:
+    .. _689bf589-8de2-49a0-b260-9f94244aacde:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/689bf589-8de2-49a0-b260-9f94244aacde
         :alt: Chart with wall and floor gradient transparency
@@ -199,7 +199,7 @@ The results can bee seen in :numref:`689bf589-8de2-49a0-b260-9f94244aacde` and :
 
 .. cssclass:: screen_shot
 
-    .. _236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84:
+    .. _0f8ac32f-e2d2-41c1-b0ad-a3ead8371ee9:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/0f8ac32f-e2d2-41c1-b0ad-a3ead8371ee9
         :alt: Chart Wall Gradient Transparency Dialog Modified
@@ -215,6 +215,7 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`part05`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

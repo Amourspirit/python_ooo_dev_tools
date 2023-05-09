@@ -86,7 +86,6 @@ class Gradient(FillGradient):
             None:
 
         See Also:
-
             - :ref:`help_chart2_format_direct_general_area`
         """
         self._chart_doc = chart_doc

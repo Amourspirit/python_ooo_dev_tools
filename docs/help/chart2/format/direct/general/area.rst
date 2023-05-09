@@ -111,11 +111,11 @@ The results are seen in :numref:`236884919-28fb1be6-5cbd-4bdf-95e1-5cacb75a65ef`
     .. _236885274-e11f0494-063b-4035-a2d1-0482a10470c4:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236885274-e11f0494-063b-4035-a2d1-0482a10470c4.png
-        :alt: Chart Area Color Dialog Modified
+        :alt: Chart Area Color Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Color Dialog Modified
+        Chart Area Color Dialog
 
 Getting the color From a Chart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -187,11 +187,11 @@ The results are seen in :numref:`236910715-fbeaae07-9b55-49e9-8e75-318bf28c72ab`
     .. _236910913-c636dd2b-29b2-47d4-9cb6-d38b7afd75f1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236910913-c636dd2b-29b2-47d4-9cb6-d38b7afd75f1.png
-        :alt: Chart Area Gradient Dialog Modified
+        :alt: Chart Area Gradient Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Gradient Dialog Modified
+        Chart Area Gradient Dialog
 
 
 Apply a custom Gradient
@@ -215,7 +215,7 @@ Apply the preset gradient to a Chart
         chart_grad = ChartGradient(
             chart_doc=chart_doc,
             style=GradientStyle.LINEAR,
-            angle=Angle(45),
+            angle=45,
             grad_color=ColorRange(StandardColor.GREEN_DARK3, StandardColor.GREEN_LIGHT2),
         )
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
@@ -310,11 +310,11 @@ The results are seen in :numref:`236939959-33e79374-1504-473e-b2ef-66fa9d9c452d`
     .. _236940111-f9621402-a9bb-42c4-99bf-e557704344e0:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236940111-f9621402-a9bb-42c4-99bf-e557704344e0.png
-        :alt: Chart Area Image Dialog Modified
+        :alt: Chart Area Image Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Image Dialog Modified
+        Chart Area Image Dialog
 
 Getting the image from a Chart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -384,11 +384,11 @@ The results are seen in :numref:`236945010-c70afbc5-3916-4c0c-b67f-2c5a8824e0ae`
     .. _236945582-b028fc8f-7d40-4384-872d-ca4cdeda1f9e:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236945582-b028fc8f-7d40-4384-872d-ca4cdeda1f9e.png
-        :alt: Chart Area Pattern Dialog Modified
+        :alt: Chart Area Pattern Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Pattern Dialog Modified
+        Chart Area Pattern Dialog
 
 Getting the pattern from a Chart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -458,11 +458,11 @@ The results are seen in :numref:`236948256-33f0c206-6d96-40ee-a8ec-e78e3a59cc91`
     .. _236948325-4c411e94-2b41-4542-9c4b-185edcc8f828:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236948325-4c411e94-2b41-4542-9c4b-185edcc8f828.png
-        :alt: Chart Area Hatch Dialog Modified
+        :alt: Chart Area Hatch Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Hatch Dialog Modified
+        Chart Area Hatch Dialog
 
 
 Related Topics
@@ -472,6 +472,7 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`part05`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
