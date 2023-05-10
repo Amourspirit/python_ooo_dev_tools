@@ -8,8 +8,8 @@ Calc Direct Cell Protection
     :backlinks: none
     :depth: 2
 
-Introduction
-------------
+Overview
+--------
 
 The :py:class:`~.calc.Calc` class has several methods related to cell protection and sheet protection.
 

@@ -1,23 +1,27 @@
 from __future__ import annotations
 import uno
 from typing import Any, Tuple, cast, overload
-from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_border_line_props
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitConvert, UnitMM
 from ooodev.units import UnitObj
-from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
 
 class LineProperties(StyleBase):
-    """This class represents the line properties of a chart borders line properties."""
+    """
+    This class represents the line properties of a chart borders line properties.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_general_borders`
+    """
 
     def __init__(
         self,
-        style: BorderLineKind = BorderLineKind.CONTINUIOUS,
+        style: BorderLineKind = BorderLineKind.CONTINUOUS,
         color: Color = Color(0),
         width: float | UnitObj = 0,
         transparency: int | Intensity = 0,
@@ -26,13 +30,16 @@ class LineProperties(StyleBase):
         Constructor.
 
         Args:
-            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUIOUS``.
+            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
             width (float | UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
             transparency (int | Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_general_borders`
         """
         super().__init__()
         self._prop_style = style
@@ -108,8 +115,7 @@ class LineProperties(StyleBase):
 
     @prop_color.setter
     def prop_color(self, value: Color):
-        if value < 0:
-            value = 0
+        value = max(value, 0)
         self._set("LineColor", value)
 
     @property
@@ -124,8 +130,7 @@ class LineProperties(StyleBase):
             val = value.get_value_mm100()
         except AttributeError:
             val = UnitConvert.convert_mm_mm100(value)
-        if val < 0:
-            val = 0
+        val = max(val, 0)
         self._set("LineWidth", val)
 
     @property

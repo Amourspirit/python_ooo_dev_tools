@@ -42,7 +42,7 @@ def test_calc_chart_axis_grid(loader, copy_fix_calc) -> None:
         Calc.goto_cell(cell_name="A1", doc=doc)
         chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
 
-        grid_style = GridLineProperties(style=BorderLineKind.CONTINUIOUS, color=StandardColor.RED, width=0.5)
+        grid_style = GridLineProperties(style=BorderLineKind.CONTINUOUS, color=StandardColor.RED, width=0.5)
 
         props = Chart2.set_grid_lines(chart_doc=chart_doc, axis_val=AxisKind.Y, idx=0, styles=[grid_style])
 

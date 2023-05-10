@@ -14,10 +14,26 @@ class Page(StyleName):
     """
     Page Style.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_style_page`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: CalcStylePageKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (CalcStylePageKind | str, optional): Style name. Defaults to ``Default``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_style_page`
+        """
         if name == "":
             name = Page.default.prop_name
         super().__init__(name=name)

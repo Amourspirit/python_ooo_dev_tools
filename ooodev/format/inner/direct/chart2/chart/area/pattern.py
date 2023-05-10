@@ -20,6 +20,10 @@ class Pattern(FillPattern):
     """
     Class for Chart Area Fill Pattern.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_general_area`
+
     .. versionadded:: 0.9.4
     """
 
@@ -46,6 +50,12 @@ class Pattern(FillPattern):
             tile (bool, optional): Specified if bitmap is tiled. Defaults to ``True``.
             stretch (bool, optional): Specifies if bitmap is stretched. Defaults to ``False``.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_general_area`
         """
         self._chart_doc = chart_doc
         super().__init__(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)

@@ -117,7 +117,7 @@ def test_calc_set_styles_title(loader, copy_fix_calc) -> None:
             chart_doc=chart_doc, color=CommonColor.INDIGO, space=3, angle=40, bg_color=CommonColor.LIGHT_SKY_BLUE
         )
         title_border = TitleBorderLineProperties(
-            style=BorderLineKind.CONTINUIOUS, width=0.7, color=CommonColor.BLUE_VIOLET, transparency=15
+            style=BorderLineKind.CONTINUOUS, width=0.7, color=CommonColor.BLUE_VIOLET, transparency=15
         )
         orient = TitleOrientation(angle=0, vertical=False)
         Chart2.style_title(chart_doc=chart_doc, styles=[hatch, title_border, orient])

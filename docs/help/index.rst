@@ -7,5 +7,6 @@ Help Documentation
     :glob:
 
     calc/index
+    chart2/index
     writer/index
     common/index
