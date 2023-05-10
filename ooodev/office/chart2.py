@@ -1403,6 +1403,9 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_grid_line_properties`
         """
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
@@ -1493,6 +1496,9 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.grid </src/format/ooodev.format.chart2.direct.grid>`.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_grid_line_properties`
         """
         try:
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
@@ -1525,6 +1531,11 @@ class Chart2:
                 - :doc:`ooodev.format.chart2.direct.general.borders </src/format/ooodev.format.chart2.direct.general.borders>`
                 - :doc:`ooodev.format.chart2.direct.general.transparency </src/format/ooodev.format.chart2.direct.general.transparency>`
 
+        See Also:
+            - :ref:`help_chart2_format_direct_general_borders`
+            - :ref:`help_chart2_format_direct_general_area`
+            - :ref:`help_chart2_format_direct_general_transparency`
+
         .. versionadded:: 0.9.0
         """
         bg_ps = chart_doc.getPageBackground()
@@ -1546,10 +1557,12 @@ class Chart2:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
 
+        See Also:
+            - :ref:`help_chart2_format_direct_wall_floor_area`
+
         .. versionadded:: 0.9.0
         """
-        wall = chart_doc.getFirstDiagram().getWall()
-        if wall:
+        if wall := chart_doc.getFirstDiagram().getWall():
             for style in styles:
                 style.apply(wall)
 
@@ -1568,10 +1581,12 @@ class Chart2:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.wall </src/format/ooodev.format.chart2.direct.wall>` subpackages.
 
+        See Also:
+            - :ref:`help_chart2_format_direct_wall_floor_area`
+
         .. versionadded:: 0.9.4
         """
-        floor = chart_doc.getFirstDiagram().getFloor()
-        if floor:
+        if floor := chart_doc.getFirstDiagram().getFloor():
             for style in styles:
                 style.apply(floor)
 
@@ -1585,7 +1600,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document.
             series_idx (int): Series Index.
-            idx (int): Index to extract from the datapoints data.
+            idx (int): Index to extract from the data points data.
                 If ``idx=-1`` then the last data point is styled.
             styles (Sequence[StyleObj]): One or more styles to apply chart data point.
 
@@ -1625,6 +1640,9 @@ class Chart2:
 
                 - :doc:`ooodev.format.chart2.direct.series.data_series </src/format/ooodev.format.chart2.direct.series.data_series>`
                 - :doc:`ooodev.format.chart2.direct.series.data_labels </src/format/ooodev.format.chart2.direct.series.data_labels>`
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series`
 
         .. versionadded:: 0.9.4
         """

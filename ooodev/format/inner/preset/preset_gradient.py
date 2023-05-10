@@ -6,6 +6,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils.data_type.offset import Offset
 from ooodev.utils.data_type.color_range import ColorRange
 from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.kind import kind_helper
 
 
 class PresetGradientKind(Enum):
@@ -64,6 +65,57 @@ class PresetGradientKind(Enum):
             p_name = PresetGradientKind._preset_names
 
         return name in p_name
+
+    @staticmethod
+    def from_str(s: str) -> PresetGradientKind:
+        """
+        Gets an ``PresetGradientKind`` instance from string.
+
+        Args:
+            s (str): String that represents the name of an enum Name.
+                ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
+                ``hyphen-case``, ``normal case``.
+
+        Raises:
+            ValueError: If input string is empty.
+            AttributeError: If unable to get ``PresetGradientKind`` instance.
+
+        Returns:
+            PresetGradientKind: Enum instance.
+        """
+        s = s.lower()
+        if s == "pastel bouquet":
+            return PresetGradientKind.PASTEL_BOUQUET
+        elif s == "pastel dream":
+            return PresetGradientKind.PASTEL_DREAM
+        elif s == "blue touch":
+            return PresetGradientKind.BLUE_TOUCH
+        elif s == "blank with gray":
+            return PresetGradientKind.BLANK_GRAY
+        elif s == "spotted gray":
+            return PresetGradientKind.SPOTTED_GRAY
+        elif s == "london mist":
+            return PresetGradientKind.LONDON_MIST
+        elif s == "teal to blue":
+            return PresetGradientKind.TEAL_BLUE
+        elif s == "midnight":
+            return PresetGradientKind.MIDNIGHT
+        elif s == "deep ocean":
+            return PresetGradientKind.DEEP_OCEAN
+        elif s == "submarine":
+            return PresetGradientKind.SUBMARINE
+        elif s == "green grass":
+            return PresetGradientKind.GREEN_GRASS
+        elif s == "neon light":
+            return PresetGradientKind.NEON_LIGHT
+        elif s == "sunshine":
+            return PresetGradientKind.SUNSHINE
+        elif s == "present":
+            return PresetGradientKind.PRESENT
+        elif s == "mahogany":
+            return PresetGradientKind.MAHOGANY
+        else:
+            return kind_helper.enum_from_string(s, PresetGradientKind)
 
 
 def pastel_bouquet() -> Dict[str, Any]:

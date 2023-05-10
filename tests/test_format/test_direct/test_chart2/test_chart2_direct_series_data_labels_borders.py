@@ -46,7 +46,7 @@ def test_calc_chart_data_series_labels_borders(loader, copy_fix_calc) -> None:
         Calc.goto_cell(cell_name="A1", doc=doc)
         chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
 
-        line_props = BorderLineProperties(style=BorderLineKind.CONTINUIOUS, color=StandardColor.RED, width=0.5)
+        line_props = BorderLineProperties(style=BorderLineKind.CONTINUOUS, color=StandardColor.RED, width=0.5)
 
         Chart2.style_data_series(chart_doc=chart_doc, idx=0, styles=[line_props])
 

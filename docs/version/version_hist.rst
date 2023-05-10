@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.10.2
+==============
+
+Fix for Chart2 Gradient Fill class.
+
 Version 0.10.1
 ==============
 

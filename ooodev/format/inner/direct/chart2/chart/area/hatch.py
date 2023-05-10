@@ -26,6 +26,10 @@ class Hatch(StyleMulti):
     """
     Class for Chart Area Fill Hatch.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_general_area`
+
     .. versionadded:: 0.9.4
     """
 
@@ -48,10 +52,13 @@ class Hatch(StyleMulti):
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
             space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
-            bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
+            bg_color(Color, optional): Specifies the background Color. Set this ``-1`` (default) for no background color.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_general_area`
         """
         super().__init__()
 
@@ -59,9 +66,7 @@ class Hatch(StyleMulti):
         self._style = style
         self._color = color
 
-        if self._color < 0:
-            self._color = 0
-
+        self._color = max(self._color, 0)
         try:
             self._space = space.get_value_mm100()
         except AttributeError:
