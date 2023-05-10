@@ -22,7 +22,13 @@ class MissingValueKind(IntEnum):
 
 
 class Plot(PlotSimple):
-    """Chart Data Series Plot Options"""
+    """
+    Chart Data Series Plot Options
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
+    """
 
     def __init__(
         self,
@@ -41,6 +47,9 @@ class Plot(PlotSimple):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         super().__init__(chart_doc=chart_doc, hidden_cell_values=hidden_cell_values)
         if missing_values is not None:

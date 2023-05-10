@@ -2082,8 +2082,8 @@
 </node>
 <node TEXT="series" ID="ID_325684732" CREATED="1681812935409" MODIFIED="1682196183159">
 <icon BUILTIN="unchecked"/>
-<node TEXT="data_series" ID="ID_1828713434" CREATED="1681931207572" MODIFIED="1682196183159">
-<icon BUILTIN="unchecked"/>
+<node TEXT="data_series" ID="ID_1828713434" CREATED="1681931207572" MODIFIED="1683737541412">
+<icon BUILTIN="checked"/>
 <node TEXT="area" ID="ID_53139705" CREATED="1675065864419" MODIFIED="1683660634125">
 <icon BUILTIN="checked"/>
 <node TEXT="Color" ID="ID_1134255286" CREATED="1675065870452" MODIFIED="1683660634127">
@@ -2114,8 +2114,8 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1682196183159">
-<icon BUILTIN="unchecked"/>
+<node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1683737528267">
+<icon BUILTIN="checked"/>
 <richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
@@ -2127,33 +2127,41 @@
     </p>
   </body>
 </html></richcontent>
-<node TEXT="AlignSeries" ID="ID_485145973" CREATED="1681921659089" MODIFIED="1682196183160">
+<node TEXT="AlignSeries" ID="ID_485145973" CREATED="1681921659089" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="LegendEntry" ID="ID_1616067693" CREATED="1681921668314" MODIFIED="1682196183160">
+<node TEXT="LegendEntry" ID="ID_1616067693" CREATED="1681921668314" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Orientation" ID="ID_1108640920" CREATED="1681921643265" MODIFIED="1682196183160">
+<node TEXT="Plot" ID="ID_1288825919" CREATED="1681921676321" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Plot" ID="ID_1288825919" CREATED="1681921676321" MODIFIED="1682196183160">
+<node TEXT="PlotSimple" ID="ID_1648305024" CREATED="1681921689201" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      For Pie and Donut charts.
+    </p>
+  </body>
+</html>
+</richcontent>
 </node>
-<node TEXT="PlotSimple" ID="ID_1648305024" CREATED="1681921689201" MODIFIED="1682196183160">
+<node TEXT="Settings" ID="ID_699012602" CREATED="1681921695073" MODIFIED="1683737528271">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Settings" ID="ID_699012602" CREATED="1681921695073" MODIFIED="1682196183160">
+<node TEXT="Orientation" ID="ID_1638430240" CREATED="1681921700697" MODIFIED="1683737528271">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="Orientation" ID="ID_1638430240" CREATED="1681921700697" MODIFIED="1682196183160">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 <richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
