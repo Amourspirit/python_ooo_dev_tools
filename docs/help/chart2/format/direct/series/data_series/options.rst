@@ -67,7 +67,7 @@ General setup for examples.
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc(Path.cwd() / "tmp" / "pie_chart.ods")
+                doc = Calc.open_doc("pie_chart.ods")
                 GUI.set_visible(True, doc)
                 Lo.delay(500)
                 Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)

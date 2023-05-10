@@ -1,7 +1,7 @@
-.. _help_chart2_format_direct_series_series_borders:
+.. _help_chart2_format_direct_series_labels_font_only:
 
-Chart2 Direct Series Data Series Borders
-========================================
+Chart2 Direct Series Data Labels Font Only
+==========================================
 
 .. contents:: Table of Contents
     :local:
@@ -11,32 +11,23 @@ Chart2 Direct Series Data Series Borders
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.series.data_series.borders.LineProperties` class gives the same options as the Chart Data Series Borders dialog
-as seen in :numref:`c4cc6299-704d-40be-8a8b-68daff8c5eef`.
+The :py:class:`ooodev.format.chart2.direct.series.data_labels.font.FontOnly` class gives you the similar options for data labels
+as :numref:`f4bbd523-c10f-483c-a9c8-3d370dd19433` Font Dialog, but without the dialog.
 
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data series borders of a Chart.
-
-.. cssclass:: screen_shot
-
-    .. _c4cc6299-704d-40be-8a8b-68daff8c5eef:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/c4cc6299-704d-40be-8a8b-68daff8c5eef
-        :alt: Chart Data Series Borders Default Dialog
-        :figclass: align-center
-        :width: 450px
-
-        Chart Data Series Borders Default Dialog
+Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data labels font of a Chart.
 
 Setup
 -----
 
+General setup for this example.
+
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 27, 28
+        :emphasize-lines: 27,28
 
         import uno
-        from ooodev.format.chart2.direct.series.data_series.borders import LineProperties as SeriesLineProperties
+        from ooodev.format.chart2.direct.series.data_labels.font import FontOnly as LblFontOnly
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
         from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient, PresetGradientKind
         from ooodev.office.calc import Calc
@@ -61,8 +52,8 @@ Setup
                 chart_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.TEAL_BLUE)
                 Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
 
-                data_series_border = SeriesLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
-                Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_border])
+                data_lbl_font = LblFontOnly(name="Lucida Calligraphy", size=14, font_style="italic")
+                Chart2.style_data_series(chart_doc=chart_doc, styles=[data_lbl_font])
 
                 Lo.delay(1_000)
                 Lo.close_doc(doc)
@@ -71,25 +62,23 @@ Setup
         if __name__ == "__main__":
             SystemExit(main())
 
+
     .. only:: html
 
         .. cssclass:: tab-none
 
             .. group-tab:: None
 
-Setting Line Properties
------------------------
 
-The :py:class:`~ooodev.format.chart2.direct.general.borders.LineProperties` class is used to set the data series border line properties.
-
-Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+Apply the font to Data Labels
+-----------------------------
 
 .. tabs::
 
     .. code-tab:: python
 
-        data_series_border = SeriesLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_border])
+        data_lbl_font = LblFontOnly(name="Lucida Calligraphy", size=14, font_style="italic")
+        Chart2.style_data_series(chart_doc=chart_doc, styles=[data_lbl_font])
 
     .. only:: html
 
@@ -97,30 +86,30 @@ Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971
 
             .. group-tab:: None
 
-The results are seen in :numref:`f462c874-3624-4eaa-898f-ea79e4b98bc4` and :numref:`cc6bba18-1fcd-4188-a0c5-14e8dbed654d`
+Running the above code will produce the following output shown in :numref:`f4bbd523-c10f-483c-a9c8-3d370dd19433` and :numref:`2641c2d6-6efb-4c59-a747-13f7e0c3ed5c`.
+
+.. cssclass:: screen_shot
+
+    .. _f4bbd523-c10f-483c-a9c8-3d370dd19433:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f4bbd523-c10f-483c-a9c8-3d370dd19433
+        :alt: Chart with Data Labels Font set
+        :figclass: align-center
+        :width: 450px
+
+        Chart with Data Labels Font set
 
 
 .. cssclass:: screen_shot
 
-    .. _f462c874-3624-4eaa-898f-ea79e4b98bc4:
+    .. _2641c2d6-6efb-4c59-a747-13f7e0c3ed5c:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f462c874-3624-4eaa-898f-ea79e4b98bc4
-        :alt: Chart with data series border set
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/2641c2d6-6efb-4c59-a747-13f7e0c3ed5c
+        :alt: Chart Data Labels Dialog Font
         :figclass: align-center
         :width: 450px
 
-        Chart with data series border set
-
-.. cssclass:: screen_shot
-
-    .. _cc6bba18-1fcd-4188-a0c5-14e8dbed654d:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/cc6bba18-1fcd-4188-a0c5-14e8dbed654d
-        :alt: Chart Data Series Borders Default Dialog
-        :figclass: align-center
-        :width: 450px
-
-        Chart Data Series Borders Default Dialog
+        Chart Data Labels Dialog Font
 
 Related Topics
 --------------
@@ -133,12 +122,11 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
-        - :ref:`help_chart2_format_direct_wall_floor_area`
-        - :ref:`help_chart2_format_direct_series_labels_borders`
+        - :ref:`help_chart2_format_direct_series_labels_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.borders.LineProperties`
+        - :py:class:`ooodev.format.chart2.direct.series.data_labels.font.FontOnly`

@@ -2152,8 +2152,7 @@
       For Pie and Donut charts.
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 </node>
 <node TEXT="Settings" ID="ID_699012602" CREATED="1681921695073" MODIFIED="1683737528271">
 <icon BUILTIN="links/code/file_Python"/>
@@ -2212,22 +2211,22 @@
 <icon BUILTIN="unchecked"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_138277937" CREATED="1681812570753" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="LineProperties" ID="ID_1377741107" CREATED="1681812583066" MODIFIED="1682196183161">
+<node TEXT="borders" ID="ID_138277937" CREATED="1681812570753" MODIFIED="1683747527185">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1377741107" CREATED="1681812583066" MODIFIED="1683747527182">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="font" ID="ID_800546028" CREATED="1681812800265" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="FontEffects" ID="ID_1810266221" CREATED="1681812817473" MODIFIED="1682196183161">
+<node TEXT="font" ID="ID_800546028" CREATED="1681812800265" MODIFIED="1683751727705">
+<icon BUILTIN="checked"/>
+<node TEXT="FontEffects" ID="ID_1810266221" CREATED="1681812817473" MODIFIED="1683751727702">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontOnly" ID="ID_1178392321" CREATED="1681812822481" MODIFIED="1682196183161">
+<node TEXT="FontOnly" ID="ID_1178392321" CREATED="1681812822481" MODIFIED="1683750966035">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>

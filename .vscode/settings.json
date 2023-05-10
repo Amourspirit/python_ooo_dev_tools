@@ -223,6 +223,7 @@
         "PYPI",
         "QUERYBOX",
         "RDPARTYFILTER",
+        "SMALLCAPS",
         "soffice",
         "sphinxcontrib",
         "spreadsheetview",

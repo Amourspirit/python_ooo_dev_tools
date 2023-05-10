@@ -1,7 +1,7 @@
 .. _help_calc_format_direct_cell_font_effects:
 
-Calc Direct Cell FontEffects
-============================
+Calc Direct Cell Font Effects
+=============================
 
 .. contents:: Table of Contents
     :local:

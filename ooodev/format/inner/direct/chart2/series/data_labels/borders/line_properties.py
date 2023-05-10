@@ -1,7 +1,7 @@
 from __future__ import annotations
+import contextlib
 from typing import Any
 import uno
-from com.sun.star.beans import XPropertySet
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 
 from ooodev.format.inner.direct.chart2.series.data_series.borders.line_properties import (
@@ -9,12 +9,44 @@ from ooodev.format.inner.direct.chart2.series.data_series.borders.line_propertie
     _LinePropertiesProps,
 )
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props
+from ooodev.units import UnitObj
 from ooodev.utils import props as mProps
-from ooodev.utils import lo as mLo
+from ooodev.utils.color import Color
+from ooodev.utils.data_type.intensity import Intensity
 
 
 class LineProperties(DataSeriesLineProperties):
-    """This class represents the line properties of a chart data series labels borders line properties."""
+    """
+    This class represents the line properties of a chart data series labels borders line properties.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_labels`
+    """
+
+    def __init__(
+        self,
+        style: BorderLineKind = BorderLineKind.CONTINUOUS,
+        color: Color = Color(0),
+        width: float | UnitObj = 0,
+        transparency: int | Intensity = 0,
+    ) -> None:
+        """
+        Constructor.
+
+        Args:
+            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
+            color (Color, optional): Line Color. Defaults to ``Color(0)``.
+            width (float, UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
+            transparency (int, Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_labels`
+        """
+        super().__init__(style=style, color=color, width=width, transparency=transparency)
 
     # region overrides
     def _set_line_style(self, style: BorderLineKind):
@@ -35,7 +67,7 @@ class LineProperties(DataSeriesLineProperties):
             # Even though the property is set, the border appears on the chart data point lablel.
             # Opening the data point properties dialog shows the border line is not set to anything.
             # However, because it display correctly, we will ignore the exception.
-            try:
+            with contextlib.suppress(Exception):
                 if event_args.event_data.getImplementationName() == "com.sun.star.comp.chart.DataPoint":
                     event_args.handled = True
                     # attempting to set via invoke does not work, setPropertyValue is missing due to bad implementation.
@@ -45,8 +77,6 @@ class LineProperties(DataSeriesLineProperties):
                     # props = mLo.Lo.qi(XPropertySet, event_args.event_data)
                     # uno.invoke(props, "setPropertyValue", ("LabelBorderDash", uany))
                     # event_args.handled = True
-            except Exception:
-                pass
         return super().on_property_set_error(source, event_args)
 
     # endregion event methods

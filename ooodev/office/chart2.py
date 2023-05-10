@@ -1643,6 +1643,7 @@ class Chart2:
 
         See Also:
             - :ref:`help_chart2_format_direct_series_series`
+            - :ref:`help_chart2_format_direct_series_labels`
 
         .. versionadded:: 0.9.4
         """
