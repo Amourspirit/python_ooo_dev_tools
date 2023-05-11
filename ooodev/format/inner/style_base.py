@@ -1386,7 +1386,6 @@ class StyleName(StyleBase):
 
     # region Init
     def __init__(self, name: Any, **kwargs) -> None:
-        # sourcery skip: dict-assign-update-to-union
         """
         Constructor
 
@@ -1396,6 +1395,7 @@ class StyleName(StyleBase):
         Raises:
             ValueError: If Name is ``None`` or empty string.
         """
+        # sourcery skip: dict-assign-update-to-union
         if not name and name != "":
             raise ValueError("Name is required.")
         init_vars = {self._get_property_name(): str(name)}

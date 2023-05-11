@@ -77,10 +77,11 @@ Example:
 
 - `#` with overline, for parts
 - `*` with overline, for chapters
-- `=`, for sections
-- `-`, for subsections
-- `^`, for subsubsections
-- `“`, for paragraphs
+- `=` for sections
+- `-` for subsections
+- `^` for sub-subsections
+- `“` for paragraphs
+- `~` Next Level 
 
 See Also:
 <https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html#headings>

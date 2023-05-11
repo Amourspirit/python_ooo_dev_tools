@@ -5,7 +5,7 @@ Chart2 Direct Series Data Labels
 
 .. contents:: Table of Contents
     :local:
-    :backlinks: none
+    :backlinks: top
     :depth: 2
 
 Overview
@@ -14,7 +14,8 @@ Overview
 The Data Labels tab of the Chart Data Labels dialog has many options as see in :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d`.
 The :py:mod:`ooodev.format.chart2.direct.series.data_labels.data_labels` module has various classes to set the same options.
 
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data labels options of a Chart.
+Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data labels options of a Chart.
 
 .. cssclass:: screen_shot
 
@@ -52,7 +53,7 @@ General setup for these examples.
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc(Path.cwd() / "tmp" / "col_chart.ods")
+                doc = Calc.open_doc("col_chart.ods")
                 GUI.set_visible(True, doc)
                 Lo.delay(500)
                 Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
@@ -103,6 +104,11 @@ Text Attribs
 
 The :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.TextAttribs` class is used to set the various boolean options in the ``Text Attributes`` section of the Chart Data Labels dialog as seen in :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d`.
 
+Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+
+Style Data Series
+~~~~~~~~~~~~~~~~~
+
 .. tabs::
 
     .. code-tab:: python
@@ -131,11 +137,11 @@ Running the above code will produce the following output shown in :numref:`ffd26
     .. _ffd2621d-fb71-4a00-ad8a-5d0760ed11bf:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/ffd2621d-fb71-4a00-ad8a-5d0760ed11bf
-        :alt: Chart Format Number Dialog
+        :alt: Chart with formatting applied to data series
         :figclass: align-center
         :width: 450px
 
-        Chart Format Number Dialog
+        Chart with formatting applied to data series
 
 .. cssclass:: screen_shot
 
@@ -148,6 +154,33 @@ Running the above code will produce the following output shown in :numref:`ffd26
 
         Chart Format Number Dialog
 
+Style Data Point
+~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=2, styles=[text_attribs])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Running the above code will produce the following output shown in :numref:`959761b7-4336-4712-8e86-a48897606925`.
+
+.. cssclass:: screen_shot
+
+    .. _959761b7-4336-4712-8e86-a48897606925:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/959761b7-4336-4712-8e86-a48897606925
+        :alt: Chart with Text Attributes applied to data point
+        :figclass: align-center
+        :width: 450px
+
+        Chart with Text Attributes applied to data point
 
 Number Format
 """""""""""""
@@ -160,6 +193,11 @@ The ``NumberFormatIndexEnum`` enum contains the values in |num_fmt_index|_ for e
 To ensure that the effects of :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.NumberFormat` are
 visible the :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.TextAttribs` class is used to
 turn on ``Value as Number`` of the dialog seen in :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d`.
+
+Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+
+Style Data Series
+~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
@@ -191,11 +229,11 @@ Running the above code will produce the following output shown in :numref:`3d1f5
     .. _3d1f582b-558d-4da5-8996-bebb6b6781d0:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3d1f582b-558d-4da5-8996-bebb6b6781d0
-        :alt: Chart Format Number Dialog
+        :alt: Chart with Text Attributes applied to data series
         :figclass: align-center
         :width: 450px
 
-        Chart Format Number Dialog
+        Chart with Text Attributes applied to data series
 
 .. cssclass:: screen_shot
 
@@ -208,6 +246,37 @@ Running the above code will produce the following output shown in :numref:`3d1f5
 
         Chart Format Number Dialog
 
+Style Data Point
+~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(
+            chart_doc=chart_doc, series_idx=0, idx=1, styles=[text_attribs, format_number]
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Running the above code will produce the following output shown in :numref:`157ea466-4511-4f84-90e9-52b76390c1fb`.
+
+.. cssclass:: screen_shot
+
+    .. _157ea466-4511-4f84-90e9-52b76390c1fb:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/157ea466-4511-4f84-90e9-52b76390c1fb
+        :alt: Chart with Text Attributes applied to data point
+        :figclass: align-center
+        :width: 450px
+
+        Chart with Text Attributes applied to data point
+
 Percentage Format
 """""""""""""""""
 
@@ -219,6 +288,11 @@ The ``NumberFormatIndexEnum`` enum contains the values in |num_fmt_index|_ for e
 To ensure that the effects of :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.PercentFormat` are
 visible the :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.TextAttribs` class is used to
 turn on ``Value as Percentage`` of the dialog seen in :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d`.
+
+Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+
+Style Data Series
+~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
@@ -242,37 +316,73 @@ turn on ``Value as Percentage`` of the dialog seen in :numref:`0c7d3398-34f5-4da
 
             .. group-tab:: None
 
-Running the above code will produce the following output shown in :numref:`3d1f582b-558d-4da5-8996-bebb6b6781d0` and :numref:`ca21f3f1-e1b1-4bab-bb36-f52c966e00af`.
+Running the above code will produce the following output shown in :numref:`d8b1329b-d94e-457d-91d1-87d5f14aefa2` and :numref:`45c0d0a1-4c9e-4b84-ad9b-c92bb4a2658e`.
 
 .. cssclass:: screen_shot
 
-    .. _3d1f582b-558d-4da5-8996-bebb6b6781d0:
+    .. _d8b1329b-d94e-457d-91d1-87d5f14aefa2:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3d1f582b-558d-4da5-8996-bebb6b6781d0
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/d8b1329b-d94e-457d-91d1-87d5f14aefa2
+        :alt: Chart with formatting applied to data series
+        :figclass: align-center
+        :width: 450px
+
+        Chart with formatting applied to data series
+
+.. cssclass:: screen_shot
+
+    .. _45c0d0a1-4c9e-4b84-ad9b-c92bb4a2658e:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/45c0d0a1-4c9e-4b84-ad9b-c92bb4a2658e
         :alt: Chart Format Number Dialog
         :figclass: align-center
         :width: 450px
 
         Chart Format Number Dialog
 
+Style Data Point
+~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(
+            chart_doc=chart_doc, series_idx=0, idx=3, styles=[text_attribs, format_percent]
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Running the above code will produce the following output shown in :numref:`cc247b93-54e7-4f51-a5c7-c80c759eaad8`.
+
 .. cssclass:: screen_shot
 
-    .. _ca21f3f1-e1b1-4bab-bb36-f52c966e00af:
+    .. _cc247b93-54e7-4f51-a5c7-c80c759eaad8:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/ca21f3f1-e1b1-4bab-bb36-f52c966e00af
-        :alt: Chart Format Number Dialog
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/cc247b93-54e7-4f51-a5c7-c80c759eaad8
+        :alt: Chart with formatting applied to data point
         :figclass: align-center
         :width: 450px
 
-        Chart Format Number Dialog
+        Chart with formatting applied to data point
 
 Attribute Options
 -----------------
 
 The :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.AttribOptions` class is used to set the Options data labels.
-This class is used to set the values seen in the ``Attribute Options`` section of :numref:`ca21f3f1-e1b1-4bab-bb36-f52c966e00af`.
+This class is used to set the values seen in the ``Attribute Options`` section of :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d`.
 
 The :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.PlacementKind` enum is used to look up the placement.
+
+Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+
+Style Data Series
+"""""""""""""""""
 
 .. tabs::
 
@@ -298,11 +408,11 @@ Running the above code will produce the following output shown in :numref:`115e2
     .. _115e2eaa-876c-4048-b30a-06e5be91b240:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/115e2eaa-876c-4048-b30a-06e5be91b240
-        :alt: Chart Format Number Dialog
+        :alt: Chart with formatting applied to data series
         :figclass: align-center
         :width: 450px
 
-        Chart Format Number Dialog
+        Chart with formatting applied to data series
 
 .. cssclass:: screen_shot
 
@@ -315,15 +425,46 @@ Running the above code will produce the following output shown in :numref:`115e2
 
         Chart Format Number Dialog
 
+Style Data Point
+"""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=-1, styles=[attrib_opt])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Running the above code will produce the following output shown in :numref:`4968c491-5e45-449e-800f-01549bc009bd`.
+
+.. cssclass:: screen_shot
+
+    .. _4968c491-5e45-449e-800f-01549bc009bd:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/4968c491-5e45-449e-800f-01549bc009bd
+        :alt: Chart with formatting applied to data point
+        :figclass: align-center
+        :width: 450px
+
+        Chart with formatting applied to data point
+
 Rotate Text
 -----------
 
 The :py:class:`~ooodev.format.chart2.direct.series.data_labels.data_labels.Orientation` class is used to set the rotation of data labels.
-This class is used to set the values seen in the ``Rotate Text`` section of :numref:`ca21f3f1-e1b1-4bab-bb36-f52c966e00af`.
+This class is used to set the values seen in the ``Rotate Text`` section of :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d`.
 
 The :py:class:`~ooodev.format.inner.direct.chart2.title.alignment.direction.DirectionModeKind` enum is used to look up the text direction.
 
-direction
+Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+
+Style Data Series
+"""""""""""""""""
 
 .. tabs::
 
@@ -349,11 +490,11 @@ Running the above code will produce the following output shown in :numref:`d57bc
     .. _d57bc634-0f1e-4acc-9d02-848809635021:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/d57bc634-0f1e-4acc-9d02-848809635021
-        :alt: Chart Format Number Dialog
+        :alt: Chart with formatting applied to data series
         :figclass: align-center
         :width: 450px
 
-        Chart Format Number Dialog
+        Chart with formatting applied to data series
 
 .. cssclass:: screen_shot
 
@@ -365,6 +506,35 @@ Running the above code will produce the following output shown in :numref:`d57bc
         :width: 450px
 
         Chart Format Number Dialog
+
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=2, styles=[rotation])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Running the above code will produce the following output shown in :numref:`35ff95c1-f3b3-48d6-848f-8c2935faa9b3`
+
+.. cssclass:: screen_shot
+
+    .. _35ff95c1-f3b3-48d6-848f-8c2935faa9b3:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/35ff95c1-f3b3-48d6-848f-8c2935faa9b3
+        :alt: Chart with formatting applied to data point
+        :figclass: align-center
+        :width: 450px
+
+        Chart with formatting applied to data point
+
 
 Related Topics
 --------------
@@ -384,6 +554,7 @@ Related Topics
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.series.data_labels.data_labels.TextAttribs`
         - :py:class:`ooodev.format.chart2.direct.series.data_labels.data_labels.NumberFormat`
