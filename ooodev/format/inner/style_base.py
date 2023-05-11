@@ -1386,6 +1386,7 @@ class StyleName(StyleBase):
 
     # region Init
     def __init__(self, name: Any, **kwargs) -> None:
+        # sourcery skip: dict-assign-update-to-union
         """
         Constructor
 
@@ -1397,7 +1398,8 @@ class StyleName(StyleBase):
         """
         if not name and name != "":
             raise ValueError("Name is required.")
-        init_vars = {self._get_property_name(): str(name)} | kwargs
+        init_vars = {self._get_property_name(): str(name)}
+        init_vars.update(kwargs)
         super().__init__(**init_vars)
 
     # endregion Init
