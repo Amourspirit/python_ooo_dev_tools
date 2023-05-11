@@ -43,8 +43,8 @@ class MetaStyle(type):
     def __call__(cls, *args, **kw):
         custom_args = kw.pop("_cattribs", None)
         obj = cls.__new__(cls, *args, **kw)
-        # uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
-        # object.__setattr__(obj, "_uniquie_id", uniquie_id)
+        # unique_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        # object.__setattr__(obj, "_unique_id", unique_id)
         _events = Events(source=obj)
         object.__setattr__(obj, "_internal_events", _events)
 
@@ -83,7 +83,7 @@ class StyleBase(metaclass=MetaStyle):
             if key.startswith("__"):
                 # internal and not consider a property
                 continue
-            if not value is None:
+            if value is not None:
                 self._dv[key] = value
         super().__init__()
         self._set_style_internal_events()
@@ -190,7 +190,7 @@ class StyleBase(metaclass=MetaStyle):
 
     def _get(self, key: str) -> Any:
         """Gets the property value"""
-        return self._get_properties().get(key, None)
+        return self._get_properties().get(key)
 
     def _set(self, key: str, val: Any) -> bool:
         """Sets a property value"""
@@ -280,14 +280,11 @@ class StyleBase(metaclass=MetaStyle):
             bool: ``True`` if service is supported; Otherwise, ``Fasle``.
         """
         services = self._supported_services()
-        for s in service:
-            if s in services:
-                return True
-        return False
+        return any(s in services for s in service)
 
     def _supported_services(self) -> Tuple[str, ...]:
         """
-        Gets a tuple of suported services for the style such as (``com.sun.star.style.ParagraphProperties``,)
+        Gets a tuple of supported services for the style such as (``com.sun.star.style.ParagraphProperties``,)
 
         Raises:
             NotImplementedError: If not implemented in child class
@@ -319,8 +316,7 @@ class StyleBase(metaclass=MetaStyle):
         Returns:
             bool: ``True`` if has a required service; Otherwise, ``False``
         """
-        rs = self._supported_services()
-        if rs:
+        if rs := self._supported_services():
             return mInfo.Info.support_service(obj, *rs)
         # if style class has no required services then return True
         return True
@@ -334,10 +330,7 @@ class StyleBase(metaclass=MetaStyle):
         """
         rs = self._supported_services()
         rs_len = len(rs)
-        if method_name:
-            name = f".{method_name}()"
-        else:
-            name = ""
+        name = f".{method_name}()" if method_name else ""
         if rs_len == 0:
             mLo.Lo.print(f"{self.__class__.__name__}{name}: object is not valid.")
             return
@@ -349,8 +342,8 @@ class StyleBase(metaclass=MetaStyle):
 
     # region Internal Methods
     def _props_set(self, obj: object, **kwargs: Any) -> None:
-        # set properties. Can be overriden in child classes
-        # may be usful to wrap in try statements in child classes
+        # set properties. Can be overridden in child classes
+        # may be useful to wrap in try statements in child classes
         try:
             mProps.Props.set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -383,9 +376,7 @@ class StyleBase(metaclass=MetaStyle):
         cargs = CancelEventArgs(self)
         cargs.event_data = cattribs
         self._events.trigger("internal_cattribs", cargs)
-        if cargs.cancel:
-            return None
-        return cargs.event_data
+        return None if cargs.cancel else cargs.event_data
 
     # endregion _props methods
 
@@ -432,7 +423,7 @@ class StyleBase(metaclass=MetaStyle):
         else:
             dv = self._get_properties()
         if len(dv) > 0:
-            if validate is False or self._is_valid_obj(obj):
+            if not validate or self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
                 cargs.event_data = self
                 self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
@@ -458,9 +449,7 @@ class StyleBase(metaclass=MetaStyle):
         """
         # see: setPropertyValues([in] sequence< com::sun::star::beans::PropertyValue > aProps)
         # https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1beans_1_1XPropertyAccess.html#a5ac97dfa6d796f4c794e2350e9130692
-        if len(self._dv) == 0:
-            return ()
-        return mProps.Props.make_props(**self._dv)
+        return () if len(self._dv) == 0 else mProps.Props.make_props(**self._dv)
 
     # region Copy()
     @overload
@@ -482,13 +471,11 @@ class StyleBase(metaclass=MetaStyle):
                 mEx.CancelEventError(cargs)
         nu = self.__class__(**kwargs)
         nu._prop_parent = self._prop_parent
-        # depending on python 3.7 builtin dictionary ordering
-        dv = self._get_properties()
-        if dv:
-            # it is possible that that a new instance will have different property names thne the current instance.
+        if dv := self._get_properties():
+            # it is possible that that a new instance will have different property names then the current instance.
             # This can happen because this class inherits from MetaStyle.
             # if ne contains a _props attribute (tuple of prop names) then use them to remap keys.
-            # For instance a key of BorderLength may become ParaBoderLength.
+            # For instance a key of BorderLength may become ParaBorderLength.
 
             key_map = None
             p_len = len(nu._props)
@@ -753,13 +740,12 @@ class StyleBase(metaclass=MetaStyle):
         raise NotImplementedError
 
     def _container_get_inst(self) -> XNameContainer:
-        container = mLo.Lo.create_instance_msf(
+        return mLo.Lo.create_instance_msf(
             XNameContainer,
             service_name=self._container_get_service_name(),
             msf=self._container_get_msf(),
             raise_err=True,
         )
-        return container
 
     def _container_get_msf(self) -> XMultiServiceFactory | None:
         return None
@@ -805,9 +791,7 @@ class StyleBase(metaclass=MetaStyle):
             raise ValueError("Name is empty value. Expected a string name.")
         if nc is None:
             nc = self._container_get_inst()
-        if nc.hasByName(name):
-            return nc.getByName(name)
-        return None
+        return nc.getByName(name) if nc.hasByName(name) else None
 
     # endregion Named Container Methods
 
@@ -821,9 +805,7 @@ class StyleBase(metaclass=MetaStyle):
     @property
     def prop_has_backup(self) -> bool:
         """Gets If instance has backup data set."""
-        if self._dv_bak is None:
-            return False
-        return len(self._dv_bak) > 0
+        return False if self._dv_bak is None else len(self._dv_bak) > 0
 
     @property
     def prop_format_kind(self) -> FormatKind:
@@ -1038,10 +1020,10 @@ class StyleMulti(StyleBase):
         Args:
             key (str): key store style info
             style (StyleBase): style
-            attrs: Exapandable list attributes that style sets.
+            attrs: Expandable list attributes that style sets.
                 The values added here are added when get_attrs() method is called.
                 This is used for backup and restore in Write Module.
-            kwargs: Expandalble key value args to that are to be passed to style when ``apply_style()`` is called.
+            kwargs: Expandable key value args to that are to be passed to style when ``apply_style()`` is called.
         """
         kvargs = KeyValCancelArgs("_set_style", key=key, value=style)
         self._events.trigger(FormatNamedEvent.MULTI_STYLE_SETTING, kvargs)
@@ -1085,9 +1067,7 @@ class StyleMulti(StyleBase):
 
     def _get_style_inst(self, key: str) -> StyleBase | None:
         style = self._get_style(key)
-        if style is None:
-            return None
-        return style.style
+        return None if style is None else style.style
 
     def _has_style(self, key: str) -> bool:
         return key in self._get_multi_styles()
@@ -1171,8 +1151,7 @@ class StyleMulti(StyleBase):
         props = self._get_properties()
         attrs = set(props.keys())
         if self._all_attributes:
-            styles = self._get_multi_styles()
-            if styles:
+            if styles := self._get_multi_styles():
                 for _, info in styles.items():
                     _, args = info
                     if args:
@@ -1227,9 +1206,7 @@ class StyleMulti(StyleBase):
                 break
         if result:
             return True
-        if self._dv_bak is None:
-            return False
-        return len(self._dv_bak) > 0
+        return False if self._dv_bak is None else len(self._dv_bak) > 0
 
     # endregion Properties
 
@@ -1265,10 +1242,8 @@ class StyleModifyMulti(StyleMulti):
     def _is_valid_obj(self, obj: object) -> bool:
         if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.style.XStyle"):
             return self._is_obj_service(obj)
-        else:
-            valid = self._is_obj_service(obj)
-            if valid:
-                return True
+        if valid := self._is_obj_service(obj):
+            return True
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
@@ -1422,8 +1397,7 @@ class StyleName(StyleBase):
         """
         if not name and name != "":
             raise ValueError("Name is required.")
-        init_vars = {self._get_property_name(): str(name)}
-        init_vars.update(kwargs)
+        init_vars = {self._get_property_name(): str(name)} | kwargs
         super().__init__(**init_vars)
 
     # endregion Init
@@ -1438,10 +1412,9 @@ class StyleName(StyleBase):
 
         .. versionadded:: 0.9.2
         """
-        props = mInfo.Info.get_style_props(
+        return mInfo.Info.get_style_props(
             doc=mLo.Lo.this_component, family_style_name=self._get_family_style_name(), prop_set_nm=self.prop_name
         )
-        return props
 
     # endregion methods
 

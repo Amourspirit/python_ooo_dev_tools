@@ -21,7 +21,7 @@ class LineProperties(DataSeriesLineProperties):
 
     .. seealso::
 
-        - :ref:`help_chart2_format_direct_series_labels`
+        - :ref:`help_chart2_format_direct_series_labels_borders`
     """
 
     def __init__(
@@ -44,7 +44,7 @@ class LineProperties(DataSeriesLineProperties):
             None:
 
         See Also:
-            - :ref:`help_chart2_format_direct_series_labels`
+            - :ref:`help_chart2_format_direct_series_labels_borders`
         """
         super().__init__(style=style, color=color, width=width, transparency=transparency)
 

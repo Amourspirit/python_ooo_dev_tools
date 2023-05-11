@@ -2186,29 +2186,29 @@
 </node>
 </node>
 </node>
-<node TEXT="data_labels" ID="ID_1369009468" CREATED="1681945027399" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="data_labels" ID="ID_1033990878" CREATED="1681945034638" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="AttribOptions" ID="ID_189408235" CREATED="1681945051566" MODIFIED="1682196183161">
+<node TEXT="data_labels" ID="ID_1369009468" CREATED="1681945027399" MODIFIED="1683836062277">
+<icon BUILTIN="checked"/>
+<node TEXT="data_labels" ID="ID_1033990878" CREATED="1681945034638" MODIFIED="1683836055011">
+<icon BUILTIN="checked"/>
+<node TEXT="AttribOptions" ID="ID_189408235" CREATED="1681945051566" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="NumberFormat" ID="ID_1897538878" CREATED="1681945054646" MODIFIED="1682196183161">
+<node TEXT="NumberFormat" ID="ID_1897538878" CREATED="1681945054646" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Orientation" ID="ID_566788292" CREATED="1681945060734" MODIFIED="1682196183161">
+<node TEXT="Orientation" ID="ID_566788292" CREATED="1681945060734" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="PercentFormat" ID="ID_223178391" CREATED="1681945072614" MODIFIED="1682196183161">
+<node TEXT="PercentFormat" ID="ID_223178391" CREATED="1681945072614" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="TextAttribs" ID="ID_1047434092" CREATED="1681945078318" MODIFIED="1682196183161">
+<node TEXT="TextAttribs" ID="ID_1047434092" CREATED="1681945078318" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="borders" ID="ID_138277937" CREATED="1681812570753" MODIFIED="1683747527185">

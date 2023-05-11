@@ -73,6 +73,8 @@ Setup
 Setting the Numbers format
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The ``NumberFormatIndexEnum`` contains the values in |num_fmt_index|_ for easy lookup.
+
 .. tabs::
 
     .. code-tab:: python
@@ -245,9 +247,15 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_cell_numbers`
-        - `API NumberFormat <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1NumberFormat.html>`__
-        - `API NumberFormatIndex <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1i18n_1_1NumberFormatIndex.html>`__
+        - |num_fmt|_
+        - |num_fmt_index|_
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
         - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`
+
+.. |num_fmt| replace:: API NumberFormat
+.. _num_fmt: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1NumberFormat.html
+
+.. |num_fmt_index| replace:: API NumberFormatIndex
+.. _num_fmt_index: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1i18n_1_1NumberFormatIndex.html

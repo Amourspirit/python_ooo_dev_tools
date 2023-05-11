@@ -122,14 +122,14 @@ class Borders(StyleMulti):
         super().__init__(**init_vals)
         if border_table.prop_has_attribs:
             self._set_style("border_table", border_table, *border_table.get_attrs())
-        if not padding_fmt is None:
+        if padding_fmt is not None:
             self._set_style("padding", padding_fmt, *padding_fmt.get_attrs())
 
-        if not shadow_fmt is None:
+        if shadow_fmt is not None:
             self._set_style("shadow", shadow_fmt)
-        if not diag_dn is None:
+        if diag_dn is not None:
             self._set_style("diag_dn", diag_dn)
-        if not diag_up is None:
+        if diag_up is not None:
             self._set_style("diag_up", diag_up)
 
     # endregion init
@@ -214,14 +214,6 @@ class Borders(StyleMulti):
         super().apply(obj, **kwargs)
 
     # endregion apply()
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     # endregion Overrides
 

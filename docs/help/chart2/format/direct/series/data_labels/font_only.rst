@@ -73,6 +73,8 @@ General setup for this example.
 Apply the font to Data Labels
 -----------------------------
 
+Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
+
 .. tabs::
 
     .. code-tab:: python
