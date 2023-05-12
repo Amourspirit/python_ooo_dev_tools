@@ -5,15 +5,18 @@ Chart2 Direct Series Data Series Transparency
 
 .. contents:: Table of Contents
     :local:
-    :backlinks: none
-    :depth: 2
+    :backlinks: top
+    :depth: 3
 
 Overview
 --------
 
-Classes in the :py:mod:`ooodev.format.chart2.direct.series.data_series.transparency` module can be used to set the data series transparency of a chart.
+Classes in the :py:mod:`ooodev.format.chart2.direct.series.data_series.transparency` module contains classes that are used to set the data series transparency of a chart.
 
 Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data series transparency of a Chart.
+
+Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data series transparency of a Chart.
 
 Setup
 -----
@@ -77,6 +80,9 @@ Setting Transparency
 
 The :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Transparency` class can be used to set the data series transparency of a chart.
 
+Style Data Series
+"""""""""""""""""
+
 .. tabs::
 
     .. code-tab:: python
@@ -117,6 +123,38 @@ The results can bee seen in :numref:`1c71f71a-ea08-4d47-abbb-55738998a182` and :
 
         Chart Data Series Area Transparency Dialog
 
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(
+            chart_doc=chart_doc, series_idx=0, idx=-1, styles=[data_series_transparency]
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results can bee seen in :numref:`7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae`.
+
+.. cssclass:: screen_shot
+
+    .. _7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae
+        :alt: Chart with data point transparency set
+        :figclass: align-center
+        :width: 450px
+
+        Chart with data point transparency set
+
+
 Gradient Transparency
 ---------------------
 
@@ -126,6 +164,9 @@ Setting Gradient
 ^^^^^^^^^^^^^^^^
 
 The :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Gradient` class can be used to set the data series gradient transparency of a chart.
+
+Style Data Series
+"""""""""""""""""
 
 .. tabs::
 
@@ -171,6 +212,37 @@ The results can bee seen in :numref:`f2eea034-d414-4e70-9fe8-701968ad1304` and :
 
         Chart Data Series Area Transparency Dialog
 
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(
+            chart_doc=chart_doc, series_idx=0, idx=-1, styles=[data_series_grad_transparency]
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results can bee seen in :numref:`bd61630d-0f6d-45ed-bcb0-f194c233b81e`.
+
+.. cssclass:: screen_shot
+
+    .. _bd61630d-0f6d-45ed-bcb0-f194c233b81e:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bd61630d-0f6d-45ed-bcb0-f194c233b81e
+        :alt: Chart data point with gradient transparency set
+        :figclass: align-center
+        :width: 450px
+
+        Chart data point with gradient transparency set
+
 Related Topics
 --------------
 
@@ -188,6 +260,7 @@ Related Topics
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Transparency`
         - :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Gradient`
