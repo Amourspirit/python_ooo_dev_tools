@@ -11,10 +11,10 @@ Chart2 Direct series Data Series Area
 Overview
 --------
 
-The :py:mod:`ooodev.format.chart2.direct.series.data_series.area` module is used to set the data series area of a Chart.
+The :py:mod:`ooodev.format.chart2.direct.series.data_series.area` module contains classes that are used to set the data series area of a Chart.
 
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data series area of a Chart.
-
+Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data series area of a Chart.
 
 Setup
 -----
@@ -78,6 +78,9 @@ Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971
 Apply the background color to a data series
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Style Data Series
+"""""""""""""""""
+
 .. tabs::
 
     .. code-tab:: python
@@ -102,11 +105,11 @@ The results are seen in :numref:`4f8d241f-a6d7-49b7-9fce-e5a801329163` and :numr
     .. _4f8d241f-a6d7-49b7-9fce-e5a801329163:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/4f8d241f-a6d7-49b7-9fce-e5a801329163
-        :alt: Chart with color set to green
+        :alt: Chart with data series color set to green
         :figclass: align-center
         :width: 450px
 
-        Chart with color set to green
+        Chart with data series color set to green
 
 .. cssclass:: screen_shot
 
@@ -118,6 +121,36 @@ The results are seen in :numref:`4f8d241f-a6d7-49b7-9fce-e5a801329163` and :numr
         :width: 450px
 
         Chart Area Color Dialog
+
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=2, styles=[data_series_color])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results are seen in :numref:`4f6bd16f-440c-4bac-a774-1909bac08e7d`.
+
+
+.. cssclass:: screen_shot
+
+    .. _4f6bd16f-440c-4bac-a774-1909bac08e7d:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/4f6bd16f-440c-4bac-a774-1909bac08e7d
+        :alt: Chart with data point color set to green
+        :figclass: align-center
+        :width: 450px
+
+        Chart with data point color set to green
 
 Gradient
 --------
@@ -133,6 +166,9 @@ Apply the preset gradient to a data series
 """"""""""""""""""""""""""""""""""""""""""
 
 The :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` enum is used to select the preset gradient.
+
+Style Data Series
+~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
@@ -150,7 +186,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` e
 
             .. group-tab:: None
 
-The results are seen in :numref:`90acf78e-9cd0-4c27-bfe7-67f18cde61ba` and :numref:`79a1ab8e-b004-42be-ad3d-fe99f20e565c`
+The results are seen in :numref:`90acf78e-9cd0-4c27-bfe7-67f18cde61ba` and :numref:`79a1ab8e-b004-42be-ad3d-fe99f20e565c`.
 
 
 .. cssclass:: screen_shot
@@ -158,11 +194,11 @@ The results are seen in :numref:`90acf78e-9cd0-4c27-bfe7-67f18cde61ba` and :numr
     .. _90acf78e-9cd0-4c27-bfe7-67f18cde61ba:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/90acf78e-9cd0-4c27-bfe7-67f18cde61ba
-        :alt: Chart with gradient data series
+        :alt: Chart with gradient data series modified
         :figclass: align-center
         :width: 450px
 
-        Chart with gradient data series
+        Chart with gradient data series modified
 
 .. cssclass:: screen_shot
 
@@ -174,6 +210,36 @@ The results are seen in :numref:`90acf78e-9cd0-4c27-bfe7-67f18cde61ba` and :numr
         :width: 450px
 
         Chart Data Series Area Gradient Dialog
+
+Style Data Point
+~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=-1, styles=[data_series_grad])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results are seen in :numref:`97f6969e-7db1-455c-b259-faed13a83c21`.
+
+
+.. cssclass:: screen_shot
+
+    .. _97f6969e-7db1-455c-b259-faed13a83c21:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/97f6969e-7db1-455c-b259-faed13a83c21
+        :alt: Chart with gradient data point modified
+        :figclass: align-center
+        :width: 450px
+
+        Chart with gradient data point modified
 
 
 Apply a custom Gradient
@@ -234,6 +300,9 @@ Apply background image of a Chart
 
 The :py:class:`~ooodev.format.inner.preset.preset_image.PresetImageKind` enum is used to select an image preset.
 
+Style Data Series
+"""""""""""""""""
+
 .. tabs::
 
     .. code-tab:: python
@@ -251,7 +320,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_image.PresetImageKind` enum is
 
             .. group-tab:: None
 
-The results are seen in :numref:`9bc504c1-7b59-4405-be2f-5a25bbcb46cf` and :numref:`f4bb389f-71fb-40a7-9d53-3608780135f4`
+The results are seen in :numref:`9bc504c1-7b59-4405-be2f-5a25bbcb46cf` and :numref:`f4bb389f-71fb-40a7-9d53-3608780135f4`.
 
 
 .. cssclass:: screen_shot
@@ -276,6 +345,36 @@ The results are seen in :numref:`9bc504c1-7b59-4405-be2f-5a25bbcb46cf` and :numr
 
         Chart Data Series Area Image Dialog
 
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=0, styles=[data_series_img])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results are seen in :numref:`9aa0b92d-7686-4e59-bc1b-cea1eeb10e34`.
+
+
+.. cssclass:: screen_shot
+
+    .. _9aa0b92d-7686-4e59-bc1b-cea1eeb10e34:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9aa0b92d-7686-4e59-bc1b-cea1eeb10e34
+        :alt: Chart with data point background image
+        :figclass: align-center
+        :width: 450px
+
+        Chart with data point background image
+
 Pattern
 -------
 
@@ -288,6 +387,9 @@ Apply background pattern of a Chart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` enum is used to select a pattern preset.
+
+Style Data Series
+"""""""""""""""""
 
 .. tabs::
 
@@ -306,7 +408,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` enu
 
             .. group-tab:: None
 
-The results are seen in :numref:`38b5b471-17e3-462e-8e8f-57ea193c77fd` and :numref:`66d5b091-a31f-4291-a51e-ac14f66f80e8`
+The results are seen in :numref:`38b5b471-17e3-462e-8e8f-57ea193c77fd` and :numref:`66d5b091-a31f-4291-a51e-ac14f66f80e8`.
 
 
 .. cssclass:: screen_shot
@@ -331,6 +433,36 @@ The results are seen in :numref:`38b5b471-17e3-462e-8e8f-57ea193c77fd` and :numr
 
         Chart Data Series Area Pattern Dialog
 
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=4, styles=[data_series_pattern])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results are seen in :numref:`256a9572-ba48-4810-847d-d09f2f7f558d`.
+
+
+.. cssclass:: screen_shot
+
+    .. _256a9572-ba48-4810-847d-d09f2f7f558d:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/256a9572-ba48-4810-847d-d09f2f7f558d
+        :alt: Chart data point with background pattern
+        :figclass: align-center
+        :width: 450px
+
+        Chart data point with background pattern
+
 
 Hatch
 -----
@@ -344,6 +476,9 @@ Apply background hatch of a Chart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` enum is used to select a hatch preset.
+
+Style Data Series
+"""""""""""""""""
 
 .. tabs::
 
@@ -362,7 +497,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` enum is
 
             .. group-tab:: None
 
-The results are seen in :numref:`331e5a64-f4d3-4eab-a375-6c6df880eed0` and :numref:`7c2912b1-69dd-4342-aa8b-5c8873bc3be8`
+The results are seen in :numref:`331e5a64-f4d3-4eab-a375-6c6df880eed0` and :numref:`7c2912b1-69dd-4342-aa8b-5c8873bc3be8`.
 
 
 .. cssclass:: screen_shot
@@ -387,6 +522,36 @@ The results are seen in :numref:`331e5a64-f4d3-4eab-a375-6c6df880eed0` and :numr
 
         Chart Data Series Area Hatch Dialog
 
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=-1, styles=[data_series_hatch])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results are seen in :numref:`87f3fa77-903c-4f37-bbb0-b7692e33bffa`.
+
+
+.. cssclass:: screen_shot
+
+    .. _87f3fa77-903c-4f37-bbb0-b7692e33bffa:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/87f3fa77-903c-4f37-bbb0-b7692e33bffa
+        :alt: Chart with data point background hatch
+        :figclass: align-center
+        :width: 450px
+
+        Chart with data point background hatch
+
 
 Related Topics
 --------------
@@ -405,4 +570,5 @@ Related Topics
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`

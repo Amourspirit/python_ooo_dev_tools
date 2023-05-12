@@ -14,7 +14,8 @@ Overview
 The :py:class:`ooodev.format.chart2.direct.series.data_labels.borders.LineProperties` class gives the same options as the Chart Data Labels Border dialog
 as seen in :numref:`e970bb90-2e58-442f-89c7-bae07efa6237`.
 
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data labels borders of a Chart.
+Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data labels borders of a Chart.
 
 .. cssclass:: screen_shot
 
@@ -84,10 +85,14 @@ The :py:class:`~ooodev.format.chart2.direct.series.data_labels.borders.LinePrope
 
 Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
+Style Data Series
+"""""""""""""""""
+
 .. tabs::
 
     .. code-tab:: python
 
+        # ... other code
         data_lbl_border = LblLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
         Chart2.style_data_series(chart_doc=chart_doc, styles=[data_lbl_border])
 
@@ -105,11 +110,11 @@ The results are seen in :numref:`9a4c1076-d28b-4d6d-9924-cad9ddf69e6e` and :numr
     .. _9a4c1076-d28b-4d6d-9924-cad9ddf69e6e:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9a4c1076-d28b-4d6d-9924-cad9ddf69e6e
-        :alt: Chart with data labels border set
+        :alt: Chart with series data labels border set
         :figclass: align-center
         :width: 450px
 
-        Chart with data labels border set
+        Chart with series data labels border set
 
 .. cssclass:: screen_shot
 
@@ -121,6 +126,35 @@ The results are seen in :numref:`9a4c1076-d28b-4d6d-9924-cad9ddf69e6e` and :numr
         :width: 450px
 
         Chart Data Labels Borders Default Dialog
+
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=2, styles=[data_lbl_border])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results are seen in :numref:`bcd85dc8-5f30-4810-890a-a8ef0ee8c377`.
+
+.. cssclass:: screen_shot
+
+    .. _bcd85dc8-5f30-4810-890a-a8ef0ee8c377:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bcd85dc8-5f30-4810-890a-a8ef0ee8c377
+        :alt: Chart with point data labels border set
+        :figclass: align-center
+        :width: 450px
+
+        Chart with point data labels border set
 
 Related Topics
 --------------
@@ -139,5 +173,6 @@ Related Topics
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.series.data_labels.borders.LineProperties`
