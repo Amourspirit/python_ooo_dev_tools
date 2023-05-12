@@ -20,6 +20,10 @@ class Orientation(StyleBase):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_title_alignment`
+
     .. versionadded:: 0.9.4
     """
 
@@ -30,6 +34,12 @@ class Orientation(StyleBase):
         Args:
             angle (int, Angle, optional): Rotation in degrees of the text.
             vertical (bool, optional): Specifies if the text is vertically stacked.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_title_alignment`
         """
         super().__init__()
         self.prop_angle = angle

@@ -49,6 +49,10 @@ class Direction(AbstractWritingMode):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_title_alignment`
+
     .. versionadded:: 0.9.4
     """
 
@@ -61,6 +65,9 @@ class Direction(AbstractWritingMode):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_title_alignment`
         """
         super().__init__(mode=mode)
 

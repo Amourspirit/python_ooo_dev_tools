@@ -1738,6 +1738,9 @@ class Chart2:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
 
+        See Also:
+            - :ref:`help_chart2_format_direct_title`
+
         .. versionadded:: 0.9.4
         """
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
@@ -1768,6 +1771,9 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_title`
 
         .. versionadded:: 0.9.4
         """
