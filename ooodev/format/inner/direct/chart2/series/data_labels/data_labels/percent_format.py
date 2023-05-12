@@ -15,7 +15,13 @@ from ooodev.utils import props as mProps
 
 
 class PercentFormat(ChartNumbers):
-    """Chart Data Series, Data Lables Percent Format."""
+    """
+    Chart Data Series, Data Labels Percent Format.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_labels_data_labels`
+    """
 
     def __init__(
         self,
@@ -26,6 +32,24 @@ class PercentFormat(ChartNumbers):
         num_format_index: NumberFormatIndexEnum | int = -1,
         lang_locale: Locale | None = None,
     ) -> None:
+        """
+        Constructor
+
+        Args:
+            chart_doc (XChartDocument): Chart document.
+            source_format (bool, optional): Specifies whether the number format should be linked to the source format. Defaults to ``True``.
+            num_format (NumberFormatEnum, int, optional): specifies the number format. Defaults to ``0``.
+            num_format_index (NumberFormatIndexEnum | int, optional): Specifies the number format index. Defaults to ``-1``.
+            lang_locale (Locale, optional): Specifies the language locale. Defaults to ``None``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_labels_data_labels`
+            - `API NumberFormat <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1NumberFormat.html>`__
+            - `API NumberFormatIndex <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1i18n_1_1NumberFormatIndex.html>`__
+        """
         super().__init__(
             chart_doc=chart_doc, num_format=num_format, num_format_index=num_format_index, lang_locale=lang_locale
         )
@@ -74,6 +98,9 @@ class PercentFormat(ChartNumbers):
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property. Invalid object")
             return
         props = {"verify": False}
+
+        override_dv = {"LinkNumberFormatToSource": self._source_format}
+        props["override_dv"] = override_dv
 
         if self._source_format:
             # if source format is true then the number format should be set to None.
@@ -141,7 +168,8 @@ class PercentFormat(ChartNumbers):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         locale = mProps.Props.get(obj, "CharLocale", None)
-        inst = cls(chart_doc=chart_doc, source_format=False, lang_locale=locale, **kwargs)
+        src_format = bool(mProps.Props.get(obj, "LinkNumberFormatToSource", True))
+        inst = cls(chart_doc=chart_doc, source_format=src_format, lang_locale=locale, **kwargs)
         inst._format_key_prop = nf
         return inst
 
@@ -164,7 +192,10 @@ class PercentFormat(ChartNumbers):
             chart_doc (XChartDocument): Chart document.
             nf_str (str): Format string.
             lang_locale (Locale, optional): Locale. Defaults to ``None``.
-            auto_add (bool, optional): If True, format string will be added to document if not found. Defaults to ``False``.
+            auto_add (bool, optional): If ``True``, format string will be added to document if not found. Defaults to ``False``.
+
+        Keyword Args:
+            source_format (bool, optional): If ``True``, the number format will be linked to the source format. Defaults to ``False``.
 
         Returns:
             PercentFormat: Instance that represents numbers format.
@@ -172,8 +203,9 @@ class PercentFormat(ChartNumbers):
         num_chart = ChartNumbers.from_str(
             chart_doc=chart_doc, nf_str=nf_str, lang_locale=lang_locale, auto_add=auto_add, **kwargs
         )
+        source_format = kwargs.pop("source_format", False)
 
-        inst = cls(chart_doc=chart_doc, source_format=False, **kwargs)
+        inst = cls(chart_doc=chart_doc, source_format=source_format, **kwargs)
 
         inst._format_key_prop = num_chart.prop_format_key
         return inst
@@ -186,18 +218,21 @@ class PercentFormat(ChartNumbers):
         cls, chart_doc: XChartDocument, index: int, lang_locale: Locale | None = None, **kwargs
     ) -> PercentFormat:
         """
-        Gets instance from number format index. This is the index that is assinged to the ``PercentageNumberFormat`` property of an object such as a cell.
+        Gets instance from number format index. This is the index that is assigned to the ``PercentageNumberFormat`` property of an object such as a cell.
 
         Args:
             chart_doc (XChartDocument): Chart document.
             index (int): Format (``PercentageNumberFormat``) index.
             lang_locale (Locale, optional): Locale. Defaults to ``None``.
 
+        Keyword Args:
+            source_format (bool, optional): If ``True``, the number format will be linked to the source format. Defaults to ``False``.
 
         Returns:
             PercentFormat: Instance that represents numbers format.
         """
-        inst = cls(chart_doc=chart_doc, source_format=False, lang_locale=lang_locale, **kwargs)
+        source_format = kwargs.pop("source_format", False)
+        inst = cls(chart_doc=chart_doc, source_format=source_format, lang_locale=lang_locale, **kwargs)
         inst._format_key_prop = index
         return inst
 
@@ -213,7 +248,7 @@ class PercentFormat(ChartNumbers):
                 # As of LibreOffice 7.5 it still throws an exception.
                 # This seems to be due to XPropertySet not being properly implemented on data points and data series.
                 # currently this event is raised only for data point and not for data series.
-                # Eithor way, the error is caught and only printed to console.
+                # Either way, the error is caught and only printed to console.
                 mProps.Props.set_default(event_args.event_data, self._get_property_name())
                 event_args.handled = True
             except Exception:

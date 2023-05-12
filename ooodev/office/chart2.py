@@ -1613,6 +1613,10 @@ class Chart2:
                 - :doc:`ooodev.format.chart2.direct.series.data_series </src/format/ooodev.format.chart2.direct.series.data_series>`
                 - :doc:`ooodev.format.chart2.direct.series.data_labels </src/format/ooodev.format.chart2.direct.series.data_labels>`
 
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series`
+            - :ref:`help_chart2_format_direct_series_labels`
+
         .. versionadded:: 0.9.0
         """
 
@@ -1643,6 +1647,7 @@ class Chart2:
 
         See Also:
             - :ref:`help_chart2_format_direct_series_series`
+            - :ref:`help_chart2_format_direct_series_labels`
 
         .. versionadded:: 0.9.4
         """

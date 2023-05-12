@@ -54,9 +54,7 @@ class FontLine:
 
     def has_values(self) -> bool:
         """Gets if instance has any values."""
-        if self._line is None and self._color is None:
-            return False
-        return True
+        return self._line is not None or self._color is not None
 
     @property
     def line(self) -> FontUnderlineEnum | None:
@@ -131,7 +129,6 @@ class FontEffects(StyleBase):
             None:
 
         See Also:
-
             - :ref:`help_writer_format_direct_char_font_effects`
         """
         # could not find any documentation in the API or elsewhere online for Overline
@@ -230,7 +227,7 @@ class FontEffects(StyleBase):
         def set_prop(key: str, fe: FontEffects):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 fe._set(key, val)
 
         set_prop("CharColor", inst)
@@ -624,9 +621,7 @@ class FontEffects(StyleBase):
     def prop_transparency(self) -> Intensity | None:
         """Gets/Sets The transparency value"""
         pv = cast(int, self._get("CharTransparence"))
-        if not pv is None:
-            return Intensity(pv)
-        return None
+        return Intensity(pv) if pv is not None else None
 
     @prop_transparency.setter
     def prop_transparency(self, value: Intensity | int | None) -> None:
@@ -639,10 +634,7 @@ class FontEffects(StyleBase):
     def prop_overline(self) -> FontLine:
         """This property contains the value for the character overline."""
         pv = cast(int, self._get("CharOverline"))
-        if pv is None:
-            line = None
-        else:
-            line = FontUnderlineEnum(pv)
+        line = None if pv is None else FontUnderlineEnum(pv)
         return FontLine(line=line, color=cast(int, self._get("CharOverlineColor")))
 
     @prop_overline.setter
@@ -660,23 +652,19 @@ class FontEffects(StyleBase):
         if value.color is None:
             self._remove("CharOverlineColor")
             self._remove("CharOverlineHasColor")
+        elif value.color < 0:
+            # automatic color
+            self._set("CharOverlineHasColor", False)
+            self._set("CharOverlineColor", -1)
         else:
-            if value.color < 0:
-                # automatic color
-                self._set("CharOverlineHasColor", False)
-                self._set("CharOverlineColor", -1)
-            else:
-                self._set("CharOverlineHasColor", True)
-                self._set("CharOverlineColor", value.color)
+            self._set("CharOverlineHasColor", True)
+            self._set("CharOverlineColor", value.color)
 
     @property
     def prop_underline(self) -> FontLine:
         """This property contains the value for the character underline."""
         pv = cast(int, self._get("CharUnderline"))
-        if pv is None:
-            line = None
-        else:
-            line = FontUnderlineEnum(pv)
+        line = None if pv is None else FontUnderlineEnum(pv)
         return FontLine(line=line, color=cast(int, self._get("CharUnderlineColor")))
 
     @prop_underline.setter
@@ -694,22 +682,19 @@ class FontEffects(StyleBase):
         if value.color is None:
             self._remove("CharUnderlineColor")
             self._remove("CharUnderlineHasColor")
+        elif value.color < 0:
+            # automatic color
+            self._set("CharUnderlineHasColor", False)
+            self._set("CharUnderlineColor", -1)
         else:
-            if value.color < 0:
-                # automatic color
-                self._set("CharUnderlineHasColor", False)
-                self._set("CharUnderlineColor", -1)
-            else:
-                self._set("CharUnderlineHasColor", True)
-                self._set("CharUnderlineColor", value.color)
+            self._set("CharUnderlineHasColor", True)
+            self._set("CharUnderlineColor", value.color)
 
     @property
     def prop_strike(self) -> FontStrikeoutEnum | None:
         """Gets/Sets the type of the strike out of the character."""
         pv = cast(int, self._get("CharStrikeout"))
-        if not pv is None:
-            return FontStrikeoutEnum(pv)
-        return None
+        return FontStrikeoutEnum(pv) if pv is not None else None
 
     @prop_strike.setter
     def prop_strike(self, value: FontStrikeoutEnum | None) -> None:
@@ -734,9 +719,7 @@ class FontEffects(StyleBase):
     def prop_case(self) -> CaseMapEnum | None:
         """Gets/Sets Font Case Value"""
         pv = cast(int, self._get("CharCaseMap"))
-        if pv is None:
-            return None
-        return CaseMapEnum(pv)
+        return None if pv is None else CaseMapEnum(pv)
 
     @prop_case.setter
     def prop_case(self, value: CaseMapEnum | None) -> None:
@@ -749,9 +732,7 @@ class FontEffects(StyleBase):
     def prop_relief(self) -> FontReliefEnum | None:
         """Gets/Sets Font Relief Value"""
         pv = cast(int, self._get("CharRelief"))
-        if pv is None:
-            return None
-        return FontReliefEnum(pv)
+        return None if pv is None else FontReliefEnum(pv)
 
     @prop_relief.setter
     def prop_relief(self, value: FontReliefEnum | None) -> None:

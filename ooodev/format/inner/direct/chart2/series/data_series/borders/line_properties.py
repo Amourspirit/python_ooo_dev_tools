@@ -119,8 +119,7 @@ class LineProperties(StyleBase):
 
     @prop_color.setter
     def prop_color(self, value: Color):
-        if value < 0:
-            value = 0
+        value = max(value, 0)
         self._set(self._props.color1, value)
         if self._props.color2:
             self._set(self._props.color2, value)
@@ -137,8 +136,7 @@ class LineProperties(StyleBase):
             val = value.get_value_mm100()
         except AttributeError:
             val = UnitConvert.convert_mm_mm100(value)
-        if val < 0:
-            val = 0
+        val = max(val, 0)
         self._set(self._props.width, val)
 
     @property

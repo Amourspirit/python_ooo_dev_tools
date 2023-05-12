@@ -11,7 +11,13 @@ _TPlotSimple = TypeVar("_TPlotSimple", bound="PlotSimple")
 
 
 class PlotSimple(StyleBase):
-    """Data Series Plot Simple"""
+    """
+    Data Series Plot Simple
+
+    ..seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
+    """
 
     def __init__(
         self,
@@ -27,6 +33,9 @@ class PlotSimple(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         self._chart_doc = chart_doc
         super().__init__()

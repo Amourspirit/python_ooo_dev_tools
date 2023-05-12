@@ -8,6 +8,14 @@ from ooodev.format.inner.style_base import StyleBase
 
 
 class LegendEntry(StyleBase):
+    """
+    Chart Data Series Legend Visibility
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
+    """
+
     def __init__(self, chart_doc: XChartDocument, *, hide_legend: bool = False, **kwargs) -> None:
         """
         Constructor
@@ -18,6 +26,9 @@ class LegendEntry(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         self._chart_doc = chart_doc
         super().__init__()
