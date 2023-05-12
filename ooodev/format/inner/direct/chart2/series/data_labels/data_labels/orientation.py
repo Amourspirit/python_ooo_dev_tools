@@ -14,6 +14,10 @@ class Orientation(StyleBase):
     """
     Series data points Text orientation.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_labels_data_labels`
+
     .. versionadded:: 0.9.4
     """
 
@@ -26,13 +30,16 @@ class Orientation(StyleBase):
         Args:
             angle (int, Angle, optional): Rotation in degrees of the text.
             mode (DirectionModeKind, optional): Specifies the writing direction.
-            leaders (bool, optional): Leder Lines. Connect displaced data points to data points.
+            leaders (bool, optional): Leader Lines. Connect displaced data points to data points.
 
         Returns:
             None:
 
         Note:
             When setting a data point ``leaders`` is ignored. To set ``leaders`` set it on the data series.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_labels_data_labels`
         """
         super().__init__()
         if angle is not None:

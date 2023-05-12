@@ -23,7 +23,11 @@ class Settings(StyleBase):
 
     Note:
         The axis that the setting are applied to is determined by the axis that the data series is plotted on.
-        For this reason if fomatting is applied to a data series axis it should be done before applying ``Settings``.
+        For this reason if formatting is applied to a data series axis it should be done before applying ``Settings``.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
 
     .. versionadded:: 0.9.4
     """
@@ -48,6 +52,9 @@ class Settings(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         self._chart_doc = chart_doc
         super().__init__()
@@ -166,8 +173,7 @@ class Settings(StyleBase):
         if value is None:
             self._remove(self._props.spacing)
             return
-        if value < 0:
-            value = 0
+        value = max(value, 0)
         self._set(self._props.spacing, value)
 
     @property
@@ -185,14 +191,17 @@ class Settings(StyleBase):
     @property
     def prop_side_by_side(self) -> bool | None:
         """Gets or sets whether bars are side by side."""
-        return self._get(self._props.side_by_side)
+        pv = cast(bool, self._get(self._props.side_by_side))
+        # GroupBarsPerAxis is the opposite of SideBySide
+        return None if pv is None else not pv
 
     @prop_side_by_side.setter
     def prop_side_by_side(self, value: bool | None) -> None:
         if value is None:
             self._remove(self._props.side_by_side)
             return
-        self._set(self._props.side_by_side, value)
+        # GroupBarsPerAxis is the opposite of SideBySide
+        self._set(self._props.side_by_side, not value)
 
     @property
     def _props(self) -> _SettingsProps:

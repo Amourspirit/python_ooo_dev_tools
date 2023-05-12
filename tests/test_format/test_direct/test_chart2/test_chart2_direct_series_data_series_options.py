@@ -102,10 +102,10 @@ def test_calc_chart_data_series(loader, copy_fix_calc) -> None:
         opt_plot = SeriesOptPlot(
             chart_doc=chart_doc, missing_values=MissingValueKind.USE_ZERO, hidden_cell_values=False
         )
-        opt_legned = SeriesOptLegendEntry(chart_doc, hide_legend=False)
+        opt_legend = SeriesOptLegendEntry(chart_doc, hide_legend=False)
         # settings should be last in the styles list
         opt_settings = SeriesOptSettings(chart_doc=chart_doc, spacing=100, overlap=0)
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[opt_align, opt_plot, opt_legned, opt_settings])
+        Chart2.style_data_series(chart_doc=chart_doc, styles=[opt_align, opt_plot, opt_legend, opt_settings])
 
         ds = Chart2.get_data_series(chart_doc=chart_doc)
         ds1 = ds[0]
@@ -154,6 +154,7 @@ def test_calc_chart_pie_data_series(loader, copy_fix_calc) -> None:
             width=12,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_3D.PIE_3D,
+            chart_name="pie_chart",
         )
         Calc.goto_cell(cell_name="A1", doc=doc)
 
@@ -213,6 +214,7 @@ def test_calc_chart_donut_data_series(loader, copy_fix_calc) -> None:
             width=15,
             height=11,
             diagram_name=ChartTypes.Pie.TEMPLATE_DONUT.DONUT,
+            chart_name="donut_chart",
         )
         Calc.goto_cell(cell_name="A48", doc=doc)
 

@@ -34,7 +34,7 @@ class DataPointLabelStruct(StructBase):
         show_series_name: bool = False,
     ) -> None:
         """
-        _summary_
+        Constructor.
 
         Args:
             show_number (bool, optional): if ``True``, the value that is represented by a data point is displayed next to it. Defaults to ``False``.
@@ -203,6 +203,7 @@ class DataPointLabelStruct(StructBase):
 
     @classmethod
     def from_obj(cls: Type[_TDataPointLabelStruct], obj: object, **kwargs) -> _TDataPointLabelStruct:
+        # sourcery skip: raise-from-previous-error
         """
         Gets instance from object
 

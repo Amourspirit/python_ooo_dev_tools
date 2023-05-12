@@ -17,6 +17,10 @@ class Orientation(StyleBase):
     Chart Orientation.
 
     Available for pie and donut charts.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
     """
 
     def __init__(
@@ -36,8 +40,11 @@ class Orientation(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
-        # clockwise defatult is false
+        # clockwise default is false
         self._chart_doc = chart_doc
         super().__init__()
         if clockwise is not None:

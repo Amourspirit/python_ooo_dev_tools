@@ -2080,10 +2080,10 @@
 </node>
 </node>
 </node>
-<node TEXT="series" ID="ID_325684732" CREATED="1681812935409" MODIFIED="1682196183159">
-<icon BUILTIN="unchecked"/>
-<node TEXT="data_series" ID="ID_1828713434" CREATED="1681931207572" MODIFIED="1682196183159">
-<icon BUILTIN="unchecked"/>
+<node TEXT="series" ID="ID_325684732" CREATED="1681812935409" MODIFIED="1683837223826">
+<icon BUILTIN="checked"/>
+<node TEXT="data_series" ID="ID_1828713434" CREATED="1681931207572" MODIFIED="1683737541412">
+<icon BUILTIN="checked"/>
 <node TEXT="area" ID="ID_53139705" CREATED="1675065864419" MODIFIED="1683660634125">
 <icon BUILTIN="checked"/>
 <node TEXT="Color" ID="ID_1134255286" CREATED="1675065870452" MODIFIED="1683660634127">
@@ -2114,8 +2114,8 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1682196183159">
-<icon BUILTIN="unchecked"/>
+<node TEXT="options" ID="ID_60688996" CREATED="1681812977601" MODIFIED="1683737528267">
+<icon BUILTIN="checked"/>
 <richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
@@ -2127,33 +2127,40 @@
     </p>
   </body>
 </html></richcontent>
-<node TEXT="AlignSeries" ID="ID_485145973" CREATED="1681921659089" MODIFIED="1682196183160">
+<node TEXT="AlignSeries" ID="ID_485145973" CREATED="1681921659089" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="LegendEntry" ID="ID_1616067693" CREATED="1681921668314" MODIFIED="1682196183160">
+<node TEXT="LegendEntry" ID="ID_1616067693" CREATED="1681921668314" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Orientation" ID="ID_1108640920" CREATED="1681921643265" MODIFIED="1682196183160">
+<node TEXT="Plot" ID="ID_1288825919" CREATED="1681921676321" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Plot" ID="ID_1288825919" CREATED="1681921676321" MODIFIED="1682196183160">
+<node TEXT="PlotSimple" ID="ID_1648305024" CREATED="1681921689201" MODIFIED="1683737528270">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
+<richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      For Pie and Donut charts.
+    </p>
+  </body>
+</html></richcontent>
 </node>
-<node TEXT="PlotSimple" ID="ID_1648305024" CREATED="1681921689201" MODIFIED="1682196183160">
+<node TEXT="Settings" ID="ID_699012602" CREATED="1681921695073" MODIFIED="1683737528271">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Settings" ID="ID_699012602" CREATED="1681921695073" MODIFIED="1682196183160">
+<node TEXT="Orientation" ID="ID_1638430240" CREATED="1681921700697" MODIFIED="1683737528271">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
-</node>
-<node TEXT="Orientation" ID="ID_1638430240" CREATED="1681921700697" MODIFIED="1682196183160">
-<icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 <richcontent TYPE="NOTE" CONTENT-TYPE="xml/">
 <html>
   <head>
@@ -2179,47 +2186,47 @@
 </node>
 </node>
 </node>
-<node TEXT="data_labels" ID="ID_1369009468" CREATED="1681945027399" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="data_labels" ID="ID_1033990878" CREATED="1681945034638" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="AttribOptions" ID="ID_189408235" CREATED="1681945051566" MODIFIED="1682196183161">
+<node TEXT="data_labels" ID="ID_1369009468" CREATED="1681945027399" MODIFIED="1683836062277">
+<icon BUILTIN="checked"/>
+<node TEXT="data_labels" ID="ID_1033990878" CREATED="1681945034638" MODIFIED="1683836055011">
+<icon BUILTIN="checked"/>
+<node TEXT="AttribOptions" ID="ID_189408235" CREATED="1681945051566" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="NumberFormat" ID="ID_1897538878" CREATED="1681945054646" MODIFIED="1682196183161">
+<node TEXT="NumberFormat" ID="ID_1897538878" CREATED="1681945054646" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="Orientation" ID="ID_566788292" CREATED="1681945060734" MODIFIED="1682196183161">
+<node TEXT="Orientation" ID="ID_566788292" CREATED="1681945060734" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="PercentFormat" ID="ID_223178391" CREATED="1681945072614" MODIFIED="1682196183161">
+<node TEXT="PercentFormat" ID="ID_223178391" CREATED="1681945072614" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="TextAttribs" ID="ID_1047434092" CREATED="1681945078318" MODIFIED="1682196183161">
+<node TEXT="TextAttribs" ID="ID_1047434092" CREATED="1681945078318" MODIFIED="1683836055013">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="borders" ID="ID_138277937" CREATED="1681812570753" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="LineProperties" ID="ID_1377741107" CREATED="1681812583066" MODIFIED="1682196183161">
+<node TEXT="borders" ID="ID_138277937" CREATED="1681812570753" MODIFIED="1683747527185">
+<icon BUILTIN="checked"/>
+<node TEXT="LineProperties" ID="ID_1377741107" CREATED="1681812583066" MODIFIED="1683747527182">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="font" ID="ID_800546028" CREATED="1681812800265" MODIFIED="1682196183161">
-<icon BUILTIN="unchecked"/>
-<node TEXT="FontEffects" ID="ID_1810266221" CREATED="1681812817473" MODIFIED="1682196183161">
+<node TEXT="font" ID="ID_800546028" CREATED="1681812800265" MODIFIED="1683751727705">
+<icon BUILTIN="checked"/>
+<node TEXT="FontEffects" ID="ID_1810266221" CREATED="1681812817473" MODIFIED="1683751727702">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="FontOnly" ID="ID_1178392321" CREATED="1681812822481" MODIFIED="1682196183161">
+<node TEXT="FontOnly" ID="ID_1178392321" CREATED="1681812822481" MODIFIED="1683750966035">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 </node>
@@ -2290,7 +2297,7 @@
 </node>
 </node>
 </node>
-<node TEXT="wall" ID="ID_144711709" CREATED="1681813228473" MODIFIED="1683647058647">
+<node TEXT="wall" FOLDED="true" ID="ID_144711709" CREATED="1681813228473" MODIFIED="1683647058647">
 <icon BUILTIN="checked"/>
 <node TEXT="area" ID="ID_1618650196" CREATED="1675065864419" MODIFIED="1683642209613">
 <icon BUILTIN="checked"/>

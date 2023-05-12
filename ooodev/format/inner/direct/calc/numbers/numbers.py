@@ -102,11 +102,9 @@ class Numbers(StyleBase):
         n_formats = xfs.getNumberFormats()
         nft = mLo.Lo.qi(XNumberFormatTypes, n_formats, True)
         if self._num_format_index == -1:
-            key = nft.getStandardFormat(self._num_cat, self._lang_locale)
-            return key
+            return nft.getStandardFormat(self._num_cat, self._lang_locale)
         else:
-            key = nft.getFormatIndex(self._num_format_index, self._lang_locale)
-            return key
+            return nft.getFormatIndex(self._num_format_index, self._lang_locale)
 
     # endregion internal methods
 
@@ -118,14 +116,6 @@ class Numbers(StyleBase):
         except AttributeError:
             self._supported_services_values = ("com.sun.star.style.CellStyle", "com.sun.star.table.CellProperties")
         return self._supported_services_values
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            return super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     def _is_valid_obj(self, obj: object) -> bool:
         return hasattr(obj, self._get_property_name())
@@ -140,6 +130,7 @@ class Numbers(StyleBase):
         ...
 
     def apply(self, obj: object, **kwargs: Any) -> None:
+        # sourcery skip: hoist-if-from-if
         """
         Applies styles to object
 
@@ -200,6 +191,7 @@ class Numbers(StyleBase):
     def from_str(
         cls: Type[_TNumbers], nf_str: str, lang_locale: Locale | None = None, auto_add: bool = False, **kwargs
     ) -> _TNumbers:
+        # sourcery skip: hoist-similar-statement-from-if, remove-unnecessary-else, swap-if-else-branches, swap-nested-ifs
         """
         Gets instance from format string
 
@@ -237,7 +229,7 @@ class Numbers(StyleBase):
     @classmethod
     def from_index(cls: Type[_TNumbers], index: int, lang_locale: Locale | None = None, **kwargs) -> _TNumbers:
         """
-        Gets instance from number format index. This is the index that is assinged to the ``NumberFormat`` property of an object such as a cell.
+        Gets instance from number format index. This is the index that is assigned to the ``NumberFormat`` property of an object such as a cell.
 
         Args:
             index (int): Format (``NumberFormat``) index.

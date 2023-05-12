@@ -15,7 +15,13 @@ class _AlignSeriesProps(NamedTuple):
 
 
 class AlignSeries(StyleBase):
-    """Chart Data Series Align Series"""
+    """
+    Chart Data Series Align
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
+    """
 
     def __init__(
         self,
@@ -31,6 +37,9 @@ class AlignSeries(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         self._chart_doc = chart_doc
         super().__init__()

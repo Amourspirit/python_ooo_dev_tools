@@ -36,7 +36,13 @@ class SeparatorKind(Enum):
 
 
 class AttribOptions(StyleBase):
-    """Chart Data Series, Data Lables Text Attribute Options."""
+    """
+    Chart Data Series, Data Labels Text Attribute Options.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_labels_data_labels`
+    """
 
     def __init__(self, placement: PlacementKind | None = None, separator: SeparatorKind | None = None) -> None:
         """
@@ -45,6 +51,12 @@ class AttribOptions(StyleBase):
         Args:
             placement (PlacementKind, optional): Specifies the placement of data labels relative to the objects.
             separator (SeparatorKind, optional): Specifies the separator between multiple text strings for the same object.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_labels_data_labels`
         """
         super().__init__()
         if placement is not None:
@@ -80,9 +92,7 @@ class AttribOptions(StyleBase):
     def prop_placement(self) -> PlacementKind | None:
         """Gets or sets the placement kind"""
         pv = cast(int, self._get("LabelPlacement"))
-        if pv is None:
-            return None
-        return PlacementKind(pv)
+        return None if pv is None else PlacementKind(pv)
 
     @prop_placement.setter
     def prop_placement(self, value: PlacementKind | None) -> None:
@@ -96,9 +106,7 @@ class AttribOptions(StyleBase):
     def prop_separator(self) -> SeparatorKind | None:
         """Gets or sets the separator kind"""
         pv = cast(str, self._get("LabelSeparator"))
-        if pv is None:
-            return None
-        return SeparatorKind(pv)
+        return None if pv is None else SeparatorKind(pv)
 
     @prop_separator.setter
     def prop_separator(self, value: SeparatorKind | None) -> None:
