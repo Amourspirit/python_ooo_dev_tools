@@ -127,11 +127,11 @@ The results are seen in :numref:`181c5c98-e4e1-4519-b91a-ffc39f5fa430` and :numr
     .. _21408192-4819-4557-beba-b48d881312ee:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/21408192-4819-4557-beba-b48d881312ee
-        :alt: Chart Wall Color Dialog Modified
+        :alt: Chart Wall Color Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Wall Color Dialog Modified
+        Chart Wall Color Dialog
 
 Gradient
 --------
@@ -200,11 +200,11 @@ The results are seen in :numref:`3f60aea8-ab07-4831-9f2c-ba13c69bef55` and :numr
     .. _a1ca65eb-8f71-4113-b5d9-57f11e1a88d3:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/a1ca65eb-8f71-4113-b5d9-57f11e1a88d3
-        :alt: Chart Wall Gradient Dialog Modified
+        :alt: Chart Wall Gradient Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Wall Gradient Dialog Modified
+        Chart Wall Gradient Dialog
 
 
 Apply a custom Gradient
@@ -339,11 +339,11 @@ The results are seen in :numref:`17e4da98-46c0-47a0-84e0-6d5ba1f13a57` and :numr
     .. _7db6608b-e2bc-4c75-a41a-39d3ebf4e05c:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/7db6608b-e2bc-4c75-a41a-39d3ebf4e05c
-        :alt: Chart Area Image Dialog Modified
+        :alt: Chart Area Image Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Image Dialog Modified
+        Chart Area Image Dialog
 
 Pattern
 -------
@@ -412,11 +412,11 @@ The results are seen in :numref:`9cc6eeae-d204-4f6d-b10d-18d7434fe156` and :numr
     .. _8468ed6a-228d-4ec7-8e21-dda0d70dc7ea:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8468ed6a-228d-4ec7-8e21-dda0d70dc7ea
-        :alt: Chart Wall Pattern Dialog Modified
+        :alt: Chart Wall Pattern Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Wall Pattern Dialog Modified
+        Chart Wall Pattern Dialog
 
 
 Hatch
@@ -484,11 +484,11 @@ The results are seen in :numref:`cec9bb9e-9edb-46dc-96c1-5fc57069973a` and :numr
     .. _92b60156-00b7-4c75-bbb2-a7fa829992b3:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/92b60156-00b7-4c75-bbb2-a7fa829992b3
-        :alt: Chart Area Hatch Dialog Modified
+        :alt: Chart Area Hatch Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Hatch Dialog Modified
+        Chart Area Hatch Dialog
 
 
 Related Topics
@@ -512,3 +512,8 @@ Related Topics
         - :py:meth:`Chart2.style_floor() <ooodev.office.chart2.Chart2.style_floor>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:mod:`ooodev.format.chart2.direct.wall`
+        - :py:class:`ooodev.format.chart2.direct.wall.area.Color`
+        - :py:class:`ooodev.format.chart2.direct.wall.area.Gradient`
+        - :py:class:`ooodev.format.chart2.direct.wall.area.Img`
+        - :py:class:`ooodev.format.chart2.direct.wall.area.Pattern`
+        - :py:class:`ooodev.format.chart2.direct.wall.area.Hatch`

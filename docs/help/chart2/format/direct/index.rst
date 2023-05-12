@@ -10,3 +10,4 @@ Direct
     grid/index
     wall_floor/index
     series/index
+    title/index
