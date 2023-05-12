@@ -14,7 +14,8 @@ Overview
 The :py:class:`ooodev.format.chart2.direct.series.data_series.borders.LineProperties` class gives the same options as the Chart Data Series Borders dialog
 as seen in :numref:`c4cc6299-704d-40be-8a8b-68daff8c5eef`.
 
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data series borders of a Chart.
+Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data series borders of a Chart.
 
 .. cssclass:: screen_shot
 
@@ -84,10 +85,14 @@ The :py:class:`~ooodev.format.chart2.direct.general.borders.LineProperties` clas
 
 Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
+Style Data Series
+"""""""""""""""""
+
 .. tabs::
 
     .. code-tab:: python
 
+        # ... other code
         data_series_border = SeriesLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
         Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_border])
 
@@ -97,7 +102,7 @@ Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971
 
             .. group-tab:: None
 
-The results are seen in :numref:`f462c874-3624-4eaa-898f-ea79e4b98bc4` and :numref:`cc6bba18-1fcd-4188-a0c5-14e8dbed654d`
+The results are seen in :numref:`f462c874-3624-4eaa-898f-ea79e4b98bc4` and :numref:`cc6bba18-1fcd-4188-a0c5-14e8dbed654d`.
 
 
 .. cssclass:: screen_shot
@@ -122,6 +127,36 @@ The results are seen in :numref:`f462c874-3624-4eaa-898f-ea79e4b98bc4` and :numr
 
         Chart Data Series Borders Default Dialog
 
+Style Data Point
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=1, styles=[data_series_border])
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+The results are seen in :numref:`8a2b209b-b856-43fb-9df1-9f74bad97d96`.
+
+
+.. cssclass:: screen_shot
+
+    .. _8a2b209b-b856-43fb-9df1-9f74bad97d96:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8a2b209b-b856-43fb-9df1-9f74bad97d96
+        :alt: Chart with data point border set
+        :figclass: align-center
+        :width: 450px
+
+        Chart with data point border set
+
 Related Topics
 --------------
 
@@ -140,5 +175,6 @@ Related Topics
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.series.data_series.borders.LineProperties`

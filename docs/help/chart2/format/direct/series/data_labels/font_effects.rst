@@ -14,7 +14,8 @@ Overview
 The :py:class:`ooodev.format.chart2.direct.series.data_labels.font.FontEffects` class gives you the similar options for data labels
 as :numref:`c6c13eb7-cf41-4aab-a88e-1bf6ac0b77b5` Font Effects Dialog, but without the dialog.
 
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data labels font effects of a Chart.
+Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data labels font effects of a Chart.
 
 Setup
 -----
@@ -81,10 +82,14 @@ Apply the font effects to the data labels
 
 Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
+Style Data Series
+"""""""""""""""""
+
 .. tabs::
 
     .. code-tab:: python
 
+        # ... other code
         data_lbl_font = LblFontEffects(
             color=CommonColor.RED,
             underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.BLUE),
@@ -105,11 +110,11 @@ Running the above code will produce the following output in :numref:`a609d760-cf
     .. _a609d760-cf92-44b3-aafd-31a5b8a79759:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/a609d760-cf92-44b3-aafd-31a5b8a79759
-        :alt: Chart with data labels with font effects applied
+        :alt: Chart with data series labels with font effects applied
         :figclass: align-center
         :width: 520px
 
-        Chart with data labels with font effects applied
+        Chart with data series labels with font effects applied
 
     .. _c6c13eb7-cf41-4aab-a88e-1bf6ac0b77b5:
 
@@ -119,6 +124,37 @@ Running the above code will produce the following output in :numref:`a609d760-cf
         :width: 450px
 
         Chart Data Labels Dialog Font Effects
+
+Style Data Point
+"""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        Chart2.style_data_point(
+            chart_doc=chart_doc, series_idx=0, idx=4, styles=[data_lbl_font]
+        )
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Running the above code will produce the following output in :numref:`d828b120-fd13-4d10-8c12-cd3f4970d0e0`.
+
+.. cssclass:: screen_shot
+
+    .. _d828b120-fd13-4d10-8c12-cd3f4970d0e0:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/d828b120-fd13-4d10-8c12-cd3f4970d0e0
+        :alt: Chart with data point label with font effects applied
+        :figclass: align-center
+        :width: 520px
+
+        Chart with data point label with font effects applied
 
 Related Topics
 --------------
@@ -137,5 +173,6 @@ Related Topics
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
+        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.series.data_labels.font.FontOnly`
