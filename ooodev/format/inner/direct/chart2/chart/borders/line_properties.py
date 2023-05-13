@@ -1,6 +1,6 @@
 from __future__ import annotations
 import uno
-from typing import Any, Tuple, cast, overload
+from typing import Tuple, cast, overload
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_border_line_props
 from ooodev.format.inner.style_base import StyleBase

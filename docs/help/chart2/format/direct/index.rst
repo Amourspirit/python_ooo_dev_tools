@@ -7,6 +7,7 @@ Direct
     :titlesonly:
 
     general/index
+    axis/index
     grid/index
     wall_floor/index
     series/index

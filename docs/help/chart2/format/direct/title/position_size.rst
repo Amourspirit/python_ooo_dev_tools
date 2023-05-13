@@ -1,7 +1,7 @@
-.. _help_chart2_format_direct_title_alignment:
+.. _help_chart2_format_direct_title_position_size:
 
-Chart2 Direct Title/Subtitle Alignment
-======================================
+Chart2 Direct Title/Subtitle Position
+=====================================
 
 .. contents:: Table of Contents
     :local:
@@ -11,12 +11,10 @@ Chart2 Direct Title/Subtitle Alignment
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.title.alignment.Direction` and :py:class:`ooodev.format.chart2.direct.title.alignment.Orientation`
-classes are used to set the alignment of the chart title.
+The :py:class:`ooodev.format.chart2.direct.title.position_size.Position` class is used to set the position of the chart title.
 
 Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
 :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle formatting of a Chart.
-
 
 Setup
 -----
@@ -26,13 +24,13 @@ General setup used to run the examples in this page.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 34,35,36
+        :emphasize-lines: 34,35
 
         import uno
-        from ooodev.format.chart2.direct.title.alignment import Direction, Orientation, DirectionModeKind
+        from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
         from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import Gradient as GradientStyle, ColorRange
+        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
         from ooodev.office.calc import Calc
         from ooodev.office.chart2 import Chart2
         from ooodev.utils.color import StandardColor
@@ -61,9 +59,8 @@ General setup used to run the examples in this page.
                 )
                 Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
 
-                title_orient = Orientation(angle=15, vertical=False)
-                title_dir = Direction(mode=DirectionModeKind.LR_TB)
-                Chart2.style_title(chart_doc=chart_doc, styles=[title_orient, title_dir])
+                title_pos = TitlePosition(7.1, 66.3)
+                Chart2.style_title(chart_doc=chart_doc, styles=[title_pos])
 
                 Lo.delay(1_000)
                 Lo.close_doc(doc)
@@ -78,10 +75,12 @@ General setup used to run the examples in this page.
 
             .. group-tab:: None
 
-Setting Direction and Orientation
----------------------------------
+Applying Position
+-----------------
 
 Before formatting the chart is seen in :numref:`686ff974-65de-4b94-8fc2-201206d048da`.
+
+By default the :py:class:`~ooodev.format.chart2.direct.title.position_size.Position` class uses millimeters as the unit of measure.
 
 Apply to Title
 ^^^^^^^^^^^^^^
@@ -90,13 +89,11 @@ Apply to Title
 
     .. code-tab:: python
 
-        import uno
-        from ooodev.format.chart2.direct.title.alignment import Direction, Orientation, DirectionModeKind
+        from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
         # ... other code
 
-        title_orient = Orientation(angle=15, vertical=False)
-        title_dir = Direction(mode=DirectionModeKind.LR_TB)
-        Chart2.style_title(chart_doc=chart_doc, styles=[title_orient, title_dir])
+        title_pos = TitlePosition(7.1, 66.3)
+        Chart2.style_title(chart_doc=chart_doc, styles=[title_pos])
 
     .. only:: html
 
@@ -104,29 +101,28 @@ Apply to Title
 
             .. group-tab:: None
 
-The results are seen in :numref:`28f576a5-d385-492a-996e-995f66965dd3` and :numref:`e92ab05a-6093-43ce-a83b-14862827ec35`.
+The results are seen in :numref:`3c13137c-0b86-47b5-9b34-ee52902aff0f` and :numref:`e92ab05a-6093-43ce-a83b-14862827ec35`.
 
 .. cssclass:: screen_shot
 
-    .. _28f576a5-d385-492a-996e-995f66965dd3:
+    .. _3c13137c-0b86-47b5-9b34-ee52902aff0f:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/28f576a5-d385-492a-996e-995f66965dd3
-        :alt: Chart with title orientation set
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3c13137c-0b86-47b5-9b34-ee52902aff0f
+        :alt: Chart with title position set
         :figclass: align-center
         :width: 450px
 
-        Chart with title orientation set
+        Chart with title position set
 
 .. cssclass:: screen_shot
 
-    .. _e92ab05a-6093-43ce-a83b-14862827ec35:
+    .. _bfd22d03-f4d8-4d1e-9759-b773051c79df:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/e92ab05a-6093-43ce-a83b-14862827ec35
-        :alt: Chart Title Alignment Dialog
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bfd22d03-f4d8-4d1e-9759-b773051c79df
+        :alt: Chart Title Position and Size Dialog
         :figclass: align-center
-        :width: 450px
 
-        Chart Title Alignment Dialog
+        Chart Title Position and Size Dialog
 
 Apply to Subtitle
 ^^^^^^^^^^^^^^^^^
@@ -136,7 +132,7 @@ Apply to Subtitle
     .. code-tab:: python
 
         # ... other code
-        Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_orient, title_dir])
+         Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_pos])
 
     .. only:: html
 
@@ -144,18 +140,18 @@ Apply to Subtitle
 
             .. group-tab:: None
 
-The results are seen in :numref:`207076c0-ac22-4aef-a195-e5023ac04d64`.
+The results are seen in :numref:`3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f`.
 
 .. cssclass:: screen_shot
 
-    .. _207076c0-ac22-4aef-a195-e5023ac04d64:
+    .. _3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/207076c0-ac22-4aef-a195-e5023ac04d64
-        :alt: Chart with subtitle orientation set
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f
+        :alt: Chart with subtitle position set
         :figclass: align-center
         :width: 450px
 
-        Chart with subtitle orientation set
+        Chart with subtitle position set
 
 Related Topics
 --------------
@@ -175,5 +171,4 @@ Related Topics
         - :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>`
         - :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.title.alignment.Orientation`
-        - :py:class:`ooodev.format.chart2.direct.title.alignment.Direction`
+        - :py:class:`ooodev.format.chart2.direct.title.position_size.Position`

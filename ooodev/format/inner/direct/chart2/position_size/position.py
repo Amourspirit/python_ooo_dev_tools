@@ -26,8 +26,8 @@ class Position(StyleBase):
         Constructor
 
         Args:
-            pos_x (float | UnitObj): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
-            pos_y (float | UnitObj): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_x (float, UnitObj): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_y (float, UnitObj): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
         """
         super().__init__()
         # self._chart_doc = chart_doc
