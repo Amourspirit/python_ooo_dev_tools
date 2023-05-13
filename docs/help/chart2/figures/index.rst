@@ -4,7 +4,7 @@ Chart2 Figures
 ==============
 
 .. toctree::
-    :titlesonly:
+    :hidden:
     :glob:
 
     *

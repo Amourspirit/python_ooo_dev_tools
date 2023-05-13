@@ -11,8 +11,8 @@ Chart2 Direct Title/Subtitle Font
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.title.font.Font` class contains some properties from both :ref:`help_chart2_format_direct_title_font_only`and
-:ref:`help_chart2_format_direct_title_font_effects`. This class is more general purpose.
+The :py:class:`ooodev.format.chart2.direct.title.font.Font` class contains some properties from both :ref:`Font Only <help_chart2_format_direct_title_font_only>` and :ref:`Font Effects <help_chart2_format_direct_title_font_effects>`.
+This class is more general purpose.
 
 Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
 :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle font of a Chart.

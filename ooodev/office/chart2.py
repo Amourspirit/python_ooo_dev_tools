@@ -1805,6 +1805,9 @@ class Chart2:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
 
+        See Also:
+            - :ref:`help_chart2_format_direct_axis`
+
         .. versionadded:: 0.9.4
         """
         try:
@@ -1829,6 +1832,9 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_axis`
 
         .. versionadded:: 0.9.4
         """
@@ -1855,6 +1861,9 @@ class Chart2:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
 
+        See Also:
+            - :ref:`help_chart2_format_direct_axis`
+
         .. versionadded:: 0.9.4
         """
         try:
@@ -1879,6 +1888,9 @@ class Chart2:
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.axis </src/format/ooodev.format.chart2.direct.axis>` subpackages.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_axis`
 
         .. versionadded:: 0.9.4
         """

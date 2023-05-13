@@ -9,4 +9,9 @@ Chart2
     :glob:
 
     format/index
+
+
+.. toctree::
+    :hidden:
+
     figures/index
