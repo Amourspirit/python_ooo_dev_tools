@@ -11,7 +11,7 @@ Chart2 Direct Series Data Labels Font Only
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.series.data_labels.font.FontOnly` class gives you the similar options for data labels
+The :py:class:`ooodev.format.chart2.direct.series.data_labels.font.FontOnly` class gives you similar options for data labels
 as :numref:`f4bbd523-c10f-483c-a9c8-3d370dd19433` Font Dialog, but without the dialog.
 
 Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`

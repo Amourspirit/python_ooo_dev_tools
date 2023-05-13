@@ -16,11 +16,15 @@ from ooodev.units.unit_pt import UnitPT
 
 class FontOnly(CharFontOnly):
     """
-    Character Font for a chart Datapoint.
+    Character Font for a chart Data point.
 
     Any properties starting with ``prop_`` set or get current instance values.
 
     All methods starting with ``fmt_`` can be used to chain together font properties.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_axis_font_only`
 
     .. versionadded:: 0.9.4
     """
@@ -43,6 +47,12 @@ class FontOnly(CharFontOnly):
                 or :ref:`proto_unit_obj`.
             font_style (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_axis_font_only`
         """
 
         super().__init__(name=name, size=size, font_style=font_style, lang=lang)
