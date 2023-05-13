@@ -1,7 +1,7 @@
-.. _help_chart2_format_direct_title_alignment:
+.. _help_chart2_format_direct_title_font:
 
-Chart2 Direct Title/Subtitle Alignment
-======================================
+Chart2 Direct Title/Subtitle Font
+=================================
 
 .. contents:: Table of Contents
     :local:
@@ -11,28 +11,29 @@ Chart2 Direct Title/Subtitle Alignment
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.title.alignment.Direction` and :py:class:`ooodev.format.chart2.direct.title.alignment.Orientation`
-classes are used to set the alignment of the chart title.
+The :py:class:`ooodev.format.chart2.direct.title.font.Font` class contains some properties from both :ref:`help_chart2_format_direct_title_font_only`and
+:ref:`help_chart2_format_direct_title_font_effects`. This class is more general purpose.
 
 Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
-:py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle formatting of a Chart.
+:py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle font of a Chart.
 
+Because :py:class:`~ooodev.format.chart2.direct.title.font.Font` class is more general purpose, not all properties are guaranteed to work with titles.
 
 Setup
 -----
 
-General setup used to run the examples in this page.
+General setup for this example.
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 34,35,36
+        :emphasize-lines: 34,35
 
         import uno
-        from ooodev.format.chart2.direct.title.alignment import Direction, Orientation, DirectionModeKind
+        from ooodev.format.chart2.direct.title.font import Font as TitleFont
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
         from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import Gradient as GradientStyle, ColorRange
+        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
         from ooodev.office.calc import Calc
         from ooodev.office.chart2 import Chart2
         from ooodev.utils.color import StandardColor
@@ -41,7 +42,7 @@ General setup used to run the examples in this page.
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("pie_flat_chart.ods")
+                doc = Calc.open_doc(Path.cwd() / "tmp" / "pie_flat_chart.ods")
                 GUI.set_visible(True, doc)
                 Lo.delay(500)
                 Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
@@ -61,9 +62,8 @@ General setup used to run the examples in this page.
                 )
                 Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
 
-                title_orient = Orientation(angle=15, vertical=False)
-                title_dir = Direction(mode=DirectionModeKind.LR_TB)
-                Chart2.style_title(chart_doc=chart_doc, styles=[title_orient, title_dir])
+                title_font_effect = TitleFont(b=True, i=True, u=True, color=StandardColor.PURPLE_DARK2, shadowed=True)
+                Chart2.style_title(chart_doc=chart_doc, styles=[title_font_effect])
 
                 Lo.delay(1_000)
                 Lo.close_doc(doc)
@@ -78,25 +78,26 @@ General setup used to run the examples in this page.
 
             .. group-tab:: None
 
-Setting Direction and Orientation
----------------------------------
+
+Apply the Font
+--------------
 
 Before formatting the chart is seen in :numref:`686ff974-65de-4b94-8fc2-201206d048da`.
 
 Apply to Title
-^^^^^^^^^^^^^^
+""""""""""""""
 
 .. tabs::
 
     .. code-tab:: python
 
-        import uno
-        from ooodev.format.chart2.direct.title.alignment import Direction, Orientation, DirectionModeKind
-        # ... other code
+        from ooodev.format.chart2.direct.title.font import Font as TitleFont
 
-        title_orient = Orientation(angle=15, vertical=False)
-        title_dir = Direction(mode=DirectionModeKind.LR_TB)
-        Chart2.style_title(chart_doc=chart_doc, styles=[title_orient, title_dir])
+        # ... other code
+        title_font_effect = TitleFont(
+            b=True, i=True, u=True, color=StandardColor.PURPLE_DARK2, shadowed=True
+        )
+        Chart2.style_title(chart_doc=chart_doc, styles=[title_font_effect])
 
     .. only:: html
 
@@ -104,39 +105,29 @@ Apply to Title
 
             .. group-tab:: None
 
-The results are seen in :numref:`28f576a5-d385-492a-996e-995f66965dd3` and :numref:`e92ab05a-6093-43ce-a83b-14862827ec35`.
+Running the above code will produce the following output shown in :numref:`eaa1eab4-687c-466a-a7fd-2c126f7b1e2f`.
 
 .. cssclass:: screen_shot
 
-    .. _28f576a5-d385-492a-996e-995f66965dd3:
+    .. _eaa1eab4-687c-466a-a7fd-2c126f7b1e2f:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/28f576a5-d385-492a-996e-995f66965dd3
-        :alt: Chart with title orientation set
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/eaa1eab4-687c-466a-a7fd-2c126f7b1e2f
+        :alt: Chart with Title Font set
         :figclass: align-center
         :width: 450px
 
-        Chart with title orientation set
+        Chart with Title Font set
 
-.. cssclass:: screen_shot
-
-    .. _e92ab05a-6093-43ce-a83b-14862827ec35:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/e92ab05a-6093-43ce-a83b-14862827ec35
-        :alt: Chart Title Alignment Dialog
-        :figclass: align-center
-        :width: 450px
-
-        Chart Title Alignment Dialog
 
 Apply to Subtitle
-^^^^^^^^^^^^^^^^^
+"""""""""""""""""
 
 .. tabs::
 
     .. code-tab:: python
 
         # ... other code
-        Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_orient, title_dir])
+        Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_font_effect])
 
     .. only:: html
 
@@ -144,18 +135,20 @@ Apply to Subtitle
 
             .. group-tab:: None
 
-The results are seen in :numref:`207076c0-ac22-4aef-a195-e5023ac04d64`.
+
+
+Running the above code will produce the following output shown in :numref:`bb19afad-c492-4f6f-a7bf-89d2323b1c77`.
 
 .. cssclass:: screen_shot
 
-    .. _207076c0-ac22-4aef-a195-e5023ac04d64:
+    .. _bb19afad-c492-4f6f-a7bf-89d2323b1c77:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/207076c0-ac22-4aef-a195-e5023ac04d64
-        :alt: Chart with subtitle orientation set
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bb19afad-c492-4f6f-a7bf-89d2323b1c77
+        :alt: Chart with Subtitle Font set
         :figclass: align-center
         :width: 450px
 
-        Chart with subtitle orientation set
+        Chart with Subtitle Font set
 
 Related Topics
 --------------
@@ -167,7 +160,8 @@ Related Topics
         - :ref:`part05`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_chart2_format_direct_title`
+        - :ref:`help_chart2_format_direct_title_font_only`
+        - :ref:`help_chart2_format_direct_title_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
@@ -175,5 +169,4 @@ Related Topics
         - :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>`
         - :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.title.alignment.Orientation`
-        - :py:class:`ooodev.format.chart2.direct.title.alignment.Direction`
+        - :py:class:`ooodev.format.chart2.direct.title.font.Font`

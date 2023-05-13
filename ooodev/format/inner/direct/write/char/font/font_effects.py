@@ -7,6 +7,7 @@ Module for managing character fonts.
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
 
+import uno
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
 from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum

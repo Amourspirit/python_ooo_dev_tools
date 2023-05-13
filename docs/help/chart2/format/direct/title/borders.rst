@@ -1,7 +1,7 @@
-.. _help_chart2_format_direct_title_alignment:
+.. _help_chart2_format_direct_title_borders:
 
-Chart2 Direct Title/Subtitle Alignment
-======================================
+Chart2 Direct Title/Subtitle Borders
+====================================
 
 .. contents:: Table of Contents
     :local:
@@ -11,28 +11,25 @@ Chart2 Direct Title/Subtitle Alignment
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.title.alignment.Direction` and :py:class:`ooodev.format.chart2.direct.title.alignment.Orientation`
-classes are used to set the alignment of the chart title.
+The :py:class:`ooodev.format.chart2.direct.title.borders.LineProperties` class gives the same options as the Chart Data Series Borders dialog
+as seen in :numref:`a31ee22f-14cc-43ef-844f-7a078ec1abd9`.
 
 Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
-:py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle formatting of a Chart.
-
+:py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle borders of a Chart.
 
 Setup
 -----
 
-General setup used to run the examples in this page.
-
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 34,35,36
+        :emphasize-lines: 34, 35
 
         import uno
-        from ooodev.format.chart2.direct.title.alignment import Direction, Orientation, DirectionModeKind
+        from ooodev.format.chart2.direct.title.borders import LineProperties as TitleLineProperties
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
         from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import Gradient as GradientStyle, ColorRange
+        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
         from ooodev.office.calc import Calc
         from ooodev.office.chart2 import Chart2
         from ooodev.utils.color import StandardColor
@@ -61,9 +58,8 @@ General setup used to run the examples in this page.
                 )
                 Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
 
-                title_orient = Orientation(angle=15, vertical=False)
-                title_dir = Direction(mode=DirectionModeKind.LR_TB)
-                Chart2.style_title(chart_doc=chart_doc, styles=[title_orient, title_dir])
+                title_border = TitleLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
+                Chart2.style_title(chart_doc=chart_doc, styles=[title_border])
 
                 Lo.delay(1_000)
                 Lo.close_doc(doc)
@@ -78,25 +74,25 @@ General setup used to run the examples in this page.
 
             .. group-tab:: None
 
-Setting Direction and Orientation
----------------------------------
+Applying Line Properties
+------------------------
+
+The :py:class:`~ooodev.format.chart2.direct.title.borders.LineProperties` class is used to set the title and subtitle border line properties.
 
 Before formatting the chart is seen in :numref:`686ff974-65de-4b94-8fc2-201206d048da`.
 
 Apply to Title
-^^^^^^^^^^^^^^
+""""""""""""""
 
 .. tabs::
 
     .. code-tab:: python
 
-        import uno
-        from ooodev.format.chart2.direct.title.alignment import Direction, Orientation, DirectionModeKind
+        from ooodev.format.chart2.direct.title.borders import LineProperties as TitleLineProperties
         # ... other code
 
-        title_orient = Orientation(angle=15, vertical=False)
-        title_dir = Direction(mode=DirectionModeKind.LR_TB)
-        Chart2.style_title(chart_doc=chart_doc, styles=[title_orient, title_dir])
+        title_border = TitleLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
+        Chart2.style_title(chart_doc=chart_doc, styles=[title_border])
 
     .. only:: html
 
@@ -104,39 +100,40 @@ Apply to Title
 
             .. group-tab:: None
 
-The results are seen in :numref:`28f576a5-d385-492a-996e-995f66965dd3` and :numref:`e92ab05a-6093-43ce-a83b-14862827ec35`.
+The results are seen in :numref:`9b8faf7e-9cfa-407d-880c-1efce5b012fe` and :numref:`a31ee22f-14cc-43ef-844f-7a078ec1abd9`.
+
 
 .. cssclass:: screen_shot
 
-    .. _28f576a5-d385-492a-996e-995f66965dd3:
+    .. _9b8faf7e-9cfa-407d-880c-1efce5b012fe:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/28f576a5-d385-492a-996e-995f66965dd3
-        :alt: Chart with title orientation set
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9b8faf7e-9cfa-407d-880c-1efce5b012fe
+        :alt: Chart with title border set
         :figclass: align-center
         :width: 450px
 
-        Chart with title orientation set
+        Chart with title border set
 
 .. cssclass:: screen_shot
 
-    .. _e92ab05a-6093-43ce-a83b-14862827ec35:
+    .. _a31ee22f-14cc-43ef-844f-7a078ec1abd9:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/e92ab05a-6093-43ce-a83b-14862827ec35
-        :alt: Chart Title Alignment Dialog
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/a31ee22f-14cc-43ef-844f-7a078ec1abd9
+        :alt: Chart Data Series Borders Default Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Title Alignment Dialog
+        Chart Data Series Borders Default Dialog
 
 Apply to Subtitle
-^^^^^^^^^^^^^^^^^
+"""""""""""""""""
 
 .. tabs::
 
     .. code-tab:: python
 
         # ... other code
-        Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_orient, title_dir])
+        Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_border])
 
     .. only:: html
 
@@ -144,18 +141,19 @@ Apply to Subtitle
 
             .. group-tab:: None
 
-The results are seen in :numref:`207076c0-ac22-4aef-a195-e5023ac04d64`.
+The results are seen in :numref:`27378b9f-41c0-4975-8b14-161133e81ca0`.
+
 
 .. cssclass:: screen_shot
 
-    .. _207076c0-ac22-4aef-a195-e5023ac04d64:
+    .. _27378b9f-41c0-4975-8b14-161133e81ca0:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/207076c0-ac22-4aef-a195-e5023ac04d64
-        :alt: Chart with subtitle orientation set
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/27378b9f-41c0-4975-8b14-161133e81ca0
+        :alt: Chart with subtitle border set
         :figclass: align-center
         :width: 450px
 
-        Chart with subtitle orientation set
+        Chart with subtitle border set
 
 Related Topics
 --------------
@@ -167,7 +165,6 @@ Related Topics
         - :ref:`part05`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_chart2_format_direct_title`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
@@ -175,5 +172,4 @@ Related Topics
         - :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>`
         - :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.title.alignment.Orientation`
-        - :py:class:`ooodev.format.chart2.direct.title.alignment.Direction`
+        - :py:class:`ooodev.format.chart2.direct.title.borders.LineProperties`
