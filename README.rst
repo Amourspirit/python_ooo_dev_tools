@@ -52,7 +52,7 @@ PIP
 
 .. code-block:: bash
 
-    $ pip install ooo-dev-tools
+    pip install ooo-dev-tools
 
 Note: Support for python ``3.7`` was dropped in version ``0.10.0``
 
