@@ -157,15 +157,15 @@ class Chart2:
             if sheet is None:
                 doc = mCalc.Calc.get_ss_doc(mLo.Lo.this_component)
                 sheet = mCalc.Calc.get_active_sheet(doc)
-                if sheet is None:
-                    raise mEx.NoneError("unable to obtain sheet, Calc.get_active_sheet() is None")
+            if sheet is None:
+                raise mEx.NoneError("unable to obtain sheet, Calc.get_active_sheet() is None")
 
             if cells_range is None:
                 if doc is None:
                     doc = mCalc.Calc.get_ss_doc(mLo.Lo.this_component)
                 cells_range = mCalc.Calc.get_selected_addr(doc)
-                if cells_range is None:
-                    raise mEx.NoneError("unable to obtain cells_rnage, Calc.get_selected_addr() is None")
+            if cells_range is None:
+                raise mEx.NoneError("unable to obtain cells_range, Calc.get_selected_addr() is None")
 
             if not cell_name:
                 cell_name = mCalc.Calc.get_cell_str(col=cells_range.EndColumn + 1, row=cells_range.StartRow)

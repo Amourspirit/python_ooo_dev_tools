@@ -32,7 +32,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-ooouno = ">=0.2.5"
+ooouno = ">=1.0.2"
 Pillow = ">=9.2.0"
 typing-extensions = {version = ">=4.4.0", python = "<3.8"}
 lxml = ">=4.9.2"
@@ -46,11 +46,11 @@ secondary = false
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.2.0"
-hypothesis = ">=6.56.4"
+hypothesis = ">=6.75.3"
 thefuzz = ">=0.19.0"
 python-Levenshtein = ">=0.20.7"
 lo-dev-search = {version = ">=2.0.2", platform = "linux"}
-ruff = ">=0.0.254"
+ruff = ">=0.0.267"
 black = {extras = ["d"], version = ">=23.1.0"}
 oooenv = ">=0.1.1"
 pytest-mock = ">=3.10"
