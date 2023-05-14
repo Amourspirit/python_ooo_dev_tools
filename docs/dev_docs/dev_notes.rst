@@ -77,7 +77,7 @@ Checking LibreOffice Python version
 
 .. code-block::
 
-    PS C:\> & 'C:\Program Files\LibreOffice\program\python.exe' --version
+    PS C:\>"C:\Program Files\LibreOffice\program\python.exe" --version
     Python 3.8.10
 
 The details of installing a python version for use with a virtual environment is beyond the scope of this document.
@@ -293,6 +293,3 @@ Test are written for pytest_
 .. _pyenv-win: https://github.com/pyenv-win/pyenv-win
 .. _Virtualenv: https://virtualenv.pypa.io/en/latest/
 .. _pytest: https://docs.pytest.org
-
-
-
