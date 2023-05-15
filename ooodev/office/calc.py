@@ -1091,7 +1091,7 @@ class Calc:
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
-        mProps.Props.set(ctrl, ZoomType=mGui.GUI.ZoomEnum.BY_VALUE.value, ZoomValue=value)
+        mProps.Props.set(ctrl, ZoomType=int(mGui.GUI.ZoomEnum.BY_VALUE), ZoomValue=value)
 
     @classmethod
     def zoom(cls, doc: XSpreadsheetDocument, type: mGui.GUI.ZoomEnum) -> None:
@@ -1108,7 +1108,7 @@ class Calc:
             return
 
         def zoom_val(value: int) -> None:
-            mProps.Props.set(ctrl, ZoomType=mGui.GUI.ZoomEnum.BY_VALUE.value, ZoomValue=value)
+            mProps.Props.set(ctrl, ZoomType=int(mGui.GUI.ZoomEnum.BY_VALUE), ZoomValue=value)
 
         if type in (
             mGui.GUI.ZoomEnum.ENTIRE_PAGE,

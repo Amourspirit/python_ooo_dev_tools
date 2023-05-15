@@ -1,9 +1,11 @@
 # coding: utf-8
 """make/get/set properties in an array"""
+
 # Python conversion of Props.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 # region Imports
 from __future__ import annotations
+import contextlib
 from typing import Any, Iterable, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload
 import uno
 
@@ -50,13 +52,13 @@ class Props:
 
     # region ------------------- make properties -----------------------
     @staticmethod
-    def make_prop_value(name: Optional[str] = None, value: Optional[str] = None) -> PropertyValue:
+    def make_prop_value(name: Optional[str] = None, value: Optional[Any] = None) -> PropertyValue:
         """
         Makes a Uno Property Value and assigns name and value if present.
 
         Args:
             name (Optional[str], optional): Property name
-            value (Optional[str], optional): Property value
+            value (Optional[Any], optional): Property value
 
         Returns:
             PropertyValue: com.sun.star.beans.PropertyValue
@@ -64,7 +66,7 @@ class Props:
         See Also:
             `LibreOffice API PropertyValue <https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1beans_1_1PropertyValue.html>`_
         """
-        p: PropertyValue = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
+        p = cast(PropertyValue, uno.createUnoStruct("com.sun.star.beans.PropertyValue"))
         if name is not None:
             p.Name = name
         if value is not None:
@@ -122,16 +124,14 @@ class Props:
                     }
                 props = Props.make_props(**p_dic)
         """
-        lst = []
-        for k, v in kwargs.items():
-            lst.append(cls.make_prop_value(name=k, value=v))
+        lst = [cls.make_prop_value(name=k, value=v) for k, v in kwargs.items()]
         return tuple(lst)
 
     # endregion ---------------- make properties -----------------------
 
     # region ------------------- uno -----------------------------------
     @staticmethod
-    def any(*elements: object) -> uno.Any:
+    def any(*elements: object) -> uno.Any:  # type: ignore
         """
         Gets a uno.Any object for elements.
 
@@ -152,12 +152,12 @@ class Props:
 
             ``Props.any(sort_one, sort_two)``
         """
-        if len(elements) == 0:
+        if not elements:
             raise ValueError("No args to create unn.Any object")
         obj = elements[0]
         if isinstance(obj, uno.Type):
             type_name = obj.typeName
-            return uno.Any(obj, [*elements])
+            return uno.Any(obj, [*elements])  # type: ignore
         elif isinstance(obj, str):
             type_name = "string"
         elif isinstance(obj, int):
@@ -166,7 +166,7 @@ class Props:
             type_name = mInfo.Info.get_type_name(obj)
         if type_name is None:
             raise ValueError("Unable to get type name to create uno.Any object")
-        return uno.Any(f"[]{type_name}", [*elements])
+        return uno.Any(f"[]{type_name}", [*elements])  # type: ignore
 
     # endregion ---------------- uno -----------------------------------
 
@@ -261,7 +261,7 @@ class Props:
         Returns:
             Any: Property Value
         """
-        if len(args) > 0:
+        if args:
             raise TypeError(f"get_xproperty_fast_value() takes 0 positional arguments but {len(args)} was given")
 
         count = len(kwargs)
@@ -300,10 +300,10 @@ class Props:
             XPropertySetInfo: Property Set Info
         """
         try:
-            xset = cls.get_xproperty_set(obj)
-            result = xset.getPropertySetInfo()
+            x_set = cls.get_xproperty_set(obj)
+            result = x_set.getPropertySetInfo()
             if result is None:
-                raise mEx.NoneError("None Value: xset.getPropertySetInfo() returned None")
+                raise mEx.NoneError("None Value: x_set.getPropertySetInfo() returned None")
             return result
         except Exception as e:
             raise mEx.PropertyGeneralError("Error getting property set info") from e
@@ -327,10 +327,7 @@ class Props:
         """
         try:
             info = cls.get_property_set_info(obj)
-            result = info.getPropertyByName(name)
-            if result is None:
-                pass
-            return result
+            return info.getPropertyByName(name)  # type: ignore
         except Exception as e:
             raise mEx.PropertyError(name) from e
 
@@ -346,11 +343,9 @@ class Props:
         Returns:
             bool: ``True`` if object contains property with name; Otherwise, ``False``.
         """
-        try:
-            xset = cls.get_property_set_info(obj)
-            return xset.hasPropertyByName(name)
-        except Exception:
-            pass
+        with contextlib.suppress(Exception):
+            x_set = cls.get_property_set_info(obj)
+            return x_set.hasPropertyByName(name)
         return False
 
     @staticmethod
@@ -423,7 +418,7 @@ class Props:
             if kargs_len == 0:
                 return ka
             valid_keys = ("obj", "prop_set", "name", "value")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("set_property() got an unexpected keyword argument")
             keys = ("obj", "prop_set")
@@ -436,7 +431,7 @@ class Props:
             return ka
 
         if count != 3:
-            raise TypeError("set_property() got an invalid numer of arguments")
+            raise TypeError("set_property() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -566,7 +561,7 @@ class Props:
             if kargs_len == 0:
                 return ka
             valid_keys = ("obj", "prop_set", "names", "from_obj", "from_props", "vals")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("set_properties() got an unexpected keyword argument")
             keys = ("obj", "prop_set")
@@ -584,8 +579,8 @@ class Props:
             ka[3] = kwargs.get("vals", None)
             return ka
 
-        if not count in (2, 3):
-            raise TypeError("set_properties() got an invalid numer of arguments")
+        if count not in (2, 3):
+            raise TypeError("set_properties() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -622,6 +617,7 @@ class Props:
         errs = []
         for i, name in enumerate(names):
             has_error = False
+            cargs = None
             try:
                 cargs = KeyValCancelArgs(Props.set_properties.__qualname__, name, vals[i])
                 cargs.event_data = prop_set
@@ -638,16 +634,16 @@ class Props:
             except Exception as e:
                 has_error = True
                 errs.append(Exception(f'Could not set property "{name}"', e))
-            if not has_error:
+            if not has_error and cargs:
                 _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
-        if len(errs) > 0:
+        if errs:
             raise mEx.MultiError(errs)
 
     @classmethod
     def _set_properties_from_props(cls, prop_set: XPropertySet, from_props: XPropertySet) -> None:
         errs = []
         if prop_set is None:
-            print(f"Property set is null; cannot set properties")
+            print("Property set is null; cannot set properties")
             return
         if from_props is None:
             print("Source property set is null; cannot set properties")
@@ -655,6 +651,7 @@ class Props:
         nms = cls.get_prop_names(from_props)
         for itm in nms:
             has_error = False
+            cargs = None
             try:
                 cargs = KeyValCancelArgs(Props.set_properties.__qualname__, itm, cls.get_property(from_props, itm))
                 cargs.event_data = prop_set
@@ -671,16 +668,16 @@ class Props:
             except Exception as e:
                 has_error = True
                 errs.append(Exception(f'Could not set property "{itm}"', e))
-            if not has_error:
+            if not has_error and cargs:
                 _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
-        if len(errs) > 0:
+        if errs:
             raise mEx.MultiError(errs)
 
     # endregion set_properties()
 
     @staticmethod
     def _set_by_attribute(obj: object, name: str, value: Any) -> bool:
-        # there is a bug in LibreOffice that in some cases getting XPrpertySet
+        # there is a bug in LibreOffice that in some cases getting XPropertySet
         # returns the interface but it is missing setPropertyValue and or getPropertySetInfo
         # this is the case with XChartDocument.getPageBackground() and XChartDocument.getFirstDiagram().getWall()
         # See Chart2.set_background_colors()
@@ -689,23 +686,21 @@ class Props:
         #   white_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "WhiteDay"), True)
         #   black_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "BlackDay"), True)
         # see Chart2.color_stock_bars()
-        # Even though the interface is misssing setPropertyValue and or getPropertySetInfo the
+        # Even though the interface is missing setPropertyValue and or getPropertySetInfo the
         # properties are still there.
         # That is why this method. It is a fallback when bug is found to set value by attribute.
         # see Props.set()
 
         if not hasattr(obj, name):
             return False
-        try:
+        with contextlib.suppress(AttributeError):
             setattr(obj, name, value)
             return True
-        except AttributeError:
-            pass
         return False
 
     @staticmethod
     def _get_by_attribute(obj: object, name: str) -> Tuple[bool, Any]:
-        # there is a bug in LibreOffice that in some cases getting XPrpertySet
+        # there is a bug in LibreOffice that in some cases getting XPropertySet
         # returns the interface but it is missing setPropertyValue and or getPropertySetInfo
         # this is the case with XChartDocument.getPageBackground() and XChartDocument.getFirstDiagram().getWall()
         # See Chart2.set_background_colors()
@@ -714,14 +709,12 @@ class Props:
         #   white_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "WhiteDay"), True)
         #   black_day_ps = mLo.Lo.qi(XPropertySet, mProps.Props.get(ct, "BlackDay"), True)
         # see Chart2.color_stock_bars()
-        # Even though the interface is misssing setPropertyValue and or getPropertySetInfo the
+        # Even though the interface is missing setPropertyValue and or getPropertySetInfo the
         # properties are still there.
         # That is why this method. It is a fallback when bug is found to get value by attribute.
         # see Props.get()
-        try:
+        with contextlib.suppress(AttributeError):
             return (True, getattr(obj, name))
-        except AttributeError:
-            pass
         return (False, None)
 
     @classmethod
@@ -767,7 +760,7 @@ class Props:
         .. versionchanged:: 0.9.4
             Now event is raised if a property fails to set.
         """
-        if len(kwargs) == 0:
+        if not kwargs:
             return
         if mInfo.Info.is_type_interface(obj, "com.sun.star.beans.XPropertySet"):
             ps = cast(XPropertySet, obj)
@@ -784,9 +777,9 @@ class Props:
             try:
                 if cargs.default:
                     cls.set_default(obj, cargs.key)
+                elif cargs.key == "":
+                    continue
                 else:
-                    if cargs.key == "":
-                        continue
                     ps.setPropertyValue(cargs.key, cargs.value)
             except (AttributeError, UnknownPropertyException) as e:
                 # handle a LibreOffice bug
@@ -815,13 +808,11 @@ class Props:
                 error_args.cancel = False
                 error_args.handled = False
                 _Events().trigger(PropsNamedEvent.PROP_SET_ERROR, error_args)
-                if error_args.handled or error_args.cancel:
-                    # remove the last error
-                    if errs:
-                        _ = errs.pop()
+                if (error_args.handled or error_args.cancel) and errs:
+                    _ = errs.pop()
             else:
                 _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
-        if len(errs) > 0:
+        if errs:
             raise mEx.MultiError(errs)
 
     @classmethod
@@ -880,13 +871,11 @@ class Props:
                 cargs.cancel = False
                 cargs.handled = False
                 _Events().trigger(PropsNamedEvent.PROP_SET_DEFAULT_ERROR, error_args)
-                if error_args.handled or error_args.cancel:
-                    # remove the last error
-                    if errs:
-                        _ = errs.pop()
+                if (error_args.handled or error_args.cancel) and errs:
+                    _ = errs.pop()
             else:
                 _Events().trigger(PropsNamedEvent.PROP_DEFAULT_SET, EventArgs.from_args(cargs))
-        if len(errs) > 0:
+        if errs:
             raise mEx.MultiError(errs)
 
     # endregion ---------------- set properties -----------------------
@@ -911,9 +900,7 @@ class Props:
         try:
             ps = mLo.Lo.qi(XPropertyState, obj, True)
             result = ps.getPropertyDefault(prop_name)
-            if result is None and default is not gUtil.NULL_OBJ:
-                return default
-            return result
+            return default if result is None and default is not gUtil.NULL_OBJ else result
         except mEx.MissingInterfaceError:
             if default is not gUtil.NULL_OBJ:
                 return default
@@ -966,7 +953,7 @@ class Props:
                     success, val = cls._get_by_attribute(ps, name)
                 except Exception as ex:
                     if type(e).__name__ == "com.sun.star.beans.UnknownPropertyException":
-                        raise e
+                        raise e from ex
                     raise mEx.UnKnownError(
                         f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
                     ) from ex
@@ -976,16 +963,14 @@ class Props:
                         raise e
                     raise mEx.UnKnownError(
                         f'Something went wrong. Could not find getPropertyValue attribute on property set. Tried getting "{name}" manually but failed.'
-                    )
-            # it is perfeclty fine for a property to have a value of None
-            if val is None and default is not gUtil.NULL_OBJ:
-                return default
-            return val
-        except UnknownPropertyException:
+                    ) from e
+            # it is perfectly fine for a property to have a value of None
+            return default if val is None and default is not gUtil.NULL_OBJ else val
+        except UnknownPropertyException as exc:
             # the property name is not in the property set
             if default is not gUtil.NULL_OBJ:
                 return default
-            raise mEx.PropertyNotFoundError(name)
+            raise mEx.PropertyNotFoundError(name) from exc
         except mEx.UnKnownError:
             raise
         except Exception as exx:
@@ -1061,7 +1046,7 @@ class Props:
             if kargs_len == 0:
                 return ka
             valid_keys = ("obj", "prop_set", "name")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_property() got an unexpected keyword argument")
             keys = ("obj", "prop_set")
@@ -1073,7 +1058,7 @@ class Props:
             return ka
 
         if count != 2:
-            raise TypeError("get_property() got an invalid numer of arguments")
+            raise TypeError("get_property() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
@@ -1102,7 +1087,7 @@ class Props:
             raise mEx.MissingInterfaceError(XPropertySet)
         props = list(prop_set.getPropertySetInfo().getProperties())
         props.sort(key=lambda prop: prop.Name)
-        return tuple(props)
+        return tuple(props)  # type: ignore
 
     @staticmethod
     def get_prop_names(obj: object) -> Tuple[str, ...]:
@@ -1122,9 +1107,7 @@ class Props:
         if prop_set is None:
             raise mEx.MissingInterfaceError(XPropertySet)
         props = prop_set.getPropertySetInfo().getProperties()
-        nms = []
-        for prop in props:
-            nms.append(prop.Name)
+        nms = [prop.Name for prop in props]
         return tuple(nms)
 
     @staticmethod
@@ -1193,15 +1176,15 @@ class Props:
             print("Could not convert object to an IndexAccess container")
             return
 
-        num_elems = in_acc.getCount()
-        print(f"No. of elements: {num_elems}")
-        if num_elems == 0:
+        num_elements = in_acc.getCount()
+        print(f"No. of elements: {num_elements}")
+        if num_elements == 0:
             return
-        for i in range(num_elems):
+        for i in range(num_elements):
             try:
                 # PropertyValue[] props = Lo.qi(PropertyValue[].class, inAcc.getByIndex(i));
                 # above line is original java code.
-                # perhapsh thre is a way to alos include PropertyValue[] queryInterface
+                # perhaps there is a way to also include PropertyValue[] queryInterface
                 props = mLo.Lo.qi(XPropertySet, in_acc.getByIndex(i))
                 if props is None:
                     return
@@ -1257,9 +1240,7 @@ class Props:
                     lines.append(f"{p.Name} = {p.Value}")
                 except AttributeError:
                     continue
-            if not lines:
-                return "[]"
-            return "[\n    " + "\n    ".join(lines) + "\n  ]"
+            return "[\n    " + "\n    ".join(lines) + "\n  ]" if lines else "[]"
 
         def get_pv_str_f_arg(vals) -> str:
             # com.sun.star.sheet.FunctionArgument
@@ -1272,9 +1253,7 @@ class Props:
                         lines.append(f"{p.Name}")
                 except AttributeError:
                     continue
-            if not lines:
-                return "[]"
-            return "[" + ", ".join(lines) + "]"
+            return "[" + ", ".join(lines) + "]" if lines else "[]"
 
         def get_property_set_str(prop_set, props) -> str:
             lines = []
@@ -1288,7 +1267,7 @@ class Props:
         if isinstance(val, str):
             return val
         try:
-            _ = iter(val)
+            _ = iter(val)  # type: ignore
         except TypeError:
             # not iterable
             is_iter = False
@@ -1297,13 +1276,11 @@ class Props:
             is_iter = True
         if is_iter:
             val_first = None
-            try:
-                val_first = val[0]
+            with contextlib.suppress(Exception):
+                val_first = val[0]  # type: ignore
                 if isinstance(val_first, str):
                     # assume Iterable[str]
-                    return ", ".join(val)
-            except Exception:
-                pass
+                    return ", ".join(val)  # type: ignore
             if val_first is None:
                 return str(val)
             t_name = getattr(val_first, "typeName", None)
@@ -1403,7 +1380,7 @@ class Props:
             if kargs_len == 0:
                 return ka
             valid_keys = ("title", "props", "prop_kind", "props_set")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("show_props() got an unexpected keyword argument")
             keys = ("title", "prop_kind")
@@ -1419,7 +1396,7 @@ class Props:
             return ka
 
         if count != 2:
-            raise TypeError("show_props() got an invalid numer of arguments")
+            raise TypeError("show_props() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -1428,7 +1405,7 @@ class Props:
 
         if mInfo.Info.is_type_interface(kargs[2], "com.sun.star.beans.XPropertySet"):
             # def show_props(prop_kind: str, props_set: XPropertySet)
-            return cls._show_props_str_xpropertyset(prop_kind=kargs[1], props_set=kargs[2])
+            return cls._show_props_str_xproperty_set(prop_kind=kargs[1], props_set=kargs[2])
         else:
             # def show_props(title: str, props: Sequence[PropertyValue])
             return cls._show_props_str_props(title=kargs[1], props=kargs[2])
@@ -1444,7 +1421,7 @@ class Props:
         print()
 
     @classmethod
-    def _show_props_str_xpropertyset(cls, prop_kind: str, props_set: XPropertySet) -> None:
+    def _show_props_str_xproperty_set(cls, prop_kind: str, props_set: XPropertySet) -> None:
         props = cls.props_set_to_tuple(props_set)
         if props is None:
             print(f"No. {prop_kind} properties found")
@@ -1475,7 +1452,7 @@ class Props:
         if xprops is None:
             return ()
         xprops_info = xprops.getPropertySetInfo()
-        return xprops_info.getProperties()
+        return xprops_info.getProperties()  # type: ignore
 
     props_set_to_array = props_set_to_tuple
 
@@ -1491,13 +1468,13 @@ class Props:
             str: Property inf format of 'Name: TypeName'
         """
         # p.Type is uno.Type
-        return f"{p.Name}: {p.Type.typeName}"
+        return f"{p.Name}: {p.Type.typeName}"  # type: ignore
 
     # endregion ---------------- show properties of an Object ----------
 
     # region ------------------- others --------------------------------
-    @staticmethod
-    def has(obj: object, name: str) -> bool:
+    @classmethod
+    def has(cls, obj: object, name: str) -> bool:
         """
         Gets if a object contains a property matching name
 
@@ -1531,14 +1508,14 @@ class Props:
         if type is None:
             print("type is None")
             return
-        xtype_detect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection")
-        if xtype_detect is None:
+        type_detect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection")
+        if type_detect is None:
             print("No type detector reference")
             return
 
-        xname_access = mLo.Lo.qi(XNameAccess, xtype_detect)
+        name_access = mLo.Lo.qi(XNameAccess, type_detect, True)
         try:
-            props = xname_access.getByName(type)
+            props = cast(Tuple[PropertyValue, ...], name_access.getByName(type))
             cls.show_props(type, props)
         except Exception:
             print(f"No properties for '{type}'")
