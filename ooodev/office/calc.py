@@ -219,13 +219,14 @@ class Calc:
         _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        _fnm = cargs.event_data["fnm"]
-        if _fnm:
-            doc = mLo.Lo.open_doc(fnm=_fnm, loader=loader)
+        if _fnm := cargs.event_data["fnm"]:
+            doc = mLo.Lo.open_doc(fnm=_fnm) if loader is None else mLo.Lo.open_doc(fnm=_fnm, loader=loader)
             _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
+        elif loader is None:
+            doc = cls.create_doc()
         else:
             doc = cls.create_doc(loader=loader)
-        return cls.get_ss_doc(doc)
+        return cls.get_ss_doc(doc)  # type: ignore
 
     # endregion open_doc()
 
@@ -264,7 +265,7 @@ class Calc:
             return False
         fnm = cargs.event_data["fnm"]
 
-        doc = mLo.Lo.qi(XComponent, doc, True)
+        doc = mLo.Lo.qi(XComponent, doc, raise_err=True)
         result = mLo.Lo.save_doc(doc=doc, fnm=fnm)
 
         _Events().trigger(CalcNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))

@@ -8,7 +8,6 @@ from com.sun.star.text import XText
 from com.sun.star.text import XTextCursor
 from com.sun.star.text import XTextDocument
 
-from ..events.args import event_args
 
 PathOrStr = Union[str, PathLike]
 """Path like object or string"""
@@ -56,5 +55,5 @@ DocOrText = Union[XTextDocument, XText]
 """Type of Text Document of Text"""
 
 
-EventCallback = Callable[[object, event_args.EventArgs], None]
+EventCallback = Callable[[Any, Any], None]
 """Event Callback"""

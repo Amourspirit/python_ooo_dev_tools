@@ -15,6 +15,7 @@ from .table_helper import TableHelper
 from . import lo as mLo  # lazy loading
 from . import file_io as mFileIO
 from .type_var import PathOrStr
+from ooodev.utils.inst.lo.doc_type import DocTypeStr
 
 # endregion Imports
 
@@ -111,7 +112,6 @@ class XML:
         try:
             pth = mFileIO.FileIO.get_absolute_path(xml_fnm)
             with open(pth, "w") as file:
-
                 sx: str = doc.toprettyxml(indent="  ")
                 # remove any empty lines, there if often a lot with toprettyxml()
                 lines = [line for line in sx.splitlines() if line.strip() != ""]
@@ -423,7 +423,7 @@ class XML:
     # region --------------- Filter ------------------------------------
 
     @staticmethod
-    def get_flat_fiter_name(doc_type: mLo.Lo.DocTypeStr) -> str:
+    def get_flat_filter_name(doc_type: DocTypeStr) -> str:
         """
         Gets the Flat XML filter name for the doc type.
 
@@ -433,21 +433,24 @@ class XML:
         Returns:
             str: Flat XML filter name.
         """
-        if doc_type == mLo.Lo.DocTypeStr.WRITER:
+        if doc_type == DocTypeStr.WRITER:
             return "OpenDocument Text Flat XML"
-        elif doc_type == mLo.Lo.DocTypeStr.CALC:
+        elif doc_type == DocTypeStr.CALC:
             return "OpenDocument Spreadsheet Flat XML"
-        elif doc_type == mLo.Lo.DocTypeStr.DRAW:
+        elif doc_type == DocTypeStr.DRAW:
             return "OpenDocument Drawing Flat XML"
-        elif doc_type == mLo.Lo.DocTypeStr.IMPRESS:
+        elif doc_type == DocTypeStr.IMPRESS:
             return "OpenDocument Presentation Flat XML"
         else:
             print("No Flat XML filter for this document type; using Flat text")
             return "OpenDocument Text Flat XML"
 
+    get_flat_fiter_name = get_flat_filter_name
+    # spelling fix
+
     # endregion ------------ Filter ------------------------------------
 
-    # region --------------- Formating --------------------------------
+    # region --------------- Formatting --------------------------------
 
     # region    indent()
     @overload

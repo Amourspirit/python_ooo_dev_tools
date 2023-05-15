@@ -38,7 +38,6 @@ _URI_FILE_RE = r"^(file:(?:/*))"
 
 
 class FileIO:
-
     # region ------------- file path methods ---------------------------
     @staticmethod
     def get_utils_folder() -> str:
@@ -454,8 +453,9 @@ class FileIO:
             Temporary file is created in system temp directory.
             Caller of this method is responsible for deleting the file.
         """
+        # sourcery skip: raise-specific-error
         if not im_format:
-            raise ValueError("im_format must not be empyt value")
+            raise ValueError("im_format must not be empty value")
         try:
             # delete=False keeps the file after tmp.Close()
             tmp = tempfile.NamedTemporaryFile(prefix="loTemp", suffix=f".{im_format}", delete=False)

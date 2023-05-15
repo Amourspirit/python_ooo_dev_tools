@@ -1,14 +1,15 @@
 """
-Important: XML.apply_xslt() is not availabe in macros.
-     XML.apply_xslt() requires lxml python package
+Important: XML.apply_xslt() is not available in macros.
+    XML.apply_xslt() requires lxml python package
 
 Convert XML to an Office document in two steps:
-     1) use the supplied XSLT to convert the XML
+    1) use the supplied XSLT to convert the XML
         into Flat XML understood by Office;
 
-     2) Use the correct Flat XML import filter to load
+    2) Use the correct Flat XML import filter to load
         the flat XML data into Office
 """
+from typing import cast
 import pytest
 
 # from ooodev.office.write import Write
@@ -22,6 +23,7 @@ from ooodev.utils.info import Info
 from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
 from ooodev.office.write import Write
+
 
 # region    Sheet Methods
 def test_transform_pay(loader, copy_fix_xml) -> None:
@@ -52,11 +54,11 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     ods_fnm = FileIO.create_temp_file("ods")
 
     # open temp file using Office's correct Flat XML filter
-    doc_type = Lo.ext_to_doc_type(Info.get_ext(ods_fnm))
+    doc_type = Lo.ext_to_doc_type(cast(str, Info.get_ext(ods_fnm)))
     assert doc_type == Lo.DocTypeStr.CALC
-    doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type, loader=loader)
+    doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type.get_doc_type(), loader=loader)
     assert doc is not None
-    GUI.set_visible(is_visible=visible, odoc=doc)
+    GUI.set_visible(visible=visible, doc=doc)
 
     Lo.delay(delay)
     Lo.save_doc(doc=doc, fnm=ods_fnm)
@@ -64,11 +66,11 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     Lo.delay(1000)
 
     doc = Calc.open_doc(fnm=ods_fnm, loader=loader)
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
 
     arr = Calc.get_array(sheet=sheet, range_name="A1:D5")
     if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
+        GUI.set_visible(visible=visible, doc=doc)
     Lo.delay(delay)
     # (('Purpose', 'Amount', 'Tax', 'Maturity'), ('CD', 12.95, 19.1234, 39508.0), ('DVD', 19.95, 19.4321, 39509.0), ('Clothes', 99.95, 18.5678, 39510.0), ('Book', 9.49, 18.9876, 39511.0))
     assert arr[0][0] == "Purpose"
@@ -88,8 +90,8 @@ def test_transform_pay(loader, copy_fix_xml) -> None:
     assert arr[4][0] == "Book"
     assert arr[4][3] == 39511.0
 
-    Lo.close(closeable=doc, deliver_ownership=False)
-    Lo.delay(1000)
+    Lo.close(closeable=doc, deliver_ownership=False)  # type: ignore
+    # Lo.delay(1000)
 
 
 def test_transform_clubs(loader, copy_fix_xml) -> None:
@@ -104,12 +106,12 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     - Open saved Write doc
     - get lines and test
     """
-    # for unknown reason gettin a strange fail on Ubuntu 20.04. Not tested on other os at this time.
+    # for unknown reason getting a strange fail on Ubuntu 20.04. Not tested on other os at this time.
     # tests/test_xml/test_in_filter.py .terminate called after throwing an instance of 'com::sun::star::lang::DisposedException'
     # If this test is run via VS Code plugin it passes. If run command line via pytest tests/ then if conditionally fails.
     # the conditions are as follows:
     #   Is not giving error in Calc
-    #   Is only erroring if window visibality is false. Setting visibility after document is loaded seems ok.
+    #   Is only erroring if window visibility is false. Setting visibility after document is loaded seems ok.
     #   Is only erroring when opening a flat doc ( in Write ).
     #
     # Solution:
@@ -135,11 +137,11 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     odt_fnm = FileIO.create_temp_file("odt")
 
     # open temp file using Office's correct Flat XML filter
-    doc_type = Lo.ext_to_doc_type(Info.get_ext(odt_fnm))
+    doc_type = Lo.ext_to_doc_type(cast(str, Info.get_ext(odt_fnm)))
     assert doc_type == Lo.DocTypeStr.WRITER
-    doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type, loader=loader)
+    doc = Lo.open_flat_doc(fnm=flat_fnm, doc_type=doc_type.get_doc_type(), loader=loader)
     assert doc is not None
-    GUI.set_visible(is_visible=visible, odoc=doc)
+    GUI.set_visible(visible=visible, doc=doc)
 
     Lo.delay(delay)
     Lo.save_doc(doc=doc, fnm=odt_fnm)
@@ -149,7 +151,7 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     doc = Write.open_doc(fnm=odt_fnm, loader=loader)
 
     if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
+        GUI.set_visible(visible=visible, doc=doc)
     Lo.delay(delay)
 
     cursor = Write.get_cursor(doc)
@@ -166,8 +168,8 @@ def test_transform_clubs(loader, copy_fix_xml) -> None:
     assert lines[1361] == "Contact: Randy Campbell"
     assert lines[1928] == "Nipomo Youth Wrestling Club I28"
 
-    Lo.close(closeable=doc, deliver_ownership=True)
-    Lo.delay(1000)
+    Lo.close(closeable=doc, deliver_ownership=True)  # type: ignore
+    # Lo.delay(1000)
 
 
 # endregion    Sheet Methods

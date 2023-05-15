@@ -45,7 +45,7 @@ class EventObserver(Protocol):
         """
         ...
 
-    def trigger(self, event_name: str, event_args: event_args.EventArgs):
+    def trigger(self, event_name: str, event_args: event_args.AbstractEvent):
         """
         Trigger event(s) for a given name.
 

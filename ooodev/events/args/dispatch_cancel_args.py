@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Any
-from .dispatch_args import AbstractDispacthArgs
+from .dispatch_args import AbstractDispatchArgs
 from .cancel_event_args import AbstractCancelEventArgs
 
 
-class AbstractDispatchCancelArgs(AbstractDispacthArgs, AbstractCancelEventArgs):
+class AbstractDispatchCancelArgs(AbstractDispatchArgs, AbstractCancelEventArgs):
     __slots__ = ()
 
     def __init__(self, source: Any, cmd: str, cancel=False) -> None:
@@ -29,12 +29,12 @@ class DispatchCancelArgs(AbstractDispatchCancelArgs):
     __slots__ = ("cmd", "source", "_event_name", "event_data", "cancel", "handled", "_event_source", "_kv_data")
 
     @staticmethod
-    def from_args(args: DispatchCancelArgs) -> DispatchCancelArgs:
+    def from_args(args: AbstractDispatchCancelArgs) -> DispatchCancelArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (DispatchCancelArgs): Existing Instance
+            args (AbstractDispatchCancelArgs): Existing Instance
 
         Returns:
             DispatchCancelArgs: args

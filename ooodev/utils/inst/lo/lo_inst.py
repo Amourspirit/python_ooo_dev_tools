@@ -3,9 +3,10 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
 from __future__ import annotations
+import contextlib
 from datetime import datetime, timezone
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
 from urllib.parse import urlparse
 import uno
 from com.sun.star.beans import XIntrospection
@@ -14,11 +15,13 @@ from com.sun.star.container import XNamed
 from com.sun.star.frame import XComponentLoader
 from com.sun.star.frame import XDesktop
 from com.sun.star.frame import XDispatchHelper
+from com.sun.star.frame import XDispatchProvider
 from com.sun.star.frame import XModel
 from com.sun.star.frame import XStorable
 from com.sun.star.io import IOException
 from com.sun.star.lang import XComponent
 from com.sun.star.lang import XMultiServiceFactory
+from com.sun.star.lang import XServiceInfo
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 
@@ -26,10 +29,11 @@ from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
 from ooo.dyn.lang.disposed_exception import DisposedException
 from ooo.dyn.util.close_veto_exception import CloseVetoException
 
+
 # if not mock_g.DOCS_BUILDING:
 # not importing for doc building just result in short import name for
 # args that use these.
-# this is also true becuase docs/conf.py ignores com import for autodoc
+# this is also true because docs/conf.py ignores com import for autodoc
 from ooodev.mock import mock_g
 
 # import module and not module content to avoid circular import issue.
@@ -75,6 +79,7 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
+    from com.sun.star.util import Date as UnoDate
 
 
 class LoInst:
@@ -97,28 +102,20 @@ class LoInst:
             events (EventObserver, optional): Event observer
         """
         # self._events = Events(self)
-        self._xcc: XComponentContext = None
-        self._doc: XComponent = None
+        self._xcc: XComponentContext | None = None
+        self._doc: XComponent | None = None
         """remote component context"""
-        self._xdesktop: XDesktop = None
+        self._xdesktop: XDesktop | None = None
         """remote desktop UNO service"""
-        self._mc_factory: XMultiComponentFactory = None
-        self._ms_factory: XMultiServiceFactory = None
+        self._mc_factory: XMultiComponentFactory | None = None
+        self._ms_factory: XMultiServiceFactory | None = None
         self._is_office_terminated: bool = False
-        self._lo_inst: ConnectBase = None
+        self._lo_inst: ConnectBase | None = None
         self._loader = None
         self._disposed = True
 
-        if opt is None:
-            self._opt = LoOptions()
-        else:
-            self._opt = opt
-
-        if events is None:
-            self._events = Events()
-        else:
-            self._events = events
-
+        self._opt = LoOptions() if opt is None else opt
+        self._events = Events() if events is None else events
         self._allow_print = self._opt.verbose
         self._set_lo_events()
 
@@ -176,18 +173,9 @@ class LoInst:
             self.bridge.addEventListener(self._event_listener)
 
     def on_lo_loading(self, source: Any, event: CancelEventArgs) -> None:
-        try:
+        with contextlib.suppress(Exception):
             if hasattr(self, "_bridge_component") and self.bridge is not None:
                 self.bridge.removeEventListener(self._event_listener)
-        except Exception:
-            pass
-
-    def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:
-        # clears Attributes that are dynamically created
-        dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "__null_date")
-        for attr in dattrs:
-            if hasattr(self, attr):
-                delattr(self, attr)
 
     # endregion Events
 
@@ -208,10 +196,12 @@ class LoInst:
     def qi(self, atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
         result = None
         if uno.isInterface(atype) and hasattr(obj, "queryInterface"):
-            uno_t = uno.getTypeByName(atype.__pyunointerface__)
+            uno_t = uno.getTypeByName(atype.__pyunointerface__)  # type: ignore
             result = obj.queryInterface(uno_t)
-        if raise_err is True and result is None:
+        if raise_err and result is None:
             raise mEx.MissingInterfaceError(atype)
+        if result is not None:
+            result = cast(T, result)
         return result
 
     # endregion qi()
@@ -220,22 +210,22 @@ class LoInst:
         """
         Gets current LO Component Context
         """
-        return self._xcc
+        return self._xcc  # type: ignore
 
     def get_desktop(self) -> XDesktop:
         """
         Gets current LO Desktop
         """
-        return self._xdesktop
+        return self._xdesktop  # type: ignore
 
     def get_component_factory(self) -> XMultiComponentFactory:
         """Gets current multi component factory"""
-        return self._mc_factory
+        return self._mc_factory  # type: ignore
 
     def get_service_factory(self) -> XMultiServiceFactory:
         """Gets current multi service factory"""
         # return cls._bridge_component
-        return self._ms_factory
+        return self._ms_factory  # type: ignore
 
     # region interface object creation
 
@@ -267,8 +257,8 @@ class LoInst:
         ...
 
     def create_instance_msf(
-        self, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None, raise_err: bool = False
-    ) -> T:
+        self, atype: Type[T], service_name: str, msf: XMultiServiceFactory | None = None, raise_err: bool = False
+    ) -> T | None:  # sourcery skip: raise-specific-error
         if self._ms_factory is None:
             raise Exception("No document found")
         try:
@@ -276,10 +266,10 @@ class LoInst:
                 obj = self._ms_factory.createInstance(service_name)
             else:
                 obj = msf.createInstance(service_name)
-            if raise_err is True and obj is None:
+            if raise_err and obj is None:
                 mEx.CreateInstanceMsfError(atype, service_name)
             interface_obj = self.qi(atype=atype, obj=obj)
-            if raise_err is True and interface_obj is None:
+            if raise_err and interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
             return interface_obj
         except mEx.CreateInstanceMsfError:
@@ -323,6 +313,7 @@ class LoInst:
     def create_instance_mcf(
         self, atype: Type[T], service_name: str, args: Tuple[Any, ...] | None = None, raise_err: bool = False
     ) -> T | None:
+        # sourcery skip: raise-specific-error
         #  create an interface object of class atype from the named service;
         #  uses XComponentContext and XMultiComponentFactory
         #  so only a bridge to office is needed
@@ -333,10 +324,10 @@ class LoInst:
                 obj = self._mc_factory.createInstanceWithArgumentsAndContext(service_name, args, self._xcc)
             else:
                 obj = self._mc_factory.createInstanceWithContext(service_name, self._xcc)
-            if raise_err is True and obj is None:
+            if raise_err and obj is None:
                 mEx.CreateInstanceMcfError(atype, service_name)
             interface_obj = self.qi(atype=atype, obj=obj)
-            if raise_err is True and interface_obj is None:
+            if raise_err and interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
             return interface_obj
         except mEx.CreateInstanceMcfError:
@@ -387,7 +378,7 @@ class LoInst:
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_LOADED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
         Note:
             When using this class to connect to a running office instance,  the ``connector`` parameter should be set to ``Lo.bridge_connector``, the existing bridge connecton.
@@ -413,10 +404,11 @@ class LoInst:
         .. versionchanged:: 0.9.8
             connector can now also be ``ConnectBase`` to allow for existing connections.
         """
+        # sourcery skip: extract-duplicate-method
         if mock_g.DOCS_BUILDING:
             # some component call this method and are triggered during docs building.
             # by adding this block this method will be exited if docs are building.
-            return None
+            return None  # type: ignore
 
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
@@ -539,6 +531,8 @@ class LoInst:
     def _try_to_terminate(self, num_tries: int) -> bool:
         if self._disposed:
             return True
+        if self._xdesktop is None:
+            return True
         try:
             is_dead = self._xdesktop.terminate()
             if is_dead:
@@ -557,6 +551,7 @@ class LoInst:
             return False
 
     def kill_office(self) -> None:
+        # sourcery skip: extract-method, raise-specific-error
         if self._lo_inst is None:
             self.print("No instance to kill")
             return
@@ -569,7 +564,7 @@ class LoInst:
             self._events.trigger(LoNamedEvent.RESET, eargs)
             self.print("Killed Office")
         except Exception as e:
-            raise Exception(f"Unbale to kill Office") from e
+            raise Exception("Unable to kill Office") from e
 
     # endregion office shutdown
 
@@ -617,12 +612,12 @@ class LoInst:
         self, fnm: PathOrStr, doc_type: LoDocType, loader: Optional[XComponentLoader] = None
     ) -> XComponent:
         if loader is None:
-            loader = self._loader
-        nn = mXML.XML.get_flat_fiter_name(doc_type=doc_type)
+            loader = cast(XComponentLoader, self._loader)
+        nn = mXML.XML.get_flat_filter_name(doc_type=doc_type.get_doc_type_str())
         self.print(f"Flat filter Name: {nn}")
         # do not set Hidden=True property here.
         # there is a strange error that pops up conditionally and it seems
-        # to be remedied by not seting Hidden=True
+        # to be remedied by not setting Hidden=True
         # see comments in tests.text_xml.test_in_filters.test_transform_clubs()
         return self.open_doc(fnm, loader, mProps.Props.make_props(FilterName=nn))
 
@@ -651,9 +646,10 @@ class LoInst:
         loader: Optional[XComponentLoader] = None,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
-        # Props and FileIO are called this method so triger global_reset first.
+        # sourcery skip: extract-method, raise-specific-error
+        # Props and FileIO are called this method so trigger global_reset first.
         if loader is None:
-            loader = self._loader
+            loader = cast(XComponentLoader, self._loader)
         cargs = CancelEventArgs(self.open_doc.__qualname__)
         cargs.event_data = {
             "fnm": fnm,
@@ -673,20 +669,21 @@ class LoInst:
         pth = mFileIO.FileIO.get_absolute_path(fnm)
 
         if props is None:
-            props = mProps.Props.make_props(Hidden=True)
-        open_file_url = None
-        if not mFileIO.FileIO.is_openable(pth):
-            if self.is_url(pth):
-                self.print(f"Will treat filename as a URL: '{pth}'")
-                open_file_url = pth
-            else:
-                raise Exception(f"Unable to get url from file: {pth}")
+            internal_props = mProps.Props.make_props(Hidden=True)
         else:
+            internal_props = tuple(props)
+        open_file_url = None
+        if mFileIO.FileIO.is_openable(pth):
             self.print(f"Opening {pth}")
             open_file_url = mFileIO.FileIO.fnm_to_url(pth)
 
+        elif self.is_url(pth):
+            self.print(f"Will treat filename as a URL: '{pth}'")
+            open_file_url = pth
+        else:
+            raise Exception(f"Unable to get url from file: {pth}")
         try:
-            doc = loader.loadComponentFromURL(open_file_url, "_blank", 0, props)
+            doc = loader.loadComponentFromURL(str(open_file_url), "_blank", 0, internal_props)
             self._ms_factory = self.qi(XMultiServiceFactory, doc)
             self._doc = doc
             if self._doc is None:
@@ -709,7 +706,7 @@ class LoInst:
 
     def open_readonly_doc(self, fnm: PathOrStr, loader: Optional[XComponentLoader] = None) -> XComponent:
         if loader is None:
-            loader = self._loader
+            loader = cast(XComponentLoader, self._loader)
         return self.open_doc(fnm, loader, mProps.Props.make_props(Hidden=True, ReadOnly=True))
 
     # endregion open_readonly_doc()
@@ -730,21 +727,21 @@ class LoInst:
             :ref:`ch02_save_doc`
         """
         e = ext.casefold().lstrip(".")
-        if e == "":
+        if not e:
             self.print("Empty string: Using writer")
             return LoDocTypeStr.WRITER
-        if e == "odt":
-            return LoDocTypeStr.WRITER
-        elif e == "odp":
-            return LoDocTypeStr.IMPRESS
-        elif e == "odg":
-            return LoDocTypeStr.DRAW
-        elif e == "ods":
-            return LoDocTypeStr.CALC
-        elif e == "odb":
+        if e == "odb":
             return LoDocTypeStr.BASE
         elif e == "odf":
             return LoDocTypeStr.MATH
+        elif e == "odg":
+            return LoDocTypeStr.DRAW
+        elif e == "odp":
+            return LoDocTypeStr.IMPRESS
+        elif e == "ods":
+            return LoDocTypeStr.CALC
+        elif e == "odt":
+            return LoDocTypeStr.WRITER
         else:
             self.print(f"Do not recognize extension '{ext}'; using writer")
             return LoDocTypeStr.WRITER
@@ -791,9 +788,10 @@ class LoInst:
         loader: Optional[XComponentLoader] = None,
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
+        # sourcery skip: raise-specific-error
         # Props is called in this method so trigger global_reset first
         if loader is None:
-            loader = self._loader
+            loader = cast(XComponentLoader, self._loader)
         cargs = CancelEventArgs(self.create_doc.__qualname__)
         cargs.event_data = {
             "doc_type": doc_type,
@@ -808,10 +806,12 @@ class LoInst:
 
         dtype = LoDocTypeStr(cargs.event_data["doc_type"])
         if props is None:
-            props = mProps.Props.make_props(Hidden=True)
+            local_props = mProps.Props.make_props(Hidden=True)
+        else:
+            local_props = tuple(props)
         self.print(f"Creating Office document {dtype}")
         try:
-            doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, props)
+            doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, local_props)
             self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
             self._doc = doc
             self._events.trigger(LoNamedEvent.DOC_CREATED, eargs)
@@ -832,7 +832,7 @@ class LoInst:
 
     def create_macro_doc(self, doc_type: LoDocTypeStr, loader: Optional[XComponentLoader] = None) -> XComponent:
         if loader is None:
-            loader = self._loader
+            loader = cast(XComponentLoader, self._loader)
         return self.create_doc(
             doc_type=doc_type,
             loader=loader,
@@ -854,8 +854,9 @@ class LoInst:
     def create_doc_from_template(
         self, template_path: PathOrStr, loader: Optional[XComponentLoader] = None
     ) -> XComponent:
+        # sourcery skip: raise-specific-error
         if loader is None:
-            loader = self._loader
+            loader = cast(XComponentLoader, self._loader)
         cargs = CancelEventArgs(self.create_doc_from_template.__qualname__)
         self._events.trigger(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
@@ -874,7 +875,7 @@ class LoInst:
             self._events.trigger(LoNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
             return self._doc
         except Exception as e:
-            raise Exception(f"Could not create document from template") from e
+            raise Exception("Could not create document from template") from e
 
     # endregion create_doc_from_template()
 
@@ -892,7 +893,7 @@ class LoInst:
             store.store()
             self.print("Saved the document by overwriting")
         except IOException as e:
-            raise Exception(f"Could not save the document") from e
+            raise Exception("Could not save the document") from e
 
         self._events.trigger(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
         return True
@@ -911,7 +912,8 @@ class LoInst:
     def save_doc(self, doc: object, fnm: PathOrStr, password: str, format: str) -> bool:
         ...
 
-    def save_doc(self, doc: object, fnm: PathOrStr, password: str = None, format: str = None) -> bool:
+    def save_doc(self, doc: object, fnm: PathOrStr, password: str | None = None, format: str | None = None) -> bool:
+        # sourcery skip: avoid-builtin-shadow
         cargs = CancelEventArgs(self.save_doc.__qualname__)
         cargs.event_data = {
             "doc": doc,
@@ -988,6 +990,7 @@ class LoInst:
         ...
 
     def ext_to_format(self, ext: str, doc_type: LoDocType = LoDocType.UNKNOWN) -> str:
+        # sourcery skip: collection-into-set, merge-comparisons, merge-duplicate-blocks, remove-redundant-if
         dtype = LoDocType(doc_type)
         s = ext.lower()
         if s == "doc":
@@ -1094,7 +1097,8 @@ class LoInst:
     def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str, password: str) -> bool:
         ...
 
-    def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> bool:
+    def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str, password: str | None = None) -> bool:
+        # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.store_doc_format.__qualname__)
         cargs.event_data = {
             "store": store,
@@ -1135,18 +1139,20 @@ class LoInst:
         ...
 
     def close(self, closeable: XCloseable, deliver_ownership=False) -> bool:
+        # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.close.__qualname__)
         cargs.event_data = deliver_ownership
         self._events.trigger(LoNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
             return False
         if closeable is None:
-            return
+            return False
         self.print("Closing the document")
         try:
             closeable.close(cargs.event_data)
             self._doc = None
             self._events.trigger(LoNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
+            return True
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
 
@@ -1175,6 +1181,7 @@ class LoInst:
     # ================= initialization via Addon-supplied context ====================
 
     def addon_initialize(self, addon_xcc: XComponentContext) -> XComponent:
+        # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.addon_initialize.__qualname__)
         cargs.event_data = {"addon_xcc": addon_xcc}
         eargs = EventArgs.from_args(cargs)
@@ -1190,15 +1197,13 @@ class LoInst:
             raise Exception("Office Service Manager is unavailable")
 
         try:
-            xdesktop: XDesktop = mc_factory.createInstanceWithContext("com.sun.star.frame.Desktop", xcc)
-        except Exception:
-            raise Exception("Could not access desktop")
+            xdesktop = self.qi(XDesktop, mc_factory.createInstanceWithContext("com.sun.star.frame.Desktop", xcc), True)
+        except Exception as e:
+            raise Exception("Could not access desktop") from e
         doc = xdesktop.getCurrentComponent()
         if doc is None:
             raise Exception("Could not access document")
-        self._ms_factory = self.qi(XMultiServiceFactory, doc)
-        if self._ms_factory in None:
-            raise mEx.MissingInterfaceError(XMultiServiceFactory)
+        self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
         self._doc = doc
         self._events.trigger(LoNamedEvent.DOC_OPENED, eargs)
         return doc
@@ -1227,9 +1232,7 @@ class LoInst:
         doc = xdesktop.getCurrentComponent()
         if doc is None:
             raise Exception("Could not access document")
-        self._ms_factory = self.qi(XMultiServiceFactory, doc)
-        if self._ms_factory in None:
-            raise mEx.MissingInterfaceError(XMultiServiceFactory)
+        self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
         self._doc = doc
         self._events.trigger(LoNamedEvent.DOC_OPENED, eargs)
         return doc
@@ -1254,7 +1257,8 @@ class LoInst:
     def dispatch_cmd(self, cmd: str, *, frame: XFrame) -> Any:
         ...
 
-    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> Any:
+    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue] | None = None, frame: XFrame | None = None) -> Any:
+        # sourcery skip: assign-if-exp, extract-method, remove-unnecessary-cast
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
         try:
@@ -1266,16 +1270,20 @@ class LoInst:
                 raise mEx.CancelEventError(cargs, f'Dispatch Command "{str_cmd}" has been canceled')
             props = cargs.event_data
             if props is None:
-                props = ()
+                dispatch_props = ()
+            else:
+                dispatch_props = tuple(props)
             if frame is None:
-                frame = self._xdesktop.getCurrentFrame()
+                desk_top = cast(XDesktop, self._xdesktop)
+                frame = desk_top.getCurrentFrame()
 
             helper = self.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
             if helper is None:
                 raise mEx.MissingInterfaceError(
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
-            result = helper.executeDispatch(frame, f".uno:{str_cmd}", "", 0, props)
+            provider = self.qi(XDispatchProvider, frame, True)
+            result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
             self._events.trigger(LoNamedEvent.DISPATCHED, eargs)
@@ -1287,7 +1295,7 @@ class LoInst:
 
     # endregion dispatch_cmd()
 
-    # ================= Uno cmds =========================
+    # ================= Uno Commands =========================
 
     @staticmethod
     def make_uno_cmd(self, item_name: str) -> str:
@@ -1297,12 +1305,12 @@ class LoInst:
     def extract_item_name(uno_cmd: str) -> str:
         try:
             foo_pos = uno_cmd.index("Foo.")
-        except ValueError:
-            raise ValueError(f"Could not find Foo header in command: '{uno_cmd}'")
+        except ValueError as e:
+            raise ValueError(f"Could not find Foo header in command: '{uno_cmd}'") from e
         try:
             lang_pos = uno_cmd.index("?language")
-        except ValueError:
-            raise ValueError(f"Could not find language header in command: '{uno_cmd}'")
+        except ValueError as exc:
+            raise ValueError(f"Could not find language header in command: '{uno_cmd}'") from exc
         start = foo_pos + 4
         return uno_cmd[start:lang_pos]
 
@@ -1316,14 +1324,14 @@ class LoInst:
             ts = mInfo.Info.get_interface_types(obj)
             title = "Object"
             if ts is not None and len(ts) > 0:
-                title = ts[0].getTypeName() + " " + title
+                title = f"{ts[0].getTypeName()} {title}"  # type: ignore
             inspector = self._mc_factory.createInstanceWithContext("org.openoffice.InstanceInspector", self._xcc)
             #       hands on second use
             if inspector is None:
                 self.print("Inspector Service could not be instantiated")
                 return
             self.print("Inspector Service instantiated")
-            intro = self.create_instance_mcf(XIntrospection, "com.sun.star.beans.Introspection")
+            intro = self.create_instance_mcf(XIntrospection, "com.sun.star.beans.Introspection", raise_err=True)
             intro_acc = intro.inspect(inspector)
             method = intro_acc.getMethod("inspect", -1)
             self.print(f"inspect() method was found: {method is not None}")
@@ -1366,7 +1374,7 @@ class LoInst:
 
     @staticmethod
     def is_none_or_empty(s: str) -> bool:
-        return s == None or len(s) == 0
+        return s is None or not s
 
     is_null_or_empty = is_none_or_empty
 
@@ -1404,7 +1412,7 @@ class LoInst:
 
     @overload
     @staticmethod
-    def print_names(names: Iterable[str]) -> None:
+    def print_names(names: Sequence[str]) -> None:
         ...
 
     @overload
@@ -1417,29 +1425,25 @@ class LoInst:
         if not names:
             print("  No names found")
             return
-        col_count = 1 if num_per_line < 1 else num_per_line
+        col_count = max(num_per_line, 1)
 
         lst_2d = mThelper.TableHelper.convert_1d_to_2d(
             seq_obj=sorted(names, key=str.casefold), col_count=col_count, empty_cell_val=""
         )
         longest = mThelper.TableHelper.get_largest_str(names)
         fmt_len = longest + 1
-        if longest > 0:
-            format_opt = FormatterTable(format=f"<{fmt_len}")
-        else:
-            format_opt = None
-
+        format_opt = FormatterTable(format=f"<{fmt_len}") if longest > 0 else None
         indent = "  "
         print(f"No. of names: {len(names)}")
         if format_opt:
-            acutal_count = len(lst_2d[0])
-            if acutal_count > 1:
+            actual_count = len(lst_2d[0])
+            if actual_count > 1:
                 # if this is more then on colum then print header
                 #  -----------|-----------|-----------
                 print(f"{indent}", end="")
-                for i, _ in enumerate(range(acutal_count)):
+                for i, _ in enumerate(range(actual_count)):
                     print("-" * fmt_len, end="")
-                    if i < acutal_count - 1:
+                    if i < actual_count - 1:
                         print("|-", end="")
                 print()
             for i, row in enumerate(lst_2d):
@@ -1490,10 +1494,10 @@ class LoInst:
 
         names_list = []
         for i in range(num_el):
-            named = con.getByIndex(i)
+            named = self.qi(XNamed, con.getByIndex(i), True)
             names_list.append(named.getName())
 
-        if len(names_list) == 0:
+        if not names_list:
             self.print("No element names found in the container")
             return None
         return names_list
@@ -1513,16 +1517,13 @@ class LoInst:
         return None
 
     def is_uno_interfaces(self, component: object, *args: str | UnoInterface) -> bool:
-        if len(args) == 0:
+        if not args:
             return False
         result = True
         for arg in args:
             try:
-                if isinstance(arg, str):
-                    t = uno.getClass(arg)
-                else:
-                    t = arg
-                obj = self.qi(t, component)
+                t = uno.getClass(arg) if isinstance(arg, str) else arg
+                obj = self.qi(t, component)  # type: ignore
                 if obj is None:
                     result = False
                     break
@@ -1543,27 +1544,27 @@ class LoInst:
     def lock_controllers(self) -> bool:
         # much faster updates as screen is basically suspended
         cargs = CancelEventArgs(self.lock_controllers.__qualname__)
-        self._events.trigger(LoNamedEvent.CONTROLERS_LOCKING, cargs)
+        self._events.trigger(LoNamedEvent.CONTROLLERS_LOCKING, cargs)
         if cargs.cancel:
             return False
         xmodel = self.qi(XModel, self._doc, True)
         xmodel.lockControllers()
-        self._events.trigger(LoNamedEvent.CONTROLERS_LOCKED, EventArgs(self))
+        self._events.trigger(LoNamedEvent.CONTROLLERS_LOCKED, EventArgs(self))
         return True
 
     def unlock_controllers(self) -> bool:
         cargs = CancelEventArgs(self.unlock_controllers.__qualname__)
-        self._events.trigger(LoNamedEvent.CONTROLERS_UNLOCKING, cargs)
+        self._events.trigger(LoNamedEvent.CONTROLLERS_UNLOCKING, cargs)
         if cargs.cancel:
             return False
         xmodel = self.qi(XModel, self._doc, True)
         if xmodel.hasControllersLocked():
             xmodel.unlockControllers()
-        self._events.trigger(LoNamedEvent.CONTROLERS_UNLOCKED, EventArgs.from_args(cargs))
+        self._events.trigger(LoNamedEvent.CONTROLLERS_UNLOCKED, EventArgs.from_args(cargs))
         return True
 
     def has_controllers_locked(self) -> bool:
-        xmodel = self.qi(XModel, self._doc)
+        xmodel = self.qi(XModel, self._doc, True)
         return xmodel.hasControllersLocked()
 
     def print(self, *args, **kwargs) -> None:
@@ -1589,13 +1590,13 @@ class LoInst:
                 # this is not always a XNumberFormatsSupplier such as *.odp documents
                 return self._null_date
             number_settings = n_supplier.getNumberFormatSettings()
-            d = number_settings.getPropertyValue("NullDate")
+            d = cast("UnoDate", number_settings.getPropertyValue("NullDate"))
             self._null_date = datetime(d.Year, d.Month, d.Day, tzinfo=timezone.utc)
         return self._null_date
 
     @property
     def is_loaded(self) -> bool:
-        return not self._lo_inst is None
+        return self._lo_inst is not None
 
     @property
     def is_macro_mode(self) -> bool:
@@ -1610,12 +1611,12 @@ class LoInst:
     @property
     def star_desktop(self) -> XDesktop:
         """Get current desktop"""
-        return self._xdesktop
+        return self._xdesktop  # type: ignore
 
     StarDesktop, stardesktop = star_desktop, star_desktop
 
     @property
-    def this_component(self) -> XComponent:
+    def this_component(self) -> XComponent | None:
         try:
             return self._this_component
         except AttributeError:
@@ -1635,7 +1636,9 @@ class LoInst:
                 self._doc = desktop.getCurrentComponent()
             if self._doc is None:
                 return None
-            impl = self._doc.ImplementationName
+            service_info = self.qi(XServiceInfo, self._doc, True)
+            # impl = self._doc.ImplementationName
+            impl = service_info.getImplementationName()
             if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
                 return None  # None when Basic IDE or welcome screen
             self._this_component = self._doc
@@ -1663,24 +1666,24 @@ class LoInst:
     XSCRIPTCONTEXT = xscript_context
 
     @property
-    def bridge(self) -> XComponent:
+    def bridge(self) -> XComponent | None:
         try:
             return self._bridge_component
         except AttributeError:
             try:
                 # when running as macro self._lo_inst will not have bridge_component
-                self._bridge_component = self._lo_inst.bridge_component
+                self._bridge_component = self._lo_inst.bridge_component  # type: ignore
             except AttributeError:
                 self._bridge_component = None
             return self._bridge_component
 
     @property
     def loader_current(self) -> XComponentLoader:
-        return self._loader
+        return self._loader  # type: ignore
 
     @property
     def bridge_connector(self) -> LoBridgeCommon:
-        return self._lo_inst
+        return self._lo_inst  # type: ignore
 
     @property
     def options(self) -> LoOptions:

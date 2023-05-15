@@ -269,7 +269,7 @@ class Selection(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def get_cursor(cls, *args, **kwargs) -> XTextCursor:
+    def get_cursor(cls, *args, **kwargs) -> XTextCursor | None:
         """
         Gets text cursor
 
@@ -282,7 +282,7 @@ class Selection(metaclass=StaticProperty):
             CursorError: If Unable to get cursor
 
         Returns:
-            XTextCursor: Cursor
+            XTextCursor | None: Cursor or ``None`` if unable to get cursor
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -337,7 +337,7 @@ class Selection(metaclass=StaticProperty):
             raise mEx.CursorError(str(e)) from e
 
     @staticmethod
-    def _get_cursor_obj(cursor_obj: DocOrCursor) -> XTextCursor:
+    def _get_cursor_obj(cursor_obj: DocOrCursor) -> XTextCursor | None:
         # sourcery skip: raise-specific-error
         try:
             # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor

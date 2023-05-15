@@ -243,10 +243,12 @@ class Lo(metaclass=StaticProperty):
 
                 from com.sun.star.util import XSearchable
                 cell_range = ...
-                srch = Lo.qi(XSearchable, cell_range)
-                sd = srch.createSearchDescriptor()
+                search = Lo.qi(XSearchable, cell_range)
+                sd = search.createSearchDescriptor()
         """
-        return cls._lo_inst.qi(atype, obj, raise_err)
+        if raise_err:
+            return cls._lo_inst.qi(atype, obj, raise_err)
+        return cls._lo_inst.qi(atype, obj)
 
     # endregion qi()
 
@@ -312,8 +314,8 @@ class Lo(metaclass=StaticProperty):
 
     @classmethod
     def create_instance_msf(
-        cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory = None, raise_err: bool = False
-    ) -> T:
+        cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory | None = None, raise_err: bool = False
+    ) -> T | None:
         """
         Creates an instance classified by the specified service name and
         optionally passes arguments to that instance.
@@ -1546,7 +1548,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def print_names(cls, names: Iterable[str]) -> None:
+    def print_names(cls, names: Sequence[str]) -> None:
         ...
 
     @overload

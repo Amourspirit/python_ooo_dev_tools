@@ -5,11 +5,11 @@ This module is for the purpose of sharing events between classes.
 from __future__ import annotations
 import contextlib
 from weakref import ref, ReferenceType, proxy
-from typing import Any, Dict, List, NamedTuple, Generator
+from typing import Any, Dict, List, NamedTuple, Generator, Callable
 from . import event_singleton
 from ..proto import event_observer
 from ..utils.type_var import EventCallback as EventCallback
-from .args.event_args import EventArgs
+from .args.event_args import EventArgs, AbstractEvent
 from .args.generic_args import GenericArgs as GenericArgs
 
 
@@ -72,19 +72,19 @@ class _event_base(object):
                 pass
         return result
 
-    def _set_event_args(self, event_name: str, event_args: EventArgs) -> None:
+    def _set_event_args(self, event_name: str, event_args: AbstractEvent) -> None:
         if event_args is None:
             return
         event_args._event_name = event_name
-        event_args._event_source = self
+        event_args._event_source = self  # type: ignore
 
-    def trigger(self, event_name: str, event_args: EventArgs, *args, **kwargs):
+    def trigger(self, event_name: str, event_args: AbstractEvent, *args, **kwargs):
         """
         Trigger event(s) for a given name.
 
         Args:
             event_name (str): Name of event to trigger
-            event_args (EventArgs): Event args passed to the callback for trigger.
+            event_args (AbstractEvent): Event args passed to the callback for trigger.
             args (Any, optional): Optional positional args to pass to callback
             kwargs (Any, optional): Optional keyword args to pass to callback
 
@@ -151,17 +151,17 @@ class Events(_event_base):
         # register wih LoEvents so this instance get triggered when LoEvents() are triggered.
         LoEvents().add_observer(self)
 
-    def trigger(self, event_name: str, event_args: EventArgs):
+    def trigger(self, event_name: str, event_args: AbstractEvent):
         if self._t_args is None:
             super().trigger(event_name=event_name, event_args=event_args)
         else:
             super().trigger(event_name, event_args, *self._t_args.args, **self._t_args.kwargs)
 
-    def _set_event_args(self, event_name: str, event_args: EventArgs) -> None:
+    def _set_event_args(self, event_name: str, event_args: AbstractEvent) -> None:
         if event_args is None:
             return
         event_args._event_name = event_name
-        event_args._event_source = self if self._source is None else self._source
+        event_args._event_source = self if self._source is None else self._source  # type: ignore
         if event_args.source is None:
             event_args.source = self if self._source is None else self._source
 
@@ -201,11 +201,11 @@ class LoEvents(_event_base):
         for observer in args:
             self._observers.append(ref(observer))
 
-    def trigger(self, event_name: str, event_args: EventArgs):
+    def trigger(self, event_name: str, event_args: AbstractEvent):
         super().trigger(event_name, event_args)
         self._update_observers(event_name, event_args)
 
-    def _update_observers(self, event_name: str, event_args: EventArgs) -> None:
+    def _update_observers(self, event_name: str, event_args: AbstractEvent) -> None:
         if self._observers is not None:
             cleanup = None
             for i, observer in enumerate(self._observers):
@@ -222,7 +222,7 @@ class LoEvents(_event_base):
                     _ = self._observers.pop(i)
 
 
-class DummEvents:
+class DummyEvents:
     """Dummy events class for ignoring events."""
 
     def __init__(self, *args, **kwargs) -> None:
@@ -234,7 +234,7 @@ class DummEvents:
     def remove(self, event_name: str, callback: EventCallback) -> bool:
         pass
 
-    def trigger(self, event_name: str, event_args: EventArgs, *args, **kwargs):
+    def trigger(self, event_name: str, event_args: AbstractEvent, *args, **kwargs):
         pass
 
 
@@ -253,7 +253,7 @@ def event_ctx(*args: EventArg) -> Generator[event_observer.EventObserver, None, 
     """
     try:
         # yields a weakref.proxy obj
-        # wekaref is dead as soon as e_obj is set to none.
+        # weakref is dead as soon as e_obj is set to none.
         e_obj = Events()  # automatically adds itself as an observer to LoEvents()
         for arg in args:
             e_obj.on(arg.name, arg.callback)
@@ -265,7 +265,7 @@ def event_ctx(*args: EventArg) -> Generator[event_observer.EventObserver, None, 
         _ = None  # just to make sure _ is not a ref to e_obj
 
 
-def is_meth_event(source: str, meth: callable) -> bool:
+def is_meth_event(source: str, meth: Callable) -> bool:
     """
     Gets if event source is the same as meth.
     This method for for core events.
@@ -277,8 +277,6 @@ def is_meth_event(source: str, meth: callable) -> bool:
     Returns:
         bool: True if event is raised by meth; Otherwise; False
     """
-    try:
+    with contextlib.suppress(Exception):
         return source == meth.__qualname__
-    except Exception:
-        pass
     return False
