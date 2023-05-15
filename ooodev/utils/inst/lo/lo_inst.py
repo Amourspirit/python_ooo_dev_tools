@@ -68,7 +68,7 @@ if TYPE_CHECKING:
         from typing import Literal  # Py >= 3.8
     except ImportError:
         from typing_extensions import Literal
-    from com.sun.star.beans import PropertyValue
+    from ooo.dyn.beans.property_value import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
@@ -88,7 +88,7 @@ class LoInst:
 
     This class is of advanced usage and is not intended for general use.
 
-    In most cases, you should use the :py:class:`~ooodev.utils.lo.Lo` stactic class instead.
+    In most cases, you should use the :py:class:`~ooodev.utils.lo.Lo` static class instead.
 
     This class mirrors the properties and methods of the ``Lo`` class so for documentation see :py:class:`ooodev.utils.lo.Lo`,
     """
@@ -683,7 +683,7 @@ class LoInst:
         else:
             raise Exception(f"Unable to get url from file: {pth}")
         try:
-            doc = loader.loadComponentFromURL(str(open_file_url), "_blank", 0, internal_props)
+            doc = loader.loadComponentFromURL(str(open_file_url), "_blank", 0, internal_props)  # type: ignore
             self._ms_factory = self.qi(XMultiServiceFactory, doc)
             self._doc = doc
             if self._doc is None:
@@ -811,7 +811,7 @@ class LoInst:
             local_props = tuple(props)
         self.print(f"Creating Office document {dtype}")
         try:
-            doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, local_props)
+            doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, local_props)  # type: ignore
             self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
             self._doc = doc
             self._events.trigger(LoNamedEvent.DOC_CREATED, eargs)
@@ -868,7 +868,7 @@ class LoInst:
 
         props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
         try:
-            self._doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)
+            self._doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)  # type: ignore
             self._ms_factory = self.qi(XMultiServiceFactory, self._doc)
             if self._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
@@ -1120,7 +1120,7 @@ class LoInst:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=fmt)
             else:
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=fmt, Password=password)
-            store.storeToURL(save_file_url, store_props)
+            store.storeToURL(save_file_url, store_props)  # type: ignore
         except IOException as e:
             raise Exception(f"Could not save '{pth}'") from e
         self._events.trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
@@ -1283,7 +1283,7 @@ class LoInst:
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             provider = self.qi(XDispatchProvider, frame, True)
-            result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)
+            result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)  # type: ignore
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
             self._events.trigger(LoNamedEvent.DISPATCHED, eargs)
@@ -1297,12 +1297,10 @@ class LoInst:
 
     # ================= Uno Commands =========================
 
-    @staticmethod
     def make_uno_cmd(self, item_name: str) -> str:
         return f"vnd.sun.star.script:Foo/Foo.{item_name}?language=Java&location=share"
 
-    @staticmethod
-    def extract_item_name(uno_cmd: str) -> str:
+    def extract_item_name(self, uno_cmd: str) -> str:
         try:
             foo_pos = uno_cmd.index("Foo.")
         except ValueError as e:

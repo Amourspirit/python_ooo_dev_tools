@@ -19,9 +19,12 @@ from com.sun.star.document import XTypeDetection
 from com.sun.star.ui import ItemStyle  # const
 from com.sun.star.ui import ItemType  # const
 
+from ooo.dyn.beans.property_value import PropertyValue
+from ooo.dyn.beans.property import Property
+
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import Property, PropertyValue, XPropertySetInfo
+    from com.sun.star.beans import XPropertySetInfo
     from com.sun.star.beans import XMultiPropertySet
 
     # import module and not module content to avoid circular import issue.

@@ -20,7 +20,7 @@ from com.sun.star.frame import XStorable
 # if not mock_g.DOCS_BUILDING:
 # not importing for doc building just result in short import name for
 # args that use these.
-# this is also true becuase docs/conf.py ignores com import for autodoc
+# this is also true because docs/conf.py ignores com import for autodoc
 from ..mock import mock_g
 from .inst.lo import lo_inst
 
@@ -46,7 +46,7 @@ if TYPE_CHECKING:
         from typing import Literal  # Py >= 3.8
     except ImportError:
         from typing_extensions import Literal
-    from com.sun.star.beans import PropertyValue
+    from ooo.dyn.beans.property_value import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
@@ -160,7 +160,7 @@ class Lo(metaclass=StaticProperty):
     ConnectSocket = connectors.ConnectSocket
     """Alias of connectors.ConnectSocket"""
 
-    _lo_inst: lo_inst.LoInst = None
+    _lo_inst: lo_inst.LoInst = None  # type: ignore
 
     # region    qi()
 
@@ -349,7 +349,10 @@ class Lo(metaclass=StaticProperty):
                 src_con = Lo.create_instance_msf(XSheetCellRangeContainer, "com.sun.star.sheet.SheetCellRanges")
 
         """
-        return cls._lo_inst.create_instance_msf(atype, service_name, msf, raise_err)
+        if raise_err:
+            return cls._lo_inst.create_instance_msf(atype, service_name, msf, raise_err)
+        else:
+            return cls._lo_inst.create_instance_msf(atype, service_name, msf)
 
     # endregion create_instance_msf()
 
@@ -425,7 +428,10 @@ class Lo(metaclass=StaticProperty):
                 tk = Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit")
 
         """
-        return cls._lo_inst.create_instance_mcf(atype, service_name, args, raise_err)
+        if raise_err:
+            return cls._lo_inst.create_instance_mcf(atype, service_name, args, raise_err)
+
+        return cls._lo_inst.create_instance_mcf(atype, service_name, args)
 
     # endregion create_instance_mcf()
 
@@ -479,7 +485,7 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.OFFICE_LOADED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
             - :py:meth:`open_doc`
@@ -501,7 +507,7 @@ class Lo(metaclass=StaticProperty):
         if mock_g.DOCS_BUILDING:
             # some component call this method and are triggered during docs building.
             # by adding this block this method will be exited if docs are building.
-            return None
+            return None  # type: ignore
 
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
@@ -587,6 +593,8 @@ class Lo(metaclass=StaticProperty):
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
         """
+        if loader is None:
+            return cls._lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type)
         return cls._lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type, loader=loader)
 
     # endregion open_flat_doc()
@@ -641,7 +649,7 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
             - :py:meth:`~Lo.open_readonly_doc`
@@ -659,7 +667,7 @@ class Lo(metaclass=StaticProperty):
                     doc = Lo.open_doc("/home/user/fancy.odt", loader)
                     ...
         """
-        return cls._lo_inst.open_doc(fnm=fnm, loader=loader, props=props)
+        return cls._lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
 
     # endregion open_doc()
 
@@ -697,6 +705,8 @@ class Lo(metaclass=StaticProperty):
         Attention:
             :py:meth:`~.utils.lo.Lo.open_doc` method is called along with any of its events.
         """
+        if loader is None:
+            return cls._lo_inst.open_readonly_doc(fnm=fnm)
         return cls._lo_inst.open_readonly_doc(fnm=fnm, loader=loader)
 
     # endregion open_readonly_doc()
@@ -781,12 +791,12 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
             :ref:`ch02_create_doc`
         """
-        return cls._lo_inst.create_doc(doc_type=doc_type, loader=loader, props=props)
+        return cls._lo_inst.create_doc(doc_type=doc_type, loader=loader, props=props)  # type: ignore
 
     # endregion create_doc()
 
@@ -819,6 +829,8 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :ref:`ch02_create_doc`
         """
+        if loader is None:
+            return cls._lo_inst.create_macro_doc(doc_type=doc_type)
         return cls._lo_inst.create_macro_doc(doc_type=doc_type, loader=loader)
 
     # endregion create_macro_doc()
@@ -852,6 +864,8 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: document as component.
         """
+        if loader is None:
+            return cls._lo_inst.create_doc_from_template(template_path=template_path)
         return cls._lo_inst.create_doc_from_template(template_path=template_path, loader=loader)
 
     # endregion create_doc_from_template()
@@ -936,7 +950,7 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def save_doc(cls, doc: object, fnm: PathOrStr, password: str = None, format: str = None) -> bool:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str | None = None, format: str | None = None) -> bool:
         """
         Save document
 
@@ -959,7 +973,7 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
         Attention:
             :py:meth:`~.utils.lo.Lo.store_doc` method is called along with any of its events.
@@ -967,7 +981,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :ref:`ch02_save_doc`
         """
-        return cls._lo_inst.save_doc(doc=doc, fnm=fnm, password=password, format=format)
+        return cls._lo_inst.save_doc(doc=doc, fnm=fnm, password=password, format=format)  # type: ignore
 
     # endregion save_doc()
 
@@ -1027,12 +1041,14 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_STORED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
             - :py:meth:`~.Lo.store_doc_format`
             - :ref:`ch02_save_doc`
         """
+        if password is None:
+            return cls._lo_inst.store_doc(store=store, doc_type=doc_type, fnm=fnm)
         return cls._lo_inst.store_doc(store=store, doc_type=doc_type, fnm=fnm, password=password)
 
     # endregion  store_doc()
@@ -1140,7 +1156,7 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str = None) -> bool:
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str | None = None) -> bool:
         """
         Store document as format.
 
@@ -1163,11 +1179,13 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_STORED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
 
         See Also:
             :py:meth:`~.Lo.store_doc`
         """
+        if password is None:
+            return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format)
         return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format, password=password)
 
     # endregion store_doc_format()
@@ -1361,14 +1379,14 @@ class Lo(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] = None, frame: XFrame = None) -> Any:
+    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] | None = None, frame: XFrame | None = None) -> Any:
         """
         Dispatches a LibreOffice command
 
         Args:
             cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
             props (PropertyValue, optional): properties for dispatch
-            frame (XFrame, optonal): Frame to dispatch to.
+            frame (XFrame, optional): Frame to dispatch to.
 
         Raises:
             CancelEventError: If Dispatching is canceled via event.
@@ -1393,7 +1411,7 @@ class Lo(metaclass=StaticProperty):
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
         """
-        return cls._lo_inst.dispatch_cmd(cmd=cmd, props=props, frame=frame)
+        return cls._lo_inst.dispatch_cmd(cmd=cmd, props=props, frame=frame)  # type: ignore
 
     # endregion dispatch_cmd()
 
@@ -1488,7 +1506,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True if None or empty string; Otherwise, False
         """
-        return s == None or len(s) == 0
+        return s is None or not s
 
     is_null_or_empty = is_none_or_empty
 
@@ -1616,7 +1634,10 @@ class Lo(metaclass=StaticProperty):
         .. versionchanged:: 0.6.7
             Added ``format_opt`` parameter
         """
-        cls._lo_inst.print_table(name=name, table=table, format_opt=format_opt)
+        if format_opt is None:
+            cls._lo_inst.print_table(name=name, table=table)
+        else:
+            cls._lo_inst.print_table(name=name, table=table, format_opt=format_opt)
 
     # endregion print_table()
 
@@ -1765,7 +1786,7 @@ class Lo(metaclass=StaticProperty):
         event is canceled the this method will not print.
 
         :events:
-           .. include:: ../../resources/global/printing_events.rst
+            .. include:: ../../resources/global/printing_events.rst
 
         Note:
             .. include:: ../../resources/global/printing_note.rst
@@ -1786,25 +1807,15 @@ class Lo(metaclass=StaticProperty):
         """
         return cls._lo_inst.null_date
 
-    @null_date.setter
-    def null_date(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-
     @classproperty
     def is_loaded(cls) -> bool:
         """
         Gets office is currently loaded
 
         Returns:
-            bool: True if load_office has been called; Othwriwse, False
+            bool: True if load_office has been called; Otherwise, False
         """
         return cls._lo_inst is not None
-
-    @is_loaded.setter
-    def is_loaded(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
     def is_macro_mode(cls) -> bool:
@@ -1815,11 +1826,6 @@ class Lo(metaclass=StaticProperty):
             bool: True if running as a macro; Otherwise, False
         """
         return cls._lo_inst.is_macro_mode
-
-    @is_macro_mode.setter
-    def is_macro_mode(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
     def star_desktop(cls) -> XDesktop:
@@ -1842,7 +1848,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
-        return cls._lo_inst.this_component
+        return cls._lo_inst.this_component  # type: ignore
 
     ThisComponent, thiscomponent = this_component, this_component
 
@@ -1866,7 +1872,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             XComponent: bridge component
         """
-        return cls._lo_inst.bridge
+        return cls._lo_inst.bridge  # type: ignore
 
     @classproperty
     def loader_current(cls) -> XComponentLoader:
