@@ -1,5 +1,6 @@
 # region Imports
 from __future__ import annotations
+import contextlib
 from typing import Tuple, overload
 
 import uno
@@ -99,7 +100,7 @@ class Chart:
         cls, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
     ) -> XChartDocument:
         try:
-            ashape = mDraw.Draw.add_shape(
+            shape = mDraw.Draw.add_shape(
                 slide=slide,
                 shape_type=DrawingShapeKind.OLE2_SHAPE,
                 x=x,
@@ -107,7 +108,7 @@ class Chart:
                 width=width,
                 height=height,
             )
-            chart_doc = cls._get_chart_doc_shape(ashape)
+            chart_doc = cls._get_chart_doc_shape(shape)
             cls.set_chart_type(chart_doc=chart_doc, diagram_name=diagram_name)
             return chart_doc
         except mEx.ChartError:
@@ -140,7 +141,7 @@ class Chart:
 
             addrs = [cells_range]
             # first boolean: has column headers?; second boolean: has row headers?
-            tbl_charts.addNewByName(chart_name, rect, addrs, True, True)
+            tbl_charts.addNewByName(chart_name, rect, addrs, True, True)  # type: ignore
             # 2nd last arg: whether the topmost row of the source data will be used
             # to set labels for the category axis or the legend.
             # last arg: whether the leftmost column of the source data will be
@@ -164,7 +165,7 @@ class Chart:
     @classmethod
     def _insert_chart_doc(
         cls, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
-    ) -> XChartDocument:
+    ) -> XChartDocument | None:
         try:
             tc = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True)
             ps = mLo.Lo.qi(XPropertySet, tc, True)
@@ -178,7 +179,7 @@ class Chart:
 
             # set size and position
             shape = mLo.Lo.qi(XShape, tc, True)
-            shape.setSize(UnoSize(width * 1_000, height * 1_000))
+            shape.setSize(UnoSize(width * 1_000, height * 1_000))  # type: ignore
 
             ps.setPropertyValue("VertOrient", VertOrientation.NONE)
             ps.setPropertyValue("HoriOrient", HoriOrientation.NONE)
@@ -189,11 +190,13 @@ class Chart:
             chart_doc = mLo.Lo.qi(XChartDocument, ps.getPropertyValue("Model"))
             if chart_doc is not None:
                 cls.set_chart_type(chart_doc=chart_doc, diagram_name=diagram_name)
+                return chart_doc
+            return None
         except Exception as e:
             raise mEx.ChartError("Unable to insert chart") from e
 
     @classmethod
-    def insert_chart(cls, *args, **kwargs) -> XChartDocument:
+    def insert_chart(cls, *args, **kwargs) -> XChartDocument | None:
         """
         Insert a chart using the given name as name of the OLE object and
         the range as corresponding range of data to be used for rendering.
@@ -222,14 +225,14 @@ class Chart:
             ChartError: If unable to insert chart.
 
         Returns:
-            XChartDocument: Chart Document
+            XChartDocument: Chart Document on success; Otherwise, ``None``.
         """
-        if len(args) > 0:
+        if args:
             raise TypeError(f"Insert_chart() takes 0 positional arguments but {len(args)} was given")
 
         count = len(kwargs)
 
-        if not count in (6, 8):
+        if count not in {6, 8}:
             raise TypeError("insert_chart() got an invalid number of arguments")
 
         if count == 6:
@@ -253,7 +256,7 @@ class Chart:
     @classmethod
     def get_table_chart_access(cls, sheet: XSpreadsheet) -> XNameAccess:
         """
-        Get XnameAccess interface of sheet charts
+        Get XNameAccess interface of sheet charts
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -324,8 +327,7 @@ class Chart:
             XTableChart: Table Chart Interface.
         """
         try:
-            tbl_chart = mLo.Lo.qi(XTableChart, tc_access.getByName(chart_name), True)
-            return tbl_chart
+            return mLo.Lo.qi(XTableChart, tc_access.getByName(chart_name), True)
         except Exception as e:
             raise mEx.ChartError(f"Could Not Access: {chart_name}") from e
 
@@ -344,8 +346,8 @@ class Chart:
         """
         try:
             eos = mLo.Lo.qi(XEmbeddedObjectSupplier, tbl_chart, True)
-            intf = eos.getEmbeddedObject()
-            return mLo.Lo.qi(XChartDocument, intf, True)
+            embedded = eos.getEmbeddedObject()
+            return mLo.Lo.qi(XChartDocument, embedded, True)
         except Exception as e:
             raise mEx.ChartError("Unable to get chart.") from e
 
@@ -367,12 +369,7 @@ class Chart:
                 shape_props = mLo.Lo.qi(XPropertySet, shape, True)
             except mEx.MissingInterfaceError as ex:
                 raise mEx.ChartError("Unable to access shape properties") from ex
-            # set the class id for charts
-            # shape_props.setPropertyValue("CLSID", str(mLo.Lo.CLSID.CHART))
-
-            # retrieve the chart document as model of the OLE shape
-            chart_doc = mLo.Lo.qi(XChartDocument, shape_props.getPropertyValue("Model"), True)
-            return chart_doc
+            return mLo.Lo.qi(XChartDocument, shape_props.getPropertyValue("Model"), True)
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -420,7 +417,7 @@ class Chart:
             if kargs_len == 0:
                 return ka
             valid_keys = ("tbl_chart", "shape", "sheet", "chart_name")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_chart_doc() got an unexpected keyword argument")
             keys = ("tbl_chart", "sheet", "shape")
@@ -433,7 +430,7 @@ class Chart:
             ka[2] = kwargs.get("chart_name", None)
             return ka
 
-        if not count in (1, 2):
+        if count not in (1, 2):
             raise TypeError("get_chart_doc() got an invalid number of arguments")
 
         kargs = get_kwargs()
@@ -465,9 +462,9 @@ class Chart:
         Raises:
             ChartError: If error occurs.
         """
+        chart_type = f"com.sun.star.chart.{diagram_name}"
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, chart_doc, True)
-            chart_type = f"com.sun.star.chart.{diagram_name}"
             diagram = mLo.Lo.qi(XDiagram, msf.createInstance(chart_type), True)
             chart_doc.setDiagram(diagram)
         except Exception as e:
@@ -492,7 +489,7 @@ class Chart:
         except mEx.ChartError:
             raise
         except Exception as e:
-            raise mEx.ChartError("Error getting chart type")
+            raise mEx.ChartError("Error getting chart type") from e
 
     @classmethod
     def remove_chart(cls, sheet: XSpreadsheet, chart_name: str) -> bool:
@@ -516,7 +513,7 @@ class Chart:
             return False
         except mEx.MissingInterfaceError as e:
             mLo.Lo.print("Unable to get name access to chart table")
-            mLo.Lo.print(f"  {ce}")
+            mLo.Lo.print(f"  {e}")
             return False
 
         if tc_access.hasByName(chart_name):
@@ -590,14 +587,12 @@ class Chart:
             chart_class_id = str(mLo.Lo.CLSID.CHART)
             shape = None
             for i in range(num_shapes):
-                try:
+                with contextlib.suppress(Exception):
                     shape = mLo.Lo.qi(XShape, draw_page.getByIndex(i), True)
                     class_id = str(mProps.Props.get(shape, "CLSID"))
 
                     if class_id.casefold() == chart_class_id:
                         break
-                except Exception:
-                    pass
             if shape is None:
                 raise mEx.ShapeMissingError("Unable to find any chart on sheet")
             else:
@@ -631,7 +626,7 @@ class Chart:
         except mEx.ChartError:
             raise
         except Exception as e:
-            raise mEx.ChartError("Error geting chart document title") from e
+            raise mEx.ChartError("Error getting chart document title") from e
 
     @staticmethod
     def set_title(chart_doc: XChartDocument, title: str) -> None:
@@ -676,7 +671,7 @@ class Chart:
         except mEx.ChartError:
             raise
         except Exception as e:
-            raise mEx.ChartError("Error geting chart document subtitle") from e
+            raise mEx.ChartError("Error getting chart document subtitle") from e
 
     @staticmethod
     def set_subtitle(chart_doc: XChartDocument, subtitle: str) -> None:
@@ -972,8 +967,8 @@ class Chart:
                 raise mEx.ServiceNotSupported("com.sun.star.chart.ChartDataPointProperties")
 
             data_arr = mLo.Lo.qi(XChartDataArray, chart_doc.getData(), True)
-            adata = data_arr.getData()
-            num_points = len(adata)
+            arr_data = data_arr.getData()
+            num_points = len(arr_data)
             for i in range(num_points):
                 # first parameter is the index of the point, the second one is the series
                 point_props = diagram.getDataPointProperties(i, 0)
@@ -1008,32 +1003,30 @@ class Chart:
         """
         chart_data = chart_doc.getData()
         data_arr = mLo.Lo.qi(XChartDataArray, chart_data, True)
-        data = data_arr.getData()
-        if not data:
-            print("No data found")
-        else:
+        if data := data_arr.getData():
             print(f"No. of Data columns: {len(data[0])}")
             print(f"No. of Data rows: {len(data)}")
             for row in data:
                 for col in row:
                     print(f"  {col}")
+        else:
+            print("No data found")
         print()
-        row_descs = data_arr.getRowDescriptions()
-        if not row_descs:
+        row_descriptions = data_arr.getRowDescriptions()
+        if not row_descriptions:
             print("No row description found")
         else:
-            print(f"No. of rows: {len(row_descs)}")
-            for row in row_descs:
+            print(f"No. of rows: {len(row_descriptions)}")
+            for row in row_descriptions:
                 print(f'  "{row}"')
         print()
 
-        col_descs = data_arr.getColumnDescriptions()
-        if not col_descs:
-            print("No column description found")
-        else:
-            print(f"No. of columns: {len(row_descs)}")
-            for col in col_descs:
+        if col_descriptions := data_arr.getColumnDescriptions():
+            print(f"No. of columns: {len(row_descriptions)}")
+            for col in col_descriptions:
                 print(f'  "{col}"')
+        else:
+            print("No column description found")
         print()
 
     @staticmethod
@@ -1174,12 +1167,12 @@ class Chart:
             # data = data_arr.getData()
             # num_points = len(data)
 
-            if (
-                curve_type == ChartRegressionCurveType.NONE
-                or curve_type == ChartRegressionCurveType.LINEAR
-                or curve_type == ChartRegressionCurveType.LOGARITHM
-                or curve_type == ChartRegressionCurveType.EXPONENTIAL
-                or curve_type == ChartRegressionCurveType.POWER
+            if curve_type in (
+                ChartRegressionCurveType.NONE,
+                ChartRegressionCurveType.LINEAR,
+                ChartRegressionCurveType.LOGARITHM,
+                ChartRegressionCurveType.EXPONENTIAL,
+                ChartRegressionCurveType.POWER,
             ):
                 mProps.Props.set(diagram, RegressionCurves=curve_type)
             else:
