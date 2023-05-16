@@ -152,8 +152,8 @@ class LoInst:
 
     def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:
         # clears Lo Attributes that are dynamically created
-        dattrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "_null_date")
-        for attr in dattrs:
+        data_attrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "_null_date")
+        for attr in data_attrs:
             if hasattr(self, attr):
                 delattr(self, attr)
 
@@ -162,9 +162,9 @@ class LoInst:
 
     def on_lo_disposed(self, source: Any, event: EventObject) -> None:
         self.print("Office bridge has gone!!")
-        dattrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop", "_loader")
-        dvals = (None, None, None, None, None, None, None)
-        for attr, val in zip(dattrs, dvals):
+        data_attrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop", "_loader")
+        data_vals = (None, None, None, None, None, None, None)
+        for attr, val in zip(data_attrs, data_vals):
             setattr(self, attr, val)
         setattr(self, "_disposed", True)
 
@@ -381,7 +381,7 @@ class LoInst:
             Event args ``event_data`` is a dictionary containing all method parameters.
 
         Note:
-            When using this class to connect to a running office instance,  the ``connector`` parameter should be set to ``Lo.bridge_connector``, the existing bridge connecton.
+            When using this class to connect to a running office instance,  the ``connector`` parameter should be set to ``Lo.bridge_connector``, the existing bridge connection.
 
             The following example creates a new instance, connects to a running office instance and creates a new calc document.
 
@@ -404,7 +404,7 @@ class LoInst:
         .. versionchanged:: 0.9.8
             connector can now also be ``ConnectBase`` to allow for existing connections.
         """
-        # sourcery skip: extract-duplicate-method
+        # sourcery skip: class-extract-method, extract-duplicate-method
         if mock_g.DOCS_BUILDING:
             # some component call this method and are triggered during docs building.
             # by adding this block this method will be exited if docs are building.
@@ -882,6 +882,7 @@ class LoInst:
     # ======================== document saving ==============
 
     def save(self, doc: object) -> bool:
+        # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.save.__qualname__)
         cargs.event_data = {"doc": doc}
         self._events.trigger(LoNamedEvent.DOC_SAVING, cargs)
@@ -967,15 +968,15 @@ class LoInst:
         if cargs.cancel:
             return False
         ext = mInfo.Info.get_ext(fnm)
-        frmt = "Text"
+        txt_format = "Text"
         if ext is None:
             self.print("Assuming a text format")
         else:
-            frmt = self.ext_to_format(ext=ext, doc_type=doc_type)
+            txt_format = self.ext_to_format(ext=ext, doc_type=doc_type)
         if password is None:
-            self.store_doc_format(store=store, fnm=fnm, format=frmt)
+            self.store_doc_format(store=store, fnm=fnm, format=txt_format)
         else:
-            self.store_doc_format(store=store, fnm=fnm, format=frmt, password=password)
+            self.store_doc_format(store=store, fnm=fnm, format=txt_format, password=password)
         self._events.trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
         return True
 
@@ -990,7 +991,7 @@ class LoInst:
         ...
 
     def ext_to_format(self, ext: str, doc_type: LoDocType = LoDocType.UNKNOWN) -> str:
-        # sourcery skip: collection-into-set, merge-comparisons, merge-duplicate-blocks, remove-redundant-if
+        # sourcery skip: collection-into-set, low-code-quality, merge-comparisons, merge-duplicate-blocks, remove-redundant-if
         dtype = LoDocType(doc_type)
         s = ext.lower()
         if s == "doc":
@@ -1166,6 +1167,7 @@ class LoInst:
         ...
 
     def close_doc(self, doc: object, deliver_ownership=False) -> None:
+        # sourcery skip: raise-specific-error
         if self._disposed:
             self._doc = None
             return
@@ -1211,6 +1213,7 @@ class LoInst:
     # ============= initialization via script context ======================
 
     def script_initialize(self, sc: XScriptContext) -> XComponent:
+        # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.script_initialize.__qualname__)
         cargs.event_data = {"sc": sc}
         eargs = EventArgs.from_args(cargs)
@@ -1283,7 +1286,7 @@ class LoInst:
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             provider = self.qi(XDispatchProvider, frame, True)
-            result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)  # type: ignore
+            result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
             self._events.trigger(LoNamedEvent.DISPATCHED, eargs)
@@ -1340,6 +1343,7 @@ class LoInst:
             self.print(f"    {e}")
 
     def mri_inspect(self, obj: object) -> None:
+        # sourcery skip: raise-specific-error
         # Available from http://extensions.libreoffice.org/extension-center/mri-uno-object-inspection-tool
         #               or http://extensions.services.openoffice.org/en/project/MRI
         #  Docs: https://github.com/hanya/MRI/wiki
@@ -1531,6 +1535,7 @@ class LoInst:
         return result
 
     def get_frame(self) -> XFrame:
+        # sourcery skip: raise-specific-error
         if self.star_desktop is None:
             raise Exception("No desktop found")
         return self.XSCRIPTCONTEXT.getDesktop().getCurrentFrame()

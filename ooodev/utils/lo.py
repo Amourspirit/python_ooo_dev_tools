@@ -1720,13 +1720,13 @@ class Lo(metaclass=StaticProperty):
             MissingInterfaceError: If unable to obtain XModel interface.
 
         Returns:
-            bool: False if ``CONTROLERS_LOCKING`` event is canceled; Otherwise, True
+            bool: False if ``CONTROLLERS_LOCKING`` event is canceled; Otherwise, True
 
          :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_LOCKING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_LOCKED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLLERS_LOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLLERS_LOCKED` :eventref:`src-docs-event`
 
         See Also:
             :py:class:`.Lo.ControllerLock`
@@ -1748,13 +1748,13 @@ class Lo(metaclass=StaticProperty):
             MissingInterfaceError: If unable to obtain XModel interface.
 
         Returns:
-            bool: False if ``CONTROLERS_UNLOCKING`` event is canceled; Otherwise, True
+            bool: False if ``CONTROLLERS_UNLOCKING`` event is canceled; Otherwise, True
 
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLERS_UNLOCKED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLLERS_UNLOCKED` :eventref:`src-docs-event`
 
         See Also:
             :py:class:`.Lo.ControllerLock`

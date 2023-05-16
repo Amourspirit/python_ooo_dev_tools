@@ -1304,14 +1304,14 @@ files = [
 
 [[package]]
 name = "ooouno"
-version = "1.0.2"
+version = "2.0.0"
 description = "Interfaces and classes for LibreOffice (uno)"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "ooouno-1.0.2-py3-none-any.whl", hash = "sha256:7b4ecfa50d6e28e511ed4224827dab77a91c04383c2b7283c1840291444a92da"},
-    {file = "ooouno-1.0.2.tar.gz", hash = "sha256:8b9b4d1c23883ccfb41b2cf356281554970f383984c142e34d0e15d004e85cb7"},
+    {file = "ooouno-2.0.0-py3-none-any.whl", hash = "sha256:ad8a4f4b61834ce2edd0c17a4f1390de609297a8dbf2be29c103516c762874f6"},
+    {file = "ooouno-2.0.0.tar.gz", hash = "sha256:c22123940f641a44f331979bdf5cc7fc6254c38dff513526b59dd68884d975c3"},
 ]
 
 [package.dependencies]
@@ -1508,24 +1508,24 @@ files = [
 
 [[package]]
 name = "pygls"
-version = "1.0.1"
+version = "1.0.2"
 description = "a pythonic generic language server (pronounced like \"pie glass\")."
 category = "dev"
 optional = false
 python-versions = "<4,>=3.7"
 files = [
-    {file = "pygls-1.0.1-py3-none-any.whl", hash = "sha256:adacc96da77598c70f46acfdfd1481d3da90cd54f639f7eee52eb6e4dbd57b55"},
-    {file = "pygls-1.0.1.tar.gz", hash = "sha256:f3ee98ddbb4690eb5c755bc32ba7e129607f14cbd313575f33d0cea443b78cb2"},
+    {file = "pygls-1.0.2-py3-none-any.whl", hash = "sha256:6d278d29fa6559b0f7a448263c85cb64ec6e9369548b02f1a7944060848b21f9"},
+    {file = "pygls-1.0.2.tar.gz", hash = "sha256:888ed63d1f650b4fc64d603d73d37545386ec533c0caac921aed80f80ea946a4"},
 ]
 
 [package.dependencies]
 lsprotocol = "*"
-typeguard = ">=2.10.0,<3"
+typeguard = ">=3,<4"
 
 [package.extras]
 dev = ["bandit (==1.7.4)", "flake8 (==4.0.1)", "mypy (==0.961)"]
 docs = ["sphinx (==5.0.1)", "sphinx-rtd-theme (==1.0.0)"]
-test = ["mock (==4.0.3)", "pytest (==7.1.2)", "pytest-asyncio (==0.18.3)"]
+test = ["pytest (==7.1.2)", "pytest-asyncio (==0.18.3)"]
 ws = ["websockets (>=10.0.0,<11.0.0)"]
 
 [[package]]
@@ -2301,19 +2301,23 @@ files = [
 
 [[package]]
 name = "typeguard"
-version = "2.13.3"
+version = "3.0.2"
 description = "Run-time type checker for Python"
 category = "dev"
 optional = false
-python-versions = ">=3.5.3"
+python-versions = ">=3.7.4"
 files = [
-    {file = "typeguard-2.13.3-py3-none-any.whl", hash = "sha256:5e3e3be01e887e7eafae5af63d1f36c849aaa94e3a0112097312aabfa16284f1"},
-    {file = "typeguard-2.13.3.tar.gz", hash = "sha256:00edaa8da3a133674796cf5ea87d9f4b4c367d77476e185e80251cc13dfbb8c4"},
+    {file = "typeguard-3.0.2-py3-none-any.whl", hash = "sha256:bbe993854385284ab42fd5bd3bee6f6556577ce8b50696d6cb956d704f286c8e"},
+    {file = "typeguard-3.0.2.tar.gz", hash = "sha256:fee5297fdb28f8e9efcb8142b5ee219e02375509cd77ea9d270b5af826358d5a"},
 ]
 
+[package.dependencies]
+importlib-metadata = {version = ">=3.6", markers = "python_version < \"3.10\""}
+typing-extensions = {version = ">=4.4.0", markers = "python_version < \"3.11\""}
+
 [package.extras]
-doc = ["sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
-test = ["mypy", "pytest", "typing-extensions"]
+doc = ["packaging", "sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
+test = ["mypy (>=0.991)", "pytest (>=7)"]
 
 [[package]]
 name = "types-uno-script"
@@ -2491,4 +2495,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "2c246de8441fa39b702301b5370367c2dbdb4aca8c079e8d9915a99f6c1d524a"
+content-hash = "7cd894bb8b02c581e4611402ffbf4ae66aabe2dc260fb44d29d1d6063bb22b2e"

@@ -1,5 +1,6 @@
 # region Imports
 from __future__ import annotations
+import contextlib
 from random import random
 from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 
@@ -7,6 +8,7 @@ import uno
 
 # XChartTypeTemplate import error in LO 7.4.0 to 7.4.3, Corrected in Lo 7.5
 from com.sun.star.beans import XPropertySet
+from com.sun.star.chart import XChartDocument as XChartDocumentOld
 from com.sun.star.chart2 import XAxis
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.chart2 import XChartType
@@ -170,6 +172,7 @@ class Chart2:
             if not cell_name:
                 cell_name = mCalc.Calc.get_cell_str(col=cells_range.EndColumn + 1, row=cells_range.StartRow)
 
+            # sourcery skip: low-code-quality, use-or-for-fallback
             chart_name = kwargs.get("chart_name", None)
             if not chart_name:
                 chart_name = Chart2._CHART_NAME + str(int(random() * 10_000))
@@ -231,11 +234,11 @@ class Chart2:
                 FirstCellAsLabel=first_cell_as_lbl,
                 HasCategories=has_cats,
             )
-            ds = dp.createDataSource(ps)
+            ds = dp.createDataSource(ps)  # type: ignore
 
             # add data source to chart template
             args = mProps.Props.make_props(HasCategories=has_cats)
-            ct_template.changeDiagramData(diagram, ds, args)
+            ct_template.changeDiagramData(diagram, ds, args)  # type: ignore
 
             # apply style settings to chart doc
             # background and wall colors
@@ -283,7 +286,7 @@ class Chart2:
             # be used to set labels for the category axis or the legend;
             # last arg: whether the leftmost column of the source data will
             # be used to set labels for the category axis or the legend.
-            tbl_charts.addNewByName(chart_name, rect, addrs, True, True)
+            tbl_charts.addNewByName(chart_name, rect, addrs, True, True)  # type: ignore
         except Exception as e:
             raise mEx.ChartError("Error adding table chart") from e
 
@@ -375,10 +378,7 @@ class Chart2:
 
         dn = str(diagram_name).lower()
         non_cats = ("scatter", "bubble")
-        for non_cat in non_cats:
-            if non_cat in dn:
-                return False
-        return True
+        return all(non_cat not in dn for non_cat in non_cats)
 
     @staticmethod
     def remove_chart(sheet: XSpreadsheet, chart_name: str) -> bool:
@@ -447,8 +447,7 @@ class Chart2:
             charts_supp = mLo.Lo.qi(XTableChartsSupplier, sheet, True)
             tbl_charts = charts_supp.getCharts()
             tc_access = mLo.Lo.qi(XNameAccess, tbl_charts, True)
-            tbl_chart = mLo.Lo.qi(XTableChart, tc_access.getByName(chart_name))
-            return tbl_chart
+            return mLo.Lo.qi(XTableChart, tc_access.getByName(chart_name), True)
         except Exception as e:
             raise mEx.ChartError(f'Error getting table chart for chart "{chart_name}"') from e
 
@@ -476,7 +475,7 @@ class Chart2:
 
     # region titles
     @classmethod
-    def set_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
+    def set_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None) -> XTitle:
         """
         Sets the title of chart
 
@@ -499,41 +498,44 @@ class Chart2:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
         """
         try:
-            # return XTilte so it may have futher styles applied
+            # return x_title so it may have further styles applied
             titled = mLo.Lo.qi(XTitled, chart_doc, True)
-            xtitle = cls._create_title(title, 14, styles)
-            titled.setTitleObject(xtitle)
+            if styles is None:
+                x_title = cls._create_title(title, 14)
+            else:
+                x_title = cls._create_title(title, 14, styles)
+            titled.setTitleObject(x_title)
 
-            return xtitle
+            return x_title
         except Exception as e:
             raise mEx.ChartError("Error setting title for chart") from e
 
     @classmethod
-    def _create_title(cls, title: str, font_size: int, styles: Sequence[StyleObj] = None) -> XTitle:
+    def _create_title(cls, title: str, font_size: int, styles: Sequence[StyleObj] | None = None) -> XTitle:
         try:
-            xtitle = mLo.Lo.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
-            xtitle_str = mLo.Lo.create_instance_mcf(
+            x_title = mLo.Lo.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
+            x_title_str = mLo.Lo.create_instance_mcf(
                 XFormattedString, "com.sun.star.chart2.FormattedString", raise_err=True
             )
-            xtitle_str.setString(title)
+            x_title_str.setString(title)
 
             # set default font. Styles can override the default.
             fname = mInfo.Info.get_font_general_name()
-            cls.set_x_title_font(xtitle, fname, font_size)
+            cls.set_x_title_font(x_title, fname, font_size)
 
-            title_arr = (xtitle_str,)
-            xtitle.setText(title_arr)
+            title_arr = (x_title_str,)
+            x_title.setText(title_arr)
             # Shape style will not be applied. Need to use style_title() after title is created.
             if styles:
                 title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
-                cls._style_title(xtitle=xtitle, styles=title_styles)
+                cls._style_title(xtitle=x_title, styles=title_styles)
 
-            return xtitle
+            return x_title
         except Exception as e:
             raise mEx.ChartError(f'Error creating title for: "{title}"') from e
 
     @classmethod
-    def create_title(cls, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
+    def create_title(cls, title: str, styles: Sequence[StyleObj] | None = None) -> XTitle:
         """
         Creates a title object
 
@@ -576,8 +578,7 @@ class Chart2:
             :py:meth:`.Info.get_font_general_name`
         """
         try:
-            fo_strs = xtitle.getText()
-            if fo_strs:
+            if fo_strs := xtitle.getText():
                 mProps.Props.set_property(fo_strs[0], "CharFontName", font_name)
                 mProps.Props.set_property(fo_strs[0], "CharHeight", pt_size)
         except Exception as e:
@@ -598,13 +599,15 @@ class Chart2:
             XTitle: Title object.
         """
         try:
-            xtilted = mLo.Lo.qi(XTitled, chart_doc, True)
-            return xtilted.getTitleObject()
+            x_tilted = mLo.Lo.qi(XTitled, chart_doc, True)
+            return x_tilted.getTitleObject()
         except Exception as e:
             raise mEx.ChartError("Error getting title from chart") from e
 
     @classmethod
-    def set_subtitle(cls, chart_doc: XChartDocument, subtitle: str, styles: Sequence[StyleObj] = None) -> XTitle:
+    def set_subtitle(
+        cls, chart_doc: XChartDocument, subtitle: str, styles: Sequence[StyleObj] | None = None
+    ) -> XTitle:
         """
         Gets subtitle
 
@@ -766,7 +769,12 @@ class Chart2:
 
     @classmethod
     def set_axis_title(
-        cls, chart_doc: XChartDocument, title: str, axis_val: AxisKind, idx: int, styles: Sequence[StyleObj] = None
+        cls,
+        chart_doc: XChartDocument,
+        title: str,
+        axis_val: AxisKind,
+        idx: int,
+        styles: Sequence[StyleObj] | None = None,
     ) -> XTitle:
         """
         Sets axis title.
@@ -808,7 +816,9 @@ class Chart2:
             raise mEx.ChartError(f'Error setting axis tile: "{title}" for chart') from e
 
     @classmethod
-    def set_x_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
+    def set_x_axis_title(
+        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
+    ) -> XTitle:
         """
         Sets X axis Title
 
@@ -829,7 +839,9 @@ class Chart2:
         return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=0, styles=styles)
 
     @classmethod
-    def set_y_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
+    def set_y_axis_title(
+        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
+    ) -> XTitle:
         """
         Sets Y axis Title
 
@@ -850,7 +862,9 @@ class Chart2:
         return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.Y, idx=0, styles=styles)
 
     @classmethod
-    def set_x_axis2_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
+    def set_x_axis2_title(
+        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
+    ) -> XTitle:
         """
         Sets X axis2 Title
 
@@ -871,7 +885,9 @@ class Chart2:
         return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=1, styles=styles)
 
     @classmethod
-    def set_y_axis2_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] = None) -> XTitle:
+    def set_y_axis2_title(
+        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
+    ) -> XTitle:
         """
         Sets Y axis2 Title
 
@@ -1243,7 +1259,7 @@ class Chart2:
             elif scale_type == CurveKind.POWER:
                 s = "PowerScaling"
             if s is None:
-                mLo.Lo.print(f'Did not reconize scaling type: "{scale_type}"')
+                mLo.Lo.print(f'Did not recognize scaling type: "{scale_type}"')
             else:
                 sd.Scaling = mLo.Lo.create_instance_mcf(XScaling, f"com.sun.star.chart2.{s}", raise_err=True)
             axis.setScaleData(sd)
@@ -1352,7 +1368,7 @@ class Chart2:
         elif axis_type == AxisTypeKind.DATE:
             return "dates"
         else:
-            raise mEx.UnKnownError("axis_type is of unknow type")
+            raise mEx.UnKnownError("axis_type is of unknown type")
 
     # endregion Axis
 
@@ -1384,7 +1400,7 @@ class Chart2:
 
     @classmethod
     def set_grid_lines(
-        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0, styles: Sequence[StyleObj] = None
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0, styles: Sequence[StyleObj] | None = None
     ) -> XPropertySet:
         """
         Set the grid lines for a chart.
@@ -1448,8 +1464,7 @@ class Chart2:
                 leg = mLo.Lo.create_instance_mcf(XLegend, "com.sun.star.chart2.Legend", raise_err=True)
                 mProps.Props.set(leg, LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
                 diagram.setLegend(leg)
-
-            mProps.Props.set(leg, Show=is_visible)
+                mProps.Props.set(leg, Show=is_visible)
         except Exception as e:
             raise mEx.ChartError("Error while setting legend visibility") from e
 
@@ -1500,7 +1515,7 @@ class Chart2:
         See Also:
             - :ref:`help_chart2_format_direct_grid_line_properties`
         """
-        try:
+        with contextlib.suppress(Exception):
             axis = cls.get_axis(chart_doc=chart_doc, axis_val=axis_val, idx=idx)
             props = axis.getGridProperties()
 
@@ -1509,8 +1524,6 @@ class Chart2:
 
             for style in styles:
                 style.apply(props)
-        except Exception as e:
-            pass
 
     @staticmethod
     def style_background(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
@@ -1690,7 +1703,8 @@ class Chart2:
         legend_shape = None
         for style in styles:
             if style.support_service("com.sun.star.drawing.Shape"):
-                legend_shape = chart_doc.getLegend()
+                chart_old = mLo.Lo.qi(XChartDocumentOld, chart_doc, True)
+                legend_shape = chart_old.getLegend()
                 break
         if legend_shape:
             for style in styles:
@@ -1699,14 +1713,14 @@ class Chart2:
                     applied_styles += 1
         if len(styles) == applied_styles:
             return
-        legend = cls.get_legend(chart_doc=chart_doc)
-        if legend:
+        if legend := cls.get_legend(chart_doc=chart_doc):
             for style in styles:
                 if not style.support_service("com.sun.star.drawing.Shape"):
                     style.apply(legend)
 
     @classmethod
     def _style_title(cls, xtitle: XTitle, styles: Sequence[StyleObj]) -> None:
+        # sourcery skip: last-if-guard, move-assign, use-named-expression
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
         applied_styles = 0
         if title_styles:
@@ -1744,10 +1758,9 @@ class Chart2:
         .. versionadded:: 0.9.4
         """
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
-        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
-        if shape_styles:
-            title_shape = chart_doc.getTitle()
-            if title_shape:
+        if shape_styles := [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]:
+            chart_old = mLo.Lo.qi(XChartDocumentOld, chart_doc, True)
+            if title_shape := chart_old.getTitle():
                 for style in shape_styles:
                     style.apply(title_shape)
 
@@ -1778,16 +1791,14 @@ class Chart2:
         .. versionadded:: 0.9.4
         """
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
-        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
-        if shape_styles:
-            subtitle_shape = chart_doc.getSubTitle()
-            if subtitle_shape:
+        if shape_styles := [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]:
+            chart_old = mLo.Lo.qi(XChartDocumentOld, chart_doc, True)
+            if subtitle_shape := chart_old.getSubTitle():
                 for style in shape_styles:
                     style.apply(subtitle_shape)
 
         if title_styles:
-            xtitle = cls.get_subtitle(chart_doc=chart_doc)
-            if xtitle:
+            if xtitle := cls.get_subtitle(chart_doc=chart_doc):
                 cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
@@ -1920,16 +1931,13 @@ class Chart2:
         .. versionadded:: 0.9.4
         """
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
-        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
-        if shape_styles:
-            diagram = chart_doc.getDiagram()
-            title_shape = diagram.getXAxisTitle()
-            if title_shape:
+        if shape_styles := [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]:
+            diagram = chart_doc.getDiagram()  # type: ignore
+            if title_shape := diagram.getXAxisTitle():
                 for style in shape_styles:
                     style.apply(title_shape)
         if title_styles:
-            xtitle = cls.get_x_axis_title(chart_doc=chart_doc)
-            if xtitle:
+            if xtitle := cls.get_x_axis_title(chart_doc=chart_doc):
                 cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
@@ -1951,16 +1959,13 @@ class Chart2:
         """
 
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
-        shape_styles = [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]
-        if shape_styles:
-            diagram = chart_doc.getDiagram()
-            title_shape = diagram.getYAxisTitle()
-            if title_shape:
+        if shape_styles := [style for style in styles if style.support_service("com.sun.star.drawing.Shape")]:
+            diagram = chart_doc.getDiagram()  # type: ignore
+            if title_shape := diagram.getYAxisTitle():
                 for style in shape_styles:
                     style.apply(title_shape)
         if title_styles:
-            xtitle = cls.get_y_axis_title(chart_doc=chart_doc)
-            if xtitle:
+            if xtitle := cls.get_y_axis_title(chart_doc=chart_doc):
                 cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
@@ -2079,8 +2084,7 @@ class Chart2:
             XDataSeries: Data Series instance.
         """
         try:
-            ds = mLo.Lo.create_instance_mcf(XDataSeries, "com.sun.star.chart2.DataSeries", raise_err=True)
-            return ds
+            return mLo.Lo.create_instance_mcf(XDataSeries, "com.sun.star.chart2.DataSeries", raise_err=True)
         except Exception as e:
             raise mEx.ChartError("Error, unable to create XDataSeries interface") from e
 
@@ -2126,10 +2130,10 @@ class Chart2:
         """
         try:
             if chart_type:
-                xchart_type = cls.find_chart_type(chart_doc, chart_type)
+                x_chart_type = cls.find_chart_type(chart_doc, chart_type)
             else:
-                xchart_type = cls.get_chart_type(chart_doc)
-            ds_con = mLo.Lo.qi(XDataSeriesContainer, xchart_type, True)
+                x_chart_type = cls.get_chart_type(chart_doc)
+            ds_con = mLo.Lo.qi(XDataSeriesContainer, x_chart_type, True)
             return ds_con.getDataSeries()
         except Exception as e:
             raise mEx.ChartError("Error getting chart data series") from e
@@ -2179,8 +2183,7 @@ class Chart2:
         """
         try:
             dsa = cls.get_data_series(chart_doc=chart_doc, chart_type=chart_type)
-            ds = mLo.Lo.qi(XDataSource, dsa[0], True)
-            return ds
+            return mLo.Lo.qi(XDataSource, dsa[0], True)
         except mEx.NotFoundError:
             raise
         except mEx.ChartError:
@@ -2207,6 +2210,7 @@ class Chart2:
         Returns:
             XCoordinateSystem: Coordinate system object.
         """
+        # sourcery skip: merge-nested-ifs
         try:
             diagram = chart_doc.getFirstDiagram()
             coord_sys_con = mLo.Lo.qi(XCoordinateSystemContainer, diagram, True)
@@ -2388,7 +2392,7 @@ class Chart2:
         """
         dp = chart_doc.getDataProvider()
         ps = dp.detectArguments(data_source)
-        mProps.Props.show_props("Data Source arguments", ps)
+        mProps.Props.show_props("Data Source arguments", ps)  # type: ignore
 
     @staticmethod
     def print_labeled_seqs(data_source: XDataSource) -> None:
@@ -2404,7 +2408,7 @@ class Chart2:
             None:
         """
         data_seqs = data_source.getDataSequences()
-        print(f"No. of sequeneces in data source: {len(data_seqs)}")
+        print(f"No. of sequences in data source: {len(data_seqs)}")
         for seq in data_seqs:
             label_seq = seq.getLabel().getData()
             print(f"{label_seq[0]} :")
@@ -2437,10 +2441,8 @@ class Chart2:
             if idx < 0 or idx >= len(data_seqs):
                 raise IndexError(f"Index value of {idx} is out of of range")
 
-            vals_seq = data_seqs[idx].getValues().getData()
-            vals: List[float] = []
-            for val in vals_seq:
-                vals.append(float(val))
+            vals_seq = cast(Tuple[float, ...], data_seqs[idx].getValues().getData())
+            vals: List[float] = [float(val) for val in vals_seq]
             return tuple(vals)
         except IndexError:
             raise
@@ -2486,7 +2488,7 @@ class Chart2:
 
             if props is None:
                 break
-        if len(props_lst) == 0:
+        if not props_lst:
             mLo.Lo.print(f"No Data Series at index {idx}")
         return props_lst
 
@@ -2498,7 +2500,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document.
             series_idx (int): Series Index
-            idx (int): Index to extract from the datapoints data.
+            idx (int): Index to extract from the data points data.
                 If ``idx=-1`` then the last data point is returned.
 
         Raises:
@@ -2516,7 +2518,7 @@ class Chart2:
         """
         props = cls.get_data_points_props(chart_doc=chart_doc, idx=series_idx)
         if not props:
-            raise mEx.NotFoundError("No Datapoints found to get XPropertySet from")
+            raise mEx.NotFoundError("No Data points found to get XPropertySet from")
 
         if idx == -1:
             return props.pop()
@@ -2559,10 +2561,8 @@ class Chart2:
                     dp_label.ShowCategoryName = True
                 elif label_type == DataPointLabelTypeKind.SYMBOL:
                     dp_label.ShowLegendSymbol = True
-                elif label_type == DataPointLabelTypeKind.NONE:
-                    pass
-                else:
-                    raise mEx.UnKnownError("label_type is of unknow type")
+                elif label_type != DataPointLabelTypeKind.NONE:
+                    raise mEx.UnKnownError("label_type is of unknown type")
 
                 mProps.Props.set_property(data_series, "Label", dp_label)
         except mEx.ChartError:
@@ -2638,6 +2638,7 @@ class Chart2:
         See Also:
             :py:class:`~.color.CommonColor`
         """
+        # sourcery skip: remove-unnecessary-else, swap-if-else-branches
         try:
             if ct.getChartType() == "com.sun.star.chart2.CandleStickChartType":
                 # there is a bug with white_day_ps and black_day_ps
@@ -2651,7 +2652,7 @@ class Chart2:
                 mProps.Props.set(black_day_ps, FillColor=int(b_day_color))
             else:
                 raise mEx.NotSupportedError(
-                    f'Only candel stick charts supported. "{ct.getChartType()}" not supported.'
+                    f'Only candle stick charts supported. "{ct.getChartType()}" not supported.'
                 )
         except mEx.NotSupportedError:
             raise
@@ -2678,8 +2679,7 @@ class Chart2:
             XRegressionCurve: Regression Curve object.
         """
         try:
-            rc = mLo.Lo.create_instance_mcf(XRegressionCurve, curve_kind.to_namespace(), raise_err=True)
-            return rc
+            return mLo.Lo.create_instance_mcf(XRegressionCurve, curve_kind.to_namespace(), raise_err=True)
         except Exception as e:
             raise mEx.ChartError("Error creating curve") from e
 
@@ -2814,11 +2814,8 @@ class Chart2:
             curve (XRegressionCurve): Regression Curve object.
         """
         curve_calc = curve.getCalculator()
-        degree = 1
         ct = cls.get_curve_type(curve)
-        if ct != CurveKind.LINEAR:
-            degree = 2  # assumes POLYNOMIAL trend has degree == 2
-
+        degree = 2 if ct != CurveKind.LINEAR else 1
         # degree, forceIntercept, interceptValue, period (for moving average)
         # the last are for setRegressionProperties is movingType
         #   See: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1chart2_1_1MovingAverageType.html
@@ -2828,11 +2825,10 @@ class Chart2:
         curve_calc.setRegressionProperties(degree, False, 0.0, 2, 0)
 
         data_source = cls.get_data_source(chart_doc)
-        # cls.print_labled_seqs(data_source)
 
-        xvals = cls.get_chart_data(data_source=data_source, idx=0)
-        yvals = cls.get_chart_data(data_source=data_source, idx=0)
-        curve_calc.recalculateRegression(xvals, yvals)
+        x_vals = cls.get_chart_data(data_source=data_source, idx=0)
+        y_vals = cls.get_chart_data(data_source=data_source, idx=0)
+        curve_calc.recalculateRegression(x_vals, y_vals)
 
         print(f"  Curve equations: {curve_calc.getRepresentation()}")
         cc = curve_calc.getCorrelationCoefficient()
@@ -2887,14 +2883,14 @@ class Chart2:
         Returns:
             XLabeledDataSequence: Labeled data sequence object.
         """
-        # reate labeled data sequence using label and data;
+        # create labeled data sequence using label and data;
         # the data is for the specified role
 
         try:
             # create data sequence for the label
             lbl_seq = dp.createDataSequenceByRangeRepresentation(data_label)
 
-            # reate data sequence for the data and role
+            # create data sequence for the data and role
             data_seq = dp.createDataSequenceByRangeRepresentation(data_range)
 
             ds_ps = mLo.Lo.qi(XPropertySet, data_seq, True)
@@ -2959,7 +2955,7 @@ class Chart2:
 
             # store error bar in data series
             data_series_arr = cls.get_data_series(chart_doc=chart_doc)
-            # print(f'No. of data serice: {len(data_series_arr)}')
+            # print(f'No. of data series: {len(data_series_arr)}')
             data_series = data_series_arr[0]
             # mProps.Props.show_obj_props("Data Series 0", data_series)
             mProps.Props.set(data_series, ErrorBarY=error_bars_ps)
@@ -3040,7 +3036,7 @@ class Chart2:
         except mEx.ChartError:
             raise
         except Exception as e:
-            raise mEx.ChartError("Error adding category lables") from e
+            raise mEx.ChartError("Error adding category labels") from e
 
     # endregion add data to a chart
 
@@ -3071,24 +3067,23 @@ class Chart2:
             page_supp = mLo.Lo.qi(XDrawPageSupplier, sheet, True)
             draw_page = page_supp.getDrawPage()
             num_shapes = draw_page.getCount()
-            chart_classid = mLo.Lo.CLSID.CHART.value
+            chart_class_id = mLo.Lo.CLSID.CHART.value
             for i in range(num_shapes):
                 try:
                     shape = cast("OLE2Shape", mLo.Lo.qi(XShape, draw_page.getByIndex(i), True))
-                    classid = str(mProps.Props.get(shape, "CLSID")).lower()
+                    class_id = str(mProps.Props.get(shape, "CLSID")).lower()
                     if chart_name:
-                        if classid == chart_classid and chart_name == shape.PersistName.casefold():
+                        if class_id == chart_class_id and chart_name == shape.PersistName.casefold():
                             break
-                    else:
-                        if classid == chart_classid:
-                            break
+                    elif class_id == chart_class_id:
+                        break
                 except Exception:
                     shape = None
                     # continue on, just because got an error does not mean shape will not be found
         except Exception as e:
             raise mEx.ShapeError("Error getting shape from sheet") from e
         if shape is None:
-            raise mEx.ShapeMissingError("Unalbe to find Chart Shape")
+            raise mEx.ShapeMissingError("Unable to find Chart Shape")
         return shape
 
     @classmethod
@@ -3141,8 +3136,8 @@ class Chart2:
             chart_shape = cls.get_chart_shape(sheet=sheet, chart_name=chart_name)
             embedded_chart = mLo.Lo.qi(XEmbeddedObject, mProps.Props.get_property(chart_shape, "EmbeddedObject"), True)
             comp_supp = mLo.Lo.qi(XComponentSupplier, embedded_chart, True)
-            xclosable = comp_supp.getComponent()
-            supp_page = mLo.Lo.qi(XDrawPageSupplier, xclosable, True)
+            x_closable = comp_supp.getComponent()
+            supp_page = mLo.Lo.qi(XDrawPageSupplier, x_closable, True)
             result = supp_page.getDrawPage()
             if result is None:
                 raise mEx.UnKnownError("None Value: getDrawPage() returned a value of None")
@@ -3196,13 +3191,13 @@ class Chart2:
         display updates are not broadcast.
 
         Returns:
-            bool: False if ``CONTROLERS_LOCKING`` event is canceled; Otherwise, True
+            bool: False if ``CONTROLLERS_LOCKING`` event is canceled; Otherwise, True
 
-         :events:
+        :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_LOCKING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_LOCKED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLLERS_LOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLLERS_LOCKED` :eventref:`src-docs-event`
 
         See Also:
 
@@ -3213,11 +3208,11 @@ class Chart2:
         """
         # much faster updates as screen is basically suspended
         cargs = CancelEventArgs(Chart2.lock_controllers.__qualname__)
-        _Events().trigger(Chart2NamedEvent.CONTROLERS_LOCKING, cargs)
+        _Events().trigger(Chart2NamedEvent.CONTROLLERS_LOCKING, cargs)
         if cargs.cancel:
             return False
         chart_doc.lockControllers()
-        _Events().trigger(Chart2NamedEvent.CONTROLERS_LOCKED, EventArgs(cls))
+        _Events().trigger(Chart2NamedEvent.CONTROLLERS_LOCKED, EventArgs(cls))
         return True
 
     @staticmethod
@@ -3231,13 +3226,13 @@ class Chart2:
         display updates are not broadcast.
 
         Returns:
-            bool: False if ``CONTROLERS_UNLOCKING`` event is canceled; Otherwise, True
+            bool: False if ``CONTROLLERS_UNLOCKING`` event is canceled; Otherwise, True
 
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLERS_UNLOCKED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLLERS_UNLOCKING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.chart2_named_event.Chart2NamedEvent.CONTROLLERS_UNLOCKED` :eventref:`src-docs-event`
 
         See Also:
 
@@ -3247,12 +3242,12 @@ class Chart2:
         .. versionadded:: 0.9.4
         """
         cargs = CancelEventArgs(Chart2.unlock_controllers.__qualname__)
-        _Events().trigger(Chart2NamedEvent.CONTROLERS_UNLOCKING, cargs)
+        _Events().trigger(Chart2NamedEvent.CONTROLLERS_UNLOCKING, cargs)
         if cargs.cancel:
             return False
         if chart_doc.hasControllersLocked():
             chart_doc.unlockControllers()
-        _Events().trigger(Chart2NamedEvent.CONTROLERS_UNLOCKED, EventArgs.from_args(cargs))
+        _Events().trigger(Chart2NamedEvent.CONTROLLERS_UNLOCKED, EventArgs.from_args(cargs))
         return True
 
     # endregion Lock Controllers

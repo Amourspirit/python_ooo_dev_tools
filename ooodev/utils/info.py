@@ -528,7 +528,7 @@ class Info(metaclass=StaticProperty):
             try:
                 idx = addin_path.index("program")
             except ValueError:
-                mLo.Lo.print("Cound not extract office path")
+                mLo.Lo.print("Could not extract office path")
                 return addin_path
 
             p = Path(addin_path[:idx])
@@ -758,7 +758,9 @@ class Info(metaclass=StaticProperty):
             str: Doc Type.
         """
         try:
-            xdetect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection", raise_err=True)
+            x_detect = mLo.Lo.create_instance_mcf(
+                XTypeDetection, "com.sun.star.document.TypeDetection", raise_err=True
+            )
             if not mFileIO.FileIO.is_openable(fnm):
                 raise mEx.UnOpenableError(fnm)
             url_str = str(mFileIO.FileIO.fnm_to_url(fnm))
@@ -766,7 +768,7 @@ class Info(metaclass=StaticProperty):
 
             # even thought queryTypeByDescriptor reports to return a string
             # for some reason I am getting a tuple with the first value as the expected result.
-            result = xdetect.queryTypeByDescriptor(media_desc, True)
+            result = x_detect.queryTypeByDescriptor(media_desc, True)
             if result is None:
                 raise mEx.UnKnownError("queryTypeByDescriptor() is an unknown result")
             return result if isinstance(result, str) else result[0]
@@ -893,8 +895,8 @@ class Info(metaclass=StaticProperty):
             str: identifier name
         """
         try:
-            xmod = mLo.Lo.qi(XModule, obj, True)
-            return xmod.getIdentifier()
+            x_mod = mLo.Lo.qi(XModule, obj, True)
+            return x_mod.getIdentifier()
         except Exception as e:
             raise ValueError("Could not get service information") from e
 
@@ -1216,7 +1218,7 @@ class Info(metaclass=StaticProperty):
             return ka
 
         if count != 1:
-            raise TypeError("get_interfaces() got an invalid numer of arguments")
+            raise TypeError("get_interfaces() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -1338,12 +1340,12 @@ class Info(metaclass=StaticProperty):
             obj_name (str): Name of object for printing
             obj (object): obj that contains interfaces.
         """
-        intfs = cls.get_interfaces(obj)
-        if not intfs:
+        interfaces = cls.get_interfaces(obj)
+        if not interfaces:
             print(f"No interfaces found for {obj_name}")
             return
-        print(f"{obj_name} Interfaces ({len(intfs)})")
-        for s in intfs:
+        print(f"{obj_name} Interfaces ({len(interfaces)})")
+        for s in interfaces:
             print(f"  {s}")
 
     @staticmethod
@@ -2136,11 +2138,21 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool:
+        ...
+
+    @overload
+    @staticmethod
     def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
         ...
 
+    @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str = "") -> bool:
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool:
+        ...
+
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum | str, arg_name: str = "") -> bool:
         """
         Gets if an multiple inheritance enum, such as a ``str, Enum`` is of expected type.
 
@@ -2169,6 +2181,8 @@ class Info(metaclass=StaticProperty):
                 >>> print(is_enum_type("str", ct.ChartTypeNameBase, val, "input_enum"))
                 TypeError: Parameter "input_enum" must be of type "str" or "ChartTypeNameBase"
         """
+        if isinstance(enum_val, str):
+            return True
         if type(enum_val).__name__ != alt_type and not isinstance(enum_val, enum_type):
             if arg_name:
                 name = enum_type.__name__
@@ -2197,7 +2211,7 @@ class Info(metaclass=StaticProperty):
             return obj.__ooo_full_ns__
         return obj.__pyunointerface__ if hasattr(obj, "__pyunointerface__") else None
 
-    # parse_languange_code
+    # parse_language_code
     @classmethod
     def parse_language_code(cls, lang_code: str) -> Locale:
         """
@@ -2250,6 +2264,7 @@ class Info(metaclass=StaticProperty):
         try:
             return cls._language
         except AttributeError:
+            # sourcery skip: use-or-for-fallback
             lang = cls.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N")
             if not lang:
                 lang = cls.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
@@ -2318,8 +2333,8 @@ class Info(metaclass=StaticProperty):
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    dattrs = ("_language", "_language_locale", "_version", "_version_info")
-    for attr in dattrs:
+    data_attrs = ("_language", "_language_locale", "_version", "_version_info")
+    for attr in data_attrs:
         if hasattr(Info, attr):
             delattr(Info, attr)
 

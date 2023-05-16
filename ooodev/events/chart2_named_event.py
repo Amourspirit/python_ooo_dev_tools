@@ -12,12 +12,12 @@ class Chart2NamedEvent:
     .. versionadded:: 0.9.4
     """
 
-    CONTROLERS_LOCKING = "chart2_controllers_locking"
+    CONTROLLERS_LOCKING = "chart2_controllers_locking"
     """Controllers Locking see :py:meth:`Chart2.lock_controllers() <.office.chart2.Chart2.lock_controllers>`"""
-    CONTROLERS_LOCKED = "chart2_controllers_locked"
+    CONTROLLERS_LOCKED = "chart2_controllers_locked"
     """Controllers Locked see :py:meth:`Chart2.lock_controllers() <.office.chart2.Chart2.lock_controllers>`"""
 
-    CONTROLERS_UNLOCKING = "chart2_controllers_unlocking"
+    CONTROLLERS_UNLOCKING = "chart2_controllers_unlocking"
     """Controllers UnLocking see :py:meth:`Chart2.unlock_controllers() <.office.chart2.Chart2.unlock_controllers>`"""
-    CONTROLERS_UNLOCKED = "chart2_controllers_unlocked"
+    CONTROLLERS_UNLOCKED = "chart2_controllers_unlocked"
     """Controllers UnLocked see :py:meth:`Chart2.unlock_controllers() <.office.chart2.Chart2.unlock_controllers>`"""
