@@ -2,13 +2,10 @@
 # region Imports
 from __future__ import annotations
 import contextlib
-from logging import exception
-from typing import TYPE_CHECKING, Iterable, List, Sequence, overload, Any
-from enum import Enum, IntEnum
+from typing import TYPE_CHECKING, Iterable, List, overload, Any
 import uno
 
 from com.sun.star.accessibility import XAccessible
-from com.sun.star.accessibility import XAccessibleContext
 from com.sun.star.awt import PosSize  # const
 from com.sun.star.awt import VclWindowPeerAttribute  # const
 from com.sun.star.awt import WindowAttribute  # const
@@ -47,18 +44,18 @@ if TYPE_CHECKING:
     from com.sun.star.ui import XUIElement
 
 from ..dialog import input as mInput
+from ..exceptions import ex as mEx
+from ..utils import file_io as mFileIO
+from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..utils import info as mInfo
-from ..utils import file_io as mFileIO
 from ..utils import sys_info as m_sys_info
-from ..exceptions import ex as mEx
-from .decorator.deprecated import deprecated
-from .kind.zoom_kind import ZoomKind
-from .kind.tool_bar_name_kind import ToolBarNameKind
-from .kind.special_windows_kind import SpecialWindowsKind
-from .kind.window_subtype_kind import WindowSubtypeKind
 from .data_type.window_info import WindowInfo as GuiWindowInfo
+from .decorator.deprecated import deprecated
+from .kind.special_windows_kind import SpecialWindowsKind
+from .kind.tool_bar_name_kind import ToolBarNameKind
+from .kind.window_subtype_kind import WindowSubtypeKind
+from .kind.zoom_kind import ZoomKind
 
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.awt.window_descriptor import WindowDescriptor
