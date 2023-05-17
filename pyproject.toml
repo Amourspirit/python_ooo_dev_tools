@@ -32,7 +32,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-ooouno = ">=2.0.0"
+ooouno = ">=2.0.1"
 Pillow = ">=9.2.0"
 typing-extensions = {version = ">=4.4.0", python = "<3.8"}
 lxml = ">=4.9.2"

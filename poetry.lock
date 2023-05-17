@@ -1304,14 +1304,14 @@ files = [
 
 [[package]]
 name = "ooouno"
-version = "2.0.0"
+version = "2.0.1"
 description = "Interfaces and classes for LibreOffice (uno)"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "ooouno-2.0.0-py3-none-any.whl", hash = "sha256:ad8a4f4b61834ce2edd0c17a4f1390de609297a8dbf2be29c103516c762874f6"},
-    {file = "ooouno-2.0.0.tar.gz", hash = "sha256:c22123940f641a44f331979bdf5cc7fc6254c38dff513526b59dd68884d975c3"},
+    {file = "ooouno-2.0.1-py3-none-any.whl", hash = "sha256:52c1089d7ff64b14cf38f967d123f1c5b7d1c43666f3121cfff0d48eca434a59"},
+    {file = "ooouno-2.0.1.tar.gz", hash = "sha256:18f6f29400434773b1e249de8efe3cece33d8fb135c8ccaca5a9e60d1144e308"},
 ]
 
 [package.dependencies]
@@ -2333,14 +2333,14 @@ files = [
 
 [[package]]
 name = "types-unopy"
-version = "1.0.4"
+version = "1.0.6"
 description = "Type annotations for LibreOffice API"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "types_unopy-1.0.4-py3-none-any.whl", hash = "sha256:ddf1d99eb3bf8bdbec14a028837e46385bc0b5d568fbc10726a1ed9eef08c0a5"},
-    {file = "types_unopy-1.0.4.tar.gz", hash = "sha256:d0c9ed42ea14796f037000a78af9beac0f21cffc9b11cc8e49514dd2c9adaad5"},
+    {file = "types_unopy-1.0.6-py3-none-any.whl", hash = "sha256:bc018bbb08b3fa712d9b09172ddf84dc8a4a070deb1cb307bcd82c1aa80e871b"},
+    {file = "types_unopy-1.0.6.tar.gz", hash = "sha256:32e12f5c66410d4c33d8d236a5b5f82a0ffaccd85ab9b4f1c6e82f01077a541f"},
 ]
 
 [package.dependencies]
@@ -2495,4 +2495,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "7cd894bb8b02c581e4611402ffbf4ae66aabe2dc260fb44d29d1d6063bb22b2e"
+content-hash = "75b1bfc1d69dcaf3026f074fc7e421bc73ed44305c450afa24716708915dc40b"
