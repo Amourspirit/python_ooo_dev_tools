@@ -98,8 +98,8 @@ from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 from ..exceptions import ex as mEx
 from ..formatters.formatter_table import FormatterTable
 from ..proto.style_obj import StyleObj
-from ..units import UnitObj
 from ..units import UnitConvert
+from ..units import UnitObj
 from ..utils import gui as mGui
 from ..utils import info as mInfo
 from ..utils import lo as mLo
@@ -112,6 +112,7 @@ from ..utils.data_type import range_obj as mRngObj
 from ..utils.data_type import range_values as mRngValues
 from ..utils.data_type.size import Size
 from ..utils.gen_util import ArgsHelper, Util as GenUtil
+from ..utils.kind.zoom_kind import ZoomKind
 from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
 
 from ..events.args.calc.cell_args import CellArgs
@@ -1091,10 +1092,10 @@ class Calc:
         ctrl = cls.get_controller(doc)
         if ctrl is None:
             return
-        mProps.Props.set(ctrl, ZoomType=int(mGui.GUI.ZoomEnum.BY_VALUE), ZoomValue=value)
+        mProps.Props.set(ctrl, ZoomType=int(ZoomKind.BY_VALUE), ZoomValue=value)
 
     @classmethod
-    def zoom(cls, doc: XSpreadsheetDocument, type: mGui.GUI.ZoomEnum) -> None:
+    def zoom(cls, doc: XSpreadsheetDocument, type: ZoomKind) -> None:
         """
         Zooms spreadsheet document to a specific view.
 
@@ -1108,24 +1109,24 @@ class Calc:
             return
 
         def zoom_val(value: int) -> None:
-            mProps.Props.set(ctrl, ZoomType=int(mGui.GUI.ZoomEnum.BY_VALUE), ZoomValue=value)
+            mProps.Props.set(ctrl, ZoomType=int(ZoomKind.BY_VALUE), ZoomValue=value)
 
         if type in (
-            mGui.GUI.ZoomEnum.ENTIRE_PAGE,
-            mGui.GUI.ZoomEnum.OPTIMAL,
-            mGui.GUI.ZoomEnum.PAGE_WIDTH,
-            mGui.GUI.ZoomEnum.PAGE_WIDTH_EXACT,
+            ZoomKind.ENTIRE_PAGE,
+            ZoomKind.OPTIMAL,
+            ZoomKind.PAGE_WIDTH,
+            ZoomKind.PAGE_WIDTH_EXACT,
         ):
             mProps.Props.set(ctrl, ZoomType=type.value)
-        elif type == mGui.GUI.ZoomEnum.ZOOM_200_PERCENT:
+        elif type == ZoomKind.ZOOM_200_PERCENT:
             zoom_val(200)
-        elif type == mGui.GUI.ZoomEnum.ZOOM_150_PERCENT:
+        elif type == ZoomKind.ZOOM_150_PERCENT:
             zoom_val(150)
-        elif type == mGui.GUI.ZoomEnum.ZOOM_100_PERCENT:
+        elif type == ZoomKind.ZOOM_100_PERCENT:
             zoom_val(100)
-        elif type == mGui.GUI.ZoomEnum.ZOOM_75_PERCENT:
+        elif type == ZoomKind.ZOOM_75_PERCENT:
             zoom_val(75)
-        elif type == mGui.GUI.ZoomEnum.ZOOM_50_PERCENT:
+        elif type == ZoomKind.ZOOM_50_PERCENT:
             zoom_val(50)
 
     @classmethod
