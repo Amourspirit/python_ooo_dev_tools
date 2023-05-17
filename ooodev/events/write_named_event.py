@@ -43,14 +43,14 @@ class WriteNamedEvent:
     DOC_TEXT = "write_text_doc"
     """Got a Write document see :py:meth:`Write.get_text_doc() <.office.write.Write.get_text_doc>`"""
 
-    PAGE_FORRMAT_SETTING = "write_page_format_setting"
+    PAGE_FORMAT_SETTING = "write_page_format_setting"
     """Page Format Setting see :py:meth:`Write.set_page_format() <.office.write.Write.set_page_format>`"""
-    PAGE_FORRMAT_SET = "write_page_format_setting"
+    PAGE_FORMAT_SET = "write_page_format_setting"
     """Page Format Set see :py:meth:`Write.set_page_format() <.office.write.Write.set_page_format>`"""
 
-    FORMULA_ADDING = "write_forumla_adding"
+    FORMULA_ADDING = "write_formula_adding"
     """Formula Adding see :py:meth:`Write.add_formula() <.office.write.Write.add_formula>`"""
-    FORMULA_ADDED = "write_forumla_added"
+    FORMULA_ADDED = "write_formula_added"
     """Formula Added see :py:meth:`Write.add_formula() <.office.write.Write.add_formula>`"""
 
     HYPER_LINK_ADDING = "write_hyper_link_adding"
@@ -60,7 +60,7 @@ class WriteNamedEvent:
 
     BOOKMARK_ADDING = "write_bookmark_adding"
     """Bookmark Adding see :py:meth:`Write.add_bookmark() <.office.write.Write.add_bookmark>`"""
-    BOOKMARK_ADDIED = "write_bookmark_added"
+    BOOKMARK_ADDED = "write_bookmark_added"
     """Bookmark Added see :py:meth:`Write.add_bookmark() <.office.write.Write.add_bookmark>`"""
 
     TEXT_FRAME_ADDING = "write_text_frame_adding"
@@ -68,14 +68,14 @@ class WriteNamedEvent:
     TEXT_FRAME_ADDED = "write_text_frame_added"
     """Text frame Added see :py:meth:`Write.add_text_frame() <.office.write.Write.add_text_frame>`"""
 
-    TABLE_ADDING = "write_tabel_adding"
+    TABLE_ADDING = "write_table_adding"
     """Table Adding see :py:meth:`Write.add_table() <.office.write.Write.add_table>`"""
-    TABLE_ADDED = "write_tabel_added"
+    TABLE_ADDED = "write_table_added"
     """Table Added see :py:meth:`Write.add_table() <.office.write.Write.add_table>`"""
 
-    IMAGE_LNIK_ADDING = "write_image_link_adding"
+    IMAGE_LINK_ADDING = "write_image_link_adding"
     """Image Link Adding see :py:meth:`Write.add_image_link() <.office.write.Write.add_image_link>`"""
-    IMAGE_LNIK_ADDED = "write_image_link_added"
+    IMAGE_LINK_ADDED = "write_image_link_added"
     """Image Link Added see :py:meth:`Write.add_image_link() <.office.write.Write.add_image_link>`"""
 
     IMAGE_SHAPE_ADDING = "write_image_shape_adding"

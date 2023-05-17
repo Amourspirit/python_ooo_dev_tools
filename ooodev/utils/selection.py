@@ -341,16 +341,16 @@ class Selection(metaclass=StaticProperty):
         # sourcery skip: raise-specific-error
         try:
             # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
-            xtxt_cursor = mLo.Lo.qi(XTextCursor, cursor_obj)
-            if xtxt_cursor is not None:
-                c = xtxt_cursor.getText().createTextCursorByRange(xtxt_cursor)
+            x_txt_cursor = mLo.Lo.qi(XTextCursor, cursor_obj)
+            if x_txt_cursor is not None:
+                c = x_txt_cursor.getText().createTextCursorByRange(x_txt_cursor)
                 if c is None:
                     raise Exception("XTextViewCursor.createTextCursorByRange() result is null")
                 return c
 
-            xdoc = mLo.Lo.qi(XTextDocument, cursor_obj)
-            if xdoc is not None:
-                xtext = xdoc.getText()
+            x_doc = mLo.Lo.qi(XTextDocument, cursor_obj)
+            if x_doc is not None:
+                xtext = x_doc.getText()
                 if xtext is None:
                     return None
                 c = xtext.createTextCursor()
@@ -494,10 +494,10 @@ class Selection(metaclass=StaticProperty):
             int: Current Cursor Position
         """
         # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
-        #     imax = 0
+        #     i_max = 0
         #     if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
         #         l.goRight(jump, False)
-        #         imax = imax + jump
+        #         i_max = i_max + jump
         jmp_amt = 25
 
         def get_high(l: XTextCursor, r: XTextCursor, jump=jmp_amt, total=0) -> int:
@@ -595,8 +595,8 @@ class Selection(metaclass=StaticProperty):
         # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
         try:
             model = mLo.Lo.qi(XModel, text_doc, True)
-            xcontroller = model.getCurrentController()
-            supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller, True)
+            x_controller = model.getCurrentController()
+            supplier = mLo.Lo.qi(XTextViewCursorSupplier, x_controller, True)
             vc = supplier.getViewCursor()
             if vc is None:
                 raise Exception("Supplier return null view cursor")
@@ -703,9 +703,9 @@ class Selection(metaclass=StaticProperty):
         supplier = mLo.Lo.qi(XSelectionSupplier, text_doc.getCurrentController(), True)
 
         # clear any current selection
-        view_curor = cls.get_view_cursor(text_doc=text_doc)
-        # view_curor.collapseToEnd()
-        view_curor.goRight(0, False)
+        view_cursor = cls.get_view_cursor(text_doc=text_doc)
+        # view_cursor.collapseToEnd()
+        view_cursor.goRight(0, False)
 
         # see section 7.5.1 of developers' guide
         index_access = mLo.Lo.qi(XIndexAccess, supplier.getSelection(), True)
@@ -726,8 +726,8 @@ class Selection(metaclass=StaticProperty):
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    dattrs = ("_text_range_compare",)
-    for attr in dattrs:
+    d_attrs = ("_text_range_compare",)
+    for attr in d_attrs:
         if hasattr(Selection, attr):
             delattr(Selection, attr)
 
