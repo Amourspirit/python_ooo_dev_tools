@@ -27,7 +27,7 @@ Color = NewType("Color", int)
 class StandardColor(NamedTuple):
     """Standard palette Colors"""
 
-    # Standeard Palette
+    # Standard Palette
     WHITE = Color(0xFFFFFF)
     BLACK = Color(0)
     GRAY = Color(0x808080)
@@ -419,8 +419,8 @@ class CommonColor(NamedTuple):
             c_str = mGenUtil.Util.to_snake_case_upper(c_str)
         try:
             return Color(int(getattr(cls, c_str)))
-        except AttributeError:
-            raise ValueError("str_color is not a valid color")
+        except AttributeError as e:
+            raise ValueError("str_color is not a valid color") from e
 
 
 class RGBA(NamedTuple):
@@ -501,6 +501,7 @@ class RGB(NamedTuple):
         Returns:
             bool: ``True`` if valid; Otherwise, ``False``
         """
+        # sourcery skip: inline-immediately-returned-variable, use-any, use-next
         result = True
         for i in self:
             if i < MIN_COLOR or i > MAX_COLOR:
@@ -617,6 +618,7 @@ class HSL(NamedTuple):
     lightness: float
 
     def __str__(self) -> str:
+        # sourcery skip: use-fstring-for-concatenation
         return "hls(" + f"{self.hue:.6f}" + ", " + f"{self.saturation:.6f}" + ", " + f"{self.lightness:.6f}" + ")"
 
 
@@ -626,6 +628,7 @@ class HSV(NamedTuple):
     value: float
 
     def __str__(self) -> str:
+        # sourcery skip: use-fstring-for-concatenation
         return "hlv(" + f"{self.hue:.6f}" + ", " + f"{self.saturation:.6f}" + ", " + f"{self.value:.6f}" + ")"
 
 
@@ -836,16 +839,16 @@ def int_to_rgb(rgb_int: int) -> RGB:
 
 
 @overload
-def lighten(rgb_color: int, percent: numbers.Number) -> RGB:
+def lighten(rgb_color: int, percent: int | float) -> RGB:
     ...
 
 
 @overload
-def lighten(rgb_color: RGB, percent: numbers.Number) -> RGB:
+def lighten(rgb_color: RGB, percent: int | float) -> RGB:
     ...
 
 
-def lighten(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
+def lighten(rgb_color: Union[RGB, int], percent: int | float) -> RGB:
     """
     Lightens an RGB instance
 
@@ -863,31 +866,27 @@ def lighten(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
         raise ValueError("percent is expected to be between 0 and 100")
     # https://mdigi.tools/lighten-color
     # https://pastebin.com/KBAbAPh0
-    if isinstance(rgb_color, int):
-        _rgb = int_to_rgb(rgb_color)
-    else:
-        _rgb = rgb_color
+    _rgb = int_to_rgb(rgb_color) if isinstance(rgb_color, int) else rgb_color
     c_hsl = rgb_to_hsl(_rgb)
     amt = (percent * ((1 - c_hsl.lightness) * 100)) / 100
     l = c_hsl.lightness
     l += amt / 100
     increase = clamp(l, 0, 1)
     c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, increase)
-    c_rgb = hsl_to_rgb(c2_hsl)
-    return c_rgb
+    return hsl_to_rgb(c2_hsl)
 
 
 @overload
-def darken(rgb_color: int, percent: numbers.Number) -> RGB:
+def darken(rgb_color: int, percent: int | float) -> RGB:
     ...
 
 
 @overload
-def darken(rgb_color: RGB, percent: numbers.Number) -> RGB:
+def darken(rgb_color: RGB, percent: int | float) -> RGB:
     ...
 
 
-def darken(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
+def darken(rgb_color: Union[RGB, int], percent: int | float) -> RGB:
     """
     Darkens an rgb instance
 
@@ -905,18 +904,14 @@ def darken(rgb_color: Union[RGB, int], percent: numbers.Number) -> RGB:
         raise ValueError("percent is expected to be between 0 and 100")
     # https://mdigi.tools/lighten-color
     # https://pastebin.com/KBAbAPh0
-    if isinstance(rgb_color, int):
-        _rgb = int_to_rgb(rgb_color)
-    else:
-        _rgb = rgb_color
+    _rgb = int_to_rgb(rgb_color) if isinstance(rgb_color, int) else rgb_color
     c_hsl = rgb_to_hsl(_rgb)
     amt = (percent * (c_hsl.lightness * 100)) / 100
     l = c_hsl.lightness
     l -= amt / 100
     decrease = clamp(l, 0, 1)
     c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, decrease)
-    c_rgb = hsl_to_rgb(c2_hsl)
-    return c_rgb
+    return hsl_to_rgb(c2_hsl)
 
 
 def get_gray_rgb(percent: int, rgb: RGB | None = None) -> RGB:
@@ -960,9 +955,6 @@ def get_gray_rgb(percent: int, rgb: RGB | None = None) -> RGB:
     g = 0.5870 * g
     b = 0.1140 * b
     gs = r + g + b
-    if percent > 0:
-        gs_per = (percent / 100) * gs
-    else:
-        gs_per = gs
+    gs_per = (percent / 100) * gs if percent > 0 else gs
     gs_int = round(gs_per)
     return RGB(red=gs_int, green=gs_int, blue=gs_int)

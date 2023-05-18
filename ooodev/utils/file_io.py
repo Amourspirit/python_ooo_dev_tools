@@ -62,9 +62,7 @@ class FileIO:
         """
         # windows path has no resolve method
         p = Path(fnm)
-        if p.is_absolute():
-            return p
-        return p.absolute().resolve()
+        return p if p.is_absolute() else p.absolute().resolve()
 
     @classmethod
     def url_to_path(cls, url: str) -> Path:
@@ -80,6 +78,7 @@ class FileIO:
         Returns:
             Path: path as string
         """
+        # sourcery skip: raise-from-previous-error, raise-specific-error
         try:
             return cls.uri_to_path(uri_fnm=url)
         except Exception as e:
@@ -99,6 +98,7 @@ class FileIO:
         Returns:
             str: Converted path if conversion is successful; Otherwise None.
         """
+        # sourcery skip: raise-specific-error
         try:
             p = cls.get_absolute_path(fnm)
             return p.as_uri()
@@ -126,7 +126,7 @@ class FileIO:
         # result may now start with file:/ and not file:///
 
         # add proper file:/// again
-        result = re.sub(_URI_FILE_RE, "file:///", result, 1)
+        result = re.sub(pattern=_URI_FILE_RE, repl="file:///", string=result, count=1)
         return result
 
     # region uri_to_path()
@@ -157,13 +157,11 @@ class FileIO:
         """
         try:
             sys_path = uno.fileUrlToSystemPath(str(uri_fnm))
-        except UnoRuntimeException:
-            raise mEx.ConvertPathError(f'Couldn\'t convert file url to a system path: uri_fnm="{uri_fnm}"')
+        except UnoRuntimeException as e:
+            raise mEx.ConvertPathError(f'Couldn\'t convert file url to a system path: uri_fnm="{uri_fnm}"') from e
 
         p = Path(sys_path)
-        if not ensure_absolute:
-            return p
-        return cls.get_absolute_path(p)
+        return cls.get_absolute_path(p) if ensure_absolute else p
 
     # endregion uri_to_path()
 
@@ -267,10 +265,7 @@ class FileIO:
             bool: ``False`` if ``fnm`` is ``None`` or empty string; Otherwise; ``True``
         """
         # note when path is converted from empty string it becomes current dir such as PosixPath('.')
-        if not fnm:
-            # takes care of "" string and None
-            return False
-        return True
+        return bool(fnm)
 
     # region is_exist_file()
     @overload
@@ -305,18 +300,21 @@ class FileIO:
             bool: ``True`` if file is valid; Otherwise, ``False``.
         """
         if not cls.is_valid_path_or_str(fnm):
-            if not raise_err:
+            if raise_err:
+                raise ValueError(f'fnm is not a valid format for PathOrStr: "{fnm}"')
+            else:
                 return False
-            raise ValueError(f'fnm is not a valid format for PathOrStr: "{fnm}"')
         p_fnm = cls.get_absolute_path(fnm)
         if not p_fnm.exists():
-            if not raise_err:
+            if raise_err:
+                raise FileNotFoundError(f"File fnm does not exist: {p_fnm}")
+            else:
                 return False
-            raise FileNotFoundError(f"File fnm does not exist: {p_fnm}")
         if not p_fnm.is_file():
-            if not raise_err:
+            if raise_err:
+                raise ValueError(f'fnm is not a file: "{p_fnm}"')
+            else:
                 return False
-            raise ValueError(f'fnm is not a file: "{p_fnm}"')
         return True
 
     # endregion is_exist_file()
@@ -354,18 +352,21 @@ class FileIO:
             bool: ``True`` if file is valid; Otherwise, ``False``.
         """
         if not cls.is_valid_path_or_str(dnm):
-            if not raise_err:
+            if raise_err:
+                raise ValueError(f'fnm is not a valid format for PathOrStr: "{dnm}"')
+            else:
                 return False
-            raise ValueError(f'fnm is not a valid format for PathOrStr: "{dnm}"')
         p_fnm = cls.get_absolute_path(dnm)
         if not p_fnm.exists():
-            if not raise_err:
+            if raise_err:
+                raise FileNotFoundError(f"Dir fnm does not exist: {p_fnm}")
+            else:
                 return False
-            raise FileNotFoundError(f"Dir fnm does not exist: {p_fnm}")
         if not p_fnm.is_dir():
-            if not raise_err:
+            if raise_err:
+                raise NotADirectoryError(f'fnm is not a directory: "{p_fnm}"')
+            else:
                 return False
-            raise NotADirectoryError(f'fnm is not a directory: "{p_fnm}"')
         return True
 
     # endregion is_exist_dir()
@@ -384,7 +385,7 @@ class FileIO:
     @classmethod
     def make_directory(cls, *args, **kwargs) -> Path:
         """
-        Creates path and subpaths they do not exist.
+        Creates path and sub paths they do not exist.
 
         Args:
             dir (PathOrStr): PathLike object to a directory
@@ -405,7 +406,7 @@ class FileIO:
             if kargs_len == 0:
                 return ka
             valid_keys = ("dir", "fnm")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("make_directory() got an unexpected keyword argument")
             keys = ("doc", "slide")
@@ -496,7 +497,7 @@ class FileIO:
         Returns:
             bool: Returns True if all file are deleted; Otherwise, False
         """
-        if len(fnms) == 0:
+        if not fnms:
             return False
         mLo.Lo.print()
         result = True
@@ -519,6 +520,8 @@ class FileIO:
         Returns:
             None:
         """
+        # sourcery skip: raise-specific-error
+        p = None
         if not data:
             mLo.Lo.print(f"No data to save in '{fnm}'")
             return
@@ -528,7 +531,10 @@ class FileIO:
                 file.write(data)
             mLo.Lo.print(f"Saved string to file: {p}")
         except Exception as e:
-            raise Exception(f"Could not save string to file: {p}") from e
+            if p is None:
+                raise Exception("Could not save string to file") from e
+            else:
+                raise Exception(f"Could not save string to file: {p}") from e
 
     @classmethod
     def save_bytes(cls, fnm: PathOrStr, b: bytes) -> None:
@@ -543,6 +549,7 @@ class FileIO:
             ValueError: If ``b`` is None
             Exception: If any other error occurs.
         """
+        # sourcery skip: raise-specific-error
         if b is None:
             raise ValueError(f"'b' is null. No data to save in '{fnm}'")
         try:
@@ -562,6 +569,7 @@ class FileIO:
             fnm (PathOrStr): file to save data to
             arr (Table): 2d array of data.
         """
+        # sourcery skip: raise-specific-error
         if arr is None:
             raise ValueError("'arr' is null. No data to save in '{fnm}'")
         num_rows = len(arr)
@@ -591,6 +599,7 @@ class FileIO:
         Raises:
             Exception: If unable to append text.
         """
+        # sourcery skip: raise-specific-error
         try:
             p = cls.get_absolute_path(fnm)
             with open(p, "a") as file:
@@ -605,14 +614,14 @@ class FileIO:
     @classmethod
     def zip_access(cls, fnm: PathOrStr) -> XZipFileAccess:
         return mLo.Lo.create_instance_mcf(
-            XZipFileAccess, "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),)
+            XZipFileAccess, "com.sun.star.packages.zip.ZipFileAccess", (cls.fnm_to_url(fnm),), raise_err=True
         )
 
     @classmethod
     def zip_list_uno(cls, fnm: PathOrStr) -> None:
         """Use zip_list method"""
         # replaced by more detailed Java version; see below
-        zfa: XNameAccess = cls.zip_access(fnm)
+        zfa = mLo.Lo.qi(XNameAccess, cls.zip_access(fnm), True)
         names = zfa.getElementNames()
         mLo.Lo.print(f"\nZippendContents of '{fnm}'")
         mLo.Lo.print_names(names, 1)
@@ -645,8 +654,8 @@ class FileIO:
         """
         lines = []
         try:
-            tis = mLo.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream")
-            sink = mLo.Lo.qi(XActiveDataSink, tis)
+            tis = mLo.Lo.create_instance_mcf(XTextInputStream, "com.sun.star.io.TextInputStream", raise_err=True)
+            sink = mLo.Lo.qi(XActiveDataSink, tis, True)
             sink.setInputStream(in_stream)
 
             while tis.isEOF() is False:
@@ -654,9 +663,7 @@ class FileIO:
             tis.closeInput()
         except Exception as e:
             mLo.Lo.print(e)
-        if len(lines) == 0:
-            return None
-        return lines
+        return lines or None
 
     @classmethod
     def get_mime_type(cls, zfa: XZipFileAccess) -> str | None:
@@ -672,6 +679,7 @@ class FileIO:
         Returns:
             str | None: Mime-type if found; Otherwise, None
         """
+        # sourcery skip: raise-specific-error
         try:
             in_stream = zfa.getStreamByPattern("mimetype")
             lines = cls.read_lines(in_stream)
@@ -697,7 +705,8 @@ class FileIO:
         try:
             p = cls.get_absolute_path(fnm)
             with zipfile.ZipFile(p, "r") as zip:
-                for info in zip.getinfo():
+                for file in zip.filelist:
+                    info = zip.getinfo(file.filename)
                     mLo.Lo.print(info.filename)
                     mLo.Lo.print("\tModified:\t" + str(datetime.datetime(*info.date_time)))
                     mLo.Lo.print("\tSystem:\t\t" + str(info.create_system) + "(0 = Windows, 3 = Unix)")
