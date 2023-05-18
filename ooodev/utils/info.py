@@ -26,6 +26,8 @@ from com.sun.star.reflection import XIdlReflection
 from com.sun.star.style import XStyleFamiliesSupplier
 from com.sun.star.util import XChangesBatch
 
+from ooodev.utils.decorator.deprecated import deprecated
+
 if TYPE_CHECKING:
     from com.sun.star.awt import FontDescriptor
     from com.sun.star.beans import XPropertyContainer
@@ -2249,8 +2251,25 @@ class Info(metaclass=StaticProperty):
             raise ValueError(f"Invalid country code: {lang_code}")
         return Locale(lang, country.upper(), variant)
 
-    parse_languange_code = parse_language_code
-    # fix of a typo in 0.9.4
+    @classmethod
+    @deprecated("Use get_toolbar_resource")
+    def parse_languange_code(cls, lang_code: str) -> Locale:
+        """
+        Parses a language code into a ``Locale`` object.
+
+        Args:
+            lang_code (str): Language code such as ``"en-US"``
+
+        Returns:
+            Locale: ``Locale`` object
+
+        Raises:
+            ValueError: If ``lang_code`` is not valid.
+
+        # .. deprecated:: 0.9.4
+            Use :py:meth:`~.info.Info.parse_language_code` instead.
+        """
+        return cls.parse_language_code(lang_code=lang_code)
 
     @classproperty
     def language(cls) -> str:

@@ -74,7 +74,7 @@ class Lo(metaclass=StaticProperty):
 
         In the following example ControllerLock is called using ``with``.
 
-        All code inside the ``with Lo.ControllerLock() as xdoc`` block is written to **Writer**
+        All code inside the ``with Lo.ControllerLock() as x_doc`` block is written to **Writer**
         with controller locked. This means the ui will not update until the block is done.
         A soon as the block is processed the controller is unlocked and the ui is updated.
 
@@ -84,8 +84,8 @@ class Lo(metaclass=StaticProperty):
 
             .. code::
 
-                with Lo.ControllerLock() as xdoc:
-                    cursor = Write.get_cursor(xdoc)
+                with Lo.ControllerLock() as x_doc:
+                    cursor = Write.get_cursor(x_doc)
                     Write.append(cursor=cursor, text="Some examples of simple text ")
                     # do a bunch or work.
                     ...
