@@ -6,7 +6,7 @@
 # see my post: https://ask.libreoffice.org/t/libreoffice-wiping-object-properties-issue-with-gallerythemeprovider/83182
 #
 # Checking the reference count inside of find_gallery_item() show there is only 1 ref could. Which means 0 references
-# becuase sys.getrefcount() add 1 reference to the object that is being checked.
+# because sys.getrefcount() add 1 reference to the object that is being checked.
 # find_gallery_graphic() has been added which duplicates the code of find_gallery_item() due to these issues.
 # find_gallery_graphic() does successfully return XGraphic object, However I am not sure if this graphic can be used
 # as it is. I tried inserting the XGraphic into a Draw XShape and putting it on the document, however it appears to
@@ -52,7 +52,7 @@ class GalleryObj:
     """
 
     # special case for this class. Matching most of GalleryItem properties so
-    # using Camel caase
+    # using Camel case
     def __init__(self, itm: XGalleryItem) -> None:
         self._graphic = mProps.Props.get(itm, "Graphic", None)
         self._drawing = mProps.Props.get(itm, "Drawing", None)
@@ -88,7 +88,7 @@ class GalleryObj:
 
     @property
     def ImplementationId(self) -> uno.ByteSequence:
-        return self._implementation_id
+        return self._implementation_id  # type: ignore
 
     @property
     def ImplementationName(self) -> str:
@@ -96,7 +96,7 @@ class GalleryObj:
 
     @property
     def PropertySetInfo(self) -> XPropertySetInfo:
-        return self._property_set_info
+        return self._property_set_info  # type: ignore
 
     @property
     def PropertyToDefault(self) -> Any:
@@ -133,7 +133,7 @@ class Gallery(metaclass=StaticProperty):
         Returns:
             XGalleryTheme: Gallery Theme
         """
-        # enusre name is GalleryKind | str,
+        # ensure name is GalleryKind | str,
         mInfo.Info.is_type_enum_multi(alt_type="str", enum_type=GalleryKind, enum_val=name, arg_name="name")
 
         try:
@@ -145,7 +145,7 @@ class Gallery(metaclass=StaticProperty):
                 raise mEx.UnKnownError("None Value: getByName() returned None value")
             return mLo.Lo.qi(XGalleryTheme, obj, True)
         except Exception as e:
-            raise mEx.GalleryError(f'Error occured getting gallery for "{name}"') from e
+            raise mEx.GalleryError(f'Error occurred getting gallery for "{name}"') from e
 
     # endregion get_gallery()
 
@@ -321,20 +321,17 @@ class Gallery(metaclass=StaticProperty):
         Returns:
             GalleryObj: Gallery Item
         """
+        # sourcery skip: low-code-quality, merge-duplicate-blocks
         result = None
         try:
-            if search_match == SearchMatchKind.FULL_IGNORE_CASE or search_match == SearchMatchKind.PARTIAL_IGNORE_CASE:
+            if search_match in (SearchMatchKind.FULL_IGNORE_CASE, SearchMatchKind.PARTIAL_IGNORE_CASE):
                 nm = name.casefold()
                 case_sensitive = False
             else:
                 nm = name
                 case_sensitive = True
 
-            if search_match == SearchMatchKind.PARTIAL or search_match == SearchMatchKind.PARTIAL_IGNORE_CASE:
-                partial = True
-            else:
-                partial = False
-
+            partial = search_match in (SearchMatchKind.PARTIAL, SearchMatchKind.PARTIAL_IGNORE_CASE)
             gallery = cls.get_gallery(gallery_name)
             num_pics = gallery.getCount()
             mLo.Lo.print(f'Searching gallery "{gallery.getName()}" for "{name}"')
@@ -383,7 +380,7 @@ class Gallery(metaclass=StaticProperty):
 
         except Exception as e:
             raise mEx.GalleryError(
-                f'Error occured trying to find in gallery: "{gallery_name}" for item: "{name}"'
+                f'Error occurred trying to find in gallery: "{gallery_name}" for item: "{name}"'
             ) from e
         if result is None:
             raise mEx.GalleryNotFoundError(f'Not found. Tried to find in gallery: "{gallery_name}" for item: "{name}"')
@@ -414,6 +411,7 @@ class Gallery(metaclass=StaticProperty):
             return
 
         print("Gallery item information:")
+        url = None
         try:
             url = mProps.Props.get(item, "URL")
             if url is None:
@@ -431,7 +429,8 @@ class Gallery(metaclass=StaticProperty):
             print("  Fnm: Unable to compute due to no URL Property")
             print("  Path: Unable to compute due do no URL Property")
         except mEx.ConvertPathError:
-            print(f'  URL: "{url}"')
+            if url is not None:
+                print(f'  URL: "{url}"')
             print("  Fnm: Unable to compute due to URL conversion error")
             print("  Path: Unable to compute due do URL conversion error")
 
@@ -449,6 +448,7 @@ class Gallery(metaclass=StaticProperty):
             return
 
         print("Gallery item information:")
+        url = None
         try:
             url = item.URL
             if url is None:
@@ -465,7 +465,8 @@ class Gallery(metaclass=StaticProperty):
             print("  Fnm: Unable to compute due to no URL Property")
             print("  Path: Unable to compute due do no URL Property")
         except mEx.ConvertPathError:
-            print(f'  URL: "{url}"')
+            if url is not None:
+                print(f'  URL: "{url}"')
             print("  Fnm: Unable to compute due to URL conversion error")
             print("  Path: Unable to compute due do URL conversion error")
 
@@ -490,9 +491,7 @@ class Gallery(metaclass=StaticProperty):
             XGalleryThemeProvider, "com.sun.star.gallery.GalleryThemeProvider", raise_err=True
         )
         themes = gtp.getElementNames()
-        lst = list(themes)
-        lst.sort()
-        return lst
+        return sorted(themes)
 
     @staticmethod
     def report_galleries() -> None:
@@ -532,7 +531,7 @@ class Gallery(metaclass=StaticProperty):
                     # url = str(mProps.Props.get(item, "URL"))
                     # print(f"  {mFileIo.FileIO.get_fnm((mFileIo.FileIO.url_to_path(url)))}")
                 except Exception as ex:
-                    print(f"Could not access galery item: {i}")
+                    print(f"Could not access gallery item: {i}")
                     print(f"  {ex}")
         except Exception as e:
             print("Error reporting gallery items")
@@ -590,8 +589,8 @@ class _GalleryManager:
     def on_disposed(source: Any, event: EventObject) -> None:
         # Clean up static properties that may have been dynamically created.
         # print("Gallery Static Property Cleanup")
-        dattrs = ("_gallery_dir",)
-        for attr in dattrs:
+        data_attrs = ("_gallery_dir",)
+        for attr in data_attrs:
             if hasattr(Gallery, attr):
                 delattr(Gallery, attr)
 

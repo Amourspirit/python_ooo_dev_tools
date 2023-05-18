@@ -623,7 +623,7 @@ class FileIO:
         # replaced by more detailed Java version; see below
         zfa = mLo.Lo.qi(XNameAccess, cls.zip_access(fnm), True)
         names = zfa.getElementNames()
-        mLo.Lo.print(f"\nZippendContents of '{fnm}'")
+        mLo.Lo.print(f"\nZipped Contents of '{fnm}'")
         mLo.Lo.print_names(names, 1)
 
     @staticmethod
