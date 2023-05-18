@@ -40,15 +40,18 @@ class Session(metaclass=StaticProperty):
     @classproperty
     def path_sub(cls) -> PathSubstitution:
         try:
-            return cls._path_substitution
+            return cls._path_substitution  # type: ignore
         except AttributeError:
             try:
                 # raises DeploymentException if not in a macro environment
-                # in a macro envrionment there should be no dependency on Lo
+                # in a macro environment there should be no dependency on Lo
                 # this will allow for import shared python files before Lo.load_office is called.
-                # if not in a macro then must get instace after Lo.load_office is called
+                # if not in a macro then must get instance after Lo.load_office is called
                 ctx = cast("XComponentContext", uno.getComponentContext())
-                ps = ctx.getServiceManager().createInstanceWithContext("com.sun.star.util.PathSubstitution", ctx)
+                ps = cast(
+                    PathSubstitution,
+                    ctx.getServiceManager().createInstanceWithContext("com.sun.star.util.PathSubstitution", ctx),
+                )
                 cls._path_substitution = ps
                 return cls._path_substitution
             except DeploymentException as e:
@@ -57,11 +60,11 @@ class Session(metaclass=StaticProperty):
                 if mLo.Lo.is_loaded is False:
                     raise mEx.LoNotLoadedError(
                         "Lo.load_office must be called before using session when not run as a macro"
-                    )
+                    ) from e
                 cls._path_substitution = mLo.Lo.create_instance_mcf(
-                    XStringSubstitution, "com.sun.star.util.PathSubstitution"
+                    XStringSubstitution, "com.sun.star.util.PathSubstitution", raise_err=True
                 )
-        return cls._path_substitution
+        return cls._path_substitution  # type: ignore
 
     @staticmethod
     def substitute(var_name: str):
@@ -155,18 +158,21 @@ class Session(metaclass=StaticProperty):
         Args:
             path (PathEnum): Type of path to register.
         """
+        script_path = ""
         if path == Session.PathEnum.SHARE_PYTHON:
-            spath = cls.shared_py_scripts
+            script_path = cls.shared_py_scripts
         elif path == Session.PathEnum.SHARE_USER_PYTHON:
-            spath = cls.user_py_scripts
-        if not spath in sys.path:
-            sys.path.insert(0, spath)
+            script_path = cls.user_py_scripts
+        if not script_path:
+            return
+        if script_path not in sys.path:
+            sys.path.insert(0, script_path)
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Lo Attributes that are dynamically created
-    dattrs = ("_path_substitution", "_share", "_user_profile")
-    for attr in dattrs:
+    data_attrs = ("_path_substitution", "_share", "_user_profile")
+    for attr in data_attrs:
         if hasattr(Session, attr):
             delattr(Session, attr)
 
