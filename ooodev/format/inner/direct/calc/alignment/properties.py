@@ -189,14 +189,14 @@ class Properties(StyleBase):
         """
         Gets/Sets If text is hyphenation is active.
         """
-        return self._get(self._props.hypen)
+        return self._get(self._props.hyphen)
 
     @prop_hyphen_active.setter
     def prop_hyphen_active(self, value: bool | None):
         if value is None:
-            self._remove(self._props.hypen)
+            self._remove(self._props.hyphen)
             return
-        self._set(self._props.hypen, value)
+        self._set(self._props.hyphen, value)
 
     @property
     def prop_shrink_to_fit(self) -> bool | None:
@@ -235,7 +235,7 @@ class Properties(StyleBase):
             return self._props_internal_attributes
         except AttributeError:
             self._props_internal_attributes = CellTextPropertiesProps(
-                mode="WritingMode", wrapped="IsTextWrapped", hypen="ParaIsHyphenation", shrink="ShrinkToFit"
+                mode="WritingMode", wrapped="IsTextWrapped", hyphen="ParaIsHyphenation", shrink="ShrinkToFit"
             )
         return self._props_internal_attributes
 

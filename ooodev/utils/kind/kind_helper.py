@@ -1,11 +1,14 @@
 # coding: utf-8
 from __future__ import annotations
-from enum import Enum, IntEnum, IntFlag
-from typing import Any, Type
+import contextlib
+from enum import IntEnum, IntFlag
+from typing import Any, cast, Type, TypeVar
 from ...utils import gen_util as mGenUtil
 
+T = TypeVar("T")
 
-def enum_class_new(cls, value: Any) -> Enum:
+
+def enum_class_new(cls: Type[T], value: Any) -> T:
     """
     New (__new__) method for dynamically created enum classes
 
@@ -16,7 +19,7 @@ def enum_class_new(cls, value: Any) -> Enum:
         ValueError: if unable to match enum instance
 
     Returns:
-        [Enum]: Enum Instance
+        T: Enum Instance
 
     Example:
         ..code-block:: python
@@ -31,23 +34,22 @@ def enum_class_new(cls, value: Any) -> Enum:
             >>> print(e.value)
             Yellow 45 Degrees
     """
-    if isinstance(value, str):
-        if hasattr(cls, value):
-            return getattr(cls, value)
+    if isinstance(value, str) and hasattr(cls, value):
+        return getattr(cls, value)
     _type = type(value)
     if _type is cls:
-        return value
+        return cast(T, value)
     raise ValueError("%r is not a valid %s" % (value, cls.__name__))
 
 
-def enum_from_string(s: str, ec: Type[Enum]) -> Enum:
+def enum_from_string(s: str, ec: Type[T]) -> T:
     """
     Gets an enum instance from a string
 
     Args:
         s (str): Name of enum instance.
             ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
-            ``hypen-case``, ``normal case``.
+            ``hyphen-case``, ``normal case``.
         ec (Enum): Enum to get Enum instance from
 
     Raises:
@@ -55,27 +57,19 @@ def enum_from_string(s: str, ec: Type[Enum]) -> Enum:
         AttributeError: If unable to get enum instance.
 
     Returns:
-        Enum: Enum Instance
+        T: Enum Instance
     """
     if not s:
         raise ValueError("from_str arg s cannot be an empty value")
 
-    try:
+    with contextlib.suppress(AttributeError):
         return getattr(ec, s.upper())
-    except AttributeError:
-        pass
-
     if issubclass(ec, (IntEnum, IntFlag)):
-        try:
+        with contextlib.suppress(ValueError):
             return ec(int(s))
-        except ValueError:
-            pass
         if s.upper().startswith("0X"):
-            try:
+            with contextlib.suppress(ValueError):
                 return ec(int(s, 16))
-            except ValueError:
-                pass
-
     e_str = mGenUtil.Util.to_single_space(s).replace("-", "_").replace(" ", "_")
     if "_" in e_str:
         e_str = e_str.upper()

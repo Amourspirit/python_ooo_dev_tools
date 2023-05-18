@@ -151,7 +151,7 @@ class GUI:
 
         try:
             cmd = mLo.Lo.make_uno_cmd(item_name)
-            conf_man: XUIConfigurationManager = cls.get_ui_config_manager_doc(doc)
+            conf_man = cls.get_ui_config_manager_doc(doc)
             image_man = mLo.Lo.qi(XImageManager, conf_man.getImageManager())
             if image_man is None:
                 raise mEx.MissingInterfaceError(XImageManager)

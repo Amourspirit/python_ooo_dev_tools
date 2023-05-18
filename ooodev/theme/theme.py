@@ -36,18 +36,14 @@ class ThemeBase(ABC):
             node_str="Color",
             node_path=f"org.openoffice.Office.UI/ColorScheme/ColorSchemes/org.openoffice.Office.UI:ColorScheme['{self._theme_name}']/{prop_name}",
         )
-        if val is None:
-            return -1
-        return int(val)
+        return -1 if val is None else int(val)
 
     def _get_visible(self, prop_name: str) -> bool:
         val = Info.get_config(
             node_str="IsVisible",
             node_path=f"org.openoffice.Office.UI/ColorScheme/ColorSchemes/org.openoffice.Office.UI:ColorScheme['{self._theme_name}']/{prop_name}",
         )
-        if val is None:
-            return False
-        return bool(val)
+        return False if val is None else bool(val)
 
     @property
     def theme_name(self) -> str:

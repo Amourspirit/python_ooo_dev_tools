@@ -1,7 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
 import datetime
-import numbers
 from typing import cast
 from . import lo as mLo
 from com.sun.star.util import DateTime as UnoDateTime
@@ -24,15 +23,12 @@ class DateUtil:
         Returns:
             str: Formatted timestamp such as ``2022-06-19 17:12:38``
         """
-        if tz is not None:
-            dt = datetime.datetime.now(tz)
-        else:
-            dt = datetime.datetime.now()
+        dt = datetime.datetime.now(tz) if tz is not None else datetime.datetime.now()
         return dt.strftime("%Y-%m-%d %H:%M:%S")
 
     # region --------------- convert methods ---------------------------
     @staticmethod
-    def date_from_number(value: numbers.Number) -> datetime.datetime:
+    def date_from_number(value: int | float) -> datetime.datetime:
         """
         Converts a float value to corresponding datetime instance.
 
@@ -45,11 +41,11 @@ class DateUtil:
         Returns:
             datetime: Date time instance on success; Otherwise, None
         """
-        if not isinstance(value, numbers.Real):
-            raise TypeError(f"Incorrect type. Excpected 'Number' got {type(value).__name__}")
+        if not isinstance(value, (int, float)):
+            raise TypeError(f"Incorrect type. Expected int or float got {type(value).__name__}")
         delta = datetime.timedelta(days=value)
-        dnull = cast(datetime.datetime, mLo.Lo.null_date)
-        return dnull + delta
+        null_date = cast(datetime.datetime, mLo.Lo.null_date)
+        return null_date + delta
 
     @staticmethod
     def date_to_number(date: datetime.datetime | datetime.date) -> float:
@@ -65,17 +61,17 @@ class DateUtil:
         Returns:
             float: date as float on success; Otherwise, None
         """
-        dnull = cast(datetime.datetime, mLo.Lo.null_date)
+        null_date = cast(datetime.datetime, mLo.Lo.null_date)
         if isinstance(date, datetime.datetime):
-            delta = date - dnull
+            delta = date - null_date
         elif isinstance(date, datetime.date):
-            delta = date - dnull.date()
+            delta = date - null_date.date()
         else:
             raise TypeError(f"Incorrect type. Expected 'date' or 'datetime' got {type(date).__name__}")
         return delta.days + delta.seconds / (24.0 * 60 * 60)
 
     @staticmethod
-    def time_from_number(value: numbers.Number) -> datetime.time | None:
+    def time_from_number(value: int | float) -> datetime.time | None:
         """
         Converts a float value to corresponding time instance.
 
@@ -90,8 +86,8 @@ class DateUtil:
         Returns:
             time | None: Value as time on success; Otherwise, None
         """
-        if not isinstance(value, numbers.Real):
-            raise TypeError(f"Incorrect type. Excpected 'Number' got {type(value).__name__}")
+        if not isinstance(value, (int, float)):
+            raise TypeError(f"Incorrect type. Expected int or float got {type(value).__name__}")
         delta = datetime.timedelta(days=value)
         minutes, second = divmod(delta.seconds, 60)
         hour, minute = divmod(minutes, 60)
@@ -114,7 +110,7 @@ class DateUtil:
             float: time as float on success; Otherwise, None
         """
         if not isinstance(time, datetime.time):
-            raise TypeError(f"Incorrect type. Excpected 'Number' got {type(time).__name__}")
+            raise TypeError(f"Incorrect type. Expected 'Number' got {type(time).__name__}")
         return ((time.second / 60.0 + time.minute) / 60.0 + time.hour) / 24.0
 
     @staticmethod
@@ -143,7 +139,7 @@ class DateUtil:
         """
         if uno_dt.Year <= 0 or uno_dt.Month <= 0 or uno_dt.Day <= 0:
             return mLo.Lo.null_date
-        td = datetime.datetime(
+        return datetime.datetime(
             year=uno_dt.Year,
             month=uno_dt.Month,
             day=uno_dt.Day,
@@ -153,7 +149,6 @@ class DateUtil:
             microsecond=0 if uno_dt.NanoSeconds == 0 else int(uno_dt.NanoSeconds / 1000),
             tzinfo=datetime.timezone.utc if uno_dt.IsUTC else None,
         )
-        return td
 
     @classmethod
     def str_date_time(cls, uno_dt: UnoDateTime) -> str:
@@ -168,8 +163,6 @@ class DateUtil:
             or empty string if ``uno_dt`` is null.
         """
         dt = cls.uno_dt_to_dt(uno_dt)
-        if dt == mLo.Lo.null_date:
-            return ""
-        return cls.date_time_str(dt)
+        return "" if dt == mLo.Lo.null_date else cls.date_time_str(dt)
 
     # endregion ------------ convert methods ---------------------------

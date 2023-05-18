@@ -321,7 +321,7 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_config(cls, node_str: str) -> object:
+    def get_config(cls, node_str: str) -> Any:
         """
         Get config
 
@@ -338,7 +338,7 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_config(cls, node_str: str, node_path: str) -> object:
+    def get_config(cls, node_str: str, node_path: str) -> Any:
         """
         Get config
 
@@ -355,7 +355,7 @@ class Info(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def get_config(cls, node_str: str, node_path: Optional[str] = None) -> object:
+    def get_config(cls, node_str: str, node_path: Optional[str] = None) -> Any:
         """
         Get config
 
@@ -399,7 +399,7 @@ class Info(metaclass=StaticProperty):
         return mProps.Props.get(props, node_str)
 
     @classmethod
-    def _get_config2(cls, node_str: str) -> object:
+    def _get_config2(cls, node_str: str) -> Any:
         for node_path in cls.NODE_PATHS:
             with contextlib.suppress(mEx.PropertyNotFoundError):
                 return cls._get_config1(node_str=node_str, node_path=node_path)

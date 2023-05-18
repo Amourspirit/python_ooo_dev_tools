@@ -15,7 +15,7 @@ def test_theme(loader) -> None:
 
     theme = ThemeSql(theme_name=ThemeKind.LIBRE_OFFICE)
     assert theme.comment_color >= -1
-    assert theme.identifer_color >= -1
+    assert theme.identifier_color >= -1
     assert theme.keyword_color >= -1
     assert theme.number_color >= -1
     assert theme.operator_color >= -1
@@ -30,7 +30,7 @@ def test_theme_default(loader) -> None:
 
     theme = ThemeSql()
     assert theme.comment_color >= -1
-    assert theme.identifer_color >= -1
+    assert theme.identifier_color >= -1
     assert theme.keyword_color >= -1
     assert theme.number_color >= -1
     assert theme.operator_color >= -1
@@ -45,7 +45,7 @@ def test_theme_dark(loader) -> None:
 
     theme = ThemeSql(theme_name=ThemeKind.LIBRE_OFFICE_DARK)
     assert theme.comment_color >= -1
-    assert theme.identifer_color >= -1
+    assert theme.identifier_color >= -1
     assert theme.keyword_color >= -1
     assert theme.number_color >= -1
     assert theme.operator_color >= -1

@@ -15,6 +15,7 @@ from .table_helper import TableHelper
 from . import lo as mLo  # lazy loading
 from . import file_io as mFileIO
 from .type_var import PathOrStr
+from .decorator.deprecated import deprecated
 from ooodev.utils.inst.lo.doc_type import DocTypeStr
 
 # endregion Imports
@@ -39,6 +40,7 @@ class XML:
         Returns:
             Document: XML Document.
         """
+        # sourcery skip: raise-specific-error
         try:
             pth = mFileIO.FileIO.get_absolute_path(fnm)
             with open(pth) as file:
@@ -64,6 +66,7 @@ class XML:
         Returns:
             Document: XML Document
         """
+        # sourcery skip: raise-specific-error
         try:
             with urllib.request.urlopen(url) as url_data:
                 doc = parseString(url_data.read().decode())
@@ -88,6 +91,7 @@ class XML:
         Returns:
             Document: XML Document on successful load; Otherwise, None.
         """
+        # sourcery skip: raise-specific-error
         try:
             doc = parseString(xml_str)
             cls._remove_whitespace(doc)
@@ -95,7 +99,7 @@ class XML:
             return doc
         except Exception as e:
             print(e)
-            raise Exception(f"Error get xml docoument from xml string") from e
+            raise Exception("Error get xml document from xml string") from e
 
     @staticmethod
     def save_doc(doc: Document, xml_fnm: PathOrStr) -> None:
@@ -109,6 +113,7 @@ class XML:
         Raises:
             Exception: If unable to save document
         """
+        # sourcery skip: raise-specific-error
         try:
             pth = mFileIO.FileIO.get_absolute_path(xml_fnm)
             with open(pth, "w") as file:
@@ -139,15 +144,15 @@ class XML:
             Node | None: First found node; Otherwise, None
         """
         name = tag_name.casefold()
-        for node in nodes:
-            if node.nodeType == Node.ELEMENT_NODE and node.tagName.casefold() == name:
-                return node
-        return None
+        return next(
+            (node for node in nodes if node.nodeType == Node.ELEMENT_NODE and node.tagName.casefold() == name),
+            None,
+        )
 
     # region    get_node_value()
     @overload
-    @staticmethod
-    def get_node_value(node: Node) -> str:
+    @classmethod
+    def get_node_value(cls, node: Node) -> str:
         """
         Get the text stored in the node
 
@@ -160,10 +165,10 @@ class XML:
         ...
 
     @overload
-    @staticmethod
-    def get_node_value(tag_name: str, nodes: NodeList) -> str:
+    @classmethod
+    def get_node_value(cls, tag_name: str, nodes: NodeList) -> str:
         """
-        Gets firt tag_name node in the list and returns it text.
+        Gets first tag_name node in the list and returns it text.
 
         Args:
             tag_name (str): tag_name to search for.
@@ -196,7 +201,7 @@ class XML:
             if kargs_len == 0:
                 return ka
             valid_keys = ("tag_name", "nodes", "node")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_node_value() got an unexpected keyword argument")
             keys = ("tag_name", "node")
@@ -209,8 +214,8 @@ class XML:
             ka[2] = kwargs.get("nodes", None)
             return ka
 
-        if not count in (1, 2):
-            raise TypeError("get_node_value() got an invalid numer of arguments")
+        if count not in (1, 2):
+            raise TypeError("get_node_value() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -228,20 +233,20 @@ class XML:
         if not node.hasChildNodes():
             return ""
         child_nodes: NodeList = node.childNodes
-        for node in child_nodes:
-            if node.nodeType == Node.TEXT_NODE:
-                return str(node.data).strip()
-        return ""
+        return next(
+            (str(node.data).strip() for node in child_nodes if node.nodeType == Node.TEXT_NODE),
+            "",
+        )
 
     @classmethod
     def _get_node_val2(cls, tag_name: str, nodes: NodeList) -> str:
         if nodes is None:
             return ""
         name = tag_name.casefold()
-        for node in nodes:
-            if node.nodeName.casefold() == name:
-                return cls._get_node_val(node)
-        return ""
+        return next(
+            (cls._get_node_val(node) for node in nodes if node.nodeName.casefold() == name),
+            "",
+        )
 
     # endregion get_node_value()
 
@@ -261,7 +266,7 @@ class XML:
             val = cls._get_node_val(node)
             if val != "":
                 vals.append(val)
-        return tuple(val)
+        return tuple(vals) if vals else ()
 
     @staticmethod
     def get_node_attr(attr_name: str, node: Node) -> str:
@@ -275,15 +280,12 @@ class XML:
         Returns:
             str: Attribute value if found; Otherwise empty str.
         """
-        if node.attributes is None:
+        if node.attributes is None:  # type: ignore
             return ""
         # attrs is {} if there are no attributes
-        attrs = dict(node.attributes.items())
+        attrs = dict(node.attributes.items())  # type: ignore
         name = attr_name.casefold()
-        for k, v in attrs.items():
-            if str(k).casefold() == name:
-                return str(v)
-        return ""
+        return next((str(v) for k, v in attrs.items() if str(k).casefold() == name), "")
 
     @classmethod
     def get_all_node_values(cls, row_nodes: NodeList, col_ids: Sequence[str]) -> List[list] | None:
@@ -311,7 +313,7 @@ class XML:
         Note:
             col_ids must match the column names:
 
-            ``colids = ("purpose", "amount", "tax", "maturity")``
+            ``col_ids = ("purpose", "amount", "tax", "maturity")``
 
             Results for example xml:
 
@@ -357,6 +359,7 @@ class XML:
         Returns:
             str: String of XML that has been transformed.
         """
+        # sourcery skip: raise-specific-error
         if mLo.Lo.is_macro_mode:
             raise mEx.NotSupportedMacroModeError("apply_xslt() is not supported from a macro")
         try:
@@ -370,11 +373,10 @@ class XML:
             pth_xls = mFileIO.FileIO.get_absolute_path(xls_fnm)
             print(f"Applying filter '{xls_fnm}' to '{xml_fnm}'")
             dom = XML_ETREE.parse(pth_xml, parser=_xml_parser)
-            xslt = XML_ETREE.parse(pth_xls)
+            xslt = XML_ETREE.parse(pth_xls)  # type: ignore
             transform = XML_ETREE.XSLT(xslt)
-            newdom = transform(dom)
-            t_result = XML_ETREE.tostring(newdom, encoding="unicode")  # unicode produces string
-            return t_result
+            new_dom = transform(dom)
+            return XML_ETREE.tostring(new_dom, encoding="unicode")  # type: ignore # unicode produces string
         except Exception as e:
             raise Exception(f"Unable to transform '{xml_fnm}' with '{xls_fnm}'") from e
 
@@ -397,6 +399,7 @@ class XML:
         Returns:
             str: String of XML that has been transformed.
         """
+        # sourcery skip: raise-specific-error
         if mLo.Lo.is_macro_mode:
             raise mEx.NotSupportedMacroModeError("apply_xslt_2_str() is not supported from a macro")
         try:
@@ -408,13 +411,12 @@ class XML:
         try:
             pth = mFileIO.FileIO.get_absolute_path(xls_fnm)
             print(f"Applying the filter in '{xls_fnm}'")
-            dom = XML_ETREE.fromstring(xml_str)
+            dom = XML_ETREE.fromstring(xml_str)  # type: ignore
             xslt = XML_ETREE.parse(pth, parser=_xml_parser)
 
             transform = XML_ETREE.XSLT(xslt)
-            newdom = transform(dom)
-            t_result = XML_ETREE.tostring(newdom, encoding="unicode")  # unicode produces string
-            return t_result
+            new_dom = transform(dom)
+            return XML_ETREE.tostring(new_dom, encoding="unicode")  # type: ignore # unicode produces string
         except Exception as e:
             raise Exception("Unable to transform the string") from e
 
@@ -422,8 +424,8 @@ class XML:
 
     # region --------------- Filter ------------------------------------
 
-    @staticmethod
-    def get_flat_filter_name(doc_type: DocTypeStr) -> str:
+    @classmethod
+    def get_flat_filter_name(cls, doc_type: DocTypeStr) -> str:
         """
         Gets the Flat XML filter name for the doc type.
 
@@ -445,7 +447,23 @@ class XML:
             print("No Flat XML filter for this document type; using Flat text")
             return "OpenDocument Text Flat XML"
 
-    get_flat_fiter_name = get_flat_filter_name
+    @classmethod
+    @deprecated("Use get_flat_filter_name")
+    def get_flat_fiter_name(cls, doc_type: DocTypeStr) -> str:
+        """
+        Gets the Flat XML filter name for the doc type.
+
+        Args:
+            doc_type (Lo.DocTypeStr): Document type.
+
+        Returns:
+            str: Flat XML filter name.
+
+        .. deprecated:: 0.10.3
+            Use :py:meth:`~.xml_util.XML.get_flat_filter_name` instead.
+        """
+        return cls.get_flat_filter_name(doc_type)
+
     # spelling fix
 
     # endregion ------------ Filter ------------------------------------
@@ -496,7 +514,7 @@ class XML:
         Indents xml
 
         Args:
-            src (Document): xml doucment.
+            src (Document): xml document.
 
         Raises:
             TypeError is src is not expected type
@@ -522,6 +540,7 @@ class XML:
         Returns:
             str: Indented xml as string.
         """
+        # sourcery skip: raise-specific-error
         try:
             if isinstance(src, os.PathLike):
                 with open(mFileIO.FileIO.get_absolute_path(src), "r") as file:
@@ -538,18 +557,17 @@ class XML:
             cls._remove_whitespace(doc)
             doc.normalize()
             # To parse string instead use: dom = md.parseString(xml_string)
-            pretty_xml = doc.toprettyxml()
             # remove the weird newline issue:
-            # should not be needes with cls._remove_whitespace(doc)
+            # should not be needed with cls._remove_whitespace(doc)
             # pretty_xml = os.linesep.join([s for s in pretty_xml.splitlines() if s.strip()])
-            return pretty_xml
+            return doc.toprettyxml()
         except TypeError:
             raise
         except Exception as e:
             if isinstance(src, (str, os.PathLike)):
                 msg = f"Unable to indent '{src}'"
             else:
-                msg = f"Unable to indent document"
+                msg = "Unable to indent document"
             raise Exception(msg) from e
 
     # endregion indent()
@@ -573,9 +591,8 @@ class XML:
         # document = parse("smiley.svg")
         # cls._remove_whitespace(document)
         # document.normalize()
-        if node.nodeType == Node.TEXT_NODE:
-            if node.nodeValue.strip() == "":
-                node.nodeValue = ""
+        if node.nodeType == Node.TEXT_NODE and node.nodeValue.strip() == "":
+            node.nodeValue = ""
         for child in node.childNodes:
             cls._remove_whitespace(child)
 
@@ -597,4 +614,4 @@ class XML:
     #         if level and (not elem.tail or not elem.tail.strip()):
     #             elem.tail = i
 
-    # endregion ------------- Formating --------------------------------
+    # endregion ------------- Formatting --------------------------------

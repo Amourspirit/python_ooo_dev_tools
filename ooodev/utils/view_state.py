@@ -119,7 +119,7 @@ class ViewState:
         self._col_split_mode = int(value)
         if self._col_split_mode == 0:  # no column splitting
             self._vertical_split = 0
-            if self._pane_focus_num == 1 or self._pane_focus_num == 3:
+            if self._pane_focus_num in (1, 3):
                 self._pane_focus_num -= 1  # move focus to left
 
     @property
@@ -132,7 +132,7 @@ class ViewState:
         self._row_split_mode = int(value)
         if self._row_split_mode == 0:  # no row splitting
             self._horizontal_split = 0
-            if self._pane_focus_num == 2 or self._pane_focus_num == 3:
+            if self._pane_focus_num in (2, 3):
                 self._pane_focus_num -= 2  # move focus up
 
     @property
@@ -167,10 +167,10 @@ class ViewState:
         if value < 0 or value > 3:
             raise ValueError("Focus number is out of range 0-3")
 
-        if self._horizontal_split == 0 and (value == 1 or value == 3):
+        if self._horizontal_split == 0 and value in {1, 3}:
             raise ValueError("No horizontal split, so focus number must be 0 or 2")
 
-        if self._vertical_split == 0 and (value == 2 or value == 3):
+        if self._vertical_split == 0 and value in {2, 3}:
             raise ValueError("No vertical split, so focus number must be 0 or 1")
         self._pane_focus_num = value
 
@@ -200,8 +200,8 @@ class ViewState:
         """
         try:
             d = ViewState.PaneEnum(dir)
-        except Exception:
-            raise ValueError("Unknown move direction")
+        except Exception as e:
+            raise ValueError("Unknown move direction") from e
 
         if d == ViewState.PaneEnum.MOVE_UP:
             if self._pane_focus_num == 3:
@@ -299,8 +299,8 @@ class ViewState:
             print("  Sheet is not split")
 
         print(f"  Number of focused pane: {self.pane_focus_num}")
-        print(f"  Left column indicies of left/right panes: {self.column_left_pane} / {self.column_right_pane}")
-        print(f"  Top row indicies of upper/lower panes: {self.row_upper_pane} / {self.row_lower_pane}")
+        print(f"  Left column indices of left/right panes: {self.column_left_pane} / {self.column_right_pane}")
+        print(f"  Top row indices of upper/lower panes: {self.row_upper_pane} / {self.row_lower_pane}")
         print()
 
     def to_string(self) -> str:
