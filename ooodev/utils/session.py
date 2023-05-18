@@ -2,6 +2,7 @@
 from __future__ import annotations, unicode_literals
 import sys
 from typing import TYPE_CHECKING, cast
+from enum import Enum
 import uno
 import getpass, os, os.path
 from ..meta.static_meta import StaticProperty, classproperty
@@ -17,8 +18,15 @@ from ooo.dyn.uno.deployment_exception import DeploymentException
 # com.sun.star.uno.DeploymentException
 
 if TYPE_CHECKING:
-    from com.sun.star.util import PathSubstitution
+    from com.sun.star.util import PathSubstitution  # service
     from com.sun.star.uno import XComponentContext
+
+
+class PathKind(Enum):
+    """Kind of path to register"""
+
+    SHARE_PYTHON = 1
+    SHARE_USER_PYTHON = 2
 
 
 class Session(metaclass=StaticProperty):
@@ -33,9 +41,7 @@ class Session(metaclass=StaticProperty):
     # https://help.libreoffice.org/latest/lo/text/sbasic/python/python_import.html
     # https://help.libreoffice.org/latest/lo/text/sbasic/python/python_session.html
 
-    class PathEnum:
-        SHARE_PYTHON = 1
-        SHARE_USER_PYTHON = 2
+    PathEnum = PathKind
 
     @classproperty
     def path_sub(cls) -> PathSubstitution:
@@ -48,12 +54,9 @@ class Session(metaclass=StaticProperty):
                 # this will allow for import shared python files before Lo.load_office is called.
                 # if not in a macro then must get instance after Lo.load_office is called
                 ctx = cast("XComponentContext", uno.getComponentContext())
-                ps = cast(
-                    PathSubstitution,
-                    ctx.getServiceManager().createInstanceWithContext("com.sun.star.util.PathSubstitution", ctx),
-                )
+                ps = ctx.getServiceManager().createInstanceWithContext("com.sun.star.util.PathSubstitution", ctx)
                 cls._path_substitution = ps
-                return cls._path_substitution
+                return cls._path_substitution  # type: ignore
             except DeploymentException as e:
                 # print(e)
                 # there must be a connection to before calling session.
@@ -151,18 +154,18 @@ class Session(metaclass=StaticProperty):
         return "".join([cls.user_scripts, os.sep, "python"])
 
     @classmethod
-    def register_path(cls, path: Session.PathEnum) -> None:
+    def register_path(cls, path: PathKind) -> None:
         """
         Registers a path into ``sys.path`` if it does not exist
 
         Args:
-            path (PathEnum): Type of path to register.
+            path (PathKind): Type of path to register.
         """
         script_path = ""
-        if path == Session.PathEnum.SHARE_PYTHON:
+        if path == PathKind.SHARE_PYTHON:
             script_path = cls.shared_py_scripts
-        elif path == Session.PathEnum.SHARE_USER_PYTHON:
-            script_path = cls.user_py_scripts
+        elif path == PathKind.SHARE_USER_PYTHON:
+            script_path = cast(str, cls.user_py_scripts)
         if not script_path:
             return
         if script_path not in sys.path:

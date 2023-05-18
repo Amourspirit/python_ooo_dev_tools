@@ -85,3 +85,8 @@ Class Session
 
         :return: directory
         :rtype: str
+
+
+.. autoclass:: ooodev.utils.session.PathKind
+    :members:
+    :undoc-members:

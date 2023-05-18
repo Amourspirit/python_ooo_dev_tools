@@ -1,6 +1,8 @@
 # coding: utf-8
 """General Utilities"""
+
 from __future__ import annotations
+import contextlib
 import re
 import sys
 import string
@@ -108,7 +110,7 @@ class TableHelper:
         row_end = cls.row_name_to_int(cells[1])
         start_col_num = cls.col_name_to_int(col_start)
         end_col_num = cls.col_name_to_int(col_end)
-        # chekc and see if the range name need to be reversed
+        # check and see if the range name need to be reversed
         # e.g. D12:B3 => B3:D12
         if start_col_num > end_col_num:
             # swap
@@ -152,19 +154,17 @@ class TableHelper:
             raise ValueError("Empty name value or Invalid or characters detected.")
         if c_len > 5:
             raise ValueError(
-                f"Maximum number of letters that can be proceesed is 5. currently name contains {len(chars)}"
+                f"Maximum number of letters that can be processed is 5. currently name contains {len(chars)}"
             )
         if re.fullmatch(r"[a-zA-Z]+", chars) is None:
             raise ValueError(f'name of "{name}" contains invalid characters. Must be in format of "A" or "AB" or "A3"')
 
-        pow = 1
+        power = 1
         col_num = 0
         for letter in chars[::-1]:  # reverse chars
-            col_num += (int(letter, 36) - 9) * pow
-            pow *= 26
-        if zero_index:
-            return col_num - 1
-        return col_num
+            col_num += (int(letter, 36) - 9) * power
+            power *= 26
+        return col_num - 1 if zero_index else col_num
 
     @staticmethod
     def row_name_to_int(name: str, zero_index: bool = False) -> int:
@@ -194,7 +194,8 @@ class TableHelper:
         .. versionchanged:: 0.8.2
             Added ``zero_index`` parameter.
         """
-        chars = name.rstrip(string.digits + "-")
+        # sourcery skip: assign-if-exp, reintroduce-else, use-named-expression
+        chars = name.rstrip(f"{string.digits}-")
         if chars:
             s = name[len(chars) :]  # drop leading chars that are not numbers.
         else:
@@ -234,12 +235,9 @@ class TableHelper:
             Added ``zero_index`` parameter.
         """
         idx_min = 0 if zero_index else 1
-        if zero_index:
-            row_index = row + 1
-        else:
-            row_index = row
         if row < idx_min:
             raise ValueError(f"Row value cannot be less then {idx_min}: {row}")
+        row_index = row + 1 if zero_index else row
         return f"{cls.make_column_name(col, zero_index)}{row_index}"
 
     @staticmethod
@@ -264,10 +262,7 @@ class TableHelper:
         if col < idx_min:
             raise ValueError(f"Value cannot be less then {idx_min}: {col}")
         str_col = str()
-        if zero_index:
-            div = col + 1
-        else:
-            div = col
+        div = col + 1 if zero_index else col
         while div:
             (div, mod) = divmod(div - 1, 26)  # will return (x, 0 .. 25)
             str_col = chr(mod + 65) + str_col
@@ -398,7 +393,7 @@ class TableHelper:
     make_2d_list = make_2d_array
 
     @staticmethod
-    def to_list(iter_obj: Iterable[Any] | object) -> List[Any]:
+    def to_list(iter_obj: Sequence[Any] | Any) -> List[Any]:
         """
         Converts an iterable of objects into a list of objects
 
@@ -408,14 +403,12 @@ class TableHelper:
             iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
-            List[Any]: List containing same elements of ``itter_obj``
+            List[Any]: List containing same elements of ``iter_obj``
         """
-        if gUtil.Util.is_iterable(iter_obj):
-            return list(iter_obj)
-        return [iter_obj]
+        return list(iter_obj) if gUtil.Util.is_iterable(iter_obj) else [iter_obj]
 
     @staticmethod
-    def to_tuple(iter_obj: Iterable[Any] | object) -> Tuple[Any]:
+    def to_tuple(iter_obj: Iterable[Any] | Any) -> Tuple[Any]:
         """
         Converts an iterable of objects or object into a tuple of objects
 
@@ -425,11 +418,9 @@ class TableHelper:
             iter_obj (Iterable[Any] | object): iterable object or object.
 
         Returns:
-            Tuple[Any]: Tuple containing same elements of ``itter_obj``
+            Tuple[Any]: Tuple containing same elements of ``iter_obj``
         """
-        if gUtil.Util.is_iterable(iter_obj):
-            return tuple(iter_obj)
-        return (iter_obj,)
+        return tuple(iter_obj) if gUtil.Util.is_iterable(iter_obj) else (iter_obj,)
 
     @classmethod
     def to_2d_list(cls, seq_obj: Sequence[Any]) -> List[List[Any]]:
@@ -456,8 +447,7 @@ class TableHelper:
             is_2d = False
         lst = []
         if is_2d:
-            for row in seq_obj:
-                lst.append(cls.to_list(row))
+            lst.extend(cls.to_list(row) for row in seq_obj)
         else:
             lst.append(cls.to_list(seq_obj))
         return lst
@@ -476,7 +466,7 @@ class TableHelper:
         """
         num_rows = len(seq_obj)
         if num_rows == 0:
-            return tuple()
+            return ()
         is_2d = False
         try:
             is_2d = gUtil.Util.is_iterable(seq_obj[0])
@@ -484,8 +474,7 @@ class TableHelper:
             is_2d = False
         lst = []
         if is_2d:
-            for row in seq_obj:
-                lst.append(cls.to_tuple(row))
+            lst.extend(cls.to_tuple(row) for row in seq_obj)
         else:
             lst.append(cls.to_tuple(seq_obj))
         return tuple(lst)
@@ -511,13 +500,8 @@ class TableHelper:
             raise ValueError("Cannot convert Table with less than two rows")
         # first row is column headers
         try:
-            cols = [value for value in tbl[0]]
-            data = []
-            for i, row in enumerate(tbl):
-                if i == 0:  # col row
-                    continue
-                data.append(dict(zip(cols, row)))
-            return data
+            cols = list(tbl[0])
+            return [dict(zip(cols, row)) for i, row in enumerate(tbl) if i != 0]
         except Exception as e:
             raise e
 
@@ -542,10 +526,9 @@ class TableHelper:
             raise ValueError("Cannot convert table with no rows")
         try:
             first = tbl[0]
-            cols = [k for k in first.keys()]
+            cols = list(first.keys())
             data = [cols]
-            for row in tbl:
-                data.append([v for _, v in row.items()])
+            data.extend([v for _, v in row.items()] for row in tbl)
             return data
         except Exception as e:
             raise e
@@ -556,26 +539,15 @@ class TableHelper:
     def _get_extreme_element_value_1d_int(seq_obj: Sequence[int], biggest: bool) -> int:
         # max_size = sys.maxsize
         # min_size = -sys.maxsize - 1
-        if biggest:
-            min_max = -sys.maxsize - 1
-        else:
-            min_max = sys.maxsize
+        min_max = -sys.maxsize - 1 if biggest else sys.maxsize
         result = min_max
         count = 0
         for i in seq_obj:
-            try:
-                if biggest:
-                    if i > result:
-                        result = i
-                else:
-                    if i < result:
-                        result = i
+            with contextlib.suppress(Exception):
+                if biggest and i > result or not biggest and i < result:
+                    result = i
                 # count valid numbers
                 count += 1
-            except Exception:
-                # ignore elements that fail:
-                pass
-
         if count == 0:
             raise ValueError("sequence did not have any integers test.")
         return result
@@ -585,26 +557,16 @@ class TableHelper:
         # max_size = sys.maxsize
         # min_size = -sys.maxsize - 1
         # for float max: float("inf"), min: float("-inf")
-        if biggest:
-            min_max = -sys.maxsize - 1
-        else:
-            min_max = sys.maxsize
+        min_max = -sys.maxsize - 1 if biggest else sys.maxsize
         result = min_max
         count = 0
         for row in seq_obj:
             for col in row:
-                try:
-                    if biggest:
-                        if col > result:
-                            result = col
-                    else:
-                        if col < result:
-                            result = col
+                with contextlib.suppress(Exception):
+                    if biggest and col > result or not biggest and col < result:
+                        result = col
                     # count valid numbers
                     count += 1
-                except Exception:
-                    # ignore elements that fail
-                    pass
         if count == 0:
             raise ValueError("sequence did not have any integers test.")
         return result
@@ -621,9 +583,9 @@ class TableHelper:
                 is_2d = False
 
         if is_2d:
-            return cls._get_extreme_element_value_2d_int(seq_obj, biggest)
+            return cls._get_extreme_element_value_2d_int(seq_obj, biggest)  # type: ignore
 
-        return cls._get_extreme_element_value_1d_int(seq_obj, biggest)
+        return cls._get_extreme_element_value_1d_int(seq_obj, biggest)  # type: ignore
 
     @classmethod
     def get_largest_int(cls, seq_obj: Sequence[int] | Sequence[Sequence[int]]) -> int:
@@ -670,28 +632,15 @@ class TableHelper:
             return -1
         # max_size = sys.maxsize
         # min_size = -sys.maxsize - 1
-        if biggest:
-            result_len = -1
-        else:
-            result_len = sys.maxsize
-
+        result_len = -1 if biggest else sys.maxsize
         count = 0
         for s in seq_obj:
-            try:
+            with contextlib.suppress(Exception):
                 s_len = len(s)
-                if biggest:
-                    if s_len > result_len:
-                        result_len = s_len
-                else:
-                    if s_len < result_len:
-                        result_len = s_len
+                if biggest and s_len > result_len or not biggest and s_len < result_len:
+                    result_len = s_len
                 count += 1
-            except Exception:
-                # ignore elements that fail:
-                pass
-        if count == 0:
-            return -1
-        return result_len
+        return -1 if count == 0 else result_len
 
     @staticmethod
     def _get_extreme_element_value_2d_str(seq_obj: Sequence[Sequence[str]], biggest: bool) -> int:
@@ -699,29 +648,16 @@ class TableHelper:
             return -1
         # max_size = sys.maxsize
         # min_size = -sys.maxsize - 1
-        if biggest:
-            result_len = -1
-        else:
-            result_len = sys.maxsize
-
+        result_len = -1 if biggest else sys.maxsize
         count = 0
         for row in seq_obj:
             for s in row:
-                try:
+                with contextlib.suppress(Exception):
                     s_len = len(s)
-                    if biggest:
-                        if s_len > result_len:
-                            result_len = s_len
-                    else:
-                        if s_len < result_len:
-                            result_len = s_len
+                    if biggest and s_len > result_len or not biggest and s_len < result_len:
+                        result_len = s_len
                     count += 1
-                except Exception:
-                    # ignore elements that fail:
-                    pass
-        if count == 0:
-            return -1
-        return result_len
+        return -1 if count == 0 else result_len
 
     @classmethod
     def _get_extreme_element_value_str(cls, seq_obj: Sequence[str] | Sequence[Sequence[str]], biggest: bool) -> int:
@@ -737,7 +673,7 @@ class TableHelper:
         if is_2d:
             return cls._get_extreme_element_value_2d_str(seq_obj, biggest)
 
-        return cls._get_extreme_element_value_1d_str(seq_obj, biggest)
+        return cls._get_extreme_element_value_1d_str(seq_obj, biggest)  # type: ignore
 
     @classmethod
     def get_largest_str(cls, seq_obj: Sequence[str] | Sequence[Sequence[str]]) -> int:
@@ -812,6 +748,7 @@ class TableHelper:
             raise ValueError("Cols must not be less than 1")
 
         auto_fill = empty_cell_val is not gUtil.NULL_OBJ
+
         # see also: https://tinyurl.com/2elcg6fz
         def convert(lst, var_lst):
             idx = 0
@@ -820,12 +757,7 @@ class TableHelper:
                 idx += var_len
 
         if len(seq_obj) == 0:
-            if auto_fill:
-                # if there is an empty sequence then return a 2d list with one row of empties.
-                return [[empty_cell_val for _ in range(col_count)]]
-            else:
-                return [[]]
-
+            return [[empty_cell_val for _ in range(col_count)]] if auto_fill else [[]]
         lst = list(seq_obj)
 
         rows, overflow = divmod(len(seq_obj), col_count)
