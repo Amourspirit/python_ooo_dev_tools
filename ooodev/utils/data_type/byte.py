@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     except ImportError:
         from typing_extensions import Self
 
+
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
 # most cases. Especially for built in types.
@@ -33,7 +34,7 @@ class Byte(BaseIntValue):
         # for some reason BaseIntValue __eq__ is not picked up.
         # I suspect this is due to this class being a dataclass.
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return i == self.value
         except Exception as e:
             return False

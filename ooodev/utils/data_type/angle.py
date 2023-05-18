@@ -56,7 +56,7 @@ class Angle(BaseIntValue):
         # for some reason BaseIntValue __eq__ is not picked up.
         # I suspect this is due to this class being a dataclass.
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return i == self.value
         except Exception as e:
             return False
@@ -80,9 +80,7 @@ class Angle(BaseIntValue):
         Returns:
             Angle:
         """
-        if value == 0:
-            return Angle(0)
-        return Angle(round(value / 10))
+        return Angle(0) if value == 0 else Angle(round(value / 10))
 
     @staticmethod
     def from_angle100(value: int) -> Angle:
@@ -95,6 +93,4 @@ class Angle(BaseIntValue):
         Returns:
             Angle:
         """
-        if value == 0:
-            return Angle(0)
-        return Angle(round(value / 100))
+        return Angle(0) if value == 0 else Angle(round(value / 100))

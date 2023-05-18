@@ -21,7 +21,7 @@ class ImageOffset(BaseFloatValue):
 
     def __post_init__(self) -> None:
         check(
-            (self.value < 0.0 or self.value >= 1.0) == False,
+            self.value >= 0.0 and self.value < 1.0,
             f"{self}",
             f"Value of {self.value} is out of range. Value must be between 0.0 and 1.0",
         )
@@ -30,9 +30,8 @@ class ImageOffset(BaseFloatValue):
         return ImageOffset(value)
 
     def __eq__(self, other: object) -> bool:
-
         try:
-            i = float(other)
+            i = float(other)  # type: ignore
             return math.isclose(i, self.value)
         except Exception as e:
             return False

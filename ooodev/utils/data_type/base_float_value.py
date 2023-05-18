@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 @dataclass(unsafe_hash=True)
 class BaseFloatValue:
-    """Base class for Flaot Value"""
+    """Base class for float Value"""
 
     value: float
     """Float value."""
@@ -35,7 +35,7 @@ class BaseFloatValue:
 
     def __add__(self, other: object) -> Self:
         try:
-            i = float(other)
+            i = float(other)  # type: ignore
             return self._from_float(self.value + i)
         except AssertionError:
             raise
@@ -44,26 +44,23 @@ class BaseFloatValue:
 
     def __radd__(self, other: object) -> Self:
         # angle = sum([ang1, ang2, ang3])
-        # will result in TypeError becuase sum() start with 0
+        # will result in TypeError because sum() start with 0
         # this will force a call to __radd__
-        if other == 0:
-            return self
-        else:
-            return self.__add__(other)
+        return self if other == 0 else self.__add__(other)
 
     def __eq__(self, other: object) -> bool:
         # By default, __ne__() delegates to __eq__() and inverts the result unless it is NotImplemented.
         # There are no other implied relationships among the comparison operators,
         # for example, the truth of (x<y or x==y) does not imply x<=y.
         try:
-            i = float(other)
+            i = float(other)  # type: ignore
             return math.isclose(i, self.value)
         except Exception as e:
             return False
 
     def __sub__(self, other: object) -> Self:
         try:
-            i = float(other)
+            i = float(other)  # type: ignore
             return self._from_float(self.value - i)
         except AssertionError:
             raise
@@ -72,7 +69,7 @@ class BaseFloatValue:
 
     def __rsub__(self, other: object) -> Self:
         try:
-            i = float(other)
+            i = float(other)  # type: ignore
             return self._from_float(i - self.value)
         except AssertionError:
             raise
@@ -81,7 +78,7 @@ class BaseFloatValue:
 
     def __mul__(self, other: object) -> Self:
         try:
-            i = float(other)
+            i = float(other)  # type: ignore
             return self._from_float(self.value * i)
         except AssertionError:
             raise
@@ -89,46 +86,35 @@ class BaseFloatValue:
             return NotImplemented
 
     def __rmul__(self, other: int) -> Self:
-        if other == 0:
-            return self
-        else:
-            return self.__mul__(other)
+        return self if other == 0 else self.__mul__(other)
 
     def __lt__(self, other: object) -> bool:
         try:
-            i = float(other)
-            if math.isclose(i, self.value):
-                return False
-            return self.value < i
+            i = float(other)  # type: ignore
+            return False if math.isclose(i, self.value) else self.value < i
         except Exception:
             return NotImplemented
 
     def __le__(self, other: object) -> bool:
         try:
-            i = float(other)
-            if math.isclose(i, self.value):
-                return True
-            return self.value <= i
+            i = float(other)  # type: ignore
+            return True if math.isclose(i, self.value) else self.value <= i
         except Exception:
             return NotImplemented
 
     def __gt__(self, other: object) -> bool:
         try:
-            i = float(other)
-            if math.isclose(i, self.value):
-                return False
-            return self.value > i
+            i = float(other)  # type: ignore
+            return False if math.isclose(i, self.value) else self.value > i
         except Exception:
             return NotImplemented
 
     def __ge__(self, other: object) -> bool:
         try:
-            i = float(other)
-            if math.isclose(i, self.value):
-                return True
-            return self.value >= i
+            i = float(other)  # type: ignore
+            return True if math.isclose(i, self.value) else self.value >= i
         except Exception:
             return NotImplemented
 
     def __abs__(self) -> int:
-        return abs(self.value)
+        return abs(round(self.value))

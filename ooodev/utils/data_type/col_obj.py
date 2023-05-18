@@ -105,16 +105,14 @@ class ColObj:
             return self.value == other.upper()
         if isinstance(other, int):
             return self.index + 1 == other
-        if not isinstance(other, ColObj):
-            return False
-        return self.index == other.index
+        return self.index == other.index if isinstance(other, ColObj) else False
 
     def __lt__(self, other: object) -> bool:
         try:
             if isinstance(other, str):
                 oth = ColObj(other)
                 return self.index < oth.index
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.index + 1 < i
         except Exception:
             return NotImplemented
@@ -124,7 +122,7 @@ class ColObj:
             if isinstance(other, str):
                 oth = ColObj(other)
                 return self.index <= oth.index
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.index + 1 <= i
         except Exception:
             return NotImplemented
@@ -134,7 +132,7 @@ class ColObj:
             if isinstance(other, str):
                 oth = ColObj(other)
                 return self.index > oth.index
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.index + 1 > i
         except Exception:
             return NotImplemented
@@ -144,7 +142,7 @@ class ColObj:
             if isinstance(other, str):
                 oth = ColObj(other)
                 return self.index >= oth.index
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.index + 1 >= i
         except Exception:
             return NotImplemented
@@ -152,9 +150,8 @@ class ColObj:
     def __add__(self, other: object) -> ColObj:
         if isinstance(other, str):
             try:
-                if isinstance(other, str):
-                    oth = ColObj(other)
-                    return ColObj.from_int(self.index + oth.index + 2)
+                oth = ColObj(other)
+                return ColObj.from_int(self.index + oth.index + 2)
             except AssertionError as e:
                 raise IndexError from e
             except Exception:
@@ -162,7 +159,7 @@ class ColObj:
         try:
             if isinstance(other, ColObj):
                 return ColObj.from_int(self.index + other.index + 2)
-            i = int(other)
+            i = int(other)  # type: ignore
             return ColObj.from_int(self.index + i, True)
         except TypeError:
             # not an int
@@ -175,12 +172,9 @@ class ColObj:
 
     def __radd__(self, other: object) -> ColObj:
         # angle = sum([col1, col2, col3])
-        # will result in TypeError becuase sum() start with 0
+        # will result in TypeError because sum() start with 0
         # this will force a call to __radd__
-        if other == 0:
-            return self
-        else:
-            return self.__add__(other)
+        return self if other == 0 else self.__add__(other)
 
     def __sub__(self, other: object) -> ColObj:
         if isinstance(other, str):
@@ -189,12 +183,12 @@ class ColObj:
                 return ColObj.from_int(self.index - oth.index)
             except AssertionError as e:
                 raise IndexError from e
-            except Exception:
-                raise NotImplemented
+            except Exception as e:
+                raise NotImplemented from e
         try:
             if isinstance(other, ColObj):
                 return ColObj.from_int(self.index - other.index)
-            i = int(other)
+            i = int(other)  # type: ignore
             return ColObj.from_int(self.index - i, True)
         except TypeError:
             # not an int
@@ -212,10 +206,10 @@ class ColObj:
                 return ColObj.from_int(oth.index - self.index)
             except AssertionError as e:
                 raise IndexError from e
-            except Exception:
-                raise NotImplemented
+            except Exception as e:
+                raise NotImplemented from e
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.from_int(i - self.index - 1)
         except TypeError:
             # not an int
@@ -245,10 +239,7 @@ class ColObj:
         return NotImplemented
 
     def __rmul__(self, other: object) -> ColObj:
-        if other == 0:
-            return self
-        else:
-            return self.__mul__(other)
+        return self if other == 0 else self.__mul__(other)
 
     def __truediv__(self, other: object) -> ColObj:
         try:
@@ -256,16 +247,16 @@ class ColObj:
             if isinstance(other, str):
                 oth = ColObj(other)
                 i2 = oth.index + 1
-                check(i >= i2, f"{repr(self)}", f"Cannot be divided by lessor number")
+                check(i >= i2, f"{repr(self)}", "Cannot be divided by lessor number")
                 return ColObj.from_int(round(i / i2))
             if isinstance(other, ColObj):
                 i2 = other.index + 1
                 check(i >= i2, f"{repr(self)}", f"Cannot be divided by lessor {repr(other)}")
                 return ColObj.from_int(round(i / i2))
-            if isinstance(other, numbers.Real):
-                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
-                check(i >= other, f"{repr(self)}", f"Cannot be divided by lessor number")
-            return ColObj.from_int(round(i / other))
+            if isinstance(other, (int, float)):
+                check(other != 0, f"{repr(self)}", "Cannot be divided by zero")
+                check(i >= other, f"{repr(self)}", "Cannot be divided by lessor number")
+            return ColObj.from_int(round(i / other))  # type: ignore
         except IndexError:
             raise
         except AssertionError as e:
@@ -280,9 +271,9 @@ class ColObj:
             if isinstance(other, str):
                 oth = ColObj(other)
                 return oth.__truediv__(self)
-            if isinstance(other, numbers.Real):
-                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
-                check(other >= i, f"{repr(self)}", f"Cannot be divided by lessor number")
+            if isinstance(other, (int, float)):
+                check(other != 0, f"{repr(self)}", "Cannot be divided by zero")
+                check(other >= i, f"{repr(self)}", "Cannot be divided by greater number")
                 return ColObj.from_int(round(other / i))
         except IndexError:
             raise
@@ -299,14 +290,14 @@ class ColObj:
     def next(self) -> ColObj:
         """Gets the next column"""
         try:
-            n = self._next
+            n = self._next  # type: ignore
             if n() is None:
                 raise AttributeError
             return n()
         except AttributeError:
             n = ColObj.from_int(self.index + 2)
             object.__setattr__(self, "_next", ref(n))
-            return self._next()
+            return self._next()  # type: ignore
 
     @property
     def prev(self) -> ColObj:
@@ -317,7 +308,7 @@ class ColObj:
             IndexError: If previous column is out of range
         """
         try:
-            p = self._prev
+            p = self._prev  # type: ignore
             if p() is None:
                 raise AttributeError
             return p()
@@ -327,6 +318,6 @@ class ColObj:
                 object.__setattr__(self, "_prev", ref(p))
             except AssertionError as e:
                 raise IndexError from e
-            return self._prev()
+            return self._prev()  # type: ignore
 
     # endregion properties
