@@ -128,7 +128,7 @@ class TextAlign(StyleBase):
             self._supported_services_values = ("com.sun.star.style.CellStyle", "com.sun.star.table.CellProperties")
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -140,16 +140,16 @@ class TextAlign(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextAlign], obj: object) -> _TTextAlign:
+    def from_obj(cls: Type[_TTextAlign], obj: Any) -> _TTextAlign:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextAlign], obj: object, **kwargs) -> _TTextAlign:
+    def from_obj(cls: Type[_TTextAlign], obj: Any, **kwargs) -> _TTextAlign:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTextAlign], obj: object, **kwargs) -> _TTextAlign:
+    def from_obj(cls: Type[_TTextAlign], obj: Any, **kwargs) -> _TTextAlign:
         """
         Gets instance from object
 
@@ -168,7 +168,7 @@ class TextAlign(StyleBase):
         for prop in inst._props:
             if prop:
                 val = mProps.Props.get(obj, prop, None)
-                if not val is None:
+                if val is not None:
                     inst._set(prop, val)
         return inst
 
@@ -190,9 +190,7 @@ class TextAlign(StyleBase):
         meth = cast(int, self._get(self._props.hori_method))
         if justify is None:
             return None
-        if meth is None:
-            return None
-        return HoriAlignKind((meth, justify))
+        return None if meth is None else HoriAlignKind((meth, justify))
 
     @prop_hori_align.setter
     def prop_hori_align(self, value: HoriAlignKind | None) -> None:
@@ -209,22 +207,19 @@ class TextAlign(StyleBase):
         Gets/Sets indent.
         """
         pv = cast(int, self._get(self._props.indent))
-        if pv is None:
-            return None
-        return UnitPT.from_mm100(pv)
+        return None if pv is None else UnitPT.from_mm100(pv)
 
     @prop_indent.setter
-    def prop_indent(self, value: float | UnitPT | None):
+    def prop_indent(self, value: float | UnitObj | None):
         if value is None:
             self._remove(self._props.indent)
             return
         try:
-            val = value.get_value_mm100()
+            val = value.get_value_mm100()  # type: ignore
         except AttributeError:
             # value is rounded in Calc Dialog.
-            val = UnitConvert.convert_pt_mm100(round(value))
-        if val < 0:
-            val = 0
+            val = UnitConvert.convert_pt_mm100(round(value))  # type: ignore
+        val = max(val, 0)
         self._set(self._props.indent, val)
 
     @property
@@ -234,9 +229,7 @@ class TextAlign(StyleBase):
         meth = cast(int, self._get(self._props.vert_method))
         if justify is None:
             return None
-        if meth is None:
-            return None
-        return VertAlignKind((meth, justify))
+        return None if meth is None else VertAlignKind((meth, justify))
 
     @prop_vert_align.setter
     def prop_vert_align(self, value: VertAlignKind | None) -> None:

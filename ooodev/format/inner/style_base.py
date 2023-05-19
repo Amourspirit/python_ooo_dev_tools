@@ -41,8 +41,9 @@ _TStyleModifyMulti = TypeVar(name="_TStyleModifyMulti", bound="StyleModifyMulti"
 # region Meta
 class MetaStyle(type):
     def __call__(cls, *args, **kw):
+        # sourcery skip: instance-method-first-arg-name
         custom_args = kw.pop("_cattribs", None)
-        obj = cls.__new__(cls, *args, **kw)
+        obj = cls.__new__(cls, *args, **kw)  # type: ignore
         # unique_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
         # object.__setattr__(obj, "_unique_id", unique_id)
         _events = Events(source=obj)
@@ -71,7 +72,7 @@ class StyleBase(metaclass=MetaStyle):
         # this property is used in child classes that have default instances
         # self._events = Events(source=self)
 
-        # self._uniquie_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        # self._unique_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
         self._is_default_inst = False
         self._prop_parent = None
@@ -228,14 +229,14 @@ class StyleBase(metaclass=MetaStyle):
         self._events.trigger(FormatNamedEvent.STYLE_REMOVING, cargs)
         self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         if cargs.cancel:
-            return
+            return False
         if self._has(key):
             dv = self._get_properties()
             del dv[key]
             return True
         return False
 
-    def _del_attribs(self, *attribs: str) -> bool:
+    def _del_attribs(self, *attribs: str) -> None:
         """Delete Attributes from instance if exist. Calls ``_on_deleting_attrib()``"""
         for attrib in attribs:
             if hasattr(self.__class__, attrib):
@@ -243,7 +244,7 @@ class StyleBase(metaclass=MetaStyle):
                 self._on_deleting_attrib(self, kvargs)
                 if kvargs.cancel:
                     continue
-                delattr(self.__class_, attrib)
+                delattr(self.__class_, attrib)  # type: ignore
         for attrib in attribs:
             if hasattr(self, attrib):
                 kvargs = KeyValCancelArgs("style_base", key=attrib, value=getattr(self, attrib, None))
@@ -255,7 +256,7 @@ class StyleBase(metaclass=MetaStyle):
     def _update(self, value: Dict[str, Any] | StyleBase) -> None:
         """Updates properties"""
         cargs = CancelEventArgs("style_base")
-        cargs.event_data: Dict[str, Any] | StyleBase = value
+        cargs.event_data = value
         self._events.trigger(FormatNamedEvent.STYLE_UPDATING, cargs)
         self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         if cargs.cancel:
@@ -277,7 +278,7 @@ class StyleBase(metaclass=MetaStyle):
             service: expandable list of service names of UNO services such as ``com.sun.star.text.TextFrame``.
 
         Returns:
-            bool: ``True`` if service is supported; Otherwise, ``Fasle``.
+            bool: ``True`` if service is supported; Otherwise, ``False``.
         """
         services = self._supported_services()
         return any(s in services for s in service)
@@ -294,7 +295,7 @@ class StyleBase(metaclass=MetaStyle):
         """
         raise NotImplementedError
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         """
         Gets if ``obj`` supports one of the services required by style class
 
@@ -306,7 +307,7 @@ class StyleBase(metaclass=MetaStyle):
         """
         return self._is_obj_service(obj)
 
-    def _is_obj_service(self, obj: object) -> bool:
+    def _is_obj_service(self, obj: Any) -> bool:
         """
         Gets if ``obj`` supports one of the services required by style class
 
@@ -341,7 +342,7 @@ class StyleBase(metaclass=MetaStyle):
     # endregion Services
 
     # region Internal Methods
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         # set properties. Can be overridden in child classes
         # may be useful to wrap in try statements in child classes
         try:
@@ -376,7 +377,7 @@ class StyleBase(metaclass=MetaStyle):
         cargs = CancelEventArgs(self)
         cargs.event_data = cattribs
         self._events.trigger("internal_cattribs", cargs)
-        return None if cargs.cancel else cargs.event_data
+        return {} if cargs.cancel else cargs.event_data
 
     # endregion _props methods
 
@@ -393,7 +394,7 @@ class StyleBase(metaclass=MetaStyle):
         # get current keys in internal dictionary
         return tuple(self._get_properties().keys())
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -409,7 +410,7 @@ class StyleBase(metaclass=MetaStyle):
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLIED` :eventref:`src-docs-event`
 
         Returns:
             None:
@@ -462,6 +463,7 @@ class StyleBase(metaclass=MetaStyle):
 
     def copy(self: TStyleBase, **kwargs) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
+        # sourcery skip: low-code-quality
         cargs = CancelEventArgs(self)
         self._events.trigger(FormatNamedEvent.STYLE_COPYING, cargs)
         if cargs.cancel:
@@ -508,7 +510,7 @@ class StyleBase(metaclass=MetaStyle):
 
     # region Backup/Restore
 
-    def backup(self, obj: object) -> None:
+    def backup(self, obj: Any) -> None:
         """
         Backs up Attributes that are to be changed by apply.
 
@@ -544,7 +546,7 @@ class StyleBase(metaclass=MetaStyle):
             eargs = KeyValArgs.from_args(cargs)
             self._events.trigger(FormatNamedEvent.STYLE_BACKED_UP, eargs)
 
-    def restore(self, obj: object, clear: bool = False) -> None:
+    def restore(self, obj: Any, clear: bool = False) -> None:
         """
         Restores ``obj`` properties from backed up setting if any exist.
 
@@ -622,7 +624,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValueCancelArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         pass
 
     def on_property_set(self, source: Any, event_args: KeyValArgs) -> None:
@@ -633,7 +635,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         pass
 
     def on_property_set_error(self, source: Any, event_args: KeyValCancelArgs) -> None:
@@ -644,7 +646,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         pass
 
     def on_property_backing_up(self, source: Any, event_args: KeyValCancelArgs) -> None:
@@ -655,7 +657,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValueCancelArgs): Event Args.
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         pass
 
     def on_property_backed_up(self, source: Any, event_args: KeyValArgs) -> None:
@@ -666,7 +668,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         pass
 
     def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
@@ -677,7 +679,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValueCancelArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         event_args.set("on_property_restore_setting", True)
         self.on_property_setting(source, event_args)
 
@@ -689,7 +691,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         event_args.set("on_property_restore_set", True)
         self.on_property_set(source, event_args)
 
@@ -701,7 +703,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (CancelEventArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         pass
 
     def on_applied(self, source: Any, event_args: EventArgs) -> None:
@@ -712,7 +714,7 @@ class StyleBase(metaclass=MetaStyle):
             source (Any): Event Source.
             event_args (KeyValArgs): Event Args
         """
-        # can be overriden in child classes.
+        # can be overridden in child classes.
         pass
 
     # endregion Event Methods
@@ -720,17 +722,17 @@ class StyleBase(metaclass=MetaStyle):
     # region Dunder Methods
 
     def __eq__(self, oth: object) -> bool:
-        if isinstance(oth, StyleBase):
-            result = False
-            try:
-                for k, v in self._get_properties().items():
-                    if oth._get(k) != v:
-                        return False
-                result = True
-            except Exception:
-                return False
-            return result
-        return NotImplemented
+        if not isinstance(oth, StyleBase):
+            return NotImplemented
+        result = False
+        try:
+            for k, v in self._get_properties().items():
+                if oth._get(k) != v:
+                    return False
+            result = True
+        except Exception:
+            return False
+        return result
 
     # endregion Dunder Methods
 
@@ -751,7 +753,7 @@ class StyleBase(metaclass=MetaStyle):
         return None
 
     def _container_add_value(
-        self, name: str, obj: object, allow_update: bool = True, nc: XNameContainer | None = None
+        self, name: str, obj: Any, allow_update: bool = True, nc: XNameContainer | None = None
     ) -> None:
         if nc is None:
             nc = self._container_get_inst()
@@ -824,7 +826,7 @@ class StyleBase(metaclass=MetaStyle):
 
     @property
     def _events(self) -> Events:
-        return self._internal_events
+        return self._internal_events  # type: ignore
 
     # endregion Properties
 
@@ -833,7 +835,7 @@ class StyleBase(metaclass=MetaStyle):
 
 
 # region Module Internal Helper Classes
-class _StyleMultArgs:
+class _StyleMultiArgs:
     """Generic Args"""
 
     def __init__(self, *attrs, **kwargs):
@@ -864,7 +866,7 @@ class _StyleMultArgs:
 
 class _StyleInfo(NamedTuple):
     style: StyleBase
-    args: _StyleMultArgs | None
+    args: _StyleMultiArgs | None
 
 
 # endregion Module Internal Helper Classes
@@ -938,11 +940,11 @@ class StyleMulti(StyleBase):
 
     # region apply()
 
-    def _apply_direct(self, obj: object, **kwargs) -> None:
+    def _apply_direct(self, obj: Any, **kwargs) -> None:
         """Calls super apply directly"""
         super().apply(obj, **kwargs)
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style of current instance and all other internal style instances.
 
@@ -991,23 +993,23 @@ class StyleMulti(StyleBase):
     # endregion Copy()
 
     def __eq__(self, oth: object) -> bool:
-        if isinstance(oth, StyleMulti):
-            result = super().__eq__(oth)
-            if result is False:
-                return False
-            styles = self._get_multi_styles()
-            for key, info in styles.items():
-                style, _ = info
-                style_other = oth._get_style(key)
-                if style_other is None:
-                    result = False
-                    break
+        if not isinstance(oth, StyleMulti):
+            return NotImplemented
+        result = super().__eq__(oth)
+        if result is False:
+            return False
+        styles = self._get_multi_styles()
+        for key, info in styles.items():
+            style, _ = info
+            style_other = oth._get_style(key)
+            if style_other is None:
+                result = False
+                break
 
-                result = style == style_other[0]
-                if result is False:
-                    break
-            return result
-        return NotImplemented
+            result = style == style_other[0]
+            if not result:
+                break
+        return result
 
     # endregion Overrides
 
@@ -1031,11 +1033,11 @@ class StyleMulti(StyleBase):
             return
         styles = self._get_multi_styles()
         if style._prop_parent is None:
-            style._prop_parent = self
+            style._prop_parent = self  # type: ignore
         if len(attrs) + len(kwargs) == 0:
             styles[key] = _StyleInfo(style, None)
         else:
-            styles[key] = _StyleInfo(style, _StyleMultArgs(*attrs, **kwargs))
+            styles[key] = _StyleInfo(style, _StyleMultiArgs(*attrs, **kwargs))
         self._events.trigger(FormatNamedEvent.MULTI_STYLE_SET, KeyValArgs.from_args(kvargs))
 
     def _update_style(self, value: StyleMulti) -> None:
@@ -1052,7 +1054,7 @@ class StyleMulti(StyleBase):
         cargs.event_data = key
         self._events.trigger(FormatNamedEvent.MULTI_STYLE_REMOVING, cargs)
         if cargs.cancel:
-            return
+            return False
         result = False
         styles = self._get_multi_styles()
         if key in styles:
@@ -1063,7 +1065,7 @@ class StyleMulti(StyleBase):
         return result
 
     def _get_style(self, key: str) -> _StyleInfo | None:
-        return self._get_multi_styles().get(key, None)
+        return self._get_multi_styles().get(key)
 
     def _get_style_inst(self, key: str) -> StyleBase | None:
         style = self._get_style(key)
@@ -1078,7 +1080,7 @@ class StyleMulti(StyleBase):
     # endregion Internal Methods
 
     # region Methods
-    def backup(self, obj: object) -> None:
+    def backup(self, obj: Any) -> None:
         """
         Backs up Attributes that are to be changed by apply.
 
@@ -1112,7 +1114,7 @@ class StyleMulti(StyleBase):
         finally:
             self._all_attributes = True
 
-    def restore(self, obj: object, clear: bool = False) -> None:
+    def restore(self, obj: Any, clear: bool = False) -> None:
         """
         Restores ``obj`` properties from backed up setting if any exist.
 
@@ -1239,14 +1241,14 @@ class StyleModifyMulti(StyleMulti):
             "com.sun.star.beans.PropertySet",
         )
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.style.XStyle"):
             return self._is_obj_service(obj)
         if valid := self._is_obj_service(obj):
             return True
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -1256,7 +1258,7 @@ class StyleModifyMulti(StyleMulti):
 
     # region apply()
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -1309,7 +1311,7 @@ class StyleModifyMulti(StyleMulti):
 
     # region internal methods
 
-    def _is_valid_doc(self, obj: object) -> bool:
+    def _is_valid_doc(self, obj: Any) -> bool:
         return True
         # return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
@@ -1425,8 +1427,9 @@ class StyleName(StyleBase):
         raise NotImplementedError
 
     def _get_property_name(self) -> str:
+        # sourcery skip: raise-from-previous-error
         try:
-            return self._style_property_name
+            return self._style_property_name  # type: ignore
         except AttributeError:
             raise NotImplementedError
 
@@ -1444,16 +1447,16 @@ class StyleName(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[TStyleName], obj: object) -> TStyleName:
+    def from_obj(cls: Type[TStyleName], obj: Any) -> TStyleName:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[TStyleName], obj: object, **kwargs) -> TStyleName:
+    def from_obj(cls: Type[TStyleName], obj: Any, **kwargs) -> TStyleName:
         ...
 
     @classmethod
-    def from_obj(cls: Type[TStyleName], obj: object, **kwargs) -> TStyleName:
+    def from_obj(cls: Type[TStyleName], obj: Any, **kwargs) -> TStyleName:
         """
         Gets instance from object
 
@@ -1470,16 +1473,15 @@ class StyleName(StyleBase):
 
         if mInfo.Info.support_service(obj, "com.sun.star.style.CellStyle"):
             cs = cast("CellStyle", obj)
-            pname = cs.getName()
-            inst.prop_name = pname
+            name = cs.getName()
+            inst.prop_name = name
             return inst
 
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        pname = mProps.Props.get(obj, inst._get_property_name(), "")
-        if pname:
-            inst.prop_name = pname
+        if name := mProps.Props.get(obj, inst._get_property_name(), ""):
+            inst.prop_name = name
         return inst
 
     # endregion from_obj()

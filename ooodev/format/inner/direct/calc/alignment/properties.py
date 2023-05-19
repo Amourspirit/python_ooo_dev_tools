@@ -108,7 +108,7 @@ class Properties(StyleBase):
             self._supported_services_values = ("com.sun.star.style.CellStyle", "com.sun.star.table.CellProperties")
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -123,16 +123,16 @@ class Properties(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object) -> _TProperties:
+    def from_obj(cls: Type[_TProperties], obj: Any) -> _TProperties:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
+    def from_obj(cls: Type[_TProperties], obj: Any, **kwargs) -> _TProperties:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
+    def from_obj(cls: Type[_TProperties], obj: Any, **kwargs) -> _TProperties:
         """
         Gets instance from object
 
@@ -218,9 +218,7 @@ class Properties(StyleBase):
         Gets/Sets Text Direction Kind.
         """
         pv = cast(int, self._get(self._props.mode))
-        if pv is None:
-            return None
-        return TextDirectionKind(pv)
+        return None if pv is None else TextDirectionKind(pv)
 
     @prop_direction.setter
     def prop_direction(self, value: TextDirectionKind | None):

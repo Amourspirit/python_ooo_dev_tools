@@ -73,10 +73,10 @@ class AbstractWritingMode(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies writing mode to ``obj``
 
@@ -145,9 +145,7 @@ class AbstractWritingMode(StyleBase):
     def prop_mode(self) -> WritingMode2Enum | None:
         """Gets/Sets writing mode of a paragraph."""
         pv = cast(int, self._get(self._get_property_name()))
-        if pv is None:
-            return None
-        return WritingMode2Enum(pv)
+        return None if pv is None else WritingMode2Enum(pv)
 
     @prop_mode.setter
     def prop_mode(self, value: WritingMode2Enum | None):

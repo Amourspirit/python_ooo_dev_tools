@@ -68,12 +68,12 @@ class Hatch(StyleMulti):
 
         self._color = max(self._color, 0)
         try:
-            self._space = space.get_value_mm100()
+            self._space = space.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._space = UnitConvert.convert_mm_mm100(space)
+            self._space = UnitConvert.convert_mm_mm100(space)  # type: ignore
 
         try:
-            self._angle = angle.value
+            self._angle = angle.value  # type: ignore
         except AttributeError:
             self._angle = int(angle)
 
@@ -108,23 +108,23 @@ class Hatch(StyleMulti):
             hatch_name = self._container_get_unique_el_name(name, nc)
         else:
             hatch_name = name
+        self._name = hatch_name
         c_value = self._container_get_value(hatch_name, nc)  # raises value error if name is empty
         if not self.prop_hatch_name:
             self._set("FillHatchName", hatch_name)
-        if not c_value is None:
+        if c_value is not None:
             return c_value
         hatch_obj = self._get_inner_class()
         self._container_add_value(name=hatch_name, obj=hatch_obj.get_uno_struct(), allow_update=allow_update, nc=nc)
         return self._container_get_value(hatch_name, nc)
 
     def _get_inner_class(self) -> HatchStruct:
-        hatch = HatchStruct(
+        return HatchStruct(
             style=self._style,
             color=self._color,
             distance=self._space,
             angle=self._angle,
         )
-        return hatch
 
     def _update_container_hatch(self) -> None:
         _ = self._get_hatch(name=self._name, auto_name=False, allow_update=True)
@@ -164,8 +164,7 @@ class Hatch(StyleMulti):
 
     def _container_get_msf(self) -> XMultiServiceFactory | None:
         if self._chart_doc is not None:
-            chart_doc_ms_factory = mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
-            return chart_doc_ms_factory
+            return mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
         return None
 
     def _supported_services(self) -> Tuple[str, ...]:
@@ -182,11 +181,11 @@ class Hatch(StyleMulti):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Hatch.apply(): Unable to set Property")
+            mLo.Lo.print("Hatch.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -206,10 +205,10 @@ class Hatch(StyleMulti):
             Hatch: Instance from preset.
         """
         cattribs = kwargs.pop("_cattribs", {})
-        if not "_hatch_str_name" in cattribs:
+        if "_hatch_str_name" not in cattribs:
             cattribs["_hatch_str_name"] = str(preset)
         kargs = mPreset.get_preset(preset)
-        kargs.update(kwargs)
+        kargs.update(**kwargs)
         return cls(chart_doc=chart_doc, _cattribs=cattribs, **kargs)
 
     # endregion Static Methods
@@ -233,7 +232,7 @@ class Hatch(StyleMulti):
     def prop_angle(self, value: Angle | int) -> None:
         """Sets the angle."""
         try:
-            self._angle = value.value
+            self._angle = value.value  # type: ignore
         except AttributeError:
             self._angle = int(value)
         self._update_container_hatch()
@@ -241,10 +240,8 @@ class Hatch(StyleMulti):
     @property
     def prop_bg_color(self) -> Color:
         """Gets/Sets the background color."""
-        pv = cast(int, self._get("FillColor"))
-        if pv is None:
-            return -1
-        return pv
+        pv = cast(Color, self._get("FillColor"))
+        return Color(-1) if pv is None else pv
 
     @prop_bg_color.setter
     def prop_bg_color(self, value: Color) -> None:
@@ -254,18 +251,17 @@ class Hatch(StyleMulti):
             self._remove("FillColor")
         else:
             self._set("FillBackground", True)
-            self.set("FillColor", value)
+            self._set("FillColor", value)
 
     @property
     def prop_color(self) -> Color:
         """Gets/Sets the color."""
-        return self._color
+        return cast(Color, self._color)
 
     @prop_color.setter
     def prop_color(self, value: Color) -> None:
         """Sets the color."""
-        if value < 0:
-            value = 0
+        value = max(value, 0)  # type: ignore
         self._color = value
         self._update_container_hatch()
 
@@ -289,17 +285,15 @@ class Hatch(StyleMulti):
     def prop_hatch_name(self) -> str:
         """Gets Hatch Name."""
         pv = cast(str, self._get("FillHatchName"))
-        if pv is None:
-            return ""
-        return pv
+        return "" if pv is None else pv
 
     @prop_space.setter
     def prop_space(self, value: float | UnitObj) -> None:
         """Sets the space."""
         try:
-            self._space = value.get_value_mm100()
+            self._space = value.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._space = UnitConvert.convert_mm_mm100(value)
+            self._space = UnitConvert.convert_mm_mm100(value)  # type: ignore
         self._update_container_hatch()
 
     # endregion Properties

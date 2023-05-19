@@ -3,6 +3,7 @@ from typing import TypeVar, Type
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from .unit_convert import UnitConvert, UnitLength
+from ooodev.units import UnitObj
 
 _TUnitPT = TypeVar(name="_TUnitPT", bound="UnitPT")
 
@@ -57,6 +58,15 @@ class UnitPT(BaseFloatValue):
             int: Value in ``pt`` units.
         """
         return self.value
+
+    def get_value_px(self) -> float:
+        """
+        Gets instance value in ``px`` (pixel) units.
+
+        Returns:
+            int: Value in ``px`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.PX)
 
     @classmethod
     def from_pt(cls: Type[_TUnitPT], value: float) -> _TUnitPT:

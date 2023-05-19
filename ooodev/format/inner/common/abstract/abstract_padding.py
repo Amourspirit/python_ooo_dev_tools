@@ -67,19 +67,19 @@ class AbstractPadding(StyleBase):
         def validate(val: float | UnitObj | None) -> None:
             if val is not None:
                 try:
-                    value = val.get_value_mm()
+                    value = val.get_value_mm()  # type: ignore
                 except AttributeError:
-                    value = float(val)
+                    value = float(val)  # type: ignore
                 if value < 0:
                     raise ValueError("Values must be positive values")
 
         def set_val(key, value: float | UnitObj) -> None:
             nonlocal init_vals
-            if not value is None:
+            if value is not None:
                 try:
-                    init_vals[key] = value.get_value_mm100()
+                    init_vals[key] = value.get_value_mm100()  # type: ignore
                 except AttributeError:
-                    init_vals[key] = UnitConvert.convert_mm_mm100(value)
+                    init_vals[key] = UnitConvert.convert_mm_mm100(value)  # type: ignore
 
         validate(left)
         validate(right)
@@ -88,7 +88,8 @@ class AbstractPadding(StyleBase):
         validate(all)
         if all is None:
             for key, value in zip(self._props, (left, top, right, bottom)):
-                set_val(key, value)
+                if value is not None:
+                    set_val(key, value)
         else:
             for key in self._props:
                 set_val(key, all)
@@ -115,7 +116,7 @@ class AbstractPadding(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: object) -> None:  # type: ignore
         ...
 
     def apply(self, obj: object, **kwargs) -> None:
@@ -270,9 +271,7 @@ class AbstractPadding(StyleBase):
     def prop_left(self) -> UnitMM | None:
         """Gets/Sets paragraph left padding (in mm units)."""
         pv = cast(int, self._get(self._props.left))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_left.setter
     def prop_left(self, value: float | UnitObj | None):
@@ -280,17 +279,15 @@ class AbstractPadding(StyleBase):
             self._remove(self._props.left)
             return
         try:
-            self._set(self._props.left, value.get_value_mm100())
+            self._set(self._props.left, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_right(self) -> UnitMM | None:
         """Gets/Sets paragraph right padding (in mm units)."""
         pv = cast(int, self._get(self._props.right))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_right.setter
     def prop_right(self, value: float | UnitObj | None):
@@ -298,17 +295,15 @@ class AbstractPadding(StyleBase):
             self._remove(self._props.right)
             return
         try:
-            self._set(self._props.right, value.get_value_mm100())
+            self._set(self._props.right, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_top(self) -> UnitMM | None:
         """Gets/Sets paragraph top padding (in mm units)."""
         pv = cast(int, self._get(self._props.top))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_top.setter
     def prop_top(self, value: float | UnitObj | None):
@@ -316,17 +311,15 @@ class AbstractPadding(StyleBase):
             self._remove(self._props.top)
             return
         try:
-            self._set(self._props.top, value.get_value_mm100())
+            self._set(self._props.top, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_bottom(self) -> UnitMM | None:
         """Gets/Sets paragraph bottom padding (in mm units)."""
         pv = cast(int, self._get(self._props.bottom))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
     def prop_bottom(self, value: float | UnitObj | None):
@@ -334,9 +327,9 @@ class AbstractPadding(StyleBase):
             self._remove(self._props.bottom)
             return
         try:
-            self._set(self._props.bottom, value.get_value_mm100())
+            self._set(self._props.bottom, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def default(self: _TAbstractPadding) -> _TAbstractPadding:  # type: ignore[misc]

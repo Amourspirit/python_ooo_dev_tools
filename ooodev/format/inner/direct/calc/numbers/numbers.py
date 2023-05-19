@@ -117,19 +117,19 @@ class Numbers(StyleBase):
             self._supported_services_values = ("com.sun.star.style.CellStyle", "com.sun.star.table.CellProperties")
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return hasattr(obj, self._get_property_name())
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs: Any) -> None:
+    def apply(self, obj: Any, **kwargs: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs: Any) -> None:
+    def apply(self, obj: Any, **kwargs: Any) -> None:
         # sourcery skip: hoist-if-from-if
         """
         Applies styles to object
@@ -250,16 +250,16 @@ class Numbers(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNumbers], obj: object) -> _TNumbers:
+    def from_obj(cls: Type[_TNumbers], obj: Any) -> _TNumbers:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNumbers], obj: object, **kwargs) -> _TNumbers:
+    def from_obj(cls: Type[_TNumbers], obj: Any, **kwargs) -> _TNumbers:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TNumbers], obj: object, **kwargs) -> _TNumbers:
+    def from_obj(cls: Type[_TNumbers], obj: Any, **kwargs) -> _TNumbers:
         """
         Gets instance from object
 

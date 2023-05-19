@@ -1,6 +1,6 @@
 # region Imports
 from __future__ import annotations
-from typing import Tuple, cast, overload
+from typing import Any, Tuple, cast, overload
 import uno
 from com.sun.star.awt import XBitmap
 from com.sun.star.chart2 import XChartDocument
@@ -34,7 +34,7 @@ class Img(FillImg):
     .. versionadded:: 0.9.4
     """
 
-    prop_bitmap = DeletedAttrib()
+    prop_bitmap = DeletedAttrib()  # type: ignore
 
     def __init__(
         self,
@@ -105,8 +105,7 @@ class Img(FillImg):
 
     def _container_get_msf(self) -> XMultiServiceFactory | None:
         if self._chart_doc is not None:
-            chart_doc_ms_factory = mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
-            return chart_doc_ms_factory
+            return mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
         return None
 
     # region copy()
@@ -156,12 +155,12 @@ class Img(FillImg):
         nu = cls(chart_doc=chart_doc, **kwargs)
 
         nc = nu._container_get_inst()
-        bmap = cast(XBitmap, nu._container_get_value(name, nc))
-        if bmap is None:
-            bmap = mImage.get_prest_bitmap(preset)
+        bitmap = cast(XBitmap, nu._container_get_value(name, nc))
+        if bitmap is None:
+            bitmap = mImage.get_prest_bitmap(preset)
         inst = cls(
             chart_doc=chart_doc,
-            bitmap=bmap,
+            bitmap=bitmap,
             name=name,
             mode=ImgStyleKind.TILED,
             position=RectanglePoint.MIDDLE_MIDDLE,
@@ -180,16 +179,16 @@ class Img(FillImg):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object) -> Img:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Img:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Img:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Img:
         ...
 
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Img:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Img:
         """
         Gets instance from object
 

@@ -29,7 +29,7 @@ class AbstractColor(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, color: mColor.Color = -1) -> None:
+    def __init__(self, color: mColor.Color = mColor.Color(-1)) -> None:
         """
         Constructor
 
@@ -52,10 +52,10 @@ class AbstractColor(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -112,10 +112,7 @@ class AbstractColor(StyleBase):
 
         color = mProps.Props.get(obj, nu._props.color, None)
 
-        if color is None:
-            return cls(**kwargs)
-        else:
-            return cls(color=color, **kwargs)
+        return cls(**kwargs) if color is None else cls(color=color, **kwargs)
 
     # endregion from_obj()
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import uno
-from typing import Tuple
+from typing import Any, Tuple
 
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.units import UnitObj
@@ -50,5 +50,5 @@ class LineProperties(ChartBordersLineProperties):
             self._supported_services_values = ()
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return mLo.Lo.is_uno_interfaces(obj, "com.sun.star.beans.XPropertySet")

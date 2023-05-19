@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 import uno
 from com.sun.star.chart2 import XChartDocument
 from ooo.dyn.drawing.hatch_style import HatchStyle
@@ -58,5 +58,5 @@ class Hatch(ChartAreaHatch):
             self._supported_services_values = ()
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return mLo.Lo.is_uno_interfaces(obj, "com.sun.star.beans.XPropertySet")
