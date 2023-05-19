@@ -25,7 +25,12 @@ Color = NewType("Color", int)
 
 
 class StandardColor(NamedTuple):
-    """Standard palette Colors"""
+    """
+    Standard palette Colors
+
+    .. versionchanged:: 0.10.4
+        Added ``AUTO_COLOR``
+    """
 
     # Standard Palette
     WHITE = Color(0xFFFFFF)
@@ -166,10 +171,20 @@ class StandardColor(NamedTuple):
     # Defaults
     DEFAULT_BLUE = BLUE_LIGHT2  # LibreOffice Default Shape background color
 
+    AUTO_COLOR = Color(-1)
+    """
+    Automatic Color Value.
+
+    In most cases, LibreOffice API will use -1 for automatic or no color.
+    This is the same as the value of `Color(-1)`.
+    """
+
     @staticmethod
     def get_random_color() -> Color:
         """Gets a random Standard Palette color"""
-        attrs = [x for x in dir(StandardColor) if x.isupper() and not x.startswith("DEFAULT")]
+        attrs = [
+            x for x in dir(StandardColor) if x.isupper() and not x.startswith("DEFAULT") and not x.startswith("AUTO")
+        ]
         i = random.randrange(start=0, stop=len(attrs) - 1)
         return getattr(StandardColor, attrs[i])
 
@@ -189,6 +204,9 @@ class CommonColor(NamedTuple):
             def set_chart(sheet: XSpreadsheet, range_addr: CellRangeAddress) -> None:
                 chart = Chart2.insert_chart(sheet, range_addr, "A22", 20, 11, Chart2.ChartLookup.Column.TEMPLATE_PERCENT.COLUMN_DEEP_3D)
                 Chart2.set_background_colors(chart, CommonColor.LIGHT_GREEN, CommonColor.BROWN)
+
+    .. versionchanged:: 0.10.4
+        Added ``AUTO_COLOR``
     """
 
     # https://en.wikipedia.org/wiki/Web_colors
@@ -368,10 +386,20 @@ class CommonColor(NamedTuple):
     # Defaults
     DEFAULT_BLUE = StandardColor.BLUE_LIGHT2  # LibreOffice Default Shape background color
 
+    AUTO_COLOR = Color(-1)
+    """
+    Automatic Color Value.
+
+    In most cases, LibreOffice API will use -1 for automatic or no color.
+    This is the same as the value of `Color(-1)`.
+    """
+
     @staticmethod
     def get_random_color() -> Color:
         """Gets a random common color"""
-        attrs = [x for x in dir(CommonColor) if x.isupper() and not x.startswith("DEFAULT")]
+        attrs = [
+            x for x in dir(CommonColor) if x.isupper() and not x.startswith("DEFAULT") and not x.startswith("AUTO")
+        ]
         i = random.randrange(start=0, stop=len(attrs) - 1)
         return getattr(CommonColor, attrs[i])
 

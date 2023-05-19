@@ -18,11 +18,11 @@ def calculate_x_and_y_from_point_kind(x: int, y: int, shape_size: Size, point_ki
     if point_kind == ShapeBasePointKind.TOP_LEFT:
         pass
     elif point_kind == ShapeBasePointKind.TOP_CENTER:
-        x = x - round(shape_size.width / 2)
+        x -= round(shape_size.width / 2)
     elif point_kind == ShapeBasePointKind.TOP_RIGHT:
         x = x - shape_size.width
     elif point_kind == ShapeBasePointKind.CENTER_LEFT:
-        y = y - round(shape_size.height / 2)
+        y -= round(shape_size.height / 2)
     elif point_kind == ShapeBasePointKind.CENTER:
         x = x - round(shape_size.width / 2)
         y = y - round(shape_size.height / 2)
@@ -50,8 +50,8 @@ class Position(StyleMulti):
     """
 
     # in draw document the page margins are also included in the position.
-    # if page margin is 10mm and shape is positioned at 0,0 in the dialog box then the shape is actually at 10,10 in the positon struct.
-    # this means that the poisiton class must be aware of the document margins and add them to the position.
+    # if page margin is 10mm and shape is positioned at 0,0 in the dialog box then the shape is actually at 10,10 in the position struct.
+    # this means that the position class must be aware of the document margins and add them to the position.
     # for a chart the margins are not included in the position struct.
 
     # TODO: finish the Position class.
@@ -74,9 +74,9 @@ class Position(StyleMulti):
         """
         super().__init__()
         try:
-            self._pos_x = pos_x.get_value_mm100()
+            self._pos_x = pos_x.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._pos_x = UnitConvert.convert_mm_mm100(pos_x)
+            self._pos_x = UnitConvert.convert_mm_mm100(pos_x)  # type: ignore
         self._pos_y = pos_y
 
     def _get_inner_point_struct(self) -> PointStruct:

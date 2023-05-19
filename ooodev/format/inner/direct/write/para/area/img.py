@@ -233,7 +233,7 @@ class Img(StyleMulti):
 
         inst = cls(**kwargs)
         inst._set(
-            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
+            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_position, mode=fill_img.prop_mode)
         )
         inst._set(inst._props.back_graphic, fill_img._get(fill_img._props.bitmap))
         fill_img._prop_parent = inst
@@ -273,7 +273,7 @@ class Img(StyleMulti):
         inst = cls(**kwargs)
         bmap = fill_img._get(fill_img._props.bitmap)
         inst._set(
-            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
+            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_position, mode=fill_img.prop_mode)
         )
         if not bmap is None:
             inst._set(inst._props.back_graphic, fill_img._get(fill_img._props.bitmap))

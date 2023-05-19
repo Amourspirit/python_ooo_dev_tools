@@ -5,7 +5,7 @@ Module for ``LocaleStruct`` struct.
 """
 # region Import
 from __future__ import annotations
-from typing import Dict, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
 from ooodev.exceptions import ex as mEx
@@ -82,7 +82,7 @@ class LocaleStruct(StructBase):
             self._property_name = "CharLocale"
         return self._property_name
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return mProps.Props.has(obj, self._get_property_name())
 
     def get_attrs(self) -> Tuple[str, ...]:
@@ -90,14 +90,14 @@ class LocaleStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, keys: Dict[str, str]) -> None:
+    def apply(self, obj: Any, keys: Dict[str, str]) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         """
         Applies tab properties to ``obj``
 
@@ -114,6 +114,7 @@ class LocaleStruct(StructBase):
         Returns:
             None:
         """
+        # sourcery skip: dict-assign-update-to-union
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
             self._print_not_valid_srv("apply")
@@ -152,16 +153,16 @@ class LocaleStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLocaleStruct], obj: object) -> _TLocaleStruct:
+    def from_obj(cls: Type[_TLocaleStruct], obj: Any) -> _TLocaleStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLocaleStruct], obj: object, **kwargs) -> _TLocaleStruct:
+    def from_obj(cls: Type[_TLocaleStruct], obj: Any, **kwargs) -> _TLocaleStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TLocaleStruct], obj: object, **kwargs) -> _TLocaleStruct:
+    def from_obj(cls: Type[_TLocaleStruct], obj: Any, **kwargs) -> _TLocaleStruct:
         """
         Gets instance from object
 

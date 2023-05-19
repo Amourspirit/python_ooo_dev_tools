@@ -6,7 +6,7 @@ Module for Shadow format (``LineSpacing``) struct.
 # region Import
 from __future__ import annotations
 
-from typing import Any, Dict, Tuple, Type, TypeVar, overload
+from typing import Any, Dict, Tuple, Type, TypeVar, cast, overload
 from enum import Enum
 from numbers import Real
 
@@ -68,17 +68,14 @@ class ModeKind(Enum):
                 return ModeKind.LINE_1_15
             if val == 150:
                 return ModeKind.LINE_1_5
-            if val == 200:
-                return ModeKind.DOUBLE
-            else:
-                return ModeKind.PROPORTIONAL
+            return ModeKind.DOUBLE if val == 200 else ModeKind.PROPORTIONAL
         if mode == 1:
             return ModeKind.AT_LEAST
         if mode == 2:
             return ModeKind.LEADING
         if mode == 3:
             return ModeKind.FIXED
-        raise ValueError("Uanble to convert uno LineSpacing object to ModeKind Enum")
+        raise ValueError("Unable to convert uno LineSpacing object to ModeKind Enum")
 
 
 class LineSpacingStruct(StructBase):
@@ -88,7 +85,7 @@ class LineSpacingStruct(StructBase):
 
     # region init
 
-    def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: Real | UnitObj = 0) -> None:
+    def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: int | float | UnitObj = 0) -> None:
         """
         Constructor
 
@@ -102,33 +99,33 @@ class LineSpacingStruct(StructBase):
         Note:
             If ``LineMode`` is ``SINGLE``, ``LINE_1_15``, ``LINE_1_5``, or ``DOUBLE`` then ``value`` is ignored.
 
-            If ``LineMode`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm uints``)
+            If ``LineMode`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm units``)
             or :ref:`proto_unit_obj`
 
             If ``LineMode`` is ``PROPORTIONAL`` then value is an int representing percentage.
             For example ``95`` equals ``95%``, ``130`` equals ``130%``
         """
-        if value < 0:
-            raise ValueError("mode must be a positive number")
 
         self._line_mode = mode
         self._mode = mode.get_mode()
         self._value = int(mode)
         enum_val = mode.get_enum_val()
-
         if mode == ModeKind.PROPORTIONAL:
             # no conversion
             try:
                 # just in case passed in as a UnitObj
-                self._value = round(value.value)
+                self._value = round(value.value)  # type: ignore
             except AttributeError:
-                self._value = int(value)
+                self._value = int(value)  # type: ignore
 
         elif enum_val >= 5:
             try:
-                self._value = value.get_value_mm100()
+                self._value = cast(int, value.get_value_mm100())  # type: ignore
             except AttributeError:
-                self._value = UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100)
+                self._value = round(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100))  # type: ignore
+
+        if self._value < 0:
+            raise ValueError("mode must be a positive number")
 
         super().__init__()
 
@@ -136,14 +133,14 @@ class LineSpacingStruct(StructBase):
 
     # region methods
     def __eq__(self, other: object) -> bool:
-        ls2: UnoLineSpacing = None
+        ls2 = None
         if isinstance(other, LineSpacingStruct):
             ls2 = other.get_uno_struct()
         elif getattr(other, "typeName", None) == "com.sun.star.style.LineSpacing":
             ls2 = other
         if ls2:
             ls1 = self.get_uno_struct()
-            return ls1.Height == ls2.Height and ls1.Mode == ls2.Mode
+            return ls1.Height == ls2.Height and ls1.Mode == ls2.Mode  # type: ignore
         return False
 
     def _supported_services(self) -> Tuple[str, ...]:
@@ -185,8 +182,7 @@ class LineSpacingStruct(StructBase):
 
     def copy(self: _TLineSpacingStruct, **kwargs) -> _TLineSpacingStruct:
         nu = self.__class__(mode=self._mode, height=self._value, **kwargs)
-        dv = self._get_properties()
-        if dv:
+        if dv := self._get_properties():
             nu._update(dv)
         return nu
 
@@ -195,14 +191,14 @@ class LineSpacingStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object, *, keys: Dict[str, str]) -> None:
+    def apply(self, obj: Any, *, keys: Dict[str, str]) -> None:
         ...
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style to object
 
@@ -221,6 +217,7 @@ class LineSpacingStruct(StructBase):
         Returns:
             None:
         """
+        # sourcery skip: dict-assign-update-to-union
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
             self._print_not_valid_srv("apply()")
@@ -300,7 +297,7 @@ class LineSpacingStruct(StructBase):
         return self._line_mode
 
     @property
-    def prop_value(self) -> Real:
+    def prop_value(self) -> int:
         """Gets the spacing value in regard to Mode"""
         return self._value
 

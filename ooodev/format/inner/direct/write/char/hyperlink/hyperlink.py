@@ -9,7 +9,7 @@ Module for creating hyperlinks
 """
 # region Import
 from __future__ import annotations
-from typing import Tuple, overload, Type, TypeVar
+from typing import Any, Tuple, overload, Type, TypeVar
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
@@ -78,16 +78,16 @@ class Hyperlink(LinkTo):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyperlink], obj: object) -> _THyperlink:
+    def from_obj(cls: Type[_THyperlink], obj: Any) -> _THyperlink:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyperlink], obj: object, **kwargs) -> _THyperlink:
+    def from_obj(cls: Type[_THyperlink], obj: Any, **kwargs) -> _THyperlink:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_THyperlink], obj: object, **kwargs) -> _THyperlink:
+    def from_obj(cls: Type[_THyperlink], obj: Any, **kwargs) -> _THyperlink:
         """
         Gets hyperlink instance from object
 

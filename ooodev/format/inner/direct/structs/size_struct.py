@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from ooo.dyn.awt.size import Size
 
@@ -33,7 +33,7 @@ class SizeStruct(StructBase):
         self,
         width: float | UnitObj = 0.0,
         height: float | UnitObj = 0.0,
-        all: float | UnitObj = None,
+        all: float | UnitObj | None = None,
     ) -> None:
         """
         Constructor
@@ -44,7 +44,7 @@ class SizeStruct(StructBase):
             all (float, UnitObj, optional): Specifies ``width`` and ``height`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
-        if not all is None:
+        if all is not None:
             self.prop_left = all
             self.prop_right = all
         else:
@@ -85,8 +85,10 @@ class SizeStruct(StructBase):
         Returns:
             Size: ``Size`` instance
         """
-        inst = Size(Width=self._get(self._props.width), Height=self._get(self._props.height))
-        return inst
+        return Size(
+            Width=self._get(self._props.width),
+            Height=self._get(self._props.height),
+        )
 
     # endregion methods
 
@@ -102,10 +104,10 @@ class SizeStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -164,16 +166,16 @@ class SizeStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: object) -> _TSizeStruct:
+    def from_obj(cls: Type[_TSizeStruct], obj: Any) -> _TSizeStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: object, **kwargs) -> _TSizeStruct:
+    def from_obj(cls: Type[_TSizeStruct], obj: Any, **kwargs) -> _TSizeStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: object, **kwargs) -> _TSizeStruct:
+    def from_obj(cls: Type[_TSizeStruct], obj: Any, **kwargs) -> _TSizeStruct:
         """
         Gets instance from object
 
@@ -191,9 +193,9 @@ class SizeStruct(StructBase):
         prop_name = nu._get_property_name()
 
         try:
-            size = cast(SizeStruct, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+            size = cast(Size, mProps.Props.get(obj, prop_name))
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(size, **kwargs)
 
@@ -267,9 +269,9 @@ class SizeStruct(StructBase):
     @prop_height.setter
     def prop_height(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.height, value.get_value_mm100())
+            self._set(self._props.height, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.height, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.height, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_width(self) -> UnitMM:
@@ -280,9 +282,9 @@ class SizeStruct(StructBase):
     @prop_width.setter
     def prop_width(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.width, value.get_value_mm100())
+            self._set(self._props.width, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.width, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.width, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def _props(self) -> StructSizeProps:

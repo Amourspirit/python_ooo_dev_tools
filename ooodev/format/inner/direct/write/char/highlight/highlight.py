@@ -15,7 +15,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 
@@ -30,7 +30,7 @@ class Highlight(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, color: Color = -1) -> None:
+    def __init__(self, color: Color = StandardColor.AUTO_COLOR) -> None:
         """
         Constructor
 
@@ -73,10 +73,10 @@ class Highlight(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -99,16 +99,16 @@ class Highlight(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THighlight], obj: object) -> _THighlight:
+    def from_obj(cls: Type[_THighlight], obj: Any) -> _THighlight:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THighlight], obj: object, **kwargs) -> _THighlight:
+    def from_obj(cls: Type[_THighlight], obj: Any, **kwargs) -> _THighlight:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_THighlight], obj: object, **kwargs) -> _THighlight:
+    def from_obj(cls: Type[_THighlight], obj: Any, **kwargs) -> _THighlight:
         """
         Gets Highlight instance from object
 
@@ -144,10 +144,8 @@ class Highlight(StyleBase):
             Highlight: Highlight instance
         """
         cp = self.copy()
-        if value < 0:
-            cp.prop_color = -1
-        else:
-            cp.prop_color = value
+        cp.prop_color = StandardColor.AUTO_COLOR if value < 0 else value
+        return cp
 
     # endregion set styles
     @property

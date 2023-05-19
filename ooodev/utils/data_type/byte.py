@@ -5,12 +5,6 @@ from ..validation import check
 from ..decorator import enforce
 from .base_int_value import BaseIntValue
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
-
 
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
@@ -27,7 +21,7 @@ class Byte(BaseIntValue):
             f"Value of {self.value} is out of range. Value must be from 0 to 255.",
         )
 
-    def _from_int(self, value: int) -> Self:
+    def _from_int(self, value: int) -> Byte:
         return Byte(value)
 
     def __eq__(self, other: object) -> bool:

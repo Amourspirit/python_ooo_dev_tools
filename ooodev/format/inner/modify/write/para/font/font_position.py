@@ -30,8 +30,8 @@ class FontPosition(ParaStyleBaseMulti):
         self,
         *,
         script_kind: FontScriptKind | None = None,
-        raise_lower: int | Intensity | None = None,
-        rel_size: int | None = None,
+        raise_lower: int | None = None,
+        rel_size: int | Intensity | None = None,
         rotation: int | Angle | None = None,
         scale: int | None = None,
         fit: bool | None = None,
@@ -45,9 +45,9 @@ class FontPosition(ParaStyleBaseMulti):
 
         Args:
             script_kind (FontScriptKind, optional): Specifies Superscript/Subscript option.
-            raise_lower (int, Intensity, optional): Specifies raise or Lower as percent value. Min value is ``1``.
-            rel_size (int, optional): Specifies relative Font Size as percent value. Set this value to ``0`` for
-                automatic; Otherwise value from ``1`` to ``100``.
+            raise_lower (int, optional): Specifies raise or Lower as percent value. Set to a value of 0 for automatic.
+            rel_size (int, Intensity, optional): Specifies relative Font Size as percent value.
+                Set this value to ``0`` for automatic; Otherwise value from ``1`` to ``100``.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the
                 implementation only certain values may be allowed.
             scale (int, optional): Specifies scale width as percent value. Min value is ``1``.

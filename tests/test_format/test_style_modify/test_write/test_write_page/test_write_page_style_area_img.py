@@ -33,7 +33,6 @@ def test_write(loader, para_text) -> None:
         )
 
         for preset in presets:
-
             style = Img.from_preset(preset=preset)
             style.apply(doc)
             # props = style.get_style_props(doc)
@@ -42,7 +41,7 @@ def test_write(loader, para_text) -> None:
             assert f_style.prop_inner.prop_size == style.prop_inner.prop_size
             assert f_style.prop_inner.prop_mode == style.prop_inner.prop_mode
             assert f_style.prop_inner.prop_pos_offset == style.prop_inner.prop_pos_offset
-            assert f_style.prop_inner.prop_posiion == style.prop_inner.prop_posiion
+            assert f_style.prop_inner.prop_position == style.prop_inner.prop_position
 
         Lo.delay(delay)
     finally:

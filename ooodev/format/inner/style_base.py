@@ -75,7 +75,7 @@ class StyleBase(metaclass=MetaStyle):
         # self._unique_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
         self._is_default_inst = False
-        self._prop_parent = None
+        self._prop_parent: Any = None
 
         self._dv = {}
         self._dv_bak = None

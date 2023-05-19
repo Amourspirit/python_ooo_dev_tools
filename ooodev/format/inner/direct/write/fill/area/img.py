@@ -3,9 +3,11 @@ Module for Fill Properties Fill Image.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
+import contextlib
+from typing import Any, Tuple, cast, overload, Type, TypeVar
 from enum import Enum
 
 from com.sun.star.awt import XBitmap
@@ -29,11 +31,10 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
+from ooodev.utils.decorator.deprecated import deprecated
 
 # endregion Imports
 
-if TYPE_CHECKING:
-    pass
 
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
 
@@ -106,22 +107,20 @@ class Img(StyleBase):
         # when mode is ImgStyleKind.STRETCHED size, position, pos_offset, and tile_offset are not required
 
         init_vals = {}
-        bmap = None
-        try:
+        b_map = None
+        with contextlib.suppress(Exception):
             # if bitmap or name is passed in then get the bitmap
-            bmap = self._get_bitmap(bitmap, name, auto_name)
-        except Exception:
-            pass
-        if bmap is not None:
+            b_map = self._get_bitmap(bitmap, name, auto_name)
+        if b_map is not None:
             if self._props.bitmap:
-                init_vals[self._props.bitmap] = bmap
+                init_vals[self._props.bitmap] = b_map
             init_vals[self._props.name] = self._name
             init_vals[self._props.style] = FillStyle.BITMAP
 
         super().__init__(**init_vals)
         self.prop_mode = mode
         self.prop_size = size
-        self.prop_posiion = position
+        self.prop_position = position
         self.prop_pos_offset = pos_offset
         self.prop_tile_offset = tile_offset
 
@@ -140,9 +139,9 @@ class Img(StyleBase):
             self._name = self._container_get_unique_el_name(name, nc)
         else:
             self._name = name
-        bmap = self._container_get_value(self._name, nc)  # raises value error if name is empty
-        if not bmap is None:
-            return bmap
+        b_map = self._container_get_value(self._name, nc)  # raises value error if name is empty
+        if b_map is not None:
+            return b_map
         if bitmap is None:
             raise ValueError(f'No bitmap could be found in container for "{name}". In this case a bitmap is required.')
         self._container_add_value(name=self._name, obj=bitmap, allow_update=False, nc=nc)
@@ -192,10 +191,10 @@ class Img(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -212,11 +211,11 @@ class Img(StyleBase):
             return
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Img.apply(): Unable to set Property")
+            mLo.Lo.print("Img.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -260,11 +259,11 @@ class Img(StyleBase):
         nu = cls(**kwargs)
 
         nc = nu._container_get_inst()
-        bmap = cast(XBitmap, nu._container_get_value(name, nc))
-        if bmap is None:
-            bmap = mImage.get_prest_bitmap(preset)
+        bitmap = cast(XBitmap, nu._container_get_value(name, nc))
+        if bitmap is None:
+            bitmap = mImage.get_prest_bitmap(preset)
         inst = cls(
-            bitmap=bmap,
+            bitmap=bitmap,
             name=name,
             mode=ImgStyleKind.TILED,
             position=RectanglePoint.MIDDLE_MIDDLE,
@@ -284,16 +283,16 @@ class Img(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: object) -> _TImg:
+    def from_obj(cls: Type[_TImg], obj: Any) -> _TImg:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
+    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
+    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:
         """
         Gets instance from object
 
@@ -315,7 +314,7 @@ class Img(StyleBase):
             if not key:
                 return
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 fp._set(key, val)
 
         name = mProps.Props.get(obj, inst._props.name)
@@ -358,17 +357,13 @@ class Img(StyleBase):
         if not self._props.bitmap:
             return None
         pv = self._get(self._props.bitmap)
-        if pv is None:
-            return None
-        return pv
+        return None if pv is None else pv
 
     @property
     def prop_mode(self) -> ImgStyleKind | None:
         """Gets/Sets if fill image is tiled"""
         pv = self._get(self._props.mode)
-        if pv is None:
-            return None
-        return ImgStyleKind.from_bitmap_mode(pv)
+        return None if pv is None else ImgStyleKind.from_bitmap_mode(pv)
 
     @prop_mode.setter
     def prop_mode(self, value: ImgStyleKind | None) -> None:
@@ -382,28 +377,20 @@ class Img(StyleBase):
         """Gets if size is stored in percentage units."""
         x = cast(int, self._get(self._props.size_x))
         y = cast(int, self._get(self._props.size_y))
-        if x is None or y is None:
-            return False
-        if x < 0 or y < 0:
-            return True
-        return False
+        return False if x is None or y is None else x < 0 or y < 0
 
     @property
     def prop_is_size_mm(self) -> bool:
         """Gets if size is stored in ``mm`` units."""
         x = cast(int, self._get(self._props.size_x))
         y = cast(int, self._get(self._props.size_y))
-        if x is None or y is None:
-            return False
-        if x < 0 or y < 0:
-            return False
-        return True
+        return False if x is None or y is None else x >= 0 and y >= 0
 
     @property
     def prop_size(self) -> SizePercent | SizeMM | None:
         """Gets/Sets if fill image is stretched"""
         # size percent is stored as negative int
-        # size mm is stored as 1/100th mm as postitive int
+        # size mm is stored as 1/100th mm as positive int
 
         x = cast(int, self._get(self._props.size_x))
         y = cast(int, self._get(self._props.size_y))
@@ -414,9 +401,9 @@ class Img(StyleBase):
         if x < 0 or y < 0:
             # percent
             return SizePercent(round(abs(x)), round(abs(y)))
-        xval = UnitConvert.convert_mm100_mm(x)
-        yval = UnitConvert.convert_mm100_mm(y)
-        return SizeMM(xval, yval)
+        x_val = UnitConvert.convert_mm100_mm(x)
+        y_val = UnitConvert.convert_mm100_mm(y)
+        return SizeMM(x_val, y_val)
 
     @prop_size.setter
     def prop_size(self, value: SizePercent | SizeMM | None) -> None:
@@ -437,12 +424,12 @@ class Img(StyleBase):
             return
 
     @property
-    def prop_posiion(self) -> RectanglePoint | None:
+    def prop_position(self) -> RectanglePoint | None:
         """Gets/Sets if fill image is tiled"""
         return self._get(self._props.point)
 
-    @prop_posiion.setter
-    def prop_posiion(self, value: RectanglePoint | None) -> None:
+    @prop_position.setter
+    def prop_position(self, value: RectanglePoint | None) -> None:
         if value is None:
             self._remove(self._props.point)
             return
@@ -453,9 +440,7 @@ class Img(StyleBase):
         """Gets/Sets Position Offset"""
         x = cast(int, self._get(self._props.pos_x))
         y = cast(int, self._get(self._props.pos_y))
-        if x is None or y is None:
-            return None
-        return Offset(x, y)
+        return None if x is None or y is None else Offset(x, y)
 
     @prop_pos_offset.setter
     def prop_pos_offset(self, value: Offset | None) -> None:
@@ -471,19 +456,13 @@ class Img(StyleBase):
         """Gets if the offset value is a row offset."""
         row = cast(int, self._get(self._props.offset_x))
         col = cast(int, self._get(self._props.offset_y))
-        if row is None or col is None:
-            return False
-        if col > 0:
-            return False
-        return True
+        return False if row is None or col is None else col <= 0
 
     @property
     def prop_is_offset_column(self) -> bool:
         """Gets if the offset value is a column offset."""
         col = cast(int, self._get(self._props.offset_y))
-        if col is None:
-            return False
-        return col > 0
+        return False if col is None else col > 0
 
     @property
     def prop_tile_offset(self) -> OffsetColumn | OffsetRow | None:
@@ -494,10 +473,7 @@ class Img(StyleBase):
         col = cast(int, self._get(self._props.offset_y))
         if row is None or col is None:
             return None
-        if col > 0:
-            return OffsetColumn(col)
-        # if x and y are zero the default is to return row
-        return OffsetRow(row)
+        return OffsetColumn(col) if col > 0 else OffsetRow(row)
 
     @prop_tile_offset.setter
     def prop_tile_offset(self, value: OffsetColumn | OffsetRow | None) -> None:
