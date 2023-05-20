@@ -104,10 +104,14 @@ class Hyphenation(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies hyphenation properties to ``obj``
 
@@ -128,16 +132,16 @@ class Hyphenation(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyphenation], obj: object) -> _THyphenation:
+    def from_obj(cls: Type[_THyphenation], obj: Any) -> _THyphenation:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyphenation], obj: object, **kwargs) -> _THyphenation:
+    def from_obj(cls: Type[_THyphenation], obj: Any, **kwargs) -> _THyphenation:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_THyphenation], obj: object, **kwargs) -> _THyphenation:
+    def from_obj(cls: Type[_THyphenation], obj: Any, **kwargs) -> _THyphenation:
         """
         Gets instance from object
 
@@ -157,7 +161,7 @@ class Hyphenation(StyleBase):
         def set_prop(key: str, indent: Hyphenation):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 indent._set(key, val)
 
         set_prop("ParaIsHyphenation", inst)

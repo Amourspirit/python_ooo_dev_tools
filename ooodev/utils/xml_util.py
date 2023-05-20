@@ -459,7 +459,7 @@ class XML:
         Returns:
             str: Flat XML filter name.
 
-        .. deprecated:: 0.10.3
+        .. deprecated:: 0.11.0
             Use :py:meth:`~.xml_util.XML.get_flat_filter_name` instead.
         """
         return cls.get_flat_filter_name(doc_type)

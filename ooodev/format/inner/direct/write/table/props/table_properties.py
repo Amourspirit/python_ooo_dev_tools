@@ -26,7 +26,7 @@ from ooodev.units.unit_convert import UnitConvert
 # region Types
 
 _TTableProperties = TypeVar(name="_TTableProperties", bound="TableProperties")
-_TTblAuto = TypeVar(name="_TTblAuto", bound="_TblAuto")
+_TSharedAuto = TypeVar(name="_TSharedAuto", bound="_SharedAuto")
 TblAbsUnit = Union[float, UnitObj]
 TblRelUnit = Union[int, Intensity]
 
@@ -90,10 +90,8 @@ def _get_default_tbl_services() -> Tuple[str]:
 
 # endregion Module Methods
 
-# region Table size in MM units
 
-
-class _TblAuto(AbstractDocument):
+class _SharedAuto(AbstractDocument):
     """
     Automatically set table width.
     """
@@ -102,11 +100,11 @@ class _TblAuto(AbstractDocument):
     def __init__(
         self,
         *,
-        width: TblAbsUnit = None,
-        left: TblAbsUnit = None,
-        right: TblAbsUnit = None,
-        above: TblAbsUnit | None = None,
-        below: TblAbsUnit | None = None,
+        width: TblAbsUnit | TblRelUnit | None = None,
+        left: TblAbsUnit | TblRelUnit | None = None,
+        right: TblAbsUnit | TblRelUnit | None = None,
+        above: TblAbsUnit | TblRelUnit | None = None,
+        below: TblAbsUnit | TblRelUnit | None = None,
     ) -> None:
         """
         Constructor
@@ -123,9 +121,9 @@ class _TblAuto(AbstractDocument):
         self.prop_width = width
         self.prop_left = left
         self.prop_right = right
-        if not above is None:
+        if above is not None:
             self.prop_above = above
-        if not below is None:
+        if below is not None:
             self.prop_below = below
         self._post_init()
 
@@ -139,14 +137,8 @@ class _TblAuto(AbstractDocument):
         left100: int = self._get(self._props.left)
         right100: int = self._get(self._props.right)
         page_txt_width = self._prop_page_text_size.width
-        if left100 == 0:
-            left = 0
-        else:
-            left = round((left100 / page_txt_width) * 100)
-        if right100 == 0:
-            right = 0
-        else:
-            right = round((right100 / page_txt_width) * 100)
+        left = 0 if left100 == 0 else round((left100 / page_txt_width) * 100)
+        right = 0 if right100 == 0 else round((right100 / page_txt_width) * 100)
         width = 100 - (left + right)
         return _RelVals(left=left, right=right, balance=width)
 
@@ -165,10 +157,83 @@ class _TblAuto(AbstractDocument):
         self._prop_left = int(self._get(self._props.left))
         self._prop_right = int(self._get(self._props.right))
 
+    def _get_prop_width(self) -> UnitMM | None:
+        if self._prop_width is None:
+            return None
+        return UnitMM.from_mm100(self._prop_width)
+
+    def _set_prop_width(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._prop_width = None
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        # min table width seems to be in the area of 1.22 mm
+        val = max(val, 122)
+        self._prop_width = val
+
+    def _get_prop_left(self) -> UnitMM | None:
+        return None if self._prop_left is None else UnitMM.from_mm100(self._prop_left)
+
+    def _set_prop_left(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._prop_left = None
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._prop_left = val
+
+    def _get_prop_right(self) -> UnitMM | None:
+        if self._prop_right is None:
+            return None
+        return UnitMM.from_mm100(self._prop_right)
+
+    def _set_prop_right(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._prop_right = None
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._prop_right = val
+
+    def _get_prop_above(self) -> UnitMM | None:
+        pv = self._get(self._props.top)
+        return None if pv is None else UnitMM.from_mm100(pv)
+
+    def _set_prop_above(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._remove(self._props.top)
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._set(self._props.top, val)
+
+    def _get_prop_below(self) -> UnitMM | None:
+        pv = self._get(self._props.bottom)
+        return None if pv is None else UnitMM.from_mm100(pv)
+
+    def _set_prop_below(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._remove(self._props.bottom)
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._set(self._props.bottom, val)
+
     # endregion internal methods
 
     # region overrides
-    def copy(self: _TTblAuto, **kwargs) -> _TTblAuto:
+    def copy(self: _TSharedAuto, **kwargs) -> _TSharedAuto:
         """Gets a copy of the instance"""
         cp = super().copy(**kwargs)
         cp._prop_width = self._prop_width
@@ -220,16 +285,16 @@ class _TblAuto(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblAuto:
+    def from_obj(cls: Type[_TSharedAuto], obj: object) -> _TSharedAuto:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblAuto:
+    def from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblAuto:
+    def from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         """
         Gets instance from object
 
@@ -242,10 +307,10 @@ class _TblAuto(AbstractDocument):
         Returns:
             TblAuto: ``TblAuto`` Instance.
         """
-        return _TblAuto._from_obj(cls, obj, **kwargs)
+        return _SharedAuto._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         """
         Gets instance from object
 
@@ -282,105 +347,55 @@ class _TblAuto(AbstractDocument):
         """
         Gets/Sets Width.
         """
-        if self._prop_width is None:
-            return None
-        return UnitMM.from_mm100(self._prop_width)
+        return self._get_prop_width()
 
     @prop_width.setter
-    def prop_width(self, value: float | UnitObj | None):
-        if value is None:
-            self._prop_width = None
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        # min table width seems to be in the area of 1.22 mm
-        if val < 122:
-            val = 122
-        self._prop_width = val
+    def prop_width(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_width(value)
 
     @property
     def prop_left(self) -> UnitMM | None:
         """
         Gets/Sets Left.
         """
-        if self._prop_left is None:
-            return None
-        return UnitMM.from_mm100(self._prop_left)
+        return self._get_prop_left()
 
     @prop_left.setter
-    def prop_left(self, value: float | UnitObj | None):
-        if value is None:
-            self._prop_left = None
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._prop_left = val
+    def prop_left(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_left(value)
 
     @property
     def prop_right(self) -> UnitMM | None:
         """
         Gets/Sets Right.
         """
-        if self._prop_right is None:
-            return None
-        return UnitMM.from_mm100(self._prop_right)
+        return self._get_prop_right()
 
     @prop_right.setter
-    def prop_right(self, value: float | UnitObj | None):
-        if value is None:
-            self._prop_right = None
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._prop_right = val
+    def prop_right(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_right(value)
 
     @property
     def prop_above(self) -> UnitMM | None:
         """
         Gets/Sets above.
         """
-        pv = self._get(self._props.top)
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return self._get_prop_above()
 
     @prop_above.setter
-    def prop_above(self, value: float | UnitObj | None):
-        if value is None:
-            self._remove(self._props.top)
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._set(self._props.top, val)
+    def prop_above(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_above(value)
 
     @property
     def prop_below(self) -> UnitMM | None:
         """
         Gets/Sets below.
         """
-        pv = self._get(self._props.bottom)
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return self._get_prop_below()
 
     @prop_below.setter
-    def prop_below(self, value: float | UnitObj | None):
-        if value is None:
-            self._remove(self._props.bottom)
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._set(self._props.bottom, val)
+    def prop_below(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_below(value)
 
     @property
     def _props(self) -> TablePropertiesProps:
@@ -409,6 +424,138 @@ class _TblAuto(AbstractDocument):
         except AttributeError:
             self._prop_page_size_attrib = self.get_page_size()
         return self._prop_page_size_attrib
+
+    # endregion Properties
+
+
+class _TblAuto(_SharedAuto):
+    def __init__(
+        self,
+        *,
+        width: TblAbsUnit | None = None,
+        left: TblAbsUnit | None = None,
+        right: TblAbsUnit | None = None,
+        above: TblAbsUnit | None = None,
+        below: TblAbsUnit | None = None,
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            width (TblAbsUnit, optional): Table width value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            left (TblAbsUnit, optional): Spacing Left value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            right (TblAbsUnit, optional): Spacing Right value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            above (TblAbsUnit, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            below (TblAbsUnit, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+        """
+        # only Above and Below properties are used in this class
+        super().__init__(width=width, left=left, right=right, above=above, below=below)
+
+    # region Static Methods
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TSharedAuto], obj: object) -> _TSharedAuto:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO Object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            TblAuto: ``TblAuto`` Instance.
+        """
+        return _TblAuto._from_obj(cls, obj, **kwargs)
+
+    @staticmethod
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO Object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            Options: Instance that represents Frame Wrap Settings.
+        """
+        inst = cls(**kwargs)
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+        inst._set_props_from_obj(obj)
+        return inst
+
+    # endregion Static Methods
+
+    # region Properties
+    @property
+    def prop_width(self) -> UnitMM | None:
+        """
+        Gets/Sets Width.
+        """
+        return self._get_prop_width()
+
+    @prop_width.setter
+    def prop_width(self, value: TblAbsUnit | None):
+        self._set_prop_width(value)
+
+    @property
+    def prop_left(self) -> UnitMM | None:
+        """
+        Gets/Sets Left.
+        """
+        return self._get_prop_left()
+
+    @prop_left.setter
+    def prop_left(self, value: TblAbsUnit | None):
+        self._set_prop_left(value)
+
+    @property
+    def prop_right(self) -> UnitMM | None:
+        """
+        Gets/Sets Right.
+        """
+        return self._get_prop_right()
+
+    @prop_right.setter
+    def prop_right(self, value: TblAbsUnit | None):
+        self._set_prop_right(value)
+
+    @property
+    def prop_above(self) -> UnitMM | None:
+        """
+        Gets/Sets above.
+        """
+        return self._get_prop_above()
+
+    @prop_above.setter
+    def prop_above(self, value: TblAbsUnit | None):
+        self._set_prop_above(value)
+
+    @property
+    def prop_below(self) -> UnitMM | None:
+        """
+        Gets/Sets below.
+        """
+        return self._get_prop_below()
+
+    @prop_below.setter
+    def prop_below(self, value: TblAbsUnit | None):
+        self._set_prop_below(value)
 
     # endregion Properties
 
@@ -505,7 +652,7 @@ class _TblCenterWidth(_TblAuto):
         return _TblCenterWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblAuto._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -591,7 +738,7 @@ class _TblLeft(_TblCenterWidth):
         return _TblLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -661,7 +808,7 @@ class _TblLeftWidth(_TblLeft):
         return _TblLeftWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -743,7 +890,7 @@ class _TblRight(_TblLeft):
         return _TblRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -807,7 +954,7 @@ class _TblRightWidth(_TblRight):
         return _TblRightWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblRight._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -884,7 +1031,7 @@ class _TblCenterLeft(_TblLeft):
         return _TblCenterLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -956,7 +1103,7 @@ class _TblFromLeft(_TblLeft):
         return _TblFromLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblLeft._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1036,7 +1183,7 @@ class _TblFromLeftWidth(_TblCenterWidth):
         return _TblFromLeftWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1109,7 +1256,7 @@ class _TblManualLeftRight(_TblCenterWidth):
         return _TblManualLeftRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1204,7 +1351,7 @@ class _TblManualCenter(_TblManualLeftRight):
         return _TblManualCenter._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblManualLeftRight._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1320,7 +1467,7 @@ class _TblRelLeftByWidth(_TblAuto):
         return _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblAuto._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1444,7 +1591,7 @@ class _TblRelLeftByRight(_TblRelLeftByWidth):
         return _TblRelLeftByRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1530,7 +1677,7 @@ class _TblRelFromLeft(_TblRelLeftByWidth):
         return _TblRelFromLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1600,7 +1747,7 @@ class _TblRelRightByWidth(_TblRelLeftByWidth):
         return _TblRelRightByWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1679,7 +1826,7 @@ class _TblRelRightByLeft(_TblRelRightByWidth):
         return _TblRelRightByLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblRelRightByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -1757,7 +1904,7 @@ class _TblRelCenter(_TblRelLeftByWidth):
         return _TblRelCenter._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
         inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
         return inst
 
@@ -2173,7 +2320,7 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         pv = cast(int, po._get(self._props.width))
@@ -2194,7 +2341,7 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         pv = cast(int, po._get(self._props.left))
@@ -2215,7 +2362,7 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         pv = cast(int, po._get(self._props.right))
@@ -2281,7 +2428,7 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_width_mm`.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         return po.prop_width
@@ -2297,7 +2444,7 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_left_mm`.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         return po.prop_left
@@ -2313,7 +2460,7 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_right_mm`.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         return po.prop_right
@@ -2321,7 +2468,7 @@ class TableProperties(StyleMulti):
     @property
     def prop_above(self) -> UnitMM | None:
         """Gets above value"""
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         pv = cast(int, po._get(self._props.top))
@@ -2332,7 +2479,7 @@ class TableProperties(StyleMulti):
     @property
     def prop_below(self) -> UnitMM | None:
         """Gets below value"""
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)
         if po is None:
             return None
         pv = cast(int, po._get(self._props.bottom))

@@ -118,7 +118,7 @@ class GUI:
         Returns:
             str: A formatted resource string such as ``private:resource/toolbar/zoombar``
 
-        .. deprecated:: 0.10.3
+        .. deprecated:: 0.11.0
             Use :py:meth:`~.gui.GUI.get_toolbar_resource` instead.
         """
         return cls.get_toolbar_resource(name)
@@ -483,7 +483,7 @@ class GUI:
         Returns:
             GUI.Window: Window Info
 
-        .. deprecated:: 0.10.3
+        .. deprecated:: 0.11.0
             Use :py:meth:`~.gui.GUI.get_window_identity` instead.
         """
         return cls.get_window_identity(obj)

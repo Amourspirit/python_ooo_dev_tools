@@ -47,9 +47,7 @@ class Margins(CalcMargins):
     def prop_gutter(self) -> UnitMM | None:
         """Gets/Sets Gutter value"""
         pv = cast(int, self._get(self._props.gutter))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_gutter.setter
     def prop_gutter(self, value: float | UnitObj | None) -> None:
@@ -58,9 +56,9 @@ class Margins(CalcMargins):
             self._remove(self._props.gutter)
             return
         try:
-            self._set(self._props.gutter, value.get_value_mm100())
+            self._set(self._props.gutter, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.gutter, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.gutter, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def _props(self) -> PageMarginProps:

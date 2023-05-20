@@ -37,7 +37,7 @@ class Img(ParaImg):
     .. versionadded:: 0.9.0
     """
 
-    from_obj = DisabledMethod()
+    from_obj = DisabledMethod()  # type: ignore[assignment] #
     """From object is not supported in this class."""
 
     def __init__(
@@ -60,7 +60,7 @@ class Img(ParaImg):
             name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
             mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
             size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
-            positin (RectanglePoint): Tiling position of Image.
+            position (RectanglePoint): Tiling position of Image.
             pos_offset (Offset, optional): Tiling position offset.
             tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
@@ -100,15 +100,16 @@ class Img(ParaImg):
         return super()._on_multi_child_style_applying(source, event_args)
 
     # region apply()
+
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 

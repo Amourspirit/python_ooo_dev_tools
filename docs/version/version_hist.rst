@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.11.0
+==============
+
+Major Refactoring of entire Library. Much improved typing support.
+
 Version 0.10.3
 ==============
 

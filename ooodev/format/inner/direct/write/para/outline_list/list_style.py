@@ -65,16 +65,8 @@ class ListStyle(StyleBase):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
         init_vals = {}
-        if not list_style is None:
-            # if list_style is StyleListKind and it is StyleListKind.NONE then str will be empty string
-
-            # Note: If LibreOffice does not have a name assigned (_props.name) then
-            # _props.restart will alwayse be false and cannot be change until a name assigned.
-            # So, it is also important that name is assigned in the inner dictionary before
-            # other values. This will make it possible for _props.restart to be changed
-
-            str_style = str(list_style)
-            if str_style:
+        if list_style is not None:
+            if str_style := str(list_style):
                 init_vals[self._props.name] = str_style
             else:
                 init_vals[self._props.name] = ""
@@ -108,10 +100,14 @@ class ListStyle(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies break properties to ``obj``
 
@@ -123,7 +119,7 @@ class ListStyle(StyleBase):
         """
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -136,16 +132,16 @@ class ListStyle(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TListStyle], obj: object) -> _TListStyle:
+    def from_obj(cls: Type[_TListStyle], obj: Any) -> _TListStyle:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TListStyle], obj: object, **kwargs) -> _TListStyle:
+    def from_obj(cls: Type[_TListStyle], obj: Any, **kwargs) -> _TListStyle:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TListStyle], obj: object, **kwargs) -> _TListStyle:
+    def from_obj(cls: Type[_TListStyle], obj: Any, **kwargs) -> _TListStyle:
         """
         Gets instance from object
 
@@ -165,7 +161,7 @@ class ListStyle(StyleBase):
         def set_prop(key: str, o: ListStyle):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 o._set(key, val)
 
         set_prop(inst._props.name, inst)

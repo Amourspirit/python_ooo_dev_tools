@@ -9,8 +9,8 @@ from ooodev.meta.deleted_attrib import DeletedAttrib
 class Names(FrameNames):
     """Image Options Names"""
 
-    prop_next = DeletedAttrib()
-    prop_prev = DeletedAttrib()
+    prop_next = DeletedAttrib()  # type: ignore
+    prop_prev = DeletedAttrib()  # type: ignore
 
     # region Init
     def __init__(self, *, name: str | None = None, desc: str | None = None, alt: str | None = None) -> None:

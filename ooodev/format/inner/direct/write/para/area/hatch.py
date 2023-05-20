@@ -100,11 +100,7 @@ class Hatch(StyleMulti):
         bk_color.add_event_listener(FormatNamedEvent.STYLE_SETTING, _on_bg_color_setting)
         bk_color.prop_color = bg_color
 
-        if bg_color < 0:
-            init_vals["FillBackground"] = False
-        else:
-            init_vals["FillBackground"] = True
-
+        init_vals["FillBackground"] = bg_color >= 0
         super().__init__(**init_vals)
         self._set_bg_color(color)
         in_hatch = self._get_inner_hatch()(style=style, color=color, distance=space, angle=angle)
@@ -146,10 +142,7 @@ class Hatch(StyleMulti):
         # https://github.com/LibreOffice/core/blob/1a79594a27f41ad369e7c387c51e00afb1352872/include/xmloff/xmltypes.hxx
 
         fb = cast(bool, self._get("FillBackground"))
-        if fb:
-            para_bg_color = color
-        else:
-            para_bg_color = PARA_BACK_COLOR_FLAGS | color
+        para_bg_color = color if fb else PARA_BACK_COLOR_FLAGS | color
         self._set("ParaBackColor", para_bg_color)
 
     def _set_fill_hatch(self, hatch_struct: HatchStruct, ignore_preset: bool) -> None:
@@ -186,12 +179,12 @@ class Hatch(StyleMulti):
             # for preset expect name similar to 'Black 0 Degrees 1'
             self._is_preset = False
 
-            name = name.rstrip() + " "  # add a space after name before getting unique name
+            name = f"{name.rstrip()} "
             self._name = self._container_get_unique_el_name(name, nc)
         else:
             self._name = name
         hatch = self._container_get_value(self._name, nc)  # raises value error if name is empty
-        if not hatch is None:
+        if hatch is not None:
             return self._get_inner_hatch().from_uno_struct(hatch)
 
         self._container_add_value(name=self._name, obj=hatch_struct.get_uno_struct(), allow_update=False, nc=nc)
@@ -245,10 +238,14 @@ class Hatch(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -260,11 +257,11 @@ class Hatch(StyleMulti):
         """
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Hatch.apply(): Unable to set Property")
+            mLo.Lo.print("Hatch.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -307,16 +304,16 @@ class Hatch(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any) -> _THatch:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
         """
         Gets instance from object
 

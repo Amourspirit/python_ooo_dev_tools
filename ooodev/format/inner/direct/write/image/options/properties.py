@@ -45,7 +45,7 @@ class Properties(StyleBase):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -60,16 +60,16 @@ class Properties(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object) -> _TProperties:
+    def from_obj(cls: Type[_TProperties], obj: Any) -> _TProperties:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
+    def from_obj(cls: Type[_TProperties], obj: Any, **kwargs) -> _TProperties:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
+    def from_obj(cls: Type[_TProperties], obj: Any, **kwargs) -> _TProperties:
         """
         Gets instance from object
 

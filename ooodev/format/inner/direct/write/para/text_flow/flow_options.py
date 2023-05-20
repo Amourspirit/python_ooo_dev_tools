@@ -105,10 +105,14 @@ class FlowOptions(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies writing mode to ``obj``
 
@@ -130,16 +134,16 @@ class FlowOptions(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFlowOptions], obj: object) -> _TFlowOptions:
+    def from_obj(cls: Type[_TFlowOptions], obj: Any) -> _TFlowOptions:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFlowOptions], obj: object, **kwargs) -> _TFlowOptions:
+    def from_obj(cls: Type[_TFlowOptions], obj: Any, **kwargs) -> _TFlowOptions:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TFlowOptions], obj: object, **kwargs) -> _TFlowOptions:
+    def from_obj(cls: Type[_TFlowOptions], obj: Any, **kwargs) -> _TFlowOptions:
         """
         Gets instance from object
 
@@ -159,7 +163,7 @@ class FlowOptions(StyleBase):
         def set_prop(key: str, indent: FlowOptions):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 indent._set(key, val)
 
         set_prop("ParaOrphans", inst)
@@ -177,6 +181,7 @@ class FlowOptions(StyleBase):
         Args:
             event_args (KeyValueCancelArgs): Event Args
         """
+        # sourcery skip: merge-nested-ifs
         if event_args.key == "ParaSplit" and self.prop_no_split is True:
             # ParaSplit default is True, prop_no_split controls this property and is inverse
             # prop_no_split is True so attempting to set ParaSplit False
@@ -318,9 +323,7 @@ class FlowOptions(StyleBase):
     def prop_no_split(self) -> bool | None:
         """Gets/Sets Do not split paragraph"""
         pv = cast(bool, self._get("ParaSplit"))
-        if pv is None:
-            return None
-        return not pv
+        return None if pv is None else not pv
 
     @prop_no_split.setter
     def prop_no_split(self, value: bool | None):

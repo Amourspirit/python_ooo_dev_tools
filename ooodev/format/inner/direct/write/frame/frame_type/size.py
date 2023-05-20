@@ -4,7 +4,7 @@ Module for Fill Transparency.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, Type, TypeVar, cast, overload
+from typing import Any, Tuple, Type, TypeVar, cast, overload
 from ooo.dyn.text.size_type import SizeTypeEnum
 
 from ooodev.utils import props as mProps
@@ -45,12 +45,12 @@ class Size(ImageSize):
         """
         # size width as a percent is max value of 254
         # Width
-        #   Realitive to eniter page ((PageWidth - (LeftMargin - RightMargin)) x percent)
+        #   Relative to entire page ((PageWidth - (LeftMargin - RightMargin)) x percent)
 
         # RelativeWidthRelation is RelativeKind value
         # RelativeHeighRelation is RelativeKind value
-        # When AbsoluteSize RealitiveWidth=0, Size.Width=(width 1/100 mm) Width=(width 1/100 mm)
-        # When RelativeSize = RealitiveWidth=RelativeSize.size, Size.Width and Width become a caclulated value base upon RelativeSize.Kind
+        # When AbsoluteSize RelativeWidth=0, Size.Width=(width 1/100 mm) Width=(width 1/100 mm)
+        # When RelativeSize = RelativeWidth=RelativeSize.size, Size.Width and Width become a calculated value base upon RelativeSize.Kind
         super().__init__(width=width, height=height)
         self._auto_width = auto_width
         self._auto_height = auto_height
@@ -67,18 +67,17 @@ class Size(ImageSize):
         return self._supported_services_values
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style of current instance.
 
         Args:
             obj (object): UNO Object that styles are to be applied.
         """
-        apply_clear = kwargs.pop("_apply_clear", True)
-        if apply_clear:
+        if kwargs.pop("_apply_clear", True):
             self._clear()
         if self.prop_width:
             if self._auto_width:
@@ -119,16 +118,16 @@ class Size(ImageSize):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: object) -> _TSize:
+    def from_obj(cls: Type[_TSize], obj: Any) -> _TSize:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: object, **kwargs) -> _TSize:
+    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: object, **kwargs) -> _TSize:
+    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:
         """
         Gets instance from object
 
@@ -138,21 +137,13 @@ class Size(ImageSize):
         Returns:
             Size: Instance that represents Frame size.
         """
-        inst = cast(Size, super(cls, cls)).from_obj(obj, **kwargs)
+        inst = cast(_TSize, super(cls, cls)).from_obj(obj, **kwargs)
         # https://tinyurl.com/2mdozjx2
 
         auto_width = SizeTypeEnum(int(mProps.Props.get(obj, inst._props.width_type, SizeTypeEnum.FIX.value)))
-        if auto_width == SizeTypeEnum.MIN:
-            inst._auto_width = True
-        else:
-            inst._auto_width = False
-
+        inst._auto_width = auto_width == SizeTypeEnum.MIN
         auto_height = SizeTypeEnum(int(mProps.Props.get(obj, inst._props.size_type, SizeTypeEnum.FIX.value)))
-        if auto_height == SizeTypeEnum.MIN:
-            inst._auto_height = True
-        else:
-            inst._auto_height = False
-
+        inst._auto_height = auto_height == SizeTypeEnum.MIN
         return inst
 
     # endregion from_obj()

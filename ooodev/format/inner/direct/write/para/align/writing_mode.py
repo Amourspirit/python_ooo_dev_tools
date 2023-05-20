@@ -36,7 +36,7 @@ class WritingMode(AbstractWritingMode):
             WritingMode: ``WritingMode`` instance
         """
         cp = self.copy()
-        cp.prop_align = value
+        cp.prop_mode = value
         return cp
 
     # endregion style methods

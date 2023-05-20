@@ -5,7 +5,7 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload, Type, TypeVar
+from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -116,16 +116,16 @@ class AbstractSides(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: object) -> _TAbstractSides:
+    def from_obj(cls: Type[_TAbstractSides], obj: Any) -> _TAbstractSides:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: object, **kwargs) -> _TAbstractSides:
+    def from_obj(cls: Type[_TAbstractSides], obj: Any, **kwargs) -> _TAbstractSides:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: object, **kwargs) -> _TAbstractSides:
+    def from_obj(cls: Type[_TAbstractSides], obj: Any, **kwargs) -> _TAbstractSides:
         """
         Gets instance from object properties
 

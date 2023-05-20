@@ -73,7 +73,11 @@ class AbstractWritingMode(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: Any) -> None:  # type: ignore
+    def apply(self, obj: Any) -> None:
+        ...
+
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
     def apply(self, obj: Any, **kwargs) -> None:
@@ -98,16 +102,16 @@ class AbstractWritingMode(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractWritingMode], obj: object) -> _TAbstractWritingMode:
+    def from_obj(cls: Type[_TAbstractWritingMode], obj: Any) -> _TAbstractWritingMode:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractWritingMode], obj: object, **kwargs) -> _TAbstractWritingMode:
+    def from_obj(cls: Type[_TAbstractWritingMode], obj: Any, **kwargs) -> _TAbstractWritingMode:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TAbstractWritingMode], obj: object, **kwargs) -> _TAbstractWritingMode:
+    def from_obj(cls: Type[_TAbstractWritingMode], obj: Any, **kwargs) -> _TAbstractWritingMode:
         """
         Gets instance from object
 
