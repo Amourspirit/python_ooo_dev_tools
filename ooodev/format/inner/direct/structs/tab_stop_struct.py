@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Dict, Iterable, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Dict, Iterable, Tuple, Type, cast, overload, TypeVar
 from enum import Enum
 
 import uno
@@ -88,9 +88,9 @@ class TabStopStruct(StructBase):
 
         init_vals = {"FillChar": str(fill_char)[:1], "Alignment": align, "DecimalChar": decimal_char[:1]}
         try:
-            init_vals["Position"] = position.get_value_mm100()
+            init_vals["Position"] = position.get_value_mm100()  # type: ignore
         except AttributeError:
-            init_vals["Position"] = UnitConvert.convert_mm_mm100(position)
+            init_vals["Position"] = UnitConvert.convert_mm_mm100(position)  # type: ignore
         if align != TabAlign.DECIMAL:
             init_vals["DecimalChar"] = " "
 
@@ -118,14 +118,14 @@ class TabStopStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, keys: Dict[str, str]) -> None:
+    def apply(self, obj: Any, keys: Dict[str, str]) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         """
         Applies tab properties to ``obj``
 
@@ -145,6 +145,7 @@ class TabStopStruct(StructBase):
         Returns:
             None:
         """
+        # sourcery skip: dict-assign-update-to-union
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
             self._print_not_valid_srv("apply()")
@@ -193,9 +194,6 @@ class TabStopStruct(StructBase):
 
     # endregion apply()
 
-    def get_attrs(self) -> Tuple[str, ...]:
-        return ("ParaTabStops",)
-
     def get_uno_struct(self) -> TabStop:
         """
         Gets UNO ``TabStop`` from instance.
@@ -203,10 +201,7 @@ class TabStopStruct(StructBase):
         Returns:
             TabStop: ``TabStop`` instance
         """
-        if self.prop_align == TabAlign.DECIMAL:
-            dec = self._get("DecimalChar")
-        else:
-            dec = " "
+        dec = self._get("DecimalChar") if self.prop_align == TabAlign.DECIMAL else " "
         return TabStop(
             Position=self._get("Position"),
             Alignment=self._get("Alignment"),
@@ -217,16 +212,16 @@ class TabStopStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTabStopStruct], obj: object) -> _TTabStopStruct:
+    def from_obj(cls: Type[_TTabStopStruct], obj: Any) -> _TTabStopStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTabStopStruct], obj: object, **kwargs) -> _TTabStopStruct:
+    def from_obj(cls: Type[_TTabStopStruct], obj: Any, **kwargs) -> _TTabStopStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTabStopStruct], obj: object, index: int = 0, **kwargs) -> _TTabStopStruct:
+    def from_obj(cls: Type[_TTabStopStruct], obj: Any, index: int = 0, **kwargs) -> _TTabStopStruct:
         """
         Gets instance from object
 
@@ -240,6 +235,7 @@ class TabStopStruct(StructBase):
         Returns:
             Tab: ``Tab`` instance that represents ``obj`` Tab properties.
         """
+        # sourcery skip: raise-from-previous-error
         # this nu is only used to get Property Name
         nu = cls(**kwargs)
         prop_name = nu._get_property_name()
@@ -285,12 +281,12 @@ class TabStopStruct(StructBase):
 
     # endregion from_tab_stop()
 
-    def _set_obj_tabs(self, obj: object, tabs: Iterable[TabStop], prop: str = "") -> None:
+    def _set_obj_tabs(self, obj: Any, tabs: Iterable[TabStop], prop: str = "") -> None:
         if not prop:
             prop = self._get_property_name()
         prop_set = mLo.Lo.qi(XPropertySet, obj, raise_err=True)
-        seq = uno.Any("[]com.sun.star.style.TabStop", tabs)
-        uno.invoke(prop_set, "setPropertyValue", (prop, seq))
+        seq = uno.Any("[]com.sun.star.style.TabStop", tabs)  # type: ignore
+        uno.invoke(prop_set, "setPropertyValue", (prop, seq))  # type: ignore
 
     # endregion methods
 
@@ -392,9 +388,9 @@ class TabStopStruct(StructBase):
     @prop_position.setter
     def prop_position(self, value: float | UnitObj) -> None:
         try:
-            self._set("Position", value.get_value_mm100())
+            self._set("Position", value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set("Position", UnitConvert.convert_mm_mm100(value))
+            self._set("Position", UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_align(self) -> TabAlign:

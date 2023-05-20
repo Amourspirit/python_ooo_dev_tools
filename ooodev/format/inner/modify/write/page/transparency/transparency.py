@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -53,7 +53,7 @@ class Transparency(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Transparency:
@@ -61,7 +61,7 @@ class Transparency(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

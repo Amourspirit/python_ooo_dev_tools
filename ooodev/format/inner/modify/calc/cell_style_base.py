@@ -1,6 +1,6 @@
 # region Imports
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 import uno
 from com.sun.star.beans import XPropertySet
 
@@ -39,7 +39,7 @@ class CellStyleBase(StyleBase):
         Returns:
             None:
         """
-
+        # sourcery skip: remove-unnecessary-cast
         self._style_name = str(style_name)
         self._style_family_name = str(style_family)
         super().__init__(**kwargs)
@@ -58,7 +58,7 @@ class CellStyleBase(StyleBase):
             )
         return self._supported_services_values
 
-    def _is_valid_doc(self, obj: object) -> bool:
+    def _is_valid_doc(self, obj: Any) -> bool:
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.CALC)
 
     # endregion internal methods
@@ -86,7 +86,7 @@ class CellStyleBase(StyleBase):
 
     # region Overrides
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 

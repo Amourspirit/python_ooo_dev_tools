@@ -11,7 +11,7 @@ from ..utils import paths
 
 class ConnectorBase(ABC):
     @abstractmethod
-    def get_connnection_str(self) -> str:
+    def get_connection_str(self) -> str:
         ...
 
 
@@ -25,8 +25,7 @@ class ConnectorBridgeBase(ConnectorBase):
         self._start_as_service = bool(kwargs.get("start_as_service", False))
         self._start_office = bool(kwargs.get("start_office", True))
 
-        soffice = kwargs.get("soffice", None)
-        if soffice:
+        if soffice := kwargs.get("soffice"):
             # allow empty string or None to be passed
             self.soffice = soffice
 
@@ -50,14 +49,13 @@ class ConnectorBridgeBase(ConnectorBase):
         Get/Sets Path to LibreOffice soffice. Default is auto discovered.
         """
         try:
-            return self._soffice
+            return self._soffice  # type: ignore
         except AttributeError:
-            so = os.environ.get("ODEV_CONN_SOFFICE", None)
-            if so:
+            if so := os.environ.get("ODEV_CONN_SOFFICE", None):
                 self._soffice = so
             else:
                 self._soffice = paths.get_soffice_path()
-        return self._soffice
+        return self._soffice  # type: ignore
 
     @soffice.setter
     def soffice(self, value: Path | str):
@@ -158,10 +156,9 @@ class ConnectSocket(ConnectorBridgeBase):
         self._host = host
         self._port = port
 
-    def get_connnection_str(self) -> str:
+    def get_connection_str(self) -> str:
         identifier = f"socket,host={self.host},port={self.port}"
-        conn_str = f"uno:{identifier};urp;StarOffice.ServiceManager"
-        return conn_str
+        return f"uno:{identifier};urp;StarOffice.ServiceManager"
 
     @property
     def host(self) -> str:
@@ -207,15 +204,11 @@ class ConnectPipe(ConnectorBridgeBase):
             soffice: (Path | str, optional): Path to soffice
         """
         super().__init__(**kwargs)
-        if pipe is None:
-            self._pipe = uuid.uuid4().hex
-        else:
-            self._pipe = pipe
+        self._pipe = uuid.uuid4().hex if pipe is None else pipe
 
-    def get_connnection_str(self) -> str:
+    def get_connection_str(self) -> str:
         identifier = f"pipe,name={self.pipe}"
-        conn_str = f"uno:{identifier};urp;StarOffice.ServiceManager"
-        return conn_str
+        return f"uno:{identifier};urp;StarOffice.ServiceManager"
 
     @property
     def pipe(self) -> str:

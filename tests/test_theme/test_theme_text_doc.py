@@ -24,7 +24,7 @@ def test_theme(loader) -> None:
     assert theme.header_footer_mark_color >= -1
     assert theme.index_table_shadings_color >= -1
     assert isinstance(theme.index_table_shadings_visible, bool)
-    assert theme.page_colums_breaks_color >= -1
+    assert theme.page_columns_breaks_color >= -1
     assert theme.script_indicator_color >= -1
     assert theme.section_boundaries_color >= -1
     assert isinstance(theme.section_boundaries_visible, bool)
@@ -47,7 +47,7 @@ def test_theme_default(loader) -> None:
     assert theme.header_footer_mark_color >= -1
     assert theme.index_table_shadings_color >= -1
     assert isinstance(theme.index_table_shadings_visible, bool)
-    assert theme.page_colums_breaks_color >= -1
+    assert theme.page_columns_breaks_color >= -1
     assert theme.script_indicator_color >= -1
     assert theme.section_boundaries_color >= -1
     assert isinstance(theme.section_boundaries_visible, bool)
@@ -70,7 +70,7 @@ def test_theme_dark(loader) -> None:
     assert theme.header_footer_mark_color >= -1
     assert theme.index_table_shadings_color >= -1
     assert isinstance(theme.index_table_shadings_visible, bool)
-    assert theme.page_colums_breaks_color >= -1
+    assert theme.page_columns_breaks_color >= -1
     assert theme.script_indicator_color >= -1
     assert theme.section_boundaries_color >= -1
     assert isinstance(theme.section_boundaries_visible, bool)

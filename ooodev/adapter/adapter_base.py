@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 
 
-class AdapterBase(unohelper.Base):
+class AdapterBase(unohelper.Base):  # type: ignore
     """
     Base Class for Listeners in the ``adapter`` name space.
     """
@@ -33,9 +33,9 @@ class AdapterBase(unohelper.Base):
 
     def _trigger_event(self, name: str, event: EventObject) -> None:
         # any trigger args passed in will be passed to callback event via Events class.
-        earg = EventArgs(self.__class__.__qualname__)
-        earg.event_data = event
-        self._events.trigger(name, earg)
+        event_arg = EventArgs(self.__class__.__qualname__)
+        event_arg.event_data = event
+        self._events.trigger(name, event_arg)
 
     def on(self, event_name: str, cb: EventCallback) -> None:
         """

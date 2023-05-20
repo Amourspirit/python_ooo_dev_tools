@@ -29,20 +29,20 @@ class ShapeBasePointKind(IntEnum):
     """Bottom Right"""
 
     @staticmethod
-    def from_str(s: str) -> "ShapeBaseKind":
+    def from_str(s: str) -> "ShapeBasePointKind":
         """
-        Gets an ``ShapeBaseKind`` instance from string.
+        Gets an ``ShapeBasePointKind`` instance from string.
 
         Args:
             s (str): String that represents the name of an enum Name.
                 ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
-                ``hypen-case``, ``normal case``.
+                ``hyphen-case``, ``normal case``.
 
         Raises:
             ValueError: If input string is empty.
-            AttributeError: If unable to get ``ShapeBaseKind`` instance.
+            AttributeError: If unable to get ``ShapeBasePointKind`` instance.
 
         Returns:
-            ShapeBaseKind: Enum instance.
+            ShapeBasePointKind: Enum instance.
         """
-        return kind_helper.enum_from_string(s, ShapeBaseKind)
+        return kind_helper.enum_from_string(s, ShapeBasePointKind)

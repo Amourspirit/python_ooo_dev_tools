@@ -3,8 +3,10 @@ Module for managing paragraph Tabs.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
+import contextlib
 from typing import Any, Tuple, cast, Type, TypeVar, overload
 
 import uno
@@ -100,16 +102,16 @@ class Tabs(TabStopStruct):
     # region find()
     @overload
     @classmethod
-    def find(cls: Type[_TTabs], obj: object, position: float) -> _TTabs | None:
+    def find(cls: Type[_TTabs], obj: Any, position: float) -> _TTabs | None:
         ...
 
     @overload
     @classmethod
-    def find(cls: Type[_TTabs], obj: object, position: float, **kwargs) -> _TTabs | None:
+    def find(cls: Type[_TTabs], obj: Any, position: float, **kwargs) -> _TTabs | None:
         ...
 
     @classmethod
-    def find(cls: Type[_TTabs], obj: object, position: float, **kwargs) -> _TTabs | None:
+    def find(cls: Type[_TTabs], obj: Any, position: float, **kwargs) -> _TTabs | None:
         """
         Gets a Tab that matches position from obj such as a cursor.
 
@@ -152,16 +154,16 @@ class Tabs(TabStopStruct):
 
     @overload
     @classmethod
-    def remove_by_pos(cls, obj: object, position: float) -> bool:
+    def remove_by_pos(cls, obj: Any, position: float) -> bool:
         ...
 
     @overload
     @classmethod
-    def remove_by_pos(cls, obj: object, position: float, **kwargs) -> bool:
+    def remove_by_pos(cls, obj: Any, position: float, **kwargs) -> bool:
         ...
 
     @classmethod
-    def remove_by_pos(cls, obj: object, position: float, **kwargs) -> bool:
+    def remove_by_pos(cls, obj: Any, position: float, **kwargs) -> bool:
         """
         Removes a Tab Stop from ``obj``
 
@@ -177,10 +179,10 @@ class Tabs(TabStopStruct):
             return False
         # tb will contain the exact Position number so no need to plus or minus
         pos = cast(int, tb._get("Position"))
-        return cls._remove_by_positon(obj, pos, **kwargs)
+        return cls._remove_by_position(obj, pos, **kwargs)
 
     @classmethod
-    def _remove_by_positon(cls, obj: object, position: int, **kwargs) -> bool:
+    def _remove_by_position(cls, obj: Any, position: int, **kwargs) -> bool:
         """
         Removes a Tab Stop from ``obj``
 
@@ -195,10 +197,7 @@ class Tabs(TabStopStruct):
         tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, inst._get_property_name()))
         if tss is None:
             return False
-        lst = []
-        for ts in tss:
-            if position != ts.Position:
-                lst.append(ts)
+        lst = [ts for ts in tss if position != ts.Position]
         if len(lst) == len(tss):
             return False
         inst._set_obj_tabs(obj, lst)
@@ -209,16 +208,16 @@ class Tabs(TabStopStruct):
     # region remove()
     @overload
     @classmethod
-    def remove(cls, obj: object, tab: TabStop | TabStopStruct) -> bool:
+    def remove(cls, obj: Any, tab: TabStop | TabStopStruct) -> bool:
         ...
 
     @overload
     @classmethod
-    def remove(cls, obj: object, tab: TabStop | TabStopStruct, **kwargs) -> bool:
+    def remove(cls, obj: Any, tab: TabStop | TabStopStruct, **kwargs) -> bool:
         ...
 
     @classmethod
-    def remove(cls, obj: object, tab: TabStop | TabStopStruct, **kwargs) -> bool:
+    def remove(cls, obj: Any, tab: TabStop | TabStopStruct, **kwargs) -> bool:
         """
         Removes a Tab Stop from ``obj`` ``ParaTabStops`` property.
 
@@ -233,25 +232,25 @@ class Tabs(TabStopStruct):
         if not inst._is_valid_obj(obj):
             return False
         if isinstance(tab, TabStopStruct):
-            return inst._remove_by_positon(obj, tab._get("Position"), **kwargs)
+            return inst._remove_by_position(obj, tab._get("Position"), **kwargs)
         ts = cast(TabStop, tab)
-        return inst._remove_by_positon(obj, ts.Position, **kwargs)
+        return inst._remove_by_position(obj, ts.Position, **kwargs)
 
     # endregion remove()
 
     # region remove_all()
     @overload
     @classmethod
-    def remove_all(cls, obj: object) -> None:
+    def remove_all(cls, obj: Any) -> None:
         ...
 
     @overload
     @classmethod
-    def remove_all(cls, obj: object, **kwargs) -> None:
+    def remove_all(cls, obj: Any, **kwargs) -> None:
         ...
 
     @classmethod
-    def remove_all(cls, obj: object, **kwargs) -> None:
+    def remove_all(cls, obj: Any, **kwargs) -> None:
         """
         Removes all tab from ``obj`` ``ParaTabStops`` property.
 
@@ -280,12 +279,10 @@ class Tabs(TabStopStruct):
             TabStop: Tab stop instance
         """
         ts = super().get_uno_struct()
-        try:
+        with contextlib.suppress(Exception):
             # not critical
             if self is Tabs.default:
                 ts.DecimalChar = "."
-        except Exception:
-            pass
         return ts
 
     # endregion methods
@@ -295,7 +292,7 @@ class Tabs(TabStopStruct):
     def default() -> Tabs:  # type: ignore[misc]
         """Gets ``Tabs`` default. Static Property."""
         try:
-            return Tabs._DEFAULT_INST
+            return Tabs._DEFAULT_INST  # type: ignore
         except AttributeError:
             inst = Tabs(align=TabAlign.DEFAULT)
             # this commented section works if not in macro mode
@@ -307,12 +304,13 @@ class Tabs(TabStopStruct):
             props = mLo.Lo.qi(
                 XPropertySet,
                 mInfo.Info.get_config(node_str="Other", node_path="/org.openoffice.Office.Writer/Layout/"),
+                True,
             )
             ts_val = props.getPropertyValue("TabStop")
             inst._set("Position", ts_val)
             inst._set("DecimalChar", ".")
             inst._is_default_inst = True
-            Tabs._DEFAULT_INST = inst
-        return Tabs._DEFAULT_INST
+            Tabs._DEFAULT_INST = inst  # type: ignore
+        return Tabs._DEFAULT_INST  # type: ignore
 
     # endregion Properties

@@ -69,13 +69,13 @@ class Indent(StyleBase):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         super().__init__()
 
-        if not before is None:
+        if before is not None:
             self.prop_before = before
-        if not after is None:
+        if after is not None:
             self.prop_after = after
-        if not first is None:
+        if first is not None:
             self.prop_first = first
-        if not auto is None:
+        if auto is not None:
             self.prop_auto = auto
 
     # endregion init
@@ -98,10 +98,14 @@ class Indent(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies writing mode to ``obj``
 
@@ -123,16 +127,16 @@ class Indent(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndent], obj: object) -> _TIndent:
+    def from_obj(cls: Type[_TIndent], obj: Any) -> _TIndent:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndent], obj: object, **kwargs) -> _TIndent:
+    def from_obj(cls: Type[_TIndent], obj: Any, **kwargs) -> _TIndent:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TIndent], obj: object, **kwargs) -> _TIndent:
+    def from_obj(cls: Type[_TIndent], obj: Any, **kwargs) -> _TIndent:
         """
         Gets instance from object
 
@@ -152,7 +156,7 @@ class Indent(StyleBase):
         def set_prop(key: str, indent: Indent):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 indent._set(key, val)
 
         set_prop("ParaLeftMargin", inst)
@@ -248,9 +252,7 @@ class Indent(StyleBase):
     def prop_before(self) -> UnitMM | None:
         """Gets/Sets the left margin of the paragraph (in mm units)."""
         pv = cast(int, self._get("ParaLeftMargin"))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_before.setter
     def prop_before(self, value: float | UnitObj | None):
@@ -258,17 +260,15 @@ class Indent(StyleBase):
             self._remove("ParaLeftMargin")
             return
         try:
-            self._set("ParaLeftMargin", value.get_value_mm100())
+            self._set("ParaLeftMargin", value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set("ParaLeftMargin", UnitConvert.convert_mm_mm100(value))
+            self._set("ParaLeftMargin", UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_after(self) -> UnitMM | None:
         """Gets/Sets the right margin of the paragraph (in mm units)."""
         pv = cast(int, self._get("ParaRightMargin"))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_after.setter
     def prop_after(self, value: float | UnitObj | None):
@@ -276,17 +276,15 @@ class Indent(StyleBase):
             self._remove("ParaRightMargin")
             return
         try:
-            self._set("ParaRightMargin", value.get_value_mm100())
+            self._set("ParaRightMargin", value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set("ParaRightMargin", UnitConvert.convert_mm_mm100(value))
+            self._set("ParaRightMargin", UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_first(self) -> UnitMM | None:
         """Gets/Sets the indent for the first line (in mm units)."""
         pv = cast(int, self._get("ParaFirstLineIndent"))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_first.setter
     def prop_first(self, value: float | UnitObj | None):
@@ -294,9 +292,9 @@ class Indent(StyleBase):
             self._remove("ParaFirstLineIndent")
             return
         try:
-            self._set("ParaFirstLineIndent", value.get_value_mm100())
+            self._set("ParaFirstLineIndent", value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set("ParaFirstLineIndent", UnitConvert.convert_mm_mm100(value))
+            self._set("ParaFirstLineIndent", UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_auto(self) -> bool | None:

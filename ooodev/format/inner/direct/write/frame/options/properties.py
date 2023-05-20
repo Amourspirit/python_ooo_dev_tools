@@ -8,7 +8,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode, _TWritingMode
+from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode, WritingMode2Enum, _TWritingMode
 from ooodev.meta.deleted_attrib import DeletedAttrib
 from ooodev.format.inner.common.props.frame_options_properties import FrameOptionsProperties
 
@@ -72,7 +72,7 @@ class TextDirectionKind(Enum):
 
 
 class TextDirectionMode(WritingMode):
-    context = DeletedAttrib()
+    context = DeletedAttrib()  # type: ignore[misc]
 
     def __init__(self, mode: TextDirectionKind | None = None) -> None:
         """
@@ -84,7 +84,10 @@ class TextDirectionMode(WritingMode):
         Returns:
             None:
         """
-        super().__init__(mode=mode)
+        if mode is None:
+            super().__init__()
+        else:
+            super().__init__(mode=WritingMode2Enum(mode.value))
 
     # region style methods
     def fmt_mode(self: _TWritingMode, value: TextDirectionKind | None) -> _TWritingMode:
@@ -97,7 +100,9 @@ class TextDirectionMode(WritingMode):
         Returns:
             TextDirectionMode: ``TextDirectionMode`` instance
         """
-        return super().fmt_mode(value=value)
+        if value is None:
+            return super().fmt_mode(value=None)
+        return super().fmt_mode(value=WritingMode2Enum(value.value))
 
     # endregion style methods
 
@@ -105,9 +110,7 @@ class TextDirectionMode(WritingMode):
     def prop_mode(self) -> TextDirectionKind | None:
         """Gets/Sets writing mode of a paragraph."""
         pv = cast(int, self._get(self._get_property_name()))
-        if pv is None:
-            return None
-        return TextDirectionKind(pv)
+        return None if pv is None else TextDirectionKind(pv)
 
     @prop_mode.setter
     def prop_mode(self, value: TextDirectionKind | None):
@@ -276,9 +279,7 @@ class Properties(StyleMulti):
         if self.prop_inner_writing_mode is None:
             return None
         pv = self.prop_inner_writing_mode.prop_mode
-        if pv is None:
-            return None
-        return TextDirectionKind(int(pv))
+        return None if pv is None else TextDirectionKind(int(pv))
 
     @prop_txt_direction.setter
     def prop_txt_direction(self, value: TextDirectionKind | None) -> None:
@@ -287,10 +288,10 @@ class Properties(StyleMulti):
     @property
     def prop_inner_writing_mode(self) -> WritingMode | None:
         try:
-            return self._inner_writing_mode
+            return self._inner_writing_mode  # type: ignore
         except AttributeError:
             self._inner_writing_mode = self._get_style_inst("text_mode")
-        return self._inner_writing_mode
+        return self._inner_writing_mode  # type: ignore
 
     @property
     def _props(self) -> FrameOptionsProperties:

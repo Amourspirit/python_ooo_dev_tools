@@ -260,9 +260,9 @@ def test_get_recent_functions(loader) -> None:
 
 
 def show_recent_functions() -> None:
-    recents = Calc.get_recent_functions()
-    print(f"Recently used functions ({len(recents)}):")
-    for i in recents:
+    recent = Calc.get_recent_functions()
+    print(f"Recently used functions ({len(recent)}):")
+    for i in recent:
         props = Calc.find_function(idx=i)
         print(f"  {Props.get_value(name='Name',props=props)}")
     print()

@@ -455,21 +455,21 @@ The resulting sheet is shown in :numref:`ch24fig_data_gen_growth_mode`.
 ==========================
 
 The |c_txt_py|_ example brings together a few techniques for manipulating text in cells, namely the addition of borders, headlines, hyperlinks, and annotations.
-The sheet ends up looking like :numref:`ch24fig_text_manipulaton_sht`.
+The sheet ends up looking like :numref:`ch24fig_text_manipulation_sht`.
 
 ..
     figure 9
 
 .. cssclass:: screen_shot invert
 
-    .. _ch24fig_text_manipulaton_sht:
+    .. _ch24fig_text_manipulation_sht:
     .. figure:: https://user-images.githubusercontent.com/4193389/204060401-9529598c-684d-407b-9db2-87bb22f6243d.png
         :alt: Text manipulation in a Sheet.
         :figclass: align-center
 
         :Text manipulation in a Sheet.
 
-.. _ch24_creating_boder_headline:
+.. _ch24_creating_border_headline:
 
 24.3.1 Creating a Border and Headline
 -------------------------------------
@@ -620,7 +620,7 @@ Since the ``headerRange`` covers ``A2:C2``, (``0``, ``0``) means the ``A2`` cell
 24.3.2 Adding Hyperlink Text
 ----------------------------
 
-:numref:`ch24fig_text_manipulaton_sht` shows that the ``B4`` cell contains two paragraphs.
+:numref:`ch24fig_text_manipulation_sht` shows that the ``B4`` cell contains two paragraphs.
 The second ends with a hyperlink, which means that if the user control-clicks on the "hypertext" text,
 then the URL `<https://github.com/Amourspirit/python_ooo_dev_tools>`__ is opened in the default web browser.
 
@@ -754,7 +754,7 @@ Both the following calls return ``None``:
 24.3.4 Adding an Annotation
 ---------------------------
 
-Cells can be annotated, which causes a little yellow text box to appear near the cell, linked to the cell by an arrow (as in :numref:`ch24fig_text_manipulaton_sht`).
+Cells can be annotated, which causes a little yellow text box to appear near the cell, linked to the cell by an arrow (as in :numref:`ch24fig_text_manipulation_sht`).
 Creating a new annotation is a two-step process: the XSheetAnnotationsSupplier_ interface is used to access the collection of existing annotations,
 and a new one is added by supplying the annotation text and the address of the cell where its arrow will point. These steps are performed by the first half of :py:meth:`.Calc.add_annotation`:
 

@@ -50,10 +50,8 @@ class InnerListStyle(StyleBase):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
         init_vals = {}
-        if not list_style is None:
-            # if list_style is StyleListKind, and it is StyleListKind.NONE then str will be empty string
-            str_style = str(list_style)
-            if str_style:
+        if list_style is not None:
+            if str_style := str(list_style):
                 init_vals["NumberingStyleName"] = str_style
             else:
                 init_vals["NumberingStyleName"] = ""
@@ -80,22 +78,26 @@ class InnerListStyle(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies break properties to ``obj``
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
+            obj (Any): UNO object that supports ``com.sun.star.style.ParagraphProperties`` service.
 
         Returns:
             None:
         """
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -106,12 +108,12 @@ class InnerListStyle(StyleBase):
     # endregion apply()
 
     @classmethod
-    def from_obj(cls: Type[_TInnerListStyle], obj: object) -> _TInnerListStyle:
+    def from_obj(cls: Type[_TInnerListStyle], obj: Any) -> _TInnerListStyle:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object.
+            obj (Any): UNO object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.
@@ -126,7 +128,7 @@ class InnerListStyle(StyleBase):
         def set_prop(key: str, o: InnerListStyle):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 o._set(key, val)
 
         set_prop("NumberingStyleName", inst)
@@ -225,7 +227,7 @@ class ListStyle(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> ListStyle:
@@ -233,7 +235,7 @@ class ListStyle(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Any, Tuple, overload
 import uno
 from com.sun.star.awt import XBitmap
 from com.sun.star.chart2 import XChartDocument
@@ -27,8 +27,8 @@ class Pattern(FillPattern):
     .. versionadded:: 0.9.4
     """
 
-    prop_tile = DeletedAttrib()
-    prop_stretch = DeletedAttrib()
+    prop_tile = DeletedAttrib()  # type: ignore
+    prop_stretch = DeletedAttrib()  # type: ignore
 
     def __init__(
         self,
@@ -77,8 +77,7 @@ class Pattern(FillPattern):
 
     def _container_get_msf(self) -> XMultiServiceFactory | None:
         if self._chart_doc is not None:
-            chart_doc_ms_factory = mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
-            return chart_doc_ms_factory
+            return mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
         return None
 
     # region copy()
@@ -126,26 +125,26 @@ class Pattern(FillPattern):
         nu = cls(chart_doc=chart_doc, **kwargs)
 
         nc = nu._container_get_inst()
-        bmap = nu._container_get_value(name, nc)
-        if bmap is None:
-            bmap = mPattern.get_prest_bitmap(preset)
-        return cls(chart_doc=chart_doc, bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
+        bitmap = nu._container_get_value(name, nc)
+        if bitmap is None:
+            bitmap = mPattern.get_prest_bitmap(preset)
+        return cls(chart_doc=chart_doc, bitmap=bitmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
 
     # endregion from_preset()
 
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object) -> Pattern:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Pattern:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Pattern:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Pattern:
         ...
 
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Pattern:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Pattern:
         """
         Gets instance from object
 

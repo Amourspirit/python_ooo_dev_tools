@@ -78,8 +78,8 @@ class FontPosition(StyleBase):
         self,
         *,
         script_kind: FontScriptKind | None = None,
-        raise_lower: int | Intensity | None = None,
-        rel_size: int | None = None,
+        raise_lower: int | None = None,
+        rel_size: int | Intensity | None = None,
         rotation: int | Angle | None = None,
         scale: int | None = None,
         fit: bool | None = None,
@@ -91,8 +91,8 @@ class FontPosition(StyleBase):
 
         Args:
             script_kind (FontScriptKind, optional): Specifies Superscript/Subscript option.
-            raise_lower (int, Intensity, optional): Specifies raise or Lower as percent value. Min value is ``1``.
-            rel_size (int, optional): Specifies relative Font Size as percent value.
+            raise_lower (int, optional): Specifies raise or Lower as percent value. Set to a value of 0 for automatic.
+            rel_size (int, Intensity, optional): Specifies relative Font Size as percent value.
                 Set this value to ``0`` for automatic; Otherwise value from ``1`` to ``100``.
             rotation (int, Angle, optional): Specifies the rotation of a character in degrees. Depending on the
                 implementation only certain values may be allowed.
@@ -112,21 +112,21 @@ class FontPosition(StyleBase):
 
         super().__init__()
         # superscript and subscript use the same internal properties,CharEscapementHeight, CharEscapement
-        if not script_kind is None:
+        if script_kind is not None:
             self.prop_script_kind = script_kind
-        if not raise_lower is None:
+        if raise_lower is not None:
             self.prop_raise_lower = raise_lower
-        if not rel_size is None:
+        if rel_size is not None:
             self.prop_rel_size = rel_size
-        if not rotation is None:
+        if rotation is not None:
             self.prop_rotation = rotation
-        if not scale is None:
+        if scale is not None:
             self.prop_scale = scale
-        if not fit is None:
+        if fit is not None:
             self.prop_fit = fit
-        if not spacing is None:
+        if spacing is not None:
             self.prop_spacing = spacing
-        if not pair is None:
+        if pair is not None:
             self.prop_pair = pair
 
     # region methods
@@ -148,10 +148,10 @@ class FontPosition(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -163,11 +163,11 @@ class FontPosition(StyleBase):
         """
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"FontPosition.apply(): Unable to set Property")
+            mLo.Lo.print("FontPosition.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -176,16 +176,16 @@ class FontPosition(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontPosition], obj: object) -> _TFontPosition:
+    def from_obj(cls: Type[_TFontPosition], obj: Any) -> _TFontPosition:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontPosition], obj: object, **kwargs) -> _TFontPosition:
+    def from_obj(cls: Type[_TFontPosition], obj: Any, **kwargs) -> _TFontPosition:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TFontPosition], obj: object, **kwargs) -> _TFontPosition:
+    def from_obj(cls: Type[_TFontPosition], obj: Any, **kwargs) -> _TFontPosition:
         """
         Gets instance from object
 
@@ -205,10 +205,11 @@ class FontPosition(StyleBase):
         def set_prop(key: str, fp: FontPosition):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 fp._set(key, val)
 
         set_prop("CharEscapement", inst)
+        set_prop("CharAutoEscapement", inst)
         set_prop("CharEscapementHeight", inst)
         set_prop("CharRotation", inst)
         set_prop("CharScaleWidth", inst)
@@ -227,12 +228,12 @@ class FontPosition(StyleBase):
             event_args (KeyValueCancelArgs): Event Args
         """
         # if position is normal then defaults should be set
-        if event_args.key == "CharEscapementHeight":
-            if self.prop_script_kind == FontScriptKind.NORMAL:
-                event_args.value = 100
         if event_args.key == "CharEscapement":
             if self.prop_script_kind == FontScriptKind.NORMAL:
                 event_args.value = 0
+        elif event_args.key == "CharEscapementHeight":
+            if self.prop_script_kind == FontScriptKind.NORMAL:
+                event_args.value = 100
         super().on_property_setting(source, event_args)
 
     # endregion methods
@@ -424,7 +425,7 @@ class FontPosition(StyleBase):
         return ft
 
     @property
-    def spacing_very_tight(self) -> _TFontPosition:
+    def spacing_very_tight(self: _TFontPosition) -> _TFontPosition:
         """Gets copy of instance with spacing set to very tight value"""
         ft = self.copy()
         ft.prop_spacing = CharSpacingKind.VERY_TIGHT
@@ -481,15 +482,13 @@ class FontPosition(StyleBase):
     def prop_raise_lower(self) -> int | None:
         """Gets/Sets raise or lower amount, A value of ``0`` means automatic."""
         pv = cast(int, self._get("CharEscapement"))
-        if pv is None:
-            return None
-        # subscript is always a negative value
-        return abs(pv)
+        return None if pv is None else abs(pv)
 
     @prop_raise_lower.setter
     def prop_raise_lower(self, value: int | None) -> None:
         if value is None:
             self._remove("CharEscapement")
+            self._remove("CharAutoEscapement")
             return
 
         if value < 0:
@@ -498,6 +497,7 @@ class FontPosition(StyleBase):
 
         if value == 0:
             # 0 means automatic
+            self._set("CharAutoEscapement", True)
             if kind is None:
                 self._set("CharEscapement", FontScriptKind.SUPERSCRIPT.value)
                 return
@@ -506,6 +506,8 @@ class FontPosition(StyleBase):
                 return
             self._set("CharEscapement", FontScriptKind.SUPERSCRIPT.value)
             return
+
+        self._set("CharAutoEscapement", False)
 
         if kind == FontScriptKind.SUBSCRIPT:
             # subscript is always a negative value
@@ -517,9 +519,7 @@ class FontPosition(StyleBase):
     def prop_rel_size(self) -> Intensity | None:
         """Gets/Sets relative font size"""
         pv = cast(int, self._get("CharEscapementHeight"))
-        if pv is None:
-            return None
-        return Intensity(pv)
+        return None if pv is None else Intensity(pv)
 
     @prop_rel_size.setter
     def prop_rel_size(self, value: Intensity | int | None) -> None:
@@ -535,9 +535,7 @@ class FontPosition(StyleBase):
             return None
         if pv == 0:
             return FontScriptKind.NORMAL
-        if pv < 0:
-            return FontScriptKind.SUBSCRIPT
-        return FontScriptKind.SUPERSCRIPT
+        return FontScriptKind.SUBSCRIPT if pv < 0 else FontScriptKind.SUPERSCRIPT
 
     @prop_script_kind.setter
     def prop_script_kind(self, value: FontScriptKind | None) -> None:
@@ -569,9 +567,7 @@ class FontPosition(StyleBase):
     def prop_rotation(self) -> Angle | None:
         """Gets/Sets Font Rotation"""
         pv = cast(int, self._get("CharRotation"))
-        if pv is None:
-            return None
-        return Angle(round(pv / 10))
+        return None if pv is None else Angle(round(pv / 10))
 
     @prop_rotation.setter
     def prop_rotation(self, value: int | Angle | None) -> None:
@@ -613,9 +609,7 @@ class FontPosition(StyleBase):
     def prop_spacing(self) -> UnitPT | None:
         """This value contains character spacing in point units"""
         pv = cast(int, self._get("CharKerning"))
-        if pv is None:
-            return None
-        return UnitPT.from_mm100(pv)
+        return None if pv is None else UnitPT.from_mm100(pv)
 
     @prop_spacing.setter
     def prop_spacing(self, value: float | CharSpacingKind | UnitObj | None) -> None:
@@ -623,9 +617,9 @@ class FontPosition(StyleBase):
             self._remove("CharKerning")
             return
         try:
-            self._set("CharKerning", value.get_value_mm100())
+            self._set("CharKerning", value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set("CharKerning", UnitConvert.convert_pt_mm100(float(value)))
+            self._set("CharKerning", UnitConvert.convert_pt_mm100(float(value)))  # type: ignore
 
     @property
     def prop_pair(self) -> bool | None:

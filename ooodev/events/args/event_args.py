@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Protocol
 from abc import ABC
 from ...utils.gen_util import NULL_OBJ
 
@@ -66,7 +66,7 @@ class AbstractEvent(ABC):
         if allow_overwrite:
             self._kv_data[key] = value
             return True
-        if not key in self._kv_data:
+        if key not in self._kv_data:
             self._kv_data[key] = value
             return True
         return False
@@ -83,9 +83,7 @@ class AbstractEvent(ABC):
 
         .. versionadded:: 0.9.0
         """
-        if self._kv_data is None:
-            return False
-        return key in self._kv_data
+        return False if self._kv_data is None else key in self._kv_data
 
     def remove(self, key: str) -> bool:
         """
@@ -132,12 +130,12 @@ class EventArgs(AbstractEvent):
     __slots__ = ("source", "_event_name", "event_data", "_event_source", "_kv_data")
 
     @staticmethod
-    def from_args(args: EventArgs) -> EventArgs:
+    def from_args(args: AbstractEvent) -> EventArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (EventArgs): Existing Instance
+            args (AbstractEvent): Existing Instance
 
         Returns:
             EventArgs: args
@@ -147,6 +145,3 @@ class EventArgs(AbstractEvent):
         eargs._event_source = args.event_source
         eargs.event_data = args.event_data
         return eargs
-
-
-e = EventArgs(None)

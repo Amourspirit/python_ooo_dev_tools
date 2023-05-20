@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload
+from typing import Any, Dict, Tuple, overload
 import uno
 from com.sun.star.chart2 import XChartDocument
 
@@ -91,7 +91,7 @@ class NumberFormat(ChartNumbers):
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property. Invalid object")
             return
         dv = kwargs.pop("override_dv", {})
-        props = {"verify": False}
+        props: Dict[str, Any] = {"verify": False}
 
         if self._source_format:
             # if source format is true then the number format should be set to None.

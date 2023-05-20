@@ -14,7 +14,7 @@ class GalleryKind(str, Enum):
 
     See Also:
         - :py:meth:`.Gallery.find_gallery_item`
-        - :py:meth:`.Gallery.report_galeries`
+        - :py:meth:`.Gallery.report_gallery_items`
     """
 
     BPMN = "BPMN"
@@ -38,7 +38,7 @@ class GalleryKind(str, Enum):
         Args:
             s (str): String that represents the name of an enum Name.
                 ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
-                ``hypen-case``, ``normal case``.
+                ``hyphen-case``, ``normal case``.
 
         Raises:
             ValueError: If input string is empty.

@@ -80,25 +80,25 @@ class Alignment(StyleMulti):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}
 
-        if not align is None:
+        if align is not None:
             # ParagraphAdjust.STRETCH seems to be the same as LEFT
             init_vals["ParaAdjust"] = align
 
-        if not align_vert is None:
+        if align_vert is not None:
             init_vals["ParaVertAlignment"] = align_vert.value
 
-        if not align_last is None:
+        if align_last is not None:
             init_vals["ParaLastLineAdjust"] = align_last.value
 
         # SnapToGrid: could not find what service this property is part of, may not be any.
-        if not snap_to_grid is None:
+        if snap_to_grid is not None:
             init_vals["SnapToGrid"] = snap_to_grid
 
-        if not expand_single_word is None:
+        if expand_single_word is not None:
             init_vals["ParaExpandSingleWord"] = expand_single_word
 
         super().__init__(**init_vals)
-        if not txt_direction is None:
+        if txt_direction is not None:
             self._set_style("txt_direction", txt_direction, *txt_direction.get_attrs())
 
     # endregion init
@@ -122,10 +122,14 @@ class Alignment(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies alignment to ``obj``
 
@@ -165,23 +169,21 @@ class Alignment(StyleMulti):
             return ParagraphAdjust.RIGHT
         if num == 2:
             return ParagraphAdjust.BLOCK
-        if num == 3:
-            return ParagraphAdjust.CENTER
-        return ParagraphAdjust.STRETCH
+        return ParagraphAdjust.CENTER if num == 3 else ParagraphAdjust.STRETCH
 
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAlignment], obj: object) -> _TAlignment:
+    def from_obj(cls: Type[_TAlignment], obj: Any) -> _TAlignment:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAlignment], obj: object, **kwargs) -> _TAlignment:
+    def from_obj(cls: Type[_TAlignment], obj: Any, **kwargs) -> _TAlignment:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TAlignment], obj: object, **kwargs) -> _TAlignment:
+    def from_obj(cls: Type[_TAlignment], obj: Any, **kwargs) -> _TAlignment:
         """
         Gets Padding instance from object
 
@@ -201,7 +203,7 @@ class Alignment(StyleMulti):
         def set_prop(key: str, align: Alignment):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 align._set(key, val)
 
         set_prop("ParaVertAlignment", inst)
@@ -209,8 +211,8 @@ class Alignment(StyleMulti):
         set_prop("ParaExpandSingleWord", inst)
 
         # LibreOffice Writer converts ParagraphAdjust to an int value
-        padj = cast(int, mProps.Props.get(obj, "ParaAdjust"))
-        inst._set("ParaAdjust", cls.convert_int_to_paragraph_adjust(padj))
+        adjust = cast(int, mProps.Props.get(obj, "ParaAdjust"))
+        inst._set("ParaAdjust", cls.convert_int_to_paragraph_adjust(adjust))
         try:
             # SnapToGrid is not part of any known service
             snap = mProps.Props.get(obj, "SnapToGrid")
@@ -393,9 +395,7 @@ class Alignment(StyleMulti):
     def prop_align_vert(self) -> ParagraphVertAlignEnum | None:
         """Gets/Sets vertical alignment of a paragraph."""
         pv = cast(int, self._get("ParaVertAlignment"))
-        if pv is None:
-            return None
-        return ParagraphVertAlignEnum(pv)
+        return None if pv is None else ParagraphVertAlignEnum(pv)
 
     @prop_align_vert.setter
     def prop_align_vert(self, value: ParagraphVertAlignEnum | None):
@@ -408,9 +408,7 @@ class Alignment(StyleMulti):
     def prop_align_last(self) -> LastLineKind | None:
         """Gets/Sets the adjustment of the last line."""
         pv = cast(int, self._get("ParaLastLineAdjust"))
-        if pv is None:
-            return None
-        return LastLineKind(pv)
+        return None if pv is None else LastLineKind(pv)
 
     @prop_align_last.setter
     def prop_align_last(self, value: LastLineKind | None):

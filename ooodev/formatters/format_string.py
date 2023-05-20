@@ -23,13 +23,12 @@ class FormatString(FormatListItem):
             return str(value)
 
     def _apply_all_formats(self, value) -> str:
-        if isinstance(self.format, tuple):
-            v = value
-            for fmt in self.format:
-                v = self._apply_single_format(v, fmt)
-            return str(v)
-        else:
+        if not isinstance(self.format, tuple):
             return self._apply_single_format(value, self.format)
+        v = value
+        for fmt in self.format:
+            v = self._apply_single_format(v, fmt)
+        return str(v)
 
     def get_formatted(self, val: str) -> str:
         result = self._get_stripped(val)

@@ -27,7 +27,7 @@ class Orientation(StyleBase):
     .. versionadded:: 0.9.4
     """
 
-    def __init__(self, angle: int | Angle = None, vertical: bool = None) -> None:
+    def __init__(self, angle: int | Angle | None = None, vertical: bool | None = None) -> None:
         """
         Constructor
 
@@ -110,9 +110,7 @@ class Orientation(StyleBase):
     def prop_angle(self) -> Angle | None:
         """Gets/Sets the rotation of the text."""
         pv = cast(int, self._get(self._props.angle))
-        if pv is None:
-            return None
-        return Angle(pv)
+        return None if pv is None else Angle(pv)
 
     @prop_angle.setter
     def prop_angle(self, value: int | Angle | None) -> None:
@@ -126,9 +124,7 @@ class Orientation(StyleBase):
     def prop_vertical(self) -> bool | None:
         """Gets/Sets if the text is vertically stacked."""
         pv = cast(bool, self._get(self._props.vertical))
-        if pv is None:
-            return None
-        return pv
+        return None if pv is None else pv
 
     @prop_vertical.setter
     def prop_vertical(self, value: bool | None) -> None:

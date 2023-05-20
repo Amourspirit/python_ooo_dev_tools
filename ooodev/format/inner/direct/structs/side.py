@@ -3,8 +3,10 @@ Module for table side (``BorderLine2``) struct.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
+import contextlib
 from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum, IntEnum
 
@@ -33,7 +35,7 @@ _TSide = TypeVar(name="_TSide", bound="Side")
 # region Enums
 
 if TYPE_CHECKING or mock_g.DOCS_BUILDING:
-    # if doc are building then use this class for doc puropses.
+    # if doc are building then use this class for doc purposes.
     # Otherwise, Sphinx will error for BorderLineKind
 
     class BorderLineKind(IntEnum):
@@ -211,9 +213,9 @@ class Side(StructBase):
             None:
         """
         try:
-            self._pts = cast(float, width.get_value_pt())
+            self._pts = cast(float, width.get_value_pt())  # type: ignore
         except AttributeError:
-            self._pts = float(width)
+            self._pts = float(width)  # type: ignore
 
         if color < 0:
             raise ValueError("color must be a positive value")
@@ -237,6 +239,7 @@ class Side(StructBase):
         self._set_line_values(pts=self._pts, line=line)
 
     def _set_line_values(self, pts: float, line: BorderLineKind) -> None:
+        # sourcery skip: extract-duplicate-method, inline-immediately-returned-variable, low-code-quality
         # taken care of by creating dynamic enum BorderLineKind
         # if line.name == BorderLineKind.BORDER_LINE_STYLE_MAX:
         #     raise ValueError("BORDER_LINE_STYLE_MAX is not supported")
@@ -361,15 +364,13 @@ class Side(StructBase):
             "_supported_services_values": self._supported_services(),
             "_format_kind_prop": self.prop_format_kind,
         }
-        try:
+        with contextlib.suppress(NotImplementedError):
             cattribs["_property_name"] = self._get_property_name()
-        except NotImplementedError:
-            pass
         return cattribs
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: Any) -> bool:
         # noinspection PyTypeChecker
-        bl2: BorderLine2 = None
+        bl2 = None
         if isinstance(other, Side):
             bl2 = other.get_uno_struct()
         elif getattr(other, "typeName", None) == "com.sun.star.table.BorderLine2":
@@ -401,10 +402,10 @@ class Side(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style to object
 
@@ -480,16 +481,16 @@ class Side(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSide], obj: object) -> _TSide:
+    def from_obj(cls: Type[_TSide], obj: Any) -> _TSide:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSide], obj: object, **kwargs) -> _TSide:
+    def from_obj(cls: Type[_TSide], obj: Any, **kwargs) -> _TSide:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TSide], obj: object, **kwargs) -> _TSide:
+    def from_obj(cls: Type[_TSide], obj: Any, **kwargs) -> _TSide:
         """
         Gets instance from object
 

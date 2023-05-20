@@ -4,7 +4,7 @@ Module for ``DropCapFormat`` struct.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Dict, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 from ooo.dyn.style.drop_cap_format import DropCapFormat
 
@@ -49,14 +49,14 @@ class DropCapStruct(StructBase):
         Note:
             If argument ``type`` is ``None`` then all other argument are ignored
         """
-        bcount = Byte(count)
-        count = bcount.value
-        blines = Byte(lines)
-        lines = blines.value
+        b_count = Byte(count)
+        count = b_count.value
+        b_lines = Byte(lines)
+        lines = b_lines.value
         try:
-            dist = distance.get_value_mm100()
+            dist = distance.get_value_mm100()  # type: ignore
         except AttributeError:
-            dist = int(distance)
+            dist = int(distance)  # type: ignore
         if dist < 0:
             raise ValueError("distance arg must be a positive value.")
 
@@ -81,7 +81,7 @@ class DropCapStruct(StructBase):
             self._property_name = "DropCapFormat"
         return self._property_name
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return mProps.Props.has(obj, self._get_property_name())
 
     def get_attrs(self) -> Tuple[str, ...]:
@@ -89,14 +89,14 @@ class DropCapStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, keys: Dict[str, str]) -> None:
+    def apply(self, obj: Any, keys: Dict[str, str]) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         """
         Applies tab properties to ``obj``
 
@@ -116,6 +116,7 @@ class DropCapStruct(StructBase):
         Returns:
             None:
         """
+        # sourcery skip: dict-assign-update-to-union
         if not self._is_valid_obj(obj):
             # will not apply on this class but may apply on child classes
             self._print_not_valid_srv("apply")
@@ -154,16 +155,16 @@ class DropCapStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCapStruct], obj: object) -> _TDropCapStruct:
+    def from_obj(cls: Type[_TDropCapStruct], obj: Any) -> _TDropCapStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCapStruct], obj: object, **kwargs) -> _TDropCapStruct:
+    def from_obj(cls: Type[_TDropCapStruct], obj: Any, **kwargs) -> _TDropCapStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TDropCapStruct], obj: object, **kwargs) -> _TDropCapStruct:
+    def from_obj(cls: Type[_TDropCapStruct], obj: Any, **kwargs) -> _TDropCapStruct:
         """
         Gets instance from object
 
@@ -182,8 +183,8 @@ class DropCapStruct(StructBase):
 
         try:
             dcf = cast(DropCapFormat, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(dcf, **kwargs)
 
@@ -318,11 +319,12 @@ class DropCapStruct(StructBase):
 
     @prop_distance.setter
     def prop_distance(self, value: int | UnitObj) -> None:
-        if value < 0:
-            raise ValueError("value must be a positive number.")
         try:
-            self._set("Distance", value.get_value_mm100())
+            val = cast(int, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set("Distance", value)
+            val = cast(int, value)
+        if val < 0:
+            raise ValueError("value must be a positive number.")
+        self._set("Distance", val)
 
     # endregion properties

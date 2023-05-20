@@ -146,9 +146,9 @@ class BulletList(StyleName):
     def default() -> BulletList:  # type: ignore[misc]
         """Gets ``StyleList`` default. Static Property."""
         try:
-            return BulletList._DEFAULT
+            return BulletList._DEFAULT  # type: ignore[return-value]
         except AttributeError:
             # empty string name will result in No List, list style being applied
-            BulletList._DEFAULT = BulletList(name="")
-            BulletList._DEFAULT._is_default_inst = True
-        return BulletList._DEFAULT
+            BulletList._DEFAULT = BulletList(name="")  # type: ignore[assignment]
+            BulletList._DEFAULT._is_default_inst = True  # type: ignore[assignment]
+        return BulletList._DEFAULT  # type: ignore[return-value]

@@ -429,8 +429,8 @@ class Para(StyleName):
     def default() -> Para:  # type: ignore[misc]
         """Gets ``Para`` default. Static Property."""
         try:
-            return Para._DEFAULT_INST
+            return Para._DEFAULT_INST  # type: ignore[attr-defined]
         except AttributeError:
-            Para._DEFAULT_INST = Para(name=StyleParaKind.STANDARD)
-            Para._DEFAULT_INST._is_default_inst = True
-        return Para._DEFAULT_INST
+            Para._DEFAULT_INST = Para(name=StyleParaKind.STANDARD)  # type: ignore[attr-defined]
+            Para._DEFAULT_INST._is_default_inst = True  # type: ignore[attr-defined]
+        return Para._DEFAULT_INST  # type: ignore[attr-defined]

@@ -1,10 +1,10 @@
 # region Import
 from __future__ import annotations
-from typing import cast, Type, TypeVar
+from typing import Any, cast, Type, TypeVar
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -39,7 +39,7 @@ class Gradient(PageStyleBaseMulti):
         offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
         border: Intensity | int = 0,
-        grad_color: ColorRange = ColorRange(Color(0), Color(16777215)),
+        grad_color: ColorRange = ColorRange(StandardColor.BLACK, StandardColor.WHITE),
         grad_intensity: IntensityRange = IntensityRange(100, 100),
         name: str = "",
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
@@ -52,8 +52,8 @@ class Gradient(PageStyleBaseMulti):
             style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
             step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
             offset (Offset, int, optional): Specifies the X and Y coordinate, where the gradient begins.
-                 X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT``
-                 style gradients. Defaults to ``Offset(50, 50)``.
+                X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT``
+                style gradients. Defaults to ``Offset(50, 50)``.
             angle (Angle, int, optional): Specifies angle of the gradient. Defaults to 0.
             border (int, optional): Specifies percent of the total width where just the start color is used.
                 Defaults to ``0``.
@@ -110,7 +110,7 @@ class Gradient(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls: Type[_TGradient],
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TGradient:
@@ -118,7 +118,7 @@ class Gradient(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

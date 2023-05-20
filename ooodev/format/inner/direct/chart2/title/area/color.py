@@ -15,7 +15,7 @@ class Color(ChartColor):
     .. versionadded:: 0.9.4
     """
 
-    def __init__(self, color: mColor.Color = -1) -> None:
+    def __init__(self, color: mColor.Color = mColor.Color(-1)) -> None:
         """
         Constructor
 

@@ -51,7 +51,7 @@ def test_write(loader, para_text) -> None:
         )
         assert f_style.prop_inner.prop_size == style.prop_inner.prop_size
         assert f_style.prop_inner.prop_mode == style.prop_inner.prop_mode
-        assert f_style.prop_inner.prop_posiion == style.prop_inner.prop_posiion
+        assert f_style.prop_inner.prop_position == style.prop_inner.prop_position
 
         Lo.delay(delay)
     finally:

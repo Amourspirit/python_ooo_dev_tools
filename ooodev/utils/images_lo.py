@@ -34,7 +34,7 @@ class BitmapArgs:
     """Args use when calling bitmap method that support args"""
 
     name: str
-    """Name given to bitmap in the ``BitmapTable`` containor"""
+    """Name given to bitmap in the ``BitmapTable`` container"""
     auto_name: bool = True
     """If True then name is checked. If it exist in ``BitmapTable`` then a new unique name is created"""
     auto_update: bool = False
@@ -71,32 +71,35 @@ class ImagesLo:
         .. versionchanged:: 0.9.0
             Added ``args`` to method.
         """
+        # sourcery skip: raise-specific-error
         try:
             fp = mFileIO.FileIO.get_absolute_path(fnm)
             if not mFileIO.FileIO.is_openable(fp):
                 raise mEx.UnOpenableError(fnm=fp)
             btc = mLo.Lo.create_instance_msf(XNameContainer, "com.sun.star.drawing.BitmapTable", raise_err=True)
-            if not args is None:
+            if args is not None:
                 if args.auto_name:
                     name = cls._get_unique_container_el_name(args.name, btc)
                 else:
                     name = args.name
                 args.out_name = name
             else:
-                # Get a sequence name Bitmap 1, Bitmat 2 etc
+                # Get a sequence name Bitmap 1, Bitmap 2 etc
                 name = cls._get_unique_container_el_name("Bitmap ", btc)
             pic_url = mFileIO.FileIO.fnm_to_url(fp)
 
-            if not args is None and args.auto_update:
-                if btc.hasByName(name):
-                    btc.replaceByName(name, pic_url)
-                else:
-                    btc.insertByName(name, pic_url)
-            else:
-                if btc.hasByName(name):
-                    return btc.getByName(name)
+            if args is not None and args.auto_update and btc.hasByName(name):
+                btc.replaceByName(name, pic_url)
+            elif (
+                args is not None
+                and args.auto_update
+                and not btc.hasByName(name)
+                or (args is None or not args.auto_update)
+                and not btc.hasByName(name)
+            ):
                 btc.insertByName(name, pic_url)
-
+            else:
+                return btc.getByName(name)
             # return bitmap.getDIB() # byte sequence
             return btc.getByName(name)
         except mEx.UnOpenableError:
@@ -124,7 +127,7 @@ class ImagesLo:
         tmp = mFileIO.FileIO.create_temp_file(img_format)
         try:
             with open(tmp, "wb") as fh:
-                fh.write(base64.decodebytes(value))
+                fh.write(base64.decodebytes(value))  # type: ignore
             return cls.get_bitmap(tmp, args)
         finally:
             mFileIO.FileIO.delete_file(tmp)
@@ -148,11 +151,11 @@ class ImagesLo:
         try:
             _ = mFileIO.FileIO.is_exist_file(fnm=im_fnm, raise_err=True)
             fnm = mFileIO.FileIO.get_absolute_path(im_fnm)
-            gprovider = mLo.Lo.create_instance_mcf(
+            provider = mLo.Lo.create_instance_mcf(
                 XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
             )
             file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(fnm))
-            result = gprovider.queryGraphic(file_props)
+            result = provider.queryGraphic(file_props)  # type: ignore
             if result is None:
                 raise mEx.UnKnownError("None Value: queryGraphic() returned None")
             return result
@@ -215,15 +218,16 @@ class ImagesLo:
         Returns:
             XGraphic: Graphic
         """
+        # sourcery skip: raise-specific-error
         xprops = mLo.Lo.qi(XPropertySet, graphic_link, True)
 
         try:
             graphic = xprops.getPropertyValue("Graphic")
             if graphic is None:
-                raise Exception("Grapich is None")
+                raise Exception("Graphic is None")
             return graphic
         except Exception as e:
-            raise Exception(f"Unable to retrieve graphic") from e
+            raise Exception("Unable to retrieve graphic") from e
 
     # region save_graphic()
     @overload
@@ -255,20 +259,21 @@ class ImagesLo:
             if pic is None:
                 raise TypeError("Expected pic to be XGraphic instance but got None")
             if not im_format:
-                im_format = mInfo.Info.get_ext(fnm)
+                ext = mInfo.Info.get_ext(fnm)
+                im_format = "" if ext is None else ext
                 if not im_format:
                     raise ValueError(
                         "Unable to get image format from fnm. Does fnm have an file extension such as myfile.png?"
                     )
                 im_format = im_format.lower()
 
-            gprovider = mLo.Lo.create_instance_mcf(
+            provider = mLo.Lo.create_instance_mcf(
                 XGraphicProvider, "com.sun.star.graphic.GraphicProvider", raise_err=True
             )
 
             png_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(fnm), MimeType=f"image/{im_format}")
 
-            gprovider.storeGraphic(pic, png_props)
+            provider.storeGraphic(pic, png_props)  # type: ignore
         except Exception as e:
             raise mEx.ImageError(f'Error saving graphic for "{fnm}') from e
 
@@ -390,9 +395,7 @@ class ImagesLo:
         Note:
             If ``length`` or ``new_length`` is ``0`` then ``1.0`` is returned.
         """
-        if length == 0 or new_length == 0:
-            return 1.0
-        return (new_length / length) * 100
+        return 1.0 if length == 0 or new_length == 0 else (new_length / length) * 100
 
     @classmethod
     def calc_scale_crop(cls, orig_len: float, new_len: float, start_crop: float, end_crop: float) -> float:

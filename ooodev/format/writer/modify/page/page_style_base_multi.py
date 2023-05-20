@@ -5,7 +5,7 @@ Base Class for Page Style.
 """
 # region Import
 from __future__ import annotations
-from typing import Tuple, overload, TypeVar
+from typing import Any, Tuple, overload, TypeVar
 
 from com.sun.star.beans import XPropertySet
 
@@ -52,19 +52,24 @@ class PageStyleBaseMulti(StyleMulti):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
-            obj (object): UNO Writer Document
+            obj (Any): UNO Writer Document
 
         Returns:
             None:
         """
+        # sourcery skip: extract-method
         cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
         cargs.event_data = self
         if cargs.cancel:

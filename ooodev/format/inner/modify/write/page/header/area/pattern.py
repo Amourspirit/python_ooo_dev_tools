@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast, Type, TypeVar
+from typing import Any, cast, Type, TypeVar
 import uno
 from com.sun.star.awt import XBitmap
 
@@ -20,7 +20,7 @@ class Pattern(PageStyleBaseMulti):
     """
     Page Footer Pattern
 
-    .. Seeealso::
+    .. seealso::
 
         - :ref:`help_writer_format_modify_page_header_area`
 
@@ -96,7 +96,7 @@ class Pattern(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls: Type[_TPattern],
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TPattern:
@@ -104,7 +104,7 @@ class Pattern(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

@@ -150,6 +150,6 @@ class Font(CharFont):
             self._remove("CharHeight")
             return
         try:
-            self._set("CharHeight", round(value.get_value_pt()))
+            self._set("CharHeight", round(value.get_value_pt()))  # type: ignore
         except AttributeError:
-            self._set("CharHeight", round(value))
+            self._set("CharHeight", round(value))  # type: ignore

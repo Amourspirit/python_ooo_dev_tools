@@ -111,7 +111,7 @@ class Gradient(StyleMulti):
         end_color: int,
         end_intensity: Intensity | int,
     ) -> GradientStruct:
-        fs = GradientStruct(
+        return GradientStruct(
             style=style,
             step_count=step_count,
             x_offset=x_offset,
@@ -124,7 +124,6 @@ class Gradient(StyleMulti):
             end_intensity=end_intensity,
             _cattribs=self._get_inner_cattribs(),
         )
-        return fs
 
     def _get_inner_cattribs(self) -> dict:
         return {
@@ -135,7 +134,6 @@ class Gradient(StyleMulti):
 
     def _set_fill_tp(self, fill_tp: GradientStruct, name: str = "") -> None:
         fs = self._get_fill_tp(fill_tp, name)
-        fs._prop_parent = self
 
         self._set(self._props.name, self._name)
         self._set_style("fill_style", fs, *fs.get_attrs())
@@ -150,7 +148,7 @@ class Gradient(StyleMulti):
         # if the name passed in already exist in the TransparencyGradientTable Table then it is returned.
         # Otherwise, the struct is added to the TransparencyGradientTable Table and then returned.
         # after struct is added to table all other subsequent call of this name will return
-        # that struc from the Table. Except auto_name which will force a new entry
+        # that struct from the Table. Except auto_name which will force a new entry
         # into the Table each time.
         # see: https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L212
         nc = self._container_get_inst()
@@ -161,7 +159,7 @@ class Gradient(StyleMulti):
                 return self._get_gradient_from_uno_struct(value=struct, _cattribs=self._get_inner_cattribs())
 
         name = self._container_get_default_name()
-        name = name.strip() + " "
+        name = f"{name.strip()} "
         self._name = self._container_get_unique_el_name(name, nc)
         struct = self._container_get_value(self._name, nc)  # raises value error if name is empty
         if struct is not None:
@@ -216,7 +214,7 @@ class Gradient(StyleMulti):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -231,6 +229,7 @@ class Gradient(StyleMulti):
         Args:
             event_args (KeyValueCancelArgs): Event Args
         """
+        # sourcery skip: merge-nested-ifs
         if event_args.key == self._props.name:
             if event_args.value is None or event_args.value == "":
                 # instruct Props.set to call set_default()
@@ -242,16 +241,16 @@ class Gradient(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any) -> _TGradient:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object, **kwargs) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object, **kwargs) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
         """
         Gets instance from object
 
@@ -271,10 +270,7 @@ class Gradient(StyleMulti):
 
         grad_fill = cast("UNOGradient", mProps.Props.get(obj, nu._props.struct_prop))
         fill_gradient_name = cast(str, mProps.Props.get(obj, nu._props.name, ""))
-        if grad_fill.Angle == 0:
-            angle = 0
-        else:
-            angle = round(grad_fill.Angle / 10)
+        angle = 0 if grad_fill.Angle == 0 else round(grad_fill.Angle / 10)
         return cls(
             style=grad_fill.Style,
             offset=Offset(grad_fill.XOffset, grad_fill.YOffset),

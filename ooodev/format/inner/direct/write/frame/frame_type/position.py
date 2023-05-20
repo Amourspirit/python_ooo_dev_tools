@@ -20,7 +20,7 @@ from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.inner.common.props.frame_type_positon_props import FrameTypePositonProps
+from ooodev.format.inner.common.props.frame_type_position_props import FrameTypePositionProps
 
 _TPosition = TypeVar(name="_TPosition", bound="Position")
 
@@ -111,9 +111,9 @@ class Horizontal:
         self._position = position
         self._rel = rel
         try:
-            self._amount = amount.get_value_mm()
+            self._amount = amount.get_value_mm()  # type: ignore
         except AttributeError:
-            self._amount = float(amount)
+            self._amount = float(amount)  # type: ignore
 
     # endregion Init
 
@@ -174,9 +174,9 @@ class Horizontal:
     @amount.setter
     def amount(self, value: float | UnitObj):
         try:
-            self._amount = value.get_value_mm()
+            self._amount = value.get_value_mm()  # type: ignore
         except AttributeError:
-            self._amount = float(value)
+            self._amount = float(value)  # type: ignore
 
     # endregion Properties
 
@@ -199,9 +199,9 @@ class Vertical:
         self._position = position
         self._rel = rel
         try:
-            self._amount = amount.get_value_mm()
+            self._amount = amount.get_value_mm()  # type: ignore
         except AttributeError:
-            self._amount = float(amount)
+            self._amount = float(amount)  # type: ignore
 
     # endregion Init
 
@@ -262,9 +262,9 @@ class Vertical:
     @amount.setter
     def amount(self, value: float | UnitObj):
         try:
-            self._amount = value.get_value_mm()
+            self._amount = value.get_value_mm()  # type: ignore
         except AttributeError:
-            self._amount = float(value)
+            self._amount = float(value)  # type: ignore
 
     # endregion Properties
 
@@ -350,16 +350,8 @@ class Position(StyleBase):
     def copy(self: _TPosition, **kwargs) -> _TPosition:
         """Gets a copy of instance as a new instance"""
         cp = super().copy(**kwargs)
-        if self._horizontal is None:
-            cp._horizontal = None
-        else:
-            # cp._horizontal = dataclasses.replace(self._horizontal)
-            cp._horizontal = self._horizontal.copy()
-        if self._vertical is None:
-            cp._vertical = None
-        else:
-            # cp._vertical = dataclasses.replace(self._vertical)
-            cp._vertical = self._vertical.copy()
+        cp._horizontal = None if self._horizontal is None else self._horizontal.copy()
+        cp._vertical = None if self._vertical is None else self._vertical.copy()
         return cp
 
     # endregion copy()
@@ -381,7 +373,7 @@ class Position(StyleBase):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -393,16 +385,16 @@ class Position(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPosition], obj: object) -> _TPosition:
+    def from_obj(cls: Type[_TPosition], obj: Any) -> _TPosition:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPosition], obj: object, **kwargs) -> _TPosition:
+    def from_obj(cls: Type[_TPosition], obj: Any, **kwargs) -> _TPosition:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TPosition], obj: object, **kwargs) -> _TPosition:
+    def from_obj(cls: Type[_TPosition], obj: Any, **kwargs) -> _TPosition:
         """
         Gets instance from object
 
@@ -507,11 +499,11 @@ class Position(StyleBase):
         self._set_vertical(value)
 
     @property
-    def _props(self) -> FrameTypePositonProps:
+    def _props(self) -> FrameTypePositionProps:
         try:
             return self._props_internal_attributes
         except AttributeError:
-            self._props_internal_attributes = FrameTypePositonProps(
+            self._props_internal_attributes = FrameTypePositionProps(
                 hori_orient="HoriOrient",
                 hori_pos="HoriOrientPosition",
                 hori_rel="HoriOrientRelation",

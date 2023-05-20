@@ -104,13 +104,13 @@ class ThemeTextDoc(ThemeBase):
         return self._index_table_shadings_visible
 
     @property
-    def page_colums_breaks_color(self) -> int:
+    def page_columns_breaks_color(self) -> int:
         """Page and Columns breaks color."""
         try:
-            return self._page_colums_breaks_color
+            return self._page_columns_breaks_color
         except AttributeError:
-            self._page_colums_breaks_color = self._get_color("WriterPageBreaks")
-        return self._page_colums_breaks_color
+            self._page_columns_breaks_color = self._get_color("WriterPageBreaks")
+        return self._page_columns_breaks_color
 
     @property
     def script_indicator_color(self) -> int:

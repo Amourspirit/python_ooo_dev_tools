@@ -1397,7 +1397,7 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
                 cls._append_text_content(cursor, bmk_content)
             except Exception as e:
                 raise Exception("Unable to add bookmark") from e
-            _Events().trigger(WriteNamedEvent.BOOKMARK_ADDIED, EventArgs.from_args(cargs))
+            _Events().trigger(WriteNamedEvent.BOOKMARK_ADDED, EventArgs.from_args(cargs))
             return True
 
     .. only:: html

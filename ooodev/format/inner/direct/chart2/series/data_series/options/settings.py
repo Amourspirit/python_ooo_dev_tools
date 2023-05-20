@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, cast, overload, NamedTuple
+from typing import Any, Tuple, cast, overload, NamedTuple
 import uno
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.beans import XPropertySet
@@ -75,14 +75,14 @@ class Settings(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -98,7 +98,7 @@ class Settings(StyleBase):
             return
 
         try:
-            diagram = self._chart_doc.getDiagram()
+            diagram = self._chart_doc.getDiagram()  # type: ignore
         except Exception as e:
             mLo.Lo.print(f"{self.__class__.__name__}.apply() - Unable to apply spacing and overlap.")
             mLo.Lo.print(f"  Error: {e}")
@@ -111,8 +111,9 @@ class Settings(StyleBase):
 
         spacing = self.prop_spacing
         overlap = self.prop_overlap
+        axis_props = {}
+        axis = None
         if spacing is not None or overlap is not None:
-            axis_props = {}
             try:
                 # get the axis to apply spacing and overlap.
                 # The axis is determined by the primary_y_axis property of the data series.
@@ -131,7 +132,7 @@ class Settings(StyleBase):
                 mLo.Lo.print(f"{self.__class__.__name__}.apply() - Unable to apply spacing and overlap.")
                 mLo.Lo.print(f"  Error: {e}")
                 return
-        if len(axis_props) > 0:
+        if axis_props and axis is not None:
             super().apply(obj=axis, validate=False, override_dv=axis_props, **kwargs)
 
     # endregion apply()

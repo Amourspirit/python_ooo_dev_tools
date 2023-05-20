@@ -131,10 +131,10 @@ class Frame(StyleName):
     def default() -> Frame:  # type: ignore[misc]
         """Gets Frame default style. Static Property."""
         try:
-            return Frame._DEFAULT_FRAME
+            return Frame._DEFAULT_FRAME  # type: ignore[attr-defined]
         except AttributeError:
-            Frame._DEFAULT_FRAME = Frame(name=StyleFrameKind.FRAME)
-            Frame._DEFAULT_FRAME._is_default_inst = True
-        return Frame._DEFAULT_FRAME
+            Frame._DEFAULT_FRAME = Frame(name=StyleFrameKind.FRAME)  # type: ignore[attr-defined]
+            Frame._DEFAULT_FRAME._is_default_inst = True  # type: ignore[attr-defined]
+        return Frame._DEFAULT_FRAME  # type: ignore[attr-defined]
 
     # endregion Properties

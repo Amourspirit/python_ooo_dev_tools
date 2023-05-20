@@ -12,7 +12,7 @@ from ooodev.utils import lo as mLo
 
 class PositionAxis(StyleBase):
     """
-    Chart Axis Line Positon.
+    Chart Axis Line Position.
 
     Note:
         Does not apply to all axis types.

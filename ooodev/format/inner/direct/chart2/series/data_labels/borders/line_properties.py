@@ -63,8 +63,8 @@ class LineProperties(DataSeriesLineProperties):
     def on_property_set_error(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == "LabelBorderDash":
             # there is a bug, API DataPoint does not properly implement XPropertySet.
-            # This may lead to an exception when trying to setint the LabelBorderDash property.
-            # Even though the property is set, the border appears on the chart data point lablel.
+            # This may lead to an exception when trying to setting the LabelBorderDash property.
+            # Even though the property is set, the border appears on the chart data point label.
             # Opening the data point properties dialog shows the border line is not set to anything.
             # However, because it display correctly, we will ignore the exception.
             with contextlib.suppress(Exception):
@@ -73,9 +73,9 @@ class LineProperties(DataSeriesLineProperties):
                     # attempting to set via invoke does not work, setPropertyValue is missing due to bad implementation.
                     #
                     # tpl = self._get("LabelBorderDash")
-                    # uany = uno.Any("[]com.sun.star.beans.XPropertySet", tpl)
+                    # uno_any = uno.Any("[]com.sun.star.beans.XPropertySet", tpl)
                     # props = mLo.Lo.qi(XPropertySet, event_args.event_data)
-                    # uno.invoke(props, "setPropertyValue", ("LabelBorderDash", uany))
+                    # uno.invoke(props, "setPropertyValue", ("LabelBorderDash", uno_any))
                     # event_args.handled = True
         return super().on_property_set_error(source, event_args)
 

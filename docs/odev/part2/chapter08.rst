@@ -53,7 +53,7 @@ Adding an image to a text document follows the same steps as other text content,
                 "width": width,
                 "height": height,
             }
-            _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDING, cargs)
+            _Events().trigger(WriteNamedEvent.IMAGE_LINK_ADDING, cargs)
             if cargs.cancel:
                 return False
 
@@ -84,7 +84,7 @@ Adding an image to a text document follows the same steps as other text content,
                 raise
             except Exception as e:
                 raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
-            _Events().trigger(WriteNamedEvent.IMAGE_LNIK_ADDED, EventArgs.from_args(cargs))
+            _Events().trigger(WriteNamedEvent.IMAGE_LINK_ADDED, EventArgs.from_args(cargs))
             return True
 
     .. only:: html

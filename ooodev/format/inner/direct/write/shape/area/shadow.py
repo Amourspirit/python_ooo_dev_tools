@@ -66,15 +66,15 @@ class Shadow(StyleBase):
         # shadow distance is stored in ShadowXDistance and ShadowYDistance depending on location value.
         super().__init__()
         self._location = location
-        if not use_shadow is None:
+        if use_shadow is not None:
             self.prop_use_shadow = use_shadow
-        if not color is None:
+        if color is not None:
             self.prop_color = color
-        if not distance is None:
+        if distance is not None:
             self.prop_distance = distance
-        if not blur is None:
+        if blur is not None:
             self.prop_blur = blur
-        if not transparency is None:
+        if transparency is not None:
             self.prop_transparency = transparency
 
     # endregion Init
@@ -88,7 +88,7 @@ class Shadow(StyleBase):
             self._supported_services_values = ("com.sun.star.drawing.ShadowProperties",)
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -111,14 +111,9 @@ class Shadow(StyleBase):
             return 0
 
         def get_xy(x: bool = True) -> int:
-            if x:
-                xy = self._props.dist_x
-            else:
-                xy = self._props.dist_y
+            xy = self._props.dist_x if x else self._props.dist_y
             pv = cast(int, self._get(xy))
-            if pv is None:
-                return 0
-            return abs(pv)
+            return 0 if pv is None else abs(pv)
 
         if self._location == ShadowLocationKind.TOP_LEFT:
             # x or y, both negative values
@@ -130,24 +125,20 @@ class Shadow(StyleBase):
             # x, y, x is positive, y is negative
             return get_xy()
         if self._location == ShadowLocationKind.RIGHT:
-            # x, postitive value
+            # x, positive value
             return get_xy()
         if self._location == ShadowLocationKind.BOTTOM_RIGHT:
             # x or y, both are positive values
             return get_xy()
         if self._location == ShadowLocationKind.BOTTOM:
-            # y, postive value
+            # y, positive value
             return get_xy(False)
         if self._location == ShadowLocationKind.BOTTOM_LEFT:
             # x or y, x is negative, y is positive
             return get_xy()
-        if self._location == ShadowLocationKind.LEFT:
-            # x, negative value
-            return get_xy()
+        return get_xy() if self._location == ShadowLocationKind.LEFT else 0
 
-        return 0.0
-
-    def _set_shaodw_distance(self, value: int) -> None:
+    def _set_shadow_distance(self, value: int) -> None:
         """value is ``1/100th mm``"""
 
         val = abs(value)
@@ -188,18 +179,20 @@ class Shadow(StyleBase):
             return ShadowLocationKind.TOP_LEFT
         if x == 0 and y < 0:
             return ShadowLocationKind.TOP
-        if x > 0 and y < 0:
-            return ShadowLocationKind.TOP_RIGHT
-        if x > 0 and y == 0:
-            return ShadowLocationKind.RIGHT
-        if x > 0 and y > 0:
-            return ShadowLocationKind.BOTTOM_RIGHT
+        if x > 0:
+            if y < 0:
+                return ShadowLocationKind.TOP_RIGHT
+            if y == 0:
+                return ShadowLocationKind.RIGHT
+            if y > 0:
+                return ShadowLocationKind.BOTTOM_RIGHT
         if x == 0 and y > 0:
             return ShadowLocationKind.BOTTOM
-        if x < 0 and y > 0:
-            return ShadowLocationKind.BOTTOM_LEFT
-        if x < 0 and y == 0:
-            return ShadowLocationKind.LEFT
+        if x < 0:
+            if y > 0:
+                return ShadowLocationKind.BOTTOM_LEFT
+            if y == 0:
+                return ShadowLocationKind.LEFT
         return ShadowLocationKind.NONE
 
     # endregion Internal Methods
@@ -207,16 +200,16 @@ class Shadow(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadow], obj: object) -> _TShadow:
+    def from_obj(cls: Type[_TShadow], obj: Any) -> _TShadow:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadow], obj: object, **kwargs) -> _TShadow:
+    def from_obj(cls: Type[_TShadow], obj: Any, **kwargs) -> _TShadow:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TShadow], obj: object, **kwargs) -> _TShadow:
+    def from_obj(cls: Type[_TShadow], obj: Any, **kwargs) -> _TShadow:
         """
         Gets instance from object
 
@@ -323,7 +316,7 @@ class Shadow(StyleBase):
             Shadow: Shadow with style added or removed
         """
         cp = self.copy()
-        cp.prop_blur = value
+        cp.prop_transparency = value
         return cp
 
     # endregion style methods
@@ -337,7 +330,7 @@ class Shadow(StyleBase):
         return cp
 
     @property
-    def top_left(self) -> _TShadow:
+    def top_left(self: _TShadow) -> _TShadow:
         """Gets instance with shadow location set to top left."""
         cp = self.copy()
         cp.prop_location = ShadowLocationKind.TOP_LEFT
@@ -424,7 +417,7 @@ class Shadow(StyleBase):
     @prop_location.setter
     def prop_location(self, value: ShadowLocationKind | None) -> None:
         self._location = value
-        self._set_shaodw_distance(self._get_shadow_distance())
+        self._set_shadow_distance(self._get_shadow_distance())
 
     @property
     def prop_color(self) -> Color | None:
@@ -450,17 +443,15 @@ class Shadow(StyleBase):
             self._remove(self._props.dist_y)
             return
         try:
-            self._set_shaodw_distance(value.get_value_mm100())
+            self._set_shadow_distance(value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set_shaodw_distance(UnitConvert.convert_mm_mm100(value))
+            self._set_shadow_distance(UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_blur(self) -> UnitPT | None:
         """Gets/Sets Shadow blur value. Return value is in ``pt`` (points) units."""
         pv = cast(int, self._get(self._props.blur))
-        if pv is None:
-            return None
-        return UnitPT(round(UnitConvert.convert_mm100_pt(pv)))
+        return None if pv is None else UnitPT(round(UnitConvert.convert_mm100_pt(pv)))
 
     @prop_blur.setter
     def prop_blur(self, value: int | UnitObj | None) -> None:
@@ -468,17 +459,15 @@ class Shadow(StyleBase):
             self._remove(self._props.blur)
             return
         try:
-            self._set(self._props.blur, value.get_value_mm100())
+            self._set(self._props.blur, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.blur, UnitConvert.convert_pt_mm100(value))
+            self._set(self._props.blur, UnitConvert.convert_pt_mm100(value))  # type: ignore
 
     @property
     def prop_transparency(self) -> Intensity | None:
         """Gets/Sets Shadow transparency value"""
         pv = cast(int, self._get(self._props.transparence))
-        if pv is None:
-            return None
-        return Intensity(pv)
+        return None if pv is None else Intensity(pv)
 
     @prop_transparency.setter
     def prop_transparency(self, value: int | Intensity | None) -> None:

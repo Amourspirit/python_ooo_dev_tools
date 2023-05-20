@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar
 import uno
 
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -132,7 +132,7 @@ class Sides(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls: Type[_TSides],
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TSides:
@@ -140,7 +140,7 @@ class Sides(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

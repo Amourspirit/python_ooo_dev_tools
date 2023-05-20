@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.10.3"
+version = "0.11.0"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -32,7 +32,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-ooouno = ">=0.2.5"
+ooouno = ">=2.0.3"
 Pillow = ">=9.2.0"
 typing-extensions = {version = ">=4.4.0", python = "<3.8"}
 lxml = ">=4.9.2"
@@ -46,14 +46,15 @@ secondary = false
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.2.0"
-hypothesis = ">=6.56.4"
+hypothesis = ">=6.75.3"
 thefuzz = ">=0.19.0"
 python-Levenshtein = ">=0.20.7"
 lo-dev-search = {version = ">=2.0.2", platform = "linux"}
-ruff = ">=0.0.254"
+ruff = ">=0.0.267"
 black = {extras = ["d"], version = ">=23.1.0"}
 oooenv = ">=0.1.1"
 pytest-mock = ">=3.10"
+pyright = ">=1.1.309"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -83,3 +84,18 @@ extended-select=["ANN", "C4", "N", "SIM", "TCH"]
 ignore=[]
 show-fixes=true
 target="py37"
+
+[tool.pyright]
+pythonVersion = "3.8"
+venvPath = "."
+venv = ".venv"
+include = ["ooodev", "src"]
+exclude = ["tests",
+    "docs",
+    "build",
+    "dist",
+    "cmds",
+    "tmp",
+    "**/__pycache__",
+    ".venv"
+]

@@ -4,7 +4,7 @@ Module for Fill Properties Fill Color.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Tuple, TypeVar
+from typing import Any, Tuple, TypeVar
 
 from ooodev.utils import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -38,13 +38,10 @@ class FillColor(AbstractColor):
             )
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
-        valid = super()._is_valid_obj(obj)
-        if valid:
+    def _is_valid_obj(self, obj: Any) -> bool:
+        if super()._is_valid_obj(obj):
             return True
-        if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.beans.XPropertySet"):
-            return True
-        return False
+        return bool(mLo.Lo.is_uno_interfaces(obj, "com.sun.star.beans.XPropertySet"))
 
     @property
     def prop_format_kind(self) -> FormatKind:

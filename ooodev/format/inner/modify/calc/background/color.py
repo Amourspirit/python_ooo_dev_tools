@@ -8,6 +8,7 @@ from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as 
 from ooodev.format.inner.direct.calc.background.color import Color as InnerColor
 from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind as TextDirectionKind
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 
 # endregion Imports
 
@@ -27,7 +28,7 @@ class Color(CellStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = StandardColor.AUTO_COLOR,
         style_name: StyleCellKind | str = StyleCellKind.DEFAULT,
         style_family: str = "CellStyles",
     ) -> None:

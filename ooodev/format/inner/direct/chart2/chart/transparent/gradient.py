@@ -46,8 +46,8 @@ class Gradient(WriteGradient):
     .. versionadded:: 0.9.4
     """
 
-    from_obj = DisabledMethod()
-    default = DeletedAttrib()
+    from_obj = DisabledMethod()  # type: ignore
+    default = DeletedAttrib()  # type: ignore
 
     def __init__(
         self,
@@ -137,7 +137,7 @@ class Gradient(WriteGradient):
             )
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return self._is_obj_service(obj)
 
     # region copy()

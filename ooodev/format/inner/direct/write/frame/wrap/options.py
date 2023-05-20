@@ -26,7 +26,7 @@ class Options(StyleBase):
         *,
         first: bool | None = None,
         background: bool | None = None,
-        countour: bool | None = None,
+        contour: bool | None = None,
         outside: bool | None = None,
         overlap: bool | None = None,
     ) -> None:
@@ -36,8 +36,8 @@ class Options(StyleBase):
         Args:
             first (bool , optional): Specifies first paragraph.
             background (bool , optional): Specifies in background.
-            countour (bool , optional): Specifies contour.
-            outside (bool , optional): Specifies contour outside only. ``countour`` must be ``True`` for this parameter to be effective.
+            contour (bool , optional): Specifies contour.
+            outside (bool , optional): Specifies contour outside only. ``contour`` must be ``True`` for this parameter to be effective.
             overlap (bool , optional): Specifies allow overlap.
         """
         super().__init__()
@@ -45,8 +45,8 @@ class Options(StyleBase):
             self.prop_first = first
         if background is not None:
             self.prop_background = background
-        if countour is not None:
-            self.prop_coutour = countour
+        if contour is not None:
+            self.prop_contour = contour
         if outside is not None:
             self.prop_outside = outside
         if overlap is not None:
@@ -67,7 +67,7 @@ class Options(StyleBase):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -79,21 +79,21 @@ class Options(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOptions], obj: object) -> _TOptions:
+    def from_obj(cls: Type[_TOptions], obj: Any) -> _TOptions:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOptions], obj: object, **kwargs) -> _TOptions:
+    def from_obj(cls: Type[_TOptions], obj: Any, **kwargs) -> _TOptions:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TOptions], obj: object, **kwargs) -> _TOptions:
+    def from_obj(cls: Type[_TOptions], obj: Any, **kwargs) -> _TOptions:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO Object.
+            obj (Any): UNO Object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.
@@ -131,11 +131,11 @@ class Options(StyleBase):
     def contour(self: _TOptions) -> _TOptions:
         """Gets copy of instance with contour set to ``True``"""
         opt = self.copy()
-        opt.prop_coutour = True
+        opt.prop_contour = True
         return opt
 
     @property
-    def outisde(self: _TOptions) -> _TOptions:
+    def outside(self: _TOptions) -> _TOptions:
         """Gets copy of instance with contour outside only set to ``True``"""
         opt = self.copy()
         opt.prop_outside = True
@@ -177,9 +177,7 @@ class Options(StyleBase):
         """Gets/Sets background value"""
         # background (Opaque) is stored in toggled mode When background is True, Opaque is False
         pv = cast(bool, self._get(self._props.background))
-        if pv is None:
-            return None
-        return not pv
+        return None if pv is None else not pv
 
     @prop_background.setter
     def prop_background(self, value: bool | None) -> None:
@@ -189,28 +187,28 @@ class Options(StyleBase):
         self._set(self._props.background, not value)
 
     @property
-    def prop_coutour(self) -> bool | None:
+    def prop_contour(self) -> bool | None:
         """Gets/Sets contour value"""
-        return self._get(self._props.countour)
+        return self._get(self._props.contour)
 
-    @prop_coutour.setter
-    def prop_coutour(self, value: bool | None) -> None:
+    @prop_contour.setter
+    def prop_contour(self, value: bool | None) -> None:
         if value is None:
-            self._remove(self._props.countour)
+            self._remove(self._props.contour)
             return
-        self._set(self._props.countour, value)
+        self._set(self._props.contour, value)
 
     @property
     def prop_outside(self) -> bool | None:
         """Gets/Sets contour outside only value"""
-        return self._get(self._props.countour)
+        return self._get(self._props.contour)
 
     @prop_outside.setter
     def prop_outside(self, value: bool | None) -> None:
         if value is None:
-            self._remove(self._props.countour)
+            self._remove(self._props.contour)
             return
-        self._set(self._props.countour, value)
+        self._set(self._props.contour, value)
 
     @property
     def prop_overlap(self) -> bool | None:
@@ -233,7 +231,7 @@ class Options(StyleBase):
             self._props_internal_attributes = FrameWrapOptionsProps(
                 first_para="SurroundAnchorOnly",
                 background="Opaque",
-                countour="SurroundContour",
+                contour="SurroundContour",
                 outside="ContourOutside",
                 overlap="AllowOverlap",
             )

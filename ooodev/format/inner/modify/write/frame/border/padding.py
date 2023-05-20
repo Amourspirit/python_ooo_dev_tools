@@ -112,7 +112,7 @@ class Padding(FrameStyleBaseMulti):
         if not isinstance(value, InnerPadding):
             raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
         direct = value.__class__(_cattribs=self._get_inner_cattribs())
-        vals = [value._get(pname) for pname in value._props]
+        vals = [value._get(p_name) for p_name in value._props]
         for key, val in zip(direct._props, vals):
             direct._set(key, val)
         self._del_attribs("_direct_inner")

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 
 
-class XTopWindowAdapter(unohelper.Base, XTopWindowListener):
+class XTopWindowAdapter(unohelper.Base, XTopWindowListener):  # type: ignore
     """
     makes it possible to receive window events.
 

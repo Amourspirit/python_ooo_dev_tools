@@ -1,17 +1,9 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 from dataclasses import dataclass
 import math
 from ..validation import check
 from ..decorator import enforce
 from .base_float_value import BaseFloatValue
-
-
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
 
 
 @enforce.enforce_types
@@ -21,18 +13,17 @@ class ImageOffset(BaseFloatValue):
 
     def __post_init__(self) -> None:
         check(
-            (self.value < 0.0 or self.value >= 1.0) == False,
+            self.value >= 0.0 and self.value < 1.0,
             f"{self}",
             f"Value of {self.value} is out of range. Value must be between 0.0 and 1.0",
         )
 
-    def _from_float(self, value: int) -> Self:
+    def _from_float(self, value: int) -> ImageOffset:
         return ImageOffset(value)
 
     def __eq__(self, other: object) -> bool:
-
         try:
-            i = float(other)
+            i = float(other)  # type: ignore
             return math.isclose(i, self.value)
         except Exception as e:
             return False

@@ -6,7 +6,6 @@ import uno
 from ooodev.format.inner.common.abstract.abstract_sides import AbstractSides
 from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
-from ooodev.format.inner.direct.write.para.border.sides import Sides as InnerSides
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ...cell_style_base_multi import CellStyleBaseMulti

@@ -11,11 +11,15 @@ The solution is to Mock unohelper during read the docs build.
 # if not stickytape will import sphinx modules.
 
 from .mock_g import DOCS_BUILDING
+
 if DOCS_BUILDING:
     from sphinx.ext.autodoc.mock import _MockObject
-    class Base(_MockObject):
+
+    class Base(_MockObject):  # type: ignore
         pass
+
 else:
     import unohelper
+
     class Base(unohelper.Base):
         pass

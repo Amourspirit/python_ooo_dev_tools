@@ -33,19 +33,19 @@ class Size(StyleBase):
         super().__init__()
         # self._chart_doc = chart_doc
         try:
-            self._width = width.get_value_mm100()
+            self._width = width.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._width = UnitConvert.convert_mm_mm100(width)
+            self._width = UnitConvert.convert_mm_mm100(width)  # type: ignore
         try:
-            self._height = height.get_value_mm100()
+            self._height = height.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._height = UnitConvert.convert_mm_mm100(height)
+            self._height = UnitConvert.convert_mm_mm100(height)  # type: ignore
 
     def _get_property_name(self) -> str:
         return "Size"
 
     # region Overridden Methods
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -69,7 +69,7 @@ class Size(StyleBase):
             self._supported_services_values = ("com.sun.star.drawing.Shape",)
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -119,9 +119,9 @@ class Size(StyleBase):
     @prop_width.setter
     def prop_width(self, value: float | UnitObj) -> None:
         try:
-            self._width = value.get_value_mm100()
+            self._width = value.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._width = UnitConvert.convert_mm_mm100(value)
+            self._width = UnitConvert.convert_mm_mm100(value)  # type: ignore
 
     @property
     def prop_height(self) -> UnitMM:
@@ -131,8 +131,8 @@ class Size(StyleBase):
     @prop_height.setter
     def prop_height(self, value: float | UnitObj) -> None:
         try:
-            self._height = value.get_value_mm100()
+            self._height = value.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._height = UnitConvert.convert_mm_mm100(value)
+            self._height = UnitConvert.convert_mm_mm100(value)  # type: ignore
 
     # endregion Properties

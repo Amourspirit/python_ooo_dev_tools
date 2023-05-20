@@ -1,5 +1,7 @@
 version: 2
 
+# https://docs.readthedocs.io/en/stable/config-file/index.html
+
 build:
   os: "ubuntu-22.04"
   tools:
@@ -15,5 +17,4 @@ python:
     - requirements: docs/requirements.txt
 
 formats:
-  - epub
-  - pdf
+  - htmlzip

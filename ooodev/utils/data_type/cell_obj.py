@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import cast
 from dataclasses import dataclass, field
 from typing import overload
@@ -32,10 +33,9 @@ class CellObj:
     """Range Object that instance is part of"""
 
     def __post_init__(self):
-
         object.__setattr__(self, "col", self.col.upper())
         try:
-            # convert col to index for the purpose of validataion
+            # convert col to index for the purpose of validation
             _ = mTb.TableHelper.col_name_to_int(name=self.col)
         except ValueError as e:
             raise AssertionError from e
@@ -45,12 +45,10 @@ class CellObj:
                 if self.range_obj.sheet_idx >= 0:
                     object.__setattr__(self, "sheet_idx", self.range_obj.sheet_idx)
             else:
-                try:
+                with contextlib.suppress(Exception):
                     if mLo.Lo.is_loaded:
                         idx = mCalc.Calc.get_sheet_index()
                         object.__setattr__(self, "sheet_idx", idx)
-                except:
-                    pass
 
     # endregion init
 
@@ -100,11 +98,9 @@ class CellObj:
             parts = mTb.TableHelper.get_cell_parts(cell_val)
             idx = -1
             if parts.sheet and mLo.Lo.is_loaded:
-                try:
+                with contextlib.suppress(Exception):
                     sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=parts.sheet)
                     idx = mCalc.Calc.get_sheet_index(sheet=sheet)
-                except:
-                    pass
             return CellObj(col=parts.col, row=parts.row, sheet_idx=idx)
 
         cv = mCellVals.CellValues.from_cell(cell_val)
@@ -173,9 +169,7 @@ class CellObj:
     def __eq__(self, other: object) -> bool:
         if isinstance(other, CellObj):
             return self.sheet_idx == other.sheet_idx and self.col == other.col and self.row == other.row
-        if isinstance(other, str):
-            return str(self) == other.upper()
-        return False
+        return str(self) == other.upper() if isinstance(other, str) else False
 
     def __add__(self, other: object) -> CellObj:
         try:
@@ -215,7 +209,7 @@ class CellObj:
             if isinstance(other, int):
                 return CellObj(col=self.col, row=self.row - other, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, CellObj):
-                # subbtract row and column:
+                # subtract row and column:
                 col = self.col_obj - other.col_obj
                 row = self.row_obj - other.row_obj
                 return CellObj(col=col.value, row=row.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
@@ -254,15 +248,11 @@ class CellObj:
         return NotImplemented
 
     def __rmul__(self, other: object) -> CellObj:
-        if other == 0:
-            return self
-        else:
-            return self.__mul__(other)
+        return self if other == 0 else self.__mul__(other)
 
     def __truediv__(self, other: object) -> CellObj:
         try:
             if isinstance(other, str):
-                # string mean subtract column
                 col = self.col_obj / other
                 return CellObj(col=col.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             if isinstance(other, mCol.ColObj):
@@ -287,13 +277,13 @@ class CellObj:
 
     def __rtruediv__(self, other: object) -> CellObj:
         try:
-            i = self.index + 1
+            i = self.col_obj.index + 1
             if isinstance(other, str):
-                oth = CellObj(other)
+                oth = CellObj.from_cell(other)
                 return oth.__truediv__(self.col)
-            if isinstance(other, numbers.Real):
-                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
-                check(other >= i, f"{repr(self)}", f"Cannot be divided by lessor number")
+            if isinstance(other, (int, float)):
+                check(other != 0, f"{repr(self)}", "Cannot be divided by zero")
+                check(other >= i, f"{repr(self)}", "Cannot be divided by greater number")
                 oth = CellObj.from_idx(col_idx=self.col_obj.index, row_idx=round(other - 1), sheet_idx=self.sheet_idx)
                 return oth.__truediv__(self.row)
         except IndexError:
@@ -312,40 +302,40 @@ class CellObj:
     def col_obj(self) -> mCol.ColObj:
         """Gets Column object"""
         try:
-            inf = self._col_info
+            inf = self._col_info  # type: ignore
             if inf() is None:
                 raise AttributeError
             return inf()
         except AttributeError:
             obj = mCol.ColObj(value=self.col, cell_obj=self)
             object.__setattr__(self, "_col_info", ref(obj))
-        return self._col_info()
+        return self._col_info()  # type: ignore
 
     @property
     def row_obj(self) -> mRow.RowObj:
         """Gets Row object"""
         try:
-            inf = self._row_info
+            inf = self._row_info  # type: ignore
             if inf() is None:
                 raise AttributeError
             return inf()
         except AttributeError:
             obj = mRow.RowObj(value=self.row, cell_obj=self)
             object.__setattr__(self, "_row_info", ref(obj))
-        return self._row_info()
+        return self._row_info()  # type: ignore
 
     @property
     def right(self) -> CellObj:
         """Gets the cell to the right of current cell"""
         try:
-            co = self._cell_right
+            co = self._cell_right  # type: ignore
             if co() is None:
                 raise AttributeError
             return co()
         except AttributeError:
             co = CellObj(col=self.col_obj.next.value, row=self.row, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             object.__setattr__(self, "_cell_right", ref(co))
-        return self._cell_right()
+        return self._cell_right()  # type: ignore
 
     @property
     def left(self) -> CellObj:
@@ -356,7 +346,7 @@ class CellObj:
             IndexError: If cell left is out of range
         """
         try:
-            co = self._cell_left
+            co = self._cell_left  # type: ignore
             if co() is None:
                 raise AttributeError
             return co()
@@ -370,20 +360,20 @@ class CellObj:
                 raise
             except AssertionError as e:
                 raise IndexError from e
-        return self._cell_left()
+        return self._cell_left()  # type: ignore
 
     @property
     def down(self) -> CellObj:
         """Gets the cell below of current cell"""
         try:
-            co = self._cell_down
+            co = self._cell_down  # type: ignore
             if co() is None:
                 raise AttributeError
             return co()
         except AttributeError:
             co = CellObj(col=self.col, row=self.row_obj.next.value, sheet_idx=self.sheet_idx, range_obj=self.range_obj)
             object.__setattr__(self, "_cell_down", ref(co))
-        return self._cell_down()
+        return self._cell_down()  # type: ignore
 
     @property
     def up(self) -> CellObj:
@@ -394,7 +384,7 @@ class CellObj:
             IndexError: If cell above is out of range
         """
         try:
-            co = self._cell_up
+            co = self._cell_up  # type: ignore
             if co() is None:
                 raise AttributeError
             return co()
@@ -408,7 +398,7 @@ class CellObj:
                 raise
             except AssertionError as e:
                 raise IndexError from e
-        return self._cell_up()
+        return self._cell_up()  # type: ignore
 
     # endregion properties
 

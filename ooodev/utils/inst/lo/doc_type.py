@@ -16,9 +16,13 @@ class DocType(IntEnum):
     def __str__(self) -> str:
         return str(self.value)
 
+    def get_doc_type_str(self) -> DocTypeStr:
+        """Gets the document type as string Enum"""
+        return DocTypeStr[self.name]
+
 
 class DocTypeStr(str, Enum):
-    """Document Type as string"""
+    """Document Type as string Enum"""
 
     UNKNOWN = "unknown"
     WRITER = "swriter"
@@ -30,3 +34,7 @@ class DocTypeStr(str, Enum):
 
     def __str__(self) -> str:
         return self.value
+
+    def get_doc_type(self) -> DocType:
+        """Gets the document type as DocType Enum"""
+        return DocType[self.name]

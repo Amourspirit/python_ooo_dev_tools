@@ -5,7 +5,7 @@ Module for ``Gradient`` struct.
 """
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 import json
 import uno
 from ooo.dyn.awt.gradient import Gradient
@@ -170,10 +170,10 @@ class GradientStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -275,16 +275,16 @@ class GradientStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: object) -> _TGradientStruct:
+    def from_obj(cls: Type[_TGradientStruct], obj: Any) -> _TGradientStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: object, **kwargs) -> _TGradientStruct:
+    def from_obj(cls: Type[_TGradientStruct], obj: Any, **kwargs) -> _TGradientStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: object, **kwargs) -> _TGradientStruct:
+    def from_obj(cls: Type[_TGradientStruct], obj: Any, **kwargs) -> _TGradientStruct:
         """
         Gets instance from object
 
@@ -303,8 +303,8 @@ class GradientStruct(StructBase):
 
         try:
             grad = cast(Gradient, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(grad, **kwargs)
 
@@ -419,9 +419,7 @@ class GradientStruct(StructBase):
     def prop_angle(self) -> Angle:
         """Gets/Sets angle of the gradient."""
         pv = cast(int, self._get("Angle"))
-        if pv == 0:
-            return Angle(0)
-        return Angle(round(pv / 10))
+        return Angle(0) if pv == 0 else Angle(round(pv / 10))
 
     @prop_angle.setter
     def prop_angle(self, value: Angle | int):

@@ -39,7 +39,7 @@ class Position(ChartShapePosition):
         super().__init__(pos_x=pos_x, pos_y=pos_y)
 
     # region Overridden Methods
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 

@@ -23,13 +23,13 @@ class ThemeSql(ThemeBase):
         return self._comment_color
 
     @property
-    def identifer_color(self) -> int:
+    def identifier_color(self) -> int:
         """Identifier color."""
         try:
-            return self._identifer_color
+            return self._identifier_color
         except AttributeError:
-            self._identifer_color = self._get_color("SQLIdentifier")
-        return self._identifer_color
+            self._identifier_color = self._get_color("SQLIdentifier")
+        return self._identifier_color
 
     @property
     def keyword_color(self) -> int:

@@ -55,6 +55,7 @@ class AbstractDocument(StyleBase):
 
         .. versionadded:: 0.9.0
         """
+        # sourcery skip: extract-method, raise-specific-error
         props = mInfo.Info.get_style_props(
             doc=mWrite.Write.active_doc,
             family_style_name=self._get_doc_family_style_name(),
@@ -87,6 +88,7 @@ class AbstractDocument(StyleBase):
         Returns:
             Size: Page Size in ``1/100 mm`` units.
         """
+        # sourcery skip: raise-specific-error
         props = mInfo.Info.get_style_props(
             doc=mWrite.Write.active_doc,
             family_style_name=self._get_doc_family_style_name(),

@@ -59,9 +59,7 @@ class Plot(PlotSimple):
     def prop_missing_values(self) -> MissingValueKind | None:
         """Gets or sets the missing value treatment."""
         pv = cast(int, self._get("MissingValueTreatment"))
-        if pv is None:
-            return None
-        return MissingValueKind(pv)
+        return None if pv is None else MissingValueKind(pv)
 
     @prop_missing_values.setter
     def prop_missing_values(self, value: MissingValueKind | None) -> None:

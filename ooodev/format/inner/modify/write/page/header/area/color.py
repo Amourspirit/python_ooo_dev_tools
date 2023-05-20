@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar
 import uno
 from ooodev.utils import color as mColor
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
@@ -59,7 +59,7 @@ class Color(PageStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = mColor.StandardColor.AUTO_COLOR,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -102,7 +102,7 @@ class Color(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls: Type[_TColor],
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TColor:
@@ -110,7 +110,7 @@ class Color(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

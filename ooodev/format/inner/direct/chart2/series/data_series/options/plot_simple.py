@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, TypeVar, overload
+from typing import Any, Tuple, TypeVar, overload
 import uno
 from com.sun.star.chart2 import XChartDocument
 
@@ -52,14 +52,14 @@ class PlotSimple(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -74,7 +74,7 @@ class PlotSimple(StyleBase):
             return
 
         try:
-            diagram = self._chart_doc.getDiagram()
+            diagram = self._chart_doc.getDiagram()  # type: ignore
         except Exception as e:
             mLo.Lo.print(f"{self.__class__.__name__}.apply() - Unable to get chart diagram")
             mLo.Lo.print(f"  Error: {e}")

@@ -39,12 +39,12 @@ class SheetCancelArgs(AbstractSheetCancelArgs):
     )
 
     @staticmethod
-    def from_args(args: SheetCancelArgs) -> SheetCancelArgs:
+    def from_args(args: AbstractSheetCancelArgs) -> SheetCancelArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (SheetCancelArgs): Existing Instance
+            args (AbstractSheetCancelArgs): Existing Instance
 
         Returns:
             SheetCancelArgs: args

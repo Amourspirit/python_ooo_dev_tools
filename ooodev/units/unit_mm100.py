@@ -23,15 +23,14 @@ class UnitMM100(BaseIntValue):
         :ref:`proto_unit_obj`
     """
 
-    def _from_int(self, value: int) -> _TUnitMM100:
-        inst = super(UnitMM100, self.__class__).__new__(self.__class__)
-        return inst.__init__(value)
+    def _from_int(self, value: int) -> UnitMM100:
+        return UnitMM100(value)
 
     def __eq__(self, other: object) -> bool:
         # for some reason BaseIntValue __eq__ is not picked up.
         # I suspect this is due to this class being a dataclass.
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return i == self.value
         except Exception as e:
             return False
@@ -122,6 +121,7 @@ class UnitMM100(BaseIntValue):
         Returns:
             UnitMM100:
         """
+        # sourcery skip: remove-unnecessary-cast
         inst = super(UnitMM100, cls).__new__(cls)
         inst.__init__(int(value))
         return inst

@@ -77,17 +77,14 @@ class Borders(StyleMulti):
             bottom=bottom,
             all=all,
         )
-        sides._prop_parent = self
 
         super().__init__(**init_vals)
 
         if sides.prop_has_attribs:
             self._set_style("sides", sides, *sides.get_attrs())
-        if not padding is None:
-            padding._prop_parent = self
+        if padding is not None:
             self._set_style("padding", padding, *padding.get_attrs())
-        if not shadow is None:
-            shadow._prop_parent = self
+        if shadow is not None:
             self._set_style("shadow", shadow, *shadow.get_attrs())
 
     # endregion init
@@ -97,11 +94,9 @@ class Borders(StyleMulti):
         if pos == BorderKind.NONE:
             inst._remove_style("sides")
             return
-        sides_info = inst._get_style("sides")
-        if sides_info is None:
-            sides = Sides()
-        else:
-            sides = sides_info[0].copy()
+        sides_info = inst._get_style_inst("sides")
+
+        sides = Sides() if sides_info is None else cast(Sides, sides_info.copy())
         if BorderKind.BOTTOM in pos:
             sides.prop_bottom = side
         if BorderKind.LEFT in pos:
@@ -252,10 +247,10 @@ class Borders(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 

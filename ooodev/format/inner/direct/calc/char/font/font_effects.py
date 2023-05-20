@@ -30,8 +30,8 @@ class FontEffects(CharFontEffects):
     .. versionadded:: 0.9.4
     """
 
-    prop_hidden = DeletedAttrib()
-    fmt_hidden = DisabledMethod()
+    prop_hidden = DeletedAttrib()  # type: ignore
+    fmt_hidden = DisabledMethod()  # type: ignore
 
     def __init__(
         self,

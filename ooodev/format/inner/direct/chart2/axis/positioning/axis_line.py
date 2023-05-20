@@ -18,7 +18,7 @@ class AxisLine(StyleBase):
     .. versionadded:: 0.9.4
     """
 
-    def __init__(self, cross: ChartAxisPosition | None = None, value: float | None | TNullObj = NULL_OBJ) -> None:
+    def __init__(self, cross: ChartAxisPosition | None = None, value: float | None | TNullObj = NULL_OBJ) -> None:  # type: ignore
         """
         Constructor
 
@@ -50,7 +50,7 @@ class AxisLine(StyleBase):
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == "CrossoverValue" and event_args.value is None:
             # CrossoverValue can be None but is not allowed via property set.
-            # Setting to default will cause Props to call set defatult.
+            # Setting to default will cause Props to call set default.
             event_args.default = True
         return super().on_property_setting(source, event_args)
 

@@ -1,7 +1,7 @@
 # region Import
 from __future__ import annotations
 from ast import Tuple
-from typing import cast
+from typing import Any, cast
 import uno
 from ooo.dyn.style.page_style_layout import PageStyleLayout as PageStyleLayout
 from ooo.dyn.style.numbering_type import NumberingTypeEnum as NumberingTypeEnum
@@ -30,19 +30,19 @@ class _GutterPosition(AbstractDocument):
         # True means left, False means top
         self._pos_left = pos_left
 
-    def _supported_services(self) -> Tuple[str, ...]:
+    def _supported_services(self) -> Tuple[str, ...]:  # type: ignore
         try:
-            return self._supported_services_values
+            return self._supported_services_values  # type: ignore
         except AttributeError:
             self._supported_services_values = ("com.sun.star.text.DocumentSettings",)
-        return self._supported_services_values
+        return self._supported_services_values  # type: ignore
 
     def copy(self, **kwargs) -> _GutterPosition:
         cp = super().copy(**kwargs)
         cp.prop_pos_left = self.prop_pos_left
         return cp
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         try:
             props = self.get_doc_settings()
         except Exception as e:
@@ -52,7 +52,7 @@ class _GutterPosition(AbstractDocument):
         super().apply(obj=props, override_dv={"GutterAtTop": not self._pos_left})
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _GutterPosition:
+    def from_obj(cls, obj: Any, **kwargs) -> _GutterPosition:
         inst = cls(**kwargs)
         props = inst.get_doc_settings()
         inst._pos_left = not bool(mProps.Props.get(props, "GutterAtTop", False))
@@ -125,7 +125,7 @@ class LayoutSettings(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> LayoutSettings:
@@ -133,7 +133,7 @@ class LayoutSettings(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

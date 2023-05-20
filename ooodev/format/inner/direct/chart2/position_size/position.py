@@ -32,19 +32,19 @@ class Position(StyleBase):
         super().__init__()
         # self._chart_doc = chart_doc
         try:
-            self._pos_x = pos_x.get_value_mm100()
+            self._pos_x = pos_x.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._pos_x = UnitConvert.convert_mm_mm100(pos_x)
+            self._pos_x = UnitConvert.convert_mm_mm100(pos_x)  # type: ignore
         try:
-            self._pos_y = pos_y.get_value_mm100()
+            self._pos_y = pos_y.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._pos_y = UnitConvert.convert_mm_mm100(pos_y)
+            self._pos_y = UnitConvert.convert_mm_mm100(pos_y)  # type: ignore
 
     def _get_property_name(self) -> str:
         return "Position"
 
     # region Overridden Methods
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -70,7 +70,7 @@ class Position(StyleBase):
             self._supported_services_values = ("com.sun.star.drawing.Shape",)
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -120,9 +120,9 @@ class Position(StyleBase):
     @prop_pos_x.setter
     def prop_pos_x(self, value: float | UnitObj) -> None:
         try:
-            self._pos_x = value.get_value_mm100()
+            self._pos_x = value.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._pos_x = UnitConvert.convert_mm_mm100(value)
+            self._pos_x = UnitConvert.convert_mm_mm100(value)  # type: ignore
 
     @property
     def prop_pos_y(self) -> UnitMM:
@@ -132,8 +132,8 @@ class Position(StyleBase):
     @prop_pos_y.setter
     def prop_pos_y(self, value: float | UnitObj) -> None:
         try:
-            self._pos_y = value.get_value_mm100()
+            self._pos_y = value.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._pos_y = UnitConvert.convert_mm_mm100(value)
+            self._pos_y = UnitConvert.convert_mm_mm100(value)  # type: ignore
 
     # endregion Properties

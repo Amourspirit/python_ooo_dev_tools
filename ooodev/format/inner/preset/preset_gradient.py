@@ -7,6 +7,7 @@ from ooodev.utils.data_type.offset import Offset
 from ooodev.utils.data_type.color_range import ColorRange
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.kind import kind_helper
+from ooodev.utils.color import Color
 
 
 class PresetGradientKind(Enum):
@@ -126,7 +127,7 @@ def pastel_bouquet() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "grad_color": ColorRange(14543051, 16766935),
+        "grad_color": ColorRange(Color(14543051), Color(16766935)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.PASTEL_BOUQUET.value,
     }
@@ -140,7 +141,7 @@ def pastel_dream() -> Dict[str, Any]:
         "offset": Offset(50, 50),
         "angle": 45,
         "border": 0,
-        "grad_color": ColorRange(16766935, 11847644),
+        "grad_color": ColorRange(Color(16766935), Color(11847644)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.PASTEL_DREAM.value,
     }
@@ -154,7 +155,7 @@ def blue_touch() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 1,
         "border": 0,
-        "grad_color": ColorRange(11847644, 14608111),
+        "grad_color": ColorRange(Color(11847644), Color(14608111)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.BLUE_TOUCH.value,
     }
@@ -168,7 +169,7 @@ def blank_gray() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 90,
         "border": 75,
-        "grad_color": ColorRange(16777215, 14540253),
+        "grad_color": ColorRange(Color(16777215), Color(14540253)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.BLANK_GRAY.value,
     }
@@ -182,7 +183,7 @@ def spotted_gray() -> Dict[str, Any]:
         "offset": Offset(50, 50),
         "angle": 0,
         "border": 0,
-        "grad_color": ColorRange(11711154, 15658734),
+        "grad_color": ColorRange(Color(11711154), Color(15658734)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.SPOTTED_GRAY.value,
     }
@@ -196,7 +197,7 @@ def london_mist() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "grad_color": ColorRange(13421772, 6710886),
+        "grad_color": ColorRange(Color(13421772), Color(6710886)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.LONDON_MIST.value,
     }
@@ -210,7 +211,7 @@ def teal_blue() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "grad_color": ColorRange(5280650, 5866416),
+        "grad_color": ColorRange(Color(5280650), Color(5866416)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.TEAL_BLUE.value,
     }
@@ -224,7 +225,7 @@ def midnight() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 0,
         "border": 0,
-        "grad_color": ColorRange(0, 2777241),
+        "grad_color": ColorRange(Color(0), Color(2777241)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.MIDNIGHT.value,
     }
@@ -238,7 +239,7 @@ def deep_ocean() -> Dict[str, Any]:
         "offset": Offset(50, 50),
         "angle": 0,
         "border": 0,
-        "grad_color": ColorRange(0, 7512015),
+        "grad_color": ColorRange(Color(0), Color(7512015)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.DEEP_OCEAN.value,
     }
@@ -252,7 +253,7 @@ def submarine() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 0,
         "border": 0,
-        "grad_color": ColorRange(14543051, 11847644),
+        "grad_color": ColorRange(Color(14543051), Color(11847644)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.SUBMARINE.value,
     }
@@ -266,7 +267,7 @@ def green_grass() -> Dict[str, Any]:
         "offset": Offset(0, 0),
         "angle": 30,
         "border": 0,
-        "grad_color": ColorRange(16776960, 8508442),
+        "grad_color": ColorRange(Color(16776960), Color(8508442)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.GREEN_GRASS.value,
     }
@@ -280,7 +281,7 @@ def neon_light() -> Dict[str, Any]:
         "offset": Offset(50, 50),
         "angle": 0,
         "border": 15,
-        "grad_color": ColorRange(1209890, 16777215),
+        "grad_color": ColorRange(Color(1209890), Color(16777215)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.NEON_LIGHT.value,
     }
@@ -294,7 +295,7 @@ def sunshine() -> Dict[str, Any]:
         "offset": Offset(66, 33),
         "angle": 0,
         "border": 33,
-        "grad_color": ColorRange(16760576, 16776960),
+        "grad_color": ColorRange(Color(16760576), Color(16776960)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.SUNSHINE.value,
     }
@@ -308,7 +309,7 @@ def present() -> Dict[str, Any]:
         "offset": Offset(70, 60),
         "angle": 45,
         "border": 72,
-        "grad_color": ColorRange(8468233, 16728064),
+        "grad_color": ColorRange(Color(8468233), Color(16728064)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.PRESENT.value,
     }
@@ -322,13 +323,13 @@ def mahogany() -> Dict[str, Any]:
         "offset": Offset(50, 50),
         "angle": 45,
         "border": 0,
-        "grad_color": ColorRange(0, 9250846),
+        "grad_color": ColorRange(Color(0), Color(9250846)),
         "grad_intensity": IntensityRange(100, 100),
         "name": PresetGradientKind.MAHOGANY.value,
     }
 
 
-def get_preset(kind: PresetGradientKind) -> Dict[str:Any]:
+def get_preset(kind: PresetGradientKind) -> Dict[str, Any]:
     """
     Gets preset
 

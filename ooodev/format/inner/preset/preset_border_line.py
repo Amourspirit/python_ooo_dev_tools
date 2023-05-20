@@ -399,7 +399,7 @@ def _get_line_kind_line_with_fine_dots() -> BorderLineProps:
 # region data series border internal methods
 def _get_default_line_dash() -> LineDash:
     return LineDash(
-        Style=DashStyle.RECT,
+        Style=DashStyle.RECT,  # type: ignore
         Dots=0,
         DotLen=0,
         Dashes=0,

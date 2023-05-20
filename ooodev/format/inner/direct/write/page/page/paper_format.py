@@ -51,7 +51,7 @@ class PaperFormat(StyleBase):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -70,16 +70,16 @@ class PaperFormat(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPaperFormat], obj: object) -> _TPaperFormat:
+    def from_obj(cls: Type[_TPaperFormat], obj: Any) -> _TPaperFormat:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPaperFormat], obj: object, **kwargs) -> _TPaperFormat:
+    def from_obj(cls: Type[_TPaperFormat], obj: Any, **kwargs) -> _TPaperFormat:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TPaperFormat], obj: object, **kwargs) -> _TPaperFormat:
+    def from_obj(cls: Type[_TPaperFormat], obj: Any, **kwargs) -> _TPaperFormat:
         """
         Gets instance from object
 
@@ -98,7 +98,7 @@ class PaperFormat(StyleBase):
         def set_prop(key: str, clazz: PaperFormat):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 clazz._set(key, val)
 
         set_prop("Width", inst)

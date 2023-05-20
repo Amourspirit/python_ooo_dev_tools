@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 import uno
 from ooo.dyn.awt.point import Point
@@ -63,7 +63,7 @@ class PointStruct(StructBase):
             obj2 = cast(PointStruct, oth)
         if obj2:
             obj1 = self.get_uno_struct()
-            return obj1.X == obj2.X and obj1.Y == obj2.Y
+            return obj1.X == obj2.X and obj1.Y == obj2.Y  # type: ignore
         return NotImplemented
 
     # endregion dunder methods
@@ -78,8 +78,7 @@ class PointStruct(StructBase):
         """
         x = self._get(self._props.width)
         y = self._get(self._props.height)
-        inst = Point(X=x, Y=y)
-        return inst
+        return Point(X=x, Y=y)
 
     # endregion methods
 
@@ -95,10 +94,10 @@ class PointStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -148,8 +147,8 @@ class PointStruct(StructBase):
             PointStruct: ``PointStruct`` set with ``Point`` properties.
         """
         inst = cls(**kwargs)
-        inst._set(inst._props.height, value.Height)
-        inst._set(inst._props.width, value.Width)
+        inst._set(inst._props.height, value.X)
+        inst._set(inst._props.width, value.Y)
         return inst
 
     # endregion from_uno_struct()
@@ -157,16 +156,16 @@ class PointStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPointStruct], obj: object) -> _TPointStruct:
+    def from_obj(cls: Type[_TPointStruct], obj: Any) -> _TPointStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPointStruct], obj: object, **kwargs) -> _TPointStruct:
+    def from_obj(cls: Type[_TPointStruct], obj: Any, **kwargs) -> _TPointStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TPointStruct], obj: object, **kwargs) -> _TPointStruct:
+    def from_obj(cls: Type[_TPointStruct], obj: Any, **kwargs) -> _TPointStruct:
         """
         Gets instance from object
 
@@ -184,9 +183,9 @@ class PointStruct(StructBase):
         prop_name = nu._get_property_name()
 
         try:
-            point = cast(PointStruct, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+            point = cast(Point, mProps.Props.get(obj, prop_name))
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(point, **kwargs)
 

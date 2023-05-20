@@ -76,6 +76,6 @@ class FontOnly(CharFontOnly):
             self._remove(self._props.size)
             return
         try:
-            self._set(self._props.size, round(value.get_value_pt()))
+            self._set(self._props.size, round(value.get_value_pt()))  # type: ignore
         except AttributeError:
-            self._set(self._props.size, round(value))
+            self._set(self._props.size, round(value))  # type: ignore
