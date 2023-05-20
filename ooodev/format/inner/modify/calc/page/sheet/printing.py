@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import NamedTuple
 import uno
 
-from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind

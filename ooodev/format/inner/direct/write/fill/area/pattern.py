@@ -3,7 +3,9 @@ Module for Fill Properties Fill Pattern.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
+import contextlib
 from typing import Any, Tuple, overload, Type, TypeVar
 
 from com.sun.star.awt import XBitmap
@@ -66,14 +68,12 @@ class Pattern(StyleBase):
             init_vals[self._props.tile] = tile
         if self._props.stretch:
             init_vals[self._props.stretch] = stretch
-        bmap = None
-        try:
-            bmap = self._get_bitmap(bitmap, name, auto_name)
-        except Exception:
-            pass
-        if not bmap is None:
+        b_map = None
+        with contextlib.suppress(Exception):
+            b_map = self._get_bitmap(bitmap, name, auto_name)
+        if b_map is not None:
             if self._props.bitmap:
-                init_vals[self._props.bitmap] = bmap
+                init_vals[self._props.bitmap] = b_map
             if self._props.name:
                 init_vals[self._props.name] = self._name
             if self._props.style:
@@ -96,9 +96,9 @@ class Pattern(StyleBase):
             self._name = self._container_get_unique_el_name(name, nc)
         else:
             self._name = name
-        bmap = self._container_get_value(self._name, nc)  # raises value error if name is empty
-        if not bmap is None:
-            return bmap
+        b_map = self._container_get_value(self._name, nc)  # raises value error if name is empty
+        if b_map is not None:
+            return b_map
         if bitmap is None:
             raise ValueError(f'No bitmap could be found in container for "{name}". In this case a bitmap is required.')
         self._container_add_value(name=self._name, obj=bitmap, allow_update=False, nc=nc)
@@ -146,10 +146,10 @@ class Pattern(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -164,11 +164,11 @@ class Pattern(StyleBase):
             return
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Pattern.apply(): Unable to set Property")
+            mLo.Lo.print("Pattern.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -212,26 +212,26 @@ class Pattern(StyleBase):
         nu = cls(**kwargs)
 
         nc = nu._container_get_inst()
-        bmap = nu._container_get_value(name, nc)
-        if bmap is None:
-            bmap = mPattern.get_prest_bitmap(preset)
-        return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
+        bitmap = nu._container_get_value(name, nc)
+        if bitmap is None:
+            bitmap = mPattern.get_prest_bitmap(preset)
+        return cls(bitmap=bitmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
 
     # endregion from_preset()
 
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: object) -> _TPattern:
+    def from_obj(cls: Type[_TPattern], obj: Any) -> _TPattern:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
+    def from_obj(cls: Type[_TPattern], obj: Any, **kwargs) -> _TPattern:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
+    def from_obj(cls: Type[_TPattern], obj: Any, **kwargs) -> _TPattern:
         """
         Gets instance from object
 
@@ -253,7 +253,7 @@ class Pattern(StyleBase):
             if not key:
                 return
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 fp._set(key, val)
 
         name = mProps.Props.get(obj, inst._props.name)

@@ -93,9 +93,8 @@ class ScalePagesWidthHeight(CellStyleBase):
 
     @prop_width.setter
     def prop_width(self, value: int):
-        if value < 1:
-            # 1 is min
-            value = 1
+        # 1 is min
+        value = max(value, 1)
         # the order is important here.
         # by setting value last it ensure it is the last property set.
         # Otherwise, may get unexpected results. This is a Calc issue.
@@ -112,9 +111,8 @@ class ScalePagesWidthHeight(CellStyleBase):
 
     @prop_height.setter
     def prop_height(self, value: int):
-        if value < 1:
-            # 1 is min
-            value = 1
+        # 1 is min
+        value = max(value, 1)
         # the order is important here.
         # by setting value last it ensure it is the last property set.
         # Otherwise, may get unexpected results. This is a Calc issue.

@@ -198,10 +198,10 @@ class Borders(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -221,16 +221,16 @@ class Borders(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any) -> _TBorders:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         """
         Gets Borders instance from object
 
@@ -304,7 +304,7 @@ class Borders(StyleMulti):
         bt.prop_right = value
         bt.prop_top = value
         bt.prop_bottom = value
-        cp._border_table = bt
+        cp._border_table = bt  # type: ignore
         return cp
 
     def fmt_left(self: _TBorders, value: Side | None) -> _TBorders:
@@ -424,9 +424,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
-        cp, ret = self._fmt_get_border_table(value, "vertical")
-        if ret:
-            return cp
+        cp = self.copy()
 
         bt = cast(TableBorderStruct, cp._get_style_inst("distance"))
         bt.prop_distance = value

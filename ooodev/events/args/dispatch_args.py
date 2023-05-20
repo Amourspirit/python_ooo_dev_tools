@@ -3,7 +3,7 @@ from typing import Any
 from .event_args import AbstractEvent
 
 
-class AbstractDispacthArgs(AbstractEvent):
+class AbstractDispatchArgs(AbstractEvent):
     # https://stackoverflow.com/questions/472000/usage-of-slots
     __slots__ = ()
 
@@ -22,16 +22,16 @@ class AbstractDispacthArgs(AbstractEvent):
     """Gets/Sets the dispatch cmd of the event"""
 
 
-class DispatchArgs(AbstractDispacthArgs):
+class DispatchArgs(AbstractDispatchArgs):
     __slots__ = ("source", "_event_name", "event_data", "cmd", "_event_source", "_kv_data")
 
     @staticmethod
-    def from_args(args: DispatchArgs) -> DispatchArgs:
+    def from_args(args: AbstractDispatchArgs) -> DispatchArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (DispatchArgs): Existing Instance
+            args (AbstractDispatchArgs): Existing Instance
 
         Returns:
             DispatchArgs: args

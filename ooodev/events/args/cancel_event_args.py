@@ -31,12 +31,12 @@ class CancelEventArgs(AbstractCancelEventArgs):
     __slots__ = ("source", "_event_name", "event_data", "cancel", "handled", "_event_source", "_kv_data")
 
     @staticmethod
-    def from_args(args: CancelEventArgs) -> CancelEventArgs:
+    def from_args(args: AbstractCancelEventArgs) -> CancelEventArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (CancelEventArgs): Existing Instance
+            args (AbstractCancelEventArgs): Existing Instance
 
         Returns:
             CancelEventArgs: args

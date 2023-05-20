@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor
 from ooodev.utils import color as mColor
@@ -16,7 +16,7 @@ class Color(FillColor):
     .. versionadded:: 0.9.4
     """
 
-    def __init__(self, color: mColor.Color = -1) -> None:
+    def __init__(self, color: mColor.Color = mColor.Color(-1)) -> None:
         """
         Constructor
 
@@ -45,5 +45,5 @@ class Color(FillColor):
             )
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return self._is_obj_service(obj)

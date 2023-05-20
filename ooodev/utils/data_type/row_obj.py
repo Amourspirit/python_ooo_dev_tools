@@ -36,14 +36,14 @@ class RowObj(BaseIntValue):
     @staticmethod
     def from_int(num: int, zero_index: bool = False) -> RowObj:
         """
-        Gets a ``RowObj`` instance from an interger.
+        Gets a ``RowObj`` instance from an integer.
 
         Args:
             num (int): Row number.
             zero_index (bool, optional): Determines if the row value is treated as zero index. Defaults to ``False``.
 
         Raises:
-            AssertionError: if unablt to create ``RowObj`` instance.
+            AssertionError: if unable to create ``RowObj`` instance.
 
         Returns:
             RowObj: Cell Object
@@ -62,7 +62,7 @@ class RowObj(BaseIntValue):
 
     # endregion static methods
 
-    # region duner methods
+    # region dunder methods
 
     def __str__(self) -> str:
         return str(self.value)
@@ -73,34 +73,32 @@ class RowObj(BaseIntValue):
     def __eq__(self, other: object) -> bool:
         if isinstance(other, int):
             return self.value == other
-        if not isinstance(other, RowObj):
-            return False
-        return self.value == other.value
+        return self.value == other.value if isinstance(other, RowObj) else False
 
     def __lt__(self, other: object) -> bool:
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.value < i
         except Exception:
             return NotImplemented
 
     def __le__(self, other: object) -> bool:
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.value <= i
         except Exception:
             return NotImplemented
 
     def __gt__(self, other: object) -> bool:
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.value > i
         except Exception:
             return NotImplemented
 
     def __ge__(self, other: object) -> bool:
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return self.value >= i
         except Exception:
             return NotImplemented
@@ -109,7 +107,7 @@ class RowObj(BaseIntValue):
         if isinstance(other, RowObj):
             return RowObj.from_int(self.value + other.value)
         try:
-            i = round(other)
+            i = round(other)  # type: ignore
             return RowObj.from_int(self.value + i)
         except TypeError:
             # not an int
@@ -124,16 +122,13 @@ class RowObj(BaseIntValue):
         # angle = sum([col1, col2, col3])
         # will result in TypeError becuase sum() start with 0
         # this will force a call to __radd__
-        if other == 0:
-            return self
-        else:
-            return self.__add__(other)
+        return self if other == 0 else self.__add__(other)
 
     def __sub__(self, other: object) -> RowObj:
         try:
             if isinstance(other, RowObj):
                 return RowObj.from_int(self.value - other.value)
-            i = round(other)
+            i = round(other)  # type: ignore
             return RowObj.from_int(self.value - i)
         except TypeError:
             # not an int
@@ -146,7 +141,7 @@ class RowObj(BaseIntValue):
 
     def __rsub__(self, other: object) -> RowObj:
         try:
-            i = round(other)
+            i = round(other)  # type: ignore
             return self.from_int(i - self.value)
         except TypeError:
             # not an int
@@ -170,20 +165,17 @@ class RowObj(BaseIntValue):
         return NotImplemented
 
     def __rmul__(self, other: object) -> RowObj:
-        if other == 0:
-            return self
-        else:
-            return self.__mul__(other)
+        return self if other == 0 else self.__mul__(other)
 
     def __truediv__(self, other: object):
         try:
             if isinstance(other, RowObj):
-                check(self.value != 0, f"{repr(self)}", f"Cannot be divided by zero")
+                check(self.value != 0, f"{repr(self)}", "Cannot be divided by zero")
                 return RowObj.from_int(round(self.value / other.value))
-            if isinstance(other, numbers.Real):
-                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
-                check(self.value >= other, f"{repr(self)}", f"Cannot be divided by lessor number")
-            return RowObj.from_int(round(self.value / other))
+            if isinstance(other, (int, float)):
+                check(other != 0, f"{repr(self)}", "Cannot be divided by zero")
+                check(self.value >= other, f"{repr(self)}", "Cannot be divided by lessor number")
+            return RowObj.from_int(round(self.value / other))  # type: ignore
         except AssertionError as e:
             raise IndexError from e
         except Exception:
@@ -192,17 +184,17 @@ class RowObj(BaseIntValue):
 
     def __rtruediv__(self, other: object) -> RowObj:
         try:
-            if isinstance(other, numbers.Real):
-                check(other != 0, f"{repr(self)}", f"Cannot be divided by zero")
-                check(other >= self.value, f"{repr(self)}", f"Cannot be divided by lessor number")
-            return RowObj.from_int(round(other / self.value))
+            if isinstance(other, (int, float)):
+                check(other != 0, f"{repr(self)}", "Cannot be divided by zero")
+                check(other >= self.value, f"{repr(self)}", "Cannot be divided by lessor number")
+            return RowObj.from_int(round(other / self.value))  # type: ignore
         except AssertionError as e:
             raise IndexError from e
         except Exception:
             pass
         return NotImplemented
 
-    # endregion duner methods
+    # endregion dunder methods
 
     # region properties
 
@@ -210,25 +202,25 @@ class RowObj(BaseIntValue):
     def next(self) -> RowObj:
         """Gets the nex row"""
         try:
-            n = self._next
+            n = self._next  # type: ignore
             if n() is None:
                 raise AttributeError
             return n()
         except AttributeError:
             n = RowObj.from_int(self.value + 1)
             object.__setattr__(self, "_next", ref(n))
-        return self._next()
+        return self._next()  # type: ignore
 
     @property
     def prev(self) -> RowObj:
         """
-        Gets the prevous row
+        Gets the previous row
 
         Raises:
             IndexError: If previous row is out of range
         """
         try:
-            p = self._prev
+            p = self._prev  # type: ignore
             if p() is None:
                 raise AttributeError
             return p()
@@ -238,6 +230,6 @@ class RowObj(BaseIntValue):
                 object.__setattr__(self, "_prev", ref(p))
             except AssertionError as e:
                 raise IndexError from e
-        return self._prev()
+        return self._prev()  # type: ignore
 
     # endregion properties

@@ -236,7 +236,7 @@ def fill_yellow_45_degrees_triple() -> Dict[str, Any]:
 
 
 # region Get Preset
-def get_preset(kind: PresetHatchKind) -> Dict[str:Any]:
+def get_preset(kind: PresetHatchKind) -> Dict[str, Any]:
     """
     Gets preset
 

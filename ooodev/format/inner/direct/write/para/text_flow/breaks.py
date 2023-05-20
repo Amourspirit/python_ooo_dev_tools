@@ -5,7 +5,7 @@ Module for managing paragraph breaks.
 """
 # region Imports
 from __future__ import annotations
-from typing import Any, Tuple, overload, Type, TypeVar
+from typing import Any, Dict, Tuple, overload, Type, TypeVar
 
 from ooo.dyn.style.break_type import BreakType as BreakType
 
@@ -55,6 +55,7 @@ class Breaks(StyleBase):
 
             - :ref:`help_writer_format_direct_para_text_flow`
         """
+        # sourcery skip: merge-nested-ifs
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         # Default for writer is BreakType.NONE
         # BreakType controls the dialog insert checkbox
@@ -68,9 +69,9 @@ class Breaks(StyleBase):
             super().__init__()
             return
 
-        init_vals = {"BreakType": type}
-        if type in (BreakType.PAGE_BEFORE, BreakType.COLUMN_BEFORE, BreakType.COLUMN_BOTH, BreakType.PAGE_BOTH):
-            if not style is None:
+        init_vals: Dict[str, Any] = {"BreakType": type}
+        if style is not None:
+            if type in (BreakType.PAGE_BEFORE, BreakType.COLUMN_BEFORE, BreakType.COLUMN_BOTH, BreakType.PAGE_BOTH):
                 # # pg_style is only valid when BreakType.COLUMN_BEFORE or BreakType.PAGE_BEFORE
 
                 # LibreOffice Dev Tools report this property as readonly.
@@ -83,7 +84,7 @@ class Breaks(StyleBase):
                 # it belongs to and assigns the value as the name of the new page style sheet to use.
                 init_vals["PageDescName"] = style
 
-        if "PageDescName" in init_vals and not num is None:
+        if "PageDescName" in init_vals and num is not None:
             # pg_num is only valid when BreakType.COLUMN_BEFORE or BreakType.PAGE_BEFORE AND
             # page style is set (pg_style)
             init_vals["PageNumberOffset"] = num
@@ -111,10 +112,14 @@ class Breaks(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies break properties to ``obj``
 
@@ -136,16 +141,16 @@ class Breaks(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBreaks], obj: object) -> _TBreaks:
+    def from_obj(cls: Type[_TBreaks], obj: Any) -> _TBreaks:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBreaks], obj: object, **kwargs) -> _TBreaks:
+    def from_obj(cls: Type[_TBreaks], obj: Any, **kwargs) -> _TBreaks:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TBreaks], obj: object, **kwargs) -> _TBreaks:
+    def from_obj(cls: Type[_TBreaks], obj: Any, **kwargs) -> _TBreaks:
         """
         Gets instance from object
 

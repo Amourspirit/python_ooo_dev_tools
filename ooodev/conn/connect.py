@@ -1,13 +1,17 @@
 # coding: utf-8
 from __future__ import annotations
+import uno
+from com.sun.star.uno import XComponentContext
+from com.sun.star.lang import XComponent
+
+import contextlib
 import os
 import time
 from abc import ABC, abstractmethod
 import subprocess
 import signal
-from typing import List, TYPE_CHECKING, cast
+from typing import List, TYPE_CHECKING, cast, Optional
 import time
-import uno
 from pathlib import Path
 from com.sun.star.connection import NoConnectException
 from . import connectors
@@ -20,9 +24,7 @@ if TYPE_CHECKING:
     from com.sun.star.bridge import XBridgeFactory
     from com.sun.star.bridge import XBridge
     from com.sun.star.connection import XConnector
-    from com.sun.star.lang import XComponent
     from com.sun.star.lang import XMultiComponentFactory
-    from com.sun.star.uno import XComponentContext
 
 
 class ConnectBase(ABC):
@@ -34,7 +36,7 @@ class ConnectBase(ABC):
 
         # start openoffice process with python to use with pyuno using subprocess
         # see https://tinyurl.com/y5y66462
-        self._ctx: XComponentContext = None
+        self._ctx = cast(XComponentContext, None)
 
     @abstractmethod
     def connect(self):
@@ -104,15 +106,12 @@ class LoBridgeCommon(ConnectBase):
         super().__init__()
         self._connector = connector
         self._soffice_process = None
-        self._bridge_component = None
+        self._bridge_component = cast(XComponent, None)
         self._platform = SysInfo.get_platform()
         self._environment = os.environ
         self._timeout = 30.0
         self._conn_try_sleep = 0.2
-        if cache_obj is None:
-            self._cache = cache.Cache(use_cache=False)
-        else:
-            self._cache = cache_obj
+        self._cache = cache.Cache(use_cache=False) if cache_obj is None else cache_obj
         if self._cache.use_cache:
             self._environment["TMPDIR"] = str(self._cache.working_dir)
 
@@ -140,7 +139,9 @@ class LoBridgeCommon(ConnectBase):
 
                 bridge = self._get_bridge(local_factory=localFactory, local_ctx=localContext)
 
-                self._bridge_component = bridge.queryInterface(uno.getTypeByName("com.sun.star.lang.XComponent"))
+                self._bridge_component = cast(
+                    XComponent, bridge.queryInterface(uno.getTypeByName("com.sun.star.lang.XComponent"))
+                )
 
                 # smgr = resolver.resolve(conn_str)
                 smgr = cast(
@@ -162,15 +163,15 @@ class LoBridgeCommon(ConnectBase):
             raise last_ex
 
     def _popen_from_args(self, args: List[str], shutdown: bool):
-        if shutdown == True:
+        if shutdown:
             if self._platform == SysInfo.PlatformEnum.WINDOWS:
                 cmd_str = " ".join(args)
-                self._soffice_process_shutdown = subprocess.Popen(cmd_str, shell=True, env=self._envirnment)
+                self._soffice_process_shutdown = subprocess.Popen(cmd_str, shell=True, env=self._environment)
             else:
                 self._soffice_process_shutdown = subprocess.Popen(
                     " ".join(args),
-                    env=self._envirnment,
-                    preexec_fn=os.setsid,
+                    env=self._environment,
+                    preexec_fn=os.setsid,  # type: ignore
                     shell=True,
                 )
         else:
@@ -180,7 +181,7 @@ class LoBridgeCommon(ConnectBase):
             # this does not seem to work for socket connections
 
             # self._soffice_process = subprocess.Popen(
-            #     args, env=self._envirnment, preexec_fn=os.setsid
+            #     args, env=self._environment, preexec_fn=os.setsid
             # )
             cmd_str = " ".join(args)
             if self._platform == SysInfo.PlatformEnum.WINDOWS:
@@ -189,7 +190,7 @@ class LoBridgeCommon(ConnectBase):
                 self._soffice_process = subprocess.Popen(
                     cmd_str,
                     env=self._environment,
-                    preexec_fn=os.setsid,
+                    preexec_fn=os.setsid,  # type: ignore
                     shell=True,
                 )
 
@@ -208,19 +209,20 @@ class LoBridgeCommon(ConnectBase):
         Returns:
             int: of pid if found; Otherwise, None
         """
-        if self._platform == SysInfo.PlatformEnum.WINDOWS:
-            if self._soffice_process:
-                return self._soffice_process.pid
-            return None
-        else:
-            pid = None
-            try:
-                with open(self._pid_file, "r") as f:
-                    pid = f.read()
-                    pid = int(pid)
-            except:
-                pid = None
-            return pid
+        return self._soffice_process.pid if self._soffice_process else None
+        # if self._platform == SysInfo.PlatformEnum.WINDOWS:
+        #     if self._soffice_process:
+        #         return self._soffice_process.pid
+        #     return None
+        # else:
+        #     pid = None
+        #     try:
+        #         with open(self._pid_file, "r") as f:
+        #             pid = f.read()
+        #             pid = int(pid)
+        #     except Exception:
+        #         pid = None
+        #     return pid
 
     def _check_pid(self, pid: int) -> bool:
         """
@@ -246,13 +248,9 @@ class LoBridgeCommon(ConnectBase):
             if self._soffice_process:
                 self._soffice_process.kill()
             if self._platform == SysInfo.PlatformEnum.WINDOWS:
-                try:
+                with contextlib.suppress(PermissionError):
                     # this should work without admin privileges.
                     os.system("taskkill /im soffice.bin")
-                except PermissionError:
-                    # Not able to terminate.
-                    # Windows issue, Needs to be run a admin.
-                    pass
                 return
 
             pid = self.get_soffice_pid()
@@ -261,7 +259,7 @@ class LoBridgeCommon(ConnectBase):
             # print("pid:", pid)
             if self._check_pid(pid=pid):
                 # no SIGLILL on windows.
-                os.kill(pid, signal.SIGKILL)
+                os.kill(pid, signal.SIGKILL)  # type: ignore
         except Exception as e:
             # print(e)
             raise e
@@ -327,10 +325,8 @@ class LoBridgeCommon(ConnectBase):
         return self._connector.start_as_service
 
     def __del__(self) -> None:
-        try:
+        with contextlib.suppress(Exception):
             self._cache.del_working_dir()
-        except Exception:
-            pass
 
 
 class LoDirectStart(ConnectBase):
@@ -364,14 +360,13 @@ class LoPipeStart(LoBridgeCommon):
     def __init__(self, connector: connectors.ConnectPipe | None = None, cache_obj: cache.Cache | None = None) -> None:
         if connector is None:
             connector = connectors.ConnectPipe()
-        else:
-            if not isinstance(connector, connectors.ConnectPipe):
-                raise TypeError("connector arg must be ConnectPipe class")
+        elif not isinstance(connector, connectors.ConnectPipe):
+            raise TypeError("connector arg must be ConnectPipe class")
 
         super().__init__(connector=connector, cache_obj=cache_obj)
 
     def _get_connection_str(self) -> str:
-        return self._connector.get_connnection_str()
+        return self._connector.get_connection_str()
 
     def connect(self) -> None:
         """
@@ -404,9 +399,8 @@ class LoPipeStart(LoBridgeCommon):
                 uno.getTypeByName("com.sun.star.bridge.XBridgeFactory")
             ),
         )
-        xconn = connector.connect(f"pipe,name={self.connector.pipe}")
-        bridge = bridgeFactory.createBridge("PipeBridgeAD", "urp", xconn, None)
-        return bridge
+        conn = connector.connect(f"pipe,name={self.connector.pipe}")
+        return bridgeFactory.createBridge("PipeBridgeAD", "urp", conn, None)  # type: ignore
 
     def _popen(self, shutdown=False) -> None:
         # it is important that quotes be placed in the correct place.
@@ -415,18 +409,14 @@ class LoPipeStart(LoBridgeCommon):
         # '--accept="socket,host=localhost,port=2002,tcpNoDelay=1;urp;"' THIS WORKS
         # "--accept='socket,host=localhost,port=2002,tcpNoDelay=1;urp;'" THIS FAILS
         # SEE ALSO: https://tinyurl.com/y5y66462
-        if shutdown == True:
-            prefix = "--unaccept="
-        else:
-            prefix = "--accept="
-
+        prefix = "--unaccept=" if shutdown else "--accept="
         args = [f'"{self._connector.soffice}"']
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
             args.append(f'-env:UserInstallation="{self._cache.user_profile.as_uri()}"')
 
-        args.append(f'{prefix}"pipe,name={self._connector.pipe};urp;"')
+        args.append(f'{prefix}"pipe,name={self._connector.pipe};urp;"')  # type: ignore
 
         if self._connector.start_as_service is True:
             args.append("StarOffice.Service")
@@ -436,7 +426,7 @@ class LoPipeStart(LoBridgeCommon):
     @property
     def connector(self) -> connectors.ConnectPipe:
         """Gets the current Connector"""
-        return self._connector
+        return self._connector  # type: ignore
 
 
 class LoSocketStart(LoBridgeCommon):
@@ -445,13 +435,12 @@ class LoSocketStart(LoBridgeCommon):
     ) -> None:
         if connector is None:
             connector = connectors.ConnectSocket()
-        else:
-            if not isinstance(connector, connectors.ConnectSocket):
-                raise TypeError("connector arg must be ConnectSocket class")
+        elif not isinstance(connector, connectors.ConnectSocket):
+            raise TypeError("connector arg must be ConnectSocket class")
         super().__init__(connector=connector, cache_obj=cache_obj)
 
     def _get_connection_str(self) -> str:
-        return self._connector.get_connnection_str()
+        return self._connector.get_connection_str()
 
     def connect(self) -> None:
         """
@@ -484,9 +473,8 @@ class LoSocketStart(LoBridgeCommon):
                 uno.getTypeByName("com.sun.star.bridge.XBridgeFactory")
             ),
         )
-        xconn = connector.connect(f"socket,host={self.connector.host},port={self.connector.port},tcpNoDelay=1")
-        bridge = bridgeFactory.createBridge("socketBridgeAD", "urp", xconn, None)
-        return bridge
+        conn = connector.connect(f"socket,host={self.connector.host},port={self.connector.port},tcpNoDelay=1")
+        return bridgeFactory.createBridge("socketBridgeAD", "urp", conn, None)  # type: ignore
 
     def _popen(self, shutdown=False) -> None:
         # it is important that quotes be placed in the correct place.
@@ -495,18 +483,14 @@ class LoSocketStart(LoBridgeCommon):
         # '--accept="socket,host=localhost,port=2002,tcpNoDelay=1;urp;"' THIS WORKS
         # "--accept='socket,host=localhost,port=2002,tcpNoDelay=1;urp;'" THIS FAILS
         # SEE ALSO: https://tinyurl.com/y5y66462
-        if shutdown == True:
-            prefix = "--unaccept="
-        else:
-            prefix = "--accept="
-
+        prefix = "--unaccept=" if shutdown else "--accept="
         args = [f'"{self._connector.soffice}"']
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
             args.append(f'-env:UserInstallation="{self._cache.user_profile.as_uri()}"')
 
-        args.append(f'{prefix}"socket,host={self._connector.host},port={self._connector.port},tcpNoDelay=1;urp;"')
+        args.append(f'{prefix}"socket,host={self._connector.host},port={self._connector.port},tcpNoDelay=1;urp;"')  # type: ignore
 
         if self._connector.start_as_service is True:
             args.append("StarOffice.Service")
@@ -516,7 +500,7 @@ class LoSocketStart(LoBridgeCommon):
     @property
     def connector(self) -> connectors.ConnectSocket:
         """Gets the current Connector"""
-        return self._connector
+        return self._connector  # type: ignore
 
 
 class LoManager:

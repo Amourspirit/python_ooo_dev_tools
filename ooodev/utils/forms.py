@@ -73,7 +73,7 @@ class Forms:
         if mLo.Lo.is_uno_interfaces(obj, XDrawPage):
             draw_page = obj
         else:
-            draw_page = cls.get_draw_page(obj)
+            draw_page = cls.get_draw_page(cast(XComponent, obj))
 
         forms_supp = mLo.Lo.qi(XFormsSupplier, draw_page, True)
 
@@ -95,16 +95,17 @@ class Forms:
         Returns:
             XDrawPage: Draw Page
         """
+        # sourcery skip: raise-specific-error
         try:
-            xsupp_page = mLo.Lo.qi(XDrawPageSupplier, doc)
-            if xsupp_page is not None:
-                return xsupp_page.getDrawPage()
+            supp_page = mLo.Lo.qi(XDrawPageSupplier, doc)
+            if supp_page is not None:
+                return supp_page.getDrawPage()
 
             # doc supports multiple DrawPages
-            xsupp_pages = mLo.Lo.qi(XDrawPagesSupplier, doc)
+            supp_pages = mLo.Lo.qi(XDrawPagesSupplier, doc, True)
 
-            xpages = xsupp_pages.getDrawPages()
-            return mLo.Lo.qi(XDrawPage, xpages.getByIndex(0))
+            pages = supp_pages.getDrawPages()
+            return mLo.Lo.qi(XDrawPage, pages.getByIndex(0), True)
         except Exception as e:
             raise Exception(f"Unable to get draw page: {e}") from e
 
@@ -116,7 +117,7 @@ class Forms:
 
     @overload
     @classmethod
-    def get_form(cls, obj: XComponent, for_name: str) -> XNameContainer:
+    def get_form(cls, obj: XComponent, form_name: str) -> XForm:
         ...
 
     @overload
@@ -125,7 +126,7 @@ class Forms:
         ...
 
     @classmethod
-    def get_form(cls, obj: XComponent | XDrawPage, form_name: str | None = None) -> XNameContainer:
+    def get_form(cls, obj: XComponent | XDrawPage, form_name: str = "") -> XNameContainer | XForm:
         """
         Gets form as name container
 
@@ -139,26 +140,27 @@ class Forms:
         Returns:
             XNameContainer: Name container
         """
-        if form_name is not None:
+        # sourcery skip: raise-specific-error
+        if form_name:
             # get_form(cls, obj: XComponent, for_name: str)
             try:
                 named_forms = cls.get_forms(obj)
                 con = cls.get_form_by_name(form_name, named_forms)
                 return mLo.Lo.qi(XForm, con, True)
             except Exception as e:
-                raise Exception(f"Unabel to get form: {e}") from e
+                raise Exception(f"Unable to get form: {e}") from e
         try:
             if mLo.Lo.is_uno_interfaces(obj, XDrawPage):
                 draw_page = obj
             else:
-                draw_page = cls.get_draw_page(obj)
+                draw_page = cls.get_draw_page(cast(XComponent, obj))
 
-            idx_forms = cls.get_indexed_forms(draw_page)
+            idx_forms = cls.get_indexed_forms(cast(XDrawPage, draw_page))
         except Exception as e:
-            raise Exception(f"Unabel to get form: {e}") from e
+            raise Exception(f"Unable to get form: {e}") from e
 
         try:
-            return mLo.Lo.qi(XNameContainer, idx_forms.getByIndex(0))
+            return mLo.Lo.qi(XNameContainer, idx_forms.getByIndex(0), True)
         except Exception as e:
             raise Exception(f"Could not find default form: {e}") from e
 
@@ -179,8 +181,9 @@ class Forms:
         Returns:
             XNameContainer: Name Container
         """
+        # sourcery skip: raise-specific-error
         try:
-            return mLo.Lo.qi(XNameContainer, named_forms.getByName(form_name))
+            return mLo.Lo.qi(XNameContainer, named_forms.getByName(form_name), True)
         except Exception as e:
             raise Exception(f'Could not find the form "{form_name}"') from e
 
@@ -195,17 +198,18 @@ class Forms:
         Returns:
             XIndexContainer: Index container
         """
-        form_supp = mLo.Lo.qi(XFormsSupplier, draw_page)
-        return mLo.Lo.qi(XIndexContainer, form_supp.getForms())
+        form_supp = mLo.Lo.qi(XFormsSupplier, draw_page, True)
+        return mLo.Lo.qi(XIndexContainer, form_supp.getForms(), True)
 
     # region        insert_form()
     @classmethod
     def _insert_form_name_comp(cls, doc: XComponent) -> XNameContainer:
         doc_forms = cls.get_forms(doc)
-        return cls._insert_form_namecontainer("GridForm", doc_forms)
+        return cls._insert_form_name_container("GridForm", doc_forms)
 
     @classmethod
-    def _insert_form_namecontainer(cls, form_name: str, named_forms: XNameContainer) -> XNameContainer:
+    def _insert_form_name_container(cls, form_name: str, named_forms: XNameContainer) -> XNameContainer:
+        # sourcery skip: raise-specific-error
         if named_forms.hasByName(form_name):
             mLo.Lo.print(f'"{form_name}" already exists')
             return cls.get_form_by_name(form_name=form_name, named_forms=named_forms)
@@ -271,7 +275,7 @@ class Forms:
             if kargs_len == 0:
                 return ka
             valid_keys = ("form_name", "doc", "named_forms")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("insert_form() got an unexpected keyword argument")
             keys = ("doc", "form_name")
@@ -284,7 +288,7 @@ class Forms:
             ka[2] = kwargs.get("named_forms", None)
             return ka
 
-        if not count in (1, 2):
+        if count not in (1, 2):
             raise TypeError("insert_form() got an invalid number of arguments")
 
         kargs = get_kwargs()
@@ -294,7 +298,7 @@ class Forms:
         if count == 1:
             return cls._insert_form_name_comp(kargs[1])
 
-        return cls._insert_form_namecontainer(form_name=kargs[1], named_forms=kargs[2])
+        return cls._insert_form_name_container(form_name=kargs[1], named_forms=kargs[2])
         # endregion     insert_form()
 
     @classmethod
@@ -354,26 +358,26 @@ class Forms:
             None:
         """
         if mLo.Lo.is_uno_interfaces(obj, XComponent):
-            xcontainer = cls.get_forms(obj)
+            container = cls.get_forms(cast(XComponent, obj))
         else:
-            xcontainer = cast(XNameContainer, obj)
-        nms = xcontainer.getElementNames()
+            container = cast(XNameContainer, obj)
+        nms = container.getElementNames()
         for name in nms:
             try:
-                serv_info = mLo.Lo.qi(XServiceInfo, xcontainer.getByName(name), True)
-                if serv_info.supportsService("com.sun.star.form.FormComponents"):
+                service_info = mLo.Lo.qi(XServiceInfo, container.getByName(name), True)
+                if service_info.supportsService("com.sun.star.form.FormComponents"):
                     # this means that the form has been found
-                    if mInfo.Info.support_service(serv_info, "com.sun.star.form.component.DataForm"):
+                    if mInfo.Info.support_service(service_info, "com.sun.star.form.component.DataForm"):
                         print(f'{tab_str}Data From "{name}"')
                     else:
                         print(f'{tab_str}Form "{name}"')
-                        # mInfo.Info.show_services("Form", serv_info)
-                        # mInfo.Info.show_interfaces("Form", serv_info)
-                    child_con = mLo.Lo.qi(XNameAccess, serv_info, True)
+                        # mInfo.Info.show_services("Form", service_info)
+                        # mInfo.Info.show_interfaces("Form", service_info)
+                    child_con = mLo.Lo.qi(XNameAccess, service_info, True)
                     # recursively list form components
                     cls.list_forms(child_con, tab_str=f"{tab_str}  ")
-                elif serv_info.supportsService("com.sun.star.form.FormComponent"):
-                    model = mLo.Lo.qi(XControlModel, serv_info)
+                elif service_info.supportsService("com.sun.star.form.FormComponent"):
+                    model = mLo.Lo.qi(XControlModel, service_info, True)
                     print(f'{tab_str}"{name}":{cls.get_type_str(model)}')
                     #  mProps.Props.show_obj_props("Model", model)
                 else:
@@ -409,21 +413,21 @@ class Forms:
             :py:meth:`~.forms.Forms.get_models2`
         """
         if mLo.Lo.is_uno_interfaces(obj, XComponent):
-            xcontainer = cls.get_forms(obj)
+            container = cls.get_forms(cast(XComponent, obj))
         else:
-            xcontainer = cast(XNameContainer, obj)
+            container = cast(XNameContainer, obj)
         models: List[XControlModel] = []
-        nms = xcontainer.getElementNames()
+        nms = container.getElementNames()
         for name in nms:
             try:
-                serv_info = mLo.Lo.qi(XServiceInfo, xcontainer.getByName(name))
-                if serv_info.supportsService("com.sun.star.form.FormComponents"):
+                service_info = mLo.Lo.qi(XServiceInfo, container.getByName(name), True)
+                if service_info.supportsService("com.sun.star.form.FormComponents"):
                     # this means that a form has been found
-                    child_con = mLo.Lo.qi(XNameAccess, serv_info, True)
+                    child_con = mLo.Lo.qi(XNameAccess, service_info, True)
                     # recursively search
                     models.extend(cls.get_models(child_con))
-                elif serv_info.supportsService("com.sun.star.form.FormComponent"):
-                    model = mLo.Lo.qi(XControlModel, serv_info, True)
+                elif service_info.supportsService("com.sun.star.form.FormComponent"):
+                    model = mLo.Lo.qi(XControlModel, service_info, True)
                     models.append(model)
 
             except Exception as e:
@@ -456,8 +460,8 @@ class Forms:
             return models
         try:
             for i in range(xdraw_page.getCount()):
-                cshape = mLo.Lo.qi(XControlShape, xdraw_page.getByIndex(i))
-                model = cshape.getControl()
+                shape = mLo.Lo.qi(XControlShape, xdraw_page.getByIndex(i), True)
+                model = shape.getControl()
                 if cls.belongs_to_form(model, form_name):
                     models.append(model)
         except Exception as e:
@@ -476,7 +480,7 @@ class Forms:
         Returns:
             str: event source name
         """
-        control = mLo.Lo.qi(XControl, event.Source, True)
+        control = mLo.Lo.qi(XControlModel, event.Source, True)
         return cls.get_name(control)
 
     @staticmethod
@@ -504,8 +508,8 @@ class Forms:
         Returns:
             str: form name
         """
-        child = mLo.Lo.qi(XChild, ctl_model)
-        named = mLo.Lo.qi(XNamed, child.getParent())
+        child = mLo.Lo.qi(XChild, ctl_model, True)
+        named = mLo.Lo.qi(XNamed, child.getParent(), True)
         return named.getName()
 
     @classmethod
@@ -559,53 +563,54 @@ class Forms:
         Returns:
             str | None: Type as string if found; Otherwise, ``None``
         """
-        id = cls.get_id(ctl_model)
-        if id == -1:
+        # sourcery skip: low-code-quality
+        control_id = cls.get_id(ctl_model)
+        if control_id == -1:
             return None
 
-        serv_info = mLo.Lo.qi(XServiceInfo, ctl_model)
-        if id == FormComponentType.COMMANDBUTTON:
+        service_info = mLo.Lo.qi(XServiceInfo, ctl_model)
+        if control_id == FormComponentType.COMMANDBUTTON:
             return "Command button"
-        elif id == FormComponentType.RADIOBUTTON:
+        elif control_id == FormComponentType.RADIOBUTTON:
             return "Radio button"
-        elif id == FormComponentType.IMAGEBUTTON:
+        elif control_id == FormComponentType.IMAGEBUTTON:
             return "Image button"
-        elif id == FormComponentType.CHECKBOX:
+        elif control_id == FormComponentType.CHECKBOX:
             return "Check Box"
-        elif id == FormComponentType.LISTBOX:
+        elif control_id == FormComponentType.LISTBOX:
             return "List Box"
-        elif id == FormComponentType.COMBOBOX:
+        elif control_id == FormComponentType.COMBOBOX:
             return "Combo Box"
-        elif id == FormComponentType.GROUPBOX:
+        elif control_id == FormComponentType.GROUPBOX:
             return "Group Box"
-        elif id == FormComponentType.FIXEDTEXT:
+        elif control_id == FormComponentType.FIXEDTEXT:
             return "Fixed Text"
-        elif id == FormComponentType.GRIDCONTROL:
+        elif control_id == FormComponentType.GRIDCONTROL:
             return "Grid Control"
-        elif id == FormComponentType.FILECONTROL:
+        elif control_id == FormComponentType.FILECONTROL:
             return "File Control"
-        elif id == FormComponentType.HIDDENCONTROL:
+        elif control_id == FormComponentType.HIDDENCONTROL:
             return "Hidden Control"
-        elif id == FormComponentType.IMAGECONTROL:
+        elif control_id == FormComponentType.IMAGECONTROL:
             return "Image Control"
-        elif id == FormComponentType.DATEFIELD:
+        elif control_id == FormComponentType.DATEFIELD:
             return "Date Field"
-        elif id == FormComponentType.TIMEFIELD:
+        elif control_id == FormComponentType.TIMEFIELD:
             return "Time Field"
-        elif id == FormComponentType.NUMERICFIELD:
+        elif control_id == FormComponentType.NUMERICFIELD:
             return "Numeric Field"
-        elif id == FormComponentType.CURRENCYFIELD:
+        elif control_id == FormComponentType.CURRENCYFIELD:
             return "Currency Field"
-        elif id == FormComponentType.PATTERNFIELD:
+        elif control_id == FormComponentType.PATTERNFIELD:
             return "Pattern Field"
-        elif id == FormComponentType.TEXTFIELD:
+        elif control_id == FormComponentType.TEXTFIELD:
             # two services with this class id: text field and formatted field
-            if serv_info is not None and serv_info.supportsService("com.sun.star.form.component.FormattedField"):
+            if service_info is not None and service_info.supportsService("com.sun.star.form.component.FormattedField"):
                 return "Formatted Field"
             else:
                 return "Text Field"
         else:
-            mLo.Lo.print(f"Unknown class ID: {id}")
+            mLo.Lo.print(f"Unknown class ID: {control_id}")
             return None
 
     @staticmethod
@@ -636,11 +641,14 @@ class Forms:
         Returns:
             bool: ``True`` if is button; Otherwise, ``False``
         """
-        id = cls.get_id(ctl_model)
-        if id == -1:
+        button_id = cls.get_id(ctl_model)
+        if button_id == -1:
             return False
 
-        return id == FormComponentType.COMMANDBUTTON or id == FormComponentType.IMAGEBUTTON
+        return button_id in (
+            FormComponentType.COMMANDBUTTON,
+            FormComponentType.IMAGEBUTTON,
+        )
 
     @classmethod
     def is_text_field(cls, ctl_model: XControlModel) -> bool:
@@ -653,17 +661,17 @@ class Forms:
         Returns:
             bool: ``True`` if is text field; Otherwise, ``False``
         """
-        id = cls.get_id(ctl_model)
-        if id == -1:
+        text_id = cls.get_id(ctl_model)
+        if text_id == -1:
             return False
 
-        return (
-            id == FormComponentType.DATEFIELD
-            or id == FormComponentType.TIMEFIELD
-            or id == FormComponentType.NUMERICFIELD
-            or id == FormComponentType.CURRENCYFIELD
-            or id == FormComponentType.PATTERNFIELD
-            or id == FormComponentType.TEXTFIELD
+        return text_id in (
+            FormComponentType.DATEFIELD,
+            FormComponentType.TIMEFIELD,
+            FormComponentType.NUMERICFIELD,
+            FormComponentType.CURRENCYFIELD,
+            FormComponentType.PATTERNFIELD,
+            FormComponentType.TEXTFIELD,
         )
 
     @classmethod
@@ -677,11 +685,11 @@ class Forms:
         Returns:
             bool: ``True`` if is box; Otherwise, ``False``
         """
-        id = cls.get_id(ctl_model)
-        if id == -1:
+        box_id = cls.get_id(ctl_model)
+        if box_id == -1:
             return False
 
-        return id == FormComponentType.RADIOBUTTON or id == FormComponentType.CHECKBOX
+        return box_id in (FormComponentType.RADIOBUTTON, FormComponentType.CHECKBOX)
 
     @classmethod
     def is_list(cls, ctl_model: XControlModel) -> bool:
@@ -694,11 +702,11 @@ class Forms:
         Returns:
             bool: ``True`` if is list; Otherwise, ``False``
         """
-        id = cls.get_id(ctl_model)
-        if id == -1:
+        control_id = cls.get_id(ctl_model)
+        if control_id == -1:
             return False
 
-        return id == FormComponentType.LISTBOX or id == FormComponentType.COMBOBOX
+        return control_id in (FormComponentType.LISTBOX, FormComponentType.COMBOBOX)
 
     # Other control types
     # FormComponentType.GROUPBOX
@@ -729,6 +737,7 @@ class Forms:
         Returns:
             XControl: Control
         """
+        # sourcery skip: raise-specific-error
         try:
             control_access = mGui.GUI.get_control_access(doc)
             if control_access is None:
@@ -777,9 +786,7 @@ class Forms:
             XControlModel | None: Control Model if found; Otherwise, None
         """
         control = cls.get_named_control(doc, ctl_name)
-        if control is None:
-            return None
-        return control.getModel()
+        return None if control is None else control.getModel()
 
     # endregion get control for a model
 
@@ -800,7 +807,7 @@ class Forms:
         anchor_type: TextContentAnchorType | None = None,
         parent_form: XNameContainer | None = None,
         *,
-        styles: Iterable[StyleObj] = None,
+        styles: Iterable[StyleObj] | None = None,
     ) -> XPropertySet:
         """
         Add a control
@@ -830,21 +837,21 @@ class Forms:
         try:
             # create a shape to represent the control's view
             #     xDocAsFactory = mLo.Lo.qi(XMultiServiceFactory, doc, True)
-            #     cshpae =
+            #     shape =
             #     XMultiServiceFactory xDocAsFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
             #   XMultiServiceFactory.class, s_aDocument);
 
             #     XControlShape xShape = (XControlShape)UnoRuntime.queryInterface(XControlShape.class,
             #   xDocAsFactory.createInstance("com.sun.star.drawing.ControlShape"));
 
-            cshape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
+            shape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
 
             # position and size of the shape
-            cshape.setSize(UnoSize(width * 100, height * 100))
-            cshape.setPosition(Point(x * 100, y * 100))
+            shape.setSize(UnoSize(width * 100, height * 100))
+            shape.setPosition(Point(x * 100, y * 100))
 
             # adjust the anchor so that the control is tied to the page
-            shape_props = mLo.Lo.qi(XPropertySet, cshape, True)
+            shape_props = mLo.Lo.qi(XPropertySet, shape, True)
 
             if anchor_type is None:
                 shape_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
@@ -853,27 +860,29 @@ class Forms:
 
             # create the control's model, this is a service
             # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1form_1_1FormControlModel.html
-            cmodel = mLo.Lo.create_instance_mcf(XControlModel, f"com.sun.star.form.component.{comp_kind}")
+            model = mLo.Lo.create_instance_mcf(
+                XControlModel, f"com.sun.star.form.component.{comp_kind}", raise_err=True
+            )
 
             # insert the model into the form (or default to "Form")
             if parent_form is not None:
-                parent_form.insertByName(name, cmodel)
+                parent_form.insertByName(name, model)
 
             # link model to the shape
-            cshape.setControl(cmodel)
+            shape.setControl(model)
 
             # add the shape to the shapes on the doc's draw page
             draw_page = cls.get_draw_page(doc)
-            form_shapes = mLo.Lo.qi(XShapes, draw_page)
-            form_shapes.add(cshape)
+            form_shapes = mLo.Lo.qi(XShapes, draw_page, True)
+            form_shapes.add(shape)
 
-            # styles need to not be added until after form_shapes.add(cshape) or may not work
+            # styles need to not be added until after form_shapes.add(shape) or may not work
             if styles:
                 for style in styles:
                     style.apply(shape_props)
 
             # set Name and Label properties for the model
-            model_props = mLo.Lo.qi(XPropertySet, cmodel, True)
+            model_props = mLo.Lo.qi(XPropertySet, model, True)
             model_props.setPropertyValue("Name", name)
             if label is not None:
                 model_props.setPropertyValue("Label", label)
@@ -930,7 +939,7 @@ class Forms:
         ...
 
     @classmethod
-    def add_labelled_control(cls, *args, **kwargs) -> None:
+    def add_labelled_control(cls, *args, **kwargs) -> XPropertySet:
         """
         Create a label and data field control, with the label preceding the control
 
@@ -961,7 +970,7 @@ class Forms:
             if kargs_len == 0:
                 return ka
             valid_keys = ("doc", "label", "comp_kind", "x", "y", "height")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("addLabelledControl() got an unexpected keyword argument")
             ka[1] = kwargs.get("doc", None)
@@ -978,8 +987,8 @@ class Forms:
             ka[6] = kwargs.get("height", None)
             return ka
 
-        if not count in (4, 6):
-            raise TypeError("addLabelledControl() got an invalid numer of arguments")
+        if count not in (4, 6):
+            raise TypeError("addLabelledControl() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -1020,8 +1029,8 @@ class Forms:
         x: int,
         y: int,
         height: int,
-        lbl_styles: Iterable[StyleObj],
-        ctl_styles: Iterable[StyleObj],
+        lbl_styles: Iterable[StyleObj] | None,
+        ctl_styles: Iterable[StyleObj] | None,
     ) -> XPropertySet:
         try:
             name = f"{label}_label"
@@ -1103,7 +1112,7 @@ class Forms:
         width: int,
         height: int = 6,
         *,
-        styles: Iterable[StyleObj] = None,
+        styles: Iterable[StyleObj] | None = None,
     ) -> XPropertySet:
         """
         Adds a button control.
@@ -1161,7 +1170,7 @@ class Forms:
         width: int,
         height: int,
         *,
-        styles: Iterable[StyleObj] = None,
+        styles: Iterable[StyleObj] | None = None,
     ) -> XPropertySet:
         """
         Adds a list
@@ -1194,14 +1203,14 @@ class Forms:
                 height=height,
                 styles=styles,
             )
-            items = mProps.Props.any(*[s for s in entries])
+            items = mProps.Props.any(*list(entries))
             # lst_props.setPropertyValue("DefaultSelection", 0)
-            uno.invoke(lst_props, "setPropertyValue", ("ListSource", items))
-            uno.invoke(lst_props, "setPropertyValue", ("DefaultSelection", mProps.Props.any(0)))
+            uno.invoke(lst_props, "setPropertyValue", ("ListSource", items))  # type: ignore
+            uno.invoke(lst_props, "setPropertyValue", ("DefaultSelection", mProps.Props.any(0)))  # type: ignore
             lst_props.setPropertyValue("Dropdown", True)
             lst_props.setPropertyValue("MultiSelection", False)
-            uno.invoke(lst_props, "setPropertyValue", ("StringItemList", items))
-            uno.invoke(lst_props, "setPropertyValue", ("SelectedItems", mProps.Props.any(0)))
+            uno.invoke(lst_props, "setPropertyValue", ("StringItemList", items))  # type: ignore
+            uno.invoke(lst_props, "setPropertyValue", ("SelectedItems", mProps.Props.any(0)))  # type: ignore
             return lst_props
         except Exception:
             raise
@@ -1217,7 +1226,7 @@ class Forms:
         width: int,
         height: int,
         *,
-        styles: Iterable[StyleObj] = None,
+        styles: Iterable[StyleObj] | None = None,
     ) -> XPropertySet:
         """
         Add a list with a SQL command as it data source
@@ -1256,7 +1265,7 @@ class Forms:
 
             # data-aware properties
             lst_props.setPropertyValue("ListSourceType", ListSourceType.SQL)
-            uno.invoke(lst_props, "setPropertyValue", ("ListSource", mProps.Props.any(sql_cmd)))
+            uno.invoke(lst_props, "setPropertyValue", ("ListSource", mProps.Props.any(sql_cmd)))  # type: ignore
             return lst_props
         except Exception:
             raise
@@ -1276,8 +1285,8 @@ class Forms:
             None:
         """
         # column container and factory
-        col_container = mLo.Lo.qi(XIndexContainer, grid_model)
-        col_factory = mLo.Lo.qi(XGridColumnFactory, grid_model)
+        col_container = mLo.Lo.qi(XIndexContainer, grid_model, True)
+        col_factory = mLo.Lo.qi(XGridColumnFactory, grid_model, True)
 
         # create the column
         col_props = col_factory.createColumn(col_kind)
@@ -1363,7 +1372,7 @@ class Forms:
                     break
 
             if pos == -1:
-                mLo.Lo.print("Could not find contol's position in form")
+                mLo.Lo.print("Could not find control's position in form")
             else:
                 mgr = mLo.Lo.qi(XEventAttacherManager, parent_form, True)
                 ed = ScriptEventDescriptor(

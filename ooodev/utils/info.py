@@ -2,6 +2,7 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
+import contextlib
 from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
@@ -24,6 +25,8 @@ from com.sun.star.lang import XTypeProvider
 from com.sun.star.reflection import XIdlReflection
 from com.sun.star.style import XStyleFamiliesSupplier
 from com.sun.star.util import XChangesBatch
+
+from ooodev.utils.decorator.deprecated import deprecated
 
 if TYPE_CHECKING:
     from com.sun.star.awt import FontDescriptor
@@ -49,6 +52,7 @@ from ..meta.static_meta import StaticProperty, classproperty
 from .kind.info_paths_kind import InfoPathsKind as InfoPathsKind
 from .sys_info import SysInfo
 from .type_var import PathOrStr
+from ooodev.proto import uno_proto
 
 
 class Info(metaclass=StaticProperty):
@@ -112,7 +116,7 @@ class Info(metaclass=StaticProperty):
         Returns:
             Tuple[FontDescriptor, ...]: Font Descriptors
         """
-        xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
+        xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit", raise_err=True)
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
             mLo.Lo.print("Could not access graphical output device")
@@ -139,6 +143,9 @@ class Info(metaclass=StaticProperty):
         """
         Gets font descriptor for a font name with a font style such as ``Bold Italic``.
 
+        This method is useful for obtaining a font descriptor for a specific font name and style,
+        which can be used for various purposes such as setting the font of text in a document or application.
+
         Args:
             name (str): Font Name
             style (str): Font Style
@@ -154,10 +161,10 @@ class Info(metaclass=StaticProperty):
             return None
         style = style.casefold()
         fds = cls.get_fonts()
-        for fd in fds:
-            if fd.Name == name and fd.StyleName.casefold() == style:
-                return fd
-        return None
+        return next(
+            (fd for fd in fds if fd.Name == name and fd.StyleName.casefold() == style),
+            None,
+        )
 
     @staticmethod
     def get_font_mono_name() -> str:
@@ -269,6 +276,8 @@ class Info(metaclass=StaticProperty):
         See Also:
             :py:meth:`~.info.Info.get_config`
         """
+        # sourcery skip: merge-else-if-into-elif, raise-specific-error, remove-unnecessary-else, swap-if-else-branches
+
         # return value from "registrymodifications.xcu"
         # windows C:\Users\user\AppData\Roaming\LibreOffice\4\user\registrymodifications.xcu
         # e.g. val = Info.get_reg_item_prop("Calc/Calculate/Other", "DecimalPlaces")
@@ -279,7 +288,7 @@ class Info(metaclass=StaticProperty):
         if mLo.Lo.is_macro_mode:
             raise mEx.NotSupportedMacroModeError("get_reg_item_prop() is not supported from a macro")
         try:
-            from lxml import etree as XML_ETREE
+            from lxml import etree as XML_ETREE  # type: ignore[import]
         except ImportError as e:
             raise Exception("get_reg_item_prop() requires lxml python package") from e
 
@@ -312,7 +321,7 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_config(cls, node_str: str) -> object:
+    def get_config(cls, node_str: str) -> Any:
         """
         Get config
 
@@ -329,7 +338,7 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_config(cls, node_str: str, node_path: str) -> object:
+    def get_config(cls, node_str: str, node_path: str) -> Any:
         """
         Get config
 
@@ -346,7 +355,7 @@ class Info(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def get_config(cls, node_str: str, node_path: Optional[str] = None) -> object:
+    def get_config(cls, node_str: str, node_path: Optional[str] = None) -> Any:
         """
         Get config
 
@@ -390,12 +399,10 @@ class Info(metaclass=StaticProperty):
         return mProps.Props.get(props, node_str)
 
     @classmethod
-    def _get_config2(cls, node_str: str) -> object:
+    def _get_config2(cls, node_str: str) -> Any:
         for node_path in cls.NODE_PATHS:
-            try:
+            with contextlib.suppress(mEx.PropertyNotFoundError):
                 return cls._get_config1(node_str=node_str, node_path=node_path)
-            except mEx.PropertyNotFoundError:
-                pass
         raise mEx.ConfigError(f"{node_str} not found in common node paths")
 
     @staticmethod
@@ -418,8 +425,7 @@ class Info(metaclass=StaticProperty):
             )
             p = mProps.Props.make_props(nodepath=node_path)
             ca = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", p)
-            ps = mLo.Lo.qi(XPropertySet, ca, True)
-            return ps
+            return mLo.Lo.qi(XPropertySet, ca, True)
         except Exception as e:
             raise mEx.PropertyError(node_path, f"Unable to access config properties for\n\n  '{node_path}'") from e
 
@@ -492,16 +498,13 @@ class Info(metaclass=StaticProperty):
         try:
             paths = cls.get_paths(setting)
         except ValueError:
-            mLo.Lo.print(f"Cound not find paths for '{setting}'")
+            mLo.Lo.print(f"Could not find paths for '{setting}'")
             return []
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
-            mLo.Lo.print(f"Cound not split paths for '{setting}'")
+            mLo.Lo.print(f"Could not split paths for '{setting}'")
             return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(paths))]
-        dirs = []
-        for el in paths_arr:
-            dirs.append(mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(el)))
-        return dirs
+        return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(el)) for el in paths_arr]
 
     @classmethod
     def get_office_dir(cls) -> str:
@@ -527,7 +530,7 @@ class Info(metaclass=StaticProperty):
             try:
                 idx = addin_path.index("program")
             except ValueError:
-                mLo.Lo.print("Cound not extract office path")
+                mLo.Lo.print("Could not extract office path")
                 return addin_path
 
             p = Path(addin_path[:idx])
@@ -550,9 +553,11 @@ class Info(metaclass=StaticProperty):
         .. versionadded:: 0.9.1
         """
         try:
-            return cls.get_config(
-                node_str="CurrentColorScheme",
-                node_path="/org.openoffice.Office.ExtendedColorScheme/ExtendedColorScheme",
+            return str(
+                cls.get_config(
+                    node_str="CurrentColorScheme",
+                    node_path="/org.openoffice.Office.ExtendedColorScheme/ExtendedColorScheme",
+                )
             )
         except mEx.ConfigError:
             # most likely pre LO 7.4
@@ -654,7 +659,7 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: True on success; Otherwise, False
         """
-        try:
+        with contextlib.suppress(Exception):
             props = cls.set_config_props(node_path=node_path)
             if props is None:
                 return False
@@ -664,8 +669,6 @@ class Info(metaclass=StaticProperty):
                 raise mEx.MissingInterfaceError(XChangesBatch)
             secure_change.commitChanges()
             return True
-        except Exception as e:
-            pass
         return False
 
     # =================== getting info about a document ====================
@@ -690,7 +693,7 @@ class Info(metaclass=StaticProperty):
         p = Path(fnm)
         if not p.is_file():
             raise ValueError(f"Not a file: '{fnm}'")
-        if p.suffix == "":
+        if not p.suffix:
             mLo.Lo.print(f"No extension found for '{fnm}'")
             return p.stem
         return p.stem
@@ -715,7 +718,7 @@ class Info(metaclass=StaticProperty):
         # if not p.is_file():
         #     mLo.Lo.print(f"Not a file: {fnm}")
         #     return None
-        if p.suffix == "":
+        if not p.suffix:
             mLo.Lo.print(f"No extension found for '{fnm}'")
             return None
         return p.suffix[1:]
@@ -757,7 +760,9 @@ class Info(metaclass=StaticProperty):
             str: Doc Type.
         """
         try:
-            xdetect = mLo.Lo.create_instance_mcf(XTypeDetection, "com.sun.star.document.TypeDetection", raise_err=True)
+            x_detect = mLo.Lo.create_instance_mcf(
+                XTypeDetection, "com.sun.star.document.TypeDetection", raise_err=True
+            )
             if not mFileIO.FileIO.is_openable(fnm):
                 raise mEx.UnOpenableError(fnm)
             url_str = str(mFileIO.FileIO.fnm_to_url(fnm))
@@ -765,17 +770,15 @@ class Info(metaclass=StaticProperty):
 
             # even thought queryTypeByDescriptor reports to return a string
             # for some reason I am getting a tuple with the first value as the expected result.
-            result = xdetect.queryTypeByDescriptor(media_desc, True)
+            result = x_detect.queryTypeByDescriptor(media_desc, True)
             if result is None:
                 raise mEx.UnKnownError("queryTypeByDescriptor() is an unknown result")
-            if isinstance(result, str):
-                return result
-            return result[0]
+            return result if isinstance(result, str) else result[0]
         except Exception as e:
             raise ValueError(f"unable to get doc type for '{fnm}'") from e
 
     @classmethod
-    def report_doc_type(cls, doc: object) -> mLo.Lo.DocType:
+    def report_doc_type(cls, doc: Any) -> mLo.Lo.DocType:
         """
         Prints doc type to console and return doc type
 
@@ -809,12 +812,12 @@ class Info(metaclass=StaticProperty):
         return doc_type
 
     @classmethod
-    def doc_type_service(cls, doc: object) -> mLo.Lo.Service:
+    def doc_type_service(cls, doc: Any) -> mLo.Lo.Service:
         """
         Prints service type to console and return service type
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Returns:
             Lo.Service: Service type
@@ -842,7 +845,7 @@ class Info(metaclass=StaticProperty):
             return mLo.Lo.Service.UNKNOWN
 
     @staticmethod
-    def is_doc_type(obj: object, doc_type: mLo.Lo.Service) -> bool:
+    def is_doc_type(obj: Any, doc_type: mLo.Lo.Service) -> bool:
         """
         Gets if doc is a particular doc type.
 
@@ -855,14 +858,12 @@ class Info(metaclass=StaticProperty):
         """
         try:
             si = mLo.Lo.qi(XServiceInfo, obj)
-            if si is None:
-                return False
-            return si.supportsService(str(doc_type))
+            return False if si is None else si.supportsService(str(doc_type))
         except Exception:
             return False
 
     @staticmethod
-    def get_implementation_name(obj: object) -> str:
+    def get_implementation_name(obj: Any) -> str:
         """
         Gets implementation name such as ``com.sun.star.comp.deployment.PackageInformationProvider``
 
@@ -882,7 +883,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError("Could not get service information") from e
 
     @staticmethod
-    def get_identifier(obj: object) -> str:
+    def get_identifier(obj: Any) -> str:
         """
         Gets identifier name such as ``com.sun.star.text.TextDocument``
 
@@ -896,8 +897,8 @@ class Info(metaclass=StaticProperty):
             str: identifier name
         """
         try:
-            xmod = mLo.Lo.qi(XModule, obj, True)
-            return xmod.getIdentifier()
+            x_mod = mLo.Lo.qi(XModule, obj, True)
+            return x_mod.getIdentifier()
         except Exception as e:
             raise ValueError("Could not get service information") from e
 
@@ -915,10 +916,10 @@ class Info(metaclass=StaticProperty):
         default = "application/octet-stream"
         mt = mimetypes.guess_type(fnm)
         if mt is None:
-            mLo.Lo.print("unable to find mimeypte")
+            mLo.Lo.print("unable to find mimetype")
             return default
         if mt[0] is None:
-            mLo.Lo.print("unable to find mimeypte")
+            mLo.Lo.print("unable to find mimetype")
             return default
         return str(mt[0])
 
@@ -933,23 +934,23 @@ class Info(metaclass=StaticProperty):
         Returns:
             Lo.DocType: Document type. If mime_type is unknown then 'DocType.UNKNOWN'
         """
-        if mime_type is None or mime_type == "":
+        if mime_type is None or not mime_type:
             return mLo.Lo.DocType.UNKNOWN
-        if mime_type.find("vnd.oasis.opendocument.text") >= 0:
+        if "vnd.oasis.opendocument.text" in mime_type:
             return mLo.Lo.DocType.WRITER
-        if mime_type.find("vnd.oasis.opendocument.base") >= 0:
+        if "vnd.oasis.opendocument.base" in mime_type:
             return mLo.Lo.DocType.BASE
-        if mime_type.find("vnd.oasis.opendocument.spreadsheet") >= 0:
+        if "vnd.oasis.opendocument.spreadsheet" in mime_type:
             return mLo.Lo.DocType.CALC
         if (
-            mime_type.find("vnd.oasis.opendocument.graphics") >= 0
-            or mime_type.find("vnd.oasis.opendocument.image") >= 0
-            or mime_type.find("vnd.oasis.opendocument.chart") >= 0
+            "vnd.oasis.opendocument.graphics" in mime_type
+            or "vnd.oasis.opendocument.image" in mime_type
+            or "vnd.oasis.opendocument.chart" in mime_type
         ):
             return mLo.Lo.DocType.DRAW
-        if mime_type.find("vnd.oasis.opendocument.presentation") >= 0:
+        if "vnd.oasis.opendocument.presentation" in mime_type:
             return mLo.Lo.DocType.IMPRESS
-        if mime_type.find("vnd.oasis.opendocument.formula") >= 0:
+        if "vnd.oasis.opendocument.formula" in mime_type:
             return mLo.Lo.DocType.MATH
         return mLo.Lo.DocType.UNKNOWN
 
@@ -964,13 +965,11 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: True if known mime-type; Otherwise False
         """
-        if mime_type is None or mime_type == "":
+        if mime_type is None or not mime_type:
             return False
         if mime_type.startswith("image/"):
             return True
-        if mime_type.startswith("application/x-openoffice-bitmap"):
-            return True
-        return False
+        return bool(mime_type.startswith("application/x-openoffice-bitmap"))
 
     # ------------------------ services, interfaces, methods info ----------------------
     @overload
@@ -994,7 +993,7 @@ class Info(metaclass=StaticProperty):
             service_name (str): service name
 
         Returns:
-             List[str]: List of service names.
+            List[str]: List of service names.
         """
         ...
 
@@ -1010,7 +1009,7 @@ class Info(metaclass=StaticProperty):
             Exception: If error occurs
 
         Returns:
-             List[str]: List of service names.
+            List[str]: List of service names.
         """
         if service_name is None:
             return cls._get_service_names1()
@@ -1021,9 +1020,7 @@ class Info(metaclass=StaticProperty):
         mc_factory = mLo.Lo.get_component_factory()
         if mc_factory is None:
             return []
-        service_names = list(mc_factory.getAvailableServiceNames())
-        service_names.sort()
-        return service_names
+        return sorted(mc_factory.getAvailableServiceNames())
 
     @staticmethod
     def _get_service_names2(service_name: str) -> List[str]:
@@ -1032,12 +1029,12 @@ class Info(metaclass=StaticProperty):
             enum_access = mLo.Lo.qi(XContentEnumerationAccess, mLo.Lo.get_component_factory(), True)
             x_enum = enum_access.createContentEnumeration(service_name)
             while x_enum.hasMoreElements():
-                si = mLo.Lo.qi(XServiceInfo, x_enum.nextElement())
+                si = mLo.Lo.qi(XServiceInfo, x_enum.nextElement(), True)
                 names.append(si.getImplementationName())
         except Exception as e:
             mLo.Lo.print(f"Could not collect service names for: {service_name}")
             raise e
-        if len(names) == 0:
+        if not names:
             mLo.Lo.print(f"No service names found for: {service_name}")
             return names
 
@@ -1045,7 +1042,7 @@ class Info(metaclass=StaticProperty):
         return names
 
     @staticmethod
-    def get_services(obj: object) -> List[str]:
+    def get_services(obj: Any) -> List[str]:
         """
         Gets service names
 
@@ -1055,26 +1052,19 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: service names
         """
-        try:
-            service_names = list(obj.SupportedServiceNames)
-            service_names.sort()
-            return service_names
-        except AttributeError:
-            pass
-
+        with contextlib.suppress(AttributeError):
+            return sorted(obj.SupportedServiceNames)  # type: ignore
         try:
             si = mLo.Lo.qi(XServiceInfo, obj, True)
             names = si.getSupportedServiceNames()
-            service_names = list(names)
-            service_names.sort()
-            return service_names
+            return sorted(names)
         except Exception as e:
             mLo.Lo.print("Unable to get services")
             mLo.Lo.print(f"    {e}")
             raise e
 
     @classmethod
-    def show_services(cls, obj_name: str, obj: object) -> None:
+    def show_services(cls, obj_name: str, obj: Any) -> None:
         """
         Prints services to console
 
@@ -1091,7 +1081,7 @@ class Info(metaclass=StaticProperty):
             print(f"'{service}'")
 
     @staticmethod
-    def support_service(obj: object, *service: str) -> bool:
+    def support_service(obj: Any, *service: str) -> bool:
         """
         Gets if ``obj`` supports a service.
 
@@ -1118,7 +1108,7 @@ class Info(metaclass=StaticProperty):
         return result
 
     @staticmethod
-    def get_available_services(obj: object) -> List[str]:
+    def get_available_services(obj: Any) -> List[str]:
         """
         Gets available services for obj
 
@@ -1131,6 +1121,7 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: List of services
         """
+        # sourcery skip: raise-specific-error
         services: List[str] = []
         try:
             sf = mLo.Lo.qi(XMultiServiceFactory, obj, True)
@@ -1156,10 +1147,10 @@ class Info(metaclass=StaticProperty):
         Returns:
             Tuple[object, ...]: Tuple of interfaces
         """
+        # sourcery skip: raise-specific-error
         try:
             tp = mLo.Lo.qi(XTypeProvider, target, True)
-            types = tp.getTypes()
-            return types
+            return tp.getTypes()
         except Exception as e:
             mLo.Lo.print("Unable to get interface types")
             mLo.Lo.print(f"    {e}")
@@ -1208,6 +1199,7 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: List of interfaces
         """
+        # sourcery skip: raise-specific-error
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -1217,7 +1209,7 @@ class Info(metaclass=StaticProperty):
             if kargs_len == 0:
                 return ka
             valid_keys = ("target", "typeProvider")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_interfaces() got an unexpected keyword argument")
             keys = ("target", "typeProvider")
@@ -1228,7 +1220,7 @@ class Info(metaclass=StaticProperty):
             return ka
 
         if count != 1:
-            raise TypeError("get_interfaces() got an invalid numer of arguments")
+            raise TypeError("get_interfaces() got an invalid number of arguments")
 
         kargs = get_kwargs()
 
@@ -1248,8 +1240,7 @@ class Info(metaclass=StaticProperty):
             names_set = set()
             for t in types:
                 names_set.add(t.typeName)
-            type_names = list(names_set)
-            type_names.sort()
+            type_names = sorted(names_set)
             return type_names
         except Exception as e:
             mLo.Lo.print("Unable to get interfaces")
@@ -1270,11 +1261,9 @@ class Info(metaclass=StaticProperty):
         result = False
         if obj is None:
             return result
-        try:
+        with contextlib.suppress(mEx.MissingInterfaceError):
             interfaces = cls.get_interfaces(obj)
             result = len(interfaces) > 0
-        except mEx.MissingInterfaceError:
-            pass
         return result
 
     @staticmethod
@@ -1292,11 +1281,9 @@ class Info(metaclass=StaticProperty):
             return False
         if not hasattr(obj, "typeName"):
             return False
-        try:
-            t = uno.getTypeByName(obj.typeName)
+        with contextlib.suppress(Exception):
+            t = cast(uno_proto.UnoType, uno.getTypeByName(obj.typeName))
             return t.typeClass.value == "STRUCT"
-        except Exception:
-            pass
         return False
 
     @classmethod
@@ -1316,14 +1303,11 @@ class Info(metaclass=StaticProperty):
         # be called on both. In Java, check for the identity by calling the runtime function
         # com.sun.star.uni.UnoRuntime.areSame().
         if cls.is_struct(obj1) and cls.is_struct(obj2):
-            # types and attribue values must match
+            # types and attribute values must match
             if obj1.typeName != obj2.typeName:
                 return False
             obj1_attrs = [s for s in dir(obj1.value) if not s.startswith("_")]
-            for atr in obj1_attrs:
-                if getattr(obj1, atr) != getattr(obj2, atr):
-                    return False
-            return True
+            return all(getattr(obj1, atr) == getattr(obj2, atr) for atr in obj1_attrs)
         elif cls.is_interface_obj(obj1) and cls.is_interface_obj(obj2):
             # must be same object in memory
             id1 = id(obj1)
@@ -1350,7 +1334,7 @@ class Info(metaclass=StaticProperty):
         print()
 
     @classmethod
-    def show_interfaces(cls, obj_name: str, obj: object) -> None:
+    def show_interfaces(cls, obj_name: str, obj: Any) -> None:
         """
         prints interfaces in obj to console
 
@@ -1358,12 +1342,12 @@ class Info(metaclass=StaticProperty):
             obj_name (str): Name of object for printing
             obj (object): obj that contains interfaces.
         """
-        intfs = cls.get_interfaces(obj)
-        if not intfs:
+        interfaces = cls.get_interfaces(obj)
+        if not interfaces:
             print(f"No interfaces found for {obj_name}")
             return
-        print(f"{obj_name} Interfaces ({len(intfs)})")
-        for s in intfs:
+        print(f"{obj_name} Interfaces ({len(interfaces)})")
+        for s in interfaces:
             print(f"  {s}")
 
     @staticmethod
@@ -1398,7 +1382,7 @@ class Info(metaclass=StaticProperty):
                 print(f'"{length.name}" does not convert')
 
     @staticmethod
-    def get_methods_obj(obj: object, property_concept: PropertyConceptEnum | None = None) -> List[str]:
+    def get_methods_obj(obj: Any, property_concept: PropertyConceptEnum | None = None) -> List[str]:
         """
         Get Methods of an object such as a doc.
 
@@ -1412,20 +1396,19 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: List of method names found for obj
         """
+        # sourcery skip: raise-specific-error
         if property_concept is None:
             property_concept = PropertyConceptEnum.ALL
 
         try:
-            intro = theIntrospection()
+            intro = theIntrospection()  # type: ignore
             result = intro.inspect(obj)
             methods = result.getMethods(int(property_concept))
-            lst = []
-            for meth in methods:
-                lst.append(meth.getName())
+            lst = [meth.getName() for meth in methods]
             lst.sort()
             return lst
         except Exception as e:
-            raise Exception(f"Could not get object Methods") from e
+            raise Exception("Could not get object Methods") from e
 
     @staticmethod
     def get_methods(interface_name: str) -> List[str]:
@@ -1438,6 +1421,7 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: List of methods
         """
+        # sourcery skip: raise-specific-error
         # from com.sun.star.beans.PropertyConcept import ALL
         # ctx = XSCRIPTCONTEXT.getComponentContext()
         # smgr = ctx.getServiceManager()
@@ -1466,32 +1450,30 @@ class Info(metaclass=StaticProperty):
             return []
         try:
             methods: Tuple[XIdlMethod, ...] = fname.getMethods()
-            lst = []
-            for meth in methods:
-                lst.append(meth.getName())
+            lst = [meth.getName() for meth in methods]
             lst.sort()
             return lst
         except Exception as e:
             raise Exception(f"Could not get Methods for: {interface_name}") from e
 
     @classmethod
-    def show_methods(cls, interfce_name: str) -> None:
+    def show_methods(cls, interface_name: str) -> None:
         """
         Prints methods to console for an interface
 
         Args:
-            interfce_name (str): name of interface
+            interface_name (str): name of interface
         """
-        methods = cls.get_methods(interface_name=interfce_name)
+        methods = cls.get_methods(interface_name=interface_name)
         if len(methods) == 0:
-            print(f"No methods found for '{interfce_name}'")
+            print(f"No methods found for '{interface_name}'")
             return
-        print(f"{interfce_name} Methods: {len(methods)}")
+        print(f"{interface_name} Methods: {len(methods)}")
         for method in methods:
             print(f"  {method}")
 
     @classmethod
-    def show_methods_obj(cls, obj: object, property_concept: PropertyConceptEnum | None = None) -> None:
+    def show_methods_obj(cls, obj: Any, property_concept: PropertyConceptEnum | None = None) -> None:
         """
         Prints method to console for an object such as a doc.
 
@@ -1501,7 +1483,7 @@ class Info(metaclass=StaticProperty):
         """
         methods = cls.get_methods_obj(obj=obj, property_concept=property_concept)
         if len(methods) == 0:
-            print(f"No Object methods found")
+            print("No Object methods found")
             return
         print(f"Object Methods: {len(methods)}")
         for method in methods:
@@ -1509,12 +1491,12 @@ class Info(metaclass=StaticProperty):
 
     # -------------------------- style info --------------------------
     @staticmethod
-    def get_style_families(doc: object) -> XNameAccess:
+    def get_style_families(doc: Any) -> XNameAccess:
         """
         Gets a list of style family names
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Raises:
             MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface
@@ -1523,6 +1505,7 @@ class Info(metaclass=StaticProperty):
         Returns:
             XNameAccess: Style Families
         """
+        # sourcery skip: raise-specific-error
         try:
             xsupplier = mLo.Lo.qi(XStyleFamiliesSupplier, doc)
             if xsupplier is None:
@@ -1534,12 +1517,12 @@ class Info(metaclass=StaticProperty):
             raise Exception("Unable to get family style names") from e
 
     @classmethod
-    def get_style_family_names(cls, doc: object) -> List[str]:
+    def get_style_family_names(cls, doc: Any) -> List[str]:
         """
         Gets a list of style family names
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Raises:
             Exception: If unable to names.
@@ -1547,22 +1530,21 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: List of style names
         """
+        # sourcery skip: raise-specific-error
         try:
             name_acc = cls.get_style_families(doc)
             names = name_acc.getElementNames()
-            lst = list(names)
-            lst.sort()
-            return lst
+            return sorted(names)
         except Exception as e:
             raise Exception("Unable to get family style names") from e
 
     @classmethod
-    def get_style_container(cls, doc: object, family_style_name: str) -> XNameContainer:
+    def get_style_container(cls, doc: Any, family_style_name: str) -> XNameContainer:
         """
         Gets style container of document for a family of styles
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             family_style_name (str): Family style name
 
         Raises:
@@ -1572,16 +1554,15 @@ class Info(metaclass=StaticProperty):
             XNameContainer: Style Family container
         """
         name_acc = cls.get_style_families(doc)
-        xcontianer = mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name), raise_err=True)
-        return xcontianer
+        return mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name), raise_err=True)
 
     @classmethod
-    def get_style_names(cls, doc: object, family_style_name: str) -> List[str]:
+    def get_style_names(cls, doc: Any, family_style_name: str) -> List[str]:
         """
         Gets a list of style names
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             family_style_name (str): name of family style
 
         Raises:
@@ -1590,22 +1571,21 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[str]: List of style names
         """
+        # sourcery skip: raise-specific-error
         try:
             style_container = cls.get_style_container(doc=doc, family_style_name=family_style_name)
             names = style_container.getElementNames()
-            lst = list(names)
-            lst.sort()
-            return lst
+            return sorted(names)
         except Exception as e:
             raise Exception("Could not access style names") from e
 
     @classmethod
-    def get_style_props(cls, doc: object, family_style_name: str, prop_set_nm: str) -> XPropertySet:
+    def get_style_props(cls, doc: Any, family_style_name: str, prop_set_nm: str) -> XPropertySet:
         """
         Get style properties for a family of styles
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             family_style_name (str): name of family style
             prop_set_nm (str): property set name
 
@@ -1616,17 +1596,15 @@ class Info(metaclass=StaticProperty):
             XPropertySet: Property set
         """
         style_container = cls.get_style_container(doc, family_style_name)
-        #       container is a collection of named property sets
-        name_props = mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
-        return name_props
+        return mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
 
     @classmethod
-    def get_page_style_props(cls, doc: object) -> XPropertySet:
+    def get_page_style_props(cls, doc: Any) -> XPropertySet:
         """
         Gets style properties for page styles
 
         Args:
-            doc (object): office docs
+            doc (Any): office docs
 
         Raises:
             MissingInterfaceError: if a required interface cannot be obtained.
@@ -1637,12 +1615,12 @@ class Info(metaclass=StaticProperty):
         return cls.get_style_props(doc, "PageStyles", "Standard")
 
     @classmethod
-    def get_paragraph_style_props(cls, doc: object) -> XPropertySet:
+    def get_paragraph_style_props(cls, doc: Any) -> XPropertySet:
         """
         Gets style properties for paragraph styles
 
         Args:
-            doc (object): office docs
+            doc (Any): office docs
 
         Raises:
             MissingInterfaceError: if a required interface cannot be obtained.
@@ -1655,12 +1633,12 @@ class Info(metaclass=StaticProperty):
     # ----------------------------- document properties ----------------------
 
     @classmethod
-    def print_doc_properties(cls, doc: object) -> None:
+    def print_doc_properties(cls, doc: Any) -> None:
         """
         Prints document properties to console
 
         Args:
-            doc (object): office document
+            doc (Any): office document
         """
         try:
             doc_props_supp = mLo.Lo.qi(XDocumentPropertiesSupplier, doc, True)
@@ -1685,35 +1663,36 @@ class Info(metaclass=StaticProperty):
             :py:meth:`~Info.print_doc_properties`
         """
         print("Document Properties Info")
-        print("  Author: " + dps.Author)
-        print("  Title: " + dps.Title)
-        print("  Subject: " + dps.Subject)
-        print("  Description: " + dps.Description)
-        print("  Generator: " + dps.Generator)
+        print(f"  Author: {dps.Author}")
+        print(f"  Title: {dps.Title}")
+        print(f"  Subject: {dps.Subject}")
+        print(f"  Description: {dps.Description}")
+        print(f"  Generator: {dps.Generator}")
 
         keys = dps.Keywords
         print("  Keywords: ")
         for keyword in keys:
             print(f"  {keyword}")
 
-        print("  Modified by: " + dps.ModifiedBy)
-        print("  Printed by: " + dps.PrintedBy)
-        print("  Template Name: " + dps.TemplateName)
-        print("  Template URL: " + dps.TemplateURL)
-        print("  Autoload URL: " + dps.AutoloadURL)
-        print("  Default Target: " + dps.DefaultTarget)
+        print(f"  Modified by: {dps.ModifiedBy}")
+        print(f"  Printed by: {dps.PrintedBy}")
+        print(f"  Template Name: {dps.TemplateName}")
+        print(f"  Template URL: {dps.TemplateURL}")
+        print(f"  Autoload URL: {dps.AutoloadURL}")
+        print(f"  Default Target: {dps.DefaultTarget}")
 
         l = dps.Language
-        loc = []
-        loc.append("unknown" if len(l.Language) == 0 else l.Language)
-        loc.append("unknown" if len(l.Country) == 0 else l.Country)
-        loc.append("unknown" if len(l.Variant) == 0 else l.Variant)
+        loc = [
+            "unknown" if len(l.Language) == 0 else l.Language,
+            "unknown" if len(l.Country) == 0 else l.Country,
+            "unknown" if len(l.Variant) == 0 else l.Variant,
+        ]
         print(f"  Locale: {'; '.join(loc)}")
 
-        print("  Modification Date: " + mDate.DateUtil.str_date_time(dps.ModificationDate))
-        print("  Creation Date: " + mDate.DateUtil.str_date_time(dps.CreationDate))
-        print("  Print Date: " + mDate.DateUtil.str_date_time(dps.PrintDate))
-        print("  Template Date: " + mDate.DateUtil.str_date_time(dps.TemplateDate))
+        print(f"  Modification Date: {mDate.DateUtil.str_date_time(dps.ModificationDate)}")
+        print(f"  Creation Date: {mDate.DateUtil.str_date_time(dps.CreationDate)}")
+        print(f"  Print Date: {mDate.DateUtil.str_date_time(dps.PrintDate)}")
+        print(f"  Template Date: {mDate.DateUtil.str_date_time(dps.TemplateDate)}")
 
         doc_stats = dps.DocumentStatistics
         print("  Document statistics:")
@@ -1735,12 +1714,12 @@ class Info(metaclass=StaticProperty):
         print()
 
     @staticmethod
-    def set_doc_props(doc: object, subject: str, title: str, author: str) -> None:
+    def set_doc_props(doc: Any, subject: str, title: str, author: str) -> None:
         """
         Set document properties for subject, title, author
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             subject (str): subject
             title (str): title
             author (str): author
@@ -1758,12 +1737,12 @@ class Info(metaclass=StaticProperty):
             raise mEx.PropertiesError("Unable to set doc properties") from e
 
     @staticmethod
-    def get_user_defined_props(doc: object) -> XPropertyContainer:
+    def get_user_defined_props(doc: Any) -> XPropertyContainer:
         """
         Gets user defined properties
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Raises:
             PropertiesError: if unable to access properties
@@ -1794,12 +1773,11 @@ class Info(metaclass=StaticProperty):
             XPackageInformationProvider: Package Information Provider
         """
         ctx = mLo.Lo.get_context()
-        pip = mLo.Lo.qi(
+        return mLo.Lo.qi(
             XPackageInformationProvider,
             ctx.getValueByName("/singletons/com.sun.star.deployment.PackageInformationProvider"),
             True,
         )
-        return pip
         # return pip.get(mLo.Lo.get_context())
 
     @classmethod
@@ -1823,7 +1801,7 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_extension_info(cls, id: str) -> Tuple[str, ...]:
         """
-        Gets infor for an installed extension in LibreOffice.
+        Gets info for an installed extension in LibreOffice.
 
         Args:
             id (str): Extension id
@@ -1886,13 +1864,13 @@ class Info(metaclass=StaticProperty):
             filter_nm (str): Filter Name
 
         Returns:
-            List[PropertyValue]: List of PropertValue
+            List[PropertyValue]: List of PropertyValue
         """
         na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
             mLo.Lo.print("No Filter factory found")
             return []
-        result = na.getByName(filter_nm)
+        result = cast(Tuple[PropertyValue, ...], na.getByName(filter_nm))
         if result is None:
             mLo.Lo.print(f"No props for filter: {filter_nm}")
             return []
@@ -2081,12 +2059,12 @@ class Info(metaclass=StaticProperty):
         return (filter_flags & cls.Filter.PREFERRED) == cls.Filter.PREFERRED
 
     @staticmethod
-    def is_type_struct(obj: object, type_name: str) -> bool:
+    def is_type_struct(obj: Any, type_name: str) -> bool:
         """
         Gets if an object is a Uno Struct of matching type.
 
         Args:
-            obj (object): Object to test if is struct
+            obj (Any): Object to test if is struct
             type_name (str): Type string such as 'com.sun.star.table.CellRangeAddress'
 
         Returns:
@@ -2094,12 +2072,10 @@ class Info(metaclass=StaticProperty):
         """
         if obj is None:
             return False
-        if hasattr(obj, "typeName"):
-            return obj.typeName == type_name
-        return False
+        return obj.typeName == type_name if hasattr(obj, "typeName") else False
 
     @staticmethod
-    def is_type_interface(obj: object, type_name: str) -> bool:
+    def is_type_interface(obj: Any, type_name: str) -> bool:
         """
         Gets if an object is a Uno interface of matching type.
 
@@ -2123,12 +2099,12 @@ class Info(metaclass=StaticProperty):
         # return False
 
     @staticmethod
-    def is_type_enum(obj: uno.Enum, type_name: str) -> bool:
+    def is_type_enum(obj: Any, type_name: str) -> bool:
         """
-        Gets if an object is a Uno enum of matching type.
+        Gets if an object is a UNO enum of matching type.
 
         Args:
-            obj (object): Object to test if is uno enum
+            obj (Any): Object to test if is uno enum
             type_name (str): Type string such as ``com.sun.star.sheet.GeneralFunction``
 
         Returns:
@@ -2136,12 +2112,10 @@ class Info(metaclass=StaticProperty):
         """
         if obj is None:
             return False
-        if hasattr(obj, "typeName"):
-            return obj.typeName == type_name
-        return False
+        return obj.typeName == type_name if hasattr(obj, "typeName") else False
 
     @staticmethod
-    def is_uno(obj: object) -> bool:
+    def is_uno(obj: Any) -> bool:
         """
         Gets if an object is a UNO object
 
@@ -2166,11 +2140,21 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool:
+        ...
+
+    @overload
+    @staticmethod
     def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
         ...
 
+    @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str = "") -> bool:
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool:
+        ...
+
+    @staticmethod
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum | str, arg_name: str = "") -> bool:
         """
         Gets if an multiple inheritance enum, such as a ``str, Enum`` is of expected type.
 
@@ -2199,24 +2183,25 @@ class Info(metaclass=StaticProperty):
                 >>> print(is_enum_type("str", ct.ChartTypeNameBase, val, "input_enum"))
                 TypeError: Parameter "input_enum" must be of type "str" or "ChartTypeNameBase"
         """
-        if type(enum_val).__name__ != alt_type:
-            if not isinstance(enum_val, enum_type):
-                if arg_name:
-                    name = enum_type.__name__
-                    raise TypeError(f'Parameter "{arg_name}" must be of type "{alt_type}" or "{name}"')
-                else:
-                    return False
+        if isinstance(enum_val, str):
+            return True
+        if type(enum_val).__name__ != alt_type and not isinstance(enum_val, enum_type):
+            if arg_name:
+                name = enum_type.__name__
+                raise TypeError(f'Parameter "{arg_name}" must be of type "{alt_type}" or "{name}"')
+            else:
+                return False
         return True
 
     # endregion is_type_enum_multi()
 
     @classmethod
-    def get_type_name(cls, obj: object) -> str | None:
+    def get_type_name(cls, obj: Any) -> str | None:
         """
         Gets type name such as ``com.sun.star.table.TableSortField`` from uno object.
 
         Args:
-            obj (object): Uno object
+            obj (Any): Uno object
 
         Returns:
             str | None: Full type name if found; Otherwise; None
@@ -2226,12 +2211,11 @@ class Info(metaclass=StaticProperty):
         if hasattr(obj, "__ooo_full_ns__"):
             # ooouno object
             return obj.__ooo_full_ns__
-        if hasattr(obj, "__pyunointerface__"):
-            return obj.__pyunointerface__
-        return None
+        return obj.__pyunointerface__ if hasattr(obj, "__pyunointerface__") else None
 
+    # parse_language_code
     @classmethod
-    def parse_languange_code(cls, lang_code: str) -> Locale:
+    def parse_language_code(cls, lang_code: str) -> Locale:
         """
         Parses a language code into a ``Locale`` object.
 
@@ -2247,6 +2231,9 @@ class Info(metaclass=StaticProperty):
         if not lang_code:
             raise ValueError("lang_code cannot be empty")
         lang_code = lang_code.lower()
+        lang = ""
+        country = ""
+        variant = ""
         if "-" in lang_code:
             parts = lang_code.split("-", maxsplit=2)
             if len(parts) == 2:
@@ -2264,6 +2251,26 @@ class Info(metaclass=StaticProperty):
             raise ValueError(f"Invalid country code: {lang_code}")
         return Locale(lang, country.upper(), variant)
 
+    @classmethod
+    @deprecated("Use get_toolbar_resource")
+    def parse_languange_code(cls, lang_code: str) -> Locale:
+        """
+        Parses a language code into a ``Locale`` object.
+
+        Args:
+            lang_code (str): Language code such as ``"en-US"``
+
+        Returns:
+            Locale: ``Locale`` object
+
+        Raises:
+            ValueError: If ``lang_code`` is not valid.
+
+        # .. deprecated:: 0.9.4
+            Use :py:meth:`~.info.Info.parse_language_code` instead.
+        """
+        return cls.parse_language_code(lang_code=lang_code)
+
     @classproperty
     def language(cls) -> str:
         """
@@ -2276,6 +2283,7 @@ class Info(metaclass=StaticProperty):
         try:
             return cls._language
         except AttributeError:
+            # sourcery skip: use-or-for-fallback
             lang = cls.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N")
             if not lang:
                 lang = cls.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
@@ -2284,11 +2292,6 @@ class Info(metaclass=StaticProperty):
                 lang = "en-US"
             cls._language = str(lang)
         return cls._language
-
-    @language.setter
-    def language(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
     def language_locale(cls) -> Locale:
@@ -2304,13 +2307,8 @@ class Info(metaclass=StaticProperty):
         try:
             return cls._language_locale
         except AttributeError:
-            cls._language_locale = cls.parse_languange_code(cls.language)
+            cls._language_locale = cls.parse_language_code(cls.language)
         return cls._language_locale
-
-    @language_locale.setter
-    def language_locale(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
     @classproperty
     def version(cls) -> str:
@@ -2333,11 +2331,6 @@ class Info(metaclass=StaticProperty):
             cls._version = str(lang)
         return cls._version
 
-    @version.setter
-    def version(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
-
     @classproperty
     def version_info(cls) -> Tuple[int, ...]:
         """
@@ -2353,19 +2346,14 @@ class Info(metaclass=StaticProperty):
         try:
             return cls._version_info
         except AttributeError:
-            cls._version_info = tuple([int(s) for s in cls.version.split(".")])
+            cls._version_info = tuple(int(s) for s in cls.version.split("."))
         return cls._version_info
-
-    @version_info.setter
-    def version_info(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    dattrs = ("_language", "_language_locale", "_version", "_version_info")
-    for attr in dattrs:
+    data_attrs = ("_language", "_language_locale", "_version", "_version_info")
+    for attr in data_attrs:
         if hasattr(Info, attr):
             delattr(Info, attr)
 

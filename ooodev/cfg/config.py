@@ -21,9 +21,7 @@ class ConfigMeta(type):
                 # does not include non *.py files when it packages scripts
                 data = {"profile_versions": ["4"], "slide_template_path": "share/template/common/presnt/"}
 
-            # get any override values from os.environ
-            profile_ver = os.environ.get("OOODEV_CONFIG_PROFILE_VERSION", "")
-            if profile_ver:
+            if profile_ver := os.environ.get("OOODEV_CONFIG_PROFILE_VERSION", ""):
                 data["profile_versions"] = [s.strip() for s in profile_ver.split(",")]
             data["slide_template_path"] = os.environ.get(
                 "OOODEV_CONFIG_SLIDE_TEMPLATE_PATH", data["slide_template_path"]

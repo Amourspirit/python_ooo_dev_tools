@@ -7,6 +7,7 @@ from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooodev.units import UnitObj
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.color import Color
+from ooodev.utils.color import StandardColor
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ..page_style_base_multi import PageStyleBaseMulti
@@ -30,10 +31,10 @@ class Hatch(PageStyleBaseMulti):
         self,
         *,
         style: HatchStyle = HatchStyle.SINGLE,
-        color: Color = Color(0),
+        color: Color = StandardColor.BLACK,
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
-        bg_color: Color = Color(-1),
+        bg_color: Color = StandardColor.AUTO_COLOR,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:

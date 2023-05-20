@@ -4,13 +4,13 @@ from enum import Enum
 class StyleFrameKind(Enum):
     """Style Look ups for Frame Styles"""
 
-    FORMULA: str = "Formula"
-    FRAME: str = "Frame"
-    GRAPHICS: str = "Graphics"
-    LABELS: str = "Labels"
-    MARGINALIA: str = "Marginalia"
-    OLE: str = "OLE"
-    WATERMARK: str = "Watermark"
+    FORMULA = "Formula"
+    FRAME = "Frame"
+    GRAPHICS = "Graphics"
+    LABELS = "Labels"
+    MARGINALIA = "Marginalia"
+    OLE = "OLE"
+    WATERMARK = "Watermark"
 
     def __str__(self) -> str:
         return self.value

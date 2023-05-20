@@ -5,7 +5,7 @@ from .format_table_item import FormatTableItem
 from .table_item_kind import TableItemKind
 
 
-class TableItemProcesser:
+class TableItemProcessor:
     """
     Process ``FormatterTableItem`` Instances
 
@@ -31,46 +31,37 @@ class TableItemProcesser:
             return result
 
         if idx_col == 0:
-            if TableItemKind.START_COL_LEFT_STRIP in itm.item_kind:
-                if not l_stripped:
-                    result = result.lstrip()
-                    l_stripped = True
-            if TableItemKind.START_COL_RIGHT_STRIP in itm.item_kind:
-                if not r_stripped:
-                    result = result.rstrip()
-                    r_stripped = True
+            if TableItemKind.START_COL_LEFT_STRIP in itm.item_kind and not l_stripped:
+                result = result.lstrip()
+                l_stripped = True
+            if TableItemKind.START_COL_RIGHT_STRIP in itm.item_kind and not r_stripped:
+                result = result.rstrip()
+                r_stripped = True
 
         if l_stripped and r_stripped:
             return result
 
         if idx_col_last == idx_col:
-            if TableItemKind.END_COL_LEFT_STRIP in itm.item_kind:
-                if not l_stripped:
-                    result = result.lstrip()
-                    l_stripped = True
-            if TableItemKind.END_COL_RIGHT_STRIP in itm.item_kind:
-                if not r_stripped:
-                    result = result.rstrip()
-                    r_stripped = True
+            if TableItemKind.END_COL_LEFT_STRIP in itm.item_kind and not l_stripped:
+                result = result.lstrip()
+                l_stripped = True
+            if TableItemKind.END_COL_RIGHT_STRIP in itm.item_kind and not r_stripped:
+                result = result.rstrip()
+                r_stripped = True
 
         return result
 
     @staticmethod
     def _is_format(itm: FormatTableItem, idx_row: int, idx: int) -> bool:
-        has_rows = True if itm.row_idxs_exc else False
-        has_idx = True if itm.idxs_inc else False
+        has_rows = bool(itm.row_idxs_exc)
+        has_idx = bool(itm.idxs_inc)
 
         if has_rows and itm.is_row_exc_index(idx_row):
             # excludes take priority over includes
             # explicitly excluded
             return False
 
-        if has_idx and itm.is_index(idx):
-            # explicitly included
-            return True
-
-        # not excluded and not included
-        return False
+        return bool(has_idx and itm.is_index(idx))
 
     @staticmethod
     def _apply_single_format(value, fmt: str) -> str:
@@ -81,13 +72,12 @@ class TableItemProcesser:
 
     @classmethod
     def _apply_all_formats(cls, itm: FormatTableItem, value: Any) -> str:
-        if isinstance(itm.format, tuple):
-            v = value
-            for fmt in itm.format:
-                v = cls._apply_single_format(v, fmt)
-            return str(v)
-        else:
+        if not isinstance(itm.format, tuple):
             return cls._apply_single_format(value, itm.format)
+        v = value
+        for fmt in itm.format:
+            v = cls._apply_single_format(v, fmt)
+        return str(v)
 
     @classmethod
     def process_row(

@@ -1,6 +1,5 @@
 from __future__ import annotations
-from ast import Tuple
-from typing import Type
+from typing import Type, Tuple
 import uno
 
 from ooodev.format.inner.direct.structs.data_point_label_struct import DataPointLabelStruct
@@ -164,10 +163,10 @@ class TextAttribs(StyleMulti):
     def _dp_struct(self) -> DataPointLabelStruct:
         """Gets the struct of the style"""
         try:
-            return self._dp_struct_prop
+            return self._dp_struct_prop  # type: ignore
         except AttributeError:
             self._dp_struct_prop = self._get_style("dp_struct")
-        return self._dp_struct_prop
+        return self._dp_struct_prop  # type: ignore
 
     @property
     def prop_auto_text_wrap(self) -> bool | None:
@@ -185,11 +184,11 @@ class TextAttribs(StyleMulti):
     @property
     def prop_show_number(self) -> bool:
         """Gets or set if the number is additionally displayed in the caption."""
-        return self._get(self._dp_struct.prop_show_number)
+        return self._dp_struct.prop_show_number
 
     @prop_show_number.setter
     def prop_show_number(self, value: bool) -> None:
-        self._set(self._dp_struct.prop_show_number, value)
+        self._dp_struct.prop_show_number = value
 
     @property
     def prop_show_number_in_percent(self) -> bool:
@@ -198,33 +197,33 @@ class TextAttribs(StyleMulti):
 
         If this member is also ``True``, the numbers are displayed as percentages of a category
         """
-        return self._get(self._dp_struct.prop_show_number_in_percent)
+        return self._dp_struct.prop_show_number_in_percent
 
     @prop_show_number_in_percent.setter
     def prop_show_number_in_percent(self, value: bool) -> None:
-        self._set(self._dp_struct.prop_show_number_in_percent, value)
+        self._dp_struct.prop_show_number_in_percent = value
 
     @property
     def prop_show_category_name(self) -> bool:
         """
         Gets or set if the caption contains the category name of the category to which a data point belongs
         """
-        return self._get(self._dp_struct.prop_show_number_in_percent)
+        return self._dp_struct.prop_show_number_in_percent
 
     @prop_show_category_name.setter
     def prop_show_category_name(self, value: bool) -> None:
-        self._set(self._dp_struct.prop_show_number_in_percent, value)
+        self._dp_struct.prop_show_number_in_percent = value
 
     @property
     def prop_show_legend_symbol(self) -> bool:
         """
         Gets or set if the legend symbol is additionally displayed in the caption.
         """
-        return self._get(self._dp_struct.prop_show_legend_symbol)
+        return self._dp_struct.prop_show_legend_symbol
 
     @prop_show_legend_symbol.setter
     def prop_show_legend_symbol(self, value: bool) -> None:
-        self._set(self._dp_struct.prop_show_legend_symbol, value)
+        self._dp_struct.prop_show_legend_symbol = value
 
     @property
     def prop_show_custom_label(self) -> bool:
@@ -233,11 +232,11 @@ class TextAttribs(StyleMulti):
 
         Since LibreOffice ``7.1``
         """
-        return self._get(self._dp_struct.prop_show_custom_label)
+        return self._dp_struct.prop_show_custom_label
 
     @prop_show_custom_label.setter
     def prop_show_custom_label(self, value: bool) -> None:
-        self._set(self._dp_struct.prop_show_custom_label, value)
+        self._dp_struct.prop_show_custom_label = value
 
     @property
     def prop_show_series_name(self) -> bool:
@@ -246,11 +245,11 @@ class TextAttribs(StyleMulti):
 
         Since LibreOffice ``7.2``
         """
-        return self._get(self._dp_struct.prop_show_series_name)
+        return self._dp_struct.prop_show_series_name
 
     @prop_show_series_name.setter
     def prop_show_series_name(self, value: bool) -> None:
-        self._set(self._dp_struct.prop_show_series_name, value)
+        self._dp_struct.prop_show_series_name = value
 
     # endregion Data Point Label Struct Properties
 

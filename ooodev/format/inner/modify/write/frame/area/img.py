@@ -48,7 +48,7 @@ class Img(FrameStyleBaseMulti):
             name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
             mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
             size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
-            positin (RectanglePoint): Tiling position of Image.
+            position (RectanglePoint): Tiling position of Image.
             pos_offset (Offset, optional): Tiling position offset.
             tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.

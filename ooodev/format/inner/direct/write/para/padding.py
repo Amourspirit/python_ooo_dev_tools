@@ -46,16 +46,16 @@ class Padding(AbstractPadding):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: object) -> _TPadding:
+    def from_obj(cls: Type[_TPadding], obj: Any) -> _TPadding:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
+    def from_obj(cls: Type[_TPadding], obj: Any, **kwargs) -> _TPadding:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
+    def from_obj(cls: Type[_TPadding], obj: Any, **kwargs) -> _TPadding:
         """
         Gets Padding instance from object
 

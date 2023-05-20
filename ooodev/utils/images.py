@@ -5,6 +5,7 @@ import base64
 from typing import TYPE_CHECKING
 from PIL import Image  # LibreOffice has PHL Module.
 import uno
+from ooodev.exceptions import ex as mEx
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
@@ -18,15 +19,13 @@ from ..utils.type_var import PathOrStr
 class Images(mImgLo.ImagesLo):
     @staticmethod
     def load_image(fnm: PathOrStr) -> Image.Image:
-        img = None
         try:
-            img = Image.open(fnm)
+            img = Image.open(fnm)  # type: ignore
             img.load()
             print(f"Loaded image: '{fnm}'")
+            return img
         except Exception as e:
-            print(f"Unable to load '{fnm}':")
-            print(f"    {e}")
-        return img
+            raise mEx.ImageError(f"Unable to load '{fnm}':") from e
 
     @staticmethod
     def save_image(im: Image.Image, fnm: PathOrStr) -> None:
@@ -44,10 +43,10 @@ class Images(mImgLo.ImagesLo):
         if im is None:
             raise TypeError("im is None")
         try:
-            im.save(fp=fnm, format="png")
+            im.save(fp=fnm, format="png")  # type: ignore
             print(f"Saved image to file: {fnm}")
         except Exception as e:
-            raise Exception(f"Could not save image to '{fnm}'") from e
+            raise mEx.ImageError(f"Could not save image to '{fnm}'") from e
 
     @staticmethod
     def im_to_bytes(im: Image.Image) -> bytes:
@@ -62,8 +61,7 @@ class Images(mImgLo.ImagesLo):
         """
         buf = io.BytesIO()
         im.save(buf, format="png")
-        byte_im = buf.getvalue()
-        return byte_im
+        return buf.getvalue()
 
     @classmethod
     def im_to_string(cls, im: Image.Image) -> str:
@@ -74,38 +72,31 @@ class Images(mImgLo.ImagesLo):
             im (Image): image
 
         Raises:
-            Exception: If unable to convet to string
+            Exception: If unable to convent to string
 
         Returns:
             str: Image as string
         """
         try:
             b = cls.im_to_bytes(im)
-            s = base64.b64encode(b).decode("utf-8")
-            return s
+            return base64.b64encode(b).decode("utf-8")
         except Exception as e:
-            raise Exception("Converting image to string is not possible:") from e
+            raise mEx.ImageError("Converting image to string is not possible:") from e
 
     @staticmethod
     def string_to_im(s: str) -> Image.Image:
         try:
-            imgdata = base64.b64decode(s)
-            image = Image.open(io.BytesIO(imgdata))
-            return image
+            img_data = base64.b64decode(s)
+            return Image.open(io.BytesIO(img_data))
         except Exception as e:
-            print("Converting string to image is not possible:")
-            print(f"    {e}")
-            return None
+            raise mEx.ImageError("Converting string to image is not possible:") from e
 
     @staticmethod
     def bytes_to_im(b: bytes) -> Image.Image:
         try:
-            image = Image.open(io.BytesIO(b))
-            return image
+            return Image.open(io.BytesIO(b))
         except Exception as e:
-            print("Converting bytes to image is not possible:")
-            print(f"    {e}")
-            return None
+            raise mEx.ImageError("Converting bytes to image is not possible:") from e
 
     @classmethod
     def im_to_graphic(cls, im: Image.Image) -> XGraphic | None:

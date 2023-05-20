@@ -111,10 +111,10 @@ class AbstractHF(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies break properties to ``obj``
 
@@ -413,9 +413,7 @@ class AbstractHF(StyleBase):
         Gets/Sets Left Margin in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.margin_left))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_margin_left.setter
     def prop_margin_left(self, value: float | UnitObj | None) -> None:
@@ -423,9 +421,9 @@ class AbstractHF(StyleBase):
             self._remove(self._props.margin_left)
             return
         try:
-            self._set(self._props.margin_left, value.get_value_mm100())
+            self._set(self._props.margin_left, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.margin_left, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.margin_left, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_margin_right(self) -> UnitMM | None:
@@ -433,9 +431,7 @@ class AbstractHF(StyleBase):
         Gets/Sets Right Margin in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.margin_right))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_margin_right.setter
     def prop_margin_right(self, value: float | UnitObj | None) -> None:
@@ -443,9 +439,9 @@ class AbstractHF(StyleBase):
             self._remove(self._props.margin_right)
             return
         try:
-            self._set(self._props.margin_right, value.get_value_mm100())
+            self._set(self._props.margin_right, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.margin_right, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.margin_right, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_spacing(self) -> UnitMM | None:
@@ -453,9 +449,7 @@ class AbstractHF(StyleBase):
         Gets/Sets Spacing in ``mm`` units.
         """
         pv = cast(int, self._get(self._props.spacing))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_spacing.setter
     def prop_spacing(self, value: float | UnitObj | None) -> None:
@@ -463,9 +457,9 @@ class AbstractHF(StyleBase):
             self._remove(self._props.spacing)
             return
         try:
-            self._set(self._props.spacing, value.get_value_mm100())
+            self._set(self._props.spacing, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.spacing, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.spacing, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_spacing_dynamic(self) -> bool | None:
@@ -490,7 +484,7 @@ class AbstractHF(StyleBase):
         pv = cast(int, self._get(self._props.height))
         if pv is None:
             return None
-        if pv is 0:
+        if pv == 0:
             return UnitMM(0.0)
         spacing = self._get_spacing()
         val = pv - spacing
@@ -504,9 +498,9 @@ class AbstractHF(StyleBase):
             return
         spacing = self._get_spacing()
         try:
-            self._set(self._props.height, value.get_value_mm100() + spacing)
+            self._set(self._props.height, value.get_value_mm100() + spacing)  # type: ignore
         except AttributeError:
-            self._set(self._props.height, UnitConvert.convert_mm_mm100(value) + spacing)
+            self._set(self._props.height, UnitConvert.convert_mm_mm100(value) + spacing)  # type: ignore
 
     @property
     def prop_height_auto(self) -> bool | None:

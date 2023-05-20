@@ -161,7 +161,7 @@ class Numbers(CalcNumbers):
         cls: Type[_TNumbers], chart_doc: XChartDocument, index: int, lang_locale: Locale | None = None, **kwargs
     ) -> _TNumbers:
         """
-        Gets instance from number format index. This is the index that is assinged to the ``NumberFormat`` property of an object such as a cell.
+        Gets instance from number format index. This is the index that is assigned to the ``NumberFormat`` property of an object such as a cell.
 
         Args:
             chart_doc (XChartDocument): Chart document.

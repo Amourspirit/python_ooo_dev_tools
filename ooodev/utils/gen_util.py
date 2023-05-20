@@ -1,13 +1,15 @@
 # coding: utf-8
 """General Utilities"""
+
 from __future__ import annotations
+import contextlib
 import re
-from typing import Iterable, Iterator, NamedTuple, Any, Type, TypeVar
+from typing import Iterable, Iterator, NamedTuple, Any, Sequence, Type, TypeVar
 from inspect import isclass
 
 # match:
 #   Any uppercase character that is not at the start of a line
-#   Any Number that is preceeded by a Upper or Lower case character
+#   Any Number that is preceded by a Upper or Lower case character
 _REG_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])|(?<=[A-zA-Z])(?=[0-9])")  # re.compile(r"(?<!^)(?=[A-Z])")
 _REG_LETTER_AFTER_NUMBER = re.compile(r"(?<=\d)(?=[a-zA-Z])")
 
@@ -30,7 +32,7 @@ class ArgsHelper:
 
 class Util:
     @classmethod
-    def is_iterable(cls, arg: object, excluded_types: Iterable[type] | None = None) -> bool:
+    def is_iterable(cls, arg: Any, excluded_types: Sequence[type] | None = None) -> bool:
         """
         Gets if ``arg`` is iterable.
 
@@ -63,7 +65,7 @@ class Util:
                 assert not is_iterable(arg=44)           # integer
                 assert not is_iterable(arg=is_iterable)  # function
 
-                # excluded_types, optionally exlcude types
+                # excluded_types, optionally exclude types
                 from enum import Enum, auto
 
                 class Color(Enum):
@@ -83,13 +85,12 @@ class Util:
             result = isinstance(iter(arg), Iterator)
         except Exception:
             result = False
-        if result is True:
-            if cls._is_iterable_excluded(arg, excluded_types=excluded_types):
-                result = False
+        if result and cls._is_iterable_excluded(arg, excluded_types=excluded_types):
+            result = False
         return result
 
     @staticmethod
-    def _is_iterable_excluded(arg: object, excluded_types: Iterable) -> bool:
+    def _is_iterable_excluded(arg: object, excluded_types: Sequence) -> bool:
         try:
             isinstance(iter(excluded_types), Iterator)
         except Exception:
@@ -101,22 +102,16 @@ class Util:
         def _is_instance(obj: object) -> bool:
             # when obj is instance then isinstance(obj, obj) raises TypeError
             # when obj is not instance then isinstance(obj, obj) return False
-            try:
-                if not isinstance(obj, obj):
+            with contextlib.suppress(TypeError):
+                if not isinstance(obj, obj):  # type: ignore
                     return False
-            except TypeError:
-                pass
             return True
 
         ex_types = excluded_types if isinstance(excluded_types, tuple) else tuple(excluded_types)
         arg_instance = _is_instance(arg)
         if arg_instance is True:
-            if isinstance(arg, ex_types):
-                return True
-            return False
-        if isclass(arg) and issubclass(arg, ex_types):
-            return True
-        return arg in ex_types
+            return isinstance(arg, ex_types)
+        return True if isclass(arg) and issubclass(arg, ex_types) else arg in ex_types
 
     @staticmethod
     def to_camel_case(s: str) -> str:
@@ -133,12 +128,9 @@ class Util:
         if not s:
             return ""
         result = s
-        if "_" in s:
-            result = "".join(word.title() for word in s.split("_"))
-            return result
-        # convert to CamelCase if pascalCase was passed in.
-        result = result[:1].upper() + result[1:]
-        return result
+        if "_" in result:
+            return "".join(word.title() for word in result.split("_"))
+        return result[:1].upper() + result[1:]
 
     @classmethod
     def to_pascal_case(cls, s: str) -> str:
@@ -186,9 +178,7 @@ class Util:
             str: string converted to ``SNAKE_CASE_WORD``
         """
         result = cls.to_snake_case(s)
-        if not s:
-            return ""
-        return result.upper()
+        return result.upper() if s else ""
 
     @staticmethod
     def to_single_space(s: str, strip=True) -> str:
@@ -212,9 +202,7 @@ class Util:
         if not s:
             return ""
         result = re.sub(" +", " ", s)
-        if strip:
-            return result.strip()
-        return result
+        return result.strip() if strip else result
 
     @staticmethod
     def _atoi(text):
@@ -229,9 +217,9 @@ class Util:
 
         .. code-block:: python
 
-            alist.sort(key=Util.natural_key_sorter)
+            a_list.sort(key=Util.natural_key_sorter)
         """
-        # alist.sort(key=natural_keys) sorts in human order
+        # a_list.sort(key=natural_keys) sorts in human order
         # http://nedbatchelder.com/blog/200712/human_sorting.html
         # (See Toothy's implementation in the comments)
         # https://stackoverflow.com/questions/5967500/how-to-correctly-sort-a-string-with-a-number-inside

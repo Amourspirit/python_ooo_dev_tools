@@ -62,9 +62,9 @@ class LinkTo(StyleBase):
             None:
         """
         init_vals = {self._props.target: str(target)}
-        if not name is None:
+        if name is not None:
             init_vals[self._props.name] = name
-        if not url is None:
+        if url is not None:
             init_vals[self._props.url] = url
 
         super().__init__(**init_vals)
@@ -92,15 +92,19 @@ class LinkTo(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
+            obj (Any): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:
@@ -119,21 +123,21 @@ class LinkTo(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLinkTo], obj: object) -> _TLinkTo:
+    def from_obj(cls: Type[_TLinkTo], obj: Any) -> _TLinkTo:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLinkTo], obj: object, **kwargs) -> _TLinkTo:
+    def from_obj(cls: Type[_TLinkTo], obj: Any, **kwargs) -> _TLinkTo:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TLinkTo], obj: object, **kwargs) -> _TLinkTo:
+    def from_obj(cls: Type[_TLinkTo], obj: Any, **kwargs) -> _TLinkTo:
         """
         Gets hyperlink instance from object
 
         Args:
-            obj (object): UNO object.
+            obj (Any): UNO object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.

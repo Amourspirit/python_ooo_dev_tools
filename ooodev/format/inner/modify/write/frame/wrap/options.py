@@ -24,7 +24,7 @@ class Options(FrameStyleBaseMulti):
         *,
         first: bool | None = None,
         background: bool | None = None,
-        countour: bool | None = None,
+        contour: bool | None = None,
         outside: bool | None = None,
         overlap: bool | None = None,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
@@ -36,8 +36,8 @@ class Options(FrameStyleBaseMulti):
         Args:
             first (bool , optional): Specifies first paragraph.
             background (bool , optional): Specifies in background.
-            countour (bool , optional): Specifies contour.
-            outside (bool , optional): Specifies contour outside only. ``countour`` must be ``True`` for this parameter to be effective.
+            contour (bool , optional): Specifies contour.
+            outside (bool , optional): Specifies contour outside only. ``contour`` must be ``True`` for this parameter to be effective.
             overlap (bool , optional): Specifies allow overlap.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to.
                 Default is Default Frame Style.
@@ -47,7 +47,7 @@ class Options(FrameStyleBaseMulti):
             None:
         """
 
-        direct = InnerOptions(first=first, background=background, countour=countour, outside=outside, overlap=overlap)
+        direct = InnerOptions(first=first, background=background, contour=contour, outside=outside, overlap=overlap)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family

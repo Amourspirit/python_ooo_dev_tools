@@ -1,11 +1,11 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ooodev.units import UnitObj
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -35,10 +35,10 @@ class Hatch(ParaStyleBaseMulti):
         self,
         *,
         style: HatchStyle = HatchStyle.SINGLE,
-        color: Color = Color(0),
+        color: Color = StandardColor.BLACK,
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
-        bg_color: Color = Color(-1),
+        bg_color: Color = StandardColor.AUTO_COLOR,
         name: str = "",
         auto_name: bool = False,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
@@ -101,7 +101,7 @@ class Hatch(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Hatch:
@@ -109,7 +109,7 @@ class Hatch(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

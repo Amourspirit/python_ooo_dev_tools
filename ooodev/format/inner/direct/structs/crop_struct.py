@@ -5,7 +5,7 @@ Module for Image Crop (``GraphicCrop``) struct
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from ooo.dyn.text.graphic_crop import GraphicCrop
 
@@ -41,7 +41,7 @@ class CropStruct(StructBase):
         right: float | UnitObj = 0.0,
         top: float | UnitObj = 0.0,
         bottom: float | UnitObj = 0.0,
-        all: float | UnitObj = None,
+        all: float | UnitObj | None = None,
     ) -> None:
         """
         Constructor
@@ -54,7 +54,7 @@ class CropStruct(StructBase):
             all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
-        if not all is None:
+        if all is not None:
             self.prop_left = all
             self.prop_right = all
             self.prop_top = all
@@ -104,13 +104,12 @@ class CropStruct(StructBase):
         Returns:
             GraphicCrop: ``GraphicCrop`` instance
         """
-        inst = GraphicCrop(
+        return GraphicCrop(
             Top=self._get(self._props.top),
             Bottom=self._get(self._props.bottom),
             Left=self._get(self._props.left),
             Right=self._get(self._props.right),
         )
-        return inst
 
     # endregion methods
 
@@ -126,10 +125,10 @@ class CropStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -187,16 +186,16 @@ class CropStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: object) -> _TCropStruct:
+    def from_obj(cls: Type[_TCropStruct], obj: Any) -> _TCropStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: object, **kwargs) -> _TCropStruct:
+    def from_obj(cls: Type[_TCropStruct], obj: Any, **kwargs) -> _TCropStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: object, **kwargs) -> _TCropStruct:
+    def from_obj(cls: Type[_TCropStruct], obj: Any, **kwargs) -> _TCropStruct:
         """
         Gets instance from object
 
@@ -214,9 +213,9 @@ class CropStruct(StructBase):
         prop_name = nu._get_property_name()
 
         try:
-            grad = cast(CropStruct, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+            grad = cast(GraphicCrop, mProps.Props.get(obj, prop_name))
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(grad, **kwargs)
 
@@ -320,9 +319,9 @@ class CropStruct(StructBase):
     @prop_left.setter
     def prop_left(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.left, value.get_value_mm100())
+            self._set(self._props.left, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_right(self) -> UnitMM:
@@ -333,9 +332,9 @@ class CropStruct(StructBase):
     @prop_right.setter
     def prop_right(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.right, value.get_value_mm100())
+            self._set(self._props.right, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_top(self) -> UnitMM:
@@ -346,9 +345,9 @@ class CropStruct(StructBase):
     @prop_top.setter
     def prop_top(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.top, value.get_value_mm100())
+            self._set(self._props.top, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_bottom(self) -> UnitMM:
@@ -359,9 +358,9 @@ class CropStruct(StructBase):
     @prop_bottom.setter
     def prop_bottom(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.bottom, value.get_value_mm100())
+            self._set(self._props.bottom, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def _props(self) -> StructCropProps:

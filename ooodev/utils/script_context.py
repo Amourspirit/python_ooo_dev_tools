@@ -2,10 +2,11 @@
 # Origin class https://gitlab.com/LibreOfficiant/ide_utils/-/blob/master/IDE_utils.py
 # Original Author: LibreOfficiant: https://gitlab.com/LibreOfficiant
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 import uno
 import os
-_ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
+
+_ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
 if _ON_RTD:
     from ..mock import unohelper
 else:
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XComponentContext
 
 
-class ScriptContext(unohelper.Base, XScriptContext):
+class ScriptContext(unohelper.Base, XScriptContext):  # type: ignore
     """Substitute (Libre|Open)Office XSCRIPTCONTEXT built-in
 
     Can be used in IDEs such as Anaconda, Geany, KDevelop, PyCharm, VS Code..
@@ -28,7 +29,7 @@ class ScriptContext(unohelper.Base, XScriptContext):
     Implements: com.sun.star.script.provider.XScriptContext
     """
 
-    def __init__(self, ctx, desktop, doc):
+    def __init__(self, ctx: XComponentContext, desktop: XDesktop | None, doc):
         self.ctx = ctx
         self.desktop = desktop
         self.doc = doc
@@ -39,20 +40,18 @@ class ScriptContext(unohelper.Base, XScriptContext):
     def getDesktop(self) -> XDesktop:
         # return self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
         if self.desktop is None:
-            try:
-                self.desktop = self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
-            except Exception:
-                self.desktop = None
+            uno_type = uno.getTypeByName("com.sun.star.frame.XDesktop")
+            interface = self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
+            self.desktop = cast(XDesktop, interface.queryInterface(uno_type))
         return self.desktop
 
     def getDocument(self) -> XModel:
         # return self.getDesktop().getCurrentComponent()
         if self.doc is None:
-            try:
-                self.doc =self.getDesktop().getCurrentComponent()
-            except Exception:
-                self.doc = None
+            uno_type = uno.getTypeByName("com.sun.star.frame.XModel")
+            component = self.getDesktop().getCurrentComponent()
+            self.doc = cast(XModel, component.queryInterface(uno_type))
         return self.doc
 
     def getInvocationContext(self):
-        raise os.NotImplementedError
+        raise NotImplementedError

@@ -41,7 +41,7 @@ class LineSpacing(StyleMulti):
         self,
         *,
         mode: ModeKind | None = None,
-        value: Real | UnitObj = 0,
+        value: int | float | UnitObj = 0,
         active_ln_spacing: bool | None = None,
     ) -> None:
         """
@@ -114,10 +114,10 @@ class LineSpacing(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies writing mode to ``obj``
 
@@ -143,16 +143,16 @@ class LineSpacing(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLineSpacing], obj: object) -> _TLineSpacing:
+    def from_obj(cls: Type[_TLineSpacing], obj: Any) -> _TLineSpacing:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLineSpacing], obj: object, **kwargs) -> _TLineSpacing:
+    def from_obj(cls: Type[_TLineSpacing], obj: Any, **kwargs) -> _TLineSpacing:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TLineSpacing], obj: object, **kwargs) -> _TLineSpacing:
+    def from_obj(cls: Type[_TLineSpacing], obj: Any, **kwargs) -> _TLineSpacing:
         """
         Gets instance from object
 
@@ -172,7 +172,7 @@ class LineSpacing(StyleMulti):
         def set_prop(key: str, ls_inst: LineSpacing):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 ls_inst._set(key, val)
 
         set_prop("ParaRegisterModeActive", inst)
@@ -182,7 +182,7 @@ class LineSpacing(StyleMulti):
             pls,
             _cattribs={"_supported_services_values": inst._supported_services(), "_property_name": "ParaLineSpacing"},
         )
-        if not ls is None:
+        if ls is not None:
             inst._set_style("line_spacing", ls, *ls.get_attrs())
         return inst
 
@@ -218,7 +218,7 @@ class LineSpacing(StyleMulti):
         return self.prop_inner.prop_mode
 
     @property
-    def prop_value(self) -> Real | None:
+    def prop_value(self) -> int | float | None:
         """Gets the Value of line spacing."""
         return self.prop_inner.prop_value
 

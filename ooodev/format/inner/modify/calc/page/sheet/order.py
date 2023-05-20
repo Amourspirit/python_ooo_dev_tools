@@ -117,9 +117,8 @@ class Order(CellStyleBase):
         if value is None:
             self._remove(self._props.first_pg)
             return
-        if value < 0:
-            # zero for no page number
-            value = 0
+        # zero for no page number
+        value = max(value, 0)
         self._set(self._props.first_pg, value)
 
     @property

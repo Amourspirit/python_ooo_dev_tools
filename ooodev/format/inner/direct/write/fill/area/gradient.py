@@ -249,16 +249,16 @@ class Gradient(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any) -> _TGradient:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object, **kwargs) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object, **kwargs) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
         """
         Gets instance from object.
 
@@ -395,7 +395,7 @@ class Gradient(StyleMulti):
                 offset=Offset(0, 0),
                 angle=0,
                 border=0,
-                grad_color=ColorRange(0, 16777215),
+                grad_color=ColorRange(Color(0), Color(16777215)),
                 grad_intensity=IntensityRange(100, 100),
                 _cattribs=self._get_gradient_struct_cattrib(),
             )

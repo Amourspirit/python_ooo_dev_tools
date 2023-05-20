@@ -60,15 +60,19 @@ class ImageMapOptions(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
-            obj (object): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
+            obj (Any): UNO object that supports ``com.sun.star.style.CharacterProperties`` service.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Returns:

@@ -8,6 +8,8 @@ from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
 
 
 class Shadow(ShadowStruct):
+    """Shadow format for paragraph border"""
+
     def _get_property_name(self) -> str:
         try:
             return self._property_name

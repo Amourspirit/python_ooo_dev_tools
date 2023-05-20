@@ -5,7 +5,7 @@ Module for managing character border side.
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, cast, overload, Type, TypeVar
+from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -78,8 +78,12 @@ class AbstractSides(StyleMulti):
 
     # region internal methods
     def _get_property_side(self, side: Side, prop: str) -> Side:
-        inst = side.copy(_cattribs={"_property_name": prop, "_supported_services_values": self._supported_services()})
-        return inst
+        return side.copy(
+            _cattribs={
+                "_property_name": prop,
+                "_supported_services_values": self._supported_services(),
+            }
+        )
 
     # endregion internal methods
 
@@ -112,16 +116,16 @@ class AbstractSides(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: object) -> _TAbstractSides:
+    def from_obj(cls: Type[_TAbstractSides], obj: Any) -> _TAbstractSides:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: object, **kwargs) -> _TAbstractSides:
+    def from_obj(cls: Type[_TAbstractSides], obj: Any, **kwargs) -> _TAbstractSides:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: object, **kwargs) -> _TAbstractSides:
+    def from_obj(cls: Type[_TAbstractSides], obj: Any, **kwargs) -> _TAbstractSides:
         """
         Gets instance from object properties
 
@@ -246,14 +250,11 @@ class AbstractSides(StyleMulti):
     def prop_left(self) -> Side | None:
         """Gets left value"""
         try:
-            return self._prop_left
+            return self._prop_left  # type: ignore
         except AttributeError:
             val = self._get_style("left")
-            if val is None:
-                self._prop_left = None
-            else:
-                self._prop_left = val.style
-        return self._prop_left
+            self._prop_left = None if val is None else val.style
+        return self._prop_left  # type: ignore
 
     @prop_left.setter
     def prop_left(self, value: Side | None) -> None:
@@ -268,14 +269,11 @@ class AbstractSides(StyleMulti):
     def prop_right(self) -> Side | None:
         """Gets right value"""
         try:
-            return self._prop_right
+            return self._prop_right  # type: ignore
         except AttributeError:
             val = self._get_style("right")
-            if val is None:
-                self._prop_right = None
-            else:
-                self._prop_right = val.style
-        return self._prop_right
+            self._prop_right = None if val is None else val.style
+        return self._prop_right  # type: ignore
 
     @prop_right.setter
     def prop_right(self, value: Side | None) -> None:
@@ -290,14 +288,11 @@ class AbstractSides(StyleMulti):
     def prop_top(self) -> Side | None:
         """Gets top value"""
         try:
-            return self._prop_top
+            return self._prop_top  # type: ignore
         except AttributeError:
             val = self._get_style("top")
-            if val is None:
-                self._prop_top = None
-            else:
-                self._prop_top = val.style
-        return self._prop_top
+            self._prop_top = None if val is None else val.style
+        return self._prop_top  # type: ignore
 
     @prop_top.setter
     def prop_top(self, value: Side | None) -> None:
@@ -312,14 +307,11 @@ class AbstractSides(StyleMulti):
     def prop_bottom(self) -> Side | None:
         """Gets bottom value"""
         try:
-            return self._prop_bottom
+            return self._prop_bottom  # type: ignore
         except AttributeError:
             val = self._get_style("bottom")
-            if val is None:
-                self._prop_bottom = None
-            else:
-                self._prop_bottom = val.style
-        return self._prop_bottom
+            self._prop_bottom = None if val is None else val.style
+        return self._prop_bottom  # type: ignore
 
     @prop_bottom.setter
     def prop_bottom(self, value: Side | None) -> None:

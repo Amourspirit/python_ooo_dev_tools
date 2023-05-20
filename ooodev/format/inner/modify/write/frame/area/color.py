@@ -7,6 +7,7 @@ from ..frame_style_base_multi import FrameStyleBaseMulti
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor as InnerColor
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 
 # endregion Imports
 
@@ -22,7 +23,7 @@ class Color(FrameStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = StandardColor.AUTO_COLOR,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:

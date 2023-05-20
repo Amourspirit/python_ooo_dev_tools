@@ -1,0 +1,39 @@
+# https://docs.sourcery.ai/Reference/Configuration/sourcery-yaml/
+ignore:
+    - .git
+    - venv
+    - .venv
+    - env
+    - .env
+    - .tox
+    - node_modules
+    - vendor
+    - docs
+    - dist
+    - .githooks
+    - .hypothesis
+    - tests
+    - out
+    - tmp
+
+rule_settings:
+  enable: [default]
+  disable: []
+  rule_types:
+    - refactoring
+    - suggestion
+    - comment
+  python_version: '3.8'
+
+rules: []
+
+metrics:
+  quality_threshold: 25.0
+
+clone_detection:
+  min_lines: 3
+  min_duplicates: 2
+  identical_clones_only: false
+
+proxy:
+  no_ssl_verify: false

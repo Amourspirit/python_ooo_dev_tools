@@ -44,7 +44,7 @@ if TYPE_CHECKING:
 else:
     # Class takes the place of the above class at runtime.
     # The reason for this to make sure 'AT_FRAME' enum value is excluded
-    # Also fture proof enum, if later version add new enum values.
+    # Also future proof enum, if later version add new enum values.
     class AnchorKind(
         metaclass=DeletedUnoEnumMeta,
         type_name="com.sun.star.text.TextContentAnchorType",
@@ -87,7 +87,7 @@ class Anchor(StyleBase):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -99,16 +99,16 @@ class Anchor(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAnchor], obj: object) -> _TAnchor:
+    def from_obj(cls: Type[_TAnchor], obj: Any) -> _TAnchor:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAnchor], obj: object, **kwargs) -> _TAnchor:
+    def from_obj(cls: Type[_TAnchor], obj: Any, **kwargs) -> _TAnchor:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TAnchor], obj: object, **kwargs) -> _TAnchor:
+    def from_obj(cls: Type[_TAnchor], obj: Any, **kwargs) -> _TAnchor:
         """
         Gets instance from object
 

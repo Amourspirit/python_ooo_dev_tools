@@ -32,7 +32,7 @@ class Flip(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, vertical: bool = None, horizontal: FlipKind | None = None) -> None:
+    def __init__(self, vertical: bool | None = None, horizontal: FlipKind | None = None) -> None:
         """
         Constructor
 
@@ -40,9 +40,9 @@ class Flip(StyleBase):
             printable (bool, optional): Specifies if Frame can be printed. Default ``True``.
         """
         super().__init__()
-        if not vertical is None:
+        if vertical is not None:
             self.prop_vertical = vertical
-        if not horizontal is None:
+        if horizontal is not None:
             self.prop_Horizontal = horizontal
 
     # region Overrides
@@ -134,13 +134,9 @@ class Flip(StyleBase):
         if even is None or odd is None:
             return None
 
-        if even and odd:
-            return FlipKind.ALL
         if even:
-            return FlipKind.LEFT
-        if odd:
-            return FlipKind.RIGHT
-        return FlipKind.NONE
+            return FlipKind.ALL if odd else FlipKind.LEFT
+        return FlipKind.RIGHT if odd else FlipKind.NONE
 
     @prop_Horizontal.setter
     def prop_Horizontal(self, value: FlipKind | None) -> None:

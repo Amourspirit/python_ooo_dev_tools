@@ -3,12 +3,6 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 from .base_int_value import BaseIntValue
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
-
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
 # most cases. Especially for built in types.
@@ -49,14 +43,14 @@ class Angle(BaseIntValue):
     def __post_init__(self) -> None:
         self.value = _to_positive_angle(self.value)
 
-    def _from_int(self, value: int) -> Self:
+    def _from_int(self, value: int) -> Angle:
         return Angle(_to_positive_angle(value))
 
     def __eq__(self, other: object) -> bool:
         # for some reason BaseIntValue __eq__ is not picked up.
         # I suspect this is due to this class being a dataclass.
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return i == self.value
         except Exception as e:
             return False
@@ -80,9 +74,7 @@ class Angle(BaseIntValue):
         Returns:
             Angle:
         """
-        if value == 0:
-            return Angle(0)
-        return Angle(round(value / 10))
+        return Angle(0) if value == 0 else Angle(round(value / 10))
 
     @staticmethod
     def from_angle100(value: int) -> Angle:
@@ -95,6 +87,4 @@ class Angle(BaseIntValue):
         Returns:
             Angle:
         """
-        if value == 0:
-            return Angle(0)
-        return Angle(round(value / 100))
+        return Angle(0) if value == 0 else Angle(round(value / 100))

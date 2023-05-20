@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as WriteTransparency
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -45,7 +45,7 @@ class Transparency(WriteTransparency):
             )
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return self._is_obj_service(obj)
 
     @property

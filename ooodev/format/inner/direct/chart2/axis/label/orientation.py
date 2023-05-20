@@ -16,7 +16,7 @@ class Orientation(StyleBase):
     """
 
     def __init__(
-        self, angle: int | Angle = None, mode: DirectionModeKind | None = None, vertical: bool | None = None
+        self, angle: int | Angle | None = None, mode: DirectionModeKind | None = None, vertical: bool | None = None
     ) -> None:
         """
         Constructor
@@ -65,9 +65,7 @@ class Orientation(StyleBase):
         """Gets/Sets the rotation of the text."""
         # angle is stored as float but the dialog only allows integer values
         pv = cast(float, self._get("TextRotation"))
-        if pv is None:
-            return None
-        return Angle(int(pv))
+        return None if pv is None else Angle(int(pv))
 
     @prop_angle.setter
     def prop_angle(self, value: int | Angle | None) -> None:
@@ -82,9 +80,7 @@ class Orientation(StyleBase):
     def prop_mode(self) -> DirectionModeKind | None:
         """Gets/Sets writing mode."""
         pv = cast(int, self._get("WritingMode"))
-        if pv is None:
-            return None
-        return DirectionModeKind(pv)
+        return None if pv is None else DirectionModeKind(pv)
 
     @prop_mode.setter
     def prop_mode(self, value: DirectionModeKind | None):
@@ -97,9 +93,7 @@ class Orientation(StyleBase):
     def prop_vertical(self) -> bool | None:
         """Gets/Sets if the text is vertically stacked."""
         pv = cast(bool, self._get("StackCharacters"))
-        if pv is None:
-            return None
-        return pv
+        return None if pv is None else pv
 
     @prop_vertical.setter
     def prop_vertical(self, value: bool | None) -> None:

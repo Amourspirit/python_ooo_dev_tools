@@ -18,9 +18,7 @@ class ThemeRptBuilder(ThemeBase):
             node_str="Color",
             node_path=f"org.openoffice.Office.ExtendedColorScheme/ExtendedColorScheme/ColorSchemes/{self._theme_name}/SunReportBuilder/Entries/{prop_name}",
         )
-        if val is None:
-            return -1
-        return int(val)
+        return -1 if val is None else int(val)
 
     # region Properties
     @property

@@ -83,10 +83,10 @@ class AbstractLineNumber(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies break properties to ``obj``
 
@@ -139,7 +139,7 @@ class AbstractLineNumber(StyleBase):
         def set_prop(key: str, o: AbstractLineNumber):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 o._set(key, val)
 
         set_prop(inst._props.value, inst)
@@ -184,8 +184,8 @@ class AbstractLineNumber(StyleBase):
         """Gets instance with include in line numbering set to include."""
         cp = self.copy()
         # zero or higher is already include
-        if cp.prop_num_start < 0:
-            cp.prop_num_start = 0
+        if cp.prop_num_start is not None:
+            cp.prop_num_start = max(cp.prop_num_start, 0)
         return cp
 
     @property

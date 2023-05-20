@@ -1,6 +1,6 @@
 # region Imports
 from __future__ import annotations
-from typing import Tuple, TYPE_CHECKING
+from typing import Any, Tuple
 
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
@@ -16,9 +16,6 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 
 # endregion Imports
-
-if TYPE_CHECKING:
-    pass
 
 # PARA_BACK_COLOR_FLAGS = 0x7F000000
 PARA_BACK_COLOR_FLAGS = 0x7C000000
@@ -72,7 +69,15 @@ class Gradient(StyleMulti):
             "com.sun.star.style.ParagraphStyle",
         )
 
-    def on_property_setting(self, event_args: KeyValCancelArgs) -> None:
+    def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
+        """
+        Triggers for each property that is set
+
+        Args:
+            source (Any): Event Source.
+            event_args (KeyValueCancelArgs): Event Args
+        """
+        # sourcery skip: merge-nested-ifs
         if event_args.key == "ParaBackColor":
             # event_args.cancel = True
             if event_args.value is gUtil.NULL_OBJ:
@@ -83,7 +88,7 @@ class Gradient(StyleMulti):
                 #     event_args.value = PARA_BACK_COLOR_FLAGS
                 # else:
                 #     event_args.value = PARA_BACK_COLOR_FLAGS | color
-        super().on_property_setting(event_args)
+        super().on_property_setting(source, event_args)
 
     # region Properties
     @property

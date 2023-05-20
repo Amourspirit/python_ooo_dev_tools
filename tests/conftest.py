@@ -73,7 +73,7 @@ def skip_for_headless(request, run_headless: bool):
             if reason:
                 pytest.skip(reason)
             else:
-                pytest.skip("Skiped in headless mode")
+                pytest.skip("Skipped in headless mode")
 
 
 @pytest.fixture(autouse=True)
@@ -96,7 +96,7 @@ def skip_not_headless_os(request, run_headless: bool):
             if reason:
                 pytest.skip(reason)
             else:
-                pytest.skip(f"Skiped in GUI mode on os: {rq.args[0]}")
+                pytest.skip(f"Skipped in GUI mode on os: {rq.args[0]}")
 
 
 @pytest.fixture(scope="session")

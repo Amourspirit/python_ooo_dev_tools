@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast, Tuple, overload, TYPE_CHECKING
+from typing import Any, cast, Tuple, overload, TYPE_CHECKING
 import uno
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.chart2 import XChartDocument
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 # endregion Import
 
 
-class _TitleGradidentStruct(GradientStruct):
+class _TitleGradientStruct(GradientStruct):
     def _get_property_name(self) -> str:
         return ""
 
@@ -48,7 +48,7 @@ class Gradient(FillGradient):
     .. versionadded:: 0.9.4
     """
 
-    default = DeletedAttrib()
+    default = DeletedAttrib()  # type: ignore
 
     def __init__(
         self,
@@ -118,8 +118,7 @@ class Gradient(FillGradient):
 
     def _container_get_msf(self) -> XMultiServiceFactory | None:
         if self._chart_doc is not None:
-            chart_doc_ms_factory = mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
-            return chart_doc_ms_factory
+            return mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
         return None
 
     # region copy()
@@ -144,8 +143,8 @@ class Gradient(FillGradient):
 
     # endregion copy()
 
-    def _get_gradient_from_uno_struct(self, uno_struct: UNOGradient, **kwargs) -> _TitleGradidentStruct:
-        return _TitleGradidentStruct.from_uno_struct(uno_struct, **kwargs)
+    def _get_gradient_from_uno_struct(self, uno_struct: UNOGradient, **kwargs) -> _TitleGradientStruct:
+        return _TitleGradientStruct.from_uno_struct(uno_struct, **kwargs)
 
     def _get_inner_class(
         self,
@@ -159,8 +158,8 @@ class Gradient(FillGradient):
         start_intensity: Intensity | int,
         end_color: Color,
         end_intensity: Intensity | int,
-    ) -> _TitleGradidentStruct:
-        fs = _TitleGradidentStruct(
+    ) -> _TitleGradientStruct:
+        return _TitleGradientStruct(
             style=style,
             step_count=step_count,
             x_offset=x_offset,
@@ -173,7 +172,6 @@ class Gradient(FillGradient):
             end_intensity=end_intensity,
             _cattribs=self._get_gradient_struct_cattrib(),
         )
-        return fs
 
     # endregion overrides
 
@@ -181,16 +179,16 @@ class Gradient(FillGradient):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object) -> Gradient:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Gradient:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Gradient:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Gradient:
         ...
 
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Gradient:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Gradient:
         """
         Gets instance from object.
 

@@ -9,4 +9,4 @@ class StructCellProtectionProps(NamedTuple):
     hide_all: str
     hide_formula: str
     protected: str
-    hide_pirnt: str
+    hide_print: str

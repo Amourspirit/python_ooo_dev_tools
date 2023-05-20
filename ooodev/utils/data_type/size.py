@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import TypeVar, Type
 import uno
 from ooo.dyn.awt.size import Size as UnoSize
@@ -23,16 +24,14 @@ class Size:
             width (int): Width value.
             height (int): Height Value.
         """
-        self.width = width
-        self.height = height
+        self._width = width
+        self._height = height
 
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, Size):
             return self.width == oth.width and self.height == oth.height
-        try:
-            return self.width == oth.Width and self.height == oth.Height
-        except AttributeError:
-            pass
+        with contextlib.suppress(AttributeError):
+            return self.width == oth.Width and self.height == oth.Height  # type: ignore
         return NotImplemented
 
     def swap(self) -> Size:
@@ -67,7 +66,7 @@ class Size:
 
     @width.setter
     def width(self, value: int):
-        self._width = int(value)
+        self._width = value
 
     @property
     def height(self) -> int:
@@ -78,7 +77,20 @@ class Size:
 
     @height.setter
     def height(self, value: int):
-        self._height = int(value)
+        self._height = value
 
-    Width = width
-    Height = height
+    @property
+    def Width(self) -> int:
+        return self._width
+
+    @Width.setter
+    def Width(self, value: int):
+        self._width = value
+
+    @property
+    def Height(self) -> int:
+        return self._height
+
+    @Height.setter
+    def Height(self, value: int):
+        self._height = value

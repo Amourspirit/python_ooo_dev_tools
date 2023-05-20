@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload
+import contextlib
+from typing import Any, Dict, Tuple, overload
 import uno
 from com.sun.star.chart2 import XChartDocument
 
@@ -72,14 +73,14 @@ class PercentFormat(ChartNumbers):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs: Any) -> None:
+    def apply(self, obj: Any, **kwargs: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs: Any) -> None:
+    def apply(self, obj: Any, **kwargs: Any) -> None:
         """
         Applies styles to object
 
@@ -97,11 +98,8 @@ class PercentFormat(ChartNumbers):
         if not self._is_valid_obj(obj):
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property. Invalid object")
             return
-        props = {"verify": False}
-
         override_dv = {"LinkNumberFormatToSource": self._source_format}
-        props["override_dv"] = override_dv
-
+        props: Dict[str, Any] = {"verify": False, "override_dv": override_dv}
         if self._source_format:
             # if source format is true then the number format should be set to None.
             # This causes the chart to use the source format.
@@ -136,16 +134,16 @@ class PercentFormat(ChartNumbers):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object) -> PercentFormat:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> PercentFormat:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> PercentFormat:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> PercentFormat:
         ...
 
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> PercentFormat:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> PercentFormat:
         """
         Gets instance from object
 
@@ -243,7 +241,7 @@ class PercentFormat(ChartNumbers):
     # region on events
     def on_property_set_error(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == self._get_property_name() and event_args.value is None:
-            try:
+            with contextlib.suppress(Exception):
                 # in theory this should work, but it doesn't.
                 # As of LibreOffice 7.5 it still throws an exception.
                 # This seems to be due to XPropertySet not being properly implemented on data points and data series.
@@ -251,8 +249,6 @@ class PercentFormat(ChartNumbers):
                 # Either way, the error is caught and only printed to console.
                 mProps.Props.set_default(event_args.event_data, self._get_property_name())
                 event_args.handled = True
-            except Exception:
-                pass
         super().on_property_set_error(source, event_args)
 
     # endregion on events

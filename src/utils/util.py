@@ -76,20 +76,19 @@ def get_path(path: Union[str, Path, List[str]], ensure_absolute: bool = False) -
     elif isinstance(path, Path):
         p = path
     else:
-        lst = [s for s in path]
+        lst = list(path)
     if p is None:
-        if len(lst) == 0:
+        if not lst:
             raise ValueError("lst arg is zero length")
         arg = lst[0]
         expand = arg.startswith("~")
         p = Path(*lst)
-    else:
-        if expand is None:
-            pstr = str(p)
-            expand = pstr.startswith("~")
+    elif expand is None:
+        p_str = str(p)
+        expand = p_str.startswith("~")
     if expand:
         p = p.expanduser()
-    if ensure_absolute is True and p.is_absolute() is False:
+    if ensure_absolute and p.is_absolute() is False:
         p = Path(get_root(), p)
     return p
 
@@ -99,18 +98,16 @@ def get_virtual_env_path() -> str:
     Gets the Virtual Environment Path
 
     Returns:
-        str: Viruatl Environment Path
+        str: Virtual Environment Path
 
     Note:
         If unable to get virtual path from Environment then ``sys.base_exec_prefix`` is returned.
     """
-    spath = os.environ.get("VIRTUAL_ENV", None)
-    if spath is not None:
-        return spath
-    return sys.base_exec_prefix
+    s_path = os.environ.get("VIRTUAL_ENV", None)
+    return s_path if s_path is not None else sys.base_exec_prefix
 
 
-def get_site_packeges_dir() -> Union[Path, None]:
+def get_site_packages_dir() -> Union[Path, None]:
     """
     Gets the ``site-packages`` directory for current python environment.
 
@@ -124,9 +121,7 @@ def get_site_packeges_dir() -> Union[Path, None]:
 
     ver = f"{sys.version_info[0]}.{sys.version_info[1]}"
     p_site = Path(v_path, "lib", f"python{ver}", "site-packages")
-    if p_site.exists() and p_site.is_dir():
-        return p_site
-    return None
+    return p_site if p_site.exists() and p_site.is_dir() else None
 
 
 def copy_file(src: str | Path, dst: str | Path):

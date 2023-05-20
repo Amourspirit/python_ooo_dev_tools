@@ -1,6 +1,7 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+import contextlib
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 import uno
 from ooo.dyn.chart2.data_point_label import DataPointLabel
 
@@ -72,20 +73,16 @@ class DataPointLabelStruct(StructBase):
     # region dunder methods
     def __eq__(self, oth: object) -> bool:
         obj2 = None
-        if isinstance(oth, DataPointLabel):
+        if isinstance(oth, DataPointLabelStruct):
             obj2 = oth.get_uno_struct()
         if getattr(oth, "typeName", None) == "com.sun.star.chart2.DataPointLabel":
             obj2 = cast(DataPointLabel, oth)
         if obj2:
             obj1 = self.get_uno_struct()
             for prop in self._props:
-                try:
+                with contextlib.suppress(AttributeError):
                     if getattr(obj1, prop) != getattr(obj2, prop):
                         return False
-                except AttributeError:
-                    # ShowCustomLabel is LibreOffice 7.1+
-                    # ShowSeriesName is LibreOffice 7.2+
-                    pass
             return True
         return NotImplemented
 
@@ -101,12 +98,8 @@ class DataPointLabelStruct(StructBase):
         """
         inst = DataPointLabel()
         for prop in self._props:
-            try:
+            with contextlib.suppress(AttributeError):
                 setattr(inst, prop, self._get(prop))
-            except AttributeError:
-                # ShowCustomLabel is LibreOffice 7.1+
-                # ShowSeriesName is LibreOffice 7.2+
-                pass
         return inst
 
     # endregion methods
@@ -126,10 +119,10 @@ class DataPointLabelStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -180,12 +173,8 @@ class DataPointLabelStruct(StructBase):
         """
         inst = cls(**kwargs)
         for prop in inst._props:
-            try:
+            with contextlib.suppress(AttributeError):
                 inst._set(prop, getattr(value, prop))
-            except AttributeError:
-                # ShowCustomLabel is LibreOffice 7.1+
-                # ShowSeriesName is LibreOffice 7.2+
-                pass
         return inst
 
     # endregion from_uno_struct()
@@ -193,16 +182,16 @@ class DataPointLabelStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDataPointLabelStruct], obj: object) -> _TDataPointLabelStruct:
+    def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any) -> _TDataPointLabelStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDataPointLabelStruct], obj: object, **kwargs) -> _TDataPointLabelStruct:
+    def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any, **kwargs) -> _TDataPointLabelStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TDataPointLabelStruct], obj: object, **kwargs) -> _TDataPointLabelStruct:
+    def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any, **kwargs) -> _TDataPointLabelStruct:
         # sourcery skip: raise-from-previous-error
         """
         Gets instance from object

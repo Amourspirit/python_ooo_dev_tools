@@ -37,12 +37,12 @@ class CellCancelArgs(AbstractCellCancelArgs):
     )
 
     @staticmethod
-    def from_args(args: CellCancelArgs) -> CellCancelArgs:
+    def from_args(args: AbstractCellCancelArgs) -> CellCancelArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (CellArgs): Existing Instance
+            args (AbstractCellCancelArgs): Existing Instance
 
         Returns:
             CellArgs: args

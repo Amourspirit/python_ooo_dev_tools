@@ -24,7 +24,7 @@ def test_activate(copy_fix_writer, loader) -> None:
 
     # for a manual test remove loader arg from test_activate and uncomment the next line.
     # loader = Lo.load_office(Lo.ConnectPipe())
-    delay = 100 # 1_000
+    delay = 100  # 1_000
     #
     # does not assert anything.
     # when run manually you can see window being activated, minimized, reactivated, etc.
@@ -35,7 +35,7 @@ def test_activate(copy_fix_writer, loader) -> None:
         Lo.delay(delay)
         GUI.minimize(doc)
         Lo.delay(delay)
-        win_info = GUI.get_window_idenity(doc)
+        win_info = GUI.get_window_identity(doc)
         GUI.activate(win_info.window_name)
         Lo.delay(delay)
         GUI.minimize(doc)
@@ -54,13 +54,14 @@ def test_activate(copy_fix_writer, loader) -> None:
         Lo.close_doc(doc, False)
         # pass
 
+
 def test_activate_new_doc(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.utils.gui import GUI
 
     # for a manual test remove loader arg from test_activate and uncomment the next line.
     # loader = Lo.load_office(Lo.ConnectPipe(headless=True))
-    delay = 100 # 1_000
+    delay = 100  # 1_000
     #
     # does not assert anything.
     # when run manually you can see window being activated, minimized, reactivated, etc.
@@ -70,7 +71,7 @@ def test_activate_new_doc(loader) -> None:
         Lo.delay(delay)
         GUI.minimize(doc)
         Lo.delay(delay)
-        win_info = GUI.get_window_idenity(doc)
+        win_info = GUI.get_window_identity(doc)
         GUI.activate(win_info.window_name)
         Lo.delay(delay)
         GUI.minimize(doc)

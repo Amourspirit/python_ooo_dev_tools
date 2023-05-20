@@ -4,6 +4,7 @@ from typing import Tuple
 from ooodev.format.inner.direct.calc.background.color import Color as CellColor
 from ooodev.format.inner.common.props.cell_background_color_props import CellBackgroundColorProps
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 
 # endregion Imports
 
@@ -19,7 +20,7 @@ class Color(CellColor):
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, color: mColor.Color = -1) -> None:
+    def __init__(self, color: mColor.Color = StandardColor.AUTO_COLOR) -> None:
         """
         Constructor
 

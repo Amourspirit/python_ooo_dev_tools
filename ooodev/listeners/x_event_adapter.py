@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 
 
-class XEventAdapter(unohelper.Base, XEventListener):
+class XEventAdapter(unohelper.Base, XEventListener):  # type: ignore
     """
     XEventListener implementation
 

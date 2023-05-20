@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import NamedTuple
 
 
-class FrameTypePositonProps(NamedTuple):
+class FrameTypePositionProps(NamedTuple):
     """Internal Properties"""
 
     hori_orient: str  # HoriOrient

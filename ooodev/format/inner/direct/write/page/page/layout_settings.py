@@ -73,7 +73,7 @@ class LayoutSettings(StyleBase):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -92,16 +92,16 @@ class LayoutSettings(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLayoutSettings], obj: object) -> _TLayoutSettings:
+    def from_obj(cls: Type[_TLayoutSettings], obj: Any) -> _TLayoutSettings:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLayoutSettings], obj: object, **kwargs) -> _TLayoutSettings:
+    def from_obj(cls: Type[_TLayoutSettings], obj: Any, **kwargs) -> _TLayoutSettings:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TLayoutSettings], obj: object, **kwargs) -> _TLayoutSettings:
+    def from_obj(cls: Type[_TLayoutSettings], obj: Any, **kwargs) -> _TLayoutSettings:
         """
         Gets instance from object
 
@@ -120,7 +120,7 @@ class LayoutSettings(StyleBase):
         def set_prop(key: str, clazz: LayoutSettings):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 clazz._set(key, val)
 
         set_prop("PageStyleLayout", inst)
@@ -157,9 +157,7 @@ class LayoutSettings(StyleBase):
     def prop_numbers(self) -> NumberingTypeEnum | None:
         """Gets/Sets Page Numbering value"""
         pv = cast(int, self._get("NumberingType"))
-        if pv is None:
-            return None
-        return NumberingTypeEnum(pv)
+        return None if pv is None else NumberingTypeEnum(pv)
 
     @prop_numbers.setter
     def prop_numbers(self, value: NumberingTypeEnum | None) -> None:

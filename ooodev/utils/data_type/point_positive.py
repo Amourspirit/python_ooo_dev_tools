@@ -12,5 +12,5 @@ class PointPositive(Point):
         check(
             self.x >= 0 and self.y >= 0,
             f"{self}",
-            f"Point values must be a positive value",
+            "Point values must be a positive value",
         )

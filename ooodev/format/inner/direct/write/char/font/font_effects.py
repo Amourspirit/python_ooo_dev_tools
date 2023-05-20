@@ -17,7 +17,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -180,10 +180,10 @@ class FontEffects(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -199,16 +199,16 @@ class FontEffects(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontEffects], obj: object) -> _TFontEffects:
+    def from_obj(cls: Type[_TFontEffects], obj: Any) -> _TFontEffects:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontEffects], obj: object, **kwargs) -> _TFontEffects:
+    def from_obj(cls: Type[_TFontEffects], obj: Any, **kwargs) -> _TFontEffects:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TFontEffects], obj: object, **kwargs) -> _TFontEffects:
+    def from_obj(cls: Type[_TFontEffects], obj: Any, **kwargs) -> _TFontEffects:
         """
         Gets instance from object
 
@@ -279,7 +279,7 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_bg_transparent = value
+        ft.prop_transparency = value
         return ft
 
     def fmt_overline(self: _TFontEffects, value: FontUnderlineEnum | None = None) -> _TFontEffects:
@@ -296,7 +296,7 @@ class FontEffects(StyleBase):
         ft = self.copy()
         fl = ft.prop_overline
         fl.line = value
-        ft.prop_overline = ft
+        ft.prop_overline = fl
         return ft
 
     def fmt_overline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
@@ -345,7 +345,7 @@ class FontEffects(StyleBase):
         ft = self.copy()
         fl = ft.prop_underline
         fl.line = value
-        ft.prop_underline = ft
+        ft.prop_underline = fl
         return ft
 
     def fmt_underline_color(self: _TFontEffects, value: Color | None = None) -> _TFontEffects:
@@ -424,7 +424,7 @@ class FontEffects(StyleBase):
             FontEffects: Font with style added or removed
         """
         ft = self.copy()
-        ft.prop_relief = value
+        ft.prop_outline = value
         return ft
 
     def fmt_hidden(self: _TFontEffects, value: bool | None = None) -> _TFontEffects:
@@ -464,14 +464,14 @@ class FontEffects(StyleBase):
     def color_auto(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with color set to automatic"""
         ft = self.copy()
-        ft.prop_color = -1
+        ft.prop_color = StandardColor.AUTO_COLOR
         return ft
 
     @property
     def overline(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with overline set"""
         ft = self.copy()
-        ft.prop_overline = FontLine(line=FontUnderlineEnum.SINGLE, color=-1)
+        ft.prop_overline = FontLine(line=FontUnderlineEnum.SINGLE, color=StandardColor.AUTO_COLOR)
         return ft
 
     @property
@@ -479,7 +479,7 @@ class FontEffects(StyleBase):
         """Gets copy of instance with overline color set to automatic"""
         ft = self.copy()
         fl = ft.prop_overline
-        fl.color = -1
+        fl.color = StandardColor.AUTO_COLOR
         ft.prop_overline = fl
         return ft
 
@@ -487,7 +487,7 @@ class FontEffects(StyleBase):
     def underline(self: _TFontEffects) -> _TFontEffects:
         """Gets copy of instance with underline set"""
         ft = self.copy()
-        ft.prop_underline = FontLine(line=FontUnderlineEnum.SINGLE, color=-1)
+        ft.prop_underline = FontLine(line=FontUnderlineEnum.SINGLE, color=StandardColor.AUTO_COLOR)
         return ft
 
     @property
@@ -495,7 +495,7 @@ class FontEffects(StyleBase):
         """Gets copy of instance with underline color set to automatic"""
         ft = self.copy()
         fl = ft.prop_underline
-        fl.color = -1
+        fl.color = StandardColor.AUTO_COLOR
         ft.prop_underline = fl
         return ft
 
@@ -636,7 +636,7 @@ class FontEffects(StyleBase):
         """This property contains the value for the character overline."""
         pv = cast(int, self._get("CharOverline"))
         line = None if pv is None else FontUnderlineEnum(pv)
-        return FontLine(line=line, color=cast(int, self._get("CharOverlineColor")))
+        return FontLine(line=line, color=cast(Color, self._get("CharOverlineColor")))
 
     @prop_overline.setter
     def prop_overline(self, value: FontLine | None) -> None:
@@ -666,7 +666,7 @@ class FontEffects(StyleBase):
         """This property contains the value for the character underline."""
         pv = cast(int, self._get("CharUnderline"))
         line = None if pv is None else FontUnderlineEnum(pv)
-        return FontLine(line=line, color=cast(int, self._get("CharUnderlineColor")))
+        return FontLine(line=line, color=cast(Color, self._get("CharUnderlineColor")))
 
     @prop_underline.setter
     def prop_underline(self, value: FontLine | None) -> None:

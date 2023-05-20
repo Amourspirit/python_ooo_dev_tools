@@ -5,10 +5,12 @@ Module for table border (``TableBorder2``) struct
 """
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
+from ooo.dyn.table.border_line import BorderLine
+from ooo.dyn.table.border_line2 import BorderLine2
 
 from ooodev.events.lo_events import Events
 from ooodev.events.props_named_event import PropsNamedEvent
@@ -68,6 +70,7 @@ class TableBorderStruct(StructBase):
             vertical (Side, optional): Determines the line style of vertical lines for the inner part of a cell range.
             distance (float, UnitObj, optional): Contains the distance between the lines and other contents (in mm units) or :ref:`proto_unit_obj`.
         """
+        # sourcery skip: low-code-quality
         init_vals = {}
         if border_side is not None:
             init_vals[self._props.top.first] = border_side
@@ -87,7 +90,7 @@ class TableBorderStruct(StructBase):
                 init_vals[self._props.top.first] = top
                 if self._props.top.second:
                     init_vals[self._props.top.second] = True
-            if not bottom is None:
+            if bottom is not None:
                 init_vals[self._props.bottom.first] = bottom
                 if self._props.bottom.second:
                     init_vals[self._props.bottom.second] = True
@@ -110,10 +113,10 @@ class TableBorderStruct(StructBase):
                 init_vals[self._props.vert.second] = True
         if distance is not None:
             try:
-                init_vals[self._props.dist.first] = distance.get_value_mm100()
+                init_vals[self._props.dist.first] = distance.get_value_mm100()  # type: ignore
             except AttributeError:
                 init_vals[self._props.dist.first] = UnitConvert.convert(
-                    num=distance, frm=UnitLength.MM, to=UnitLength.MM100
+                    num=distance, frm=UnitLength.MM, to=UnitLength.MM100  # type: ignore
                 )
             if self._props.dist.second:
                 init_vals[self._props.dist.second] = True
@@ -140,10 +143,10 @@ class TableBorderStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies Style to obj
 
@@ -154,7 +157,7 @@ class TableBorderStruct(StructBase):
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLYED` :eventref:`src-docs-event`
+                - :py:attr:`~.events.format_named_event.FormatNamedEvent.STYLE_APPLIED` :eventref:`src-docs-event`
 
         Raises:
             PropertyNotFoundError: If ``obj`` does not have ``TableBorder2`` property.
@@ -196,12 +199,12 @@ class TableBorderStruct(StructBase):
 
         for ap in attrs_props:
             val = cast(Side, self._get(ap.first))
-            if not val is None:
+            if val is not None:
                 setattr(tb, ap.first, val.get_uno_struct())
                 if ap.second:
                     setattr(tb, ap.second, True)
         distance = cast(int, self._get(self._props.dist.first))
-        if not distance is None:
+        if distance is not None:
             tb.Distance = distance
             tb.IsDistanceValid = True
         mProps.Props.set(obj, **{prop_name: tb})
@@ -235,16 +238,16 @@ class TableBorderStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderStruct], obj: object) -> _TTableBorderStruct:
+    def from_obj(cls: Type[_TTableBorderStruct], obj: Any) -> _TTableBorderStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderStruct], obj: object, **kwargs) -> _TTableBorderStruct:
+    def from_obj(cls: Type[_TTableBorderStruct], obj: Any, **kwargs) -> _TTableBorderStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTableBorderStruct], obj: object, **kwargs) -> _TTableBorderStruct:
+    def from_obj(cls: Type[_TTableBorderStruct], obj: Any, **kwargs) -> _TTableBorderStruct:
         """
         Gets instance from object properties
 
@@ -265,26 +268,10 @@ class TableBorderStruct(StructBase):
         if tb is None:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
-        if tb.IsLeftLineValid:
-            left = Side.from_uno_struct(tb.LeftLine)
-        else:
-            left = None
-
-        if tb.IsTopLineValid:
-            top = Side.from_uno_struct(tb.TopLine)
-        else:
-            top = None
-
-        if tb.IsRightLineValid:
-            right = Side.from_uno_struct(tb.RightLine)
-        else:
-            right = None
-
-        if tb.IsBottomLineValid:
-            bottom = Side.from_uno_struct(tb.BottomLine)
-        else:
-            bottom = None
-
+        left = Side.from_uno_struct(tb.LeftLine) if tb.IsLeftLineValid else None
+        top = Side.from_uno_struct(tb.TopLine) if tb.IsTopLineValid else None
+        right = Side.from_uno_struct(tb.RightLine) if tb.IsRightLineValid else None
+        bottom = Side.from_uno_struct(tb.BottomLine) if tb.IsBottomLineValid else None
         if tb.IsVerticalLineValid:
             vertical = Side.from_uno_struct(tb.VerticalLine)
         else:
@@ -333,17 +320,42 @@ class TableBorderStruct(StructBase):
         Returns:
             TableBorder: ``TableBorder`` instance
         """
-        tb = TableBorder2()
+
+        def border2_border(b2: BorderLine2) -> BorderLine:
+            # convert borderline2 to borderline
+            return BorderLine(
+                Color=b2.Color,
+                InnerLineWidth=b2.InnerLineWidth,
+                OuterLineWidth=b2.OuterLineWidth,
+                LineDistance=b2.LineDistance,
+            )
+
+        tb2 = TableBorder2()
         # put attribs in a tuple
         attrs = (*(self._props[i].first for i in range(6)),)
 
         for key, val in self._dv.items():
             if key in attrs:
                 side = cast(Side, val)
-                setattr(tb, key, side.get_uno_struct_border_line())
+                setattr(tb2, key, side.get_uno_struct_border_line())
             else:
-                setattr(tb, key, val)
-        return tb
+                setattr(tb2, key, val)
+        return TableBorder(
+            TopLine=border2_border(tb2.TopLine),
+            IsTopLineValid=tb2.IsTopLineValid,
+            BottomLine=border2_border(tb2.BottomLine),
+            IsBottomLineValid=tb2.IsBottomLineValid,
+            LeftLine=border2_border(tb2.LeftLine),
+            IsLeftLineValid=tb2.IsLeftLineValid,
+            RightLine=border2_border(tb2.RightLine),
+            IsRightLineValid=tb2.IsRightLineValid,
+            HorizontalLine=border2_border(tb2.HorizontalLine),
+            IsHorizontalLineValid=tb2.IsHorizontalLineValid,
+            VerticalLine=border2_border(tb2.VerticalLine),
+            IsVerticalLineValid=tb2.IsVerticalLineValid,
+            Distance=tb2.Distance,
+            IsDistanceValid=tb2.IsDistanceValid,
+        )
 
     # endregion methods
 
@@ -480,9 +492,7 @@ class TableBorderStruct(StructBase):
     def prop_distance(self) -> UnitMM | None:
         """Gets/Sets distance value (``in mm`` units)"""
         pv = cast(int, self._get(self._props.dist.first))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_distance.setter
     def prop_distance(self, value: float | UnitObj | None) -> None:
@@ -493,9 +503,9 @@ class TableBorderStruct(StructBase):
                 self._remove(p.second)
             return
         try:
-            self._set(p.first, value.get_value_mm100())
+            self._set(p.first, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(p.first, UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100))
+            self._set(p.first, UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM100))  # type: ignore
         if p.second:
             self._set(p.second, True)
 

@@ -8,7 +8,7 @@ from ooodev.units.unit_pt import UnitPT
 
 # endregion Import
 
-# for unnknown reason Chart DataPoint font size only responds when be set as an int
+# for unknown reason Chart DataPoint font size only responds when be set as an int
 # even though the property is a float.
 # If 10.5 is set for the font size it just gets ignored, this is true for all fractions.
 # The fixe seems to be to force ints.
@@ -76,6 +76,6 @@ class FontOnly(CharFontOnly):
             self._remove(self._props.size)
             return
         try:
-            self._set(self._props.size, round(value.get_value_pt()))
+            self._set(self._props.size, round(value.get_value_pt()))  # type: ignore
         except AttributeError:
-            self._set(self._props.size, round(value))
+            self._set(self._props.size, round(value))  # type: ignore
