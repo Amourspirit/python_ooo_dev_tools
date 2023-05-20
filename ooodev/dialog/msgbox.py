@@ -39,13 +39,14 @@ class MsgBox:
             * Button press ``Retry`` returns ``MessageBoxResultsEnum.RETRY``
             * Button press ``Yes`` returns ``MessageBoxResultsEnum.YES``
         """
+        # sourcery skip: remove-unnecessary-cast
         if boxtype == MessageBoxType.INFOBOX:
-            # this is the default behaviour anyways. So assigning ok to make it official here
+            # this is the default behavior anyways. So assigning ok to make it official here
             _buttons = MessageBoxButtonsEnum.BUTTONS_OK.value
         else:
             _buttons = buttons
 
-        tk = mLo.Lo.create_instance_mcf(XToolkit2, "com.sun.star.awt.Toolkit")
+        tk = mLo.Lo.create_instance_mcf(XToolkit2, "com.sun.star.awt.Toolkit", raise_err=True)
         parent = tk.getDesktopWindow()
-        box = cast(XMessageBox, tk.createMessageBox(parent, boxtype, int(_buttons), str(title), str(msg)))
+        box = tk.createMessageBox(parent, boxtype, int(_buttons), str(title), str(msg))  # type: ignore
         return MessageBoxResultsEnum(int(box.execute()))

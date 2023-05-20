@@ -38,8 +38,13 @@ class Input:
         Returns:
             str: The value of input or empty string.
         """
-        dialog = cast("UnoControlDialog", mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog"))
-        dialog_model = mLo.Lo.create_instance_mcf(XControlModel, "com.sun.star.awt.UnoControlDialogModel")
+        dialog = cast(
+            "UnoControlDialog",
+            mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
+        )
+        dialog_model = mLo.Lo.create_instance_mcf(
+            XControlModel, "com.sun.star.awt.UnoControlDialogModel", raise_err=True
+        )
 
         dialog.setModel(dialog_model)
         platform = mSysInfo.SysInfo.get_platform()
@@ -82,11 +87,11 @@ class Input:
         )
         window = mLo.Lo.get_frame().getContainerWindow()
         ps = window.getPosSize()
-        x = ps.Width / 2 - width / 2
-        y = ps.Height / 2 - height / 2
+        x = round(ps.Width / 2 - width / 2)
+        y = round(ps.Height / 2 - height / 2)
         dialog.setTitle(title)
         dialog.setPosSize(x, y, width, height, PosSize.POSSIZE)
         dialog.setVisible(True)
-        ret = txt_input.getModel().Text if dialog.execute() else ""
+        ret = txt_input.getModel().Text if dialog.execute() else ""  # type: ignore
         dialog.dispose()
         return ret

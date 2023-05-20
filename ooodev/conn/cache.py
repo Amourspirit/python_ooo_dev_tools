@@ -5,6 +5,7 @@ from pathlib import Path
 from shutil import copytree
 import shutil
 import tempfile
+from typing import Tuple
 from ..utils.type_var import PathOrStr
 from ..utils import sys_info
 from ..cfg import config
@@ -39,20 +40,20 @@ class Cache:
         # see: https://www.howtogeek.com/289587/how-to-find-your-libreoffice-profile-folder-in-windows-macos-and-linux/
         cache_path = None
         platform = sys_info.SysInfo.get_platform()
-        def get_path(ver: str):
+
+        def get_path(ver: str) -> Tuple[bool, Path] | Tuple[bool, None]:
+            # sourcery skip: merge-nested-ifs
             result = None
             if platform == sys_info.SysInfo.PlatformEnum.LINUX:
                 result = Path("~/.config/libreoffice", ver).expanduser()
             elif platform == sys_info.SysInfo.PlatformEnum.WINDOWS:
-                result = Path(os.getenv("APPDATA"), "LibreOffice", ver)
+                result = Path(os.getenv("APPDATA", ""), "LibreOffice", ver)
             elif platform == sys_info.SysInfo.PlatformEnum.MAC:
                 result = Path("~/Library/Application Support/LibreOffice/", ver).expanduser()
             if result is not None:
                 if result.exists() is False or result.is_dir() is False:
                     result = None
-            if result is None:
-                return False, None
-            return True, result
+            return (False, None) if result is None else (True, result)
 
         # lookup profile versions from config
         for s_ver in config.Config().profile_versions:
@@ -105,9 +106,8 @@ class Cache:
 
         Ignored if :py:attr:`~Cache.use_cache` is ``False``
         """
-        if self.use_cache:
-            if self.working_dir.exists() and self.working_dir.is_dir():
-                shutil.rmtree(self.working_dir)
+        if self.use_cache and (self.working_dir.exists() and self.working_dir.is_dir()):
+            shutil.rmtree(self.working_dir)
 
     @property
     def user_profile(self) -> Path:
@@ -134,7 +134,7 @@ class Cache:
 
     @cache_path.setter
     def cache_path(self, value: PathOrStr | None):
-        self._cache_path = Path(value)
+        self._cache_path = Path(value)  # type: ignore
 
     @property
     def working_dir(self) -> Path:

@@ -4,7 +4,7 @@ Module for converting between different units.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import List, Tuple, TypeVar, NamedTuple, overload
+from typing import List, Tuple, NamedTuple, overload, Union
 from enum import IntEnum
 import math
 from ooodev.utils import table_helper as mTh
@@ -16,7 +16,7 @@ from ooodev.utils import table_helper as mTh
 #   https://wiki.documentfoundation.org/Documentation/Calc_Functions/CONVERT
 
 
-N = TypeVar("N", int, float)
+N = Union[int, float]
 
 
 class UnitLength(IntEnum):
@@ -73,12 +73,12 @@ class MulDiv:
         self._div = div / UnitConvert.asserting_gcd(mul, div)
 
     @property
-    def mul(self) -> int:
+    def mul(self) -> float:
         """Gets mul value"""
         return self._mul
 
     @property
-    def div(self) -> int:
+    def div(self) -> float:
         """Gets div value"""
         return self._div
 
@@ -112,7 +112,7 @@ _mul_div = (
 )
 
 
-def _prepare_mul_div(md: Tuple[MdItem]) -> List[List[int]]:
+def _prepare_mul_div(md: Tuple[MdItem, ...]) -> List[List[int]]:
     n = len(md)
     a = mTh.TableHelper.make_2d_array(n, n)
     for i in range(n):
@@ -146,7 +146,7 @@ class UnitConvert:
         return num
 
     @classmethod
-    def _md(cls, i: UnitLength, j: UnitLength) -> int:
+    def _md(cls, i: UnitLength | int, j: UnitLength | int) -> int:
         ni = int(i)
         nj = int(j)
         al = len(_a_length_md_array)

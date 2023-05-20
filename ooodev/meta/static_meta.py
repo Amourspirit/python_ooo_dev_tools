@@ -13,13 +13,12 @@ class classproperty(Generic[T]):
         self.fset = fset
         # https://stackoverflow.com/a/17705456/1171746
         # no need to update wrapper in this case.
-        # becasue this is a decorater in a metaclass
+        # because this is a decorated in a metaclass
         # i am not sure yet if the doc string is accessible at all
         # functools.update_wrapper(self, fget)  ## TA-DA! ##
 
-    def __get__(self, obj, objtype=None) -> T:
-        val = self.fget(obj)
-        return val
+    def __get__(self, obj, obj_type=None) -> T:
+        return self.fget(obj)
 
     def __set__(self, obj, value: T) -> T:
         if not self.fset:
@@ -38,7 +37,7 @@ class classinstanceproperty(Generic[T]):
         self.fset = fset
         # functools.update_wrapper(self, fget)  ## TA-DA! ##
 
-    def __get__(self, obj, objtype=None) -> T:
+    def __get__(self, obj, obj_type=None) -> T:
         return self.fget(obj)
 
     def __set__(self, obj, value: T) -> T:
@@ -53,7 +52,7 @@ class classinstanceproperty(Generic[T]):
 
 
 class StaticProperty(type):
-    def __new__(self, name, bases, props):
+    def __new__(cls, name, bases, props):
         class_properties = {}
         to_remove = {}
         for key, value in props.items():

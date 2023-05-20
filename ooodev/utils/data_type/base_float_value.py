@@ -1,18 +1,15 @@
 from __future__ import annotations
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TypeVar
 from dataclasses import dataclass
 import math
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
 
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
 # most cases. Especially for built in types.
+
+_TBaseFloatValue = TypeVar("_TBaseFloatValue", bound="BaseFloatValue")
 
 
 @dataclass(unsafe_hash=True)
@@ -23,7 +20,7 @@ class BaseFloatValue:
     """Float value."""
 
     @abstractmethod
-    def _from_float(self, value: float) -> Self:
+    def _from_float(self: _TBaseFloatValue, value: float) -> _TBaseFloatValue:
         ...
 
     # Override "int" method
@@ -33,7 +30,7 @@ class BaseFloatValue:
     def __int__(self) -> float:
         return int(self.value)
 
-    def __add__(self, other: object) -> Self:
+    def __add__(self: _TBaseFloatValue, other: object) -> _TBaseFloatValue:
         try:
             i = float(other)  # type: ignore
             return self._from_float(self.value + i)
@@ -42,7 +39,7 @@ class BaseFloatValue:
         except Exception:
             return NotImplemented
 
-    def __radd__(self, other: object) -> Self:
+    def __radd__(self: _TBaseFloatValue, other: object) -> _TBaseFloatValue:
         # angle = sum([ang1, ang2, ang3])
         # will result in TypeError because sum() start with 0
         # this will force a call to __radd__
@@ -58,7 +55,7 @@ class BaseFloatValue:
         except Exception as e:
             return False
 
-    def __sub__(self, other: object) -> Self:
+    def __sub__(self: _TBaseFloatValue, other: object) -> _TBaseFloatValue:
         try:
             i = float(other)  # type: ignore
             return self._from_float(self.value - i)
@@ -67,7 +64,7 @@ class BaseFloatValue:
         except Exception:
             return NotImplemented
 
-    def __rsub__(self, other: object) -> Self:
+    def __rsub__(self: _TBaseFloatValue, other: object) -> _TBaseFloatValue:
         try:
             i = float(other)  # type: ignore
             return self._from_float(i - self.value)
@@ -76,7 +73,7 @@ class BaseFloatValue:
         except Exception:
             return NotImplemented
 
-    def __mul__(self, other: object) -> Self:
+    def __mul__(self: _TBaseFloatValue, other: object) -> _TBaseFloatValue:
         try:
             i = float(other)  # type: ignore
             return self._from_float(self.value * i)
@@ -85,7 +82,7 @@ class BaseFloatValue:
         except Exception:
             return NotImplemented
 
-    def __rmul__(self, other: int) -> Self:
+    def __rmul__(self: _TBaseFloatValue, other: int) -> _TBaseFloatValue:
         return self if other == 0 else self.__mul__(other)
 
     def __lt__(self, other: object) -> bool:

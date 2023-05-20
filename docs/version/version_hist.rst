@@ -7,6 +7,10 @@ Version 0.11.0
 
 Major Refactoring of entire Library. Much improved typing support.
 
+This version now has complete type support. Entire code base has been refactored to support type hints and type checking.
+
+Test have been preformed with ``pyright`` to ensure type hints are correct.
+
 Version 0.10.3
 ==============
 

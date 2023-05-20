@@ -54,6 +54,7 @@ ruff = ">=0.0.267"
 black = {extras = ["d"], version = ">=23.1.0"}
 oooenv = ">=0.1.1"
 pytest-mock = ">=3.10"
+pyright = ">=1.1.309"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -83,3 +84,18 @@ extended-select=["ANN", "C4", "N", "SIM", "TCH"]
 ignore=[]
 show-fixes=true
 target="py37"
+
+[tool.pyright]
+pythonVersion = "3.8"
+venvPath = "."
+venv = ".venv"
+include = ["ooodev", "src"]
+exclude = ["tests",
+    "docs",
+    "build",
+    "dist",
+    "cmds",
+    "tmp",
+    "**/__pycache__",
+    ".venv"
+]

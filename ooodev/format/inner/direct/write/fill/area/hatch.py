@@ -377,7 +377,7 @@ class Hatch(StyleMulti):
 
 def _on_bg_color_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     fc = cast(FillColor, event_args.event_source)
-    hatch = cast(_THatch, fc.prop_parent)
+    hatch = cast(_THatch, fc.prop_parent)  # type: ignore
     if event_args.key == hatch._props.style:
         event_args.cancel = True
     elif event_args.key == hatch._props.color:

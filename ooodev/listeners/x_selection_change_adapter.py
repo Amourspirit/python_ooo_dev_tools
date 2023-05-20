@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 
 
-class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):
+class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):  # type: ignore
     """
     Makes it possible to receive an event when the current selection changes.
 

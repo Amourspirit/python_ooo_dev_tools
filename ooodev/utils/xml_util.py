@@ -363,7 +363,7 @@ class XML:
         if mLo.Lo.is_macro_mode:
             raise mEx.NotSupportedMacroModeError("apply_xslt() is not supported from a macro")
         try:
-            from lxml import etree as XML_ETREE
+            from lxml import etree as XML_ETREE  # type: ignore
         except ImportError as e:
             raise Exception("apply_xslt() requires lxml python package") from e
         _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
@@ -403,7 +403,7 @@ class XML:
         if mLo.Lo.is_macro_mode:
             raise mEx.NotSupportedMacroModeError("apply_xslt_2_str() is not supported from a macro")
         try:
-            from lxml import etree as XML_ETREE
+            from lxml import etree as XML_ETREE  # type: ignore[import]
         except ImportError as e:
             raise Exception("apply_xslt requires lxml python package") from e
         _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)

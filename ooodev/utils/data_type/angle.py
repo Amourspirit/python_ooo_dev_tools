@@ -3,12 +3,6 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 from .base_int_value import BaseIntValue
 
-if TYPE_CHECKING:
-    try:
-        from typing import Self
-    except ImportError:
-        from typing_extensions import Self
-
 # Note that from __future__ import annotations converts annotations to string.
 # this means that @enforce.enforce_types will see string as type. This is fine in
 # most cases. Especially for built in types.
@@ -49,7 +43,7 @@ class Angle(BaseIntValue):
     def __post_init__(self) -> None:
         self.value = _to_positive_angle(self.value)
 
-    def _from_int(self, value: int) -> Self:
+    def _from_int(self, value: int) -> Angle:
         return Angle(_to_positive_angle(value))
 
     def __eq__(self, other: object) -> bool:

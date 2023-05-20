@@ -1,5 +1,6 @@
 # coding: utf-8
 import importlib
+
 # https://snarky.ca/lazy-importing-in-python-3-7/
 
 
@@ -17,23 +18,23 @@ def lazy_import(importer_name: str, to_import: str):
     module for easy reference within itself. The second item is a callable to be
     set to `__getattr__`.
     """
+
     module = importlib.import_module(importer_name)
     import_mapping = {}
     for name in to_import:
-        importing, _, binding = name.partition(' as ')
+        importing, _, binding = name.partition(" as ")
         if not binding:
-            _, _, binding = importing.rpartition('.')
+            _, _, binding = importing.rpartition(".")
         import_mapping[binding] = importing
 
     def __getattr__(name):
         if name not in import_mapping:
-            message = f'module {importer_name!r} has no attribute {name!r}'
+            message = f"module {importer_name!r} has no attribute {name!r}"
             raise AttributeError(message)
         importing = import_mapping[name]
         # importlib.import_module() implicitly sets submodules on this module as
         # appropriate for direct imports.
-        imported = importlib.import_module(importing,
-                                           module.__spec__.parent)
+        imported = importlib.import_module(importing, module.__spec__.parent)  # type: ignore
         setattr(module, name, imported)
         return imported
 

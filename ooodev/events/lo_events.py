@@ -5,7 +5,7 @@ This module is for the purpose of sharing events between classes.
 from __future__ import annotations
 import contextlib
 from weakref import ref, ReferenceType, proxy
-from typing import Any, Dict, List, NamedTuple, Generator, Callable
+from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union, cast
 from . import event_singleton
 from ..proto import event_observer
 from ..utils.type_var import EventCallback as EventCallback
@@ -30,7 +30,7 @@ class _event_base(object):
     """Base events class"""
 
     def __init__(self) -> None:
-        self._callbacks = None
+        self._callbacks: Dict[str, List[ReferenceType[EventCallback]]] | None = None
 
     def on(self, event_name: str, callback: EventCallback):
         """
@@ -41,7 +41,7 @@ class _event_base(object):
             callback (Callable[[object, EventArgs], None]): Callback function
         """
         if self._callbacks is None:
-            self._callbacks: Dict[str, List[ReferenceType[EventCallback]]] = {}
+            self._callbacks = {}
 
         if event_name not in self._callbacks:
             self._callbacks[event_name] = [ref(callback)]
@@ -65,11 +65,9 @@ class _event_base(object):
         result = False
         if event_name in self._callbacks:
             # cb = cast(Dict[str, List[EventCallback]], self._callbacks)
-            try:
+            with contextlib.suppress(ValueError):
                 self._callbacks[event_name].remove(ref(callback))
                 result = True
-            except ValueError:
-                pass
         return result
 
     def _set_event_args(self, event_name: str, event_args: AbstractEvent) -> None:
@@ -91,6 +89,7 @@ class _event_base(object):
         Note:
             Events are removed automatically when they are out of scope.
         """
+        # sourcery skip: last-if-guard
 
         if self._callbacks is not None and event_name in self._callbacks:
             cleanup = None
@@ -103,10 +102,10 @@ class _event_base(object):
                 self._set_event_args(event_name=event_name, event_args=event_args)
                 if callable(callback()):
                     try:
-                        callback()(event_args.source, event_args, *args, **kwargs)
+                        callback()(event_args.source, event_args, *args, **kwargs)  # type: ignore
                     except AttributeError:
                         # event_arg is None
-                        callback()(self, None)
+                        callback()(self, None)  # type: ignore
             if cleanup:
                 cleanup.reverse()
                 for i in cleanup:
@@ -125,13 +124,13 @@ class Events(_event_base):
 
     # Dev Notes:
     # Event callbacks are assigned to this class as a weak ref.
-    # This is necessary; Howerver, a side effect is class method cannot be assigned
+    # This is necessary; However, a side effect is class method cannot be assigned
     # as an event from class __init__. It is possible to assign a class static method from
     # __init__ but not a class method. Attempting to assign class method result with method
     # being out of scope before trigger is called on it.
     # Making an Events class with strong ref ( no weak ref ) and then assigning a class method
     # as a callback result in the class method being triggered even after the class instance is set
-    # to none. In other words python does not realease the object or callback because the strong ref Events class
+    # to none. In other words python does not release the object or callback because the strong ref Events class
     # is still holding on to it.
     # In short, do not change this class!
 
@@ -175,13 +174,14 @@ class LoEvents(_event_base):
         if not cls._instance:
             cls._instance = super(LoEvents, cls).__new__(cls, *args, **kwargs)
             cls._instance._callbacks = None
-            cls._instance._observers: List[ReferenceType[event_observer.EventObserver]] = None
+            # cls._instance._observers: List[ReferenceType[event_observer.EventObserver]] | None = None
+            cls._instance._observers = None
             # register wih _Events so this instance get triggered when _Events() are triggered.
             event_singleton._Events().add_observer(cls._instance)
         return cls._instance
 
     def __init__(self) -> None:
-        pass
+        self._observers: Union[List[ReferenceType[event_observer.EventObserver]], None]
 
     def add_observer(self, *args: event_observer.EventObserver) -> None:
         """
@@ -206,6 +206,7 @@ class LoEvents(_event_base):
         self._update_observers(event_name, event_args)
 
     def _update_observers(self, event_name: str, event_args: AbstractEvent) -> None:
+        # sourcery skip: last-if-guard
         if self._observers is not None:
             cleanup = None
             for i, observer in enumerate(self._observers):
@@ -214,7 +215,7 @@ class LoEvents(_event_base):
                         cleanup = []
                     cleanup.append(i)
                     continue
-                observer().trigger(event_name=event_name, event_args=event_args)
+                observer().trigger(event_name=event_name, event_args=event_args)  # type: ignore
             if cleanup:
                 # reverse list to allow removing form highest to lowest to avoid errors
                 cleanup.reverse()
@@ -228,13 +229,13 @@ class DummyEvents:
     def __init__(self, *args, **kwargs) -> None:
         pass
 
-    def on(self, event_name: str, callback: EventCallback):
+    def on(self, event_name: str, callback: EventCallback) -> None:
         pass
 
     def remove(self, event_name: str, callback: EventCallback) -> bool:
-        pass
+        return True
 
-    def trigger(self, event_name: str, event_args: AbstractEvent, *args, **kwargs):
+    def trigger(self, event_name: str, event_args: AbstractEvent, *args, **kwargs) -> None:
         pass
 
 

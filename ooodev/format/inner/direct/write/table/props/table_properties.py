@@ -2340,7 +2340,7 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.width))
@@ -2359,7 +2359,7 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.left))
@@ -2378,7 +2378,7 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.right))
@@ -2439,7 +2439,7 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_width_mm`.
         """
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         return None if po is None else po.prop_width
 
     @property
@@ -2453,7 +2453,7 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_left_mm`.
         """
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         return None if po is None else po.prop_left
 
     @property
@@ -2467,13 +2467,13 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_right_mm`.
         """
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         return None if po is None else po.prop_right
 
     @property
     def prop_above(self) -> UnitMM | None:
         """Gets above value"""
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.top))
@@ -2482,7 +2482,7 @@ class TableProperties(StyleMulti):
     @property
     def prop_below(self) -> UnitMM | None:
         """Gets below value"""
-        po = cast(_TSharedAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.bottom))

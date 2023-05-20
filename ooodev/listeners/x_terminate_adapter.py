@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 
 
-class XTerminateAdapter(unohelper.Base, XTerminateListener):
+class XTerminateAdapter(unohelper.Base, XTerminateListener):  # type: ignore
     """
     XTerminateListener implementation
 

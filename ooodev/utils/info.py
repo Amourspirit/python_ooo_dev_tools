@@ -288,7 +288,7 @@ class Info(metaclass=StaticProperty):
         if mLo.Lo.is_macro_mode:
             raise mEx.NotSupportedMacroModeError("get_reg_item_prop() is not supported from a macro")
         try:
-            from lxml import etree as XML_ETREE
+            from lxml import etree as XML_ETREE  # type: ignore[import]
         except ImportError as e:
             raise Exception("get_reg_item_prop() requires lxml python package") from e
 

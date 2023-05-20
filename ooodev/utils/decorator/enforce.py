@@ -20,7 +20,7 @@ def enforce_types(callable):
         for name, value in parameters.items():
             with suppress(KeyError):  # Assume un-annotated parameters can be any type
                 type_hint = spec.annotations[name]
-                if type(type_hint).__name__ == "str":  # normally shoud be 'type'
+                if type(type_hint).__name__ == "str":  # normally should be 'type'
                     # if from __future__ import annotations
                     # then type will be a string.
                     # locate will convert the string to type in most cases
@@ -43,9 +43,9 @@ def enforce_types(callable):
 
                 if isinstance(actual_type, typing._SpecialForm):
                     # case of typing.Union[…] or typing.ClassVar[…]
-                    actual_type = type_hint.__args__
+                    actual_type = type_hint.__args__  # type: ignore
                 is_valid = False
-                if isinstance(value, actual_type):
+                if isinstance(value, actual_type):  # type: ignore
                     is_valid = True
 
                 if not is_valid:
