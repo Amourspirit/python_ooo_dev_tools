@@ -428,6 +428,9 @@ class _SharedAuto(AbstractDocument):
     # endregion Properties
 
 
+# region Table size in MM units
+
+
 class _TblAuto(_SharedAuto):
     def __init__(
         self,
@@ -478,6 +481,8 @@ class _TblAuto(_SharedAuto):
             TblAuto: ``TblAuto`` Instance.
         """
         return _TblAuto._from_obj(cls, obj, **kwargs)
+
+    # endregion from_obj()
 
     @staticmethod
     def _from_obj(cls: Type[_TSharedAuto], obj: object, **kwargs) -> _TSharedAuto:
@@ -1364,7 +1369,7 @@ class _TblManualCenter(_TblManualLeftRight):
 # region Table size in percentage units
 
 
-class _TblRelLeftByWidth(_TblAuto):
+class _TblRelLeftByWidth(_SharedAuto):
     """
     Relative Table size. Set table right margin using width as a percentage value.
     """
@@ -1389,7 +1394,7 @@ class _TblRelLeftByWidth(_TblAuto):
             above (TblRelUnit, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
             below (TblRelUnit, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
         """
-        # right is ommited from constructor because it is (100 - width)
+        # right is omitted from constructor because it is (100 - width)
         # width and right are calculated and stored as 1/100th mm
         super().__init__(width=width, left=left, right=right, above=above, below=below)
 
@@ -1485,11 +1490,7 @@ class _TblRelLeftByWidth(_TblAuto):
     @prop_width.setter
     def prop_width(self, value: int | Intensity):
         val = Intensity(int(value))
-        if val.value == 0:
-            # min value is always 1
-            self._prop_width = 1
-        else:
-            self._prop_width = val.value
+        self._prop_width = 1 if val.value == 0 else val.value
 
     @property
     def prop_left(self) -> Intensity:
