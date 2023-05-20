@@ -6,7 +6,7 @@ from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.units import UnitObj
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle
 from ...header.area.hatch import Hatch as HeaderHatch
 
@@ -26,10 +26,10 @@ class Hatch(HeaderHatch):
         self,
         *,
         style: HatchStyle = HatchStyle.SINGLE,
-        color: Color = Color(0),
+        color: Color = StandardColor.BLACK,
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
-        bg_color: Color = Color(-1),
+        bg_color: Color = StandardColor.AUTO_COLOR,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:

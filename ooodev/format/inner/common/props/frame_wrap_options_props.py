@@ -7,6 +7,6 @@ class FrameWrapOptionsProps(NamedTuple):
 
     first_para: str
     background: str
-    countour: str
+    contour: str
     outside: str
     overlap: str

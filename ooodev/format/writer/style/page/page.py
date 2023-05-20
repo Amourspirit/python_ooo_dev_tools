@@ -103,21 +103,21 @@ class Page(StyleName):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> Page:
+    def from_obj(cls, obj: Any) -> Page:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> Page:
+    def from_obj(cls, obj: Any, **kwargs) -> Page:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> Page:
+    def from_obj(cls, obj: Any, **kwargs) -> Page:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object.
+            obj (Any): UNO object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.
@@ -130,9 +130,8 @@ class Page(StyleName):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        pname = mProps.Props.get(obj, inst._pg_style_name, "")
-        if pname:
-            inst.prop_name = pname
+        if name := mProps.Props.get(obj, inst._pg_style_name, ""):
+            inst.prop_name = name
         return inst
 
     # endregion from_obj()
@@ -154,10 +153,10 @@ class Page(StyleName):
     def default() -> Page:  # type: ignore[misc]
         """Gets Page default style. Static Property."""
         try:
-            return Page._DEFAULT_PAGE
+            return Page._DEFAULT_PAGE  # type: ignore[return-value]
         except AttributeError:
-            Page._DEFAULT_PAGE = Page(name=WriterStylePageKind.STANDARD)
-            Page._DEFAULT_PAGE._is_default_inst = True
-        return Page._DEFAULT_PAGE
+            Page._DEFAULT_PAGE = Page(name=WriterStylePageKind.STANDARD)  # type: ignore[assignment]
+            Page._DEFAULT_PAGE._is_default_inst = True  # type: ignore[assignment]
+        return Page._DEFAULT_PAGE  # type: ignore[return-value]
 
     # endregion Properties

@@ -228,11 +228,6 @@ class Char(StyleName):
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
-        return FormatKind.STYLE | FormatKind.CHAR
-
-    @property
-    def prop_format_kind(self) -> FormatKind:
-        """Gets the kind of style"""
         try:
             return self._format_kind_prop
         except AttributeError:
@@ -243,10 +238,10 @@ class Char(StyleName):
     def default() -> Char:  # type: ignore[misc]
         """Gets ``StyleChar`` default. Static Property."""
         try:
-            return Char._DEFAULT_CHAR
+            return Char._DEFAULT_CHAR  # type: ignore[attr-defined]
         except AttributeError:
-            Char._DEFAULT_CHAR = Char(name="Standard")
-            Char._DEFAULT_CHAR._is_default_inst = True
-        return Char._DEFAULT_CHAR
+            Char._DEFAULT_CHAR = Char(name="Standard")  # type: ignore[attr-defined]
+            Char._DEFAULT_CHAR._is_default_inst = True  # type: ignore[attr-defined]
+        return Char._DEFAULT_CHAR  # type: ignore[attr-defined]
 
     # endregion Properties

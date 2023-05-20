@@ -300,7 +300,7 @@ class StyleBase(metaclass=MetaStyle):
         Gets if ``obj`` supports one of the services required by style class
 
         Args:
-            obj (object): UNO object that must have requires service
+            obj (Any): UNO object that must have requires service
 
         Returns:
             bool: ``True`` if has a required service; Otherwise, ``False``
@@ -312,7 +312,7 @@ class StyleBase(metaclass=MetaStyle):
         Gets if ``obj`` supports one of the services required by style class
 
         Args:
-            obj (object): UNO object that must have requires service
+            obj (Any): UNO object that must have requires service
 
         Returns:
             bool: ``True`` if has a required service; Otherwise, ``False``
@@ -399,7 +399,7 @@ class StyleBase(metaclass=MetaStyle):
         Applies styles to object
 
         Args:
-            obj (object): UNO Object that styles are to be applied.
+            obj (Any): UNO Object that styles are to be applied.
             kwargs (Any, optional): Expandable list of key value pairs that may be used in child classes.
 
         Keyword Arguments:
@@ -517,7 +517,7 @@ class StyleBase(metaclass=MetaStyle):
         If used method should be called before apply.
 
         Args:
-            obj (object): Object to backup properties from.
+            obj (Any): Object to backup properties from.
 
         Returns:
             None:
@@ -553,7 +553,7 @@ class StyleBase(metaclass=MetaStyle):
         Restore can only be effective if ``backup()`` has be run before calling this method.
 
         Args:
-            obj (object): Object to restore properties on.
+            obj (Any): Object to restore properties on.
             clear (bool): Determines if backup is cleared after restore. Default ``False``
 
         Returns:
@@ -949,7 +949,7 @@ class StyleMulti(StyleBase):
         Applies style of current instance and all other internal style instances.
 
         Args:
-            obj (object): UNO Object that styles are to be applied.
+            obj (Any): UNO Object that styles are to be applied.
         """
         styles = self._get_multi_styles()
         for key, info in styles.items():
@@ -1087,7 +1087,7 @@ class StyleMulti(StyleBase):
         If used method should be called before apply.
 
         Args:
-            obj (object): Object to backup properties from.
+            obj (Any): Object to backup properties from.
 
         Returns:
             None:
@@ -1121,7 +1121,7 @@ class StyleMulti(StyleBase):
         Restore can only be effective if ``backup()`` has be run before calling this method.
 
         Args:
-            obj (object): Object to restore properties on.
+            obj (Any): Object to restore properties on.
             clear (bool): Determines if backup is cleared after restore. Default ``False``
 
         Returns:
@@ -1257,13 +1257,20 @@ class StyleModifyMulti(StyleMulti):
                 mLo.Lo.print(f"  {err}")
 
     # region apply()
+    @overload
+    def apply(self, obj: Any) -> None:
+        ...
+
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
-            obj (object): UNO Object such as a Document, Spreadsheet, or ``XStyle``
+            obj (Any): UNO Object such as a Document, Spreadsheet, or ``XStyle``
 
         Returns:
             None:
@@ -1324,12 +1331,12 @@ class StyleModifyMulti(StyleMulti):
 
     # region Methods
 
-    def get_style_props(self, doc: object) -> XPropertySet:
+    def get_style_props(self, doc: Any) -> XPropertySet:
         """
         Gets the Style Properties
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
 
         Raises:
             NotSupportedDocumentError: If document is not supported.
@@ -1461,7 +1468,7 @@ class StyleName(StyleBase):
         Gets instance from object
 
         Args:
-            obj (object): UNO object.
+            obj (Any): UNO object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.

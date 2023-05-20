@@ -5,6 +5,7 @@ import uno
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ..page_style_base_multi import PageStyleBaseMulti
@@ -62,7 +63,7 @@ class Color(PageStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = StandardColor.AUTO_COLOR,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:

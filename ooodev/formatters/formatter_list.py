@@ -36,10 +36,7 @@ class FormatterList:
     def _custom_format(self, current_index: int) -> FormatListItem | None:
         if current_index < 0:
             return None
-        for cf in self.custom_formats:
-            if cf.has_index(current_index):
-                return cf
-        return None
+        return next((cf for cf in self.custom_formats if cf.has_index(current_index)), None)
 
     def apply_format(self, val: Any, current_index: int = -1) -> str:
         """
@@ -79,12 +76,10 @@ class FormatterList:
             if not self.format or self.idx_rule == OnlyIgnoreKind.NONE:
                 return str(val)
             if current_index > -1:
-                if self.idx_rule == OnlyIgnoreKind.IGNORE:
-                    if current_index in self.idxs:
-                        return str(val)
-                if self.idx_rule == OnlyIgnoreKind.ONLY:
-                    if not current_index in self.idxs:
-                        return str(val)
+                if self.idx_rule == OnlyIgnoreKind.IGNORE and current_index in self.idxs:
+                    return str(val)
+                if self.idx_rule == OnlyIgnoreKind.ONLY and current_index not in self.idxs:
+                    return str(val)
             return _apply_all_formats(val, self.format)
         except Exception:
             return str(val)

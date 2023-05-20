@@ -9,6 +9,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 from ooodev.format.inner.style_base import StyleBase
 from ..props.fill_color_props import FillColorProps
 
@@ -29,7 +30,7 @@ class AbstractColor(StyleBase):
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, color: mColor.Color = mColor.Color(-1)) -> None:
+    def __init__(self, color: mColor.Color = StandardColor.AUTO_COLOR) -> None:
         """
         Constructor
 
@@ -69,7 +70,7 @@ class AbstractColor(StyleBase):
 
     # endregion apply()
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -83,16 +84,16 @@ class AbstractColor(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractColor], obj: object) -> _TAbstractColor:
+    def from_obj(cls: Type[_TAbstractColor], obj: Any) -> _TAbstractColor:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractColor], obj: object, **kwargs) -> _TAbstractColor:
+    def from_obj(cls: Type[_TAbstractColor], obj: Any, **kwargs) -> _TAbstractColor:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TAbstractColor], obj: object, **kwargs) -> _TAbstractColor:
+    def from_obj(cls: Type[_TAbstractColor], obj: Any, **kwargs) -> _TAbstractColor:
         """
         Gets instance from object
 

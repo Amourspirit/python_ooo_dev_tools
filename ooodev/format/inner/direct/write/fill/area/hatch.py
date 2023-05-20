@@ -45,10 +45,10 @@ class Hatch(StyleMulti):
         self,
         *,
         style: HatchStyle = HatchStyle.SINGLE,
-        color: Color = Color(0),
+        color: Color = StandardColor.BLACK,
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
-        bg_color: Color = Color(-1),
+        bg_color: Color = StandardColor.AUTO_COLOR,
     ) -> None:
         """
         Constructor

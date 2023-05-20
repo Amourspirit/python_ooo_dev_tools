@@ -1,6 +1,6 @@
 # region Imports
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
@@ -26,5 +26,5 @@ class CellStyleBaseMulti(StyleModifyMulti):
             )
         return self._supported_services_values
 
-    def _is_valid_doc(self, obj: object) -> bool:
+    def _is_valid_doc(self, obj: Any) -> bool:
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.CALC)

@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 from ooodev.units import UnitObj
 from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.direct.write.page.page.margins import Margins as InnerMargins
@@ -60,7 +60,7 @@ class Margins(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Margins:
@@ -68,7 +68,7 @@ class Margins(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

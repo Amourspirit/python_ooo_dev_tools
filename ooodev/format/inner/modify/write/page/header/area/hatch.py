@@ -1,12 +1,12 @@
 # region Import
 from __future__ import annotations
-from typing import cast, Type, TypeVar
+from typing import Any, cast, Type, TypeVar
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.units import UnitObj
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
@@ -34,10 +34,10 @@ class Hatch(PageStyleBaseMulti):
         self,
         *,
         style: HatchStyle = HatchStyle.SINGLE,
-        color: Color = Color(0),
+        color: Color = StandardColor.BLACK,
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
-        bg_color: Color = Color(-1),
+        bg_color: Color = StandardColor.AUTO_COLOR,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:
@@ -99,7 +99,7 @@ class Hatch(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls: Type[_THatch],
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _THatch:
@@ -107,7 +107,7 @@ class Hatch(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

@@ -88,9 +88,8 @@ class ScaleNumOfPages(CellStyleBase):
 
     @prop_pages.setter
     def prop_pages(self, value: int):
-        if value < 1:
-            # 1 is min
-            value = 1
+        # 1 is min
+        value = max(value, 1)
         # the order is important here.
         # by setting value last it ensure it is the last property set.
         # Otherwise, may get unexpected results. This is a Calc issue.

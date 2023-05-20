@@ -1,8 +1,7 @@
 # region Import
 from __future__ import annotations
-from typing import Type, cast
+from typing import Any, cast
 import uno
-from numbers import Real
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind as ModeKind
 from ooodev.format.inner.direct.write.para.indent_space.line_spacing import LineSpacing as InnerLineSpacing
@@ -27,7 +26,7 @@ class LineSpacing(ParaStyleBaseMulti):
         self,
         *,
         mode: ModeKind | None = None,
-        value: Real | UnitObj = 0,
+        value: int | float | UnitObj = 0,
         active_ln_spacing: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -37,7 +36,7 @@ class LineSpacing(ParaStyleBaseMulti):
 
         Args:
             mode (ModeKind, optional): Determines the mode that is used to apply units.
-            value (Real, UnitObj, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
+            value (int, float, UnitObj, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
                 ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             active_ln_spacing (bool, optional): Determines active page line-spacing.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
@@ -69,7 +68,7 @@ class LineSpacing(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> LineSpacing:
@@ -77,7 +76,7 @@ class LineSpacing(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

@@ -778,7 +778,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError(f"unable to get doc type for '{fnm}'") from e
 
     @classmethod
-    def report_doc_type(cls, doc: object) -> mLo.Lo.DocType:
+    def report_doc_type(cls, doc: Any) -> mLo.Lo.DocType:
         """
         Prints doc type to console and return doc type
 
@@ -812,12 +812,12 @@ class Info(metaclass=StaticProperty):
         return doc_type
 
     @classmethod
-    def doc_type_service(cls, doc: object) -> mLo.Lo.Service:
+    def doc_type_service(cls, doc: Any) -> mLo.Lo.Service:
         """
         Prints service type to console and return service type
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Returns:
             Lo.Service: Service type
@@ -845,7 +845,7 @@ class Info(metaclass=StaticProperty):
             return mLo.Lo.Service.UNKNOWN
 
     @staticmethod
-    def is_doc_type(obj: object, doc_type: mLo.Lo.Service) -> bool:
+    def is_doc_type(obj: Any, doc_type: mLo.Lo.Service) -> bool:
         """
         Gets if doc is a particular doc type.
 
@@ -863,7 +863,7 @@ class Info(metaclass=StaticProperty):
             return False
 
     @staticmethod
-    def get_implementation_name(obj: object) -> str:
+    def get_implementation_name(obj: Any) -> str:
         """
         Gets implementation name such as ``com.sun.star.comp.deployment.PackageInformationProvider``
 
@@ -883,7 +883,7 @@ class Info(metaclass=StaticProperty):
             raise ValueError("Could not get service information") from e
 
     @staticmethod
-    def get_identifier(obj: object) -> str:
+    def get_identifier(obj: Any) -> str:
         """
         Gets identifier name such as ``com.sun.star.text.TextDocument``
 
@@ -1042,7 +1042,7 @@ class Info(metaclass=StaticProperty):
         return names
 
     @staticmethod
-    def get_services(obj: object) -> List[str]:
+    def get_services(obj: Any) -> List[str]:
         """
         Gets service names
 
@@ -1064,7 +1064,7 @@ class Info(metaclass=StaticProperty):
             raise e
 
     @classmethod
-    def show_services(cls, obj_name: str, obj: object) -> None:
+    def show_services(cls, obj_name: str, obj: Any) -> None:
         """
         Prints services to console
 
@@ -1081,7 +1081,7 @@ class Info(metaclass=StaticProperty):
             print(f"'{service}'")
 
     @staticmethod
-    def support_service(obj: object, *service: str) -> bool:
+    def support_service(obj: Any, *service: str) -> bool:
         """
         Gets if ``obj`` supports a service.
 
@@ -1108,7 +1108,7 @@ class Info(metaclass=StaticProperty):
         return result
 
     @staticmethod
-    def get_available_services(obj: object) -> List[str]:
+    def get_available_services(obj: Any) -> List[str]:
         """
         Gets available services for obj
 
@@ -1334,7 +1334,7 @@ class Info(metaclass=StaticProperty):
         print()
 
     @classmethod
-    def show_interfaces(cls, obj_name: str, obj: object) -> None:
+    def show_interfaces(cls, obj_name: str, obj: Any) -> None:
         """
         prints interfaces in obj to console
 
@@ -1382,7 +1382,7 @@ class Info(metaclass=StaticProperty):
                 print(f'"{length.name}" does not convert')
 
     @staticmethod
-    def get_methods_obj(obj: object, property_concept: PropertyConceptEnum | None = None) -> List[str]:
+    def get_methods_obj(obj: Any, property_concept: PropertyConceptEnum | None = None) -> List[str]:
         """
         Get Methods of an object such as a doc.
 
@@ -1473,7 +1473,7 @@ class Info(metaclass=StaticProperty):
             print(f"  {method}")
 
     @classmethod
-    def show_methods_obj(cls, obj: object, property_concept: PropertyConceptEnum | None = None) -> None:
+    def show_methods_obj(cls, obj: Any, property_concept: PropertyConceptEnum | None = None) -> None:
         """
         Prints method to console for an object such as a doc.
 
@@ -1491,12 +1491,12 @@ class Info(metaclass=StaticProperty):
 
     # -------------------------- style info --------------------------
     @staticmethod
-    def get_style_families(doc: object) -> XNameAccess:
+    def get_style_families(doc: Any) -> XNameAccess:
         """
         Gets a list of style family names
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Raises:
             MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface
@@ -1517,12 +1517,12 @@ class Info(metaclass=StaticProperty):
             raise Exception("Unable to get family style names") from e
 
     @classmethod
-    def get_style_family_names(cls, doc: object) -> List[str]:
+    def get_style_family_names(cls, doc: Any) -> List[str]:
         """
         Gets a list of style family names
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Raises:
             Exception: If unable to names.
@@ -1539,12 +1539,12 @@ class Info(metaclass=StaticProperty):
             raise Exception("Unable to get family style names") from e
 
     @classmethod
-    def get_style_container(cls, doc: object, family_style_name: str) -> XNameContainer:
+    def get_style_container(cls, doc: Any, family_style_name: str) -> XNameContainer:
         """
         Gets style container of document for a family of styles
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             family_style_name (str): Family style name
 
         Raises:
@@ -1557,12 +1557,12 @@ class Info(metaclass=StaticProperty):
         return mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name), raise_err=True)
 
     @classmethod
-    def get_style_names(cls, doc: object, family_style_name: str) -> List[str]:
+    def get_style_names(cls, doc: Any, family_style_name: str) -> List[str]:
         """
         Gets a list of style names
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             family_style_name (str): name of family style
 
         Raises:
@@ -1580,12 +1580,12 @@ class Info(metaclass=StaticProperty):
             raise Exception("Could not access style names") from e
 
     @classmethod
-    def get_style_props(cls, doc: object, family_style_name: str, prop_set_nm: str) -> XPropertySet:
+    def get_style_props(cls, doc: Any, family_style_name: str, prop_set_nm: str) -> XPropertySet:
         """
         Get style properties for a family of styles
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             family_style_name (str): name of family style
             prop_set_nm (str): property set name
 
@@ -1599,12 +1599,12 @@ class Info(metaclass=StaticProperty):
         return mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
 
     @classmethod
-    def get_page_style_props(cls, doc: object) -> XPropertySet:
+    def get_page_style_props(cls, doc: Any) -> XPropertySet:
         """
         Gets style properties for page styles
 
         Args:
-            doc (object): office docs
+            doc (Any): office docs
 
         Raises:
             MissingInterfaceError: if a required interface cannot be obtained.
@@ -1615,12 +1615,12 @@ class Info(metaclass=StaticProperty):
         return cls.get_style_props(doc, "PageStyles", "Standard")
 
     @classmethod
-    def get_paragraph_style_props(cls, doc: object) -> XPropertySet:
+    def get_paragraph_style_props(cls, doc: Any) -> XPropertySet:
         """
         Gets style properties for paragraph styles
 
         Args:
-            doc (object): office docs
+            doc (Any): office docs
 
         Raises:
             MissingInterfaceError: if a required interface cannot be obtained.
@@ -1633,12 +1633,12 @@ class Info(metaclass=StaticProperty):
     # ----------------------------- document properties ----------------------
 
     @classmethod
-    def print_doc_properties(cls, doc: object) -> None:
+    def print_doc_properties(cls, doc: Any) -> None:
         """
         Prints document properties to console
 
         Args:
-            doc (object): office document
+            doc (Any): office document
         """
         try:
             doc_props_supp = mLo.Lo.qi(XDocumentPropertiesSupplier, doc, True)
@@ -1714,12 +1714,12 @@ class Info(metaclass=StaticProperty):
         print()
 
     @staticmethod
-    def set_doc_props(doc: object, subject: str, title: str, author: str) -> None:
+    def set_doc_props(doc: Any, subject: str, title: str, author: str) -> None:
         """
         Set document properties for subject, title, author
 
         Args:
-            doc (object): office document
+            doc (Any): office document
             subject (str): subject
             title (str): title
             author (str): author
@@ -1737,12 +1737,12 @@ class Info(metaclass=StaticProperty):
             raise mEx.PropertiesError("Unable to set doc properties") from e
 
     @staticmethod
-    def get_user_defined_props(doc: object) -> XPropertyContainer:
+    def get_user_defined_props(doc: Any) -> XPropertyContainer:
         """
         Gets user defined properties
 
         Args:
-            doc (object): office document
+            doc (Any): office document
 
         Raises:
             PropertiesError: if unable to access properties
@@ -2075,7 +2075,7 @@ class Info(metaclass=StaticProperty):
         return obj.typeName == type_name if hasattr(obj, "typeName") else False
 
     @staticmethod
-    def is_type_interface(obj: object, type_name: str) -> bool:
+    def is_type_interface(obj: Any, type_name: str) -> bool:
         """
         Gets if an object is a Uno interface of matching type.
 
@@ -2115,7 +2115,7 @@ class Info(metaclass=StaticProperty):
         return obj.typeName == type_name if hasattr(obj, "typeName") else False
 
     @staticmethod
-    def is_uno(obj: object) -> bool:
+    def is_uno(obj: Any) -> bool:
         """
         Gets if an object is a UNO object
 

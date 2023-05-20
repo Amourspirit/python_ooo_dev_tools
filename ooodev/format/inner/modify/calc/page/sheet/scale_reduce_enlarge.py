@@ -94,12 +94,10 @@ class ScaleReduceEnlarge(CellStyleBase):
 
     @prop_factor.setter
     def prop_factor(self, value: int):
-        if value < 10:
-            # 10% is min
-            value = 10
-        if value > 400:
-            # 400% is max
-            value = 400
+        # 10% is min
+        value = max(value, 10)
+        # 400% is max
+        value = min(value, 400)
         # the order is important here.
         # if factor is not last Calc will set it to 100
         # by setting it last here the property gets set last by Props

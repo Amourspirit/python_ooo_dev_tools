@@ -1,11 +1,11 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.char.highlight.highlight import Highlight as InnerHighlight
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ..para_style_base_multi import ParaStyleBaseMulti
 
 # endregion Import
@@ -25,7 +25,7 @@ class Highlight(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: Color = -1,
+        color: Color = StandardColor.AUTO_COLOR,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -54,7 +54,7 @@ class Highlight(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Highlight:
@@ -62,7 +62,7 @@ class Highlight(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

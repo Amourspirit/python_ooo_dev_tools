@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
@@ -64,7 +65,7 @@ class Color(CellStyleBaseMulti):
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = StandardColor.AUTO_COLOR,
         style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
