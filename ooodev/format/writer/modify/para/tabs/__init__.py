@@ -6,4 +6,4 @@ from ooodev.format.inner.modify.write.para.tabs.tabs import InnerTabs as InnerTa
 from ooodev.format.inner.modify.write.para.tabs.tabs import Tabs as Tabs
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 
-__all__ = ["FillCharKind", "InnerTabs", "Tabs"]
+__all__ = ["Tabs"]

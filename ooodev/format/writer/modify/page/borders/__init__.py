@@ -12,14 +12,4 @@ from ooodev.format.inner.modify.write.page.border.sides import InnerSides as Inn
 from ooodev.format.inner.modify.write.page.border.sides import Sides as Sides
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 
-__all__ = [
-    "BorderLineKind",
-    "LineSize",
-    "Side",
-    "InnerPadding",
-    "Padding",
-    "InnerShadow",
-    "Shadow",
-    "InnerSides",
-    "Sides",
-]
+__all__ = ["Padding", "Shadow", "Sides"]

@@ -19,4 +19,4 @@ class ClassPropertyReadonly(property):
 
     # https://stackoverflow.com/a/1383402/1171746
     def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()
+        return self.fget.__get__(None, owner)()  # type: ignore

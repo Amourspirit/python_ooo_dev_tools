@@ -4,6 +4,11 @@
 Chapter 26. Search and Replace
 ******************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 1
+
 .. topic:: Overview
 
     XSearchable_; XReplaceable_; SearchDescriptor_; ReplaceDescriptor_; Searching Iteratively; Searching For All Matches; Replacing All Matches

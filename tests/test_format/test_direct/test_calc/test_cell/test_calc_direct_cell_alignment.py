@@ -69,7 +69,7 @@ def test_calc(loader) -> None:
         assert f_style.prop_vert_align == VertAlignKind.TOP
         assert f_style.prop_indent.get_value_mm100() in range(indent.value - 2, indent.value + 3)  # +- 2
 
-        # ===================Distrubuted==========================
+        # ===================Distributed==========================
 
         cell_obj = Calc.get_cell_obj("A2")
         Calc.set_val(value="distributed text", sheet=sheet, cell_obj=cell_obj)

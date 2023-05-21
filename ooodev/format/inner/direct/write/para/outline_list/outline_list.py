@@ -73,14 +73,14 @@ class OutlineList(StyleMulti):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
         super().__init__()
-        if not ol_level is None:
+        if ol_level is not None:
             ol = InnerOutline(level=ol_level)
             self._set_style("outline", ol, *ol.get_attrs())
 
         ls = ParaListStyle(list_style=ls_style, num_start=ls_num)
         if ls.prop_has_attribs:
             self._set_style("list_style", ls, *ls.get_attrs())
-        if not ln_num is None:
+        if ln_num is not None:
             ln = LineNum(ln_num)
             self._set_style("line_num", ln, *ln.get_attrs())
 
@@ -105,16 +105,16 @@ class OutlineList(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOutlineList], obj: object) -> _TOutlineList:
+    def from_obj(cls: Type[_TOutlineList], obj: Any) -> _TOutlineList:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOutlineList], obj: object, **kwargs) -> _TOutlineList:
+    def from_obj(cls: Type[_TOutlineList], obj: Any, **kwargs) -> _TOutlineList:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TOutlineList], obj: object, **kwargs) -> _TOutlineList:
+    def from_obj(cls: Type[_TOutlineList], obj: Any, **kwargs) -> _TOutlineList:
         """
         Gets instance from object
 

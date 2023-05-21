@@ -18,6 +18,10 @@ class InnerCellProtection(CellProtectionStruct):
     Note:
         Cell protection is only effective after the sheet is has been applied to is also been protected.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_protection`
+
     .. versionadded:: 0.9.0
     """
 
@@ -44,6 +48,10 @@ class CellProtection(CellStyleBaseMulti):
 
     Note:
         Cell protection is only effective after the sheet is has been applied to is also been protected.
+
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_protection`
 
     .. versionadded:: 0.9.0
     """
@@ -73,6 +81,9 @@ class CellProtection(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_protection`
         """
 
         direct = InnerCellProtection(

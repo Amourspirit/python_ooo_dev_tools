@@ -5,4 +5,4 @@ from ooodev.format.inner.direct.write.para.outline_list.outline import Outline a
 from ooodev.format.inner.direct.write.para.outline_list.line_num import LineNum as LineNum
 from ooodev.format.inner.direct.write.para.outline_list.list_style import ListStyle as ListStyle
 
-__all__ = ["LevelKind", "Outline", "LineNum", "ListStyle"]
+__all__ = ["Outline", "LineNum", "ListStyle"]

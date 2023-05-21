@@ -4,6 +4,11 @@
 Chapter 4. Listening, and Other Techniques
 ******************************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Window Listeners;
 
     Window Listeners and |odev| Events.
@@ -126,20 +131,25 @@ For example |exmonitor|_ uses |terminate_listener| and |event_listener|.
 
                 .. code-block:: python
 
+                    # region Imports
                     from __future__ import annotations
                     from typing import TYPE_CHECKING, Any, cast
 
-                    from ooodev.adapter.awt.top_window_listener import (
-                        TopWindowListener, EventArgs, GenericArgs
-                    )
+                    from ooodev.adapter.awt.top_window_listener import TopWindowListener, EventArgs
                     from ooodev.office.write import Write
                     from ooodev.utils.gui import GUI
                     from ooodev.utils.lo import Lo
 
                     from com.sun.star.awt import XWindow
 
+
                     if TYPE_CHECKING:
+                        # only need types in design time and not at run time.
                         from com.sun.star.lang import EventObject
+                    # endregion Imports
+
+                    # region DocWindow Class
+
 
                     class DocWindowAdapter:
                         def __init__(self) -> None:
@@ -148,63 +158,115 @@ For example |exmonitor|_ uses |terminate_listener| and |event_listener|.
                             loader = Lo.load_office(Lo.ConnectPipe())
                             self.doc = Write.create_doc(loader=loader)
 
-                            self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
-                            self._twl.on("windowOpened", DocWindowAdapter.on_window_opened)
-                            self._twl.on("windowActivated", DocWindowAdapter.on_window_activated)
-                            self._twl.on("windowDeactivated", DocWindowAdapter.on_window_deactivated)
-                            self._twl.on("windowMinimized", DocWindowAdapter.on_window_minimized)
-                            self._twl.on("windowNormalized", DocWindowAdapter.on_window_normalized)
-                            self._twl.on("windowClosing", DocWindowAdapter.on_window_closing)
-                            self._twl.on("windowClosed", DocWindowAdapter.on_window_closed)
-                            self._twl.on("disposing", DocWindowAdapter.on_disposing)
+                            # Event handlers are defined as methods on the class.
+                            # However class methods are not callable by the event system.
+                            # The solution is to create a function that calls the class method and
+                            # pass that function to the event system.
+                            # Also the function must be a member of the class so that it is not garbage collected.
+
+                            def _on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_window_opened(source=source, event_args=event_args, *args, **kwargs)
+
+                            def _on_window_activated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_window_activated(source=source, event_args=event_args, *args, **kwargs)
+
+                            def _on_window_deactivated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_window_deactivated(source=source, event_args=event_args, *args, **kwargs)
+
+                            def _on_window_minimized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_window_minimized(source=source, event_args=event_args, *args, **kwargs)
+
+                            def _on_window_normalized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_window_normalized(source=source, event_args=event_args, *args, **kwargs)
+
+                            def _on_window_closing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_window_closing(source=source, event_args=event_args, *args, **kwargs)
+
+                            def _on_window_closed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_window_closed(source=source, event_args=event_args, *args, **kwargs)
+
+                            def _on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                                self.on_disposing(source=source, event_args=event_args, *args, **kwargs)
+
+                            self._fn_on_window_openeed = _on_window_opened
+                            self._fn_on_window_activated = _on_window_activated
+                            self._fn_on_window_deactivated = _on_window_deactivated
+                            self._fn_on_window_minimized = _on_window_minimized
+                            self._fn_on_window_normalized = _on_window_normalized
+                            self._fn_on_window_closing = _on_window_closing
+                            self._fn_on_window_closed = _on_window_closed
+                            self._fn_on_disposing = _on_disposing
+
+                            # assigning TopWindowListener to class is important.
+                            # if not assigned then tk get garbage collected after class __init__() is called.
+                            self._twl = TopWindowListener()
+                            self._twl.on("windowOpened", _on_window_opened)
+                            self._twl.on("windowActivated", _on_window_activated)
+                            self._twl.on("windowDeactivated", _on_window_deactivated)
+                            self._twl.on("windowMinimized", _on_window_minimized)
+                            self._twl.on("windowNormalized", _on_window_normalized)
+                            self._twl.on("windowClosing", _on_window_closing)
+                            self._twl.on("windowClosed", _on_window_closed)
+                            self._twl.on("disposing", _on_disposing)
 
                             GUI.set_visible(True, self.doc)
                             # triggers 2 opened and 2 activated events
 
-                        @staticmethod
-                        def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_opened(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                             """is invoked when a window is activated."""
                             event = cast("EventObject", event_args.event_data)
                             print("WA: Opened")
                             xwin = Lo.qi(XWindow, event.Source)
                             GUI.print_rect(xwin.getPosSize())
 
-                        @staticmethod
-                        def on_window_activated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_activated(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                             """is invoked when a window is activated."""
                             print("WA: Activated")
                             print(f"  Titile bar: {GUI.get_title_bar()}")
 
-                        @staticmethod
-                        def on_window_deactivated(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_deactivated(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                             """is invoked when a window is deactivated."""
                             print("WA: Minimized")
 
-                        @staticmethod
-                        def on_window_minimized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_minimized(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                             """is invoked when a window is iconified."""
                             print("WA:  De-activated")
 
-                        @staticmethod
-                        def on_window_normalized(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_normalized(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                             """is invoked when a window is deiconified."""
                             print("WA: Normalized")
 
-                        @staticmethod
-                        def on_window_closing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_closing(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """
+                            is invoked when a window is in the process of being closed.
+
+                            The close operation can be overridden at this point.
+                            """
                             print("WA: Closing")
 
-                        @staticmethod
-                        def on_window_closed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_closed(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                             """is invoked when a window has been closed."""
-                            dw = cast(DocWindowAdapter, kwargs["listener"])
-                            if not dw.closed:
-                                dw.closed = True
-                                print("WA: Closed")
+                            self.closed = True
+                            print("WA: Closed")
 
-                        @staticmethod
-                        def on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_disposing(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                            """
+                            gets called when the broadcaster is about to be disposed.
+
+                            All listeners and all other objects, which reference the broadcaster
+                            should release the reference to the source. No method should be invoked
+                            anymore on this object ( including XComponent.removeEventListener() ).
+
+                            This method is called for every listener registration of derived listener
+                            interfaced, not only for registrations at XComponent.
+                            """
+
+                            # don't expect Disposing to print if script ends due to closing.
+                            # script will stop before dispose is called
                             print("WA: Disposing")
+
+
+                    # endregion DocWindow Class
 
     .. only:: html
 
@@ -222,8 +284,8 @@ In this example the method subscribed to is ``windowOpened``.
 
     .. code-tab:: python
 
-        self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
-        self._twl.on("windowOpened", DocWindowAdapter.on_window_opened)
+        self._twl = TopWindowListener()
+        self._twl.on("windowOpened", _on_window_opened)
 
     .. only:: html
 
@@ -238,11 +300,10 @@ as demonstrated below in ``on_window_opened()``.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 5
+        :emphasize-lines: 4
 
         # in DocWindowAdapter class
-        @staticmethod
-        def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+        def on_window_opened(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
             """is invoked when a window is activated."""
             event = cast("EventObject", event_args.event_data)
             print("WA: Opened")
@@ -255,47 +316,6 @@ as demonstrated below in ``on_window_opened()``.
 
             .. group-tab:: None
 
-Extra data can be passed to listener events via ``trigger_args`` parameter and |generic_args| class instance.
-
-.. tabs::
-
-    .. code-tab:: python
-
-        # in DocWindowAdapter.__init__()
-        # ...
-        self._twl = TopWindowListener(trigger_args=GenericArgs(listener=self))
-        # ...
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-
-``trigger_args`` passed to listeners can be retrieved easily.
-In the following case it allows an instance of ``DocWindowAdapter`` to be passed to event listeners.
-Event listeners must be static method or stand alone functions.
-
-
-.. tabs::
-
-    .. code-tab:: python
-        :emphasize-lines: 5
-
-        # in DocWindowAdapter class
-        @staticmethod
-        def on_window_closed(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
-            """is invoked when a window has been closed."""
-            dw = cast(DocWindowAdapter, kwargs["listener"])
-            dw.closed = True
-            print("WA: Closed")
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
 
 The |doc_window|_ class implements seven methods from XTopWindowListener_, and ``disposing()`` inherited from XEventListener_.
 
@@ -324,9 +344,9 @@ When an event arrives at a listener method, one of the more useful things to do 
 
                 .. code-block:: python
 
-                    @staticmethod
-                    def on_window_opened(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                   def on_window_opened(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                         event = cast("EventObject", event_args.event_data)
+                        print("WA: Opened")
                         xwin = Lo.qi(XWindow, event.Source)
                         GUI.print_rect(xwin.getPosSize())
 
@@ -372,7 +392,7 @@ Rather confusingly, both these methods are called twice.
             except KeyboardInterrupt:
                 # ctrl+c exitst the script earily
                 print("\nExiting by user request.\n", file=sys.stderr)
-                sys.exit(0)
+                SystemExit(0)
 
     .. only:: html
 
@@ -415,30 +435,65 @@ as seen in |exmonitor|_ example.
                 self.closed = False
                 self.bridge_disposed = False
                 loader = Lo.load_office(Lo.ConnectPipe())
-                xdesktop = Lo.XSCRIPTCONTEXT.getDesktop()
+                _ = Lo.XSCRIPTCONTEXT.getDesktop()
 
-                self._term_listener = TerminateListener(trigger_args=GenericArgs(listener=self))
-                self._term_listener.on("notifyTermination", DocMonitor.on_notify_termination)
-                self._term_listener.on("queryTermination", DocMonitor.on_query_termination)
-                self._term_listener.on("disposing", DocMonitor.on_disposing)
+                self._set_internal_events()
 
                 self.doc = Calc.create_doc(loader=loader)
+
                 GUI.set_visible(True, self.doc)
 
-            @staticmethod
-            def on_notify_termination(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
-                print("TL: Finished Closing")
-                dm = cast(DocMonitor, kwargs["listener"])
-                dm.bridge_disposed = True
-                dm.closed = True
+            def _set_internal_events(self):
+                # Event handlers are defined as methods on the class.
+                # However class methods are not callable by the event system.
+                # The solution is to create a function that calls the class method and pass that
+                # function to the event system.
+                # Also the function must be a member of the class so that it is not garbage collected.
+                def _on_notify_termination(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                    self.on_notify_termination(source=source, event_args=event_args, *args, **kwargs)
 
-            @staticmethod
-            def on_query_termination(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                def _on_query_termination(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                    self.on_query_termination(source=source, event_args=event_args, *args, **kwargs)
+
+                def _on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                    self.on_disposing(source=source, event_args=event_args, *args, **kwargs)
+
+                def _on_disposed(source: Any, event_args: EventArgs) -> None:
+                    self.on_disposed(source, event_args)
+
+                self._fn_on_notify_termination = _on_notify_termination
+                self._fn_on_query_termination = _on_query_termination
+                self._fn_on_disposing = _on_disposing
+                self._fn_on_disposed = _on_disposed
+
+                # create a new instance of listener.
+                self._term_listener = TerminateListener()
+                self._term_listener.on("notifyTermination", _on_notify_termination)
+                self._term_listener.on("queryTermination", _on_query_termination)
+                self._term_listener.on("disposing", _on_disposing)
+
+                # using an event is redundant here and is included for example purposes.
+                # below a listener is attached to Lo.birdge that does the same job.
+                self.events = Events(source=self)
+                self.events.on(LoNamedEvent.BRIDGE_DISPOSED, _on_disposed)
+
+            def on_notify_termination(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                print("TL: Finished Closing")
+                self.bridge_disposed = True
+                self.closed = True
+
+            def on_query_termination(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
                 print("TL: Starting Closing")
 
-            @staticmethod
-            def on_disposing(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+            def on_disposing(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                # don't expect Disposing to print if script ends due to closing.
+                # script will stop before dispose is called
                 print("TL: Disposing")
+
+            def on_disposed(self, source: Any, event_args: EventArgs) -> None:
+                # just another way of knowing when bridge is gone.
+                print("LO: Office bridge has gone!!")
+                self.bridge_disposed = True
 
     .. only:: html
 
@@ -488,19 +543,24 @@ The modified parts of |exmonitor|_ are:
 
     .. code-tab:: python
 
-        # new imports
-        from ooodev.listeners.x_event_adapter import XEventAdapter
+        # DocMonitor _set_internal_events changes
+        def _on_disposing_bridge(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+            self.on_disposing_bridge(source=source, event_args=event_args, *args, **kwargs)
+        
+        self._fn_on_disposing_bridge = _on_disposing_bridge
 
-        # DocMonitor constructor changes
-        self.bridge_disposed = False
-        self._bridge_listen = EventListener(trigger_args=GenericArgs(listener=self))
-        self._bridge_listen.on("disposing", DocMonitor.on_disposing_bridge)
+        # attach a listener to the bridge connection that gets notified if
+        # office bridge connection terminates unexpectly.
+        # Lo.bridge is not available if a script is run as a macro.
+        self._bridge_listen = EventListener()
+        self._bridge_listen.on("disposing", _on_disposing_bridge)
+        Lo.bridge.addEventListener(self._bridge_listen)
+
 
         Lo.bridge.addEventListener(self._bridge_listen)
 
         # DocMonitor new method
-        @staticmethod
-        def on_disposing_bridge(source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+        def on_disposing_bridge(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
             print("BR: Office bridge has gone!!")
 
     .. only:: html

@@ -22,6 +22,10 @@ class ScaleReduceEnlarge(CellStyleBase):
     """
     Page Style Scale Reduce or Enlarge.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_sheet`
+
     .. versionadded:: 0.9.0
     """
 
@@ -43,6 +47,8 @@ class ScaleReduceEnlarge(CellStyleBase):
 
         Returns:
             None:
+        See Also:
+            - :ref:`help_calc_format_modify_page_sheet`
         """
 
         super().__init__(style_name=style_name, style_family=style_family)
@@ -88,12 +94,10 @@ class ScaleReduceEnlarge(CellStyleBase):
 
     @prop_factor.setter
     def prop_factor(self, value: int):
-        if value < 10:
-            # 10% is min
-            value = 10
-        if value > 400:
-            # 400% is max
-            value = 400
+        # 10% is min
+        value = max(value, 10)
+        # 400% is max
+        value = min(value, 400)
         # the order is important here.
         # if factor is not last Calc will set it to 100
         # by setting it last here the property gets set last by Props

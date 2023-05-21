@@ -254,6 +254,9 @@ Character Spacing Very Loose
 
         Character Space Very Loose
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list
@@ -262,6 +265,7 @@ Character Spacing Very Loose
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_font_only`
         - :ref:`help_writer_format_direct_char_font_effects`
+        - :ref:`help_writer_format_modify_char_font_position`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontPosition`

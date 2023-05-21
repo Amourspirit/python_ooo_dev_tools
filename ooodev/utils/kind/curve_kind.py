@@ -54,7 +54,7 @@ class CurveKind(Enum):
         Args:
             s (str): String that represents the name of an enum Name.
                 ``s`` is case insensitive and can be ``CamelCase``, ``pascal_case`` , ``snake_case``,
-                ``hypen-case``, ``normal case``.
+                ``hyphen-case``, ``normal case``.
 
         Raises:
             ValueError: If input string is empty.

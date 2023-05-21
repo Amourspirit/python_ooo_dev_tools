@@ -43,7 +43,7 @@ def test_calc_chart_axis_line(loader, copy_fix_calc) -> None:
         chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
 
         line_style = LineProperties(
-            style=BorderLineKind.CONTINUIOUS, color=StandardColor.RED, width=1.0, transparency=Intensity(20)
+            style=BorderLineKind.CONTINUOUS, color=StandardColor.RED, width=1.0, transparency=Intensity(20)
         )
 
         Chart2.style_x_axis(chart_doc=chart_doc, styles=[line_style])

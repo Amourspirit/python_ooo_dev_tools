@@ -21,8 +21,9 @@ class StructBase(StyleBase):
 
     # region Internal Methods
     def _get_property_name(self) -> str:
+        # sourcery skip: raise-from-previous-error
         try:
-            return self._property_name
+            return self._property_name  # type: ignore
         except AttributeError:
             raise NotImplementedError
 

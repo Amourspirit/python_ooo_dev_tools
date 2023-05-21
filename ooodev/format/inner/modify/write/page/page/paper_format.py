@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.preset.preset_paper_format import PaperFormatKind as PaperFormatKind
@@ -13,6 +13,10 @@ from ..page_style_base_multi import PageStyleBaseMulti
 class PaperFormat(PageStyleBaseMulti):
     """
     Page Style Paper Format
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_page`
 
     .. versionadded:: 0.9.0
     """
@@ -35,6 +39,9 @@ class PaperFormat(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_page`
         """
 
         direct = InnerPaperFormat(size=size)
@@ -46,7 +53,7 @@ class PaperFormat(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> PaperFormat:
@@ -54,7 +61,7 @@ class PaperFormat(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

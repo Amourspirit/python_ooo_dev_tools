@@ -90,10 +90,14 @@ class Outline(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies break properties to ``obj``
 
@@ -115,16 +119,16 @@ class Outline(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOutline], obj: object) -> _TOutline:
+    def from_obj(cls: Type[_TOutline], obj: Any) -> _TOutline:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOutline], obj: object, **kwargs) -> _TOutline:
+    def from_obj(cls: Type[_TOutline], obj: Any, **kwargs) -> _TOutline:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TOutline], obj: object, **kwargs) -> _TOutline:
+    def from_obj(cls: Type[_TOutline], obj: Any, **kwargs) -> _TOutline:
         """
         Gets instance from object
 
@@ -149,12 +153,12 @@ class Outline(StyleBase):
 
     # endregion methods
     # region style methods
-    def style_above(self: _TOutline, value: LevelKind | None) -> _TOutline:
+    def style_above(self: _TOutline, value: LevelKind) -> _TOutline:
         """
         Gets a copy of instance with level set.
 
         Args:
-            value (LevelKind | None): Level value
+            value (LevelKind): Level value
 
         Returns:
             Spacing: Outline instance
@@ -262,7 +266,7 @@ class Outline(StyleBase):
         return LevelKind(pv)
 
     @prop_level.setter
-    def prop_level(self, value: LevelKind) -> LevelKind:
+    def prop_level(self, value: LevelKind) -> None:
         self._set("OutlineLevel", value.value)
 
     @property

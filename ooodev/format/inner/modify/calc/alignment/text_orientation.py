@@ -16,6 +16,10 @@ class TextOrientation(CellStyleBaseMulti):
     """
     Cell Style Text Orientation.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -42,6 +46,9 @@ class TextOrientation(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_alignment`
         """
 
         direct = InnerTextOrientation(vert_stack=vert_stack, rotation=rotation, edge=edge)

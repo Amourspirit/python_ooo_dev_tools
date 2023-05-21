@@ -117,7 +117,7 @@ class Dialogs:
         print(f"No of controls: {len(controls)}")
         for i, ctl in enumerate(controls):
             print(f"{i}. Name: {cls.get_control_name(ctl)}")
-            print(f"  Default Contol: {cls.get_control_class_id(ctl)}")
+            print(f"  Default Control: {cls.get_control_class_id(ctl)}")
             print()
 
     @staticmethod
@@ -276,30 +276,31 @@ class Dialogs:
         See Also:
             `API UnoControlDialogModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogModel.html>`_
         """
+        # sourcery skip: raise-specific-error
         try:
             dialog_ctrl = mLo.Lo.create_instance_mcf(XControl, "com.sun.star.awt.UnoControlDialog", raise_err=True)
-            xcontrol_model = mLo.Lo.create_instance_mcf(
+            control_model = mLo.Lo.create_instance_mcf(
                 XControlModel, "com.sun.star.awt.UnoControlDialogModel", raise_err=True
             )
-            dialog_ctrl.setModel(xcontrol_model)
+            dialog_ctrl.setModel(control_model)
 
-            cprops = cls.get_control_props(dialog_ctrl.getModel())
+            ctl_props = cls.get_control_props(dialog_ctrl.getModel())
 
-            cprops.setPropertyValue("PositionX", x)
-            cprops.setPropertyValue("PositionY", y)
-            cprops.setPropertyValue("Height", height)
-            cprops.setPropertyValue("Width", width)
+            ctl_props.setPropertyValue("PositionX", x)
+            ctl_props.setPropertyValue("PositionY", y)
+            ctl_props.setPropertyValue("Height", height)
+            ctl_props.setPropertyValue("Width", width)
 
-            cprops.setPropertyValue("Title", title)
-            cprops.setPropertyValue("Name", "OfficeDialog")
+            ctl_props.setPropertyValue("Title", title)
+            ctl_props.setPropertyValue("Name", "OfficeDialog")
 
-            cprops.setPropertyValue("Step", 0)
-            cprops.setPropertyValue("Moveable", True)
-            cprops.setPropertyValue("TabIndex", 0)
+            ctl_props.setPropertyValue("Step", 0)
+            ctl_props.setPropertyValue("Moveable", True)
+            ctl_props.setPropertyValue("TabIndex", 0)
 
             # set any extra user properties
             for k, v in props.items():
-                cprops.setPropertyValue(k, v)
+                ctl_props.setPropertyValue(k, v)
 
             return dialog_ctrl
         except Exception as e:
@@ -326,12 +327,10 @@ class Dialogs:
         dialog_ctrl.createPeer(xtoolkit, window_parent_peer)
 
         # dialog_component = mLo.Lo.qi(XComponent, dialog_ctrl)
-        dialog = cls.get_dialog(dialog_ctrl)
         # dialog_component.dispose() # free window resources
         # commented out or the Add-on dialog crashes when called a second time
         # because createPeer() cannot find a model
-
-        return dialog
+        return cls.get_dialog(dialog_ctrl)
 
     # endregion create a dialog
 
@@ -369,6 +368,7 @@ class Dialogs:
         See Also:
             `API UnoControlFixedTextModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlFixedTextModel.html>`_
         """
+        # sourcery skip: raise-specific-error
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
 
@@ -377,23 +377,23 @@ class Dialogs:
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
             nm = cls.create_name(name_con, "FixedText")
 
-            cprops = cls.get_control_props(model)
-            cprops.setPropertyValue("PositionX", x)
-            cprops.setPropertyValue("PositionY", y + 2)
-            cprops.setPropertyValue("Height", height)
-            cprops.setPropertyValue("Width", width)
-            cprops.setPropertyValue("Label", label)
-            cprops.setPropertyValue("Name", nm)
+            ctl_props = cls.get_control_props(model)
+            ctl_props.setPropertyValue("PositionX", x)
+            ctl_props.setPropertyValue("PositionY", y + 2)
+            ctl_props.setPropertyValue("Height", height)
+            ctl_props.setPropertyValue("Width", width)
+            ctl_props.setPropertyValue("Label", label)
+            ctl_props.setPropertyValue("Name", nm)
 
             # set any extra user properties
             for k, v in props.items():
-                cprops.setPropertyValue(k, v)
+                ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
 
             # reference the control by name
-            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl)
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
             return ctrl_con.getControl(nm)
         except Exception as e:
             raise Exception(f"Could not create fixed text control: {e}") from e
@@ -469,6 +469,7 @@ class Dialogs:
         See Also:
             `API UnoControlButtonModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlButtonModel.html>`_
         """
+        # sourcery skip: raise-specific-error
         if btn_type is None:
             btn_type = PushButtonType.STANDARD
         try:
@@ -481,27 +482,27 @@ class Dialogs:
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
-            cprops = cls.get_control_props(model)
+            ctl_props = cls.get_control_props(model)
 
-            cprops.setPropertyValue("PositionX", x)
-            cprops.setPropertyValue("PositionY", y)
-            cprops.setPropertyValue("Height", height)
-            cprops.setPropertyValue("Width", width)
-            cprops.setPropertyValue("Label", label)
-            # cprops.setPropertyValue("PushButtonType", btn_type)
-            uany = uno.Any("short", btn_type)
-            uno.invoke(cprops, "setPropertyValue", ("PushButtonType", uany))
-            cprops.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("PositionX", x)
+            ctl_props.setPropertyValue("PositionY", y)
+            ctl_props.setPropertyValue("Height", height)
+            ctl_props.setPropertyValue("Width", width)
+            ctl_props.setPropertyValue("Label", label)
+            # ctl_props.setPropertyValue("PushButtonType", btn_type)
+            uno_any = uno.Any("short", btn_type)  # type: ignore
+            uno.invoke(ctl_props, "setPropertyValue", ("PushButtonType", uno_any))  # type: ignore
+            ctl_props.setPropertyValue("Name", nm)
 
             # set any extra user properties
             for k, v in props.items():
-                cprops.setPropertyValue(k, v)
+                ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
 
             # get the dialog's container holding all the control views
-            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl)
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
             return ctrl_con.getControl(nm)
@@ -542,6 +543,7 @@ class Dialogs:
         See Also:
             `API UnoControlEditModel  Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
         """
+        # sourcery skip: raise-specific-error
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlEditModel", msf.createInstance("com.sun.star.awt.UnoControlEditModel"))
@@ -550,27 +552,27 @@ class Dialogs:
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
-            cprops = cls.get_control_props(model)
+            ctl_props = cls.get_control_props(model)
 
-            cprops.setPropertyValue("PositionX", x)
-            cprops.setPropertyValue("PositionY", y)
-            cprops.setPropertyValue("Height", height)
-            cprops.setPropertyValue("Width", width)
-            cprops.setPropertyValue("Text", text)
-            cprops.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("PositionX", x)
+            ctl_props.setPropertyValue("PositionY", y)
+            ctl_props.setPropertyValue("Height", height)
+            ctl_props.setPropertyValue("Width", width)
+            ctl_props.setPropertyValue("Text", text)
+            ctl_props.setPropertyValue("Name", nm)
 
             # set any extra user properties
             for k, v in props.items():
-                cprops.setPropertyValue(k, v)
+                ctl_props.setPropertyValue(k, v)
 
             if len(echo_char) == 1:  # for password fields
-                cprops.setPropertyValue("EchoChar", ord(echo_char))
+                ctl_props.setPropertyValue("EchoChar", ord(echo_char))
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
 
             # reference the control by name
-            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl)
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
             return ctrl_con.getControl(nm)
@@ -644,9 +646,9 @@ class Dialogs:
         See Also:
             `API UnoControlComboBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlComboBoxModel.html>`_
         """
+        # sourcery skip: raise-specific-error
         try:
-            if max_text_len < 0:
-                max_text_len = 0
+            max_text_len = max(max_text_len, 0)
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlComboBoxModel", msf.createInstance("com.sun.star.awt.UnoControlComboBoxModel"))
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
@@ -654,27 +656,27 @@ class Dialogs:
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
-            cprops = cls.get_control_props(model)
+            ctl_props = cls.get_control_props(model)
 
-            cprops.setPropertyValue("PositionX", x)
-            cprops.setPropertyValue("PositionY", y)
-            cprops.setPropertyValue("Height", height)
-            cprops.setPropertyValue("Width", width)
-            cprops.setPropertyValue("Name", nm)
-            cprops.setPropertyValue("Dropdown", drop_down)
-            cprops.setPropertyValue("StringItemList", entries)
-            cprops.setPropertyValue("MaxTextLen", max_text_len)
-            cprops.setPropertyValue("ReadOnly", read_only)
+            ctl_props.setPropertyValue("PositionX", x)
+            ctl_props.setPropertyValue("PositionY", y)
+            ctl_props.setPropertyValue("Height", height)
+            ctl_props.setPropertyValue("Width", width)
+            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Dropdown", drop_down)
+            ctl_props.setPropertyValue("StringItemList", entries)
+            ctl_props.setPropertyValue("MaxTextLen", max_text_len)
+            ctl_props.setPropertyValue("ReadOnly", read_only)
 
             # set any extra user properties
             for k, v in props.items():
-                cprops.setPropertyValue(k, v)
+                ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
 
             # reference the control by name
-            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl)
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
             return ctrl_con.getControl(nm)
@@ -717,6 +719,7 @@ class Dialogs:
         See Also:
             `API UnoControlCheckBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlCheckBoxModel.html>`_
         """
+        # sourcery skip: raise-specific-error
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlCheckBoxModel", msf.createInstance("com.sun.star.awt.UnoControlCheckBoxModel"))
@@ -725,26 +728,26 @@ class Dialogs:
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
-            cprops = cls.get_control_props(model)
+            ctl_props = cls.get_control_props(model)
 
-            cprops.setPropertyValue("PositionX", x)
-            cprops.setPropertyValue("PositionY", y)
-            cprops.setPropertyValue("Height", height)
-            cprops.setPropertyValue("Width", width)
-            cprops.setPropertyValue("Name", nm)
-            cprops.setPropertyValue("Label", label)
-            cprops.setPropertyValue("TriState", tri_state)
-            cprops.setPropertyValue("State", int(state))
+            ctl_props.setPropertyValue("PositionX", x)
+            ctl_props.setPropertyValue("PositionY", y)
+            ctl_props.setPropertyValue("Height", height)
+            ctl_props.setPropertyValue("Width", width)
+            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Label", label)
+            ctl_props.setPropertyValue("TriState", tri_state)
+            ctl_props.setPropertyValue("State", int(state))
 
             # set any extra user properties
             for k, v in props.items():
-                cprops.setPropertyValue(k, v)
+                ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
             name_con.insertByName(nm, model)
 
             # reference the control by name
-            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl)
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
             return ctrl_con.getControl(nm)

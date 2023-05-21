@@ -34,6 +34,10 @@ class TextOrientation(StyleBase):
     """
     Text Rotation
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_alignment`
+
     .. versionadded:: 0.9.0
     """
 
@@ -53,6 +57,9 @@ class TextOrientation(StyleBase):
 
         Note:
             When ``vert_stack`` is ``True`` other parameters are not used.
+
+        See Also:
+            - :ref:`help_calc_format_direct_cell_alignment`
         """
         super().__init__()
         if vert_stack is not None:
@@ -71,7 +78,7 @@ class TextOrientation(StyleBase):
             self._supported_services_values = ("com.sun.star.style.CellStyle", "com.sun.star.table.CellProperties")
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -86,16 +93,16 @@ class TextOrientation(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextOrientation], obj: object) -> _TTextOrientation:
+    def from_obj(cls: Type[_TTextOrientation], obj: Any) -> _TTextOrientation:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextOrientation], obj: object, **kwargs) -> _TTextOrientation:
+    def from_obj(cls: Type[_TTextOrientation], obj: Any, **kwargs) -> _TTextOrientation:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTextOrientation], obj: object, **kwargs) -> _TTextOrientation:
+    def from_obj(cls: Type[_TTextOrientation], obj: Any, **kwargs) -> _TTextOrientation:
         """
         Gets instance from object
 
@@ -114,7 +121,7 @@ class TextOrientation(StyleBase):
         for prop in inst._props:
             if prop:
                 val = mProps.Props.get(obj, prop, None)
-                if not val is None:
+                if val is not None:
                     inst._set(prop, val)
         return inst
 
@@ -139,9 +146,7 @@ class TextOrientation(StyleBase):
         Gets/Sets vertically stacked.
         """
         pv = cast(CellOrientation, self._get(self._props.stacked))
-        if pv is None:
-            return None
-        return pv == CellOrientation.STACKED
+        return None if pv is None else pv == CellOrientation.STACKED
 
     @prop_vert_stacked.setter
     def prop_vert_stacked(self, value: bool | None):
@@ -158,9 +163,7 @@ class TextOrientation(StyleBase):
         """Gets/Sets Vertical flip option"""
         # in 1/100 degree units
         pv = cast(int, self._get(self._props.rotation))
-        if pv is None:
-            return None
-        return Angle.from_angle100(pv)
+        return None if pv is None else Angle.from_angle100(pv)
 
     @prop_rotation.setter
     def prop_rotation(self, value: int | Angle | None) -> None:
@@ -177,9 +180,7 @@ class TextOrientation(StyleBase):
         Gets/Sets Edge Kind.
         """
         pv = cast(int, self._get(self._props.rotate_ref))
-        if pv is None:
-            return None
-        return EdgeKind(pv)
+        return None if pv is None else EdgeKind(pv)
 
     @prop_edge.setter
     def prop_edge(self, value: EdgeKind | None):

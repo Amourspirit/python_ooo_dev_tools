@@ -4,7 +4,7 @@ from typing import cast
 import uno
 
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.format.inner.direct.write.char.highlight.highlight import Highlight as InnerHighlight
 from ..char_style_base_multi import CharStyleBaseMulti
 
@@ -15,13 +15,17 @@ class Highlight(CharStyleBaseMulti):
     """
     Character Style Highlight.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_highlight`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(
         self,
         *,
-        color: Color = -1,
+        color: Color = StandardColor.AUTO_COLOR,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
     ) -> None:
@@ -60,6 +64,9 @@ class Highlight(CharStyleBaseMulti):
 
         Returns:
             Highlight: ``Highlight`` instance from document properties.
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_highlight`
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerHighlight.from_obj(inst.get_style_props(doc))

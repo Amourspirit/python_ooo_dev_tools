@@ -1,7 +1,7 @@
 # region Import
 from __future__ import annotations
 import uno
-from typing import Tuple, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
@@ -59,6 +59,10 @@ class Header(PageStyleBaseMulti):
     """
     Page Header Settings
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_header`
+
     .. versionadded:: 0.9.0
     """
 
@@ -81,7 +85,7 @@ class Header(PageStyleBaseMulti):
         Constructor
 
         Args:
-            on (bool | None, optional): Specifics if Footer is on.
+            on (bool | None, optional): Specifics if Header is on.
             shared (bool | None, optional): Specifies if same contents left and right.
             shared_first (bool | None, optional): Specifies if same contents on first page.
             margin_left (float | None, optional): Specifies Left Margin in ``mm`` units.
@@ -96,6 +100,9 @@ class Header(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_header`
         """
 
         direct = InnerStyle(
@@ -142,7 +149,7 @@ class Header(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls: Type[_THeader],
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _THeader:
@@ -150,7 +157,7 @@ class Header(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

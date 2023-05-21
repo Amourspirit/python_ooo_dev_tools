@@ -2,6 +2,7 @@
 from __future__ import annotations, unicode_literals
 import sys
 from typing import TYPE_CHECKING, cast
+from enum import Enum
 import uno
 import getpass, os, os.path
 from ..meta.static_meta import StaticProperty, classproperty
@@ -17,8 +18,15 @@ from ooo.dyn.uno.deployment_exception import DeploymentException
 # com.sun.star.uno.DeploymentException
 
 if TYPE_CHECKING:
-    from com.sun.star.util import PathSubstitution
+    from com.sun.star.util import PathSubstitution  # service
     from com.sun.star.uno import XComponentContext
+
+
+class PathKind(Enum):
+    """Kind of path to register"""
+
+    SHARE_PYTHON = 1
+    SHARE_USER_PYTHON = 2
 
 
 class Session(metaclass=StaticProperty):
@@ -33,35 +41,33 @@ class Session(metaclass=StaticProperty):
     # https://help.libreoffice.org/latest/lo/text/sbasic/python/python_import.html
     # https://help.libreoffice.org/latest/lo/text/sbasic/python/python_session.html
 
-    class PathEnum:
-        SHARE_PYTHON = 1
-        SHARE_USER_PYTHON = 2
+    PathEnum = PathKind
 
     @classproperty
     def path_sub(cls) -> PathSubstitution:
         try:
-            return cls._path_substitution
+            return cls._path_substitution  # type: ignore
         except AttributeError:
             try:
                 # raises DeploymentException if not in a macro environment
-                # in a macro envrionment there should be no dependency on Lo
+                # in a macro environment there should be no dependency on Lo
                 # this will allow for import shared python files before Lo.load_office is called.
-                # if not in a macro then must get instace after Lo.load_office is called
+                # if not in a macro then must get instance after Lo.load_office is called
                 ctx = cast("XComponentContext", uno.getComponentContext())
                 ps = ctx.getServiceManager().createInstanceWithContext("com.sun.star.util.PathSubstitution", ctx)
                 cls._path_substitution = ps
-                return cls._path_substitution
+                return cls._path_substitution  # type: ignore
             except DeploymentException as e:
                 # print(e)
                 # there must be a connection to before calling session.
                 if mLo.Lo.is_loaded is False:
                     raise mEx.LoNotLoadedError(
                         "Lo.load_office must be called before using session when not run as a macro"
-                    )
+                    ) from e
                 cls._path_substitution = mLo.Lo.create_instance_mcf(
-                    XStringSubstitution, "com.sun.star.util.PathSubstitution"
+                    XStringSubstitution, "com.sun.star.util.PathSubstitution", raise_err=True
                 )
-        return cls._path_substitution
+        return cls._path_substitution  # type: ignore
 
     @staticmethod
     def substitute(var_name: str):
@@ -148,25 +154,28 @@ class Session(metaclass=StaticProperty):
         return "".join([cls.user_scripts, os.sep, "python"])
 
     @classmethod
-    def register_path(cls, path: Session.PathEnum) -> None:
+    def register_path(cls, path: PathKind) -> None:
         """
         Registers a path into ``sys.path`` if it does not exist
 
         Args:
-            path (PathEnum): Type of path to register.
+            path (PathKind): Type of path to register.
         """
-        if path == Session.PathEnum.SHARE_PYTHON:
-            spath = cls.shared_py_scripts
-        elif path == Session.PathEnum.SHARE_USER_PYTHON:
-            spath = cls.user_py_scripts
-        if not spath in sys.path:
-            sys.path.insert(0, spath)
+        script_path = ""
+        if path == PathKind.SHARE_PYTHON:
+            script_path = cls.shared_py_scripts
+        elif path == PathKind.SHARE_USER_PYTHON:
+            script_path = cast(str, cls.user_py_scripts)
+        if not script_path:
+            return
+        if script_path not in sys.path:
+            sys.path.insert(0, script_path)
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Lo Attributes that are dynamically created
-    dattrs = ("_path_substitution", "_share", "_user_profile")
-    for attr in dattrs:
+    data_attrs = ("_path_substitution", "_share", "_user_profile")
+    for attr in data_attrs:
         if hasattr(Session, attr):
             delattr(Session, attr)
 

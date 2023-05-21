@@ -4,6 +4,11 @@
 Chapter 1. LibreOffice API Concepts
 ***********************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: History
 
     Some History; Help and Examples for the LibreOffice SDK (``lodoc``, ``loguide``);
@@ -64,11 +69,11 @@ Finding API Documentation Online
 
 The online API documentation can be time-consuming to search due to its great size.
 
-If you want to have a browse, start at https://api.libreoffice.org/docs/idl/ref/namespaces.html, which takes a while to load.
+If you want to have a browse, start at `API Namespaces list <https://api.libreoffice.org/docs/idl/ref/namespaces.html>`__, which takes a while to load.
 
 Each Office application (e.g. Writer, Draw, Impress, Calc, Base, Math) is supported by multiple modules (similar to Java packages).
 For example, most of Writer's API is in Office's "text" module, while Impress' functionality comes from the "presentation" and "drawing" modules.
-These modules are located in com.sun.star package, which is documented at https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star.html.
+These modules are located in com.sun.star package, which is documented at `API com.sun.star module reference <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star.html>`__.
 
 Rather than searching manually through a module for a given class, it's a lot quicker to get a search engine to do it for you.
 This is the purpose of |dsearch|_.
@@ -158,7 +163,7 @@ For example:
 
 
 Choosing any number greater than ``0`` opens the that components url.
-Option ``4`` would open to https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1xml_1_1sax_1_1Writer.html
+Option ``4`` would open to `API Writer Service Reference <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1xml_1_1sax_1_1Writer.html>`__
 
 Search can be narrowed by including ``--component-type`` option.
 
@@ -213,7 +218,7 @@ For example:
     [10], com.sun.star.xml.dom.views
 
 Choosing any number greater than ``0`` opens the that components url.
-Option ``4`` would open to https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1xml_1_1crypto.html
+Option ``4`` would open to `API com.sun.star.xml.crypto Module Reference <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1xml_1_1crypto.html>`__
 
 .. tip::
 
@@ -242,7 +247,7 @@ soffice binary ( ``soffice.exe``,  ``soffice.bin`` ).
 A call starts the Office executable with several command line arguments, the most important being ``--accept``
 which specifies the use of pipes or sockets for the inter-process link.
 
-A call to `XUnoUrlResolver.resolve() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1bridge_1_1XUnoUrlResolver.html#abaac8ead87dd0ec6dfc1357792cdda3f>`_
+A call to `XUnoUrlResolver.resolve() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1bridge_1_1XUnoUrlResolver.html#abaac8ead87dd0ec6dfc1357792cdda3f>`__
 creates a remote component context, which acts as proxy for the 'real' component context over in the Office process (see :numref:`ch01fig_python_using_office`).
 The context is a container/environment for components and UNO objects which I'll explain below.
 When a Python program refers to components and UNO objects in the remote component context, the inter-process bridge maps
@@ -525,8 +530,8 @@ If you start searching the forums, newsgroups, blogs, and web sites for Office e
 Python is not the language of choice for most Office programmers.
 Basic (sometimes called StarBasic, OpenOffice.org Basic, LibreOffice Basic, or even Visual Basic or VB by mistake) is the darling of the coding crowd.
 
-Python is flexible, can run outside of LibreOffice and connect via bridge, and or can be used as a macro.
-Python also has an advantage of using the many package on `PYPI <https://pypi.org/>`_.
+Python is flexible, can run outside of LibreOffice and connect via UNO bridge, and or can be used as a macro.
+Python also has an advantage of using the many packages on `PYPI <https://pypi.org/>`_.
 Python has an advantage in the area of source control and larger projects.
 
 This is understandable since Office (both LibreOffice and OpenOffice) includes an IDE for editing and debugging Basic macros.

@@ -11,6 +11,8 @@ from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
+from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 
 
 class Color(AbstractColor):
@@ -24,7 +26,7 @@ class Color(AbstractColor):
     .. versionadded:: 0.9.0
     """
 
-    def __init__(self, color: Color = -1) -> None:
+    def __init__(self, color: mColor.Color = StandardColor.AUTO_COLOR) -> None:
         """
         Constructor
 

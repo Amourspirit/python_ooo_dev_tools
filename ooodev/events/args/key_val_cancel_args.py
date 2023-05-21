@@ -43,12 +43,12 @@ class KeyValCancelArgs(AbstractKeyValueArgs):
     )
 
     @staticmethod
-    def from_args(args: KeyValCancelArgs) -> KeyValCancelArgs:
+    def from_args(args: AbstractKeyValueArgs) -> KeyValCancelArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (KeyValCancelArgs): Existing Instance
+            args (AbstractKeyValueArgs): Existing Instance
 
         Returns:
             KeyValCancelArgs: args

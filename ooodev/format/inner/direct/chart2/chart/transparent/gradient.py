@@ -39,11 +39,15 @@ class Gradient(WriteGradient):
     """
     Chart Fill Gradient Color
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_general_transparency`
+
     .. versionadded:: 0.9.4
     """
 
-    from_obj = DisabledMethod()
-    default = DeletedAttrib()
+    from_obj = DisabledMethod()  # type: ignore
+    default = DeletedAttrib()  # type: ignore
 
     def __init__(
         self,
@@ -70,6 +74,12 @@ class Gradient(WriteGradient):
                 Defaults to ``0``.
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of
                 the gradient. Defaults to ``IntensityRange(0, 0)``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_general_transparency`
         """
         self._chart_doc = chart_doc
         super().__init__(
@@ -79,8 +89,7 @@ class Gradient(WriteGradient):
     # region overrides
     def _container_get_msf(self) -> XMultiServiceFactory | None:
         if self._chart_doc is not None:
-            chart_doc_ms_factory = mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
-            return chart_doc_ms_factory
+            return mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
         return None
 
     def _container_get_default_name(self) -> str:
@@ -102,7 +111,7 @@ class Gradient(WriteGradient):
         end_color: int,
         end_intensity: Intensity | int,
     ) -> _GradientStruct:
-        fs = _GradientStruct(
+        return _GradientStruct(
             style=style,
             step_count=step_count,
             x_offset=x_offset,
@@ -115,7 +124,6 @@ class Gradient(WriteGradient):
             end_intensity=end_intensity,
             _cattribs=self._get_inner_cattribs(),
         )
-        return fs
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -129,7 +137,7 @@ class Gradient(WriteGradient):
             )
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return self._is_obj_service(obj)
 
     # region copy()

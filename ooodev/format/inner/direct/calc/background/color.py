@@ -25,11 +25,15 @@ class Color(StyleBase):
     """
     Class for Cell Properties Back Color.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_direct_cell_background`
+
     .. versionadded:: 0.9.0
     """
 
     # region Init
-    def __init__(self, color: mColor.Color = -1) -> None:
+    def __init__(self, color: mColor.Color = mColor.Color(-1)) -> None:
         """
         Constructor
 
@@ -38,6 +42,9 @@ class Color(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_direct_cell_background`
         """
         super().__init__()
         self.prop_color = color
@@ -60,10 +67,10 @@ class Color(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -87,16 +94,16 @@ class Color(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TColor], obj: object) -> _TColor:
+    def from_obj(cls: Type[_TColor], obj: Any) -> _TColor:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TColor], obj: object, **kwargs) -> _TColor:
+    def from_obj(cls: Type[_TColor], obj: Any, **kwargs) -> _TColor:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TColor], obj: object, **kwargs) -> _TColor:
+    def from_obj(cls: Type[_TColor], obj: Any, **kwargs) -> _TColor:
         """
         Gets instance from object
 
@@ -118,9 +125,9 @@ class Color(StyleBase):
             bg = mProps.Props.get(obj, inst._props.is_transparent, None)
         else:
             bg = None
-        if not color is None:
+        if color is not None:
             inst._set(inst._props.color, int(color))
-        if not bg is None:
+        if bg is not None:
             inst._set(inst._props.is_transparent, bool(bg))
 
         return inst

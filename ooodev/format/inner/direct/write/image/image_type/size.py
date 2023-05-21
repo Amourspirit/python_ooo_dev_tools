@@ -78,6 +78,10 @@ class AbsoluteSize:
             return math.isclose(self.size.value, oth, abs_tol=0.02)
         return NotImplemented
 
+    def copy(self) -> AbsoluteSize:
+        """Creates a copy of this object"""
+        return AbsoluteSize(self.size)
+
     @property
     def size(self) -> UnitMM:
         """Gets/Sets Size value in ``mm`` units"""
@@ -86,9 +90,9 @@ class AbsoluteSize:
     @size.setter
     def size(self, value: float | UnitObj):
         try:
-            self._size = round(value.get_value_mm(), 2)
+            self._size = round(value.get_value_mm(), 2)  # type: ignore
         except AttributeError:
-            self._size = float(value)
+            self._size = float(value)  # type: ignore
 
 
 class Size(AbstractDocument):
@@ -112,12 +116,12 @@ class Size(AbstractDocument):
         """
         # size width as a percent is max value of 254
         # Width
-        #   Realitive to eniter page ((PageWidth - (LeftMargin - RightMargin)) x percent)
+        #   Relative to entire page ((PageWidth - (LeftMargin - RightMargin)) x percent)
 
         # RelativeWidthRelation is RelativeKind value
         # RelativeHeighRelation is RelativeKind value
-        # When AbsoluteSize RealitiveWidth=0, Size.Width=(width 1/100 mm) Width=(width 1/100 mm)
-        # When RelativeSize = RealitiveWidth=RelativeSize.size, Size.Width and Width become a caclulated value base upon RelativeSize.Kind
+        # When AbsoluteSize RelativeWidth=0, Size.Width=(width 1/100 mm) Width=(width 1/100 mm)
+        # When RelativeSize = RelativeWidth=RelativeSize.size, Size.Width and Width become a calculated value base upon RelativeSize.Kind
         super().__init__()
         self._width = width
         self._height = height
@@ -159,7 +163,7 @@ class Size(AbstractDocument):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -168,18 +172,21 @@ class Size(AbstractDocument):
                 mLo.Lo.print(f"  {err}")
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style of current instance.
 
         Args:
             obj (object): UNO Object that styles are to be applied.
         """
-        apply_clear = kwargs.pop("_apply_clear", True)
-        if apply_clear:
+        if kwargs.pop("_apply_clear", True):
             self._clear()
         if self._width is None and self._height is None:
             return
@@ -227,12 +234,17 @@ class Size(AbstractDocument):
         cp = super().copy(**kwargs)
         if self._width is None:
             cp._width = None
-        else:
+        elif isinstance(self._width, RelativeSize):
             cp._width = dataclasses.replace(self._width)
+        else:
+            cp._width = self._width.copy()
+
         if self._height is None:
             cp._height = None
-        else:
+        elif isinstance(self._height, RelativeSize):
             cp._height = dataclasses.replace(self._height)
+        else:
+            cp._height = self._height.copy()
         return cp
 
     # endregion copy()
@@ -244,16 +256,16 @@ class Size(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: object) -> _TSize:
+    def from_obj(cls: Type[_TSize], obj: Any) -> _TSize:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: object, **kwargs) -> _TSize:
+    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: object, **kwargs) -> _TSize:
+    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:
         """
         Gets instance from object
 

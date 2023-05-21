@@ -4,6 +4,11 @@
 Chapter 28. Chart2 API Overview
 *******************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     Charting Elements; Chart Creation: TableChart_, |ChartDocument2|_, linking template, diagram, and data source; Modifying Chart Elements: diagram, coordinate system, chart type, data series

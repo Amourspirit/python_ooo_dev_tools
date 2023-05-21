@@ -22,6 +22,10 @@ class FontEffects(CharStyleBaseMulti):
     """
     Character Style Font Effects
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_font_effects`
+
     .. versionadded:: 0.9.0
     """
 
@@ -54,7 +58,7 @@ class FontEffects(CharStyleBaseMulti):
             strike (FontStrikeoutEnum, optional): Determines the type of the strike out of the character.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to white spaces.
             case (CaseMapEnum, optional): Specifies the case of the font.
-            releif (FontReliefEnum, optional): Specifies the relief of the font.
+            relief (FontReliefEnum, optional): Specifies the relief of the font.
             outline (bool, optional): Specifies if the font is outlined.
             hidden (bool, optional): Specifies if the font is hidden.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
@@ -63,6 +67,9 @@ class FontEffects(CharStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_font_effects`
         """
 
         direct = InnerFontEffects(

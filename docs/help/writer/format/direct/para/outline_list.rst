@@ -50,22 +50,22 @@ Setup
                     |short_ptext|
                 )
 
-            with Lo.Loader(Lo.ConnectSocket()):
-                doc = Write.create_doc()
-                GUI.set_visible(True, doc)
-                Lo.delay(500)
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                with Lo.Loader(Lo.ConnectSocket()):
+                    doc = Write.create_doc()
+                    GUI.set_visible(True, doc)
+                    Lo.delay(500)
+                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                cursor = Write.get_cursor(doc)
-                Write.append_para(
-                    cursor=cursor, text=p_txt, styles=[Outline(LevelKind.LEVEL_01)]
-                )
-                Write.append_para(
-                    cursor=cursor, text=p_txt, styles=[Outline(LevelKind.TEXT_BODY)]
-                )
-                Lo.delay(1_000)
-                Lo.close_doc(doc)
-            return 0
+                    cursor = Write.get_cursor(doc)
+                    Write.append_para(
+                        cursor=cursor, text=p_txt, styles=[Outline(LevelKind.LEVEL_01)]
+                    )
+                    Write.append_para(
+                        cursor=cursor, text=p_txt, styles=[Outline(LevelKind.TEXT_BODY)]
+                    )
+                    Lo.delay(1_000)
+                    Lo.close_doc(doc)
+                return 0
 
 
             if __name__ == "__main__":
@@ -469,12 +469,16 @@ In this example the paragraph line number start value is set to ``0`` (include).
 
         Paragraph Outline & List dialog.
 
+Related Topics
+--------------
+
 .. seealso::
 
    .. cssclass:: ul-list
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_para_outline_and_list`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.outline_list.Outline`

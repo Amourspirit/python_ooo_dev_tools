@@ -28,12 +28,10 @@ def add_links(uno_src_dir: Optional[str] = None):
             if not p_uno_dir.exists():
                 raise FileNotFoundError(f"Uno Source Dir not found: {uno_src_dir}")
             if not p_uno_dir.is_dir():
-                raise NotADirectoryError(
-                    f"UNO source is not a Directory: {uno_src_dir}"
-                )
+                raise NotADirectoryError(f"UNO source is not a Directory: {uno_src_dir}")
     else:
         p_uno_dir = paths.get_uno_path()
-    p_site_dir = util.get_site_packeges_dir()
+    p_site_dir = util.get_site_packages_dir()
     if p_site_dir is None:
         print("Unable to find site_packages direct in virtual enviornment")
         return
@@ -65,9 +63,7 @@ def add_links(uno_src_dir: Optional[str] = None):
             print(f"File already exist: {dest}")
         except OSError:
             # OSError: [WinError 1314] A required privilege is not held by the client
-            print(
-                f"Unable to create system link for  '{p_uno_helper.name}'. Attempting copy."
-            )
+            print(f"Unable to create system link for  '{p_uno_helper.name}'. Attempting copy.")
             shutil.copy2(p_uno_helper, dest)
             print(f"Copied file: {p_uno_helper} -> {dest}")
     else:
@@ -83,9 +79,7 @@ def add_links(uno_src_dir: Optional[str] = None):
             print(f"File already exist: {dest}")
         except OSError:
             # OSError: [WinError 1314] A required privilege is not held by the client
-            print(
-                f"Unable to create system link for  '{p_scriptforge.name}'. Attempting copy."
-            )
+            print(f"Unable to create system link for  '{p_scriptforge.name}'. Attempting copy.")
             shutil.copy2(p_scriptforge, dest)
             print(f"Copied file: {p_scriptforge} -> {dest}")
     else:
@@ -93,7 +87,7 @@ def add_links(uno_src_dir: Optional[str] = None):
 
 
 def remove_links():
-    p_site_dir = util.get_site_packeges_dir()
+    p_site_dir = util.get_site_packages_dir()
     if p_site_dir is None:
         print("Unable to find site_packages direct in virtual enviornment")
         return

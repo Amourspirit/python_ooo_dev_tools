@@ -54,7 +54,7 @@ class IndentSpacing(StyleMulti):
             sp_below (float, optional): Determines the bottom margin of the paragraph (in ``mm`` units) or :ref:`proto_unit_obj`.
             sp_style_no_space (bool, optional): Do not add space between paragraphs of the same style.
             ln_mode (ModeKind, optional): mode (ModeKind, optional): Determines the mode that is use to apply units.
-            ln_value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PORPORTINAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
+            ln_value (Real, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``, ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             ln_active_spacing (bool, optional): Determines active page line-spacing.
         Returns:
             None:
@@ -69,7 +69,7 @@ class IndentSpacing(StyleMulti):
             When ``mode`` is ``ModeKind.AT_LEAST``, ``ModeKind.LEADING``, or ``ModeKind.FIXED``
             then the units are mm units (as float).
 
-            When ``mode`` is ``ModeKind.PORPORTINAL`` then the unit is percentage (as int).
+            When ``mode`` is ``ModeKind.PROPORTIONAL`` then the unit is percentage (as int).
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
@@ -109,16 +109,16 @@ class IndentSpacing(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndentSpacing], obj: object) -> _TIndentSpacing:
+    def from_obj(cls: Type[_TIndentSpacing], obj: Any) -> _TIndentSpacing:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndentSpacing], obj: object, **kwargs) -> _TIndentSpacing:
+    def from_obj(cls: Type[_TIndentSpacing], obj: Any, **kwargs) -> _TIndentSpacing:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TIndentSpacing], obj: object, **kwargs) -> _TIndentSpacing:
+    def from_obj(cls: Type[_TIndentSpacing], obj: Any, **kwargs) -> _TIndentSpacing:
         """
         Gets instance from object
 

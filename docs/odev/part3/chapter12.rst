@@ -4,6 +4,11 @@
 Chapter 12. Examining a Draw/Impress Document
 *********************************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 1
+
 .. topic:: Overview
 
     Examining Slides/Pages; Page Layers; Styles

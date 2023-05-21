@@ -7,4 +7,4 @@ from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as 
 from ooodev.format.inner.modify.calc.numbers.numbers import Numbers as Numbers
 from ooodev.format.inner.modify.calc.numbers.numbers import InnerNumbers as InnerNumbers
 
-__all__ = ["Numbers", "InnerNumbers"]
+__all__ = ["Numbers"]

@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
@@ -13,6 +13,10 @@ from ooodev.format.inner.direct.write.para.text_flow.hyphenation import Hyphenat
 class Hyphenation(ParaStyleBaseMulti):
     """
     Paragraph Style Hyphenation
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_text_flow`
 
     .. versionadded:: 0.9.0
     """
@@ -43,6 +47,9 @@ class Hyphenation(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_text_flow`
         """
 
         direct = InnerHyphenation(auto=auto, no_caps=no_caps, start_chars=start_chars, end_chars=end_chars, max=max)
@@ -54,7 +61,7 @@ class Hyphenation(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Hyphenation:
@@ -62,7 +69,7 @@ class Hyphenation(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

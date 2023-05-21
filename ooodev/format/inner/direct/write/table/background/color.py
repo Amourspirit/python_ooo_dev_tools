@@ -3,14 +3,37 @@ from __future__ import annotations
 from typing import Tuple
 from ooodev.format.inner.direct.calc.background.color import Color as CellColor
 from ooodev.format.inner.common.props.cell_background_color_props import CellBackgroundColorProps
+from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
+
 # endregion Imports
+
 
 class Color(CellColor):
     """
     Class for Cell Properties Back Color.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_table_background`
+
     .. versionadded:: 0.9.0
     """
+
+    def __init__(self, color: mColor.Color = StandardColor.AUTO_COLOR) -> None:
+        """
+        Constructor
+
+        Args:
+            color (:py:data:`~.utils.color.Color`, optional): Color such as ``CommonColor.LIGHT_BLUE``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_writer_format_direct_table_background`
+        """
+        super().__init__(color=color)
 
     # region overrides
     def _supported_services(self) -> Tuple[str, ...]:

@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, cast, Type, TypeVar
+from typing import Any, Tuple, cast, Type, TypeVar
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
@@ -62,6 +62,10 @@ class Shadow(PageStyleBaseMulti):
     """
     Page Style Header Border Shadow
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_header_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -91,6 +95,9 @@ class Shadow(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_header_borders`
         """
 
         direct = InnerShadow(
@@ -118,7 +125,7 @@ class Shadow(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls: Type[_TShadow],
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> _TShadow:
@@ -126,7 +133,7 @@ class Shadow(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (WriterStylePageKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

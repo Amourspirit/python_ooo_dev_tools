@@ -63,17 +63,22 @@ class LoNamedEvent:
     OFFICE_CLOSED = "lo_office_closed"
     """Lo closed office see :py:meth:`Lo.close_office() <.utils.lo.Lo.close_office>`"""
 
-    CONTROLERS_LOCKING = "lo_controllers_locking"
+    CONTROLLERS_LOCKING = "lo_controllers_locking"
     """Controllers Locking see :py:meth:`Lo.lock_controllers() <.utils.lo.Lo.lock_controllers>`"""
-    CONTROLERS_LOCKED = "lo_controllers_locked"
+    CONTROLLERS_LOCKED = "lo_controllers_locked"
     """Controllers Locked see :py:meth:`Lo.lock_controllers() <.utils.lo.Lo.lock_controllers>`"""
 
-    CONTROLERS_UNLOCKING = "lo_controllers_unlocking"
+    CONTROLLERS_UNLOCKING = "lo_controllers_unlocking"
     """Controllers UnLocking see :py:meth:`Lo.unlock_controllers() <.utils.lo.Lo.unlock_controllers>`"""
-    CONTROLERS_UNLOCKED = "lo_controllers_unlocked"
+    CONTROLLERS_UNLOCKED = "lo_controllers_unlocked"
     """Controllers UnLocked see :py:meth:`Lo.unlock_controllers() <.utils.lo.Lo.unlock_controllers>`"""
 
     BRIDGE_DISPOSED = "lo_bridge_disposed"
     """Event when Bridge Component is disposed"""
 
     RESET = "lo_reset"
+
+    COMPONENT_LOADING = "lo_component_loading"
+    """LoInst loading component see :py:meth:`LoInst.load_component() <.utils.inst.lo.lo_inst.LoInst.load_component>`"""
+    COMPONENT_LOADED = "lo_component_loaded"
+    """LoInst loaded component see :py:meth:`LoInst.load_component() <.utils.inst.lo.lo_inst.LoInst.load_component>`"""

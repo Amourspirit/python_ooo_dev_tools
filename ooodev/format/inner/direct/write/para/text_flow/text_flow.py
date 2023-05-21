@@ -118,16 +118,16 @@ class TextFlow(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextFlow], obj: object) -> _TTextFlow:
+    def from_obj(cls: Type[_TTextFlow], obj: Any) -> _TTextFlow:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextFlow], obj: object, **kwargs) -> _TTextFlow:
+    def from_obj(cls: Type[_TTextFlow], obj: Any, **kwargs) -> _TTextFlow:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTextFlow], obj: object, **kwargs) -> _TTextFlow:
+    def from_obj(cls: Type[_TTextFlow], obj: Any, **kwargs) -> _TTextFlow:
         """
         Gets instance from object
 
@@ -214,7 +214,7 @@ class TextFlow(StyleMulti):
                 flo = FlowOptions().default
             else:
                 flo = self.prop_inner_flow_options.default
-            tf = self()
+            tf = self.__class__()
             tf._set_style("hyphenation", hy, *hy.get_attrs())
             tf._set_style("breaks", brk, *brk.get_attrs())
             tf._set_style("flow_options", flo, *flo.get_attrs())

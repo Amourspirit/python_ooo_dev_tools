@@ -1,16 +1,14 @@
 # coding: utf-8
 # region Imports
 from __future__ import annotations
-from logging import exception
-from typing import TYPE_CHECKING, Iterable, overload, Any
-from enum import Enum, IntEnum
+import contextlib
+from typing import TYPE_CHECKING, Iterable, List, overload, Any
 import uno
 
 from com.sun.star.accessibility import XAccessible
-from com.sun.star.accessibility import XAccessibleContext
 from com.sun.star.awt import PosSize  # const
-from com.sun.star.awt import WindowAttribute  # const
 from com.sun.star.awt import VclWindowPeerAttribute  # const
+from com.sun.star.awt import WindowAttribute  # const
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XMenuBar
 from com.sun.star.awt import XMessageBox
@@ -25,31 +23,39 @@ from com.sun.star.awt import XWindowPeer
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexContainer
 from com.sun.star.frame import XDispatchProviderInterception
-from com.sun.star.frame import XLayoutManager
 from com.sun.star.frame import XFrame
 from com.sun.star.frame import XFrame2
 from com.sun.star.frame import XFramesSupplier
+from com.sun.star.frame import XLayoutManager
 from com.sun.star.frame import XModel
 from com.sun.star.lang import SystemDependent  # const
 from com.sun.star.lang import XComponent
-from com.sun.star.view import XControlAccess
-from com.sun.star.view import XSelectionSupplier
 from com.sun.star.ui import UIElementType  # const
 from com.sun.star.ui import XImageManager
-from com.sun.star.ui import XUIConfigurationManagerSupplier
+from com.sun.star.ui import XModuleUIConfigurationManagerSupplier
 from com.sun.star.ui import XUIConfigurationManager
+from com.sun.star.ui import XUIConfigurationManagerSupplier
+from com.sun.star.view import XControlAccess
+from com.sun.star.view import XSelectionSupplier
+
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XController
     from com.sun.star.ui import XUIElement
 
 from ..dialog import input as mInput
+from ..exceptions import ex as mEx
+from ..utils import file_io as mFileIO
+from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..utils import info as mInfo
-from ..utils import file_io as mFileIO
 from ..utils import sys_info as m_sys_info
-from ..exceptions import ex as mEx
+from .data_type.window_info import WindowInfo as GuiWindowInfo
+from .decorator.deprecated import deprecated
+from .kind.special_windows_kind import SpecialWindowsKind
+from .kind.tool_bar_name_kind import ToolBarNameKind
+from .kind.window_subtype_kind import WindowSubtypeKind
+from .kind.zoom_kind import ZoomKind
 
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.awt.window_descriptor import WindowDescriptor
@@ -64,37 +70,7 @@ class GUI:
     # region Class Enums
     # view settings zoom constants
     # ZoomEnum = DocumentZoomTypeEnum
-    class ZoomEnum(IntEnum):
-        OPTIMAL = 0
-        """
-        The page content width (excluding margins) at the current selection is fit into the view.
-        """
-        PAGE_WIDTH = 1
-        """
-        The page width at the current selection is fit into the view.
-        """
-        ENTIRE_PAGE = 2
-        """
-        A complete page of the document is fit into the view.
-        """
-        BY_VALUE = 3
-        """
-        The zoom is relative and is to be set via the property ViewSettings.ZoomValue.
-        """
-        PAGE_WIDTH_EXACT = 4
-        """
-        The page width at the current selection is fit into the view, with the view ends exactly at the end of the page.
-        """
-        ZOOM_50_PERCENT = 1000
-        """Zoom 50%"""
-        ZOOM_75_PERCENT = 1001
-        """Zoom 75%"""
-        ZOOM_100_PERCENT = 1002
-        """Zoom 100%"""
-        ZOOM_150_PERCENT = 1003
-        """Zoom 150%"""
-        ZOOM_200_PERCENT = 1004
-        """Zoom 2000%"""
+    ZoomEnum = ZoomKind
 
     # endregion Class Enums
 
@@ -105,132 +81,34 @@ class GUI:
     STANDARD_BAR = "private:resource/toolbar/standardbar"
     TOOL_BAR = "private:resource/toolbar/toolbar"
 
-    class ToolBarName(str, Enum):
-        THREE_D_OBJECTS_BAR = "3dobjectsbar"
-        ADDON_LIBRE_LOGO_OFFICE_TOOL = "addon_LibreLogo.OfficeToolBar"
-        ALIGNMENT_BAR = "alignmentbar"
-        ARROWS_BAR = "arrowsbar"
-        ARROW_SHAPES = "arrowshapes"
-        BASIC_SHAPES = "basicshapes"
-        BEZIER_OBJECT_BAR = "bezierobjectbar"
-        CALL_OUT_SHAPES = "calloutshapes"
-        CHANGES = "changes"
-        CHOOSE_MODE_BAR = "choosemodebar"
-        COLOR_BAR = "colorbar"
-        COMMENTS_BAR = "commentsbar"
-        COMMON_TASK_BAR = "commontaskbar"
-        CONNECTORS_BAR = "connectorsbar"
-        CUSTOM_TOOLBAR_1 = "custom_toolbar_1"
-        DATASTREAMS = "datastreams"
-        DESIGN_OBJECT_BAR = "designobjectbar"
-        DIALOG_BAR = "dialogbar"
-        DRAW_BAR = "drawbar"
-        DRAWING_OBJECT_BAR = "drawingobjectbar"
-        DRAW_OBJECT_BAR = "drawobjectbar"
-        DRAW_TEXT_OBJECT_BAR = "drawtextobjectbar"
-        ELLIPSES_BAR = "ellipsesbar"
-        EXTRUSION_OBJECT_BAR = "extrusionobjectbar"
-        FIND_BAR = "findbar"
-        FLOW_CHART_SHAPES = "flowchartshapes"
-        FONT_WORK_OBJECT_BAR = "fontworkobjectbar"
-        FONT_WORK_SHAPE_TYPE = "fontworkshapetype"
-        FORMAT_OBJECT_BAR = "formatobjectbar"
-        FORMATTING = "Formatting"
-        FORM_CONTROLS = "formcontrols"
-        FORM_CONTROLS_BAR = "formcontrolsbar"
-        FORM_DESIGN = "formdesign"
-        FORM_OBJECT_BAR = "formobjectbar"
-        FORMS_FILTER_BAR = "formsfilterbar"
-        FORMS_NAVIGATION_BAR = "formsnavigationbar"
-        FORM_TEXT_OBJECT_BAR = "formtextobjectbar"
-        FRAME_OBJECT_BAR = "frameobjectbar"
-        FULL_SCREEN_BAR = "fullscreenbar"
-        GLUE_POINTS_OBJECT_BAR = "gluepointsobjectbar"
-        GRAF_FILTER_BAR = "graffilterbar"
-        GRAPH_ICO_OBJECT_BAR = "graphicobjectbar"
-        INSERT_BAR = "insertbar"
-        INSERT_CELLS_BAR = "insertcellsbar"
-        INSERT_CONTROLS_BAR = "insertcontrolsbar"
-        INSERT_OBJECT_BAR = "insertobjectbar"
-        LINES_BAR = "linesbar"
-        MACRO_BAR = "macrobar"
-        MASTER_VIEW_TOOLBAR = "masterviewtoolbar"
-        MEDIA_OBJECT_BAR = "mediaobjectbar"
-        MORE_FORM_CONTROLS = "moreformcontrols"
-        NAVIGATION_OBJECT_BAR = "navigationobjectbar"
-        NUM_OBJECT_BAR = "numobjectbar"
-        OLE_OBJECT_BAR = "oleobjectbar"
-        OPTIMIZE_TABLE_BAR = "optimizetablebar"
-        OPTIONS_BAR = "optionsbar"
-        OUTLINE_TOOLBAR = "outlinetoolbar"
-        POSITION_BAR = "positionbar"
-        PREVIEW_BAR = "previewbar"
-        PREVIEW_OBJECT_BAR = "previewobjectbar"
-        QUERY_OBJECT_BAR = "queryobjectbar"
-        RECTANGLES_BAR = "rectanglesbar"
-        REPORT_CONTROLS = "reportcontrols"
-        REPORT_OBJECT_BAR = "reportobjectbar"
-        RESIZE_BAR = "resizebar"
-        SECTION_ALIGNMENT_BAR = "sectionalignmentbar"
-        SECTION_SHRINK_BAR = "sectionshrinkbar"
-        SLIDE_VIEW_OBJECT_BAR = "slideviewobjectbar"
-        SLIDE_VIEW_TOOL_BAR = "slideviewtoolbar"
-        SQL_OBJECT_BAR = "sqlobjectbar"
-        STANDARD_BAR = "standardbar"
-        STAR_SHAPES = "starshapes"
-        SYMBOL_SHAPES = "symbolshapes"
-        TABLE_OBJECT_BAR = "tableobjectbar"
-        TEXT_BAR = "textbar"
-        TEXT_OBJECT_BAR = "textobjectbar"
-        TOOLBAR = "toolbar"
-        TRANSLATION_BAR = "translationbar"
-        VIEWER_BAR = "viewerbar"
-        ZOOM_BAR = "zoombar"
+    ToolBarName = ToolBarNameKind
 
-        def __str__(self) -> str:
-            return self.value
+    SpecialWindows = SpecialWindowsKind
 
-    class SpecialWindows(str, Enum):
-        BASIC_IDE = "BASICIDE"
-        WELCOME_SCREEN = "WELCOMESCREEN"
+    WindowSubtypes = WindowSubtypeKind
 
-        def __str__(self) -> str:
-            return self.value
-
-    class WindowSubtypes(str, Enum):
-        BASE_TABLE = "BASETABLE"
-        BASE_QUERY = "BASEQUERY"
-        BASE_REPORT = "BASEREPORT"
-        BASE_DIAGRAM = "BASEDIAGRAM"
-
-        def __str__(self) -> str:
-            return self.value
-
-    class WindowInfo:
-        __slots__ = (
-            "component",
-            "component",
-            "frame",
-            "window_name",
-            "window_title",
-            "window_file_name",
-            "document_type",
-        )
-
-        def __init__(self) -> None:
-            self.component: XComponent | None = None  # com.sun.star.lang.XComponent
-            self.frame: XFrame | None = None  # com.sun.star.comp.framework.Frame
-            self.window_name: str = ""  # Object Name
-            self.window_title: str = ""  # Only mean to identify new documents
-            self.window_file_name: str = ""  # URL of file name
-            self.document_type: mLo.Lo.DocType = mLo.Lo.DocType.UNKNOWN  # Writer, Calc, ...
+    WindowInfo = GuiWindowInfo
 
     # endregion class Constants
 
     # region ---------------- toolbar addition -------------------------
 
     @classmethod
-    def get_toobar_resource(cls, name: GUI.ToolBarName | str) -> str:
+    def get_toolbar_resource(cls, name: ToolBarNameKind | str) -> str:
+        """
+        Get toolbar resource for name
+
+        Args:
+            name (ToolBarName| str): Name of toolbar resource
+
+        Returns:
+            str: A formatted resource string such as ``private:resource/toolbar/zoombar``
+        """
+        return f"private:resource/toolbar/{name}"
+
+    @classmethod
+    @deprecated("Use get_toolbar_resource")
+    def get_toobar_resource(cls, name: ToolBarNameKind | str) -> str:
         """
         Get toolbar resource for name
 
@@ -240,10 +118,11 @@ class GUI:
         Returns:
             str: A formatted resource string such as ``private:resource/toolbar/zoombar``
 
-        Note:
+        .. deprecated:: 0.11.0
+            Use :py:meth:`~.gui.GUI.get_toolbar_resource` instead.
         """
-        resource = f"private:resource/toolbar/{name}"
-        return resource
+        return cls.get_toolbar_resource(name)
+        # spelling error up to 0.10.3
 
     @classmethod
     def add_item_to_toolbar(cls, doc: XComponent, toolbar_name: str, item_name: str, im_fnm: str) -> None:
@@ -263,26 +142,26 @@ class GUI:
             # this method is also in Images module.
             # images module currently does not run as macro.
             # Pillow not needed for this method so make it local
-            gprovider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
-            if gprovider is None:
+            provider = mLo.Lo.create_instance_mcf(XGraphicProvider, "com.sun.star.graphic.GraphicProvider")
+            if provider is None:
                 return None
 
             file_props = mProps.Props.make_props(URL=mFileIO.FileIO.fnm_to_url(im_fnm))
-            return gprovider.queryGraphic(file_props)
+            return provider.queryGraphic(file_props)  # type: ignore
 
         try:
             cmd = mLo.Lo.make_uno_cmd(item_name)
-            conf_man: XUIConfigurationManager = cls.get_ui_config_manager_doc(doc)
+            conf_man = cls.get_ui_config_manager_doc(doc)
             image_man = mLo.Lo.qi(XImageManager, conf_man.getImageManager())
             if image_man is None:
                 raise mEx.MissingInterfaceError(XImageManager)
-            cmds = (cmd,)
+            commands = (cmd,)
             img = load_graphic_file(im_fnm)
             if img is None:
                 mLo.Lo.print(f"Unable to load graphics file: '{im_fnm}'")
                 return
             pics = (img,)
-            image_man.insertImages(0, cmds, pics)
+            image_man.insertImages(0, commands, pics)
 
             # add item to toolbar
             settings = conf_man.getSettings(toolbar_name, True)
@@ -320,7 +199,7 @@ class GUI:
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         if xtoolkit is None:
             raise mEx.MissingInterfaceError(XToolkit)
-        desc = WindowDescriptor(Type=WindowClass.TOP, WindowServiceName="modelessdialog", ParentIndex=-1)
+        desc = WindowDescriptor(Type=WindowClass.TOP, WindowServiceName="modelessdialog", ParentIndex=-1)  # type: ignore
 
         desc.Bounds = Rectangle(x, y, width, height)
         desc.WindowAttributes = (
@@ -331,8 +210,8 @@ class GUI:
             + VclWindowPeerAttribute.CLIPCHILDREN
         )
 
-        xwindow_peer = xtoolkit.createWindow(desc)
-        window = mLo.Lo.qi(XWindow, xwindow_peer)
+        window_peer = xtoolkit.createWindow(desc)
+        window = mLo.Lo.qi(XWindow, window_peer)
         if window is None:
             raise mEx.MissingInterfaceError(XWindow)
 
@@ -343,15 +222,15 @@ class GUI:
         xframe.setName(title)
         xframe.initialize(window)
 
-        xframes_sup = mLo.Lo.qi(XFramesSupplier, mLo.Lo.get_desktop())
-        if xframes_sup is None:
+        frames_sup = mLo.Lo.qi(XFramesSupplier, mLo.Lo.get_desktop())
+        if frames_sup is None:
             raise mEx.MissingInterfaceError(XFramesSupplier)
 
-        xframes = xframes_sup.getFrames()
-        if xframes is None:
+        frames = frames_sup.getFrames()
+        if frames is None:
             raise mEx.MissingInterfaceError(XFramesSupplier, "No desktop frames found")
         else:
-            xframes.append(xframe)
+            frames.append(xframe)
 
         window.setVisible(True)
         return xframe
@@ -369,17 +248,17 @@ class GUI:
             MissingInterfaceError: If required interface is not present.
         """
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
-        xwindow = cls.get_window()
-        if xtoolkit is None or xwindow is None:
+        x_window = cls.get_window()
+        if xtoolkit is None or x_window is None:
             return None
-        xpeer = mLo.Lo.qi(XWindowPeer, xwindow)
-        if xpeer is None:
+        peer = mLo.Lo.qi(XWindowPeer, x_window)
+        if peer is None:
             raise mEx.MissingInterfaceError(XWindowPeer)
         desc = WindowDescriptor(
-            Type=WindowClass.MODALTOP,
+            Type=WindowClass.MODALTOP,  # type: ignore
             WindowServiceName="infobox",
             ParentIndex=-1,
-            Parent=xpeer,
+            Parent=peer,
             Bounds=Rectangle(0, 0, 300, 200),
             WindowAttributes=WindowAttribute.BORDER | WindowAttribute.MOVEABLE | WindowAttribute.CLOSEABLE,
         )
@@ -417,23 +296,17 @@ class GUI:
         See Also:
             :py:class:`~.input.Input`
         """
-        try:
-            result = mInput.Input.get_input(title=title, msg=input_msg, is_password=True)
-            return result
-        except Exception:
-            # may not be in a LibreOffice window
-            pass
-
+        # sourcery skip: raise-specific-error
+        with contextlib.suppress(Exception):
+            return mInput.Input.get_input(title=title, msg=input_msg, is_password=True)
         # try a tkinter dialog. Not available in macro mode.
         # this also means may not work on windows when virtual environment
         # is set to LibreOffice python.exe
-        try:
+        with contextlib.suppress(ImportError):
             from ..dialog.tk_input import Window
 
             pass_inst = Window(title=title, input_msg=input_msg, is_password=True)
             return pass_inst.get_input()
-        except ImportError:
-            pass
         raise Exception("Unable to access a GUI to create a password dialog box")
 
     # endregion ------------- floating frame, message box --------------
@@ -443,7 +316,7 @@ class GUI:
     # region get_current_controller()
     @overload
     @staticmethod
-    def get_current_controller(doc: object) -> XController:
+    def get_current_controller(doc: object) -> XController:  # type: ignore
         ...
 
     @staticmethod
@@ -466,13 +339,11 @@ class GUI:
         if count != 1:
             raise TypeError("get_current_controller() got an invalid number of arguments")
 
-        doc = None
-        if args_len == 1:
-            doc = args[0]
+        doc = args[0] if args_len == 1 else None
         if doc is None:
             doc = kwargs.get("doc", None)
         if doc is None:
-            # odoc for backwards combability
+            # odoc for backwards compatibility
             doc = kwargs.get("odoc", None)
 
         component = mLo.Lo.qi(XComponent, doc, True)
@@ -492,8 +363,8 @@ class GUI:
         Returns:
             XFrame: document frame.
         """
-        xcontroler = cls.get_current_controller(doc)
-        return xcontroler.getFrame()
+        controller = cls.get_current_controller(doc)
+        return controller.getFrame()
 
     @classmethod
     def get_control_access(cls, doc: XComponent) -> XControlAccess:
@@ -536,7 +407,7 @@ class GUI:
     # region get_selection_supplier()
     @overload
     @classmethod
-    def get_selection_supplier(cls, doc: object) -> XSelectionSupplier:
+    def get_selection_supplier(cls, doc: object) -> XSelectionSupplier:  # type: ignore
         ...
 
     @classmethod
@@ -560,19 +431,17 @@ class GUI:
         if count != 1:
             raise TypeError("get_selection_supplier() got an invalid number of arguments")
 
-        doc = None
-        if args_len == 1:
-            doc = args[0]
+        doc = args[0] if args_len == 1 else None
         if doc is None:
             doc = kwargs.get("doc", None)
         if doc is None:
-            # odoc for backwards combability
+            # odoc for backwards combapility
             doc = kwargs.get("odoc", None)
         component = mLo.Lo.qi(XComponent, doc)
         if component is None:
             raise mEx.MissingInterfaceError(XComponent, "Not an office document")
-        xcontroler = cls.get_current_controller(component)
-        result = mLo.Lo.qi(XSelectionSupplier, xcontroler)
+        controller = cls.get_current_controller(component)
+        result = mLo.Lo.qi(XSelectionSupplier, controller)
         if result is None:
             raise mEx.MissingInterfaceError(XSelectionSupplier)
         return result
@@ -602,8 +471,9 @@ class GUI:
     # endregion ---------------- controller and frame ------------------
 
     # region ---------------- Office container window ------------------
-    @staticmethod
-    def get_window_idenity(obj: Any) -> GUI.WindowInfo:
+    @classmethod
+    @deprecated("Use get_window_identity() instead")
+    def get_window_idenity(cls, obj: Any) -> GuiWindowInfo:
         """
         Gets Identity Info for window of an object
 
@@ -612,9 +482,15 @@ class GUI:
 
         Returns:
             GUI.Window: Window Info
+
+        .. deprecated:: 0.11.0
+            Use :py:meth:`~.gui.GUI.get_window_identity` instead.
         """
-        # Credits to Scriptforge for the inspiration of this method.
-        win = GUI.WindowInfo()
+        return cls.get_window_identity(obj)
+
+    @classmethod
+    def get_window_identity(cls, obj: Any) -> GuiWindowInfo:
+        win = GuiWindowInfo()
         component = mLo.Lo.qi(XComponent, obj)
         if component is None:
             return win
@@ -632,11 +508,11 @@ class GUI:
             mLo.Lo.print(f"  {e}")
             return win
         if implementation == "com.sun.star.comp.basic.BasicIDE":
-            win.window_name = str(GUI.SpecialWindows.BASIC_IDE)
+            win.window_name = str(SpecialWindowsKind.BASIC_IDE)
         elif implementation == "com.sun.star.comp.dba.ODatabaseDocument":  # No identifier
             model = mLo.Lo.qi(XModel, obj, True)
             win.window_file_name = str(mProps.Props.get_value(name="URL", props=model.getArgs()))
-            if len(win.window_file_name) > 0:
+            if win.window_file_name != "":
                 win.window_name = str(mFileIO.FileIO.url_to_path(win.window_file_name))
             win.document_type = mLo.Lo.DocType.BASE
         elif implementation in (
@@ -646,42 +522,39 @@ class GUI:
             "org.openoffice.comp.dbu.ORelationDesign",
             "com.sun.star.comp.sfx2.BackingComp",
         ):
-            win.frame = component.Frame
-            win.window_name = str(GUI.SpecialWindows.WELCOME_SCREEN)
-        else:
-            if len(identifier) > 0:
-                # Do not use URL : it contains the TemplateFile when new documents are created from a template
-                win.window_file_name = component.Location
-                if len(win.window_file_name) > 0:
-                    win.window_name = str(mFileIO.FileIO.url_to_path(win.window_file_name))
-                if hasattr(obj, "Title"):
-                    win.window_title = obj.Title
-                if identifier in (
-                    "com.sun.star.sdb.FormDesign",
-                    "com.sun.star.sdb.TextReportDesign",
-                    "com.sun.star.text.TextDocument",
-                ):
-                    win.document_type = mLo.Lo.DocType.WRITER
-                elif identifier == "com.sun.star.sheet.SpreadsheetDocument":
-                    win.document_type = mLo.Lo.DocType.CALC
-                elif identifier == "com.sun.star.presentation.PresentationDocument":
-                    win.document_type = mLo.Lo.DocType.IMPRESS
-                elif identifier == "com.sun.star.drawing.DrawingDocument":
-                    win.document_type = mLo.Lo.DocType.DRAW
-                elif identifier == "com.sun.star.formula.FormulaProperties":
-                    win.document_type = mLo.Lo.DocType.MATH
-        if win.frame is None:
-            if hasattr(obj, "CurrentController"):
-                win.frame = obj.CurrentController.Frame
+            win.frame = component.Frame  # type: ignore
+            win.window_name = str(SpecialWindowsKind.WELCOME_SCREEN)
+        elif len(identifier) > 0:
+            # Do not use URL : it contains the TemplateFile when new documents are created from a template
+            win.window_file_name = component.Location  # type: ignore
+            if len(win.window_file_name) > 0:
+                win.window_name = str(mFileIO.FileIO.url_to_path(win.window_file_name))
+            if hasattr(obj, "Title"):
+                win.window_title = obj.Title
+            if identifier in (
+                "com.sun.star.sdb.FormDesign",
+                "com.sun.star.sdb.TextReportDesign",
+                "com.sun.star.text.TextDocument",
+            ):
+                win.document_type = mLo.Lo.DocType.WRITER
+            elif identifier == "com.sun.star.sheet.SpreadsheetDocument":
+                win.document_type = mLo.Lo.DocType.CALC
+            elif identifier == "com.sun.star.presentation.PresentationDocument":
+                win.document_type = mLo.Lo.DocType.IMPRESS
+            elif identifier == "com.sun.star.drawing.DrawingDocument":
+                win.document_type = mLo.Lo.DocType.DRAW
+            elif identifier == "com.sun.star.formula.FormulaProperties":
+                win.document_type = mLo.Lo.DocType.MATH
+        if hasattr(obj, "CurrentController") and win.frame is None:
+            win.frame = obj.CurrentController.Frame
 
         return win
 
     @classmethod
     def get_active_window(cls, obj: Any) -> str:
         """
-        Gets Active window as string
-
-        Args:
+        if hasattr(obj, "CurrentController") and win.frame is None:
+            win.frame = obj.CurrentController.Frame
             obj (Any): doc like object
 
         Returns:
@@ -690,14 +563,12 @@ class GUI:
         See Also:
             :py:meth:`~.gui.GUI.get_active_window`
         """
-        win = cls.get_window_idenity(obj)
+        win = cls.get_window_identity(obj)
         if len(win.window_file_name) > 0:
             return str(mFileIO.FileIO.url_to_path(win.window_file_name))
         if len(win.window_name) > 0:
             return win.window_name
-        if len(win.window_title) > 0:
-            return win.window_title
-        return ""
+        return win.window_title if len(win.window_title) > 0 else ""
 
     @classmethod
     def activate(cls, window: str | XComponent) -> None:
@@ -712,35 +583,32 @@ class GUI:
             - :py:meth:`~.gui.GUI.minimize`
             - :py:meth:`~.gui.GUI.maximize`
         """
-        if not isinstance(window, str):
-            swin = cls.get_active_window(window)
-        else:
-            swin = window
+        str_win = window if isinstance(window, str) else cls.get_active_window(window)
         desktop = mLo.Lo.XSCRIPTCONTEXT.getDesktop()
         enm = desktop.getComponents().createEnumeration()
         while enm.hasMoreElements():
             o_comp = enm.nextElement()
-            win = cls.get_window_idenity(o_comp)
+            win = cls.get_window_identity(o_comp)
             if (
-                (len(win.window_file_name) > 0 and win.window_file_name == mFileIO.FileIO.fnm_to_url(swin))
-                or (len(win.window_name) > 0 and win.window_name == swin)
-                or (len(win.window_title) > 0 and win.window_title == swin)
+                (len(win.window_file_name) > 0 and win.window_file_name == mFileIO.FileIO.fnm_to_url(str_win))
+                or (len(win.window_name) > 0 and win.window_name == str_win)
+                or (len(win.window_title) > 0 and win.window_title == str_win)
             ):
                 if win.frame is None:
                     break
                 container = win.frame.getContainerWindow()
                 if container is None:
                     break
-                xwin2 = mLo.Lo.qi(XWindow2, container)
-                if xwin2 is None:
+                x_win2 = mLo.Lo.qi(XWindow2, container)
+                if x_win2 is None:
                     break
                 top2 = mLo.Lo.qi(XTopWindow2, container)
                 if top2 is None:
                     break
-                if not xwin2.isVisible():
-                    xwin2.setVisible(True)
+                if not x_win2.isVisible():
+                    x_win2.setVisible(True)
                 top2.IsMinimized = False
-                xwin2.setFocus()
+                x_win2.setFocus()
                 top2.toFront()
                 break
 
@@ -762,7 +630,7 @@ class GUI:
         Gets window
 
         Args:
-            doc (XComponent): Ofice document
+            doc (XComponent): Office document
 
         Returns:
             XWindow: window instance
@@ -770,7 +638,7 @@ class GUI:
         ...
 
     @classmethod
-    def get_window(cls, doc: XComponent = None) -> XWindow | None:
+    def get_window(cls, doc: XComponent | None = None) -> XWindow | None:
         """
         Gets window
 
@@ -785,12 +653,10 @@ class GUI:
             if desktop is None:
                 return None
             frame = desktop.getCurrentFrame()
-            if frame is None:
-                return None
-            return frame.getContainerWindow()
+            return None if frame is None else frame.getContainerWindow()
         else:
-            xcontroller = cls.get_current_controller(doc)
-            return xcontroller.getFrame().getContainerWindow()
+            controller = cls.get_current_controller(doc)
+            return controller.getFrame().getContainerWindow()
 
     # region set_visible()
 
@@ -827,7 +693,7 @@ class GUI:
             if kargs_len == 0:
                 return ka
             valid_keys = ("is_visible", "visible", "doc", "odoc")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("set_visible() got an unexpected keyword argument")
             keys = ("is_visible", "visible")
@@ -844,7 +710,7 @@ class GUI:
                     break
             return ka
 
-        if not count in (0, 1, 2):
+        if count not in (0, 1, 2):
             raise TypeError("set_visible() got an invalid number of arguments")
 
         kargs = get_kwargs()
@@ -852,7 +718,7 @@ class GUI:
             kargs[ordered_keys[i]] = arg
 
         is_visible = bool(kargs.get(1, True))
-        odoc = kargs.get(2, None)
+        odoc = kargs.get(2)
 
         if odoc is None:
             odoc = mLo.Lo.this_component
@@ -860,11 +726,11 @@ class GUI:
         component = mLo.Lo.qi(XComponent, odoc)
         if component is None:
             return
-        xwindow = cls.get_frame(component).getContainerWindow()
+        window = cls.get_frame(component).getContainerWindow()
 
-        if xwindow is not None:
-            xwindow.setVisible(is_visible)
-            xwindow.setFocus()
+        if window is not None:
+            window.setVisible(is_visible)
+            window.setFocus()
 
     # endregion set_visible()
 
@@ -878,9 +744,9 @@ class GUI:
             width (int): Width of window
             height (int): Height of window
         """
-        xwindow = cls.get_window(doc)
-        rect = xwindow.getPosSize()
-        xwindow.setPosSize(rect.X, rect.Y, width, height - 30, PosSize.POSSIZE)
+        window = cls.get_window(doc)
+        rect = window.getPosSize()
+        window.setPosSize(rect.X, rect.Y, width, height - 30, PosSize.POSSIZE)
 
     @classmethod
     def set_pos_size(cls, doc: XComponent, x: int, y: int, width: int, height: int) -> None:
@@ -894,8 +760,8 @@ class GUI:
             width (int): Window Width
             height (int): Window Height
         """
-        xwindow = cls.get_window(doc)
-        xwindow.setPosSize(x, y, width, height, PosSize.POSSIZE)
+        window = cls.get_window(doc)
+        window.setPosSize(x, y, width, height, PosSize.POSSIZE)
 
     @classmethod
     def get_pos_size(cls, doc: XComponent) -> Rectangle:
@@ -908,8 +774,8 @@ class GUI:
         Returns:
             Rectangle: Rectangle representing position and size
         """
-        xwindow = cls.get_window(doc)
-        return xwindow.getPosSize()
+        window = cls.get_window(doc)
+        return window.getPosSize()
 
     @staticmethod
     def get_top_window() -> XTopWindow:
@@ -939,7 +805,7 @@ class GUI:
         Returns:
             str: title bar text if found; Otherwise, Empty string.
         """
-        try:
+        with contextlib.suppress(Exception):
             top_win = cls.get_top_window()
             acc = mLo.Lo.qi(XAccessible, top_win)
             if acc is None:
@@ -947,16 +813,12 @@ class GUI:
             acc_content = acc.getAccessibleContext()
             if acc_content is not None:
                 return acc_content.getAccessibleName()
-        except Exception:
-            pass
         # could not get title using top window. maybe the window was not currently on top.
         # get the title from XFrame2.
-        try:
+        with contextlib.suppress(Exception):
             frm2 = mLo.Lo.qi(XFrame2, mLo.Lo.get_frame())
             if frm2 is not None:
                 return frm2.Title
-        except Exception:
-            pass
         return ""
 
     @staticmethod
@@ -1021,12 +883,12 @@ class GUI:
 
             Use this method at your own risk.
         """
-        win = cls.get_window(doc)
+        win = cls.get_window() if doc is None else cls.get_window(doc)
         if win is None:
             return None
         try:
-            win_peer = mLo.Lo.qi(XSystemDependentWindowPeer, win)
-            pid = tuple([0 for _ in range(8)])  # tuple of zero's
+            win_peer = mLo.Lo.qi(XSystemDependentWindowPeer, win, True)
+            pid = tuple(0 for _ in range(8))
             info = SysInfo.get_platform()
             if info == SysInfo.PlatformEnum.WINDOWS:
                 system_type = SystemDependent.SYSTEM_WIN32
@@ -1037,8 +899,7 @@ class GUI:
             else:
                 mLo.Lo.print("Unable to support, don't know this system.")
                 return None
-            handel = int(win_peer.getWindowHandle(pid, system_type))
-            return handel
+            return int(win_peer.getWindowHandle(pid, system_type))  # type: ignore
         except Exception as e:
             mLo.Lo.print("Error getting windows handle")
             mLo.Lo.print(f"  {e}")
@@ -1058,12 +919,12 @@ class GUI:
 
     # region ---------------- min/max ----------------------------------
     @classmethod
-    def maximize(cls, odoc: object) -> None:
+    def maximize(cls, odoc: XComponent) -> None:
         """
         Maximizes Office window
 
         Args:
-            odoc (object): Office document
+            odoc (XComponent): Office document
 
         See Also:
             - :py:meth:`~.gui.GUI.minimize`
@@ -1084,12 +945,12 @@ class GUI:
         top2.IsMaximized = True
 
     @classmethod
-    def minimize(cls, odoc: object) -> None:
+    def minimize(cls, odoc: XComponent) -> None:
         """
         Minimizes Office window
 
         Args:
-            odoc (object): Office document
+            odoc (XComponent): Office document
 
         See Also:
             - :py:meth:`~.gui.GUI.maximize`
@@ -1107,7 +968,7 @@ class GUI:
             mLo.Lo.print("Unable to get top window (2)")
             return
         if top2.IsMinimized == False:
-            cls.set_visible(is_visible=True, odoc=odoc)
+            cls.set_visible(visible=True, doc=odoc)
             top2.IsMinimized = True
 
     # endregion ------------- min/max ----------------------------------
@@ -1115,12 +976,12 @@ class GUI:
     # region ---------------- zooming ----------------------------------
     @overload
     @classmethod
-    def zoom(cls, view: GUI.ZoomEnum) -> None:
+    def zoom(cls, view: ZoomKind) -> None:
         ...
 
     @overload
     @classmethod
-    def zoom(cls, view: GUI.ZoomEnum, value: int) -> None:
+    def zoom(cls, view: ZoomKind, value: int) -> None:
         ...
 
     @overload
@@ -1129,7 +990,7 @@ class GUI:
         ...
 
     @classmethod
-    def zoom(cls, view: GUI.ZoomEnum = ZoomEnum.BY_VALUE, value: int = 0) -> None:
+    def zoom(cls, view: ZoomKind = ZoomKind.BY_VALUE, value: int = 0) -> None:
         """
         Sets document zoom level.
 
@@ -1138,23 +999,23 @@ class GUI:
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
                 ``value`` has a min value of 1 and a max value of 3000. If value is out of range then 100% is used.
         """
-        if view == GUI.ZoomEnum.OPTIMAL:
+        if view == ZoomKind.OPTIMAL:
             mLo.Lo.dispatch_cmd("ZoomOptimal")
-        elif view == GUI.ZoomEnum.PAGE_WIDTH or view == GUI.ZoomEnum.PAGE_WIDTH_EXACT:
+        elif view in (ZoomKind.PAGE_WIDTH, ZoomKind.PAGE_WIDTH_EXACT):
             mLo.Lo.dispatch_cmd("ZoomPageWidth")
-        elif view == GUI.ZoomEnum.ENTIRE_PAGE:
+        elif view == ZoomKind.ENTIRE_PAGE:
             mLo.Lo.dispatch_cmd("ZoomPage")
-        elif view == GUI.ZoomEnum.ZOOM_50_PERCENT:
+        elif view == ZoomKind.ZOOM_50_PERCENT:
             mLo.Lo.dispatch_cmd("Zoom50Percent")
-        elif view == GUI.ZoomEnum.ZOOM_75_PERCENT:
+        elif view == ZoomKind.ZOOM_75_PERCENT:
             mLo.Lo.dispatch_cmd("Zoom75Percent")
-        elif view == GUI.ZoomEnum.ZOOM_100_PERCENT:
+        elif view == ZoomKind.ZOOM_100_PERCENT:
             mLo.Lo.dispatch_cmd("Zoom100Percent")
-        elif view == GUI.ZoomEnum.ZOOM_150_PERCENT:
+        elif view == ZoomKind.ZOOM_150_PERCENT:
             mLo.Lo.dispatch_cmd("Zoom150Percent")
-        elif view == GUI.ZoomEnum.ZOOM_200_PERCENT:
+        elif view == ZoomKind.ZOOM_200_PERCENT:
             mLo.Lo.dispatch_cmd("Zoom200Percent")
-        elif view == GUI.ZoomEnum.BY_VALUE:
+        elif view == ZoomKind.BY_VALUE:
             if value <= 0 or value > 3000:
                 value = 100
             p_dic = {"Zoom.Value": value, "Zoom.ValueSet": 28703, "Zoom.Type": 0}
@@ -1180,7 +1041,7 @@ class GUI:
 
     @overload
     @classmethod
-    def zoom_value(cls, value: int, view: GUI.ZoomEnum) -> None:
+    def zoom_value(cls, value: int, view: ZoomKind) -> None:
         """
         Sets document custom zoom.
 
@@ -1192,7 +1053,7 @@ class GUI:
         ...
 
     @classmethod
-    def zoom_value(cls, value: int, view: GUI.ZoomEnum = ZoomEnum.BY_VALUE) -> None:
+    def zoom_value(cls, value: int, view: ZoomKind = ZoomEnum.BY_VALUE) -> None:
         """
         Sets document custom zoom.
 
@@ -1245,14 +1106,15 @@ class GUI:
         Returns:
             XUIConfigurationManager: ui config manager
         """
+        # sourcery skip: raise-specific-error
         doc_type = mInfo.Info.doc_type_service(doc)
 
-        xmodel = mLo.Lo.qi(XModel, doc)
-        if xmodel is None:
-            raise mEx.MissingInterfaceError(XModel)
-        xsupplier = mLo.Lo.qi(XUIConfigurationManagerSupplier, xmodel)
-        if xsupplier is None:
-            raise mEx.MissingInterfaceError(XUIConfigurationManagerSupplier)
+        xsupplier = mLo.Lo.create_instance_mcf(
+            XModuleUIConfigurationManagerSupplier,
+            "com.sun.star.ui.ModuleUIConfigurationManagerSupplier",
+            raise_err=True,
+        )
+
         try:
             return xsupplier.getUIConfigurationManager(str(doc_type))
         except Exception as e:
@@ -1303,7 +1165,7 @@ class GUI:
             if kargs_len == 0:
                 return ka
             valid_keys = ("ui_elem_name", "config_man", "doc")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("print_ui_cmds() got an unexpected keyword argument")
             ka[1] = kwargs.get("ui_elem_name", None)
@@ -1337,16 +1199,16 @@ class GUI:
         try:
             settings = config_man.getSettings(ui_elem_name, True)
             num_settings = settings.getCount()
-            print(f"No. of slements in '{ui_elem_name}' toolbar: {num_settings}")
+            print(f"No. of elements in '{ui_elem_name}' toolbar: {num_settings}")
 
             for i in range(num_settings):
                 # line from java
                 # PropertyValue[] settingProps =  Lo.qi(PropertyValue[].class, settings.getByIndex(i));
-                setting_props = mLo.Lo.qi(XPropertySet, settings.getByIndex(i))
-                val = mProps.Props.get_value(name="CommandURL", props=setting_props)
+                setting_props = mLo.Lo.qi(XPropertySet, settings.getByIndex(i), True)
+                val = setting_props.getPropertyValue("CommandURL")
                 print(f"{i}) {mProps.Props.prop_value_to_string(val)}")
             print()
-        except exception as e:
+        except Exception as e:
             print(e)
 
     @classmethod
@@ -1355,7 +1217,7 @@ class GUI:
         if config_man is None:
             print("Cannot create configuration manager")
             return
-        cls.print_ui_cmds()
+        cls.print_ui_cmds(ui_elem_name, config_man)
 
     # endregion print_ui_cmds()
 
@@ -1396,7 +1258,7 @@ class GUI:
         ...
 
     @classmethod
-    def get_layout_manager(cls, doc: XComponent = None) -> XLayoutManager:
+    def get_layout_manager(cls, doc: XComponent | None = None) -> XLayoutManager:
         """
         Gets layout manager
 
@@ -1409,6 +1271,7 @@ class GUI:
         Returns:
             XLayoutManager: Layout manager
         """
+        # sourcery skip: raise-specific-error
         try:
             if doc is None:
                 desktop = mLo.Lo.get_desktop()
@@ -1420,7 +1283,7 @@ class GUI:
                 raise Exception("No current frame")
 
             lm = None
-            prop_set = mLo.Lo.qi(XPropertySet, frame)
+            prop_set = mLo.Lo.qi(XPropertySet, frame, True)
             lm = mLo.Lo.qi(XLayoutManager, prop_set.getPropertyValue("LayoutManager"))
             if lm is None:
                 raise mEx.MissingInterfaceError(XLayoutManager)
@@ -1442,7 +1305,7 @@ class GUI:
         ...
 
     @classmethod
-    def show_menu_bar(cls, doc: XComponent = None) -> None:
+    def show_menu_bar(cls, doc: XComponent | None = None) -> None:
         """
         Shows the main menu bar
 
@@ -1452,7 +1315,10 @@ class GUI:
         .. versionchanged:: 0.9.0
             Renamed from show_menu_bar to show_menu_bar
         """
-        lm = cls.get_layout_manager(doc=doc)
+        if doc is None:
+            lm = cls.get_layout_manager()
+        else:
+            lm = cls.get_layout_manager(doc=doc)
         lm.showElement(GUI.MENU_BAR)
 
     # endregion show_menu_bar()
@@ -1469,18 +1335,33 @@ class GUI:
         ...
 
     @classmethod
-    def hide_menu_bar(cls, doc: XComponent = None) -> None:
+    def hide_menu_bar(cls, doc: XComponent | None = None) -> None:
         """
         Hides the main menu bar
 
         Args:
             doc (XComponent): doc (XComponent): office document
         """
-        lm = cls.get_layout_manager(doc=doc)
+        if doc is None:
+            lm = cls.get_layout_manager()
+        else:
+            lm = cls.get_layout_manager(doc=doc)
         lm.hideElement(GUI.MENU_BAR)
 
     # added due to a spell correction.
-    hide_memu_bar = hide_menu_bar
+    @classmethod
+    @deprecated("Use hide_menu_bar instead")
+    def hide_memu_bar(cls, doc: XComponent | None = None) -> None:
+        """
+        Hides the main menu bar
+
+        Args:
+            doc (XComponent): doc (XComponent): office document
+
+        .. deprecated:: 0.9.0
+            Use :py:meth:`~gui.GUI.hide_menu_bar` instead.
+        """
+        return cls.hide_menu_bar() if doc is None else cls.hide_menu_bar(doc)
 
     @staticmethod
     def toggle_menu_bar() -> None:
@@ -1554,16 +1435,13 @@ class GUI:
             lm = cls.get_layout_manager()
         else:
             obj = mLo.Lo.qi(XLayoutManager, kargs["first"])
-            if obj is None:
-                lm = cls.get_layout_manager(kargs["first"])
-            else:
-                lm = kargs["first"]
+            lm = cls.get_layout_manager(kargs["first"]) if obj is None else kargs["first"]
         if lm is None:
             print("No layout manager found")
             return
-        ui_elems = lm.getElements()
-        print(f"No. of UI Elemtnts: {len(ui_elems)}")
-        for el in ui_elems:
+        ui_elements = lm.getElements()
+        print(f"No. of UI Elements: {len(ui_elements)}")
+        for el in ui_elements:
             print(f"  {el.ResourceURL}; {cls.get_ui_element_type_str(el.Type)}")
         print()
 
@@ -1628,9 +1506,9 @@ class GUI:
         if lm is None:
             print("No layout manager found")
             return
-        ui_elmes = lm.getElements()
-        print(f"No. of UI Elements: {len(ui_elmes)}")
-        for el in ui_elmes:
+        ui_elements = lm.getElements()
+        print(f"No. of UI Elements: {len(ui_elements)}")
+        for el in ui_elements:
             name = el.ResourceURL
             print(f"--- {name} ---")
             cls._print_ui_cmds1(ui_elem_name=name, config_man=conf_man)
@@ -1644,11 +1522,11 @@ class GUI:
             doc (XComponent): office document
             show_elem (str): name of element to show only.
         """
-        show_elems = [show_elem]
-        cls.show_only(doc=doc, show_elems=[show_elems])
+        show_elements = [show_elem]
+        cls.show_only(doc=doc, show_elems=show_elements)
 
     @classmethod
-    def show_only(cls, doc: XComponent, show_elems: Iterable[str]) -> None:
+    def show_only(cls, doc: XComponent, show_elems: List[str]) -> None:
         """
         Leave only the specified toolbars visible
 
@@ -1660,8 +1538,8 @@ class GUI:
             show_elems (Iterable[str]): Elements to show
         """
         lm = cls.get_layout_manager(doc)
-        ui_elmes = lm.getElements()
-        cls.hide_except(lm=lm, ui_elms=ui_elmes, show_elems=show_elems)
+        ui_elements = lm.getElements()
+        cls.hide_except(lm=lm, ui_elms=ui_elements, show_elms=show_elems)
 
         for el_name in show_elems:  # these elems are not in lm
             lm.createElement(el_name)  # so need to be created & shown
@@ -1669,7 +1547,7 @@ class GUI:
             mLo.Lo.print(f"{el_name} made visible")
 
     @staticmethod
-    def hide_except(lm: XLayoutManager, ui_elms: Iterable[XUIElement], show_elms: Iterable[str]) -> None:
+    def hide_except(lm: XLayoutManager, ui_elms: Iterable[XUIElement], show_elms: List[str]) -> None:
         """
         Hide all of ``ui_elms``, except ones in ``show_elms``;
         delete any strings that match in ``show_elms``.
@@ -1677,7 +1555,7 @@ class GUI:
         Args:
             lm (XLayoutManager): Layout Manager
             ui_elms (Iterable[XUIElement]): Elements
-            show_elms (Iterable[str]): elements to show
+            show_elms (Sequence[str]): elements to show
         """
         for ui_elm in ui_elms:
             el_name = ui_elm.ResourceURL
@@ -1735,15 +1613,14 @@ class GUI:
         if lm is None:
             raise TypeError("'lm' is None. No layout manager available for menu discovery")
 
-        omenu_bar = lm.getElement(cls.MENU_BAR)
-        props = mLo.Lo.qi(XPropertySet, omenu_bar)
-        if bar is None:
-            raise mEx.MissingInterfaceError(XPropertySet)
+        menu_bar = lm.getElement(cls.MENU_BAR)
+        props = mLo.Lo.qi(XPropertySet, menu_bar, True)
 
         bar = mLo.Lo.qi(XMenuBar, props.getPropertyValue("XMenuBar"))
         # the XMenuBar reference is a property of the menubar UI
         if bar is None:
             raise mEx.MissingInterfaceError(XMenuBar)
+        return bar
 
     @classmethod
     def get_menu_max_id(cls, bar: XMenuBar) -> int:
@@ -1763,9 +1640,9 @@ class GUI:
         item_count = bar.getItemCount()
         max_id = -1
         for i in range(item_count):
-            id = bar.getItemId(i)
-            if id > max_id:
-                max_id = id
+            item_id = bar.getItemId(i)
+            if item_id > max_id:
+                max_id = item_id
 
         return max_id
 

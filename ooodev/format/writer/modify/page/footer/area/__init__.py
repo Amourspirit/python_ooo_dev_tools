@@ -3,6 +3,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
@@ -27,23 +28,4 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
-__all__ = [
-    "OffsetColumn",
-    "OffsetRow",
-    "SizePercent",
-    "ImgStyleKind",
-    "Color",
-    "Gradient",
-    "Hatch",
-    "Img",
-    "Pattern",
-    "InnerColor",
-    "InnerGradient",
-    "InnerHatch",
-    "InnerImg",
-    "InnerPattern",
-    "PresetGradientKind",
-    "PresetHatchKind",
-    "PresetImageKind",
-    "PresetPatternKind",
-]
+__all__ = ["Color", "Gradient", "Hatch", "Img", "Pattern"]

@@ -4,7 +4,7 @@ from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
 
 if TYPE_CHECKING:
-    from ..events.args.event_args import EventArgs
+    from ..events.args.event_args import AbstractEvent
 
 
 class NoneError(Exception):
@@ -237,12 +237,12 @@ class CreateInstanceMcfError(CreateInstanceError):
 class CancelEventError(Exception):
     """Error when an Event is canceled"""
 
-    def __init__(self, event_args: EventArgs, message: Any = None, *args) -> None:
+    def __init__(self, event_args: AbstractEvent, message: Any = None, *args) -> None:
         """
         Cancel Event Error constructor
 
         Args:
-            event_args (EventArgs): Event args that was canceled
+            event_args (AbstractEvent): Event args that was canceled
             message (Any, optional): Message of error
         """
         if message is None:
@@ -297,6 +297,26 @@ class ViewCursorError(CursorError):
 
 class LoNotLoadedError(Exception):
     """Error when accessing Lo before Lo.load_office is called"""
+
+    pass
+
+
+class LoadingError(Exception):
+    """
+    Generic Loading Error
+
+    .. versionchanged:: 0.9.8
+    """
+
+    pass
+
+
+class ConnectionError(Exception):
+    """
+    Generic Connection Error
+
+    .. versionchanged:: 0.9.8
+    """
 
     pass
 

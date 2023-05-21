@@ -60,7 +60,7 @@ def test_write(loader, para_text) -> None:
         style_settings.prop_inner = ds
 
         do = InnerOptions(background=False)
-        do = do.contour.outisde.overlap.first
+        do = do.contour.outside.overlap.first
         style.prop_inner = do
         assert style.prop_inner is do
         Styler.apply(doc, style_settings, style)
@@ -68,8 +68,8 @@ def test_write(loader, para_text) -> None:
         f_style = Options.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_inner.prop_first
         assert f_style.prop_inner.prop_first == style.prop_inner.prop_first
-        assert f_style.prop_inner.prop_coutour
-        assert f_style.prop_inner.prop_coutour == style.prop_inner.prop_coutour
+        assert f_style.prop_inner.prop_contour
+        assert f_style.prop_inner.prop_contour == style.prop_inner.prop_contour
         assert f_style.prop_inner.prop_overlap
         assert f_style.prop_inner.prop_overlap == style.prop_inner.prop_overlap
         assert f_style.prop_inner.prop_outside

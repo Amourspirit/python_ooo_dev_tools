@@ -12,15 +12,4 @@ from ooodev.format.inner.modify.calc.alignment.text_align import TextAlign as Te
 from ooodev.format.inner.modify.calc.alignment.text_orientation import InnerTextOrientation as InnerTextOrientation
 from ooodev.format.inner.modify.calc.alignment.text_orientation import TextOrientation as TextOrientation
 
-__all__ = [
-    "TextDirectionKind",
-    "HoriAlignKind",
-    "VertAlignKind",
-    "EdgeKind",
-    "InnerProperties",
-    "Properties",
-    "InnerTextAlign",
-    "TextAlign",
-    "InnerTextOrientation",
-    "TextOrientation",
-]
+__all__ = ["Properties", "TextAlign", "TextOrientation"]

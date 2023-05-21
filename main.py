@@ -17,6 +17,7 @@ def _create_parser(name: str) -> argparse.ArgumentParser:
 
 # endregion     Create Parsers
 
+
 # region        process arg command
 def _args_cmd_link(parser: argparse.ArgumentParser) -> None:
     add_grp = parser.add_argument_group()
@@ -32,7 +33,7 @@ def _args_cmd_link(parser: argparse.ArgumentParser) -> None:
     add_grp.add_argument(
         "-s",
         "--uno-src",
-        help="Optional source directory that contains uno.py and unohelper.py. If ommited then defaults are used.",
+        help="Optional source directory that contains uno.py and unohelper.py. If omitted then defaults are used.",
         action="store",
         dest="src_dir",
         default=None,
@@ -70,7 +71,7 @@ def _args_cmd_toggle_evn(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-u",
         "--uno-env",
-        help="Displayes if the current Virtual Environment is UNO Environment.",
+        help="display's if the current Virtual Environment is UNO Environment.",
         action="store_true",
         dest="uno_env",
         default=False,

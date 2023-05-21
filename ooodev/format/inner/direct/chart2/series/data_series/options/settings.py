@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, cast, overload, NamedTuple
+from typing import Any, Tuple, cast, overload, NamedTuple
 import uno
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.beans import XPropertySet
@@ -23,7 +23,11 @@ class Settings(StyleBase):
 
     Note:
         The axis that the setting are applied to is determined by the axis that the data series is plotted on.
-        For this reason if fomatting is applied to a data series axis it should be done before applying ``Settings``.
+        For this reason if formatting is applied to a data series axis it should be done before applying ``Settings``.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
 
     .. versionadded:: 0.9.4
     """
@@ -48,6 +52,9 @@ class Settings(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         self._chart_doc = chart_doc
         super().__init__()
@@ -68,14 +75,14 @@ class Settings(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -91,7 +98,7 @@ class Settings(StyleBase):
             return
 
         try:
-            diagram = self._chart_doc.getDiagram()
+            diagram = self._chart_doc.getDiagram()  # type: ignore
         except Exception as e:
             mLo.Lo.print(f"{self.__class__.__name__}.apply() - Unable to apply spacing and overlap.")
             mLo.Lo.print(f"  Error: {e}")
@@ -104,8 +111,9 @@ class Settings(StyleBase):
 
         spacing = self.prop_spacing
         overlap = self.prop_overlap
+        axis_props = {}
+        axis = None
         if spacing is not None or overlap is not None:
-            axis_props = {}
             try:
                 # get the axis to apply spacing and overlap.
                 # The axis is determined by the primary_y_axis property of the data series.
@@ -124,7 +132,7 @@ class Settings(StyleBase):
                 mLo.Lo.print(f"{self.__class__.__name__}.apply() - Unable to apply spacing and overlap.")
                 mLo.Lo.print(f"  Error: {e}")
                 return
-        if len(axis_props) > 0:
+        if axis_props and axis is not None:
             super().apply(obj=axis, validate=False, override_dv=axis_props, **kwargs)
 
     # endregion apply()
@@ -166,8 +174,7 @@ class Settings(StyleBase):
         if value is None:
             self._remove(self._props.spacing)
             return
-        if value < 0:
-            value = 0
+        value = max(value, 0)
         self._set(self._props.spacing, value)
 
     @property
@@ -185,14 +192,17 @@ class Settings(StyleBase):
     @property
     def prop_side_by_side(self) -> bool | None:
         """Gets or sets whether bars are side by side."""
-        return self._get(self._props.side_by_side)
+        pv = cast(bool, self._get(self._props.side_by_side))
+        # GroupBarsPerAxis is the opposite of SideBySide
+        return None if pv is None else not pv
 
     @prop_side_by_side.setter
     def prop_side_by_side(self, value: bool | None) -> None:
         if value is None:
             self._remove(self._props.side_by_side)
             return
-        self._set(self._props.side_by_side, value)
+        # GroupBarsPerAxis is the opposite of SideBySide
+        self._set(self._props.side_by_side, not value)
 
     @property
     def _props(self) -> _SettingsProps:

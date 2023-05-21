@@ -29,21 +29,19 @@ from ..exceptions import ex as mEx
 
 class DeletedUnoEnumMeta(UnoEnumMeta):
     def __getattr__(cls, __name: str) -> uno.Enum | Any:
-        if __name in cls._get_deleted_attribs():
+        if __name in cls._get_deleted_attribs():  # type: ignore
             cls_name = cls.__name__
             accessed_via = f"Enum {cls_name!r}"
             raise mEx.DeletedAttributeError(f"attribute {__name!r} of {accessed_via} has been deleted")
 
-        value = super().__getattr__(__name)
-        return value
+        return super().__getattr__(__name)  # type: ignore
 
 
 class DeletedUnoConstEnumMeta(ConstEnumMeta):
     def __getattr__(cls, __name: str) -> uno.Enum | Any:
-        if __name in cls._get_deleted_attribs():
+        if __name in cls._get_deleted_attribs():  # type: ignore
             cls_name = cls.__name__
             accessed_via = f"Enum {cls_name!r}"
             raise mEx.DeletedAttributeError(f"attribute {__name!r} of {accessed_via} has been deleted")
 
-        value = super().__getattr__(__name)
-        return value
+        return super().__getattr__(__name)  # type: ignore

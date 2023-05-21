@@ -53,6 +53,7 @@ class Img(FillStyleBaseMulti):
         Returns:
             None:
         """
+        # sourcery skip: remove-unnecessary-cast
 
         direct = InnerImg(
             bitmap=bitmap,

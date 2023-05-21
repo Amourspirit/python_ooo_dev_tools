@@ -1,3 +1,5 @@
+.. _help_writer_format:
+
 Write Formatting and Style
 ==========================
 
@@ -6,4 +8,5 @@ Write Formatting and Style
     :glob:
 
     direct/index
+    modify/index
     style/index

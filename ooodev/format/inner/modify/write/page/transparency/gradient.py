@@ -19,6 +19,10 @@ class Gradient(PageStyleBaseMulti):
     """
     Page Style Transparency.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_transparency`
+
     .. versionadded:: 0.9.0
     """
 
@@ -44,6 +48,9 @@ class Gradient(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_transparency`
         """
 
         direct = InnerGradient(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
@@ -55,7 +62,7 @@ class Gradient(PageStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> Gradient:
@@ -63,7 +70,7 @@ class Gradient(PageStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``PageStyles``.

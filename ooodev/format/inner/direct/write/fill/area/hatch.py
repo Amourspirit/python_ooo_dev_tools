@@ -45,10 +45,10 @@ class Hatch(StyleMulti):
         self,
         *,
         style: HatchStyle = HatchStyle.SINGLE,
-        color: Color = Color(0),
+        color: Color = StandardColor.BLACK,
         space: float | UnitObj = 0.0,
         angle: Angle | int = 0,
-        bg_color: Color = Color(-1),
+        bg_color: Color = StandardColor.AUTO_COLOR,
     ) -> None:
         """
         Constructor
@@ -58,11 +58,12 @@ class Hatch(StyleMulti):
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
             space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
-            bg_color(Color, optionl): Specifies the background Color. Set this ``-1`` (default) for no background color.
+            bg_color(Color, optional): Specifies the background Color. Set this ``-1`` (default) for no background color.
 
         Returns:
             None:
         """
+        # sourcery skip: assign-if-exp, boolean-if-exp-identity, merge-dict-assign, remove-unnecessary-cast
 
         hatch = self._get_inner_class(style=style, color=color, distance=space, angle=angle)
 
@@ -111,10 +112,10 @@ class Hatch(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -126,11 +127,11 @@ class Hatch(StyleMulti):
         """
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Hatch.apply(): Unable to set Property")
+            mLo.Lo.print("Hatch.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -215,16 +216,16 @@ class Hatch(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any) -> _THatch:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
         """
         Gets instance from object
 
@@ -244,11 +245,7 @@ class Hatch(StyleMulti):
         hatch = cast(UnoHatch, mProps.Props.get(obj, nu._props.hatch_prop))
         fc = FillColor.from_obj(obj, _cattribs=nu._get_fill_color_cattribs())
 
-        if hatch.Angle > 0:
-            angle = round(hatch.Angle / 10)
-        else:
-            angle = 0
-
+        angle = round(hatch.Angle / 10) if hatch.Angle > 0 else 0
         return cls(
             style=hatch.Style,
             color=hatch.Color,
@@ -336,6 +333,7 @@ class Hatch(StyleMulti):
     def prop_inner_color(self, value: FillColor) -> None:
         bk_color = FillColor(color=value.prop_color, _cattribs=self._get_fill_color_cattribs())
         bk_color._prop_parent = self
+
         # FillStyle is set by this class
         bk_color._remove(self._props.style)
         # add event listener to prevent FillStyle from being set
@@ -379,12 +377,12 @@ class Hatch(StyleMulti):
 
 def _on_bg_color_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
     fc = cast(FillColor, event_args.event_source)
-    hatch = cast(_THatch, fc.prop_parent)
+    hatch = cast(_THatch, fc.prop_parent)  # type: ignore
     if event_args.key == hatch._props.style:
         event_args.cancel = True
     elif event_args.key == hatch._props.color:
         # -1 means automatic color.
         # Fillcolor for hatch has not automatic color
         if event_args.value == -1:
-            # strickly speaking this is not needed but follows how Draw handles it.
+            # strictly speaking this is not needed but follows how Draw handles it.
             event_args.value = StandardColor.DEFAULT_BLUE

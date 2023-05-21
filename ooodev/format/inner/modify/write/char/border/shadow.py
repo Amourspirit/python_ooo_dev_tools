@@ -18,6 +18,10 @@ class Shadow(CharStyleBaseMulti):
     """
     Character Style Border padding.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -44,6 +48,9 @@ class Shadow(CharStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_borders`
         """
 
         direct = InnerShadow(location=location, color=color, transparent=transparent, width=width)

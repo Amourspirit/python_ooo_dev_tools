@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
@@ -15,6 +16,10 @@ _TColor = TypeVar(name="_TColor", bound="Color")
 class InnerColor(AbstractColor):
     """
     Page header Color.
+
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_background`
 
     .. versionadded:: 0.9.0
     """
@@ -50,13 +55,17 @@ class Color(CellStyleBaseMulti):
     """
     Page Header Color
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_background`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = StandardColor.AUTO_COLOR,
         style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
@@ -71,6 +80,9 @@ class Color(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_header_background`
         """
 
         direct = InnerColor(color=color, _cattribs=self._get_inner_cattribs())

@@ -8,8 +8,4 @@ from ooodev.format.inner.direct.calc.alignment.text_orientation import TextOrien
 from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind as TextDirectionKind
 from ooodev.format.inner.direct.calc.alignment.properties import Properties as Properties
 
-__all__ = [
-    "TextAlign",
-    "TextOrientation",
-    "Properties",
-]
+__all__ = ["TextAlign", "TextOrientation", "Properties"]

@@ -29,9 +29,29 @@ PARA_BACK_COLOR_FLAGS = 0x7F000000
 _THatch = TypeVar(name="_THatch", bound="Hatch")
 
 
+class _HatchStruct(HatchStruct):
+    """Hatch Struct for para Hatch"""
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = (
+                "com.sun.star.drawing.FillProperties",
+                "com.sun.star.text.TextContent",
+                "com.sun.star.beans.PropertySet",
+                "com.sun.star.style.ParagraphStyle",
+            )
+        return self._supported_services_values
+
+
 class Hatch(StyleMulti):
     """
     Class for Fill Properties Fill Hatch.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_hatch`
 
     .. versionadded:: 0.9.0
     """
@@ -60,10 +80,14 @@ class Hatch(StyleMulti):
             bg_color(:py:data:`~.utils.color.Color`, optional): Specifies the background Color.
                 Set this ``-1`` (default) for no background color.
             name (str, optional): Specifies the Hatch Name.
-            auto_name (bool, optional): Specifies if Hatch is give an auto name such as ``Hatch ``. Default ``False``.
+            auto_name (bool, optional): Specifies if Hatch is give an auto name such as ``Hatch``. Default ``False``.
 
         Returns:
             None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_hatch`
         """
         self._auto_name = auto_name
         self._name = name  # this may change in _set_fill_hatch()
@@ -76,19 +100,18 @@ class Hatch(StyleMulti):
         bk_color.add_event_listener(FormatNamedEvent.STYLE_SETTING, _on_bg_color_setting)
         bk_color.prop_color = bg_color
 
-        if bg_color < 0:
-            init_vals["FillBackground"] = False
-        else:
-            init_vals["FillBackground"] = True
-
+        init_vals["FillBackground"] = bg_color >= 0
         super().__init__(**init_vals)
         self._set_bg_color(color)
-        in_hatch = HatchStruct(style=style, color=color, distance=space, angle=angle)
+        in_hatch = self._get_inner_hatch()(style=style, color=color, distance=space, angle=angle)
         self._set_fill_hatch(in_hatch, False)
 
         self._set_style("fill_color", bk_color, *bk_color.get_attrs())
 
     # region Internal Methods
+    def _get_inner_hatch(self) -> Type[HatchStruct]:
+        return _HatchStruct
+
     def _set_bg_color(self, color: int) -> None:
         # Writer stores ParaBackColor as flag values when there is no background color
         # When there is background color then ParaBackColor contains the actual color.
@@ -119,10 +142,7 @@ class Hatch(StyleMulti):
         # https://github.com/LibreOffice/core/blob/1a79594a27f41ad369e7c387c51e00afb1352872/include/xmloff/xmltypes.hxx
 
         fb = cast(bool, self._get("FillBackground"))
-        if fb:
-            para_bg_color = color
-        else:
-            para_bg_color = PARA_BACK_COLOR_FLAGS | color
+        para_bg_color = color if fb else PARA_BACK_COLOR_FLAGS | color
         self._set("ParaBackColor", para_bg_color)
 
     def _set_fill_hatch(self, hatch_struct: HatchStruct, ignore_preset: bool) -> None:
@@ -159,17 +179,17 @@ class Hatch(StyleMulti):
             # for preset expect name similar to 'Black 0 Degrees 1'
             self._is_preset = False
 
-            name = name.rstrip() + " "  # add a space after name before getting unique name
+            name = f"{name.rstrip()} "
             self._name = self._container_get_unique_el_name(name, nc)
         else:
             self._name = name
         hatch = self._container_get_value(self._name, nc)  # raises value error if name is empty
-        if not hatch is None:
-            return HatchStruct.from_uno_struct(hatch)
+        if hatch is not None:
+            return self._get_inner_hatch().from_uno_struct(hatch)
 
         self._container_add_value(name=self._name, obj=hatch_struct.get_uno_struct(), allow_update=False, nc=nc)
         hatch = self._container_get_value(self._name, nc)
-        return HatchStruct.from_uno_struct(hatch)
+        return self._get_inner_hatch().from_uno_struct(hatch)
 
     def _on_hatch_property_change(self) -> None:
         if self._is_preset:
@@ -218,10 +238,14 @@ class Hatch(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -233,11 +257,11 @@ class Hatch(StyleMulti):
         """
         super().apply(obj, **kwargs)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Hatch.apply(): Unable to set Property")
+            mLo.Lo.print("Hatch.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -280,16 +304,16 @@ class Hatch(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any) -> _THatch:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: object, **kwargs) -> _THatch:
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
         """
         Gets instance from object
 
@@ -333,6 +357,11 @@ class Hatch(StyleMulti):
         except AttributeError:
             self._format_kind_prop = FormatKind.TXT_CONTENT | FormatKind.FILL | FormatKind.PARA
         return self._format_kind_prop
+
+    @property
+    def prop_name(self) -> str:
+        """Gets the name of the hatch."""
+        return self._name
 
     @property
     def prop_bg_color(self) -> Color:

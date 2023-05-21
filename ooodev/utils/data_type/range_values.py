@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
 from typing import cast, overload
@@ -60,12 +61,10 @@ class RangeValues:
             object.__setattr__(self, "row_end", row_end)
 
         if self.sheet_idx < 0:
-            try:
+            with contextlib.suppress(Exception):
                 if mLo.Lo.is_loaded:
                     idx = mCalc.Calc.get_sheet_index()
                     object.__setattr__(self, "sheet_idx", idx)
-            except:
-                pass
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, RangeValues):
@@ -78,9 +77,7 @@ class RangeValues:
             )
         if isinstance(other, mRngObj.RangeObj):
             return str(self) == str(other)
-        if isinstance(other, str):
-            return str(self) == other.upper()
-        return False
+        return str(self) == other.upper() if isinstance(other, str) else False
 
     def __str__(self) -> str:
         start = mTb.TableHelper.make_cell_name(row=self.row_start, col=self.col_start, zero_index=True)
@@ -332,9 +329,8 @@ class RangeValues:
             col_end = mTb.TableHelper.col_name_to_int(parts.col_end, True)
             row_start = parts.row_start - 1
             row_end = parts.row_end - 1
-            sheet_name = parts.sheet
             sheet_idx = -1
-            if sheet_name:
+            if sheet_name := parts.sheet:
                 sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
                 sheet_idx = mCalc.Calc.get_sheet_index(sheet)
         else:
@@ -452,7 +448,7 @@ class RangeValues:
             if kargs_len == 0:
                 return ka
             valid_keys = ("cell_obj", "cell_vals", "cell_name", "cell_addr")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("contains() got an unexpected keyword argument")
             for key in valid_keys:

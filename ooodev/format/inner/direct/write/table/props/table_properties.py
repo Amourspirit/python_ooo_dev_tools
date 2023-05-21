@@ -1,7 +1,7 @@
 # region Imports
 from __future__ import annotations
 from typing import Union, cast, overload
-from typing import Any, Tuple, Type, TypeVar, NamedTuple
+from typing import Any, Tuple, Type, TypeVar, NamedTuple, Union
 from enum import Enum
 import math
 from ooo.dyn.text.hori_orientation import HoriOrientation
@@ -26,7 +26,9 @@ from ooodev.units.unit_convert import UnitConvert
 # region Types
 
 _TTableProperties = TypeVar(name="_TTableProperties", bound="TableProperties")
+_TSharedAuto = TypeVar(name="_TSharedAuto", bound="_SharedAuto")
 _TTblAuto = TypeVar(name="_TTblAuto", bound="_TblAuto")
+_TTblRelLeftByWidth = TypeVar(name="_TTblRelLeftByWidth", bound="_TblRelLeftByWidth")
 TblAbsUnit = Union[float, UnitObj]
 TblRelUnit = Union[int, Intensity]
 
@@ -90,10 +92,8 @@ def _get_default_tbl_services() -> Tuple[str]:
 
 # endregion Module Methods
 
-# region Table size in MM units
 
-
-class _TblAuto(AbstractDocument):
+class _SharedAuto(AbstractDocument):
     """
     Automatically set table width.
     """
@@ -102,30 +102,30 @@ class _TblAuto(AbstractDocument):
     def __init__(
         self,
         *,
-        width: TblAbsUnit = None,
-        left: TblAbsUnit = None,
-        right: TblAbsUnit = None,
-        above: TblAbsUnit | None = None,
-        below: TblAbsUnit | None = None,
+        width: TblAbsUnit | TblRelUnit | None = None,
+        left: TblAbsUnit | TblRelUnit | None = None,
+        right: TblAbsUnit | TblRelUnit | None = None,
+        above: TblAbsUnit | TblRelUnit | None = None,
+        below: TblAbsUnit | TblRelUnit | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            width (float, UnitObj, optional): Table width value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            left (float, UnitObj, optional): Spacing Left value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            right (float, UnitObj, optional): Spacing Right value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            above (float, UnitObj, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
-            below (float, UnitObj, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            width (TblAbsUnit, optional): Table width value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            left (TblAbsUnit, optional): Spacing Left value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            right (TblAbsUnit, optional): Spacing Right value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            above (TblAbsUnit, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            below (TblAbsUnit, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
         """
         # only Above and Below properties are used in this class
         super().__init__()
         self.prop_width = width
         self.prop_left = left
         self.prop_right = right
-        if not above is None:
+        if above is not None:
             self.prop_above = above
-        if not below is None:
+        if below is not None:
             self.prop_below = below
         self._post_init()
 
@@ -139,18 +139,12 @@ class _TblAuto(AbstractDocument):
         left100: int = self._get(self._props.left)
         right100: int = self._get(self._props.right)
         page_txt_width = self._prop_page_text_size.width
-        if left100 == 0:
-            left = 0
-        else:
-            left = round((left100 / page_txt_width) * 100)
-        if right100 == 0:
-            right = 0
-        else:
-            right = round((right100 / page_txt_width) * 100)
+        left = 0 if left100 == 0 else round((left100 / page_txt_width) * 100)
+        right = 0 if right100 == 0 else round((right100 / page_txt_width) * 100)
         width = 100 - (left + right)
         return _RelVals(left=left, right=right, balance=width)
 
-    def _set_props_from_obj(self, obj: object) -> None:
+    def _set_props_from_obj(self, obj: Any) -> None:
         if not self._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{self.__class__.__name__}"')
         self._set(self._props.left, mProps.Props.get(obj, self._props.left))
@@ -165,10 +159,83 @@ class _TblAuto(AbstractDocument):
         self._prop_left = int(self._get(self._props.left))
         self._prop_right = int(self._get(self._props.right))
 
+    def _get_prop_width(self) -> UnitMM | None:
+        if self._prop_width is None:
+            return None
+        return UnitMM.from_mm100(self._prop_width)
+
+    def _set_prop_width(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._prop_width = None
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        # min table width seems to be in the area of 1.22 mm
+        val = max(val, 122)
+        self._prop_width = val
+
+    def _get_prop_left(self) -> UnitMM | None:
+        return None if self._prop_left is None else UnitMM.from_mm100(self._prop_left)
+
+    def _set_prop_left(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._prop_left = None
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._prop_left = val
+
+    def _get_prop_right(self) -> UnitMM | None:
+        if self._prop_right is None:
+            return None
+        return UnitMM.from_mm100(self._prop_right)
+
+    def _set_prop_right(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._prop_right = None
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._prop_right = val
+
+    def _get_prop_above(self) -> UnitMM | None:
+        pv = self._get(self._props.top)
+        return None if pv is None else UnitMM.from_mm100(pv)
+
+    def _set_prop_above(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._remove(self._props.top)
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._set(self._props.top, val)
+
+    def _get_prop_below(self) -> UnitMM | None:
+        pv = self._get(self._props.bottom)
+        return None if pv is None else UnitMM.from_mm100(pv)
+
+    def _set_prop_below(self, value: TblAbsUnit | TblRelUnit | None) -> None:
+        if value is None:
+            self._remove(self._props.bottom)
+            return
+        try:
+            val = value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        self._set(self._props.bottom, val)
+
     # endregion internal methods
 
     # region overrides
-    def copy(self: _TTblAuto, **kwargs) -> _TTblAuto:
+    def copy(self: _TSharedAuto, **kwargs) -> _TSharedAuto:
         """Gets a copy of the instance"""
         cp = super().copy(**kwargs)
         cp._prop_width = self._prop_width
@@ -196,7 +263,7 @@ class _TblAuto(AbstractDocument):
         if not self._has(self._props.rel_width):
             self._set(self._props.rel_width, 0)
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies Styling to object
 
@@ -220,16 +287,16 @@ class _TblAuto(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblAuto:
+    def from_obj(cls: Type[_TSharedAuto], obj: Any) -> _TSharedAuto:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblAuto:
+    def from_obj(cls: Type[_TSharedAuto], obj: Any, **kwargs) -> _TSharedAuto:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblAuto:
+    def from_obj(cls: Type[_TSharedAuto], obj: Any, **kwargs) -> _TSharedAuto:
         """
         Gets instance from object
 
@@ -242,10 +309,10 @@ class _TblAuto(AbstractDocument):
         Returns:
             TblAuto: ``TblAuto`` Instance.
         """
-        return _TblAuto._from_obj(cls, obj, **kwargs)
+        return _SharedAuto._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
+    def _from_obj(clazz: Type[_TSharedAuto], obj: Any, **kwargs) -> _TSharedAuto:
         """
         Gets instance from object
 
@@ -258,9 +325,9 @@ class _TblAuto(AbstractDocument):
         Returns:
             Options: Instance that represents Frame Wrap Settings.
         """
-        inst = cls(**kwargs)
+        inst = clazz(**kwargs)
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{clazz.__name__}"')
         inst._set_props_from_obj(obj)
         return inst
 
@@ -282,105 +349,55 @@ class _TblAuto(AbstractDocument):
         """
         Gets/Sets Width.
         """
-        if self._prop_width is None:
-            return None
-        return UnitMM.from_mm100(self._prop_width)
+        return self._get_prop_width()
 
     @prop_width.setter
-    def prop_width(self, value: float | UnitObj | None):
-        if value is None:
-            self._prop_width = None
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        # min table width seems to be in the area of 1.22 mm
-        if val < 122:
-            val = 122
-        self._prop_width = val
+    def prop_width(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_width(value)
 
     @property
     def prop_left(self) -> UnitMM | None:
         """
         Gets/Sets Left.
         """
-        if self._prop_left is None:
-            return None
-        return UnitMM.from_mm100(self._prop_left)
+        return self._get_prop_left()
 
     @prop_left.setter
-    def prop_left(self, value: float | UnitObj | None):
-        if value is None:
-            self._prop_left = None
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._prop_left = val
+    def prop_left(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_left(value)
 
     @property
     def prop_right(self) -> UnitMM | None:
         """
         Gets/Sets Right.
         """
-        if self._prop_right is None:
-            return None
-        return UnitMM.from_mm100(self._prop_right)
+        return self._get_prop_right()
 
     @prop_right.setter
-    def prop_right(self, value: float | UnitObj | None):
-        if value is None:
-            self._prop_right = None
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._prop_right = val
+    def prop_right(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_right(value)
 
     @property
     def prop_above(self) -> UnitMM | None:
         """
         Gets/Sets above.
         """
-        pv = self._get(self._props.top)
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return self._get_prop_above()
 
     @prop_above.setter
-    def prop_above(self, value: float | UnitObj | None):
-        if value is None:
-            self._remove(self._props.top)
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._set(self._props.top, val)
+    def prop_above(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_above(value)
 
     @property
     def prop_below(self) -> UnitMM | None:
         """
         Gets/Sets below.
         """
-        pv = self._get(self._props.bottom)
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return self._get_prop_below()
 
     @prop_below.setter
-    def prop_below(self, value: float | UnitObj | None):
-        if value is None:
-            self._remove(self._props.bottom)
-            return
-        try:
-            val = value.get_value_mm100()
-        except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        self._set(self._props.bottom, val)
+    def prop_below(self, value: TblAbsUnit | TblRelUnit | None):
+        self._set_prop_below(value)
 
     @property
     def _props(self) -> TablePropertiesProps:
@@ -413,6 +430,143 @@ class _TblAuto(AbstractDocument):
     # endregion Properties
 
 
+# region Table size in MM units
+
+
+class _TblAuto(_SharedAuto):
+    def __init__(
+        self,
+        *,
+        width: TblAbsUnit | None = None,
+        left: TblAbsUnit | None = None,
+        right: TblAbsUnit | None = None,
+        above: TblAbsUnit | None = None,
+        below: TblAbsUnit | None = None,
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            width (TblAbsUnit, optional): Table width value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            left (TblAbsUnit, optional): Spacing Left value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            right (TblAbsUnit, optional): Spacing Right value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            above (TblAbsUnit, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+            below (TblAbsUnit, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
+        """
+        # only Above and Below properties are used in this class
+        super().__init__(width=width, left=left, right=right, above=above, below=below)
+
+    # region Static Methods
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TTblAuto], obj: Any) -> _TTblAuto:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO Object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            TblAuto: ``TblAuto`` Instance.
+        """
+        return _TblAuto._from_obj(cls, obj, **kwargs)
+
+    # endregion from_obj()
+
+    @staticmethod
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO Object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            Options: Instance that represents Frame Wrap Settings.
+        """
+        inst = clazz(**kwargs)
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{clazz.__name__}"')
+        inst._set_props_from_obj(obj)
+        return inst
+
+    # endregion Static Methods
+
+    # region Properties
+    @property
+    def prop_width(self) -> UnitMM | None:
+        """
+        Gets/Sets Width.
+        """
+        return self._get_prop_width()
+
+    @prop_width.setter
+    def prop_width(self, value: TblAbsUnit | None):
+        self._set_prop_width(value)
+
+    @property
+    def prop_left(self) -> UnitMM | None:
+        """
+        Gets/Sets Left.
+        """
+        return self._get_prop_left()
+
+    @prop_left.setter
+    def prop_left(self, value: TblAbsUnit | None):
+        self._set_prop_left(value)
+
+    @property
+    def prop_right(self) -> UnitMM | None:
+        """
+        Gets/Sets Right.
+        """
+        return self._get_prop_right()
+
+    @prop_right.setter
+    def prop_right(self, value: TblAbsUnit | None):
+        self._set_prop_right(value)
+
+    @property
+    def prop_above(self) -> UnitMM | None:
+        """
+        Gets/Sets above.
+        """
+        return self._get_prop_above()
+
+    @prop_above.setter
+    def prop_above(self, value: TblAbsUnit | None):
+        self._set_prop_above(value)
+
+    @property
+    def prop_below(self) -> UnitMM | None:
+        """
+        Gets/Sets below.
+        """
+        return self._get_prop_below()
+
+    @prop_below.setter
+    def prop_below(self, value: TblAbsUnit | None):
+        self._set_prop_below(value)
+
+    # endregion Properties
+
+
 class _TblCenterWidth(_TblAuto):
     """
     Sets the table width using a width value and centers the table.
@@ -422,9 +576,11 @@ class _TblCenterWidth(_TblAuto):
     # only width is used directly
 
     # region internal Methods
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
         # max right value is the neg value of page text area
         # max width is page text area * 2
+        if self.prop_width is None:
+            return
         page_txt_width = self._prop_page_text_size.width
         width100 = self.prop_width.get_value_mm100()
         if width100 > page_txt_width * 2:
@@ -461,7 +617,7 @@ class _TblCenterWidth(_TblAuto):
     def _post_init(self) -> None:
         self._set(self._props.hori_orient, TableAlignKind.CENTER.value)
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies Styling to object
 
@@ -480,16 +636,16 @@ class _TblCenterWidth(_TblAuto):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblCenterWidth:
+    def from_obj(cls, obj: Any) -> _TblCenterWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblCenterWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblCenterWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterWidth:
         """
         Gets instance from object
 
@@ -505,9 +661,8 @@ class _TblCenterWidth(_TblAuto):
         return _TblCenterWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblAuto._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblAuto._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -523,9 +678,11 @@ class _TblLeft(_TblCenterWidth):
 
     # region internal Methods
 
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
         # max right value is the neg value of page text area
         # max width is page text area * 2
+        if self.prop_right is None:
+            return
         self._set(self._props.left, 0)
         page_txt_width = self._prop_page_text_size.width
         margin = self.prop_right.get_value_mm100()
@@ -535,9 +692,9 @@ class _TblLeft(_TblCenterWidth):
             self._set(self._props.width, page_txt_width)
             return
 
-        # minimum width allowed for table seems to be 1.22 mm
-        min_width100 = 122
         if margin > 0:
+            # minimum width allowed for table seems to be 1.22 mm
+            min_width100 = 122
             if margin > page_txt_width + min_width100:
                 margin = page_txt_width - min_width100
             width100 = page_txt_width - margin
@@ -566,16 +723,16 @@ class _TblLeft(_TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblLeft:
+    def from_obj(cls, obj: Any) -> _TblLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblLeft:
         """
         Gets instance from object
 
@@ -591,9 +748,8 @@ class _TblLeft(_TblCenterWidth):
         return _TblLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblCenterWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -609,9 +765,11 @@ class _TblLeftWidth(_TblLeft):
 
     # region internal Methods
 
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
         # max right value is the neg value of page text area
         # max width is page text area * 2
+        if self.prop_width is None:
+            return
         self._set(self._props.left, 0)
         tbl_min_width = 122
         page_txt_width = self._prop_page_text_size.width
@@ -636,16 +794,16 @@ class _TblLeftWidth(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblLeftWidth:
+    def from_obj(cls, obj: Any) -> _TblLeftWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblLeftWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblLeftWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblLeftWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblLeftWidth:
         """
         Gets instance from object
 
@@ -661,9 +819,8 @@ class _TblLeftWidth(_TblLeft):
         return _TblLeftWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblLeft._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblLeft._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -681,9 +838,11 @@ class _TblRight(_TblLeft):
     def _post_init(self) -> None:
         self._set(self._props.hori_orient, TableAlignKind.RIGHT.value)
 
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
         # max right value is the neg value of page text area
         # max width is page text area * 2
+        if self.prop_left is None:
+            return
         self._set(self._props.right, 0)
         page_txt_width = self._prop_page_text_size.width
         margin = self.prop_left.get_value_mm100()
@@ -693,9 +852,9 @@ class _TblRight(_TblLeft):
             self._set(self._props.width, page_txt_width)
             return
 
-        # minimum width allowed for table seems to be 1.22 mm
-        min_width100 = 122
         if margin > 0:
+            # minimum width allowed for table seems to be 1.22 mm
+            min_width100 = 122
             if margin > page_txt_width + min_width100:
                 margin = page_txt_width - min_width100
             width100 = page_txt_width - margin
@@ -718,16 +877,16 @@ class _TblRight(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRight:
+    def from_obj(cls, obj: Any) -> _TblRight:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRight:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRight:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRight:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRight:
         """
         Gets instance from object
 
@@ -743,9 +902,8 @@ class _TblRight(_TblLeft):
         return _TblRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblLeft._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblLeft._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -757,7 +915,9 @@ class _TblRightWidth(_TblRight):
     """
 
     # region override Methods
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
+        if self.prop_width is None:
+            return
         self._set(self._props.right, 0)
         tbl_min_width = 122
         page_txt_width = self._prop_page_text_size.width
@@ -782,16 +942,16 @@ class _TblRightWidth(_TblRight):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRightWidth:
+    def from_obj(cls, obj: Any) -> _TblRightWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRightWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRightWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRightWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRightWidth:
         """
         Gets instance from object
 
@@ -807,9 +967,8 @@ class _TblRightWidth(_TblRight):
         return _TblRightWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblRight._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblRight._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -827,9 +986,11 @@ class _TblCenterLeft(_TblLeft):
     def _post_init(self) -> None:
         self._set(self._props.hori_orient, TableAlignKind.CENTER.value)
 
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
         # max right value is the neg value of page text area
         # max width is page text area * 2
+        if self.prop_left is None:
+            return
         page_txt_width = self._prop_page_text_size.width
         margin = self.prop_left.get_value_mm100()
         # minimum width allowed for table seems to be 1.22 mm
@@ -859,16 +1020,16 @@ class _TblCenterLeft(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblCenterLeft:
+    def from_obj(cls, obj: Any) -> _TblCenterLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblCenterLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblCenterLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterLeft:
         """
         Gets instance from object
 
@@ -884,9 +1045,8 @@ class _TblCenterLeft(_TblLeft):
         return _TblCenterLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblLeft._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblLeft._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -904,14 +1064,15 @@ class _TblFromLeft(_TblLeft):
     def _post_init(self) -> None:
         self._set(self._props.hori_orient, TableAlignKind.FROM_LEFT.value)
 
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
         # the total of width + left + right = page_txt_width
         # when left changes the width remains the same and right can become a neg value
         # if width exceeds page_txt_width then is set to page_txt_width, left and right become 0
         # min table width 1.22 mm
 
         # if left exceeds page_txt_width then left is set to page_txt_width, width is unchanged and right is set to neg width
-
+        if self.prop_left is None:
+            return
         page_txt_width = self._prop_page_text_size.width
         margin = self.prop_left.get_value_mm100()
         tbl_width = int(mProps.Props.get(obj, self._props.width))
@@ -931,16 +1092,16 @@ class _TblFromLeft(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblFromLeft:
+    def from_obj(cls, obj: Any) -> _TblFromLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeft:
         """
         Gets instance from object
 
@@ -956,9 +1117,8 @@ class _TblFromLeft(_TblLeft):
         return _TblFromLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblLeft._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblLeft._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -976,13 +1136,16 @@ class _TblFromLeftWidth(_TblCenterWidth):
     def _post_init(self) -> None:
         self._set(self._props.hori_orient, TableAlignKind.FROM_LEFT.value)
 
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
+        # sourcery skip: extract-duplicate-method
         # the total of width + left + right = page_txt_width.
         # when width changes left stays the same and right gets adjusted conditionally.
         #   if right is 0 then width will reduce left.
         # if width exceeds page_txt_width then is set to page_txt_width, left and right become 0/
         # min table width 1.22 mm.
 
+        if self.prop_width is None:
+            return
         page_txt_width = self._prop_page_text_size.width
         tbl_min_width = 122
 
@@ -1011,16 +1174,16 @@ class _TblFromLeftWidth(_TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblFromLeftWidth:
+    def from_obj(cls, obj: Any) -> _TblFromLeftWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeftWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeftWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblFromLeftWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeftWidth:
         """
         Gets instance from object
 
@@ -1036,9 +1199,8 @@ class _TblFromLeftWidth(_TblCenterWidth):
         return _TblFromLeftWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblCenterWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1055,8 +1217,11 @@ class _TblManualLeftRight(_TblCenterWidth):
     def _post_init(self) -> None:
         self._set(self._props.hori_orient, TableAlignKind.MANUAL.value)
 
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
+        # sourcery skip: extract-duplicate-method, use-assigned-variable
         # left, right, width must added up to page_txt_width
+        if self.prop_left is None or self.prop_right is None:
+            return
         page_txt_width = self._prop_page_text_size.width
         tbl_min_width = 122
         left100 = self.prop_left.get_value_mm100()
@@ -1084,16 +1249,16 @@ class _TblManualLeftRight(_TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblManualLeftRight:
+    def from_obj(cls, obj: Any) -> _TblManualLeftRight:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblManualLeftRight:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblManualLeftRight:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblManualLeftRight:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblManualLeftRight:
         """
         Gets instance from object
 
@@ -1109,9 +1274,8 @@ class _TblManualLeftRight(_TblCenterWidth):
         return _TblManualLeftRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblCenterWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblCenterWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1125,10 +1289,12 @@ class _TblManualCenter(_TblManualLeftRight):
     # all properties of init are used in this class
 
     # region Overrides
-    def _set_width_properties(self, obj: object) -> None:
+    def _set_width_properties(self, obj: Any) -> None:
         # get the left, right and center values.
         # Calculate the difference between current width and
         # existing width. Apply the values
+        if self.prop_width is None:
+            return
         page_txt_width = self._prop_page_text_size.width
         tbl_min_width = 122
         width = self.prop_width.get_value_mm100()
@@ -1179,16 +1345,16 @@ class _TblManualCenter(_TblManualLeftRight):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblManualCenter:
+    def from_obj(cls, obj: Any) -> _TblManualCenter:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblManualCenter:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblManualCenter:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblManualCenter:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblManualCenter:
         """
         Gets instance from object
 
@@ -1204,9 +1370,8 @@ class _TblManualCenter(_TblManualLeftRight):
         return _TblManualCenter._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblManualLeftRight._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
+        return _TblManualLeftRight._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1217,7 +1382,7 @@ class _TblManualCenter(_TblManualLeftRight):
 # region Table size in percentage units
 
 
-class _TblRelLeftByWidth(_TblAuto):
+class _TblRelLeftByWidth(_SharedAuto):
     """
     Relative Table size. Set table right margin using width as a percentage value.
     """
@@ -1242,7 +1407,7 @@ class _TblRelLeftByWidth(_TblAuto):
             above (TblRelUnit, optional): Spacing Above value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
             below (TblRelUnit, optional): Spacing Below value in ``mm`` units or :ref:`proto_unit_obj`. Default ``0``.
         """
-        # right is ommited from constructor because it is (100 - width)
+        # right is omitted from constructor because it is (100 - width)
         # width and right are calculated and stored as 1/100th mm
         super().__init__(width=width, left=left, right=right, above=above, below=below)
 
@@ -1277,11 +1442,11 @@ class _TblRelLeftByWidth(_TblAuto):
             self._set(self._props.rel_width, self.prop_width.value)
         super()._set_defaults()
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         self._set_width_properties()
         return super().apply(obj, **kwargs)
 
-    def _set_props_from_obj(self, obj: object) -> None:
+    def _set_props_from_obj(self, obj: Any) -> None:
         super()._set_props_from_obj(obj)
 
         rel = self._get_relative_values()
@@ -1295,16 +1460,16 @@ class _TblRelLeftByWidth(_TblAuto):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
         """
         Gets instance from object
 
@@ -1320,9 +1485,8 @@ class _TblRelLeftByWidth(_TblAuto):
         return _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblAuto._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblRelLeftByWidth], obj: Any, **kwargs) -> _TTblRelLeftByWidth:
+        return _SharedAuto._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1338,11 +1502,7 @@ class _TblRelLeftByWidth(_TblAuto):
     @prop_width.setter
     def prop_width(self, value: int | Intensity):
         val = Intensity(int(value))
-        if val.value == 0:
-            # min value is always 1
-            self._prop_width = 1
-        else:
-            self._prop_width = val.value
+        self._prop_width = 1 if val.value == 0 else val.value
 
     @property
     def prop_left(self) -> Intensity:
@@ -1419,16 +1579,16 @@ class _TblRelLeftByRight(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
         """
         Gets instance from object
 
@@ -1444,9 +1604,8 @@ class _TblRelLeftByRight(_TblRelLeftByWidth):
         return _TblRelLeftByRight._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblRelLeftByWidth], obj: Any, **kwargs) -> _TTblRelLeftByWidth:
+        return _TblRelLeftByWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1480,16 +1639,9 @@ class _TblRelFromLeft(_TblRelLeftByWidth):
             left_per = self.prop_left.value
 
         width_factor = self.prop_width.value / 100
-        if left_per == 0:
-            left_factor = 0
-        else:
-            left_factor = left_per / 100
-
+        left_factor = 0 if left_per == 0 else left_per / 100
         width = round(page_txt_width * width_factor)
-        if left_factor == 0:
-            left = 0
-        else:
-            left = round(page_txt_width * left_factor)
+        left = 0 if left_factor == 0 else round(page_txt_width * left_factor)
         while left + width > page_txt_width:
             # just in case rounding caused total to be more than page_width
             left -= 1
@@ -1505,16 +1657,16 @@ class _TblRelFromLeft(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRelFromLeft:
+    def from_obj(cls, obj: Any) -> _TblRelFromLeft:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelFromLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelFromLeft:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelFromLeft:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelFromLeft:
         """
         Gets instance from object
 
@@ -1530,9 +1682,8 @@ class _TblRelFromLeft(_TblRelLeftByWidth):
         return _TblRelFromLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblRelLeftByWidth], obj: Any, **kwargs) -> _TTblRelLeftByWidth:
+        return _TblRelLeftByWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1551,6 +1702,7 @@ class _TblRelRightByWidth(_TblRelLeftByWidth):
         self._set(self._props.hori_orient, TableAlignKind.RIGHT.value)
 
     def _set_width_properties(self) -> None:
+        # sourcery skip: extract-duplicate-method
         page_txt_width = self._prop_page_text_size.width
         if self.prop_width.value == 100:
             self._set(self._props.width, page_txt_width)
@@ -1575,16 +1727,16 @@ class _TblRelRightByWidth(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRelRightByWidth:
+    def from_obj(cls, obj: Any) -> _TblRelRightByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelRightByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelRightByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelRightByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelRightByWidth:
         """
         Gets instance from object
 
@@ -1600,9 +1752,8 @@ class _TblRelRightByWidth(_TblRelLeftByWidth):
         return _TblRelRightByWidth._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblRelLeftByWidth], obj: Any, **kwargs) -> _TTblRelLeftByWidth:
+        return _TblRelLeftByWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1616,10 +1767,10 @@ class _TblRelRightByLeft(_TblRelRightByWidth):
     # region internal methods
     def _set_width_properties(self) -> None:
         page_txt_width = self._prop_page_text_size.width
-        tbl_min_width100 = 122
         self._set(self._props.right, 0)
         if self.prop_left.value >= 99:
             self._set(self._props.rel_width, 1)
+            tbl_min_width100 = 122
             self._set(self._props.width, tbl_min_width100)
             self._set(self._props.left, page_txt_width - tbl_min_width100)
             return
@@ -1654,16 +1805,16 @@ class _TblRelRightByLeft(_TblRelRightByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelLeftByWidth:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
         """
         Gets instance from object
 
@@ -1679,9 +1830,8 @@ class _TblRelRightByLeft(_TblRelRightByWidth):
         return _TblRelRightByLeft._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblRelRightByWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblRelLeftByWidth], obj: Any, **kwargs) -> _TTblRelLeftByWidth:
+        return _TblRelRightByWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1700,6 +1850,7 @@ class _TblRelCenter(_TblRelLeftByWidth):
         self._set(self._props.hori_orient, TableAlignKind.CENTER.value)
 
     def _set_width_properties(self) -> None:
+        # sourcery skip: extract-duplicate-method
         page_width = self._prop_page_text_size.width
         if self.prop_width.value == 100:
             self._set(self._props.width, page_width)
@@ -1732,16 +1883,16 @@ class _TblRelCenter(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> _TblRelCenter:
+    def from_obj(cls, obj: Any) -> _TblRelCenter:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelCenter:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelCenter:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> _TblRelCenter:
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelCenter:
         """
         Gets instance from object
 
@@ -1757,9 +1908,8 @@ class _TblRelCenter(_TblRelLeftByWidth):
         return _TblRelCenter._from_obj(cls, obj, **kwargs)
 
     @staticmethod
-    def _from_obj(cls: Type[_TTblAuto], obj: object, **kwargs) -> _TTblAuto:
-        inst = _TblRelLeftByWidth._from_obj(cls, obj, **kwargs)
-        return inst
+    def _from_obj(clazz: Type[_TTblRelLeftByWidth], obj: Any, **kwargs) -> _TTblRelLeftByWidth:
+        return _TblRelLeftByWidth._from_obj(clazz, obj, **kwargs)
 
     # endregion from_obj()
     # endregion static methods
@@ -1821,11 +1971,11 @@ class TableProperties(StyleMulti):
 
         Args:
             name (str, optional): Specifies frame name. Space are NOT allowed in names
-            width (RelativeSize, AbsoluteSize, optional): Specifies table Width.
-            left (RelativeSize, AbsoluteSize, optional): Specifies table Left.
-            right (RelativeSize, AbsoluteSize, optional): Specifies table Right.
-            above (RelativeSize, AbsoluteSize, optional): Specifies table spacing above.
-            below (RelativeSize, AbsoluteSize, optional): Specifies table spacing below.
+            width (TblAbsUnit, TblRelUnit, optional): Specifies table Width.
+            left (TblAbsUnit, TblRelUnit, optional): Specifies table Left.
+            right (TblAbsUnit, TblRelUnit, optional): Specifies table Right.
+            above (TblAbsUnit, TblRelUnit, optional): Specifies table spacing above.
+            below (TblAbsUnit, TblRelUnit, optional): Specifies table spacing below.
             align (TableAlignKind, optional): Specifies table alignment.
             relative (bool, optional): Specifies if table horizontal values are in percentages or ``mm`` units.
 
@@ -1846,7 +1996,7 @@ class TableProperties(StyleMulti):
         self._prop_align = align
         self._prop_relative = relative
 
-        if not align is None:
+        if align is not None:
             size_obj = self._get_size_class(
                 relative=relative,
                 align=align,
@@ -1862,7 +2012,7 @@ class TableProperties(StyleMulti):
 
     # region Overrides
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -1876,14 +2026,11 @@ class TableProperties(StyleMulti):
         # for some reason setting Name property raises "UnknownPropertyException" when "setPropertyValue()" is used (Which Props.set() uses).
         # However, setting Name via setattr() works fine.
         # for this reason this class cancels setting of Name property and sets it via setattr() here.
-        if self._has(self._props.name):
-            if hasattr(obj, self._props.name):
-                # check if name has changed and only apply if changed.
-                # LibreOffice raises RuntimeError if attempt is made to set the same name.
-                name = getattr(obj, self._props.name)
-                if name != self.prop_name:
-                    # not case sensitive
-                    setattr(obj, self._props.name, self.prop_name)
+        if self._has(self._props.name) and hasattr(obj, self._props.name):
+            name = getattr(obj, self._props.name)
+            if name != self.prop_name:
+                # not case sensitive
+                setattr(obj, self._props.name, self.prop_name)
 
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == self._props.name:
@@ -1899,7 +2046,7 @@ class TableProperties(StyleMulti):
             self._supported_services_values = _get_default_tbl_services()
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -1924,19 +2071,19 @@ class TableProperties(StyleMulti):
         if relative:
             return self._get_size_rel_class(
                 align=align,
-                width=width,
-                left=left,
-                right=right,
-                above=above,
-                below=below,
+                width=cast(Union[TblRelUnit, None], width),
+                left=cast(Union[TblRelUnit, None], left),
+                right=cast(Union[TblRelUnit, None], right),
+                above=cast(Union[TblRelUnit, None], above),
+                below=cast(Union[TblRelUnit, None], below),
             )
         return self._get_size_abs_class(
             align=align,
-            width=width,
-            left=left,
-            right=right,
-            above=above,
-            below=below,
+            width=cast(Union[TblAbsUnit, None], width),
+            left=cast(Union[TblAbsUnit, None], left),
+            right=cast(Union[TblAbsUnit, None], right),
+            above=cast(Union[TblAbsUnit, None], above),
+            below=cast(Union[TblAbsUnit, None], below),
         )
 
     def _get_size_abs_class(
@@ -2020,8 +2167,8 @@ class TableProperties(StyleMulti):
         right: TblRelUnit | None = None,
         above: TblRelUnit | None = None,
         below: TblRelUnit | None = None,
-    ) -> _TblAuto:
-        def check_req(*args: Tuple[str, any]) -> None:
+    ) -> _TTblAuto | _TTblRelLeftByWidth:  # type: ignore
+        def check_req(*args: Any) -> bool:
             for arg in args:
                 if arg is None:
                     return False
@@ -2034,17 +2181,24 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is True."
                     )
-                return _TblRelCenter(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return cast(
+                    _TTblRelLeftByWidth,
+                    _TblRelCenter(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs()),
+                )
             else:
-                return _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return cast(
+                    _TTblAuto,
+                    _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),
+                )
         if align == TableAlignKind.FROM_LEFT:
             ck = check_req(width, left)
             if not ck:
                 raise ValueError(
                     f"width and left are required when align is set to {align.name} and relative value is True."
                 )
-            return _TblRelFromLeft(
-                above=above, below=below, width=width, left=left, _cattribs=self._get_tbl_cattribs()
+            return cast(
+                _TTblRelLeftByWidth,
+                _TblRelFromLeft(above=above, below=below, width=width, left=left, _cattribs=self._get_tbl_cattribs()),
             )
         if align == TableAlignKind.LEFT:
             if width is None:
@@ -2053,9 +2207,15 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"right or width are required when align is set to {align.name} and relative value is True."
                     )
-                return _TblRelLeftByRight(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs())
+                return cast(
+                    _TTblRelLeftByWidth,
+                    _TblRelLeftByRight(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs()),
+                )
             else:
-                return _TblRelLeftByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return cast(
+                    _TTblRelLeftByWidth,
+                    _TblRelLeftByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),
+                )
         if align == TableAlignKind.RIGHT:
             if width is None:
                 ck = check_req(left)
@@ -2063,9 +2223,15 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is True."
                     )
-                return _TblRelRightByLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return cast(
+                    _TTblRelLeftByWidth,
+                    _TblRelRightByLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs()),
+                )
             else:
-                return _TblRelRightByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return cast(
+                    _TTblRelLeftByWidth,
+                    _TblRelRightByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),
+                )
         if align == TableAlignKind.AUTO:
             raise ValueError('align must not be set to "TableAlignKind.AUTO" when relative is set to False')
         if align == TableAlignKind.MANUAL:
@@ -2086,16 +2252,16 @@ class TableProperties(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableProperties], obj: object) -> _TTableProperties:
+    def from_obj(cls: Type[_TTableProperties], obj: Any) -> _TTableProperties:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableProperties], obj: object, **kwargs) -> _TTableProperties:
+    def from_obj(cls: Type[_TTableProperties], obj: Any, **kwargs) -> _TTableProperties:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTableProperties], obj: object, **kwargs) -> _TTableProperties:
+    def from_obj(cls: Type[_TTableProperties], obj: Any, **kwargs) -> _TTableProperties:
         """
         Gets instance from object
 
@@ -2108,6 +2274,7 @@ class TableProperties(StyleMulti):
         Returns:
             TableProperties: Instance that represents Table options.
         """
+        # sourcery skip: merge-else-if-into-elif
         # this nu is only used to get Property Name
 
         inst = cls(**kwargs)
@@ -2173,13 +2340,11 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.width))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     def get_left_mm(self) -> UnitMM | None:
         """
@@ -2194,13 +2359,11 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.left))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     def get_right_mm(self) -> UnitMM | None:
         """
@@ -2215,13 +2378,11 @@ class TableProperties(StyleMulti):
         Note:
             This method may return None if ``apply()`` has not yet been called.
         """
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.right))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     # endregion Methods
 
@@ -2249,15 +2410,12 @@ class TableProperties(StyleMulti):
 
     @property
     def _prop_obj(self) -> Any:
-        """Gets inner instance if exst."""
+        """Gets inner instance if exist."""
         try:
             return self._prop_inner_obj
         except AttributeError:
             val = self._get_style("size")
-            if val is None:
-                self._prop_inner_obj = None
-            else:
-                self._prop_inner_obj = val.style
+            self._prop_inner_obj = None if val is None else val.style
         return self._prop_inner_obj
 
     @property
@@ -2281,10 +2439,8 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_width_mm`.
         """
-        po = cast(_TTblAuto, self._prop_obj)
-        if po is None:
-            return None
-        return po.prop_width
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
+        return None if po is None else po.prop_width
 
     @property
     def prop_left(self) -> UnitMM | Intensity | None:
@@ -2297,10 +2453,8 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_left_mm`.
         """
-        po = cast(_TTblAuto, self._prop_obj)
-        if po is None:
-            return None
-        return po.prop_left
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
+        return None if po is None else po.prop_left
 
     @property
     def prop_right(self) -> UnitMM | Intensity | None:
@@ -2313,32 +2467,26 @@ class TableProperties(StyleMulti):
         See Also:
             :py:meth:`~.table_properties.TableProperties.get_right_mm`.
         """
-        po = cast(_TTblAuto, self._prop_obj)
-        if po is None:
-            return None
-        return po.prop_right
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
+        return None if po is None else po.prop_right
 
     @property
     def prop_above(self) -> UnitMM | None:
         """Gets above value"""
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.top))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @property
     def prop_below(self) -> UnitMM | None:
         """Gets below value"""
-        po = cast(_TTblAuto, self._prop_obj)
+        po = cast(_TSharedAuto, self._prop_obj)  # type: ignore
         if po is None:
             return None
         pv = cast(int, po._get(self._props.bottom))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @property
     def _props(self) -> TablePropertiesProps:

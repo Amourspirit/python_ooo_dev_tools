@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, TYPE_CHECKING
+from typing import Tuple, TYPE_CHECKING, Any, overload
 from ..format.inner.kind.format_kind import FormatKind as FormatKind
 
 if TYPE_CHECKING:
@@ -18,9 +18,14 @@ class StyleObj(Protocol):
     Protocol Class for Styles
     """
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any) -> None:
         """Applies style"""
         ...
+
+    # @overload
+    # def apply(self, obj: Any, **kwargs: Any) -> None:
+    #     """Applies style"""
+    #     ...
 
     def get_props(self) -> Tuple[PropertyValue, ...]:
         """Gets Properties"""
@@ -35,7 +40,7 @@ class StyleObj(Protocol):
         """
         ...
 
-    def backup(self, obj: object) -> None:
+    def backup(self, obj: Any) -> None:
         """
         Backs up Attributes that are to be changed by apply.
 
@@ -49,7 +54,7 @@ class StyleObj(Protocol):
         """
         ...
 
-    def restore(self, obj: object, clear: bool = False) -> None:
+    def restore(self, obj: Any, clear: bool = False) -> None:
         """
         Restores ``obj`` properties from backed up setting if any exist.
 
@@ -75,7 +80,7 @@ class StyleObj(Protocol):
             service: expandable list of service names of UNO services such as ``com.sun.star.text.TextFrame``.
 
         Returns:
-            bool: ``True`` if service is supported; Otherwise, ``Fasle``.
+            bool: ``True`` if service is supported; Otherwise, ``False``.
         """
         ...
 

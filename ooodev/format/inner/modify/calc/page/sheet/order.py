@@ -21,6 +21,10 @@ class Order(CellStyleBase):
     """
     Page Style Order.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_sheet`
+
     .. versionadded:: 0.9.0
     """
 
@@ -44,6 +48,9 @@ class Order(CellStyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_sheet`
         """
 
         super().__init__(style_name=style_name, style_family=style_family)
@@ -110,9 +117,8 @@ class Order(CellStyleBase):
         if value is None:
             self._remove(self._props.first_pg)
             return
-        if value < 0:
-            # zero for no page number
-            value = 0
+        # zero for no page number
+        value = max(value, 0)
         self._set(self._props.first_pg, value)
 
     @property

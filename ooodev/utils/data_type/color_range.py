@@ -15,5 +15,5 @@ class ColorRange:
         check(
             isinstance(self.start, int) and isinstance(self.end, int),
             f"{self}",
-            f"Color range values must be of Type 'Color' or int",
+            "Color range values must be of Type 'Color' or int",
         )

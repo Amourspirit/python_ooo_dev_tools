@@ -54,19 +54,19 @@ General function used to run these examples:
                     |short_ptext|
                 )
 
-            with Lo.Loader(Lo.ConnectSocket()):
-                doc = Write.create_doc()
-                GUI.set_visible(True, doc)
-                Lo.delay(500)
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                with Lo.Loader(Lo.ConnectSocket()):
+                    doc = Write.create_doc()
+                    GUI.set_visible(True, doc)
+                    Lo.delay(500)
+                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                cursor = Write.get_cursor(doc)
-                tf = Hyphenation(auto=True)
-                Write.append_para(cursor=cursor, text=p_txt, styles=[tf])
+                    cursor = Write.get_cursor(doc)
+                    tf = Hyphenation(auto=True)
+                    Write.append_para(cursor=cursor, text=p_txt, styles=[tf])
 
-                Lo.delay(1_000)
-                Lo.close_doc(doc)
-            return 0
+                    Lo.delay(1_000)
+                    Lo.close_doc(doc)
+                return 0
 
 
             if __name__ == "__main__":
@@ -173,12 +173,17 @@ Set Breaks
 
         Writer Style Inspector with the paragraph text flow settings.
 
+Related Topics
+--------------
+
 .. seealso::
 
    .. cssclass:: ul-list
 
+        - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_para_text_flow`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.text_flow.Breaks`

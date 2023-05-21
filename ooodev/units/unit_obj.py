@@ -16,6 +16,10 @@ class UnitObj(Protocol):
     """
     Protocol Class for units.
 
+    .. seealso::
+
+        :ref:`ns_units`
+
     .. _proto_unit_obj:
 
     UnitObj
@@ -23,8 +27,14 @@ class UnitObj(Protocol):
 
     """
 
-    value: Real
-    """Unit actual value. Generally a ``float`` or ``int``"""
+    # if value is a attribute and not a property then value: Union[float, int] will not work.
+    # a property can be a float only and still work. int is a subclass of float.
+    # see: https://mypy.readthedocs.io/en/stable/common_issues.html#covariant-subtyping-of-mutable-protocol-members-is-rejected
+
+    @property
+    def value(self) -> float | int:
+        """Unit actual value. Generally a ``float`` or ``int``"""
+        ...
 
     def get_value_mm(self) -> float:
         """

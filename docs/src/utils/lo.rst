@@ -1,3 +1,5 @@
+.. _utils_lo:
+
 Class Lo
 ========
 

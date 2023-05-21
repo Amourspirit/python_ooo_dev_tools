@@ -2,12 +2,25 @@
 from __future__ import annotations
 from typing import Any, Tuple, overload
 
+import uno
+from com.sun.star.awt import XBitmap
 from com.sun.star.graphic import XGraphic
-from ooodev.utils import lo as mLo
-from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-from ooodev.meta.disabled_method import DisabledMethod
 
+from ooo.dyn.drawing.rectangle_point import RectanglePoint
+
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.utils import lo as mLo
+from ooodev.utils.data_type.offset import Offset
+from ooodev.format.inner.direct.write.fill.area.img import (
+    SizeMM,
+    SizePercent,
+    OffsetColumn,
+    OffsetRow,
+    ImgStyleKind,
+)
+from ooodev.format.inner.preset.preset_image import PresetImageKind
 from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
+from ooodev.meta.disabled_method import DisabledMethod
 from ooodev.format.inner.direct.write.para.area.img import Img as ParaImg
 
 # endregion Imports
@@ -17,11 +30,62 @@ class Img(ParaImg):
     """
     Class for table background image.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_table_background`
+
     .. versionadded:: 0.9.0
     """
 
-    from_obj = DisabledMethod()
+    from_obj = DisabledMethod()  # type: ignore[assignment] #
     """From object is not supported in this class."""
+
+    def __init__(
+        self,
+        *,
+        bitmap: XBitmap | None = None,
+        name: str = "",
+        mode: ImgStyleKind = ImgStyleKind.TILED,
+        size: SizePercent | SizeMM | None = None,
+        position: RectanglePoint | None = None,
+        pos_offset: Offset | None = None,
+        tile_offset: OffsetColumn | OffsetRow | None = None,
+        auto_name: bool = False,
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            bitmap (XBitmap, optional): Bitmap instance. If ``name`` is not already in the Bitmap Table then this property is required.
+            name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
+            mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
+            size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
+            position (RectanglePoint): Tiling position of Image.
+            pos_offset (Offset, optional): Tiling position offset.
+            tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
+            auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
+
+        Returns:
+            None:
+
+        Note:
+            If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
+            All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_table_borders`
+        """
+        super().__init__(
+            bitmap=bitmap,
+            name=name,
+            mode=mode,
+            size=size,
+            position=position,
+            pos_offset=pos_offset,
+            tile_offset=tile_offset,
+            auto_name=auto_name,
+        )
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -36,15 +100,16 @@ class Img(ParaImg):
         return super()._on_multi_child_style_applying(source, event_args)
 
     # region apply()
+
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 

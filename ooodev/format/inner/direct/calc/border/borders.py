@@ -122,14 +122,14 @@ class Borders(StyleMulti):
         super().__init__(**init_vals)
         if border_table.prop_has_attribs:
             self._set_style("border_table", border_table, *border_table.get_attrs())
-        if not padding_fmt is None:
+        if padding_fmt is not None:
             self._set_style("padding", padding_fmt, *padding_fmt.get_attrs())
 
-        if not shadow_fmt is None:
+        if shadow_fmt is not None:
             self._set_style("shadow", shadow_fmt)
-        if not diag_dn is None:
+        if diag_dn is not None:
             self._set_style("diag_dn", diag_dn)
-        if not diag_up is None:
+        if diag_up is not None:
             self._set_style("diag_up", diag_up)
 
     # endregion init
@@ -198,10 +198,10 @@ class Borders(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -215,30 +215,22 @@ class Borders(StyleMulti):
 
     # endregion apply()
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
-
     # endregion Overrides
 
     # region Static Methods
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any) -> _TBorders:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         """
         Gets Borders instance from object
 
@@ -312,7 +304,7 @@ class Borders(StyleMulti):
         bt.prop_right = value
         bt.prop_top = value
         bt.prop_bottom = value
-        cp._border_table = bt
+        cp._border_table = bt  # type: ignore
         return cp
 
     def fmt_left(self: _TBorders, value: Side | None) -> _TBorders:
@@ -432,9 +424,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
-        cp, ret = self._fmt_get_border_table(value, "vertical")
-        if ret:
-            return cp
+        cp = self.copy()
 
         bt = cast(TableBorderStruct, cp._get_style_inst("distance"))
         bt.prop_distance = value

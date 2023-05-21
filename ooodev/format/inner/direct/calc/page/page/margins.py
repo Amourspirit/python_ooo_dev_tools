@@ -50,10 +50,14 @@ class Margins(StyleBase):
         self.prop_bottom = bottom
 
     # region Internal Methods
-    def _check(self, value: float | None, name: str) -> None:
+    def _check(self, value: float | UnitObj | None, name: str) -> None:
         if value is None:
             return
-        if value < 0.0:
+        try:
+            val = value.get_value_mm()  # type: ignore
+        except AttributeError:
+            val = float(value)  # type: ignore
+        if val < 0.0:
             raise ValueError(f'"{name}" parameter must be a positive value')
 
     # endregion Internal Methods
@@ -84,7 +88,7 @@ class Margins(StyleBase):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -97,16 +101,16 @@ class Margins(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TMargins], obj: object) -> _TMargins:
+    def from_obj(cls: Type[_TMargins], obj: Any) -> _TMargins:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TMargins], obj: object, **kwargs) -> _TMargins:
+    def from_obj(cls: Type[_TMargins], obj: Any, **kwargs) -> _TMargins:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TMargins], obj: object, **kwargs) -> _TMargins:
+    def from_obj(cls: Type[_TMargins], obj: Any, **kwargs) -> _TMargins:
         """
         Gets instance from object
 
@@ -141,9 +145,7 @@ class Margins(StyleBase):
     def prop_top(self) -> UnitMM | None:
         """Gets/Sets Top value"""
         pv = cast(int, self._get(self._props.top))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_top.setter
     def prop_top(self, value: float | UnitObj | None) -> None:
@@ -152,17 +154,15 @@ class Margins(StyleBase):
             self._remove(self._props.top)
             return
         try:
-            self._set(self._props.top, value.get_value_mm100())
+            self._set(self._props.top, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_bottom(self) -> UnitMM | None:
         """Gets/Sets Bottom value"""
         pv = cast(int, self._get(self._props.bottom))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
     def prop_bottom(self, value: float | UnitObj | None) -> None:
@@ -171,17 +171,15 @@ class Margins(StyleBase):
             self._remove(self._props.bottom)
             return
         try:
-            self._set(self._props.bottom, value.get_value_mm100())
+            self._set(self._props.bottom, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_left(self) -> UnitMM | None:
         """Gets/Sets Left value"""
         pv = cast(int, self._get(self._props.left))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_left.setter
     def prop_left(self, value: float | UnitObj | None) -> None:
@@ -190,17 +188,15 @@ class Margins(StyleBase):
             self._remove(self._props.left)
             return
         try:
-            self._set(self._props.left, value.get_value_mm100())
+            self._set(self._props.left, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_right(self) -> UnitMM | None:
         """Gets/Sets Right value"""
         pv = cast(int, self._get(self._props.right))
-        if pv is None:
-            return None
-        return UnitMM.from_mm100(pv)
+        return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_right.setter
     def prop_right(self, value: float | UnitObj | None) -> None:
@@ -209,9 +205,9 @@ class Margins(StyleBase):
             self._remove(self._props.right)
             return
         try:
-            self._set(self._props.right, value.get_value_mm100())
+            self._set(self._props.right, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def _props(self) -> PageMarginProps:

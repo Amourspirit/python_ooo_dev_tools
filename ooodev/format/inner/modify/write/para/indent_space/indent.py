@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooodev.units import UnitObj
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
@@ -13,6 +13,10 @@ from ..para_style_base_multi import ParaStyleBaseMulti
 class Indent(ParaStyleBaseMulti):
     """
     Paragraph Style Indent
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_indent_spacing`
 
     .. versionadded:: 0.9.0
     """
@@ -44,6 +48,9 @@ class Indent(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_indent_spacing`
         """
 
         direct = InnerIndent(before=before, after=after, first=first, auto=auto)
@@ -55,7 +62,7 @@ class Indent(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Indent:
@@ -63,7 +70,7 @@ class Indent(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

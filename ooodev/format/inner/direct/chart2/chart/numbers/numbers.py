@@ -36,7 +36,7 @@ class Numbers(CalcNumbers):
         Args:
             chart_doc (XChartDocument): Chart document.
             num_format (NumberFormatEnum, int, optional): Type of a number format.
-                Use this to select a defatult format. Defaults to 0 (General Format).
+                Use this to select a default format. Defaults to 0 (General Format).
                 Only used if ``num_format_index`` is ``-1`` (omitted).
             num_format_index (NumberFormatIndexEnum | int, optional): Index of a number format.
                 The enumeration values represent the built-in number formats. Defaults to ``-1``.
@@ -161,7 +161,7 @@ class Numbers(CalcNumbers):
         cls: Type[_TNumbers], chart_doc: XChartDocument, index: int, lang_locale: Locale | None = None, **kwargs
     ) -> _TNumbers:
         """
-        Gets instance from number format index. This is the index that is assinged to the ``NumberFormat`` property of an object such as a cell.
+        Gets instance from number format index. This is the index that is assigned to the ``NumberFormat`` property of an object such as a cell.
 
         Args:
             chart_doc (XChartDocument): Chart document.

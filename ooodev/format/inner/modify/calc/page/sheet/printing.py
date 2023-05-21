@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import NamedTuple
 import uno
 
-from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
@@ -28,6 +27,10 @@ class PrintProps(NamedTuple):
 class Printing(CellStyleBase):
     """
     Page Style Order.
+
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_sheet`
 
     .. versionadded:: 0.9.0
     """
@@ -64,6 +67,9 @@ class Printing(CellStyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_sheet`
         """
 
         super().__init__(style_name=style_name, style_family=style_family)

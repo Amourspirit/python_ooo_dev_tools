@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
 from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum as ParagraphVertAlignEnum
@@ -19,6 +19,10 @@ class Alignment(ParaStyleBaseMulti):
     Paragraph Alignment
 
     Any properties starting with ``prop_`` set or get current instance values.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_alignment`
 
     .. versionadded:: 0.9.0
     """
@@ -53,6 +57,9 @@ class Alignment(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_alignment`
         """
 
         direct = InnerAlignment(
@@ -74,7 +81,7 @@ class Alignment(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Alignment:
@@ -82,7 +89,7 @@ class Alignment(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

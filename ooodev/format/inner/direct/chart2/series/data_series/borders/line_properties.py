@@ -20,11 +20,17 @@ class _LinePropertiesProps(NamedTuple):
 
 
 class LineProperties(StyleBase):
-    """This class represents the line properties of a chart data series borders line properties."""
+    """
+    This class represents the line properties of a chart data series borders line properties.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_borders`
+    """
 
     def __init__(
         self,
-        style: BorderLineKind = BorderLineKind.CONTINUIOUS,
+        style: BorderLineKind = BorderLineKind.CONTINUOUS,
         color: Color = Color(0),
         width: float | UnitObj = 0,
         transparency: int | Intensity = 0,
@@ -33,13 +39,16 @@ class LineProperties(StyleBase):
         Constructor.
 
         Args:
-            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUIOUS``.
+            style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
-            width (float | UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
-            transparency (int | Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
+            width (float, UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
+            transparency (int, Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_borders`
         """
         super().__init__()
         self._prop_style = style
@@ -110,8 +119,7 @@ class LineProperties(StyleBase):
 
     @prop_color.setter
     def prop_color(self, value: Color):
-        if value < 0:
-            value = 0
+        value = max(value, 0)  # type: ignore
         self._set(self._props.color1, value)
         if self._props.color2:
             self._set(self._props.color2, value)
@@ -125,11 +133,10 @@ class LineProperties(StyleBase):
     def prop_width(self, value: float | UnitObj):
         """Gets/Sets the width."""
         try:
-            val = value.get_value_mm100()
+            val = value.get_value_mm100()  # type: ignore
         except AttributeError:
-            val = UnitConvert.convert_mm_mm100(value)
-        if val < 0:
-            val = 0
+            val = UnitConvert.convert_mm_mm100(value)  # type: ignore
+        val = max(val, 0)
         self._set(self._props.width, val)
 
     @property

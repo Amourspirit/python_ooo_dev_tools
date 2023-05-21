@@ -5,14 +5,13 @@ Module for Page Style Fill Color Fill Color.
 """
 # region Import
 from __future__ import annotations
-from typing import Tuple, overload
+from typing import Any, Tuple, overload, TypeVar
 
 from com.sun.star.beans import XPropertySet
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
-from ooodev.utils.type_var import T
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.writer.style.page.kind import WriterStylePageKind
@@ -26,6 +25,8 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 # https://bugs.documentfoundation.org/show_bug.cgi?id=99125
 # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
 # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
+
+_TPageStyleBase = TypeVar("_TPageStyleBase", bound="PageStyleBase")
 
 
 class PageStyleBase(StyleBase):
@@ -41,7 +42,7 @@ class PageStyleBase(StyleBase):
     def _is_valid_obj(self, obj: object) -> bool:
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
-    def copy(self: T) -> T:
+    def copy(self: _TPageStyleBase) -> _TPageStyleBase:
         """Gets a copy of instance as a new instance"""
         cp = super().copy()
         cp.prop_style_name = self.prop_style_name
@@ -50,15 +51,19 @@ class PageStyleBase(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
         Args:
-            obj (object): UNO Writer Document
+            obj (Any): UNO Writer Document
 
         Returns:
             None:

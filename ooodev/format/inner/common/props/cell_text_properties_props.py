@@ -7,5 +7,5 @@ class CellTextPropertiesProps(NamedTuple):
 
     mode: str
     wrapped: str
-    hypen: str
+    hyphen: str
     shrink: str

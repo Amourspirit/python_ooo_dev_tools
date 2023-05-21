@@ -2,6 +2,66 @@
 Version History
 ***************
 
+Version 0.11.0
+==============
+
+Major Refactoring of entire Library. Much improved typing support.
+
+This version now has complete type support. Entire code base has been refactored to support type hints and type checking.
+
+Test have been preformed with ``pyright`` to ensure type hints are correct.
+
+Version 0.10.3
+==============
+
+Minor bug fixes and updates.
+
+Version 0.10.2
+==============
+
+Fix for Chart2 Gradient Fill class.
+
+Version 0.10.1
+==============
+
+Minor style bug fixes.
+
+
+Version 0.10.0
+==============
+
+Support dropped for Python ``3.7``. Now supporting Python ``3.8`` and up.
+
+Added Calc methods ``get_cell_protection()``, ``is_cell_protected()``, ``protect_sheet()``, ``unprotect_sheet()`` and ``is_sheet_protected()``. 
+
+Other Minor Calc tweaks.
+
+Version 0.9.8
+=============
+
+Created :ref:`ns_inst_lo` that also contains ``LoInst`` class. This class can create a new LibreOffice instance and connect to it and/or
+connect to an existing LibreOffice instance and be used for sub-components. This class is for advanced usage.
+The ``Lo`` class is still the recommended way to connect to LibreOffice and under the hood it uses ``LoInst``.
+See :ref:`ch02_multiple_docs`.
+
+
+Version 0.9.7
+=============
+
+Fix ``ooodev.utils.data_type.size_mm.SizeMM`` constructor to accept ``UnitObj`` as well as ``float``.
+
+Minor bug fixes and updates.
+
+Version 0.9.6
+=============
+
+Minor bug fixes and updates.
+
+Version 0.9.5
+=============
+
+Minor bug fixes and updates.
+
 Version 0.9.4
 =============
 
@@ -18,7 +78,7 @@ Added new event to ``ooodev.utils.props.Props.set_default()``. Now subscribers c
 Version 0.9.3
 =============
 
-Minor revisons and updates.
+Minor revisions and updates.
 
 Version 0.9.2
 =============
@@ -102,7 +162,7 @@ Added overload to ``Calc.get_sheet_names()``
 
 Added overload to ``Calc.set_sheet_name()``
 
-Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calcget_sheet(doc: XSpreadsheetDocument, idx: int)``.
+Changed ``Calc.get_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.get_sheet(doc: XSpreadsheetDocument, idx: int)``.
 ``index`` will still work but is not documented.
 
 Changed ``Calc.remove_sheet(doc: XSpreadsheetDocument, index: int)`` to ``Calc.remove_sheet(doc: XSpreadsheetDocument, idx: int)``
@@ -367,9 +427,10 @@ Version 0.5.0
 =============
 
 New modules
- - Draw
- - Chart
- - Chart2
+
+- Draw
+- Chart
+- Chart2
 
 Added ``utils.dispatch`` which as several new classes for looking up dispatch values.
 
@@ -488,7 +549,7 @@ Some methods were expecting string but got Path object.
 Version 0.4.0
 =============
 
-New more flexable and robust way of connecting to office.
+New more flexible and robust way of connecting to office.
 
 This update change :py:meth:`.Lo.load_office` method
 

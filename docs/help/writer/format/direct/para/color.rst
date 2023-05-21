@@ -91,6 +91,7 @@ Fill Color a single Paragraph
     .. figure:: https://user-images.githubusercontent.com/4193389/212850105-ab0afde4-ff6f-42e1-ac54-78c0ad4cae04.png
         :alt: Paragraph area color dialog
         :figclass: align-center
+        :width: 450px
 
         Paragraph area color dialog.
 
@@ -161,11 +162,15 @@ The fill color can be cleared by using :py:attr:`ParaStyle.default <ooodev.forma
 
         Paragraph style reset.
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list
 
         - :ref:`help_writer_format_style_para_reset_default`
+        - :ref:`help_writer_format_modify_para_color`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.area.Color`

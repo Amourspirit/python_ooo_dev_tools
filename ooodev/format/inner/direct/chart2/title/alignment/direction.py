@@ -6,6 +6,7 @@ from typing import Tuple, cast
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_writing_mode import AbstractWritingMode
+from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 
 
 class DirectionModeKind(Enum):
@@ -49,6 +50,10 @@ class Direction(AbstractWritingMode):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_title_alignment`
+
     .. versionadded:: 0.9.4
     """
 
@@ -61,8 +66,11 @@ class Direction(AbstractWritingMode):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_title_alignment`
         """
-        super().__init__(mode=mode)
+        super().__init__(mode=WritingMode2Enum(mode.value))
 
     # region overrides
     def _supported_services(self) -> Tuple[str, ...]:
@@ -75,7 +83,7 @@ class Direction(AbstractWritingMode):
     # endregion overrides
 
     # region style methods
-    def fmt_mode(self, value: DirectionModeKind | None) -> Direction:
+    def fmt_mode(self, value: DirectionModeKind) -> Direction:
         """
         Gets copy of instance with writing mode set or removed
 
@@ -86,7 +94,7 @@ class Direction(AbstractWritingMode):
             Direction: ``Direction`` instance.
         """
         cp = self.copy()
-        cp.prop_align = value
+        cp.prop_mode = value
         return cp
 
     # endregion style methods

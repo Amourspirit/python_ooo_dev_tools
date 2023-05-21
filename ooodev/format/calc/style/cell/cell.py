@@ -19,10 +19,26 @@ class Cell(StyleName):
 
     All methods starting with ``fmt_`` can be used to chain together Border Table properties.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_style_cell`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: StyleCellKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (StyleCellKind, str, optional): Cell Style. Defaults to ``Default``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+        """
         if name == "":
             name = Cell.default.prop_name
         super().__init__(name=name)
@@ -62,10 +78,6 @@ class Cell(StyleName):
     # endregion Overrides
 
     # region Style Properties
-    @property
-    def default(self) -> Cell:
-        """Style Default"""
-        return Cell(StyleCellKind.DEFAULT)
 
     @property
     def accent_1(self) -> Cell:
@@ -151,8 +163,8 @@ class Cell(StyleName):
     def default() -> Cell:  # type: ignore[misc]
         """Gets ``Cell`` default. Static Property."""
         try:
-            return Cell._DEFAULT_INST
+            return Cell._DEFAULT_INST  # type: ignore[attr-defined]
         except AttributeError:
-            Cell._DEFAULT_INST = Cell(name=StyleCellKind.DEFAULT)
-            Cell._DEFAULT_INST._is_default_inst = True
-        return Cell._DEFAULT_INST
+            Cell._DEFAULT_INST = Cell(name=StyleCellKind.DEFAULT)  # type: ignore[attr-defined]
+            Cell._DEFAULT_INST._is_default_inst = True  # type: ignore[attr-defined]
+        return Cell._DEFAULT_INST  # type: ignore[attr-defined]

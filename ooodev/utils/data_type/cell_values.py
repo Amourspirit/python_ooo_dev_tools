@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from dataclasses import dataclass
 
 from .. import table_helper as mTb
@@ -40,9 +41,7 @@ class CellValues:
     def __eq__(self, other: object) -> bool:
         if isinstance(other, CellValues):
             return self.sheet_idx == other.sheet_idx and self.col == other.col and self.row == other.row
-        if isinstance(other, str):
-            return str(self) == other.upper()
-        return False
+        return str(self) == other.upper() if isinstance(other, str) else False
 
     def get_cell_address(self) -> CellAddress:
         """
@@ -55,7 +54,7 @@ class CellValues:
             CellAddress: Cell Address
         """
         if self.sheet_idx < 0:
-            raise ValueError(f"Cannot convert to CellAddress becuase sheet_idx is negative: {self.sheet_idx}")
+            raise ValueError(f"Cannot convert to CellAddress because sheet_idx is negative: {self.sheet_idx}")
         return CellAddress(Sheet=self.sheet_idx, Column=self.col, Row=self.row)
 
     @staticmethod
@@ -79,11 +78,9 @@ class CellValues:
             row = parts.row - 1
             col = mTb.TableHelper.col_name_to_int(parts.col, True)
             if parts.sheet:
-                try:
+                with contextlib.suppress(Exception):
                     sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=parts.sheet)
                     idx = mCalc.Calc.get_sheet_index(sheet=sheet)
-                except:
-                    pass
         elif isinstance(cell_val, mCellObj.CellObj):
             idx = cell_val.sheet_idx
             row = cell_val.row - 1

@@ -16,6 +16,10 @@ class ScalePagesWidthHeight(CellStyleBase):
     """
     Page Style Shrink Print Range to pages.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_sheet`
+
     .. versionadded:: 0.9.0
     """
 
@@ -39,6 +43,9 @@ class ScalePagesWidthHeight(CellStyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_sheet`
         """
 
         super().__init__(style_name=style_name, style_family=style_family)
@@ -86,9 +93,8 @@ class ScalePagesWidthHeight(CellStyleBase):
 
     @prop_width.setter
     def prop_width(self, value: int):
-        if value < 1:
-            # 1 is min
-            value = 1
+        # 1 is min
+        value = max(value, 1)
         # the order is important here.
         # by setting value last it ensure it is the last property set.
         # Otherwise, may get unexpected results. This is a Calc issue.
@@ -105,9 +111,8 @@ class ScalePagesWidthHeight(CellStyleBase):
 
     @prop_height.setter
     def prop_height(self, value: int):
-        if value < 1:
-            # 1 is min
-            value = 1
+        # 1 is min
+        value = max(value, 1)
         # the order is important here.
         # by setting value last it ensure it is the last property set.
         # Otherwise, may get unexpected results. This is a Calc issue.

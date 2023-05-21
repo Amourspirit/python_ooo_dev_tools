@@ -7,6 +7,7 @@ from ooo.dyn.drawing.fill_style import FillStyle
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils import color as mColor
+from ooodev.utils.color import StandardColor
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ...cell_style_base_multi import CellStyleBaseMulti
@@ -74,13 +75,17 @@ class Color(CellStyleBaseMulti):
     """
     Page Style Color.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_background`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = StandardColor.AUTO_COLOR,
         style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
         style_family: str = "PageStyles",
     ) -> None:
@@ -95,6 +100,9 @@ class Color(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_background`
         """
 
         direct = InnerColor(color=color)

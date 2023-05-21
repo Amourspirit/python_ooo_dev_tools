@@ -4,6 +4,11 @@
 Chapter 9. Text Search and Replace
 **********************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 1
+
 .. topic:: Overview
 
     Finding the First Matching Phrase; Replacing all the Matching Words; Finding all Matching Phrases

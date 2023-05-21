@@ -4,6 +4,11 @@
 Chapter 31. XY (Scatter) Charts
 *******************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     A Scatter Chart (with Regressions); Calculating Regressions; Drawing a Regression Curve; Changing Axis Scales; Adding Error Bars

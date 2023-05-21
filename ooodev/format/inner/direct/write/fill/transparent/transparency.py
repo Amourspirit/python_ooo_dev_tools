@@ -21,6 +21,10 @@ class Transparency(StyleBase):
     """
     Fill Transparency
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_transparency`
+
     .. versionadded:: 0.9.0
     """
 
@@ -30,6 +34,13 @@ class Transparency(StyleBase):
 
         Args:
             value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_transparency`
         """
         super().__init__()
         self.prop_value = value
@@ -60,7 +71,7 @@ class Transparency(StyleBase):
             raise ValueError("Modifying a default instance is not allowed")
         return super()._on_modifying(source, event)
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             return super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -68,23 +79,23 @@ class Transparency(StyleBase):
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return mProps.Props.has(obj, self._props.transparence)
 
     # endregion Overrides
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTransparency], obj: object) -> _TTransparency:
+    def from_obj(cls: Type[_TTransparency], obj: Any) -> _TTransparency:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTransparency], obj: object, **kwargs) -> _TTransparency:
+    def from_obj(cls: Type[_TTransparency], obj: Any, **kwargs) -> _TTransparency:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTransparency], obj: object, **kwargs) -> _TTransparency:
+    def from_obj(cls: Type[_TTransparency], obj: Any, **kwargs) -> _TTransparency:
         """
         Gets instance from object
 
@@ -101,10 +112,7 @@ class Transparency(StyleBase):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         tp = cast(int, mProps.Props.get(obj, nu._props.transparence, None))
-        if tp is None:
-            return nu
-        else:
-            return cls(value=tp, **kwargs)
+        return nu if tp is None else cls(value=tp, **kwargs)
 
     # endregion from_obj()
     @property

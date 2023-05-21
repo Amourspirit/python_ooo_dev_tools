@@ -144,27 +144,27 @@ def test_info_language_locale() -> None:
 def test_parse_languange_code() -> None:
     from ooodev.utils.info import Info
 
-    lang = Info.parse_languange_code("en-US")
+    lang = Info.parse_language_code("en-US")
     assert lang.Language == "en"
     assert lang.Country == "US"
     assert lang.Variant == ""
-    lang = Info.parse_languange_code("en-GB")
+    lang = Info.parse_language_code("en-GB")
     assert lang.Language == "en"
     assert lang.Country == "GB"
     assert lang.Variant == ""
-    lang = Info.parse_languange_code("en-gb")
+    lang = Info.parse_language_code("en-gb")
     assert lang.Language == "en"
     assert lang.Country == "GB"
     assert lang.Variant == ""
-    lang = Info.parse_languange_code("en-GB-oxendict")
+    lang = Info.parse_language_code("en-GB-oxendict")
     assert lang.Language == "en"
     assert lang.Country == "GB"
     assert lang.Variant == "oxendict"
-    lang = Info.parse_languange_code("en--oxendict")
+    lang = Info.parse_language_code("en--oxendict")
     assert lang.Language == "en"
     assert lang.Country == ""
     assert lang.Variant == "oxendict"
-    lang = Info.parse_languange_code("en-GB-oxendict-this-that")
+    lang = Info.parse_language_code("en-GB-oxendict-this-that")
     assert lang.Language == "en"
     assert lang.Country == "GB"
     assert lang.Variant == "oxendict-this-that"
@@ -174,6 +174,6 @@ def test_parese_language_code_error() -> None:
     from ooodev.utils.info import Info
 
     with pytest.raises(ValueError):
-        _ = Info.parse_languange_code("en_GB")
+        _ = Info.parse_language_code("en_GB")
     with pytest.raises(ValueError):
-        _ = Info.parse_languange_code("-GB")
+        _ = Info.parse_language_code("-GB")

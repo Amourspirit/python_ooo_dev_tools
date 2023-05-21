@@ -204,10 +204,14 @@ class InnerBorders(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -221,7 +225,7 @@ class InnerBorders(StyleMulti):
 
     # endregion apply()
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -235,16 +239,16 @@ class InnerBorders(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TInnerBorders], obj: object) -> _TInnerBorders:
+    def from_obj(cls: Type[_TInnerBorders], obj: Any) -> _TInnerBorders:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TInnerBorders], obj: object, **kwargs) -> _TInnerBorders:
+    def from_obj(cls: Type[_TInnerBorders], obj: Any, **kwargs) -> _TInnerBorders:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TInnerBorders], obj: object, **kwargs) -> _TInnerBorders:
+    def from_obj(cls: Type[_TInnerBorders], obj: Any, **kwargs) -> _TInnerBorders:
         """
         Gets Borders instance from object
 
@@ -259,9 +263,7 @@ class InnerBorders(StyleMulti):
         """
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
-            raise mEx.NotSupportedError(
-                f'Object is not supported for conversion to "{cls.__name__}"'
-            )
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         shadow_fmt = Shadow.from_obj(obj=obj, _cattribs=inst._get_shadow_cattribs())
         inst._set_style("shadow", shadow_fmt)
@@ -467,9 +469,7 @@ class InnerBorders(StyleMulti):
         if value is None:
             self._remove_style("diag_up")
             return
-        self._set_style(
-            "diag_up", value.copy(_cattribs=self._get_diagonal_up_cattribs())
-        )
+        self._set_style("diag_up", value.copy(_cattribs=self._get_diagonal_up_cattribs()))
 
     @property
     def prop_diagonal_dn(self) -> Side | None:
@@ -486,9 +486,7 @@ class InnerBorders(StyleMulti):
         if value is None:
             self._remove_style("diag_dn")
             return
-        self._set_style(
-            "diag_dn", value.copy(_cattribs=self._get_diagonal_dn_cattribs())
-        )
+        self._set_style("diag_dn", value.copy(_cattribs=self._get_diagonal_dn_cattribs()))
 
     @property
     def prop_left(self) -> Side | None:
@@ -522,9 +520,7 @@ class InnerBorders(StyleMulti):
         if value is None:
             self._remove_style("bdr_right")
             return
-        self._set_style(
-            "bdr_right", value.copy(_cattribs=self._get_bdr_right_cattribs())
-        )
+        self._set_style("bdr_right", value.copy(_cattribs=self._get_bdr_right_cattribs()))
 
     @property
     def prop_top(self) -> Side | None:
@@ -587,6 +583,10 @@ class Borders(CellStyleBaseMulti):
     """
     Cell Style Borders.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -626,6 +626,9 @@ class Borders(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_borders`
         """
 
         direct = InnerBorders(
@@ -695,9 +698,7 @@ class Borders(CellStyleBaseMulti):
     @prop_inner.setter
     def prop_inner(self, value: InnerBorders) -> None:
         if not isinstance(value, InnerBorders):
-            raise TypeError(
-                f'Expected type of InnerBorders, got "{type(value).__name__}"'
-            )
+            raise TypeError(f'Expected type of InnerBorders, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         self._set_style("direct", value)
 

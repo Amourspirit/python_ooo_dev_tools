@@ -1,10 +1,13 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
+import uno
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
 from ooodev.format.inner.common.props.hf_props import HfProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.meta.deleted_attrib import DeletedAttrib
+from ooodev.meta.disabled_method import DisabledMethod
 from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
@@ -65,8 +68,15 @@ class Header(CellStyleBaseMulti):
     """
     Page Header Settings
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_header`
+
     .. versionadded:: 0.9.0
     """
+
+    space_dyn = DeletedAttrib()
+    fmt_spacing_dyn = DisabledMethod()
 
     def __init__(
         self,
@@ -77,7 +87,6 @@ class Header(CellStyleBaseMulti):
         margin_left: float | None = None,
         margin_right: float | None = None,
         spacing: float | None = None,
-        spacing_dyn: bool | None = None,
         height: float | None = None,
         height_auto: bool | None = None,
         style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
@@ -93,7 +102,6 @@ class Header(CellStyleBaseMulti):
             margin_left (float | None, optional): Specifies Left Margin in ``mm`` units.
             margin_right (float | None, optional): Specifies Right Margin in ``mm`` units.
             spacing (float | None, optional): Specifies Spacing in ``mm`` units.
-            spacing_dyn (bool | None, optional): Specifies if dynamic spacing is used.
             height (float | None, optional): Specifies Height in ``mm`` units.
             height_auto (bool | None, optional): Specifies if auto-fit height is used.
             style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
@@ -102,6 +110,9 @@ class Header(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_header_header`
         """
 
         direct = InnerStyle(
@@ -111,7 +122,6 @@ class Header(CellStyleBaseMulti):
             margin_left=margin_left,
             margin_right=margin_right,
             spacing=spacing,
-            spacing_dyn=spacing_dyn,
             height=height,
             height_auto=height_auto,
             _cattribs=self._get_inner_cattribs(),

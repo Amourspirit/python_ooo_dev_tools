@@ -41,6 +41,10 @@ class FontOnly(CellStyleBaseMulti):
     """
     Style Font
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_cell_font_only`
+
     .. versionadded:: 0.9.0
     """
 
@@ -68,6 +72,9 @@ class FontOnly(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_cell_font_only`
         """
 
         direct = InnerFontOnly(name=name, size=size, font_style=font_style, lang=lang)

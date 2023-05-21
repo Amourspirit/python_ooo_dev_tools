@@ -36,7 +36,7 @@ class BorderLineSeriesProps(NamedTuple):
 
 class BorderLineKind(Enum):
     NONE = "None"
-    CONTINUIOUS = "Continuous"
+    CONTINUOUS = "Continuous"
     DOT = "Dot"
     DOT_ROUNDED = "Dot (Rounded)"
     LONG_DOT = "Long Dot"
@@ -83,7 +83,7 @@ def _get_line_kind_none() -> BorderLineProps:
     )
 
 
-def _get_line_kind_continiuous() -> BorderLineProps:
+def _get_line_kind_continuous() -> BorderLineProps:
     return BorderLineProps(
         line_cap=LineCap.BUTT,
         line_dash_name=None,
@@ -399,7 +399,7 @@ def _get_line_kind_line_with_fine_dots() -> BorderLineProps:
 # region data series border internal methods
 def _get_default_line_dash() -> LineDash:
     return LineDash(
-        Style=DashStyle.RECT,
+        Style=DashStyle.RECT,  # type: ignore
         Dots=0,
         DotLen=0,
         Dashes=0,
@@ -419,7 +419,7 @@ def _get_series_line_kind_none() -> BorderLineSeriesProps:
     )
 
 
-def _get_series_line_kind_continiuous() -> BorderLineSeriesProps:
+def _get_series_line_kind_continuous() -> BorderLineSeriesProps:
     return BorderLineSeriesProps(
         border_name="Dot (Rounded)",
         border_style=LineStyle.SOLID,
@@ -775,8 +775,9 @@ def get_preset_border_line_props(kind: BorderLineKind) -> BorderLineProps:
     Returns:
         BorderLineProps: Preset border line properties.
     """
-    if kind == BorderLineKind.CONTINUIOUS:
-        return _get_line_kind_continiuous()
+    # sourcery skip: low-code-quality
+    if kind == BorderLineKind.CONTINUOUS:
+        return _get_line_kind_continuous()
     elif kind == BorderLineKind.DOT:
         return _get_line_kind_dot()
     elif kind == BorderLineKind.DOT_ROUNDED:
@@ -853,8 +854,9 @@ def get_preset_series_border_line_props(kind: BorderLineKind) -> BorderLineSerie
     Returns:
         BorderLineProps: Preset border line properties.
     """
-    if kind == BorderLineKind.CONTINUIOUS:
-        return _get_series_line_kind_continiuous()
+    # sourcery skip: low-code-quality
+    if kind == BorderLineKind.CONTINUOUS:
+        return _get_series_line_kind_continuous()
     elif kind == BorderLineKind.DOT:
         return _get_series_line_kind_dot()
     elif kind == BorderLineKind.DOT_ROUNDED:

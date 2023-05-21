@@ -7,6 +7,7 @@ Module for Paragraph Gradient Color.
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, TypeVar, overload
 
+import uno
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.awt.gradient import Gradient as UNOGradient
@@ -37,6 +38,10 @@ _TGradient = TypeVar(name="_TGradient", bound="Gradient")
 class Gradient(StyleMulti):
     """
     Paragraph Gradient Color
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_gradient`
 
     .. versionadded:: 0.9.0
     """
@@ -70,6 +75,13 @@ class Gradient(StyleMulti):
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the
                 gradient. Defaults to ``IntensityRange(100, 100)``.
             name (str, optional): Specifies the Fill Gradient Name.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_gradient`
         """
         fs = self._get_inner_class(
             style=style,
@@ -120,17 +132,34 @@ class Gradient(StyleMulti):
         self._name = name
         if name:
             if PresetGradientKind.is_preset(name):
-                return fill_struct
+                # Some gradients such as ooodev.format.inner.direct.chart2.chart.area.gradient.Gradient
+                # do not store the Gradient Struct in the properties. This is true for all charts.
+                # This is why we need to check if the name is a preset gradient and then get the
+                # gradient struct from the preset.
+                preset_kind = PresetGradientKind.from_str(name)
+                gs = GradientStruct.from_preset(preset_kind)
+                return self._get_inner_class(
+                    style=gs.prop_style,
+                    step_count=gs.prop_step_count,
+                    x_offset=gs.prop_x_offset,
+                    y_offset=gs.prop_y_offset,
+                    angle=gs.prop_angle,
+                    border=gs.prop_border,
+                    start_color=gs.prop_start_color,
+                    start_intensity=gs.prop_start_intensity,
+                    end_color=gs.prop_end_color,
+                    end_intensity=gs.prop_end_intensity,
+                )
         else:
             auto_name = True
             name = self._container_get_default_name()
         nc = self._container_get_inst()
         if auto_name:
-            name = name.rstrip() + " "  # add a space after name before getting unique name
+            name = f"{name.rstrip()} "
             self._name = self._container_get_unique_el_name(name, nc)
 
         grad = self._container_get_value(self._name, nc)  # raises value error if name is empty
-        if not grad is None:
+        if grad is not None:
             return self._get_gradient_from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
         if fill_struct is None:
             raise ValueError(
@@ -155,7 +184,7 @@ class Gradient(StyleMulti):
         end_color: Color,
         end_intensity: Intensity | int,
     ) -> GradientStruct:
-        fs = GradientStruct(
+        return GradientStruct(
             style=style,
             step_count=step_count,
             x_offset=x_offset,
@@ -168,7 +197,6 @@ class Gradient(StyleMulti):
             end_intensity=end_intensity,
             _cattribs=self._get_gradient_struct_cattrib(),
         )
-        return fs
 
     # endregion Internal Methods
 
@@ -221,16 +249,16 @@ class Gradient(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any) -> _TGradient:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object, **kwargs) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: object, **kwargs) -> _TGradient:
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
         """
         Gets instance from object.
 
@@ -256,6 +284,7 @@ class Gradient(StyleMulti):
         inst._set(inst._props.step_count, grad_fill.StepCount)
         inst._set(inst._props.name, fill_gradient_name)
         inst._set_style("fill_style", gs, *gs.get_attrs())
+        inst._name = fill_gradient_name
         return inst
 
     # endregion from_obj()
@@ -275,10 +304,7 @@ class Gradient(StyleMulti):
         """
         if name and PresetGradientKind.is_preset(name):
             return cls.from_preset(PresetGradientKind(name), **kwargs)
-        if name:
-            auto_name = False
-        else:
-            auto_name = True
+        auto_name = not name
         inst = cls(name="__constructor_default__", **kwargs)
         grad_fill = struct.get_uno_struct()
         gs = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
@@ -369,7 +395,7 @@ class Gradient(StyleMulti):
                 offset=Offset(0, 0),
                 angle=0,
                 border=0,
-                grad_color=ColorRange(0, 16777215),
+                grad_color=ColorRange(Color(0), Color(16777215)),
                 grad_intensity=IntensityRange(100, 100),
                 _cattribs=self._get_gradient_struct_cattrib(),
             )

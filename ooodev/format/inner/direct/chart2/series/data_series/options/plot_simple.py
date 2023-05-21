@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, TypeVar, overload
+from typing import Any, Tuple, TypeVar, overload
 import uno
 from com.sun.star.chart2 import XChartDocument
 
@@ -11,7 +11,13 @@ _TPlotSimple = TypeVar("_TPlotSimple", bound="PlotSimple")
 
 
 class PlotSimple(StyleBase):
-    """Data Series Plot Simple"""
+    """
+    Data Series Plot Simple
+
+    ..seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
+    """
 
     def __init__(
         self,
@@ -27,6 +33,9 @@ class PlotSimple(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         self._chart_doc = chart_doc
         super().__init__()
@@ -43,14 +52,14 @@ class PlotSimple(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -65,7 +74,7 @@ class PlotSimple(StyleBase):
             return
 
         try:
-            diagram = self._chart_doc.getDiagram()
+            diagram = self._chart_doc.getDiagram()  # type: ignore
         except Exception as e:
             mLo.Lo.print(f"{self.__class__.__name__}.apply() - Unable to get chart diagram")
             mLo.Lo.print(f"  Error: {e}")

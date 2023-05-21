@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
@@ -20,6 +20,10 @@ from ..para_style_base_multi import ParaStyleBaseMulti
 class FontEffects(ParaStyleBaseMulti):
     """
     Style Font Effects
+
+    .. seealos::
+
+        - :ref:`help_writer_format_modify_para_font_effects`
 
     .. versionadded:: 0.9.0
     """
@@ -64,6 +68,9 @@ class FontEffects(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_font_effects`
         """
 
         direct = InnerFontEffects(
@@ -87,7 +94,7 @@ class FontEffects(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> FontEffects:
@@ -95,7 +102,7 @@ class FontEffects(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to.
                 Default is Default Character Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

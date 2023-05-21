@@ -3,8 +3,10 @@ Module for managing character font.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
+import contextlib
 from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from com.sun.star.beans import XPropertySet
@@ -61,11 +63,11 @@ class FontLang(LocaleStruct):
             self._property_name = "CharLocale"
         return self._property_name
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Lang.apply(): Unable to set Property")
+            mLo.Lo.print("Lang.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -75,7 +77,7 @@ class FontLang(LocaleStruct):
         return super()._on_modifying(source, event)
 
     if mock_g.DOCS_BUILDING:
-        default: FontLang = None
+        default: FontLang = None  # type: ignore
         """
         Gets ``Lang`` default.
 
@@ -96,18 +98,19 @@ class FontLang(LocaleStruct):
 
             Static Property.
             """
+            # sourcery skip: raise-from-previous-error
             try:
                 return cls._DEFAULT_INSTANCE
             except AttributeError:
                 inst = cls()
-                s = cast(
-                    str, mInfo.Info.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
+                s = (
+                    cast(
+                        str,
+                        mInfo.Info.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N"),
+                    )
+                    or cast(str, mInfo.Info.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N"))
+                    or "en-US"
                 )
-                if not s:
-                    s = cast(str, mInfo.Info.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N"))
-                if not s:
-                    # default to en-us
-                    s = "en-US"
 
                 parts = s.split("-")
                 if len(parts) == 2:
@@ -115,11 +118,7 @@ class FontLang(LocaleStruct):
                     inst._set("Country", parts[1])
                 else:
                     inst._set("Language", "qlt")
-                    country = None
-                    for part in parts:
-                        if part.upper() == part:
-                            country = part
-                            break
+                    country = next((part for part in parts if part.upper() == part), None)
                     if country is None:
                         raise RuntimeError(f'Unable to get country code from System locale "{s}"')
                     inst._set("Country", country)
@@ -204,17 +203,16 @@ class FontOnly(StyleMulti):
         return super()._on_modifying(source, event)
 
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
-        if event_args.key == self._props.style_name:
-            if not event_args.value:
-                event_args.default = True
+        if event_args.key == self._props.style_name and not event_args.value:
+            event_args.default = True
         return super().on_property_setting(source, event_args)
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -234,6 +232,9 @@ class FontOnly(StyleMulti):
 
     def _set_fd_style(self, name: str | None, style: str | None) -> None:
         """Set Font Descriptor Style"""
+        # sourcery skip: extract-method
+        if not name or not style:
+            return None
         fd = mInfo.Info.get_font_descriptor(name, style)
         if fd is None:
             self._remove("CharFontFamily")
@@ -258,16 +259,16 @@ class FontOnly(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontOnly], obj: object) -> _TFontOnly:
+    def from_obj(cls: Type[_TFontOnly], obj: Any) -> _TFontOnly:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontOnly], obj: object, **kwargs) -> _TFontOnly:
+    def from_obj(cls: Type[_TFontOnly], obj: Any, **kwargs) -> _TFontOnly:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TFontOnly], obj: object, **kwargs) -> _TFontOnly:
+    def from_obj(cls: Type[_TFontOnly], obj: Any, **kwargs) -> _TFontOnly:
         """
         Gets Font Only instance from object
 
@@ -287,17 +288,15 @@ class FontOnly(StyleMulti):
         def set_prop(key: str, align: FontOnly):
             nonlocal obj
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 align._set(key, val)
 
         set_prop(inst._props.name, inst)
         set_prop(inst._props.size, inst)
         set_prop(inst._props.style_name, inst)
-        try:
+        with contextlib.suppress(mEx.PropertyNotFoundError):
             lang = FontLang.from_obj(obj)
             inst._set_style("lang", lang, *lang.get_attrs())
-        except mEx.PropertyNotFoundError:
-            pass
         return inst
 
     # endregion from_obj()
@@ -374,7 +373,7 @@ class FontOnly(StyleMulti):
             self._remove(self._props.size)
             return
         try:
-            self._set(self._props.size, value.get_value_pt())
+            self._set(self._props.size, value.get_value_pt())  # type: ignore
         except AttributeError:
             self._set(self._props.size, value)
 
@@ -424,7 +423,7 @@ class FontOnly(StyleMulti):
     # region Static Properties
 
     if mock_g.DOCS_BUILDING:
-        default: FontOnly = None
+        default: FontOnly = None  # type: ignore
         """
         Gets ``Font`` default.
 
@@ -433,7 +432,7 @@ class FontOnly(StyleMulti):
         Static Property.
         """
 
-        default_caption: FontOnly = None
+        default_caption: FontOnly = None  # type: ignore
         """
         Gets ``Font`` caption default.
 
@@ -442,7 +441,7 @@ class FontOnly(StyleMulti):
         Static Property.
         """
 
-        default_heading: FontOnly = None
+        default_heading: FontOnly = None  # type: ignore
         """
         Gets ``Font`` heading default.
 
@@ -451,7 +450,7 @@ class FontOnly(StyleMulti):
         Static Property.
         """
 
-        default_list: FontOnly = None
+        default_list: FontOnly = None  # type: ignore
         """
         Gets ``Font`` list default.
 
@@ -460,7 +459,7 @@ class FontOnly(StyleMulti):
         Static Property.
         """
 
-        default_index: FontOnly = None
+        default_index: FontOnly = None  # type: ignore
         """
         Gets ``Font`` index default.
 

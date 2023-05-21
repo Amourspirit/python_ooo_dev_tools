@@ -28,7 +28,6 @@ Setting the font name and size
 
     .. code-tab:: python
 
-        import sys
         from ooodev.format.writer.direct.char.font import FontOnly
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
@@ -52,7 +51,7 @@ Setting the font name and size
             return 0
 
         if __name__ == "__main__":
-            sys.exit(main())
+            SystemExit(main())
 
     .. only:: html
 
@@ -68,6 +67,7 @@ Running the above code will produce the following output in :numref:`ss_writer_h
     .. figure:: https://user-images.githubusercontent.com/4193389/229377797-5419cf8c-96cc-4b47-94c2-4b5923da3553.png
         :alt: Writer dialog Character font 20pt
         :figclass: align-center
+        :width: 450px
 
         Hello World! with font Liberation Serif 20pt
 
@@ -79,6 +79,7 @@ It can bee seen in :numref:`ss_writer_dialog_char_font_20pt` that the font size 
     .. figure:: https://user-images.githubusercontent.com/4193389/229377833-6bd6a752-35ea-4daa-9a3c-5d08b7dfc7fa.png
         :alt: Writer dialog Character font 20pt
         :figclass: align-center
+        :width: 450px
 
         Writer dialog: Character font 20pt
 
@@ -114,7 +115,8 @@ The paragraph cursor is then used to get the font style.
 
             .. group-tab:: None
 
-
+Related Topics
+--------------
 
 .. seealso::
 
@@ -124,6 +126,8 @@ The paragraph cursor is then used to get the font style.
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_font_effects`
         - :ref:`help_writer_format_direct_char_font`
+        - :ref:`help_writer_format_modify_char_font_only`
+        - :ref:`help_writer_format_modify_para_font_only`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontOnly`

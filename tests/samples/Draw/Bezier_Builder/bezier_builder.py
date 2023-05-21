@@ -147,7 +147,7 @@ class BezierBuilder:
         if len(curve_pts) % 3 != 0:
             raise mEx.NotSupportedError("Number of points must be a multiple of 3")
 
-        path_step = int(len(curve_pts) / 3)
+        path_step = len(curve_pts) // 3
         for i in range(path_step):
             # fill in the points and flags for 1 step
             bez_pts.append(start_pt)

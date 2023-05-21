@@ -37,12 +37,12 @@ class SheetArgs(AbstractSheetArgs):
     __slots__ = ("source", "_event_name", "event_data", "name", "index", "doc", "sheet", "_event_source", "_kv_data")
 
     @staticmethod
-    def from_args(args: SheetArgs) -> SheetArgs:
+    def from_args(args: AbstractSheetArgs) -> SheetArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (SheetArgs): Existing Instance
+            args (AbstractSheetArgs): Existing Instance
 
         Returns:
             SheetArgs: args

@@ -20,12 +20,12 @@ class WidthHeightFraction:
         check(
             self.width >= 0.0,
             f"{self}",
-            f"Width value of {self.width} not valid. Wdith must be a postive number",
+            f"Width value of {self.width} not valid. Width must be a positive number",
         )
         check(
             self.height >= 0.0,
             f"{self}",
-            f"Width value of {self.height} not valid. Wdith must be a postive number",
+            f"Width value of {self.height} not valid. Width must be a positive number",
         )
 
     def __eq__(self, other: object) -> bool:

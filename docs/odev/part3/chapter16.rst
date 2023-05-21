@@ -4,6 +4,11 @@
 Chapter 16. Making Slides
 *************************
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 2
+
 .. topic:: Overview
 
     Creating Slides: title, subtitle, bullets, images, video, buttons; Shape Animations; Dispatch Shapes (special symbols, block arrows, 3D shapes, flowchart elements, callouts, and stars); Slide Viewing

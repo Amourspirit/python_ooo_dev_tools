@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Tuple, TypeVar, cast, overload
+import contextlib
+from typing import Any, Tuple, TypeVar, cast, overload
 import uno
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.chart import XAxisYSupplier
@@ -17,13 +18,17 @@ class Orientation(StyleBase):
     Chart Orientation.
 
     Available for pie and donut charts.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
     """
 
     def __init__(
         self,
         chart_doc: XChartDocument,
         clockwise: bool | None = None,
-        angle: int | Angle = None,
+        angle: int | Angle | None = None,
     ) -> None:
         """
         Constructor
@@ -36,8 +41,11 @@ class Orientation(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
-        # clockwise defatult is false
+        # clockwise default is false
         self._chart_doc = chart_doc
         super().__init__()
         if clockwise is not None:
@@ -53,26 +61,24 @@ class Orientation(StyleBase):
             self._supported_services_values = ("com.sun.star.chart2.DataSeries",)
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         d_types = ("com.sun.star.chart.PieDiagram", "com.sun.star.chart.DonutDiagram")
-        try:
-            dia = self._chart_doc.getDiagram()
+        with contextlib.suppress(Exception):
+            dia = self._chart_doc.getDiagram()  # type: ignore
             d_type = dia.DiagramType
             return d_type in d_types
-        except Exception:
-            pass
         return False
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -87,7 +93,7 @@ class Orientation(StyleBase):
             return
 
         try:
-            diagram = self._chart_doc.getDiagram()
+            diagram = self._chart_doc.getDiagram()  # type: ignore
             angle = self.prop_angle
             if angle is not None:
                 super().apply(obj=diagram, validate=False, override_dv={"StartingAngle": angle.value}, **kwargs)
@@ -136,9 +142,7 @@ class Orientation(StyleBase):
     def prop_angle(self) -> Angle | None:
         """Gets or sets the angle property"""
         pv = cast(int, self._get("StartingAngle"))
-        if pv is None:
-            return None
-        return Angle(pv)
+        return None if pv is None else Angle(pv)
 
     @prop_angle.setter
     def prop_angle(self, value: Angle | int | None) -> None:

@@ -1,6 +1,6 @@
 .. _help_writer:
 
-Text Dcouments (Writer)
+Text Documents (Writer)
 =======================
 
 .. toctree::

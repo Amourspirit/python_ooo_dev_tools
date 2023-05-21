@@ -32,6 +32,16 @@ _TImg = TypeVar(name="_TImg", bound="Img")
 
 
 class Img(StyleMulti):
+    """
+    Paragraph Area Image Style
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_img`
+
+    .. versionadded:: 0.9.0
+    """
+
     def __init__(
         self,
         *,
@@ -52,7 +62,7 @@ class Img(StyleMulti):
             name (str, optional): Specifies the name of the image. This is also the name that is used to store bitmap in LibreOffice Bitmap Table.
             mode (ImgStyleKind, optional): Specifies the image style, tiled, stretched etc. Default ``ImgStyleKind.TILED``.
             size (SizePercent, SizeMM, optional): Size in percent (``0 - 100``) or size in ``mm`` units.
-            positin (RectanglePoint): Tiling position of Image.
+            position (RectanglePoint): Tiling position of Image.
             pos_offset (Offset, optional): Tiling position offset.
             tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
@@ -63,9 +73,13 @@ class Img(StyleMulti):
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
             All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_img`
         """
 
-        fimg = InnerImg(
+        img = InnerImg(
             bitmap=bitmap,
             name=name,
             mode=mode,
@@ -75,21 +89,21 @@ class Img(StyleMulti):
             tile_offset=tile_offset,
             auto_name=auto_name,
         )
-        fimg._prop_parent = self
+        img._prop_parent = self
 
-        init_vars = {}
-        init_vars[self._props.back_color] = -1
-        init_vars[self._props.graphic_loc] = self._get_graphic_loc(position, mode)
-        init_vars[self._props.transparent] = True
-
-        bmap = fimg._get(fimg._props.bitmap)
-        if not bmap is None:
-            init_vars[self._props.back_graphic] = bmap
+        init_vars = {
+            self._props.back_color: -1,
+            self._props.graphic_loc: self._get_graphic_loc(position, mode),
+            self._props.transparent: True,
+        }
+        b_map = img._get(img._props.bitmap)
+        if b_map is not None:
+            init_vars[self._props.back_graphic] = b_map
 
         super().__init__(**init_vars)
-        self._set_style("fill_image", fimg, *fimg.get_attrs())
-        fimg.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
-        fimg.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
+        self._set_style("fill_image", img, *img.get_attrs())
+        img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
+        img.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
 
     # region Overrides
 
@@ -105,20 +119,24 @@ class Img(StyleMulti):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"FillPattern.apply(): Unable to set Property")
+            mLo.Lo.print("FillPattern.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -131,14 +149,6 @@ class Img(StyleMulti):
         super().apply(obj, **kwargs)
 
     # endregion apply()
-
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"Img.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
 
     def on_property_restore_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         # mLo.Lo.print(f'Restoring "{event_args.key}"')
@@ -162,7 +172,7 @@ class Img(StyleMulti):
     # region Internal methods
     def _get_graphic_loc(self, position: RectanglePoint | None, mode: ImgStyleKind | None) -> GraphicLocation:
         loc = None
-        if not position is None:
+        if position is not None:
             if position == RectanglePoint.LEFT_BOTTOM:
                 loc = GraphicLocation.LEFT_BOTTOM
             elif position == RectanglePoint.LEFT_MIDDLE:
@@ -181,7 +191,7 @@ class Img(StyleMulti):
                 loc = GraphicLocation.RIGHT_MIDDLE
             elif position == RectanglePoint.RIGHT_TOP:
                 loc = GraphicLocation.RIGHT_TOP
-        elif not mode is None:
+        elif mode is not None:
             if mode == ImgStyleKind.CUSTOM:
                 loc = GraphicLocation.MIDDLE_MIDDLE
             elif mode == ImgStyleKind.STRETCHED:
@@ -219,7 +229,7 @@ class Img(StyleMulti):
 
         inst = cls(**kwargs)
         inst._set(
-            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
+            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_position, mode=fill_img.prop_mode)
         )
         inst._set(inst._props.back_graphic, fill_img._get(fill_img._props.bitmap))
         fill_img._prop_parent = inst
@@ -233,16 +243,16 @@ class Img(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: object) -> _TImg:
+    def from_obj(cls: Type[_TImg], obj: Any) -> _TImg:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
+    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: object, **kwargs) -> _TImg:
+    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:
         """
         Gets instance from object
 
@@ -257,11 +267,11 @@ class Img(StyleMulti):
         """
         fill_img = InnerImg.from_obj(obj)
         inst = cls(**kwargs)
-        bmap = fill_img._get(fill_img._props.bitmap)
+        bitmap = fill_img._get(fill_img._props.bitmap)
         inst._set(
-            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_posiion, mode=fill_img.prop_mode)
+            inst._props.graphic_loc, inst._get_graphic_loc(position=fill_img.prop_position, mode=fill_img.prop_mode)
         )
-        if not bmap is None:
+        if bitmap is not None:
             inst._set(inst._props.back_graphic, fill_img._get(fill_img._props.bitmap))
         fill_img._prop_parent = inst
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())

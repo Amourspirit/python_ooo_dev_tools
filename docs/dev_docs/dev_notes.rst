@@ -77,7 +77,7 @@ Checking LibreOffice Python version
 
 .. code-block::
 
-    PS C:\> & 'C:\Program Files\LibreOffice\program\python.exe' --version
+    PS C:\>"C:\Program Files\LibreOffice\program\python.exe" --version
     Python 3.8.10
 
 The details of installing a python version for use with a virtual environment is beyond the scope of this document.
@@ -274,7 +274,14 @@ Environment Variables
 ODEV_CONN_SOFFICE
 ^^^^^^^^^^^^^^^^^
 
-If set and soffice is not passed to :py:class:`~.connectors.ConnectorBridgeBase` and ``ODEV_CONN_SOFFICE`` is present then the environment variable value is used.
+The :py:class:`~.connectors.ConnectorBridgeBase` class has a ``soffice`` parameter that can be passed to the class to specify the LibreOffice version to connect to.
+
+Also there is a ``ODEV_CONN_SOFFICE`` environment variable can be set to specify the LO version to connect to.
+If ``soffice`` is passed to :py:class:`~.connectors.ConnectorBridgeBase` then the ``soffice`` parameter is used; Otherwise, if ``ODEV_CONN_SOFFICE`` is set then the environment variable value is used.
+If neither ``soffice`` or ``ODEV_CONN_SOFFICE`` are set then the default ``soffice`` is used.
+
+This is useful to test a LO development version.
+
 
 Testing
 -------
@@ -293,6 +300,3 @@ Test are written for pytest_
 .. _pyenv-win: https://github.com/pyenv-win/pyenv-win
 .. _Virtualenv: https://virtualenv.pypa.io/en/latest/
 .. _pytest: https://docs.pytest.org
-
-
-

@@ -53,6 +53,10 @@ class Shadow(PageStyleBaseMulti):
     """
     Page Style Border Shadow
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -82,6 +86,9 @@ class Shadow(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_borders`
         """
         direct = InnerShadow(location=location, color=color, transparent=transparent, width=width)
         super().__init__()

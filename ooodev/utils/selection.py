@@ -3,7 +3,7 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
 import os
-from typing import cast, overload
+from typing import cast, overload, TYPE_CHECKING
 from enum import IntEnum
 
 
@@ -41,6 +41,10 @@ from com.sun.star.view import XSelectionSupplier
 from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
 from ooo.dyn.i18n.boundary import Boundary  # struct
 from ooo.dyn.lang.locale import Locale  # struct
+
+
+if TYPE_CHECKING:
+    from com.sun.star.text import XSimpleText
 
 
 class Selection(metaclass=StaticProperty):
@@ -115,7 +119,7 @@ class Selection(metaclass=StaticProperty):
         """
         model = mLo.Lo.qi(XModel, text_doc, True)
 
-        o_selections: XIndexAccess = model.getCurrentSelection()
+        o_selections = cast(XIndexAccess, model.getCurrentSelection())
         if not o_selections:
             return None
         count = int(o_selections.getCount())
@@ -138,9 +142,7 @@ class Selection(metaclass=StaticProperty):
             Writer must be visible for this method or empty string is returned.
         """
         rng = cls.get_selected_text_range(text_doc=text_doc)
-        if rng is None:
-            return ""
-        return rng.getString()
+        return "" if rng is None else rng.getString()
 
     @classmethod
     def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> Selection.CompareEnum:
@@ -160,6 +162,7 @@ class Selection(metaclass=StaticProperty):
             :py:attr:`.CompareEnum.EQUAL` if ``c1`` end position is equal to ``c2`` end position.
             :py:attr:`.CompareEnum.AFTER` if ``c1`` end position is after ``c2`` end position.
         """
+        # sourcery skip: raise-specific-error
         range_compare = cast(XTextRangeCompare, cls.text_range_compare)
         i = range_compare.compareRegionEnds(c1, c2)
         if i == 1:
@@ -173,12 +176,12 @@ class Selection(metaclass=StaticProperty):
         raise Exception(msg)
 
     @classmethod
-    def range_len(cls, text_doc: XTextDocument, o_sel: XTextRange) -> int:
+    def range_len(cls, text_doc: XTextDocument, o_sel: XTextCursor) -> int:
         """
         Gets the distance between range start and range end.
 
         Args:
-            o_sel (XTextRange): first cursor range
+            o_sel (XTextCursor): first cursor range
             o_text (object): XText object, usually document text object
 
         Returns:
@@ -218,8 +221,7 @@ class Selection(metaclass=StaticProperty):
             XPropertySet: Properties
         """
         cursor = cls.get_cursor(text_doc)
-        props = mLo.Lo.qi(XPropertySet, cursor, True)
-        return props
+        return mLo.Lo.qi(XPropertySet, cursor, True)
 
     # region    get_cursor()
     @overload
@@ -267,7 +269,7 @@ class Selection(metaclass=StaticProperty):
         ...
 
     @classmethod
-    def get_cursor(cls, *args, **kwargs) -> XTextCursor:
+    def get_cursor(cls, *args, **kwargs) -> XTextCursor | None:
         """
         Gets text cursor
 
@@ -280,7 +282,7 @@ class Selection(metaclass=StaticProperty):
             CursorError: If Unable to get cursor
 
         Returns:
-            XTextCursor: Cursor
+            XTextCursor | None: Cursor or ``None`` if unable to get cursor
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -291,7 +293,7 @@ class Selection(metaclass=StaticProperty):
             if kargs_len == 0:
                 return ka
             valid_keys = ("cursor_obj", "rng", "txt", "text_doc")
-            check = all(key in valid_keys for key in kwargs.keys())
+            check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_cursor() got an unexpected keyword argument")
 
@@ -309,7 +311,7 @@ class Selection(metaclass=StaticProperty):
                     break
             return ka
 
-        if not count in (1, 2):
+        if count not in (1, 2):
             raise TypeError("get_cursor() got an invalid number of arguments")
 
         kargs = get_kwargs()
@@ -320,14 +322,12 @@ class Selection(metaclass=StaticProperty):
         if count == 1:
             return cls._get_cursor_obj(kargs[1])
         txt_doc = mLo.Lo.qi(XTextDocument, kargs[2])
-        if txt_doc is None:
-            txt = kargs[2]
-        else:
-            txt = txt_doc.getText()
+        txt = kargs[2] if txt_doc is None else txt_doc.getText()
         return cls._get_cursor_txt(rng=kargs[1], txt=txt)
 
     @staticmethod
     def _get_cursor_txt(rng: XTextRange, txt: XText) -> XTextCursor:
+        # sourcery skip: raise-specific-error
         try:
             cursor = txt.createTextCursorByRange(rng)
             if cursor is None:
@@ -337,19 +337,20 @@ class Selection(metaclass=StaticProperty):
             raise mEx.CursorError(str(e)) from e
 
     @staticmethod
-    def _get_cursor_obj(cursor_obj: DocOrCursor) -> XTextCursor:
+    def _get_cursor_obj(cursor_obj: DocOrCursor) -> XTextCursor | None:
+        # sourcery skip: raise-specific-error
         try:
             # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
-            xtxt_cursor = mLo.Lo.qi(XTextCursor, cursor_obj)
-            if xtxt_cursor is not None:
-                c = xtxt_cursor.getText().createTextCursorByRange(xtxt_cursor)
+            x_txt_cursor = mLo.Lo.qi(XTextCursor, cursor_obj)
+            if x_txt_cursor is not None:
+                c = x_txt_cursor.getText().createTextCursorByRange(x_txt_cursor)
                 if c is None:
                     raise Exception("XTextViewCursor.createTextCursorByRange() result is null")
                 return c
 
-            xdoc = mLo.Lo.qi(XTextDocument, cursor_obj)
-            if xdoc is not None:
-                xtext = xdoc.getText()
+            x_doc = mLo.Lo.qi(XTextDocument, cursor_obj)
+            if x_doc is not None:
+                xtext = x_doc.getText()
                 if xtext is None:
                     return None
                 c = xtext.createTextCursor()
@@ -382,13 +383,12 @@ class Selection(metaclass=StaticProperty):
                 cursor = cls.get_cursor(cursor_obj)
             else:
                 cursor = cursor_obj
-            wd_cursor = mLo.Lo.qi(XWordCursor, cursor, True)
-            return wd_cursor
+            return mLo.Lo.qi(XWordCursor, cursor, True)
         except Exception as e:
             raise mEx.WordCursorError(str(e)) from e
 
     @classmethod
-    def get_sentence_cursor(cls, cursor_obj: DocOrCursor) -> XSentenceCursor:
+    def get_sentence_cursor(cls, cursor_obj: DocOrCursor) -> XSentenceCursor | None:
         """
         Gets document sentence cursor
 
@@ -399,7 +399,7 @@ class Selection(metaclass=StaticProperty):
             SentenceCursorError: If Unable to get cursor
 
         Returns:
-            XSentenceCursor: Sentence Cursor
+            XSentenceCursor: Sentence Cursor if found else ``None``
         """
         try:
             if mLo.Lo.is_uno_interfaces(cursor_obj, XTextDocument):
@@ -409,8 +409,7 @@ class Selection(metaclass=StaticProperty):
             if cursor is None:
                 print("Text cursor is null")
                 return None
-            sc = mLo.Lo.qi(XSentenceCursor, cursor, True)
-            return sc
+            return mLo.Lo.qi(XSentenceCursor, cursor, True)
         except Exception as e:
             raise mEx.SentenceCursorError(str(e)) from e
 
@@ -433,8 +432,7 @@ class Selection(metaclass=StaticProperty):
                 cursor = cursor_obj
             else:
                 cursor = cls.get_cursor(cursor_obj)
-            para_cursor = mLo.Lo.qi(XParagraphCursor, cursor, True)
-            return para_cursor
+            return mLo.Lo.qi(XParagraphCursor, cursor, True)
         except Exception as e:
             raise mEx.ParagraphCursorError(str(e)) from e
 
@@ -452,11 +450,7 @@ class Selection(metaclass=StaticProperty):
             TextRange to travel in the given text context.
         """
         doc = mLo.Lo.qi(XTextDocument, o_text)
-        if doc is None:
-            text = o_text
-        else:
-            text = doc.getText()
-
+        text = cast(XText, o_text if doc is None else doc.getText())
         range_compare = cls.text_range_compare
         if range_compare.compareRegionStarts(o_sel.getEnd(), o_sel) >= 0:
             o_range = o_sel.getEnd()
@@ -484,7 +478,7 @@ class Selection(metaclass=StaticProperty):
             o_range = o_sel.getStart()
         else:
             o_range = o_sel.getEnd()
-        cursor = o_text.createTextCursorByRange(o_range)
+        cursor = cast("XSimpleText", o_text).createTextCursorByRange(o_range)
         cursor.goLeft(0, False)
         return cursor
 
@@ -500,10 +494,10 @@ class Selection(metaclass=StaticProperty):
             int: Current Cursor Position
         """
         # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
-        #     imax = 0
+        #     i_max = 0
         #     if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
         #         l.goRight(jump, False)
-        #         imax = imax + jump
+        #         i_max = i_max + jump
         jmp_amt = 25
 
         def get_high(l: XTextCursor, r: XTextCursor, jump=jmp_amt, total=0) -> int:
@@ -575,8 +569,7 @@ class Selection(metaclass=StaticProperty):
             XPropertySet: Properties
         """
         xview_cursor = cls.get_view_cursor(text_doc)
-        props = mLo.Lo.qi(XPropertySet, xview_cursor, True)
-        return props
+        return mLo.Lo.qi(XPropertySet, xview_cursor, True)
 
     @staticmethod
     def get_view_cursor(text_doc: XTextDocument) -> XTextViewCursor:
@@ -597,12 +590,13 @@ class Selection(metaclass=StaticProperty):
         See Also:
             `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
         """
+        # sourcery skip: raise-specific-error
 
         # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
         try:
             model = mLo.Lo.qi(XModel, text_doc, True)
-            xcontroller = model.getCurrentController()
-            supplier = mLo.Lo.qi(XTextViewCursorSupplier, xcontroller, True)
+            x_controller = model.getCurrentController()
+            supplier = mLo.Lo.qi(XTextViewCursorSupplier, x_controller, True)
             vc = supplier.getViewCursor()
             if vc is None:
                 raise Exception("Supplier return null view cursor")
@@ -622,20 +616,15 @@ class Selection(metaclass=StaticProperty):
         Returns:
             XTextRangeCompare: Text Range Compare instance
         """
-        # Note: This class is inherited so is important the attribue be assigned directly
+        # Note: This class is inherited so is important the attribute be assigned directly
         # to Selection and not to cls
         try:
-            return Selection._text_range_compare
+            return Selection._text_range_compare  # type: ignore
         except AttributeError:
-            doc = mLo.Lo.XSCRIPTCONTEXT.getDocument()
-            text = doc.getText()
+            doc = mLo.Lo.xscript_context.getDocument()
+            text = doc.getText()  # type: ignore
             Selection._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
-        return cls._text_range_compare
-
-    @text_range_compare.setter
-    def text_range_compare(cls, value) -> None:
-        # raise error on set. Not really necessary but gives feedback.
-        raise AttributeError("Attempt to modify read-only class property '%s'." % cls.__name__)
+        return Selection._text_range_compare  # type: ignore
 
     @staticmethod
     def get_word_count_ooo(text: str, word_type: WordTypeEnum | None = None, locale_lang: str | None = None) -> int:
@@ -661,29 +650,22 @@ class Selection(metaclass=StaticProperty):
         # https://forum.openoffice.org/en/forum/viewtopic.php?f=20&t=82678
         next_wd = Boundary()
         if locale_lang:
-            local = mInfo.Info.parse_languange_code(locale_lang)
+            local = mInfo.Info.parse_language_code(locale_lang)
         else:
             local = mInfo.Info.language_locale
 
         num_words = 0
         start_pos = 0
-        if word_type > WordTypeEnum.ANY_WORD:
-            # intensionally pad the start and end of the string to guarantee we get the first word and clean break on last word
-            st = f" {text} "
-        else:
-            # ANY_WORD
-            # no need to pad. All characters will be counted including whitespaces
-            st = text
-
+        st = f" {text} " if word_type > WordTypeEnum.ANY_WORD else text
         brk = mLo.Lo.create_instance_mcf(XBreakIterator, "com.sun.star.i18n.BreakIterator")
         if brk is None:
             raise mEx.CreateInstanceMcfError(XBreakIterator, "com.sun.star.i18n.BreakIterator")
 
-        next_wd = brk.nextWord(st, start_pos, local, word_type.value)
+        next_wd = brk.nextWord(st, start_pos, local, word_type.value)  # type: ignore
         while next_wd.startPos != next_wd.endPos:
             num_words += 1
             nw = next_wd.startPos
-            next_wd = brk.nextWord(st, nw, local, word_type.value)
+            next_wd = brk.nextWord(st, nw, local, word_type.value)  # type: ignore
 
         return num_words
 
@@ -709,7 +691,7 @@ class Selection(metaclass=StaticProperty):
             the next word, or any word at all! This may happen for example if it travels over empty paragraphs.
 
         Note:
-           Event args ``event_data`` is a dictionary containing ``text_doc``.
+            Event args ``event_data`` is a dictionary containing ``text_doc``.
         """
 
         cargs = CancelEventArgs(Selection.select_next_word)
@@ -721,17 +703,17 @@ class Selection(metaclass=StaticProperty):
         supplier = mLo.Lo.qi(XSelectionSupplier, text_doc.getCurrentController(), True)
 
         # clear any current selection
-        view_curor = cls.get_view_cursor(text_doc=text_doc)
-        # view_curor.collapseToEnd()
-        view_curor.goRight(0, False)
+        view_cursor = cls.get_view_cursor(text_doc=text_doc)
+        # view_cursor.collapseToEnd()
+        view_cursor.goRight(0, False)
 
         # see section 7.5.1 of developers' guide
         index_access = mLo.Lo.qi(XIndexAccess, supplier.getSelection(), True)
-        range = mLo.Lo.qi(XTextRange, index_access.getByIndex(0), True)
+        rng = mLo.Lo.qi(XTextRange, index_access.getByIndex(0), True)
 
         # get the XWordCursor and make a selection!
-        xText = range.getText()
-        word_cursor = cls.get_word_cursor(xText.createTextCursorByRange(range))
+        xText = rng.getText()
+        word_cursor = cls.get_word_cursor(xText.createTextCursorByRange(rng))
 
         if not word_cursor.isStartOfWord():
             word_cursor.gotoStartOfWord(False)
@@ -744,8 +726,8 @@ class Selection(metaclass=StaticProperty):
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    dattrs = ("_text_range_compare",)
-    for attr in dattrs:
+    d_attrs = ("_text_range_compare",)
+    for attr in d_attrs:
         if hasattr(Selection, attr):
             delattr(Selection, attr)
 

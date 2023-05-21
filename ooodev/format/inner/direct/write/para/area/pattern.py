@@ -18,6 +18,16 @@ _TPattern = TypeVar(name="_TPattern", bound="Pattern")
 
 
 class Pattern(StyleMulti):
+    """
+    Class for Para Fill Pattern.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_para_area_pattern`
+
+    .. versionadded:: 0.9.0
+    """
+
     def __init__(
         self,
         *,
@@ -45,21 +55,22 @@ class Pattern(StyleMulti):
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
             All subsequent call of the same name will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_para_area_pattern`
         """
 
         fp = InnerPattern(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
-        if stretch:
-            loc = GraphicLocation.AREA
-        else:
-            loc = GraphicLocation.TILED
+        loc = GraphicLocation.AREA if stretch else GraphicLocation.TILED
         init_vars = {
             "ParaBackColor": -1,
             "ParaBackGraphicLocation": loc,
             "ParaBackTransparent": True,
         }
-        bmap = fp._get("FillBitmap")
-        if not bmap is None:
-            init_vars["ParaBackGraphic"] = bmap
+        b_map = fp._get("FillBitmap")
+        if b_map is not None:
+            init_vars["ParaBackGraphic"] = b_map
 
         super().__init__(**init_vars)
         fp._prop_parent = self
@@ -79,19 +90,23 @@ class Pattern(StyleMulti):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"FillPattern.apply(): Unable to set Property")
+            mLo.Lo.print("FillPattern.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -101,7 +116,7 @@ class Pattern(StyleMulti):
         Returns:
             None:
         """
-        fp = cast(InnerPattern, self._get_style("fill_props")[0])
+        fp = cast(InnerPattern, self._get_style_inst("fill_props"))
         if not fp._has("FillBitmap"):
             mLo.Lo.print("Pattern.apply(): There is nothing to apply.")
             return
@@ -146,25 +161,25 @@ class Pattern(StyleMulti):
             Pattern: Instance from preset.
         """
         fp = InnerPattern.from_preset(preset)
-        bmap = fp._get("FillBitmap")
+        bitmap = fp._get("FillBitmap")
         name = str(preset)
-        return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
+        return cls(bitmap=bitmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
 
     # endregion from_preset()
 
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: object) -> _TPattern:
+    def from_obj(cls: Type[_TPattern], obj: Any) -> _TPattern:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
+    def from_obj(cls: Type[_TPattern], obj: Any, **kwargs) -> _TPattern:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: object, **kwargs) -> _TPattern:
+    def from_obj(cls: Type[_TPattern], obj: Any, **kwargs) -> _TPattern:
         """
         Gets instance from object
 
@@ -178,9 +193,9 @@ class Pattern(StyleMulti):
             Pattern: ``Pattern`` instance that represents ``obj`` fill pattern.
         """
         fp = InnerPattern.from_obj(obj)
-        bmap = fp._get("FillBitmap")
+        bitmap = fp._get("FillBitmap")
         name = fp._get("FillBitmapName")
-        return cls(bitmap=bmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
+        return cls(bitmap=bitmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
 
     # endregion from_obj()
 

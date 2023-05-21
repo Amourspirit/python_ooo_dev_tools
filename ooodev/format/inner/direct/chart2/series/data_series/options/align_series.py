@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, overload, NamedTuple
+from typing import Any, Tuple, overload, NamedTuple
 import uno
 from com.sun.star.chart2 import XChartDocument
 
@@ -15,7 +15,13 @@ class _AlignSeriesProps(NamedTuple):
 
 
 class AlignSeries(StyleBase):
-    """Chart Data Series Align Series"""
+    """
+    Chart Data Series Align
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_series_options`
+    """
 
     def __init__(
         self,
@@ -31,6 +37,9 @@ class AlignSeries(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_series_options`
         """
         self._chart_doc = chart_doc
         super().__init__()
@@ -45,19 +54,19 @@ class AlignSeries(StyleBase):
             self._supported_services_values = ("com.sun.star.chart2.DataSeries",)
         return self._supported_services_values
 
-    def _is_valid_obj(self, obj: object) -> bool:
+    def _is_valid_obj(self, obj: Any) -> bool:
         return self._chart_doc is not None
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies styles to object
 
@@ -78,7 +87,7 @@ class AlignSeries(StyleBase):
 
         if dv:
             try:
-                diagram = self._chart_doc.getDiagram()
+                diagram = self._chart_doc.getDiagram()  # type: ignore
             except Exception as e:
                 mLo.Lo.print(f"{self.__class__.__name__}.apply() - Unable to get chart diagram")
                 mLo.Lo.print(f"  Error: {e}")
@@ -120,9 +129,7 @@ class AlignSeries(StyleBase):
     def prop_primary_y_axis(self) -> bool | None:
         """Gets or sets the primary Y axis."""
         pv = self._get(self._props.primary_y_axis)
-        if pv is None:
-            return None
-        return pv == 0
+        return None if pv is None else pv == 0
 
     @prop_primary_y_axis.setter
     def prop_primary_y_axis(self, value: bool | None) -> None:

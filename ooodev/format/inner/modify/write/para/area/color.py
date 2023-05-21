@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.utils import color as mColor
@@ -14,13 +14,17 @@ class Color(ParaStyleBaseMulti):
     """
     Paragraph Style Fill Coloring
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_color`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(
         self,
         *,
-        color: mColor.Color = -1,
+        color: mColor.Color = mColor.StandardColor.AUTO_COLOR,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -35,6 +39,9 @@ class Color(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_color`
         """
 
         direct = InnerColor(color=color)
@@ -46,7 +53,7 @@ class Color(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Color:
@@ -54,7 +61,7 @@ class Color(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

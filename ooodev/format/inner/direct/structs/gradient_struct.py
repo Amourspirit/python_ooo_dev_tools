@@ -5,21 +5,25 @@ Module for ``Gradient`` struct.
 """
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 import json
-
-from .struct_base import StructBase
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.utils.color import Color, RGB
-from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.format.inner.kind.format_kind import FormatKind
-
-
 import uno
 from ooo.dyn.awt.gradient import Gradient
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+
+from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.preset import preset_gradient
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+from ooodev.utils import props as mProps
+from ooodev.utils.color import Color, RGB
+from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.utils.data_type.color_range import ColorRange
+from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
+from .struct_base import StructBase
+
 
 # endregion Import
 
@@ -166,10 +170,10 @@ class GradientStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -271,16 +275,16 @@ class GradientStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: object) -> _TGradientStruct:
+    def from_obj(cls: Type[_TGradientStruct], obj: Any) -> _TGradientStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: object, **kwargs) -> _TGradientStruct:
+    def from_obj(cls: Type[_TGradientStruct], obj: Any, **kwargs) -> _TGradientStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: object, **kwargs) -> _TGradientStruct:
+    def from_obj(cls: Type[_TGradientStruct], obj: Any, **kwargs) -> _TGradientStruct:
         """
         Gets instance from object
 
@@ -299,12 +303,61 @@ class GradientStruct(StructBase):
 
         try:
             grad = cast(Gradient, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(grad, **kwargs)
 
     # endregion from_obj()
+
+    # region from_preset()
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind) -> _TGradientStruct:
+        ...
+
+    @overload
+    @classmethod
+    def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind, **kwargs) -> _TGradientStruct:
+        ...
+
+    @classmethod
+    def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind, **kwargs) -> _TGradientStruct:
+        """
+        Gets instance from preset.
+
+        Args:
+            preset (PresetGradientKind): Preset.
+
+        Returns:
+            GradientStruct: Gradient from a preset.
+
+        .. versionadded:: 0.10.2
+        """
+        args = preset_gradient.get_preset(preset)
+        style = cast(GradientStyle, args.pop("style"))
+        step_count = cast(int, args.pop("step_count"))
+        offset = cast(Offset, args.pop("offset"))
+        angle = Angle(int(args.pop("angle")))
+        border = Intensity(int(args.pop("border")))
+        grad_color = cast(ColorRange, args.pop("grad_color"))
+        grad_intensity = cast(IntensityRange, args.pop("grad_intensity"))
+
+        return cls(
+            style=style,
+            step_count=step_count,
+            x_offset=offset.x,
+            y_offset=offset.y,
+            angle=angle,
+            border=border,
+            start_color=grad_color.start,
+            start_intensity=grad_intensity.start,
+            end_color=grad_color.end,
+            end_intensity=grad_intensity.end,
+            **kwargs,
+        )
+
+    # endregion from_preset()
 
     # endregion static methods
 
@@ -366,9 +419,7 @@ class GradientStruct(StructBase):
     def prop_angle(self) -> Angle:
         """Gets/Sets angle of the gradient."""
         pv = cast(int, self._get("Angle"))
-        if pv == 0:
-            return Angle(0)
-        return Angle(round(pv / 10))
+        return Angle(0) if pv == 0 else Angle(round(pv / 10))
 
     @prop_angle.setter
     def prop_angle(self, value: Angle | int):

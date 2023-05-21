@@ -75,7 +75,7 @@ class Borders(StyleMulti):
         """
         init_vals = {}
 
-        sides = Sides(
+        sides = self._get_sides_type()(
             left=left,
             right=right,
             top=top,
@@ -114,17 +114,11 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
-            return cp
-        if cp._sides is None:
-            cp._sides = Sides(all=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_left = value
-        sides.prop_right = value
-        sides.prop_top = value
-        sides.prop_bottom = value
-        cp._sides = sides
+        if self.prop_inner_sides is not None:
+            sides = self.prop_inner_sides.fmt_border_side(value)
+        else:
+            sides = self._get_sides_type()(all=value)
+        cp._set_style("sides", sides, *sides.get_attrs())
         return cp
 
     def fmt_left(self: _TBorders, value: Side | None) -> _TBorders:
@@ -138,14 +132,11 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
-            return cp
-        if cp._sides is None:
-            cp._sides = Sides(left=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_left = value
-        cp._sides = sides
+        if self.prop_inner_sides is not None:
+            sides = self.prop_inner_sides.fmt_left(value)
+        else:
+            sides = self._get_sides_type()(left=value)
+        cp._set_style("sides", sides, *sides.get_attrs())
         return cp
 
     def fmt_right(self: _TBorders, value: Side | None) -> _TBorders:
@@ -159,14 +150,11 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
-            return cp
-        if cp._sides is None:
-            cp._sides = Sides(right=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_right = value
-        cp._sides = sides
+        if self.prop_inner_sides is not None:
+            sides = self.prop_inner_sides.fmt_right(value)
+        else:
+            sides = self._get_sides_type()(right=value)
+        cp._set_style("sides", sides, *sides.get_attrs())
         return cp
 
     def fmt_top(self: _TBorders, value: Side | None) -> _TBorders:
@@ -180,14 +168,11 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
-            return cp
-        if cp._sides is None:
-            cp._sides = Sides(top=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_top = value
-        cp._sides = sides
+        if self.prop_inner_sides is not None:
+            sides = self.prop_inner_sides.fmt_top(value)
+        else:
+            sides = self._get_sides_type()(top=value)
+        cp._set_style("sides", sides, *sides.get_attrs())
         return cp
 
     def fmt_bottom(self: _TBorders, value: Side | None) -> _TBorders:
@@ -201,14 +186,11 @@ class Borders(StyleMulti):
             Borders: Borders instance
         """
         cp = self.copy()
-        if cp._sides is None and value is None:
-            return cp
-        if cp._sides is None:
-            cp._sides = Sides(bottom=value)
-            return cp
-        sides = cp._sides.copy()
-        sides.prop_bottom = value
-        cp._sides = sides
+        if self.prop_inner_sides is not None:
+            sides = self.prop_inner_sides.fmt_bottom(value)
+        else:
+            sides = self._get_sides_type()(bottom=value)
+        cp._set_style("sides", sides, *sides.get_attrs())
         return cp
 
     def fmt_shadow(self: _TBorders, value: InnerShadow | None) -> _TBorders:
@@ -249,6 +231,9 @@ class Borders(StyleMulti):
 
     # region methods
 
+    def _get_sides_type(self) -> Type[Sides]:
+        return Sides
+
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values
@@ -267,10 +252,14 @@ class Borders(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -293,16 +282,16 @@ class Borders(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any) -> _TBorders:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         """
         Gets instance from object
 

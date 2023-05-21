@@ -1,10 +1,10 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-from ooodev.utils.color import Color
+from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -23,6 +23,10 @@ class Gradient(ParaStyleBaseMulti):
     """
     Paragraph Style Gradient Color
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_gradient`
+
     .. versionadded:: 0.9.0
     """
 
@@ -34,7 +38,7 @@ class Gradient(ParaStyleBaseMulti):
         offset: Offset = Offset(50, 50),
         angle: Angle | int = 0,
         border: Intensity | int = 0,
-        grad_color: ColorRange = ColorRange(Color(0), Color(16777215)),
+        grad_color: ColorRange = ColorRange(StandardColor.BLACK, StandardColor.WHITE),
         grad_intensity: IntensityRange = IntensityRange(100, 100),
         name: str = "",
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
@@ -63,6 +67,9 @@ class Gradient(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_gradient`
         """
 
         direct = InnerGradient(
@@ -103,7 +110,7 @@ class Gradient(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Gradient:
@@ -111,7 +118,7 @@ class Gradient(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

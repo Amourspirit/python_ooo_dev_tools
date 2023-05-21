@@ -1,3 +1,5 @@
+.. _help_calc_format:
+
 Calc Formatting and Style
 =========================
 
@@ -6,3 +8,5 @@ Calc Formatting and Style
     :glob:
 
     direct/index
+    modify/index
+    style/index

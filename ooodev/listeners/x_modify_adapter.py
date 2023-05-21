@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 
 
-class XModifyAdapter(unohelper.Base, XModifyListener):
+class XModifyAdapter(unohelper.Base, XModifyListener):  # type: ignore
     """
     makes it possible to receive events when a model object changes.
 

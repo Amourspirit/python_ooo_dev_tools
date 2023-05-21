@@ -51,19 +51,19 @@ General function used to run these examples.
                     |short_ptext|
                 )
 
-            with Lo.Loader(Lo.ConnectSocket()):
-                doc = Write.create_doc()
-                GUI.set_visible(True, doc)
-                Lo.delay(500)
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                with Lo.Loader(Lo.ConnectSocket()):
+                    doc = Write.create_doc()
+                    GUI.set_visible(True, doc)
+                    Lo.delay(500)
+                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 
-                cursor = Write.get_cursor(doc)
-                indent = Indent(before=22.0, after=20.0, first=8.0)
-                Write.append_para(cursor=cursor, text=p_txt, styles=[indent])
-                Write.append_para(cursor=cursor, text=p_txt)
-                Lo.delay(1_000)
-                Lo.close_doc(doc)
-            return 0
+                    cursor = Write.get_cursor(doc)
+                    indent = Indent(before=22.0, after=20.0, first=8.0)
+                    Write.append_para(cursor=cursor, text=p_txt, styles=[indent])
+                    Write.append_para(cursor=cursor, text=p_txt)
+                    Lo.delay(1_000)
+                    Lo.close_doc(doc)
+                return 0
 
 
             if __name__ == "__main__":
@@ -272,6 +272,8 @@ as seen in :ref:`help_writer_format_style_para_reset_default`.
 
         Paragraph styles reset.
 
+Related Topics
+--------------
 
 .. seealso::
 
@@ -280,6 +282,7 @@ as seen in :ref:`help_writer_format_style_para_reset_default`.
         - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_writer_format_modify_para_indent_spacing`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.para.indent_space.Indent`

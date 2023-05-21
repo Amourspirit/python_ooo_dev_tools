@@ -37,6 +37,10 @@ class Borders(StyleMulti):
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_table_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -72,6 +76,12 @@ class Borders(StyleMulti):
             shadow (Shadow, optional): Cell Shadow.
             padding (BorderPadding, optional): Cell padding.
             merge_adjacent (bool, optional): Specifies if adjacent line style are to be merged.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_writer_format_direct_table_borders`
         """
         super().__init__()
 
@@ -92,7 +102,7 @@ class Borders(StyleMulti):
             _cattribs=self._get_tb_cattribs(),
         )
 
-        if not padding is None:
+        if padding is not None:
             # using paddint and converting to TableBorderDistancesStruct.
             # TableBorderDistancesStruct could be used but padding is used on other places so keep it that same.
             tb_padding_struct = TableBorderDistancesStruct(
@@ -105,13 +115,13 @@ class Borders(StyleMulti):
         else:
             tb_padding_struct = None
 
-        if not merge_adjacent is None:
+        if merge_adjacent is not None:
             self.prop_merge_adjacent = merge_adjacent
         if border_table.prop_has_attribs:
             self._set_style("border_table", border_table)
-        if not tb_padding_struct is None:
+        if tb_padding_struct is not None:
             self._set_style("padding", tb_padding_struct)
-        if not shadow_fmt is None:
+        if shadow_fmt is not None:
             self._set_style("shadow", shadow_fmt)
 
     # endregion init
@@ -165,10 +175,14 @@ class Borders(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
 
@@ -182,7 +196,7 @@ class Borders(StyleMulti):
 
     # endregion apply()
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
@@ -197,16 +211,16 @@ class Borders(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any) -> _TBorders:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: object, **kwargs) -> _TBorders:
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
         """
         Gets instance from object
 
@@ -224,10 +238,10 @@ class Borders(StyleMulti):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
         inst.prop_merge_adjacent = bool(mProps.Props.get(obj, inst._props.merge, True))
         tbl_border = TableBorderStruct.from_obj(obj, _cattribs=inst._get_tb_cattribs())
-        tbl_border_disance = TableBorderDistancesStruct.from_obj(obj, _cattribs=inst._get_tbd_cattribs())
+        tbl_border_distance = TableBorderDistancesStruct.from_obj(obj, _cattribs=inst._get_tbd_cattribs())
         shadow_fmt = Shadow.from_obj(obj, _cattribs=inst._get_shadow_cattribs())
         inst._set_style("border_table", tbl_border)
-        inst._set_style("padding", tbl_border_disance)
+        inst._set_style("padding", tbl_border_distance)
         inst._set_style("shadow", shadow_fmt)
         return inst
 
@@ -389,9 +403,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
-        cp, ret = self._fmt_get_border_table(value, "vertical")
-        if ret:
-            return cp
+        cp = self.copy()
 
         bt = cast(TableBorderStruct, cp._get_style_inst("distance"))
         bt.prop_distance = value
@@ -533,7 +545,7 @@ class Borders(StyleMulti):
             return self._empty_inst
         except AttributeError:
             side = Side()
-            self._empty_inst = self(
+            self._empty_inst = self.__class__(
                 border_side=side.empty,
                 vertical=side.empty,
                 horizontal=side.empty,

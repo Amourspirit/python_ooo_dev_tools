@@ -87,9 +87,9 @@ class DropCaps(StyleMulti):
             dc = DropCapStruct(count=0, distance=0, lines=0, _cattribs=self._get_cattribs())
         elif count > 0:
             try:
-                dist = spaces.get_value_mm100()
+                dist = spaces.get_value_mm100()  # type: ignore
             except AttributeError:
-                dist = UnitConvert.convert_mm_mm100(spaces)
+                dist = UnitConvert.convert_mm_mm100(spaces)  # type: ignore
             dc = DropCapStruct(count=count, distance=dist, lines=lines, _cattribs=self._get_cattribs())
             if whole_word is not None:
                 init_vars["DropCapWholeWord"] = whole_word
@@ -147,6 +147,7 @@ class DropCaps(StyleMulti):
             source (Any): Event Source.
             event_args (KeyValueCancelArgs): Event Args
         """
+        # sourcery skip: merge-nested-ifs
         if event_args.key == "DropCapCharStyleName":
             # DropCapCharStyleName will not allow itself to be set if it has empty string
             # as a value, even though it ia a string and will take a string value of any valid
@@ -196,16 +197,16 @@ class DropCaps(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCaps], obj: object) -> _TDropCaps:
+    def from_obj(cls: Type[_TDropCaps], obj: Any) -> _TDropCaps:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCaps], obj: object, **kwargs) -> _TDropCaps:
+    def from_obj(cls: Type[_TDropCaps], obj: Any, **kwargs) -> _TDropCaps:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TDropCaps], obj: object, **kwargs) -> _TDropCaps:
+    def from_obj(cls: Type[_TDropCaps], obj: Any, **kwargs) -> _TDropCaps:
         """
         Gets instance from object
 
@@ -226,9 +227,9 @@ class DropCaps(StyleMulti):
 
         whole_word = cast(bool, mProps.Props.get(obj, "DropCapWholeWord"))
         style = cast(str, mProps.Props.get(obj, "DropCapCharStyleName"))
-        if not whole_word is None:
+        if whole_word is not None:
             inst._set("DropCapWholeWord", whole_word)
-        if not style is None:
+        if style is not None:
             inst._set("DropCapCharStyleName", style)
         return inst
 

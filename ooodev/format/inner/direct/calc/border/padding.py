@@ -31,6 +31,9 @@ class Padding(AbstractPadding):
     .. seealso::
 
         - :ref:`help_calc_format_direct_cell_borders`
+        - :ref:`help_writer_format_direct_table_borders`
+
+    .. versionadded:: 0.9.0
     """
 
     def __init__(
@@ -62,6 +65,7 @@ class Padding(AbstractPadding):
         See Also:
 
             - :ref:`help_calc_format_direct_cell_borders`
+            - :ref:`help_writer_format_direct_table_borders`
         """
         super().__init__(left=left, right=right, top=top, bottom=bottom, all=all)
 
@@ -70,16 +74,16 @@ class Padding(AbstractPadding):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: object) -> _TPadding:
+    def from_obj(cls: Type[_TPadding], obj: Any) -> _TPadding:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
+    def from_obj(cls: Type[_TPadding], obj: Any, **kwargs) -> _TPadding:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: object, **kwargs) -> _TPadding:
+    def from_obj(cls: Type[_TPadding], obj: Any, **kwargs) -> _TPadding:
         """
         Gets Padding instance from object
 

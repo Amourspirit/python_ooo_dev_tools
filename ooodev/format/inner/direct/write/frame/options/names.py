@@ -12,7 +12,7 @@ from ooodev.format.inner.common.abstract.abstract_document import AbstractDocume
 from ooodev.format.inner.common.props.frame_options_names_props import FrameOptionsNamesProps
 
 if TYPE_CHECKING:
-    pass
+    from com.sun.star.text import ChainedTextFrame  # service
 
 _TNames = TypeVar(name="_TNames", bound="Names")
 
@@ -52,7 +52,7 @@ class Names(AbstractDocument):
         # If Text is added to both frames that are to be chained together then
         # LO will not chain them.
         # The Frame.ChainNextName and Frame.ChainPrevName properties cannot be set. and do not raise any error.
-        # This is the default behavour and makes sense.
+        # This is the default behavior and makes sense.
         # If the frame to flow to has text already then previous frame cannot flow to it.
 
         super().__init__()
@@ -82,25 +82,27 @@ class Names(AbstractDocument):
             setattr(obj, self._props.name, name)
 
         try:
-            prev = self.prop_prev
-            next = self.prop_next
+            p_prev = self.prop_prev
+            p_next = self.prop_next
         except mEx.DeletedAttributeError:
-            # attriutes not used in a child class.
+            # attributes not used in a child class.
             return
 
-        if prev is None and next is None:
+        if p_prev is None and p_next is None:
             return
 
         frames = self.get_text_frames()
         if frames is None:
             return
+        if self.prop_name is None:
+            return
         if not frames.hasByName(self.prop_name):
             return
         this_frame = cast("ChainedTextFrame", frames.getByName(self.prop_name))
-        if not prev is None:
-            this_frame.ChainPrevName = prev
-        if not next is None:
-            this_frame.ChainNextName = next
+        if p_prev is not None:
+            this_frame.ChainPrevName = p_prev
+        if p_next is not None:
+            this_frame.ChainNextName = p_next
 
     def on_property_setting(self, source: Any, event_args: KeyValCancelArgs) -> None:
         skip = (self._props.name, self._props.prev, self._props.next)
@@ -117,7 +119,7 @@ class Names(AbstractDocument):
             self._supported_services_values = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
             # This should be ChainedTextFrame only, however there seems to be a bug in LibreOffice.
             # Even though an object is passed in that has ChainedTextFrame properties it does not support ChainedTextFrame service,
-            # but does suppor TextFrame service.
+            # but does support TextFrame service.
         return self._supported_services_values
 
     def _props_set(self, obj: object, **kwargs: Any) -> None:
@@ -132,21 +134,21 @@ class Names(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNames], obj: object) -> _TNames:
+    def from_obj(cls: Type[_TNames], obj: Any) -> _TNames:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNames], obj: object, **kwargs) -> _TNames:
+    def from_obj(cls: Type[_TNames], obj: Any, **kwargs) -> _TNames:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TNames], obj: object, **kwargs) -> _TNames:
+    def from_obj(cls: Type[_TNames], obj: Any, **kwargs) -> _TNames:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO Object.
+            obj (Any): UNO Object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.
@@ -184,7 +186,7 @@ class Names(AbstractDocument):
         return self._format_kind_prop
 
     @property
-    def prop_name(self) -> SystemError | None:
+    def prop_name(self) -> str | None:
         """Gets/Sets name"""
         return self._get(self._props.name)
 

@@ -5,7 +5,7 @@ Module for ``Hatch`` struct.
 """
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 import uno
 
@@ -119,10 +119,10 @@ class HatchStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -178,16 +178,16 @@ class HatchStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatchStruct], obj: object) -> _THatchStruct:
+    def from_obj(cls: Type[_THatchStruct], obj: Any) -> _THatchStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatchStruct], obj: object, **kwargs) -> _THatchStruct:
+    def from_obj(cls: Type[_THatchStruct], obj: Any, **kwargs) -> _THatchStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_THatchStruct], obj: object, **kwargs) -> _THatchStruct:
+    def from_obj(cls: Type[_THatchStruct], obj: Any, **kwargs) -> _THatchStruct:
         """
         Gets instance from object
 
@@ -206,8 +206,8 @@ class HatchStruct(StructBase):
 
         try:
             grad = cast(Hatch, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(grad, **kwargs)
 
@@ -253,17 +253,15 @@ class HatchStruct(StructBase):
     @prop_distance.setter
     def prop_distance(self, value: float | UnitObj):
         try:
-            self._set("Distance", value.get_value_mm100())
+            self._set("Distance", value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set("Distance", UnitConvert.convert_mm_mm100(value))
+            self._set("Distance", UnitConvert.convert_mm_mm100(value))  # type: ignore
 
     @property
     def prop_angle(self) -> Angle:
         """Gets/Sets angle of the hatch."""
         pv = cast(int, self._get("Angle"))
-        if pv == 0:
-            return Angle(0)
-        return Angle(round(pv / 10))
+        return Angle(0) if pv == 0 else Angle(round(pv / 10))
 
     @prop_angle.setter
     def prop_angle(self, value: Angle | int):

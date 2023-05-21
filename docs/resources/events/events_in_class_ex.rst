@@ -3,11 +3,9 @@
     .. code-tab:: python
 
         #!/usr/bin/env python
-        # coding: utf-8
         from __future__ import annotations
         import time
         import sys
-        import types
         from typing import Any
 
         from ooodev.utils.lo import Lo
@@ -25,16 +23,21 @@
                 loader = Lo.load_office(Lo.ConnectPipe())
 
                 self.events = Events(source=self)
-                self.events.on(LoNamedEvent.BRIDGE_DISPOSED, DocMonitor.on_disposed)
+
+                def _on_disposed(source: Any, event_args: EventArgs) -> None:
+                    self.on_disposed(source=source, event_args=event_args)
+
+                self._fn_on_disposed = _on_disposed
+
+                self.events.on(LoNamedEvent.BRIDGE_DISPOSED, _on_disposed)
 
                 self.doc = Calc.create_doc(loader=loader)
 
                 GUI.set_visible(True, self.doc)
 
-            @staticmethod
-            def on_disposed(source: Any, event: EventArgs) -> None:
+            def on_disposed(self, source: Any, event: EventArgs) -> None:
                 print("LO: Office bridge has gone!!")
-                event.event_source.bridge_disposed = True
+                self.bridge_disposed = True
 
 
         def main_loop() -> None:
@@ -59,11 +62,12 @@
             try:
                 main_loop()
             except SystemExit as e:
-                sys.exit(e.code)
+                SystemExit(e.code)
             except KeyboardInterrupt:
                 # ctrl+c exitst the script earily
                 print("\nExiting by user request.\n", file=sys.stderr)
-                sys.exit(0)
+                SystemExit(0)
+
 
     .. only:: html
 

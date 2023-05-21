@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from ooo.dyn.table.table_border_distances import TableBorderDistances
 
@@ -38,7 +38,7 @@ class TableBorderDistancesStruct(StructBase):
         right: float | UnitObj = 0.0,
         top: float | UnitObj = 0.0,
         bottom: float | UnitObj = 0.0,
-        all: float | UnitObj = None,
+        all: float | UnitObj | None = None,
     ) -> None:
         """
         Constructor
@@ -51,7 +51,7 @@ class TableBorderDistancesStruct(StructBase):
             all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
-        if not all is None:
+        if all is not None:
             self.prop_left = all
             self.prop_right = all
             self.prop_top = all
@@ -105,7 +105,7 @@ class TableBorderDistancesStruct(StructBase):
         Returns:
             TableBorderDistances: ``TableBorderDistances`` instance
         """
-        inst = TableBorderDistances(
+        return TableBorderDistances(
             TopDistance=self._get(self._props.top),
             IsTopDistanceValid=self._get(self._props.valid_top),
             BottomDistance=self._get(self._props.bottom),
@@ -115,7 +115,6 @@ class TableBorderDistancesStruct(StructBase):
             RightDistance=self._get(self._props.right),
             IsRightDistanceValid=self._get(self._props.valid_right),
         )
-        return inst
 
     # endregion methods
 
@@ -131,10 +130,10 @@ class TableBorderDistancesStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -202,16 +201,16 @@ class TableBorderDistancesStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: object) -> _TTableBorderDistancesStruct:
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any) -> _TTableBorderDistancesStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: object, **kwargs) -> _TTableBorderDistancesStruct:
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any, **kwargs) -> _TTableBorderDistancesStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: object, **kwargs) -> _TTableBorderDistancesStruct:
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any, **kwargs) -> _TTableBorderDistancesStruct:
         """
         Gets instance from object
 
@@ -224,12 +223,13 @@ class TableBorderDistancesStruct(StructBase):
         Returns:
             TableBorderDistancesStruct: ``TableBorderDistancesStruct`` instance that represents ``obj`` crop properties.
         """
+        # sourcery skip: raise-from-previous-error
         # this nu is only used to get Property Name
         nu = cls(**kwargs)
         prop_name = nu._get_property_name()
 
         try:
-            struct = cast(TableBorderDistancesStruct, mProps.Props.get(obj, prop_name))
+            struct = cast(TableBorderDistances, mProps.Props.get(obj, prop_name))
         except mEx.PropertyNotFoundError:
             raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
 
@@ -335,9 +335,9 @@ class TableBorderDistancesStruct(StructBase):
     @prop_left.setter
     def prop_left(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.left, value.get_value_mm100())
+            self._set(self._props.left, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.left, UnitConvert.convert_mm_mm100(value))  # type: ignore
         self._set(self._props.valid_left, True)
 
     @property
@@ -349,9 +349,9 @@ class TableBorderDistancesStruct(StructBase):
     @prop_right.setter
     def prop_right(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.right, value.get_value_mm100())
+            self._set(self._props.right, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.right, UnitConvert.convert_mm_mm100(value))  # type: ignore
         self._set(self._props.valid_right, True)
 
     @property
@@ -363,9 +363,9 @@ class TableBorderDistancesStruct(StructBase):
     @prop_top.setter
     def prop_top(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.top, value.get_value_mm100())
+            self._set(self._props.top, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.top, UnitConvert.convert_mm_mm100(value))  # type: ignore
         self._set(self._props.valid_top, True)
 
     @property
@@ -377,9 +377,9 @@ class TableBorderDistancesStruct(StructBase):
     @prop_bottom.setter
     def prop_bottom(self, value: float | UnitObj) -> None:
         try:
-            self._set(self._props.bottom, value.get_value_mm100())
+            self._set(self._props.bottom, value.get_value_mm100())  # type: ignore
         except AttributeError:
-            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))
+            self._set(self._props.bottom, UnitConvert.convert_mm_mm100(value))  # type: ignore
         self._set(self._props.valid_bottom, True)
 
     @property

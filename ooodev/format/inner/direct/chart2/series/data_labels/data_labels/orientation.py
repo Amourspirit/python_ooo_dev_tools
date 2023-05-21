@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, cast, Tuple
 import uno
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
@@ -14,11 +15,15 @@ class Orientation(StyleBase):
     """
     Series data points Text orientation.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_series_labels_data_labels`
+
     .. versionadded:: 0.9.4
     """
 
     def __init__(
-        self, angle: int | Angle = None, mode: DirectionModeKind | None = None, leaders: bool | None = None
+        self, angle: int | Angle | None = None, mode: DirectionModeKind | None = None, leaders: bool | None = None
     ) -> None:
         """
         Constructor
@@ -26,13 +31,16 @@ class Orientation(StyleBase):
         Args:
             angle (int, Angle, optional): Rotation in degrees of the text.
             mode (DirectionModeKind, optional): Specifies the writing direction.
-            leaders (bool, optional): Leder Lines. Connect displaced data points to data points.
+            leaders (bool, optional): Leader Lines. Connect displaced data points to data points.
 
         Returns:
             None:
 
         Note:
             When setting a data point ``leaders`` is ignored. To set ``leaders`` set it on the data series.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_series_labels_data_labels`
         """
         super().__init__()
         if angle is not None:
@@ -58,13 +66,10 @@ class Orientation(StyleBase):
     # region on events
     def on_property_set_error(self, source: Any, event_args: KeyValCancelArgs) -> None:
         if event_args.key == "ShowCustomLeaderLines":
-            # ShowCustomLeaderLines must be set on data series and not datapoint
-            try:
+            # ShowCustomLeaderLines must be set on data series and not data point
+            with contextlib.suppress(Exception):
                 if event_args.event_data.getImplementationName() == "com.sun.star.comp.chart.DataPoint":
                     event_args.handled = True
-            except Exception:
-                pass
-
         super().on_property_set_error(source, event_args)
 
     # endregion on events
@@ -84,9 +89,7 @@ class Orientation(StyleBase):
         """Gets/Sets the rotation of the text."""
         # angle is stored as float but the dialog only allows integer values
         pv = cast(float, self._get("TextRotation"))
-        if pv is None:
-            return None
-        return Angle(int(pv))
+        return None if pv is None else Angle(int(pv))
 
     @prop_angle.setter
     def prop_angle(self, value: int | Angle | None) -> None:
@@ -101,9 +104,7 @@ class Orientation(StyleBase):
     def prop_mode(self) -> DirectionModeKind | None:
         """Gets/Sets writing mode."""
         pv = cast(int, self._get("WritingMode"))
-        if pv is None:
-            return None
-        return DirectionModeKind(pv)
+        return None if pv is None else DirectionModeKind(pv)
 
     @prop_mode.setter
     def prop_mode(self, value: DirectionModeKind | None):

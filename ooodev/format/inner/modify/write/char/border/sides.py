@@ -16,6 +16,10 @@ class Sides(CharStyleBaseMulti):
     """
     Character Style Border Sides (lines).
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_char_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -45,6 +49,9 @@ class Sides(CharStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_char_borders`
         """
 
         direct = InnerSides(left=left, right=right, top=top, bottom=bottom, all=border_side)

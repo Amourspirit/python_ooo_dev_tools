@@ -14,10 +14,26 @@ class Page(StyleName):
     """
     Page Style.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_style_page`
+
     .. versionadded:: 0.9.0
     """
 
     def __init__(self, name: CalcStylePageKind | str = "") -> None:
+        """
+        Constructor
+
+        Args:
+            name (CalcStylePageKind | str, optional): Style name. Defaults to ``Default``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_style_page`
+        """
         if name == "":
             name = Page.default.prop_name
         super().__init__(name=name)
@@ -73,21 +89,21 @@ class Page(StyleName):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: object) -> Page:
+    def from_obj(cls, obj: Any) -> Page:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> Page:
+    def from_obj(cls, obj: Any, **kwargs) -> Page:
         ...
 
     @classmethod
-    def from_obj(cls, obj: object, **kwargs) -> Page:
+    def from_obj(cls, obj: Any, **kwargs) -> Page:
         """
         Gets instance from object
 
         Args:
-            obj (object): UNO object.
+            obj (Any): UNO object.
 
         Raises:
             NotSupportedError: If ``obj`` is not supported.
@@ -100,9 +116,8 @@ class Page(StyleName):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        pname = mProps.Props.get(obj, inst._get_property_name(), "")
-        if pname:
-            inst.prop_name = pname
+        if name := mProps.Props.get(obj, inst._get_property_name(), ""):
+            inst.prop_name = name
         return inst
 
     # endregion from_obj()
@@ -110,11 +125,6 @@ class Page(StyleName):
     # endregion Static Methods
 
     # region Style Properties
-    @property
-    def default(self) -> Page:
-        """Style Default"""
-        return Page(CalcStylePageKind.DEFAULT)
-
     @property
     def report(self) -> Page:
         """Style Report"""
@@ -137,10 +147,10 @@ class Page(StyleName):
     def default() -> Page:  # type: ignore[misc]
         """Gets Page default style. Static Property."""
         try:
-            return Page._DEFAULT_PAGE
+            return Page._DEFAULT_PAGE  # type: ignore[return-value]
         except AttributeError:
-            Page._DEFAULT_PAGE = Page(name=CalcStylePageKind.DEFAULT)
-            Page._DEFAULT_PAGE._is_default_inst = True
-        return Page._DEFAULT_PAGE
+            Page._DEFAULT_PAGE = Page(name=CalcStylePageKind.DEFAULT)  # type: ignore[assignment]
+            Page._DEFAULT_PAGE._is_default_inst = True  # type: ignore[assignment]
+        return Page._DEFAULT_PAGE  # type: ignore[return-value]
 
     # endregion Properties

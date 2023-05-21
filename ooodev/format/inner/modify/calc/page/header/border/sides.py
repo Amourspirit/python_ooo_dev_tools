@@ -16,6 +16,10 @@ class InnerSides(DirectSides):
     """
     Page Header/Footer Style Border Sides.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -60,6 +64,10 @@ class Sides(CellStyleBaseMulti):
     """
     Page Header Style Border Sides.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_header_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -90,6 +98,9 @@ class Sides(CellStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_header_borders`
         """
 
         direct = InnerSides(

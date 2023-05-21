@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
@@ -17,6 +17,10 @@ from ..para_style_base_multi import ParaStyleBaseMulti
 class Shadow(ParaStyleBaseMulti):
     """
     Paragraph Style Shadow
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_borders`
 
     .. versionadded:: 0.9.0
     """
@@ -47,6 +51,9 @@ class Shadow(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_borders`
         """
 
         direct = InnerShadow(location=location, color=color, transparent=transparent, width=width)
@@ -58,7 +65,7 @@ class Shadow(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> Shadow:
@@ -66,7 +73,7 @@ class Shadow(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.

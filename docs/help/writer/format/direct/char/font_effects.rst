@@ -78,6 +78,7 @@ Running the above code will produce the following output in :numref:`229379242-a
     .. figure:: https://user-images.githubusercontent.com/4193389/229379242-a98c30ee-1b94-4f51-8aa5-7afbf9635b24.png
         :alt: Writer dialog Character font 20pt
         :figclass: align-center
+        :width: 450px
 
         Hello World with 20pt font, red color and underline blue color.
 
@@ -89,6 +90,7 @@ The results can be seen in dialog show in  :numref:`229383701-84fca154-24a8-4724
     .. figure:: https://user-images.githubusercontent.com/4193389/229383701-84fca154-24a8-4724-b489-ff8b57d4bfa2.png
         :alt: Writer dialog Character Font Effects
         :figclass: align-center
+        :width: 450px
 
         Writer dialog: Character Font Effects
 
@@ -124,6 +126,9 @@ The paragraph cursor is then used to get the style.
 
             .. group-tab:: None
 
+Related Topics
+--------------
+
 .. seealso::
 
     .. cssclass:: ul-list
@@ -132,6 +137,9 @@ The paragraph cursor is then used to get the style.
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_font_only`
         - :ref:`help_writer_format_direct_char_font`
+        - :ref:`help_writer_format_modify_char_font_effects`
+        - :ref:`help_writer_format_modify_para_font_effects`
+        - :ref:`help_calc_format_direct_cell_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontEffects`

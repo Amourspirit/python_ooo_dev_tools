@@ -1,8 +1,10 @@
 # region Import
 from __future__ import annotations
 
+import uno
 from com.sun.star.text import XTextDocument
 from com.sun.star.container import XNameAccess
+from com.sun.star.beans import XPropertySet
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
@@ -53,6 +55,7 @@ class AbstractDocument(StyleBase):
 
         .. versionadded:: 0.9.0
         """
+        # sourcery skip: extract-method, raise-specific-error
         props = mInfo.Info.get_style_props(
             doc=mWrite.Write.active_doc,
             family_style_name=self._get_doc_family_style_name(),
@@ -85,6 +88,7 @@ class AbstractDocument(StyleBase):
         Returns:
             Size: Page Size in ``1/100 mm`` units.
         """
+        # sourcery skip: raise-specific-error
         props = mInfo.Info.get_style_props(
             doc=mWrite.Write.active_doc,
             family_style_name=self._get_doc_family_style_name(),
@@ -114,5 +118,16 @@ class AbstractDocument(StyleBase):
         """
         # return mLo.Lo.this_component.TextFrames
         return mWrite.Write.get_text_frames(mWrite.Write.active_doc)
+
+    def get_doc_settings(self) -> XPropertySet:
+        """
+        Gets the document settings
+
+        Returns:
+            XPropertySet: Properties
+
+        .. versionadded:: 0.9.7
+        """
+        return mWrite.Write.get_doc_settings()
 
     # endregion methods

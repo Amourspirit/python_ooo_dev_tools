@@ -79,9 +79,7 @@ class IntervalMarks(StyleBase):
     @property
     def prop_major(self) -> MarkKind | None:
         pv = cast(int, self._get("MajorTickmarks"))
-        if pv is None:
-            return None
-        return MarkKind(pv)
+        return None if pv is None else MarkKind(pv)
 
     @prop_major.setter
     def prop_major(self, value: MarkKind | None) -> None:
@@ -93,9 +91,7 @@ class IntervalMarks(StyleBase):
     @property
     def prop_minor(self) -> MarkKind | None:
         pv = cast(int, self._get("MinorTickmarks"))
-        if pv is None:
-            return None
-        return MarkKind(pv)
+        return None if pv is None else MarkKind(pv)
 
     @prop_minor.setter
     def prop_minor(self, value: MarkKind | None) -> None:

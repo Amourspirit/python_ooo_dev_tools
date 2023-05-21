@@ -5,7 +5,7 @@ Module for Image Crop (``GraphicCrop``) struct
 """
 # region imports
 from __future__ import annotations
-from typing import Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 from ooo.dyn.util.cell_protection import CellProtection
 
@@ -90,13 +90,12 @@ class CellProtectionStruct(StructBase):
         Returns:
             Size: ``CellProtection`` instance
         """
-        inst = CellProtection(
+        return CellProtection(
             IsLocked=self._get(self._props.protected),
             IsFormulaHidden=self._get(self._props.hide_formula),
             IsHidden=self._get(self._props.hide_all),
-            IsPrintHidden=self._get(self._props.hide_pirnt),
+            IsPrintHidden=self._get(self._props.hide_print),
         )
-        return inst
 
     # endregion methods
 
@@ -112,10 +111,10 @@ class CellProtectionStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies tab properties to ``obj``
 
@@ -165,7 +164,7 @@ class CellProtectionStruct(StructBase):
         inst._set(inst._props.protected, value.IsLocked)
         inst._set(inst._props.hide_formula, value.IsFormulaHidden)
         inst._set(inst._props.hide_all, value.IsHidden)
-        inst._set(inst._props.hide_pirnt, value.IsPrintHidden)
+        inst._set(inst._props.hide_print, value.IsPrintHidden)
         return inst
 
     # endregion from_uno_struct()
@@ -173,16 +172,16 @@ class CellProtectionStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCellProtectionStruct], obj: object) -> _TCellProtectionStruct:
+    def from_obj(cls: Type[_TCellProtectionStruct], obj: Any) -> _TCellProtectionStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCellProtectionStruct], obj: object, **kwargs) -> _TCellProtectionStruct:
+    def from_obj(cls: Type[_TCellProtectionStruct], obj: Any, **kwargs) -> _TCellProtectionStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TCellProtectionStruct], obj: object, **kwargs) -> _TCellProtectionStruct:
+    def from_obj(cls: Type[_TCellProtectionStruct], obj: Any, **kwargs) -> _TCellProtectionStruct:
         """
         Gets instance from object
 
@@ -200,9 +199,9 @@ class CellProtectionStruct(StructBase):
         prop_name = nu._get_property_name()
 
         try:
-            struct = cast(CellProtectionStruct, mProps.Props.get(obj, prop_name))
-        except mEx.PropertyNotFoundError:
-            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property")
+            struct = cast(CellProtection, mProps.Props.get(obj, prop_name))
+        except mEx.PropertyNotFoundError as e:
+            raise mEx.PropertyNotFoundError(prop_name, f"from_obj() obj as no {prop_name} property") from e
 
         return cls.from_uno_struct(struct, **kwargs)
 
@@ -236,7 +235,7 @@ class CellProtectionStruct(StructBase):
     def hide_print(self: _TCellProtectionStruct) -> _TCellProtectionStruct:
         """Gets instance with hide print value set."""
         cp = self.copy()
-        cp.hide_print = True
+        cp.prop_hide_print = True
         return cp
 
     # endregion Format Properties
@@ -282,11 +281,11 @@ class CellProtectionStruct(StructBase):
     @property
     def prop_hide_print(self) -> bool:
         """Gets/Sets Hide Print value"""
-        return self._get(self._props.hide_pirnt)
+        return self._get(self._props.hide_print)
 
     @prop_hide_print.setter
     def prop_hide_print(self, value: bool) -> None:
-        self._set(self._props.hide_pirnt, value)
+        self._set(self._props.hide_print, value)
 
     @property
     def _props(self) -> StructCellProtectionProps:
@@ -294,7 +293,7 @@ class CellProtectionStruct(StructBase):
             return self._props_internal_attributes
         except AttributeError:
             self._props_internal_attributes = StructCellProtectionProps(
-                hide_all="IsHidden", hide_formula="IsFormulaHidden", protected="IsLocked", hide_pirnt="IsPrintHidden"
+                hide_all="IsHidden", hide_formula="IsFormulaHidden", protected="IsLocked", hide_print="IsPrintHidden"
             )
         return self._props_internal_attributes
 

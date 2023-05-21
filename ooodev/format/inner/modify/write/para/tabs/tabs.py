@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import cast
+from typing import Any, cast
 import uno
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
@@ -16,6 +16,10 @@ from ..para_style_base_multi import ParaStyleBaseMulti
 class Tabs(ParaStyleBaseMulti):
     """
     Paragraph Style Breaks
+
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_para_tabs`
 
     .. versionadded:: 0.9.0
     """
@@ -51,6 +55,9 @@ class Tabs(ParaStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_para_tabs`
         """
 
         direct = InnerTabs(position=position, align=align, decimal_char=decimal_char, fill_char=fill_char)
@@ -62,7 +69,7 @@ class Tabs(ParaStyleBaseMulti):
     @classmethod
     def from_style(
         cls,
-        doc: object,
+        doc: Any,
         index: int = 0,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -71,7 +78,7 @@ class Tabs(ParaStyleBaseMulti):
         Gets instance from Document.
 
         Args:
-            doc (object): UNO Document Object.
+            doc (Any): UNO Document Object.
             index (int, optional): Index of tab stop. Default ``0``.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.

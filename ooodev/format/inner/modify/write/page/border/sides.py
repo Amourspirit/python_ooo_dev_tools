@@ -15,6 +15,10 @@ class Sides(PageStyleBaseMulti):
     """
     Page Style Border Sides.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_modify_page_borders`
+
     .. versionadded:: 0.9.0
     """
 
@@ -45,6 +49,9 @@ class Sides(PageStyleBaseMulti):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_writer_format_modify_page_borders`
         """
 
         direct = InnerSides(left=left, right=right, top=top, bottom=bottom, all=all)

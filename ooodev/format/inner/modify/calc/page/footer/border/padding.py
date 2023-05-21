@@ -13,8 +13,53 @@ class Padding(HeaderPadding):
     """
     Page Style Footer Border Padding.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_footer_borders`
+
     .. versionadded:: 0.9.0
     """
+
+    def __init__(
+        self,
+        *,
+        left: float | None = None,
+        right: float | None = None,
+        top: float | None = None,
+        bottom: float | None = None,
+        padding_all: float | None = None,
+        style_name: CalcStylePageKind | str = CalcStylePageKind.DEFAULT,
+        style_family: str = "PageStyles",
+    ) -> None:
+        """
+        Constructor
+
+        Args:
+            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+                If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            style_name (CalcStylePageKind, str, optional): Specifies the Page Style that instance applies to.
+                Default is Default Page Style.
+            style_family (str, optional): Style family. Default ``PageStyles``.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_footer_borders`
+        """
+        super().__init__(
+            left=left,
+            right=right,
+            top=top,
+            bottom=bottom,
+            padding_all=padding_all,
+            style_name=style_name,
+            style_family=style_family,
+        )
 
     # region overrides
     def _get_inner_props(self) -> BorderProps:

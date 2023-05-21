@@ -1,3 +1,5 @@
+.. _help_writer_format_direct:
+
 Direct
 ======
 
@@ -6,3 +8,4 @@ Direct
 
     char/index
     para/index
+    table/index

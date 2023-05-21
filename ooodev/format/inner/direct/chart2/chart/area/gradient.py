@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple, overload, TYPE_CHECKING
+from typing import Any, cast, Tuple, overload, TYPE_CHECKING
 import uno
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.chart2 import XChartDocument
@@ -23,6 +23,8 @@ from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as FillGradient
 from ooodev.meta.deleted_attrib import DeletedAttrib
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
     from ooo.dyn.awt.gradient import Gradient as UNOGradient
@@ -30,7 +32,7 @@ if TYPE_CHECKING:
 # endregion Import
 
 
-class _TitleGradidentStruct(GradientStruct):
+class _TitleGradientStruct(GradientStruct):
     def _get_property_name(self) -> str:
         return ""
 
@@ -39,10 +41,14 @@ class Gradient(FillGradient):
     """
     Style for Chart Area Fill Gradient.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_general_area`
+
     .. versionadded:: 0.9.4
     """
 
-    default = DeletedAttrib()
+    default = DeletedAttrib()  # type: ignore
 
     def __init__(
         self,
@@ -57,6 +63,31 @@ class Gradient(FillGradient):
         grad_intensity: IntensityRange = IntensityRange(100, 100),
         name: str = "",
     ) -> None:
+        """
+        Constructor
+
+        Args:
+            chart_doc (XChartDocument): Chart document.
+            style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
+            step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
+            offset (Offset, int, optional): Specifies the X and Y coordinate, where the gradient begins.
+                X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and ``RECT``
+                style gradients. Defaults to ``Offset(50, 50)``.
+            angle (Angle, int, optional): Specifies angle of the gradient. Defaults to ``0``.
+            border (int, optional): Specifies percent of the total width where just the start color is used.
+                Defaults to ``0``.
+            grad_color (ColorRange, optional): Specifies the color at the start point and stop point of the gradient.
+                Defaults to ``ColorRange(Color(0), Color(16777215))``.
+            grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of the
+                gradient. Defaults to ``IntensityRange(100, 100)``.
+            name (str, optional): Specifies the Fill Gradient Name.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_general_area`
+        """
         self._chart_doc = chart_doc
         super().__init__(
             style=style,
@@ -87,8 +118,7 @@ class Gradient(FillGradient):
 
     def _container_get_msf(self) -> XMultiServiceFactory | None:
         if self._chart_doc is not None:
-            chart_doc_ms_factory = mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
-            return chart_doc_ms_factory
+            return mLo.Lo.qi(XMultiServiceFactory, self._chart_doc)
         return None
 
     # region copy()
@@ -113,8 +143,8 @@ class Gradient(FillGradient):
 
     # endregion copy()
 
-    def _get_gradient_from_uno_struct(self, uno_struct: UNOGradient, **kwargs) -> _TitleGradidentStruct:
-        _TitleGradidentStruct.from_uno_struct(uno_struct, **kwargs)
+    def _get_gradient_from_uno_struct(self, uno_struct: UNOGradient, **kwargs) -> _TitleGradientStruct:
+        return _TitleGradientStruct.from_uno_struct(uno_struct, **kwargs)
 
     def _get_inner_class(
         self,
@@ -128,8 +158,8 @@ class Gradient(FillGradient):
         start_intensity: Intensity | int,
         end_color: Color,
         end_intensity: Intensity | int,
-    ) -> _TitleGradidentStruct:
-        fs = _TitleGradidentStruct(
+    ) -> _TitleGradientStruct:
+        return _TitleGradientStruct(
             style=style,
             step_count=step_count,
             x_offset=x_offset,
@@ -142,7 +172,6 @@ class Gradient(FillGradient):
             end_intensity=end_intensity,
             _cattribs=self._get_gradient_struct_cattrib(),
         )
-        return fs
 
     # endregion overrides
 
@@ -150,16 +179,16 @@ class Gradient(FillGradient):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object) -> Gradient:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Gradient:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Gradient:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Gradient:
         ...
 
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> Gradient:
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Gradient:
         """
         Gets instance from object.
 
@@ -173,7 +202,14 @@ class Gradient(FillGradient):
         Returns:
             Gradient: Instance that represents Gradient color.
         """
-        return super().from_obj(obj=obj, chart_doc=chart_doc, **kwargs)
+        # return super().from_obj(obj=obj, chart_doc=chart_doc, **kwargs)
+        inst = cls(name="__constructor_default__", chart_doc=chart_doc, **kwargs)
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
+
+        step_count = cast(int, mProps.Props.get(obj, inst._props.step_count))
+        name = cast(str, mProps.Props.get(obj, inst._props.name))
+        return cls(name=name, step_count=step_count, chart_doc=chart_doc, **kwargs)
 
     # endregion from_obj()
 

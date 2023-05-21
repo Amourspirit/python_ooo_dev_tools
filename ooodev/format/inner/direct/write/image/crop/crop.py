@@ -35,7 +35,7 @@ class CropOpt(CropStruct):
         right: float | UnitObj = 0,
         top: float | UnitObj = 0,
         bottom: float | UnitObj = 0,
-        all: float | UnitObj = None,
+        all: float | UnitObj | None = None,
         keep_scale: bool = True,
     ) -> None:
         """
@@ -70,6 +70,7 @@ class CropOpt(CropStruct):
             return False
         if isinstance(oth, CropOpt):
             return self.prop_keep_scale == oth.prop_keep_scale
+        return False
 
     # endregion dunder methods
 
@@ -147,7 +148,7 @@ class ImageCrop(StyleMulti):
         *,
         crop: CropOpt | None = None,
         img_size: SizeMM | None = None,
-        img_scale: SizeObj = None,
+        img_scale: SizeObj | None = None,
     ) -> None:
         """
         Constructor
@@ -160,12 +161,8 @@ class ImageCrop(StyleMulti):
         super().__init__()
 
         self._img_size = img_size
-        if img_scale is None:
-            self._img_scale = None
-        else:
-            self._img_scale = Size.from_size(img_scale)
-
-        if not crop is None:
+        self._img_scale = None if img_scale is None else Size.from_size(img_scale)
+        if crop is not None:
             co = crop.copy(_cattribs=self._get_struct_cattrib())
             self._set_style("crop_struct", co, *co.get_attrs())
 
@@ -181,8 +178,9 @@ class ImageCrop(StyleMulti):
         }
 
     def _rule_crop_keep_scale_scale(self, orig_size: Size) -> Size:
+        # sourcery skip: class-extract-method
         # orig_size in 1/100th mm
-        # retruns 1/100th mm
+        # returns 1/100th mm
         # If scale is passed in then image size is to be calculated from that scale using original image values, factoring in crop values
         img_scale = self.prop_img_scale
         if img_scale is None:
@@ -207,12 +205,12 @@ class ImageCrop(StyleMulti):
             end_crop=crop.prop_right.get_value_mm100(),
             scale=img_scale.height / 100,
         )
-        # retrun 1/100th mm
+        # returns 1/100th mm
         return Size(width=round(width), height=round(height))
 
     def _rule_crop_keep_scale_no_scale(self, orig_size: Size) -> Size:
         # orig_size in 1/100th mm
-        # retruns 1/100th mm
+        # returns 1/100th mm
         # If scale is not passed in image size is calculated from 100% using original image values, factoring in crop values.
         img_scale = Size(100, 100)
         crop = self.prop_crop_opt
@@ -235,11 +233,11 @@ class ImageCrop(StyleMulti):
             end_crop=crop.prop_right.get_value_mm100(),
             scale=img_scale.height / 100,
         )
-        # retrun 1/100th mm
+        # returns 1/100th mm
         return Size(width=round(width), height=round(height))
 
     def _rule_no_crop_image(self) -> Size:
-        # retruns 1/100th mm
+        # returns 1/100th mm
         # image size is present use it. In this case scale is ignored
         if self.prop_img_size is None:
             raise ValueError("Crop Image is required for rule no-crop-image.")
@@ -247,7 +245,7 @@ class ImageCrop(StyleMulti):
 
     def _rule_no_crop_scale_no_image(self, orig_size: Size) -> Size:
         # orig_size in 1/100th mm
-        # retruns 1/100th mm
+        # returns 1/100th mm
         # Scale No images size calculate new size from original size using scale.
         if self.prop_img_scale is None:
             raise ValueError("Crop Image is required for rule no-crop-scale-no-image.")
@@ -257,22 +255,22 @@ class ImageCrop(StyleMulti):
         new_height = orig_size.height * factor_height
         return Size(width=round(new_width), height=round(new_height))
 
-    def _rule_crop_keep_image(self, orig_size: Size) -> None:
+    def _rule_crop_keep_image(self, orig_size: Size) -> Size:
         # orig_size in 1/100th mm
-        # retruns 1/100th mm
+        # returns 1/100th mm
         # If image size is passed in then it is use that the image size
         # If image is not passed in then then the original image size is used
         if self.prop_img_size is None:
             return orig_size
         return self.prop_img_size.get_size_mm100()
 
-    def _get_keep_scale_value(self, orig_size: Size) -> Size | None:
+    def _get_keep_scale_value(self, orig_size: Size) -> Size:
         # orig_size in 1/100th mm
         # If scale is passed in then image size is to be calculated from that scale using original image values, factoring in crop values
         # If scale is not passed in image size is calculated from 100% using original image values, scale factoring in crop values.
         # If Image size is passed in then it is ignored.
 
-        if not self.prop_img_scale is None:
+        if self.prop_img_scale is not None:
             return self._rule_crop_keep_scale_scale(orig_size)
         return self._rule_crop_keep_scale_no_scale(orig_size)
 
@@ -297,6 +295,10 @@ class ImageCrop(StyleMulti):
     def copy(self: _TImageCrop) -> _TImageCrop:
         ...
 
+    @overload
+    def copy(self: _TImageCrop, **kwargs) -> _TImageCrop:
+        ...
+
     def copy(self: _TImageCrop, **kwargs) -> _TImageCrop:
         """Gets a copy of instance as a new instance"""
         cp = super().copy(**kwargs)
@@ -308,16 +310,21 @@ class ImageCrop(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:
+        ...
+
+    def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style of current instance.
 
         Args:
-            obj (object): UNO Object that styles are to be applied.
+            obj (Any): UNO Object that styles are to be applied.
         """
+        # sourcery skip: de-morgan, hoist-statement-from-if, merge-else-if-into-elif, use-named-expression
         if not self._is_valid_obj(obj):
             self._print_not_valid_srv(method_name="apply")
             return
@@ -330,22 +337,19 @@ class ImageCrop(StyleMulti):
             self._clear()
         crop = self.prop_crop_opt
         if crop is None:
-            sz: Size = None
+            sz = None
             if not self.prop_img_size is None:
                 sz = self._rule_no_crop_image()
             elif not self.prop_img_scale is None:
                 sz = self._rule_no_crop_scale_no_image(orig_size)
-            if not sz is None:
-                self._set(self._props.height, sz.height)
-                self._set(self._props.width, sz.width)
         else:
             if crop.prop_keep_scale:
                 sz = self._get_keep_scale_value(orig_size)
             else:
                 sz = self._rule_crop_keep_image(orig_size)
-            if not sz is None:
-                self._set(self._props.height, sz.height)
-                self._set(self._props.width, sz.width)
+        if not sz is None:
+            self._set(self._props.height, sz.height)
+            self._set(self._props.width, sz.width)
         super().apply(obj, **kwargs)
 
     # endregion apply()
@@ -465,11 +469,7 @@ class ImageCrop(StyleMulti):
 
         sz_actual = Size.from_size(actual_size)
         sz_size = Size.from_size(size)
-        if sz_actual == sz_size:
-            cs.prop_keep_scale = False
-        else:
-            cs.prop_keep_scale = True
-
+        cs.prop_keep_scale = sz_actual != sz_size
         inst._set_style("crop_struct", cs, *cs.get_attrs())
         return inst
 
@@ -490,7 +490,7 @@ class ImageCrop(StyleMulti):
     @property
     def prop_img_size(self) -> SizeMM | None:
         """
-        Gets/Sets image size.
+        Gets or Sets image size.
         """
         return self._img_size
 
@@ -501,7 +501,7 @@ class ImageCrop(StyleMulti):
     @property
     def prop_img_scale(self) -> Size | None:
         """
-        Gets/Sets image scale.
+        Gets or Sets image scale.
         """
         return self._img_scale
 
@@ -511,15 +511,13 @@ class ImageCrop(StyleMulti):
             self._img_scale = None
         else:
             sz = Size.from_size(value)
-            if sz.height < 1:
-                sz.height = 1
-            if sz.width < 1:
-                sz.width = 1
+            sz.height = max(sz.height, 1)
+            sz.width = max(sz.width, 1)
             self._img_scale = sz
 
     @property
     def prop_crop_opt(self) -> CropOpt | None:
-        """Gets\Sets Crop Struct instance"""
+        """Gets or Sets Crop Struct instance"""
         try:
             return self._direct_inner
         except AttributeError:

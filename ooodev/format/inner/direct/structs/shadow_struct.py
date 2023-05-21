@@ -57,6 +57,9 @@ class ShadowStruct(StructBase):
 
         Raises:
             ValueError: If ``color`` or ``width`` are less than zero.
+
+        Returns:
+            None:
         """
         super().__init__()
 
@@ -64,9 +67,9 @@ class ShadowStruct(StructBase):
         self._color = color
         self._transparent = transparent
         try:
-            self._width = width.get_value_mm100()
+            self._width = width.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._width = UnitConvert.convert_mm_mm100(width)
+            self._width = UnitConvert.convert_mm_mm100(width)  # type: ignore
 
         if self._color < 0:
             raise ValueError("color must be a positive number")
@@ -77,8 +80,8 @@ class ShadowStruct(StructBase):
     # endregion init
 
     # region methods
-    def __eq__(self, other: object) -> bool:
-        s2: ShadowFormat = None
+    def __eq__(self, other: Any) -> bool:
+        s2 = None
         if isinstance(other, ShadowStruct):
             s2 = other.get_uno_struct()
         elif getattr(other, "typeName", None) == "com.sun.star.table.ShadowFormat":
@@ -101,10 +104,10 @@ class ShadowStruct(StructBase):
             ShadowFormat: ``ShadowFormat`` instance
         """
         return ShadowFormat(
-            Location=self._location,
+            Location=self._location,  # type: ignore
             ShadowWidth=self._width,
             IsTransparent=self._transparent,
-            Color=self._color,
+            Color=self._color,  # type: ignore
         )
 
     def _supported_services(self) -> Tuple[str, ...]:
@@ -151,28 +154,27 @@ class ShadowStruct(StructBase):
 
     def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
         """Gets a copy of instance as a new instance"""
-        nu = self.__class__(
+        return self.__class__(
             location=self.prop_location,
             color=self.prop_color,
             transparent=self.prop_transparent,
             width=self.prop_width,
             **kwargs,
         )
-        return nu
 
     # endregion copy()
 
     # region apply()
 
     @overload
-    def apply(self, obj: object) -> None:
+    def apply(self, obj: Any) -> None:
         ...
 
     @overload
-    def apply(self, obj: object, keys: Dict[str, str]) -> None:
+    def apply(self, obj: Any, keys: Dict[str, str]) -> None:
         ...
 
-    def apply(self, obj: object, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         """
         Applies style to object
 
@@ -184,6 +186,7 @@ class ShadowStruct(StructBase):
         Returns:
             None:
         """
+        # sourcery skip: dict-assign-update-to-union
         keys = {"prop": self._get_property_name()}
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
@@ -191,11 +194,11 @@ class ShadowStruct(StructBase):
         shadow = self.get_uno_struct()
         super().apply(obj=obj, override_dv={keys["prop"]: shadow})
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
+    def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
         except mEx.MultiError as e:
-            mLo.Lo.print(f"Hatch.apply(): Unable to set Property")
+            mLo.Lo.print("Hatch.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
 
@@ -207,16 +210,16 @@ class ShadowStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadowStruct], obj: object) -> _TShadowStruct:
+    def from_obj(cls: Type[_TShadowStruct], obj: Any) -> _TShadowStruct:
         ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadowStruct], obj: object, **kwargs) -> _TShadowStruct:
+    def from_obj(cls: Type[_TShadowStruct], obj: Any, **kwargs) -> _TShadowStruct:
         ...
 
     @classmethod
-    def from_obj(cls: Type[_TShadowStruct], obj: object, **kwargs) -> _TShadowStruct:
+    def from_obj(cls: Type[_TShadowStruct], obj: Any, **kwargs) -> _TShadowStruct:
         """
         Gets instance from object
 
@@ -380,9 +383,9 @@ class ShadowStruct(StructBase):
     @prop_width.setter
     def prop_width(self, value: float | UnitObj) -> None:
         try:
-            self._width = value.get_value_mm100()
+            self._width = value.get_value_mm100()  # type: ignore
         except AttributeError:
-            self._width = UnitConvert.convert_mm_mm100(value)
+            self._width = UnitConvert.convert_mm_mm100(value)  # type: ignore
 
     @property
     def empty(self: _TShadowStruct) -> _TShadowStruct:  # type: ignore[misc]

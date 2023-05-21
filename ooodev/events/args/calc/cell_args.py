@@ -35,12 +35,12 @@ class CellArgs(AbstractCellArgs):
     __slots__ = ("source", "_event_name", "event_data", "sheet", "cells", "_event_source", "_kv_data")
 
     @staticmethod
-    def from_args(args: CellArgs) -> CellArgs:
+    def from_args(args: AbstractCellArgs) -> CellArgs:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (CellArgs): Existing Instance
+            args (AbstractCellArgs): Existing Instance
 
         Returns:
             CellArgs: args

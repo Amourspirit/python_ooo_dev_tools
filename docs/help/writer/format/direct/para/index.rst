@@ -1,3 +1,5 @@
+.. _help_writer_format_direct_para:
+
 Writer Format Direct Paragraph
 ==============================
 

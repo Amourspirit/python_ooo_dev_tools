@@ -11,15 +11,10 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
 from ooo.dyn.awt.font_weight import FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat
 
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle
 from ooodev.units import UnitObj
 from ooodev.units import UnitPT
-from ooodev.units import UnitConvert
-from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.direct.write.char.font.font import FontLine
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
 
@@ -35,6 +30,10 @@ class Font(CharFont):
     All methods starting with ``fmt_`` can be used to chain together font properties.
 
     Many properties such as ``bold``, ``italic``, ``underline`` can be chained together.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_title_font`
 
     .. versionadded:: 0.9.4
     """
@@ -96,6 +95,12 @@ class Font(CharFont):
             weight (FontWeightEnum, optional): The value of the font weight.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to
                 white spaces.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_title_font`
         """
         super().__init__(
             b=b,
@@ -137,9 +142,7 @@ class Font(CharFont):
         """This value contains the size of the characters in ``pt`` (point) units."""
         # for chart title this value is an int.
         pv = cast(int, self._get("CharHeight"))
-        if pv is None:
-            return None
-        return UnitPT(pv)
+        return None if pv is None else UnitPT(pv)
 
     @prop_size.setter
     def prop_size(self, value: int | UnitObj | None) -> None:
@@ -147,6 +150,6 @@ class Font(CharFont):
             self._remove("CharHeight")
             return
         try:
-            self._set("CharHeight", round(value.get_value_pt()))
+            self._set("CharHeight", round(value.get_value_pt()))  # type: ignore
         except AttributeError:
-            self._set("CharHeight", round(value))
+            self._set("CharHeight", round(value))  # type: ignore

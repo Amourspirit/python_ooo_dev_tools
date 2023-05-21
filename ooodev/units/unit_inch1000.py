@@ -23,7 +23,7 @@ class UnitInch1000(BaseIntValue):
         :ref:`proto_unit_obj`
     """
 
-    def _from_int(self, value: int) -> _TUnitInch1000:
+    def _from_int(self: _TUnitInch1000, value: int) -> _TUnitInch1000:
         inst = super(UnitInch1000, self.__class__).__new__(self.__class__)
         return inst.__init__(value)
 
@@ -31,7 +31,7 @@ class UnitInch1000(BaseIntValue):
         # for some reason BaseIntValue __eq__ is not picked up.
         # I suspect this is due to this class being a dataclass.
         try:
-            i = int(other)
+            i = int(other)  # type: ignore
             return i == self.value
         except Exception as e:
             return False

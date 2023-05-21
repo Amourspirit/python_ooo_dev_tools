@@ -15,6 +15,10 @@ class ScaleNumOfPages(CellStyleBase):
     """
     Page Style Shrink Page Range.
 
+    .. seealso::
+
+        - :ref:`help_calc_format_modify_page_sheet`
+
     .. versionadded:: 0.9.0
     """
 
@@ -36,6 +40,9 @@ class ScaleNumOfPages(CellStyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_calc_format_modify_page_sheet`
         """
 
         super().__init__(style_name=style_name, style_family=style_family)
@@ -81,9 +88,8 @@ class ScaleNumOfPages(CellStyleBase):
 
     @prop_pages.setter
     def prop_pages(self, value: int):
-        if value < 1:
-            # 1 is min
-            value = 1
+        # 1 is min
+        value = max(value, 1)
         # the order is important here.
         # by setting value last it ensure it is the last property set.
         # Otherwise, may get unexpected results. This is a Calc issue.

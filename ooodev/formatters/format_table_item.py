@@ -4,8 +4,8 @@ from typing import Any
 from .table_item_kind import TableItemKind as TableItemKind
 
 
-# if include indexs are available but exclude is not then apply to all includes only
-# if exclude indexs available but include is not then apply to all includes that are not in excludes
+# if include indexes are available but exclude is not then apply to all includes only
+# if exclude indexes available but include is not then apply to all includes that are not in excludes
 # if both include and exclude are available then any index in both include and exclude will NOT be formatted.
 
 
