@@ -1902,23 +1902,23 @@
 <icon BUILTIN="checked"/>
 </node>
 </node>
-<node TEXT="positioning" ID="ID_290538694" CREATED="1682097725187" MODIFIED="1682196183156">
-<icon BUILTIN="unchecked"/>
-<node TEXT="AxisLine" ID="ID_1394882173" CREATED="1682097732727" MODIFIED="1682196183156">
+<node TEXT="positioning" ID="ID_290538694" CREATED="1682097725187" MODIFIED="1685129867881">
+<icon BUILTIN="checked"/>
+<node TEXT="AxisLine" ID="ID_1394882173" CREATED="1682097732727" MODIFIED="1685129867886">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="IntervalMarks" ID="ID_506744404" CREATED="1682097740043" MODIFIED="1682196183156">
+<node TEXT="IntervalMarks" ID="ID_506744404" CREATED="1682097740043" MODIFIED="1685129867886">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="LabelPosition" ID="ID_1232909202" CREATED="1682097746114" MODIFIED="1682196183156">
+<node TEXT="LabelPosition" ID="ID_1232909202" CREATED="1682097746114" MODIFIED="1685129867887">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
-<node TEXT="PositionAxis" ID="ID_1474983392" CREATED="1682097752053" MODIFIED="1682196183156">
+<node TEXT="PositionAxis" ID="ID_1474983392" CREATED="1682097752053" MODIFIED="1685129867888">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="scale" ID="ID_229694505" CREATED="1682084867130" MODIFIED="1682097801533">

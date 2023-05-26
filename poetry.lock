@@ -1319,18 +1319,19 @@ files = [
 
 [[package]]
 name = "ooouno"
-version = "2.0.3"
+version = "2.1.2"
 description = "Interfaces and classes for LibreOffice (uno)"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "ooouno-2.0.3-py3-none-any.whl", hash = "sha256:79f86631ed732ee0a69490511fd5e58c59b6ee28e42e117ef7726e3b0b2298b9"},
-    {file = "ooouno-2.0.3.tar.gz", hash = "sha256:4e1d6b001547ea5f1e3c3ffc65c7eb734936e6400d974a515e9a3bd97578eead"},
+    {file = "ooouno-2.1.2-py3-none-any.whl", hash = "sha256:d06635941300d8e2a489b03592d9bfb9e70167c379352c275d3b96ac0586f4de"},
+    {file = "ooouno-2.1.2.tar.gz", hash = "sha256:3152a1769c0baa7d66efe0ae4b909a0a3f882562eb283d2672cbed2e31e01b82"},
 ]
 
 [package.dependencies]
-types-unopy = ">=1.0.6"
+types-unopy = ">=1.2.3"
+typing-extensions = ">=4.6.2,<5.0.0"
 
 [[package]]
 name = "packaging"
@@ -1560,14 +1561,14 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pyright"
-version = "1.1.309"
+version = "1.1.310"
 description = "Command line wrapper for pyright"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyright-1.1.309-py3-none-any.whl", hash = "sha256:a8b052c1997f7334e80074998ea0f93bd149550e8cf27ccb5481d3b2e1aad161"},
-    {file = "pyright-1.1.309.tar.gz", hash = "sha256:1abcfa83814d792a5d70b38621cc6489acfade94ebb2279e55ba1f394d54296c"},
+    {file = "pyright-1.1.310-py3-none-any.whl", hash = "sha256:55995ac76bf56cb7a44193b7b1ffafc573abab1f1dbc9f62d327f2a1768b3bda"},
+    {file = "pyright-1.1.310.tar.gz", hash = "sha256:9e95335a678db2717eaa0c867d61f9399e916289f4a9f47d993e0df74e7d7391"},
 ]
 
 [package.dependencies]
@@ -1764,14 +1765,14 @@ full = ["numpy"]
 
 [[package]]
 name = "requests"
-version = "2.30.0"
+version = "2.31.0"
 description = "Python HTTP for Humans."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "requests-2.30.0-py3-none-any.whl", hash = "sha256:10e94cc4f3121ee6da529d358cdaeaff2f1c409cd377dbc72b825852f2f7e294"},
-    {file = "requests-2.30.0.tar.gz", hash = "sha256:239d7d4458afcb28a692cdd298d87542235f4ca8d36d03a15bfc128a6559a2f4"},
+    {file = "requests-2.31.0-py3-none-any.whl", hash = "sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f"},
+    {file = "requests-2.31.0.tar.gz", hash = "sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1"},
 ]
 
 [package.dependencies]
@@ -1786,14 +1787,14 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "ruamel-yaml"
-version = "0.17.26"
+version = "0.17.27"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
 category = "dev"
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "ruamel.yaml-0.17.26-py3-none-any.whl", hash = "sha256:25d0ee82a0a9a6f44683dcf8c282340def4074a4562f3a24f55695bb254c1693"},
-    {file = "ruamel.yaml-0.17.26.tar.gz", hash = "sha256:baa2d0a5aad2034826c439ce61c142c07082b76f4791d54145e131206e998059"},
+    {file = "ruamel.yaml-0.17.27-py3-none-any.whl", hash = "sha256:c4ffffc972d35927e715683fe1e2e47fa2aebb26ce67fe75e599fb84f115f20b"},
+    {file = "ruamel.yaml-0.17.27.tar.gz", hash = "sha256:cad7e3917da5c321658479f417320443b073e7b272033c799ba52e441d561ae5"},
 ]
 
 [package.dependencies]
@@ -1851,29 +1852,29 @@ files = [
 
 [[package]]
 name = "ruff"
-version = "0.0.267"
+version = "0.0.270"
 description = "An extremely fast Python linter, written in Rust."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "ruff-0.0.267-py3-none-macosx_10_7_x86_64.whl", hash = "sha256:4adbbbe314d8fcc539a245065bad89446a3cef2e0c9cf70bf7bb9ed6fe31856d"},
-    {file = "ruff-0.0.267-py3-none-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:67254ae34c38cba109fdc52e4a70887de1f850fb3971e5eeef343db67305d1c1"},
-    {file = "ruff-0.0.267-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bbe104f21a429b77eb5ac276bd5352fd8c0e1fbb580b4c772f77ee8c76825654"},
-    {file = "ruff-0.0.267-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:db33deef2a5e1cf528ca51cc59dd764122a48a19a6c776283b223d147041153f"},
-    {file = "ruff-0.0.267-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9adf1307fa9d840d1acaa477eb04f9702032a483214c409fca9dc46f5f157fe3"},
-    {file = "ruff-0.0.267-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:0afca3633c8e2b6c0a48ad0061180b641b3b404d68d7e6736aab301c8024c424"},
-    {file = "ruff-0.0.267-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:2972241065b1c911bce3db808837ed10f4f6f8a8e15520a4242d291083605ab6"},
-    {file = "ruff-0.0.267-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:f731d81cb939e757b0335b0090f18ca2e9ff8bcc8e6a1cf909245958949b6e11"},
-    {file = "ruff-0.0.267-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:20c594eb56c19063ef5a57f89340e64c6550e169d6a29408a45130a8c3068adc"},
-    {file = "ruff-0.0.267-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:45d61a2b01bdf61581a2ee039503a08aa603dc74a6bbe6fb5d1ce3052f5370e5"},
-    {file = "ruff-0.0.267-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:2107cec3699ca4d7bd41543dc1d475c97ae3a21ea9212238b5c2088fa8ee7722"},
-    {file = "ruff-0.0.267-py3-none-musllinux_1_2_i686.whl", hash = "sha256:786de30723c71fc46b80a173c3313fc0dbe73c96bd9da8dd1212cbc2f84cdfb2"},
-    {file = "ruff-0.0.267-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:5a898953949e37c109dd242cfcf9841e065319995ebb7cdfd213b446094a942f"},
-    {file = "ruff-0.0.267-py3-none-win32.whl", hash = "sha256:d12ab329474c46b96d962e2bdb92e3ad2144981fe41b89c7770f370646c0101f"},
-    {file = "ruff-0.0.267-py3-none-win_amd64.whl", hash = "sha256:d09aecc9f5845586ba90911d815f9772c5a6dcf2e34be58c6017ecb124534ac4"},
-    {file = "ruff-0.0.267-py3-none-win_arm64.whl", hash = "sha256:7df7eb5f8d791566ba97cc0b144981b9c080a5b861abaf4bb35a26c8a77b83e9"},
-    {file = "ruff-0.0.267.tar.gz", hash = "sha256:632cec7bbaf3c06fcf0a72a1dd029b7d8b7f424ba95a574aaa135f5d20a00af7"},
+    {file = "ruff-0.0.270-py3-none-macosx_10_7_x86_64.whl", hash = "sha256:f74c4d550f7b8e808455ac77bbce38daafc458434815ba0bc21ae4bdb276509b"},
+    {file = "ruff-0.0.270-py3-none-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:643de865fd35cb76c4f0739aea5afe7b8e4d40d623df7e9e6ea99054e5cead0a"},
+    {file = "ruff-0.0.270-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:eca02e709b3308eb7255b5f74e779be23b5980fca3862eae28bb23069cd61ae4"},
+    {file = "ruff-0.0.270-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:3ed3b198768d2b3a2300fb18f730cd39948a5cc36ba29ae9d4639a11040880be"},
+    {file = "ruff-0.0.270-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:739495d2dbde87cf4e3110c8d27bc20febf93112539a968a4e02c26f0deccd1d"},
+    {file = "ruff-0.0.270-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:08188f8351f4c0b6216e8463df0a76eb57894ca59a3da65e4ed205db980fd3ae"},
+    {file = "ruff-0.0.270-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:0827b074635d37984fc98d99316bfab5c8b1231bb83e60dacc83bd92883eedb4"},
+    {file = "ruff-0.0.270-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:0d61ae4841313f6eeb8292dc349bef27b4ce426e62c36e80ceedc3824e408734"},
+    {file = "ruff-0.0.270-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0eb412f20e77529a01fb94d578b19dcb8331b56f93632aa0cce4a2ea27b7aeba"},
+    {file = "ruff-0.0.270-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:b775e2c5fc869359daf8c8b8aa0fd67240201ab2e8d536d14a0edf279af18786"},
+    {file = "ruff-0.0.270-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:21f00e47ab2308617c44435c8dfd9e2e03897461c9e647ec942deb2a235b4cfd"},
+    {file = "ruff-0.0.270-py3-none-musllinux_1_2_i686.whl", hash = "sha256:0bbfbf6fd2436165566ca85f6e57be03ed2f0a994faf40180cfbb3604c9232ef"},
+    {file = "ruff-0.0.270-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:8af391ef81f7be960be10886a3c1aac0b298bde7cb9a86ec2b05faeb2081ce6b"},
+    {file = "ruff-0.0.270-py3-none-win32.whl", hash = "sha256:b4c037fe2f75bcd9aed0c89c7c507cb7fa59abae2bd4c8b6fc331a28178655a4"},
+    {file = "ruff-0.0.270-py3-none-win_amd64.whl", hash = "sha256:0012f9b7dc137ab7f1f0355e3c4ca49b562baf6c9fa1180948deeb6648c52957"},
+    {file = "ruff-0.0.270-py3-none-win_arm64.whl", hash = "sha256:9613456b0b375766244c25045e353bc8890c856431cd97893c97b10cc93bd28d"},
+    {file = "ruff-0.0.270.tar.gz", hash = "sha256:95db07b7850b30ebf32b27fe98bc39e0ab99db3985edbbf0754d399eb2f0e690"},
 ]
 
 [[package]]
@@ -2069,14 +2070,14 @@ sphinx-rtd-theme = "*"
 
 [[package]]
 name = "sphinx-rtd-theme"
-version = "1.2.0"
+version = "1.2.1"
 description = "Read the Docs theme for Sphinx"
 category = "dev"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
 files = [
-    {file = "sphinx_rtd_theme-1.2.0-py2.py3-none-any.whl", hash = "sha256:f823f7e71890abe0ac6aaa6013361ea2696fc8d3e1fa798f463e82bdb77eeff2"},
-    {file = "sphinx_rtd_theme-1.2.0.tar.gz", hash = "sha256:a0d8bd1a2ed52e0b338cbe19c4b2eef3c5e7a048769753dac6a9f059c7b641b8"},
+    {file = "sphinx_rtd_theme-1.2.1-py2.py3-none-any.whl", hash = "sha256:2cc9351176cbf91944ce44cefd4fab6c3b76ac53aa9e15d6db45a3229ad7f866"},
+    {file = "sphinx_rtd_theme-1.2.1.tar.gz", hash = "sha256:cf9a7dc0352cf179c538891cb28d6fad6391117d4e21c891776ab41dd6c8ff70"},
 ]
 
 [package.dependencies]
@@ -2384,14 +2385,14 @@ files = [
 
 [[package]]
 name = "types-unopy"
-version = "1.0.6"
+version = "1.2.3"
 description = "Type annotations for LibreOffice API"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "types_unopy-1.0.6-py3-none-any.whl", hash = "sha256:bc018bbb08b3fa712d9b09172ddf84dc8a4a070deb1cb307bcd82c1aa80e871b"},
-    {file = "types_unopy-1.0.6.tar.gz", hash = "sha256:32e12f5c66410d4c33d8d236a5b5f82a0ffaccd85ab9b4f1c6e82f01077a541f"},
+    {file = "types_unopy-1.2.3-py3-none-any.whl", hash = "sha256:2cf16046c2d1f5938e72faf9cc2f5439b44d07f6f2f76b22f05a1ab365882797"},
+    {file = "types_unopy-1.2.3.tar.gz", hash = "sha256:82317c61d900490d1d439d1dc7ee8c3ae1680426a8d02167a59c6292a26458b9"},
 ]
 
 [package.dependencies]
@@ -2399,14 +2400,14 @@ types-uno-script = ">=0.1.1"
 
 [[package]]
 name = "typing-extensions"
-version = "4.5.0"
+version = "4.6.2"
 description = "Backported and Experimental Type Hints for Python 3.7+"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "typing_extensions-4.5.0-py3-none-any.whl", hash = "sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4"},
-    {file = "typing_extensions-4.5.0.tar.gz", hash = "sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb"},
+    {file = "typing_extensions-4.6.2-py3-none-any.whl", hash = "sha256:3a8b36f13dd5fdc5d1b16fe317f5668545de77fa0b8e02006381fd49d731ab98"},
+    {file = "typing_extensions-4.6.2.tar.gz", hash = "sha256:06006244c70ac8ee83fa8282cb188f697b8db25bc8b4df07be1873c43897060c"},
 ]
 
 [[package]]
@@ -2546,4 +2547,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "fb99fea4f304957ee0c1e0dc9683bba499e9e260c50770ced8c6225d8ca711cc"
+content-hash = "fe28c7dfbaeb257c7e4bf943a56cb7b683d808f61f4f76f2d928d41b1e9af832"
