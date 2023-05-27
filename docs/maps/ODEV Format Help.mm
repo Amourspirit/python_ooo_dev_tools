@@ -2061,11 +2061,11 @@
 <icon BUILTIN="unchecked"/>
 </node>
 </node>
-<node TEXT="position_size" ID="ID_99788115" CREATED="1681812848249" MODIFIED="1682196183159">
-<icon BUILTIN="unchecked"/>
-<node TEXT="Position" ID="ID_494578263" CREATED="1681812657833" MODIFIED="1682196183159">
+<node TEXT="position_size" ID="ID_99788115" CREATED="1681812848249" MODIFIED="1685208090966">
+<icon BUILTIN="checked"/>
+<node TEXT="Position" ID="ID_494578263" CREATED="1681812657833" MODIFIED="1685208090963">
 <icon BUILTIN="links/code/file_Python"/>
-<icon BUILTIN="unchecked"/>
+<icon BUILTIN="checked"/>
 </node>
 </node>
 <node TEXT="transparency" ID="ID_865307522" CREATED="1681812690769" MODIFIED="1685200599909">
