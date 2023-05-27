@@ -50,6 +50,14 @@ class _WritingMode(AbstractWritingMode):
 
 
 class Position(StyleMulti):
+    """
+    Chart2 legend position.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_legend_position`
+    """
+
     def __init__(
         self,
         *,
@@ -58,12 +66,15 @@ class Position(StyleMulti):
         no_overlap: bool | None = None,
     ) -> None:
         """
-        _summary_
+        Constructor.
 
         Args:
             pos (LegendPosition | None, optional): Specifies the position of the legend.
             mode (DirectionModeKind, optional): Specifies the writing direction.
-            no_overlap (bool | None, optional): Show the legend without overlaping the chart.
+            no_overlap (bool | None, optional): Show the legend without overlapping the chart.
+
+        See Also:
+            - :ref:`help_chart2_format_direct_legend_position`
         """
         super().__init__()
         if pos is not None:

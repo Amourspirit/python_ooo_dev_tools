@@ -32,7 +32,7 @@ General setup used to run the examples in this page.
         from ooodev.format.chart2.direct.title.alignment import Direction, Orientation, DirectionModeKind
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
         from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import Gradient as GradientStyle, ColorRange
+        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
         from ooodev.office.calc import Calc
         from ooodev.office.chart2 import Chart2
         from ooodev.utils.color import StandardColor

@@ -6,7 +6,7 @@ Module for managing character fonts.
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, TypeVar
-
+import uno
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
 from ooo.dyn.awt.font_slant import FontSlant as FontSlant

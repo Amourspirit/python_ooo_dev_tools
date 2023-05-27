@@ -50,10 +50,13 @@ from ooodev.format.chart2.direct.legend.position_size import (
 if TYPE_CHECKING:
     from com.sun.star.awt import Size as UnoSize
     from ooo.dyn.awt.point import Point as UnoPoint
+    from com.sun.star.chart2 import Legend  # service
+else:
+    Legend = object
 
 
 def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
-    if Info.version_info < (7, 5):
+    if Info.version_info < (7, 5) or Chart2 is None:
         pytest.skip("Not supported in this version, Requires LibreOffice 7.5 or higher.")
 
     delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
@@ -93,7 +96,7 @@ def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
             RotationHorizontal=0,  # -ve rotates bottom edge out of page; default is -60
             RotationVertical=-45,  # -ve rotates left edge out of page; default is 0 (i.e. no rotation)
         )
-        legend = Chart2.get_legend(chart_doc=chart_doc)
+        legend = cast(Legend, Chart2.get_legend(chart_doc=chart_doc))
 
         legend_line_style = LegendLineProperties(color=StandardColor.MAGENTA, width=0.8, transparency=20)
         Chart2.style_legend(chart_doc=chart_doc, styles=[legend_line_style])
@@ -128,8 +131,8 @@ def test_calc_set_styles_legend(loader, copy_fix_calc) -> None:
         Chart2.style_legend(chart_doc=chart_doc, styles=[legend_img_style])
         assert legend.FillBitmapName == str(PresetImageKind.ICE_LIGHT)
 
-        legend_transparenc_gradient = LegendGradient(chart_doc, angle=45, grad_intensity=IntensityRange(0, 100))
-        Chart2.style_legend(chart_doc=chart_doc, styles=[legend_transparenc_gradient])
+        legend_transparency_gradient = LegendGradient(chart_doc, angle=45, grad_intensity=IntensityRange(0, 100))
+        Chart2.style_legend(chart_doc=chart_doc, styles=[legend_transparency_gradient])
         assert legend.FillTransparenceGradientName.startswith("ChartTransparencyGradient")
 
         font_size100 = UnitMM100.from_pt(11.3)

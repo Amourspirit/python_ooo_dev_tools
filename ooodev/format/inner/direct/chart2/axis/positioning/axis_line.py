@@ -15,6 +15,10 @@ class AxisLine(StyleBase):
 
     Select where to cross the other axis: at start, at end, at a specified value, or at a category.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_axis_positioning`
+
     .. versionadded:: 0.9.4
     """
 
@@ -28,6 +32,9 @@ class AxisLine(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_axis_positioning`
         """
         # Because value can be None we use NULL_OBJ to indicate no value.
         super().__init__()

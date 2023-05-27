@@ -1697,6 +1697,9 @@ class Chart2:
                 - :doc:`ooodev.format.chart2.direct.legend </src/format/ooodev.format.chart2.direct.legend>`
                 - :doc:`ooodev.format.chart2.direct.general.position_size </src/format/ooodev.format.chart2.direct.general.position_size>`
 
+        See Also:
+            - :ref:`help_chart2_format_direct_legend`
+
         .. versionadded:: 0.9.0
         """
         applied_styles = 0

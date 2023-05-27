@@ -17,6 +17,10 @@ class PositionAxis(StyleBase):
     Note:
         Does not apply to all axis types.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_axis_positioning`
+
     .. versionadded:: 0.9.4
     """
 
@@ -32,6 +36,9 @@ class PositionAxis(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_axis_positioning`
         """
         super().__init__()
         self.prop_on_mark = on_mark
