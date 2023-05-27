@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.11.1
+==============
+
+Minor tweaks and dependency updates.
+
 Version 0.11.0
 ==============
 
