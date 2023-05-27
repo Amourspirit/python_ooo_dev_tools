@@ -22,13 +22,17 @@ class MarkKind(IntFlag):
     """Marks outside the axis"""
     INSIDE = TickmarkStyle.INNER
     """Marks inside the axis"""
-    BOTH = OUTSIDE | INSIDE
+    BOTH = TickmarkStyle.OUTER | TickmarkStyle.INNER
     """Marks inside and outside the axis"""
 
 
 class IntervalMarks(StyleBase):
     """
     Chart Axis Interval Marks.
+
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_axis_positioning`
 
     .. versionadded:: 0.9.4
     """
@@ -46,6 +50,9 @@ class IntervalMarks(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_axis_positioning`
         """
         # pos, only valid when Label Position ( set using LabelPosition class) is Outside end or Outside start
         super().__init__()

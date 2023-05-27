@@ -45,7 +45,7 @@ General setup for this example.
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc(Path.cwd() / "tmp" / "bon_voyage.ods")
+                doc = Calc.open_doc("bon_voyage.ods")
                 GUI.set_visible(True, doc)
                 Lo.delay(500)
                 Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
