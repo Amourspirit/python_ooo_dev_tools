@@ -1,7 +1,7 @@
-.. _help_chart2_format_direct_legend_position:
+.. _help_chart2_format_direct_legend_font_only:
 
-Chart2 Direct Legend Position
-=============================
+Chart2 Direct Legend Font Only
+==============================
 
 .. contents:: Table of Contents
     :local:
@@ -11,7 +11,8 @@ Chart2 Direct Legend Position
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.legend.position_size.Position` class is used to specify the position of the legend.
+The :py:class:`ooodev.format.chart2.direct.legend.font.FontOnly` class gives you the similar options
+as :numref:`166f287c-eb64-4d22-9502-2d72c46adfb8` Font Dialog, but without the dialog.
 
 Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
 
@@ -23,14 +24,10 @@ General setup for this example.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 39,40,41
+        :emphasize-lines: 35,36
 
         import uno
-        from ooodev.format.chart2.direct.legend.position_size import (
-            Position as ChartLegendPosition,
-            LegendPosition,
-            DirectionModeKind,
-        )
+        from ooodev.format.chart2.direct.legend.font import FontOnly as LegendFontOnly
         from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
         from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
         from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
@@ -63,10 +60,8 @@ General setup for this example.
                 )
                 Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
 
-                legend_pos = ChartLegendPosition(
-                    pos=LegendPosition.PAGE_END, no_overlap=True, mode=DirectionModeKind.LR_TB
-                )
-                Chart2.style_legend(chart_doc=chart_doc, styles=[legend_pos])
+                legend_font_only_style = LegendFontOnly(name="Liberation Sans Narrow", size=13)
+                Chart2.style_legend(chart_doc=chart_doc, styles=[legend_font_only_style])
 
                 Lo.delay(1_000)
                 Lo.close_doc(doc)
@@ -81,24 +76,21 @@ General setup for this example.
 
             .. group-tab:: None
 
-Setting the Legend Position
----------------------------
+
+Apply the Font
+--------------
+
+Before formatting the chart is visible in :numref:`ce52cea5-2b22-4d2a-a158-9e22364d4544`.
 
 .. tabs::
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.legend.position_size import (
-            Position as ChartLegendPosition,
-            LegendPosition,
-            DirectionModeKind,
-        )
-        # ... other code
+        from ooodev.format.chart2.direct.legend.font import FontOnly as LegendFontOnly
 
-        legend_pos = ChartLegendPosition(
-            pos=LegendPosition.PAGE_END, no_overlap=True, mode=DirectionModeKind.LR_TB
-        )
-        Chart2.style_legend(chart_doc=chart_doc, styles=[legend_pos])
+        # ... other code
+        legend_font_only_style = LegendFontOnly(name="Liberation Sans Narrow", size=13)
+        Chart2.style_legend(chart_doc=chart_doc, styles=[legend_font_only_style])
 
     .. only:: html
 
@@ -106,30 +98,31 @@ Setting the Legend Position
 
             .. group-tab:: None
 
-The results are visible in :numref:`14a18c7b-b6ae-4b8a-baac-b1929fca5b2d` and :numref:`0c899f9c-4b39-4607-8553-c3bc4b8ec29f`.
+Running the above code will produce the following output shown in :numref:`15be0a00-0118-42e5-bd19-904fc82b9068` and :numref:`166f287c-eb64-4d22-9502-2d72c46adfb8`.
+
+.. cssclass:: screen_shot
+
+    .. _15be0a00-0118-42e5-bd19-904fc82b9068:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/15be0a00-0118-42e5-bd19-904fc82b9068
+        :alt: Chart with Title Font set
+        :figclass: align-center
+        :width: 450px
+
+        Chart with Title Font set
 
 
 .. cssclass:: screen_shot
 
-    .. _14a18c7b-b6ae-4b8a-baac-b1929fca5b2d:
+    .. _166f287c-eb64-4d22-9502-2d72c46adfb8:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/14a18c7b-b6ae-4b8a-baac-b1929fca5b2d
-        :alt: Chart with Legend Set to Bottom
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/166f287c-eb64-4d22-9502-2d72c46adfb8
+        :alt: Chart Data Labels Dialog Font
         :figclass: align-center
         :width: 450px
 
-        Chart with Legend Set to Bottom
+        Chart Data Labels Dialog Font
 
-.. cssclass:: screen_shot
-
-    .. _0c899f9c-4b39-4607-8553-c3bc4b8ec29f:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/0c899f9c-4b39-4607-8553-c3bc4b8ec29f
-        :alt: Chart Legend Position Dialog
-        :figclass: align-center
-        :width: 450px
-
-        Chart Legend Position Dialog
 
 Related Topics
 --------------
@@ -141,11 +134,10 @@ Related Topics
         - :ref:`part05`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_chart2_format_direct_general`
-        - :ref:`help_chart2_format_direct_general_area`
-        - :ref:`help_chart2_format_direct_legend_transparency`
+        - :ref:`help_chart2_format_direct_legend_font_effects`
+        - :ref:`help_chart2_format_direct_legend_font`
         - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.legend.position_size.Position`
+        - :py:class:`ooodev.format.chart2.direct.legend.font.FontOnly`
