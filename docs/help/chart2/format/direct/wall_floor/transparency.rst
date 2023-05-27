@@ -129,11 +129,11 @@ The results can bee seen in :numref:`eceee99c-fa50-400f-a55c-343ee6966e6d` and :
     .. _c21fd97d-d12c-4779-8cba-c45f49ad03be:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/c21fd97d-d12c-4779-8cba-c45f49ad03be
-        :alt: Chart Area Transparency Dialog Modified
+        :alt: Chart Area Transparency Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Area Transparency Dialog Modified
+        Chart Area Transparency Dialog
 
 Gradient Transparency
 ---------------------
@@ -202,11 +202,11 @@ The results can bee seen in :numref:`689bf589-8de2-49a0-b260-9f94244aacde` and :
     .. _0f8ac32f-e2d2-41c1-b0ad-a3ead8371ee9:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/0f8ac32f-e2d2-41c1-b0ad-a3ead8371ee9
-        :alt: Chart Wall Gradient Transparency Dialog Modified
+        :alt: Chart Wall Gradient Transparency Dialog
         :figclass: align-center
         :width: 450px
 
-        Chart Wall Gradient Transparency Dialog Modified
+        Chart Wall Gradient Transparency Dialog
 
 Related Topics
 --------------
