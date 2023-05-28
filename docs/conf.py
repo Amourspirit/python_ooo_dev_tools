@@ -85,6 +85,7 @@ extensions = [
     "sphinxcontrib.spelling",
     "sphinx-prompt",
     "sphinx_substitution_extensions",
+    "sphinx_copybutton",
 ]
 # "sphinx.ext.linkcode",
 # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
@@ -297,3 +298,10 @@ extlinks = {
 intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
 
 # endregion intersphinx
+
+# region copybutton
+# https://pypi.org/project/sphinx-copybutton/
+# copybutton_exclude = '.linenos, .gp, .go'
+copybutton_prompt_text = r">>> ?|\.\.\. ?|\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+# endregion copybutton
