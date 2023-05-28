@@ -69,6 +69,7 @@ sphinxcontrib-apidoc = ">=0.3.0"
 esbonio = ">=0.16.1"
 # pygls = {version = ">=0.12.4,<1.0", python = ">=3.7,<3.12"}
 sphinx-substitution-extensions = ">=2022.2.16"
+sphinx-copybutton = "^0.5.2"
 
 [tool.pytest.ini_options]
 testpaths = [
