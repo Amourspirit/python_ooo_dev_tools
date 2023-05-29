@@ -4694,7 +4694,7 @@ class Calc:
 
         Returns:
             XCellRange: Cell range
-        
+
         See Also:
             - :ref:`ch20_finding_with_cursors`
         """
@@ -8343,6 +8343,8 @@ class Calc:
         See Also:
             - :py:meth:`~.calc.Calc.get_selected_addr`
             - :ref:`help_calc_module_class_print_sheet`
+
+        .. versionadded:: 0.11.2
         """
         # sourcery skip: assign-if-exp, merge-else-if-into-elif
         if not printer_name:
