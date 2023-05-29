@@ -1749,11 +1749,12 @@ class Info(metaclass=StaticProperty):
 
         Returns:
             XPropertyContainer: Property container
+
+        See Also:
+            - :ref:`help_common_modules_info_get_user_defined_props`
         """
         try:
-            dp_supplier = mLo.Lo.qi(XDocumentPropertiesSupplier, doc)
-            if dp_supplier is None:
-                raise mEx.MissingInterfaceError(XDocumentPropertiesSupplier)
+            dp_supplier = mLo.Lo.qi(XDocumentPropertiesSupplier, doc, True)
             dps = dp_supplier.getDocumentProperties()
             return dps.getUserDefinedProperties()
         except Exception as e:
