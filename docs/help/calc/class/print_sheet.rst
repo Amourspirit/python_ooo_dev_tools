@@ -32,7 +32,7 @@ Parameters a passed directly to :py:meth:`~ooodev.office.calc.Calc.print_sheet` 
         # ... other code
 
         # open document
-        doc = Calc.open_doc(fnm=str("my_spreadsheet.ods"))
+        doc = Calc.open_doc(fnm="my_spreadsheet.ods")
 
         # print range C6:G33 of the first sheet,
         # optionally idx value can be used to print from sheet matching idx number.
@@ -66,7 +66,7 @@ Using the :py:meth:`Calc.find_used_range() <ooodev.office.calc.Calc.find_used_ra
 
         # ... other code
 
-        doc = Calc.open_doc(fnm=str("my_spreadsheet.ods"))
+        doc = Calc.open_doc(fnm="my_spreadsheet.ods")
         user_props = Info.get_user_defined_props(doc)
 
         # get properties as XPropertySet
