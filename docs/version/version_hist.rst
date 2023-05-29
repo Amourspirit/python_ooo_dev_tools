@@ -2,6 +2,12 @@
 Version History
 ***************
 
+
+Version 0.11.2
+==============
+
+Added ``Calc.print_sheet()`` method that allows printing of a specified cell range directly to a printer.
+
 Version 0.11.1
 ==============
 

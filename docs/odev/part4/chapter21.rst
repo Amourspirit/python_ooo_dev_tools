@@ -826,6 +826,10 @@ The cell range is retrieved by converting the cursor into a XCellRange_:
 
             .. group-tab:: None
 
+.. seealso::
+
+    :ref:`help_calc_module_class_print_sheet`
+
 .. _ch21_format_data_console:
 
 21.6 Formatting table data for console

@@ -8,4 +8,5 @@ Spreadsheets (Calc)
     :maxdepth: 3
     :glob:
 
+    class/index
     format/index

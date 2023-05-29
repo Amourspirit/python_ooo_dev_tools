@@ -6,9 +6,8 @@ from __future__ import annotations
 import contextlib
 import itertools
 from enum import IntEnum, IntFlag, Enum
-import numbers
 import re
-from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, Tuple, cast, overload, Sequence, Optional, TYPE_CHECKING
 import uno
 
 # from ..mock import mock_g
@@ -18,6 +17,7 @@ import uno
 # args that use these.
 # this is also true because docs/conf.py ignores com import for autodoc
 from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XEnumerationAccess
 from com.sun.star.container import XIndexAccess
 from com.sun.star.container import XNamed
 from com.sun.star.frame import XModel
@@ -35,6 +35,7 @@ from com.sun.star.sheet import XDataPilotTablesSupplier
 from com.sun.star.sheet import XFunctionAccess
 from com.sun.star.sheet import XFunctionDescriptions
 from com.sun.star.sheet import XHeaderFooterContent
+from com.sun.star.sheet import XPrintAreas
 from com.sun.star.sheet import XRecentFunctions
 from com.sun.star.sheet import XScenario
 from com.sun.star.sheet import XScenariosSupplier
@@ -62,6 +63,8 @@ from com.sun.star.util import XMergeable
 from com.sun.star.util import XNumberFormatsSupplier
 from com.sun.star.util import XNumberFormatTypes
 from com.sun.star.util import XProtectable
+from com.sun.star.view import XPrintable
+
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XComponentLoader
@@ -81,6 +84,22 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
     from com.sun.star.util import CellProtection
+else:
+    XComponentLoader = object
+    XController = object
+    XFrame = object
+    FunctionArgument = object
+    XDataPilotTables = object
+    XGoalSeek = object
+    XSheetAnnotation = object
+    XSheetCellCursor = object
+    XSolver = object
+    CellAddress = object
+    CellRangeAddress = object
+    XText = object
+    XSearchable = object
+    XSearchDescriptor = object
+    CellProtection = object
 
 from ooo.dyn.awt.point import Point
 from ooo.dyn.beans.property_value import PropertyValue
@@ -483,7 +502,7 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
 
         Note:
-           For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
+            For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
 
         .. versionchanged:: 0.6.10
 
@@ -4675,6 +4694,9 @@ class Calc:
 
         Returns:
             XCellRange: Cell range
+        
+        See Also:
+            - :ref:`ch20_finding_with_cursors`
         """
         # cell_name is for backwards compatibility
         ordered_keys = (1, 2)
@@ -5276,8 +5298,8 @@ class Calc:
     # endregion get_cell_address()
 
     # region    get_address()
-    @staticmethod
-    def _get_address_cell(cell_range: XCellRange) -> CellRangeAddress:
+    @classmethod
+    def _get_address_cell(cls, cell_range: XCellRange) -> CellRangeAddress:
         addr = mLo.Lo.qi(XCellRangeAddressable, cell_range, True)
         return addr.getRangeAddress()  # type: ignore
 
@@ -8259,3 +8281,121 @@ class Calc:
         mLo.Lo.dispatch_cmd("Calculate")
 
     # endregion ------------ dispatch ----------------------------------
+
+    # region ------------------- printer methods ---------------------------
+
+    # region print_sheet()
+    @overload
+    @classmethod
+    def print_sheet(
+        cls, *, printer_name: str, range_name: str, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
+    ) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def print_sheet(
+        cls, *, printer_name: str, range_obj: mRngObj.RangeObj, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
+    ) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def print_sheet(
+        cls, *, printer_name: str, cell_obj: mCellObj.CellObj, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
+    ) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def print_sheet(
+        cls, *, printer_name: str, cr_addr: CellRangeAddress, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
+    ) -> None:
+        ...
+
+    @overload
+    @classmethod
+    def print_sheet(cls, *, printer_name: str, cell_range: XCellRange, doc: Optional[XSpreadsheetDocument]) -> None:
+        ...
+
+    @classmethod
+    def print_sheet(cls, *, printer_name: str, **kwargs) -> None:
+        """
+        Print a sheet to the specified printer directly.
+
+        Args:
+            printer_name (str): Name of Printer to use such as "Brother MFC-L2750DW series"
+            idx (int, optional): Index of sheet to print. If not specified then the active sheet is used.
+            range_name (str): Range Name such as ``A1:D5``
+            range_obj (RangeObj): Range Object
+            cell_obj (CellObj): Cell Object
+            cr_addr (CellRangeAddress): Cell range Address
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+            doc (XSpreadsheetDocument, optional): Document to use. If not specified then the active document is used.
+
+        Raises:
+            ValueError: If printer_name is not specified
+            ValueError: If no range is specified
+
+        Returns:
+            None:
+
+        See Also:
+            - :py:meth:`~.calc.Calc.get_selected_addr`
+            - :ref:`help_calc_module_class_print_sheet`
+        """
+        # sourcery skip: assign-if-exp, merge-else-if-into-elif
+        if not printer_name:
+            raise ValueError("No printer name specified")
+        idx = int(kwargs.get("idx", -1))
+        doc = kwargs.get("doc", None)
+        print_props = mProps.Props.make_props(Name=printer_name)
+
+        if doc is None:
+            if idx < 0:
+                sheet = cls.get_active_sheet()
+            else:
+                sheet = cls.get_sheet(idx=idx)
+        else:
+            if idx < 0:
+                sheet = cls.get_active_sheet(doc=doc)
+            else:
+                sheet = cls.get_sheet(doc=doc, idx=idx)
+
+        if "range_name" in kwargs:
+            cell_range = cls.get_cell_range(sheet=sheet, range_name=kwargs["range_name"])
+        elif "range_obj" in kwargs:
+            cell_range = cls.get_cell_range(sheet=sheet, range_obj=kwargs["range_obj"])
+        elif "cell_obj" in kwargs:
+            cell_range = cls.get_cell_range(sheet=sheet, cell_obj=kwargs["cell_obj"])
+        elif "cr_addr" in kwargs:
+            cell_range = cls.get_cell_range(sheet=sheet, cr_addr=kwargs["cr_addr"])
+        elif "cell_range" in kwargs:
+            cell_range = cls.get_cell_range(cell_range=kwargs["cell_range"])
+        else:
+            raise ValueError("No range specified")
+
+        addressable = mLo.Lo.qi(XCellRangeAddressable, cell_range, True)
+
+        # remove all configured print areas
+        if doc is None:
+            sheets = cls.get_sheets()
+        else:
+            sheets = cls.get_sheets(doc=doc)
+        enum_access = mLo.Lo.qi(XEnumerationAccess, sheets, True)
+        enums = enum_access.createEnumeration()
+        while enums.hasMoreElements():
+            sh = mLo.Lo.qi(XPrintAreas, enums.nextElement())
+            if sh is not None:
+                sh.setPrintAreas(())
+
+        # set single print area
+        sh = mLo.Lo.qi(XPrintAreas, sheet, True)
+        sh.setPrintAreas((addressable.getRangeAddress(),))
+        printable = mLo.Lo.qi(XPrintable, doc, True)
+        printable.print(print_props)
+
+    # endregion print_sheet()
+
+
+# endregion --------------- printer methods ----------------------------

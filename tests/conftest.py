@@ -51,6 +51,15 @@ def run_headless():
     return True
 
 
+@pytest.fixture(scope="session")
+def fix_printer_name():
+    # a printer name that is available on the test system
+    # such as "Brother MFC-L2750DW series".
+    # Printers such as "Microsoft Print to PDF" will not work for test.
+    # see test_calc/test_calc_print.py
+    return ""
+
+
 @pytest.fixture(autouse=True)
 def skip_for_headless(request, run_headless: bool):
     # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
