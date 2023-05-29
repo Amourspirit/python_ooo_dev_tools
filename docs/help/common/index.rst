@@ -7,3 +7,4 @@ Common Help Topics
     :glob:
 
     format/index
+    modules/index
