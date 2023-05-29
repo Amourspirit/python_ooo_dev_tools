@@ -44,7 +44,7 @@ Example
 
         # ... other code
 
-        doc = Calc.open_doc(fnm=str("my_spreadsheet.ods"))
+        doc = Calc.open_doc(fnm="my_spreadsheet.ods")
         user_props = Info.get_user_defined_props(doc)
         # get properties as XPropertySet
         ps = Lo.qi(XPropertySet, user_props, True)
