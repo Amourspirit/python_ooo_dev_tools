@@ -2,6 +2,10 @@
 Version History
 ***************
 
+Version 0.11.3
+==============
+
+Fix for ``Lo.this_component`` in macros.
 
 Version 0.11.2
 ==============
