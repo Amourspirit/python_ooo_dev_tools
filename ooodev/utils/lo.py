@@ -504,6 +504,8 @@ class Lo(metaclass=StaticProperty):
 
                 Added ``opt`` parameter.
         """
+        # sourcery skip: raise-from-previous-error
+        # ToDo: Test if mock_g is still needed in Lo load_office now that there is lo_inst.
         if mock_g.DOCS_BUILDING:
             # some component call this method and are triggered during docs building.
             # by adding this block this method will be exited if docs are building.
@@ -1848,6 +1850,9 @@ class Lo(metaclass=StaticProperty):
         Returns:
             the current component or None when not a document
         """
+        if cls._lo_inst is None:
+            # for macro mode auto load office
+            cls.load_office()
         return cls._lo_inst.this_component  # type: ignore
 
     ThisComponent, thiscomponent = this_component, this_component
