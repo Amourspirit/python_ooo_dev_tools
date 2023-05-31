@@ -382,5 +382,6 @@
         "Zagorsky",
         "zoombar",
         "zorder"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "basic"
 }
