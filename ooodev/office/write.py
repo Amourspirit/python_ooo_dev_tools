@@ -115,21 +115,56 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def get_cursor(cls) -> XTextCursor:
+        """
+        Gets text cursor from the current document.
+
+        Returns:
+            XTextCursor: Cursor
+        """
         ...
 
     @overload
     @classmethod
     def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+        """
+        Gets text cursor
+
+        Args:
+            cursor_obj (DocOrCursor): Text Document or Text Cursor
+
+        Returns:
+            XTextCursor: Cursor
+        """
         ...
 
     @overload
     @classmethod
     def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+        """
+        Gets text cursor
+
+        Args:
+            rng (XTextRange): Text Range Instance
+            txt (XText): Text Instance
+
+        Returns:
+            XTextCursor: Cursor
+        """
         ...
 
     @overload
     @classmethod
     def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+        """
+        Gets text cursor
+
+        Args:
+            rng (XTextRange): Text Range instance
+            text_doc (XTextDocument): Text Document instance
+
+        Returns:
+            XTextCursor: Cursor
+        """
         ...
 
     @classmethod
@@ -151,55 +186,7 @@ class Write(mSel.Selection):
         .. versionchanged:: 0.9.0
             Added overload ``get_cursor()``
         """
-        ordered_keys = (1, 2)
-        kargs_len = len(kwargs)
-        count = len(args) + kargs_len
-
-        def get_kwargs() -> dict:
-            ka = {}
-            if kargs_len == 0:
-                return ka
-            valid_keys = ("cursor_obj", "rng", "txt", "text_doc")
-            check = all(key in valid_keys for key in kwargs)
-            if not check:
-                raise TypeError("get_cursor() got an unexpected keyword argument")
-
-            keys = ("cursor_obj", "rng")
-            for key in keys:
-                if key in kwargs:
-                    ka[1] = kwargs[key]
-                    break
-            if count == 1:
-                return ka
-            keys = ("txt", "text_doc")
-            for key in keys:
-                if key in kwargs:
-                    ka[2] = kwargs[key]
-                    break
-            return ka
-
-        if count not in (0, 1, 2):
-            raise TypeError("get_cursor() got an invalid number of arguments")
-
-        kargs = get_kwargs()
-
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
-
-        if count == 0:
-            cursor = cls._get_cursor_obj(cls.active_doc)
-            if cursor is None:
-                raise mEx.CursorError("Unable to get cursor")
-            return cursor
-
-        if count == 1:
-            cursor = cls._get_cursor_obj(kargs[1])
-            if cursor is None:
-                raise mEx.CursorError("Unable to get cursor")
-            return cursor
-        txt_doc = mLo.Lo.qi(XTextDocument, kargs[2])
-        txt = kargs[2] if txt_doc is None else txt_doc.getText()
-        return cls._get_cursor_txt(rng=kargs[1], txt=txt)
+        return mSel.Selection.get_cursor(*args, **kwargs)
 
         # endregion get_cursor()
 
@@ -340,11 +327,9 @@ class Write(mSel.Selection):
             Added overload ``get_text_doc()``
         """
         if doc is None:
-            doc = mLo.Lo.this_component
-
-        text_doc = mLo.Lo.qi(XTextDocument, doc, True)
-        _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Write.get_text_doc.__qualname__))
-        return text_doc
+            return mSel.Selection.get_text_doc()
+        else:
+            return mSel.Selection.get_text_doc(doc=doc)
 
     # endregion get_text_doc()
 
@@ -3608,7 +3593,7 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.CONFIGURED_SERVICES_SET` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
         """
         cargs = CancelEventArgs(Write.set_configured_services.__qualname__)
         cargs.event_data = {
@@ -4134,25 +4119,7 @@ class Write(mSel.Selection):
         """
         # note:
         # It is not permitted to create weak ref to pyuno objects.
-        try:
-            return Write._active_doc
-        except AttributeError:
-            Write._active_doc = Write.get_text_doc()
-            return Write._active_doc
+        return mSel.Selection.active_doc
 
-
-class _WriteManager:
-    """Manages clearing and resetting for Lo static class"""
-
-    @staticmethod
-    def del_cache_attrs(source: object, event: EventArgs) -> None:
-        # clears Lo Attributes that are dynamically created
-        data_attrs = ("_active_doc",)
-        for attr in data_attrs:
-            if hasattr(Write, attr):
-                delattr(Write, attr)
-
-
-_Events().on(LoNamedEvent.RESET, _WriteManager.del_cache_attrs)
 
 __all__ = ("Write",)
