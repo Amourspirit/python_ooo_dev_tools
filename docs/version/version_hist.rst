@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.11.4
+==============
+
+Fix for ``Write.get_cursor()`` not working correctly in Snap version of LibreOffice in macros.
+
 Version 0.11.3
 ==============
 
