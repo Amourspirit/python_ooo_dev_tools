@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.11.5
+==============
+
+Remove unused module ``ooodev.utils.images``.
+
+Remove unused dependency ``Pillow``.
+
 Version 0.11.4
 ==============
 
