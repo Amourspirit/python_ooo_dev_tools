@@ -1620,32 +1620,28 @@ class LoInst:
 
     @property
     def this_component(self) -> XComponent | None:
-        try:
+        if mock_g.DOCS_BUILDING:
+            self._this_component = None
             return self._this_component
-        except AttributeError:
-            if mock_g.DOCS_BUILDING:
-                self._this_component = None
-                return self._this_component
-            if self.is_loaded is False:
-                # attempt to connect direct
-                # failure will result in script error and then exit
-                self.load_office()
 
-            # comp = self.star_desktop.getCurrentComponent()
-            desktop = self.get_desktop()
-            if desktop is None:
-                return None
-            if self._doc is None:
-                self._doc = desktop.getCurrentComponent()
-            if self._doc is None:
-                return None
-            service_info = self.qi(XServiceInfo, self._doc, True)
-            # impl = self._doc.ImplementationName
-            impl = service_info.getImplementationName()
-            if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
-                return None  # None when Basic IDE or welcome screen
-            self._this_component = self._doc
-            return self._this_component
+        # if self.is_loaded is False:
+        #     # attempt to connect direct
+        #     # failure will result in script error and then exit
+        #     self.load_office()
+
+        # desktop = self.get_desktop()
+        desktop = self.xscript_context.getDesktop()
+        if desktop is None:
+            return None
+        self._doc = desktop.getCurrentComponent()
+        if self._doc is None:
+            return None
+        service_info = self.qi(XServiceInfo, self._doc, True)
+        # impl = self._doc.ImplementationName
+        impl = service_info.getImplementationName()
+        if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
+            return None  # None when Basic IDE or welcome screen
+        return self._doc
 
     ThisComponent, thiscomponent = this_component, this_component
 
@@ -1661,9 +1657,7 @@ class LoInst:
                 self.load_office()
                 ctx = self.get_context()
 
-            desktop = self.get_desktop()
-            model = self.qi(XModel, self._doc)
-            self._xscript_context = script_context.ScriptContext(ctx=ctx, desktop=desktop, doc=model)
+            self._xscript_context = script_context.ScriptContext(ctx=ctx, doc=self._doc)
         return self._xscript_context
 
     XSCRIPTCONTEXT = xscript_context

@@ -123,7 +123,7 @@ def test_create_doc_events(loader):
 
 def test_get_sheet(loader) -> None:
     # get_sheet is overload method.
-    # testiing each overload.
+    # testing each overload.
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -173,7 +173,7 @@ def test_get_sheet(loader) -> None:
         with event_ctx() as events:
             events.on(CalcNamedEvent.SHEET_GETTING, on)
             events.on(CalcNamedEvent.SHEET_GET, after)
-            # test overlaod no doc arg
+            # test overload no doc arg
             sheet_1_2 = Calc.get_sheet("Sheet1")
         assert on_firing
         assert on_fired
@@ -209,10 +209,10 @@ def test_get_sheet(loader) -> None:
         # Lo.delay(2000)
         with pytest.raises(TypeError):
             # unused keyword
-            Calc.get_sheet(doc=doc, name="Sheet1")
+            Calc.get_sheet(doc=doc, name="Sheet1")  # type: ignore
         with pytest.raises(TypeError):
             # Incorrect number of params
-            Calc.get_sheet(1, 2, 3, 5, 5)
+            Calc.get_sheet(1, 2, 3, 5, 5)  # type: ignore
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)
 
@@ -331,7 +331,7 @@ def test_remove_sheet(loader) -> None:
         assert len(sheet_names) == 2
         assert sheet_names[1] == sheet_name
         # test named args
-        assert Calc.remove_sheet(doc=doc, index=1)
+        assert Calc.remove_sheet(doc=doc, idx=1)
         assert on_firing
         assert on_fired
         on_firing = False
@@ -360,20 +360,20 @@ def test_remove_sheet(loader) -> None:
         on_firing = False
 
         # incorrect type
-        assert Calc.remove_sheet(doc, 22.3) is False
+        assert Calc.remove_sheet(doc, 22.3) is False  # type: ignore
         assert on_firing
         assert on_fired is False
         on_firing = False
 
         with pytest.raises(TypeError):
             # unused keyword
-            Calc.remove_sheet(doc=doc, other=1)
+            Calc.remove_sheet(doc=doc, other=1)  # type: ignore
         with pytest.raises(TypeError):
             # incorrect number of arguments
-            Calc.remove_sheet(doc)
+            Calc.remove_sheet(doc)  # type: ignore
         with pytest.raises(TypeError):
             # incorrect number of arguments
-            Calc.remove_sheet(doc, 0, "any")
+            Calc.remove_sheet(doc, 0, "any")  # type: ignore
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)
 
@@ -491,7 +491,7 @@ def test_zoom_value(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
-    GUI.set_visible(is_visible=True, odoc=doc)
+    GUI.set_visible(visible=True, doc=doc)
     Lo.delay(500)
     Calc.zoom_value(doc, 160)
     Lo.delay(1000)
@@ -507,7 +507,7 @@ def test_zoom(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     Calc.zoom_value(doc, 250)
-    GUI.set_visible(is_visible=True, odoc=doc)
+    GUI.set_visible(visible=True, doc=doc)
     Lo.delay(500)
     Calc.zoom(doc, GUI.ZoomEnum.ENTIRE_PAGE)
     Lo.delay(1000)
@@ -591,7 +591,7 @@ def test_freeze(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     Calc.zoom(doc, GUI.ZoomEnum.ENTIRE_PAGE)
-    GUI.set_visible(is_visible=True, odoc=doc)
+    GUI.set_visible(visible=True, doc=doc)
     Calc.freeze(doc=doc, num_cols=2, num_rows=3)
     Lo.delay(1500)
     Lo.close_doc(doc=doc, deliver_ownership=False)
@@ -606,7 +606,7 @@ def test_freeze_cols(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     Calc.zoom_value(doc, 100)
-    GUI.set_visible(is_visible=True, odoc=doc)
+    GUI.set_visible(visible=True, doc=doc)
     Calc.freeze_cols(doc=doc, num_cols=2)
     Lo.delay(1500)
     Lo.close_doc(doc=doc, deliver_ownership=False)
@@ -621,7 +621,7 @@ def test_freeze_rows(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     Calc.zoom_value(doc, 100)
-    GUI.set_visible(is_visible=True, odoc=doc)
+    GUI.set_visible(visible=True, doc=doc)
     Calc.freeze_rows(doc=doc, num_rows=3)
     Lo.delay(1500)
     Lo.close_doc(doc=doc, deliver_ownership=False)
@@ -706,10 +706,10 @@ def test_goto_cell(loader) -> None:
 
         with pytest.raises(TypeError):
             # incorrect number of params
-            Calc.goto_cell(cell_name="D5")
+            Calc.goto_cell(cell_name="D5")  # type: ignore
         with pytest.raises(TypeError):
             # unused keyword
-            Calc.goto_cell(cell_name="D5", f=frame)
+            Calc.goto_cell(cell_name="D5", f=frame)  # type: ignore
     finally:
         Lo.close_doc(doc=doc, deliver_ownership=False)
 
@@ -723,7 +723,7 @@ def test_split_window(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     Calc.zoom_value(doc, 100)
-    GUI.set_visible(is_visible=True, odoc=doc)
+    GUI.set_visible(visible=True, doc=doc)
     Calc.split_window(doc, "C4")
     Lo.delay(1500)
     Lo.close_doc(doc=doc, deliver_ownership=False)
@@ -734,13 +734,14 @@ def test_get_selected_addr(loader) -> None:
     from ooodev.office.calc import Calc
     from com.sun.star.view import XSelectionSupplier
     from com.sun.star.frame import XModel
+    from com.sun.star.sheet import XSheetCellRange
 
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
 
     sheet = Calc.get_active_sheet(doc)
-    rng = Calc.get_cell_range(sheet=sheet, range_name="B1:D4")
+    rng = cast(XSheetCellRange, Calc.get_cell_range(sheet=sheet, range_name="B1:D4"))
 
     # rq = Lo.qi(XCellRangesQuery, sheet)
     # if rq:
@@ -768,7 +769,7 @@ def test_get_selected_addr(loader) -> None:
     assert addr.StartRow == 0
     assert addr.EndRow == 3
 
-    model = Lo.qi(XModel, doc)
+    model = Lo.qi(XModel, doc, True)
     addr = Calc.get_selected_addr(model=model)
     assert addr.StartColumn == 1
     assert addr.EndColumn == 3
@@ -782,10 +783,10 @@ def test_get_selected_addr(loader) -> None:
     assert addr.EndRow == 3
     with pytest.raises(TypeError):
         # incorrect number of args
-        Calc.get_selected_addr()
+        Calc.get_selected_addr()  # type: ignore
     with pytest.raises(TypeError):
         # unused keyword
-        Calc.get_selected_addr(custom=1)
+        Calc.get_selected_addr(custom=1)  # type: ignore
     Lo.close_doc(doc=doc, deliver_ownership=False)
 
 
@@ -794,12 +795,13 @@ def test_get_selected_cell_addr(loader) -> None:
     from ooodev.exceptions.ex import CellError
     from ooodev.office.calc import Calc
     from com.sun.star.view import XSelectionSupplier
+    from com.sun.star.sheet import XSheetCellRange
 
     assert loader is not None
     doc = Calc.create_doc(loader)
 
     sheet = Calc.get_active_sheet(doc)
-    rng = Calc.get_cell_range(sheet=sheet, range_name="B1:D4")
+    rng = cast(XSheetCellRange, Calc.get_cell_range(sheet=sheet, range_name="B1:D4"))
 
     cursor = sheet.createCursorByRange(rng)
 
@@ -903,7 +905,7 @@ def test_insert_row(loader) -> None:
 
         sheet = Calc.get_active_sheet(doc)
         Calc.set_val(value="hello world", sheet=sheet, cell_name="A2")
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         assert Calc.insert_row(sheet=sheet, idx=1)
         assert on_firing
         assert on_fired
@@ -914,7 +916,7 @@ def test_insert_row(loader) -> None:
         # Lo.delay(1500)
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(closeable=doc, deliver_ownership=False)  # type: ignore
 
 
 def test_delete_row(loader) -> None:
@@ -951,7 +953,7 @@ def test_delete_row(loader) -> None:
         sheet = Calc.get_active_sheet(doc)
 
         Calc.set_val(value="hello world", sheet=sheet, cell_name="A3")
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         assert Calc.delete_row(sheet=sheet, idx=1)
         assert on_firing
         assert on_fired
@@ -962,7 +964,7 @@ def test_delete_row(loader) -> None:
         # Lo.delay(1500)
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(closeable=doc, deliver_ownership=False)  # type: ignore
 
 
 def test_insert_column(loader) -> None:
@@ -1001,7 +1003,7 @@ def test_insert_column(loader) -> None:
 
         sheet = Calc.get_active_sheet(doc)
         Calc.set_val(value="hello world", sheet=sheet, cell_name="C2")
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         Calc.insert_column(sheet=sheet, idx=1)
         assert on_firing
         assert on_fired
@@ -1012,7 +1014,7 @@ def test_insert_column(loader) -> None:
         # Lo.delay(1500)
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(closeable=doc, deliver_ownership=False)  # type: ignore
 
 
 def test_insert_cells_down(loader) -> None:
@@ -1051,7 +1053,7 @@ def test_insert_cells_down(loader) -> None:
 
         sheet = Calc.get_active_sheet(doc)
 
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         rng = Calc.get_cell_range(sheet=sheet, range_name="B1:D4")
         Calc.set_val(value="hello world", sheet=sheet, cell_name="B5")
         assert Calc.insert_cells(sheet=sheet, cell_range=rng, is_shift_right=False)
@@ -1063,7 +1065,7 @@ def test_insert_cells_down(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B9")
         assert val == "hello world"
     finally:
-        Lo.close(doc)
+        Lo.close(doc)  # type: ignore
 
 
 def test_insert_cells_down_rng(loader) -> None:
@@ -1081,7 +1083,7 @@ def test_insert_cells_down_rng(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B9")
         assert val == "hello world"
     finally:
-        Lo.close(doc)
+        Lo.close(doc)  # type: ignore
 
 
 def test_insert_cells_down_positional(loader) -> None:
@@ -1098,7 +1100,7 @@ def test_insert_cells_down_positional(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B9")
         assert val == "hello world"
     finally:
-        Lo.close(doc)
+        Lo.close(doc)  # type: ignore
 
 
 def test_insert_cells_right(loader) -> None:
@@ -1137,7 +1139,7 @@ def test_insert_cells_right(loader) -> None:
 
         sheet = Calc.get_active_sheet(doc)
 
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         rng = Calc.get_cell_range(sheet=sheet, range_name="B1:D4")
         Calc.set_val(value="hello world", sheet=sheet, cell_name="D4")
         assert Calc.insert_cells(sheet=sheet, cell_range=rng, is_shift_right=True)
@@ -1150,7 +1152,7 @@ def test_insert_cells_right(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="G4")
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(closeable=doc, deliver_ownership=False)  # type: ignore
 
 
 def test_delete_cells_down(loader) -> None:
@@ -1189,7 +1191,7 @@ def test_delete_cells_down(loader) -> None:
 
         sheet = Calc.get_active_sheet(doc)
 
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         rng = Calc.get_cell_range(sheet=sheet, range_name="B1:D4")
         Calc.set_val(value="hello world", sheet=sheet, cell_name="B9")
         # Calc.set_val(value="A1",sheet=sheet, cell_name="A1")
@@ -1206,7 +1208,7 @@ def test_delete_cells_down(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B5")
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_delete_cells_down_rng(loader) -> None:
@@ -1218,7 +1220,7 @@ def test_delete_cells_down_rng(loader) -> None:
     try:
         sheet = Calc.get_active_sheet(doc)
 
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         rng = Calc.get_range_obj("B1:D4")
         Calc.set_val(value="hello world", sheet=sheet, cell_name="B9")
         # Calc.set_val(value="A1",sheet=sheet, cell_name="A1")
@@ -1228,7 +1230,7 @@ def test_delete_cells_down_rng(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B5")
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_delete_cells_down_rng_postional(loader) -> None:
@@ -1240,7 +1242,7 @@ def test_delete_cells_down_rng_postional(loader) -> None:
     try:
         sheet = Calc.get_active_sheet(doc)
 
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         Calc.set_val(value="hello world", sheet=sheet, cell_name="B9")
         # Calc.set_val(value="A1",sheet=sheet, cell_name="A1")
         assert Calc.delete_cells(sheet, "B1:D4", False)
@@ -1249,7 +1251,7 @@ def test_delete_cells_down_rng_postional(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B5")
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_delete_cells_left(loader) -> None:
@@ -1263,7 +1265,7 @@ def test_delete_cells_left(loader) -> None:
     try:
         sheet = Calc.get_active_sheet(doc)
 
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         rng = Calc.get_cell_range(sheet=sheet, range_name="B1:D4")
         Calc.set_val(value="hello world", sheet=sheet, cell_name="B5")
         # Calc.set_val(value="A1",sheet=sheet, cell_name="A1")
@@ -1276,7 +1278,7 @@ def test_delete_cells_left(loader) -> None:
         val = Calc.get_val(sheet=sheet, cell_name="B1")
         assert val == "hello world"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_clear_cells(loader) -> None:
@@ -1342,7 +1344,7 @@ def test_clear_cells(loader) -> None:
             for value in row:
                 assert value == ""
 
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
     try:
         events = Events()
         events.on(CalcNamedEvent.CELLS_CLEARING, on)
@@ -1353,7 +1355,7 @@ def test_clear_cells(loader) -> None:
         rng = Calc.get_cell_range(sheet=sheet, range_name=rng_clear)
         cr_addr = Calc.get_address(cell_range=rng)
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
         # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlagsEnum)
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
@@ -1365,7 +1367,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
@@ -1378,7 +1380,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         # clear_cells(cls, sheet: XSpreadsheet, range_name: str)
@@ -1391,14 +1393,14 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
         Lo.delay(delay)
         Calc.clear_cells(sheet, rng_clear)
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlagsEnum)
@@ -1412,7 +1414,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
@@ -1425,7 +1427,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         # clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange)
@@ -1438,7 +1440,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
@@ -1450,7 +1452,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlagsEnum)
@@ -1464,7 +1466,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
@@ -1477,7 +1479,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         # clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress)
@@ -1490,7 +1492,7 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
         Calc.set_array(values=vals, sheet=sheet, name=rng_name)  # or just "A3"
@@ -1502,11 +1504,11 @@ def test_clear_cells(loader) -> None:
         on_fired = False
 
         data = Calc.get_array(sheet=sheet, range_name=rng_name)
-        check_data(data)
+        check_data(data)  # type: ignore
         Lo.delay(delay)
 
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion insert/remove/clear rows, columns, cells
@@ -1552,10 +1554,10 @@ def test_set_val(loader) -> None:
         assert val == "three"
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.set_val(value="one", sheet=sheet, cell_name="A2", other=1)
+            Calc.set_val(value="one", sheet=sheet, cell_name="A2", other=1)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.set_val(sheet)
+            Calc.set_val(sheet)  # type: ignore
     finally:
         Lo.close_doc(doc)
 
@@ -1593,8 +1595,8 @@ def test_set_val_style(loader) -> None:
         f_bg_color_style = BgColor.from_obj(cell)
         assert f_bg_color_style.prop_color == StandardColor.LIME_LIGHT2
         f_bdr_style = Borders.from_obj(cell)
-        assert f_bdr_style.prop_inner_border_table.prop_left.prop_color == StandardColor.RED
-        assert f_bdr_style.prop_inner_padding.prop_left.get_value_mm100() in range(
+        assert f_bdr_style.prop_inner_border_table.prop_left.prop_color == StandardColor.RED  # type: ignore
+        assert f_bdr_style.prop_inner_padding.prop_left.get_value_mm100() in range(  # type: ignore
             l_pad.value - 2, l_pad.value + 3
         )  # +- 2
 
@@ -1615,7 +1617,7 @@ def test_get_val(loader) -> None:
         # test overloads
         Calc.set_val(value="one", sheet=sheet, cell_name="A2")
 
-        # test overlaods
+        # test overloads
         # get_val(sheet: XSpreadsheet, cell_name: str)
         val = Calc.get_val(sheet=sheet, cell_name="A2")
         assert val == "one"
@@ -1646,12 +1648,12 @@ def test_get_val(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_val(sheet=sheet, col=0, rew=1)
+            Calc.get_val(sheet=sheet, col=0, rew=1)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_val(sheet, 0, 1, 3)
+            Calc.get_val(sheet, 0, 1, 3)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_num(loader) -> None:
@@ -1718,12 +1720,12 @@ def test_get_num(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_num(sheet=sheet, col=0, rew=0)
+            Calc.get_num(sheet=sheet, col=0, rew=0)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_num(sheet, 0, 1, 4)
+            Calc.get_num(sheet, 0, 1, 4)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_str(loader) -> None:
@@ -1790,12 +1792,12 @@ def test_get_str(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_string(sheet=sheet, cellName="A1")
+            Calc.get_string(sheet=sheet, cellName="A1")  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_string(sheet, 0, 1, 5)
+            Calc.get_string(sheet, 0, 1, 5)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion set/get values in cells
@@ -1819,7 +1821,7 @@ def test_set_array_by_range(loader) -> None:
         arr = TableHelper.to_2d_list(arr1)
         sheet = Calc.get_active_sheet(doc=doc)
         Calc.set_array(sheet=sheet, name="A1:C3", values=arr)
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         # Lo.delay(3500)
         val = Calc.get_num(sheet, "A1")
         assert val == 1.0
@@ -1836,12 +1838,12 @@ def test_set_array_by_range(loader) -> None:
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == 1.0
 
-        # positiona args
+        # positional args
         Calc.set_array(arr, sheet, f"A1:{rng}{arr_size}")
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == 1.0
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_set_array_by_cell(loader) -> None:
@@ -1865,7 +1867,7 @@ def test_set_array_by_cell(loader) -> None:
         arr = TableHelper.to_2d_tuple(TableHelper.to_tuple(2))
         sheet = Calc.get_active_sheet(doc=doc)
         Calc.set_array(sheet=sheet, name="B2", values=arr)
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         # Lo.delay(1500)
         val = Calc.get_num(sheet, "B2")
         assert val == 2.0
@@ -1878,7 +1880,7 @@ def test_set_array_by_cell(loader) -> None:
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
 
-        # positiona args
+        # positional args
         Calc.set_array(arr, sheet, f"A1")
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
@@ -1891,7 +1893,7 @@ def test_set_array_by_cell(loader) -> None:
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == 3.14
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_set_array(loader) -> None:
@@ -1913,7 +1915,7 @@ def test_set_array(loader) -> None:
         arr = TableHelper.to_2d_tuple(TableHelper.to_tuple(2))
         sheet = Calc.get_active_sheet(doc=doc)
         Calc.set_array(sheet=sheet, name="B2", values=arr)
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         # Lo.delay(1500)
         val = Calc.get_num(sheet, "B2")
         assert val == 2.0
@@ -1934,7 +1936,7 @@ def test_set_array(loader) -> None:
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
 
-        # positiona args
+        # positional args
         Calc.set_array(arr, sheet, col_start, row_start, col_end, row_end)
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
@@ -1967,10 +1969,10 @@ def test_set_array(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.set_array(values=arr, cellRange=cell_range)
+            Calc.set_array(values=arr, cellRange=cell_range)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.set_array(arr, doc, addr, 3)
+            Calc.set_array(arr, doc, addr, 3)  # type: ignore
     finally:
         Lo.close_doc(doc)
 
@@ -2017,12 +2019,12 @@ def test_set_array_style(loader) -> None:
 
         with Lo.ControllerLock():
             Calc.set_array(values=arr, sheet=sheet, range_obj=ro, styles=(bg_color_style, bdr_style, ft_style))
-        xrng = Calc.get_cell_range(sheet=sheet, range_obj=ro)
-        f_bg_color_style = BgColor.from_obj(xrng)
+        x_rng = Calc.get_cell_range(sheet=sheet, range_obj=ro)
+        f_bg_color_style = BgColor.from_obj(x_rng)
         assert f_bg_color_style.prop_color == StandardColor.GREEN_LIGHT2
-        f_bdr_style = Borders.from_obj(xrng)
-        assert f_bdr_style.prop_inner_border_table.prop_left.prop_color == StandardColor.BLUE_DARK1
-        assert f_bdr_style.prop_inner_border_table.prop_horizontal.prop_color == StandardColor.GREEN_DARK3
+        f_bdr_style = Borders.from_obj(x_rng)
+        assert f_bdr_style.prop_inner_border_table.prop_left.prop_color == StandardColor.BLUE_DARK1  # type: ignore
+        assert f_bdr_style.prop_inner_border_table.prop_horizontal.prop_color == StandardColor.GREEN_DARK3  # type: ignore
 
     finally:
         Lo.close_doc(doc)
@@ -2044,7 +2046,7 @@ def test_get_array(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         arr_size = 8
         arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
@@ -2056,8 +2058,8 @@ def test_get_array(loader) -> None:
         # test overloads
         # get_array(sheet: XSpreadsheet, range_name: str)
         # by keyword
-        # in ODEV 0.6.5 args go renamed but are backwards compatable.
-        rng_name_old_args = Calc.get_range_str(start_col=0, start_row=0, end_col=arr_size - 1, end_row=arr_size - 1)
+        # in ODEV 0.6.5 args go renamed but are backwards compatible.
+        rng_name_old_args = Calc.get_range_str(start_col=0, start_row=0, end_col=arr_size - 1, end_row=arr_size - 1)  # type: ignore
         rng_name = Calc.get_range_str(col_start=0, row_start=0, col_end=arr_size - 1, row_end=arr_size - 1)
         assert rng_name_old_args == rng_name
         result_arr = Calc.get_array(sheet=sheet, range_name=rng_name)
@@ -2085,12 +2087,12 @@ def test_get_array(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_array(sheet=sheet, rangeName=rng_name)
+            Calc.get_array(sheet=sheet, rangeName=rng_name)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_array(sheet, rng_name, 1)
+            Calc.get_array(sheet, rng_name, 1)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_print_array(capsys: pytest.CaptureFixture) -> None:
@@ -2130,7 +2132,7 @@ def test_get_float_array(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
     arr_size = 8
     arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
     rng_name = Calc.get_range_str(col_start=0, row_start=0, col_end=arr_size - 1, row_end=arr_size - 1)
@@ -2155,7 +2157,7 @@ def test_get_set_col(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         vals_len = 12
 
@@ -2202,12 +2204,12 @@ def test_get_set_col(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.set_col(sheet, vals, cellName="A1")
+            Calc.set_col(sheet, vals, cellName="A1")  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.set_col(sheet, vals)
+            Calc.set_col(sheet, vals)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_set_row(loader) -> None:
@@ -2220,7 +2222,7 @@ def test_get_set_row(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         vals_len = 12
 
@@ -2258,15 +2260,15 @@ def test_get_set_row(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.set_row(sheet=sheet, values=vals, cellName="test")
+            Calc.set_row(sheet=sheet, values=vals, cellName="test")  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.set_row(sheet, vals)
+            Calc.set_row(sheet, vals)  # type: ignore
 
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         # Lo.delay(3000)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion set/get rows and columns
@@ -2283,16 +2285,16 @@ def test_set_date(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         Calc.set_date(sheet=sheet, cell_name="A1", day=22, month=11, year=2022)
 
         cell_str = Calc.get_string(sheet=sheet, cell_name="A1")
         assert cell_str == "44887.0"
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         # Lo.delay(6000)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_annotation(loader) -> None:
@@ -2305,7 +2307,7 @@ def test_annotation(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         cn = "B2"
         msg = "Hello World"
         ann = Calc.add_annotation(sheet=sheet, cell_name=cn, msg=msg)
@@ -2320,10 +2322,10 @@ def test_annotation(loader) -> None:
         #  # test getting of annotation string with no annotation set
         ann_str = Calc.get_annotation_str(sheet=sheet, cell_name="G9")
         assert ann_str == ""
-        # GUI.set_visible(is_visible=True, odoc=doc)
+        # GUI.set_visible(visible=True, doc=doc)
         # Lo.delay(6000)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion special cell types
@@ -2340,7 +2342,7 @@ def test_get_cell(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         test_val = "test"
         col = 2  # C
         row = 4
@@ -2399,12 +2401,12 @@ def test_get_cell(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_cell(sheet=sheet, cellName="A2")
+            Calc.get_cell(sheet=sheet, cellName="A2")  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_cell()
+            Calc.get_cell()  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_is_single_cell_range(loader) -> None:
@@ -2415,13 +2417,13 @@ def test_is_single_cell_range(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         cr_addr = Calc.get_address(sheet=sheet, range_name="A1:A1")
         assert Calc.is_single_cell_range(cr_addr)
         cr_addr = Calc.get_address(sheet=sheet, range_name="A1:B1")
         assert Calc.is_single_cell_range(cr_addr) == False
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_cell_range(loader) -> None:
@@ -2432,7 +2434,7 @@ def test_get_cell_range(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         single_col_start = 1
         single_row_start = 1
         single_col_end = 1
@@ -2503,12 +2505,12 @@ def test_get_cell_range(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_cell_range(sheet=sheet, rangeName="A2:B5")
+            Calc.get_cell_range(sheet=sheet, rangeName="A2:B5")  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_cell_range()
+            Calc.get_cell_range()  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_find_used_range(loader) -> None:
@@ -2519,7 +2521,7 @@ def test_find_used_range(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         # find_used_range(sheet: XSpreadsheet)
         rng = Calc.find_used_range(sheet=sheet)
@@ -2527,12 +2529,12 @@ def test_find_used_range(loader) -> None:
         rng_str = Calc.get_range_str(cell_range=rng)
         assert rng_str == "A1:A1"
 
-        rng = Calc.find_used_range(sheet=sheet, cell_name="C2")
+        rng = Calc.find_used_range(sheet=sheet, range_name="C2")
         assert rng is not None
         rng_str = Calc.get_range_str(cell_range=rng)
         assert rng_str == "A1:A1"
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_col_range(loader) -> None:
@@ -2543,7 +2545,7 @@ def test_get_col_range(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         test_val = "test"
         index = 3
         Calc.set_val(value=test_val, sheet=sheet, col=3, row=0)
@@ -2554,7 +2556,7 @@ def test_get_col_range(loader) -> None:
         val = Calc.get_string(cell)
         assert val == test_val
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(closeable=doc, deliver_ownership=False)  # type: ignore
 
 
 def test_get_row_range(loader) -> None:
@@ -2565,7 +2567,7 @@ def test_get_row_range(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         test_val = "test"
         index = 3
         Calc.set_val(value=test_val, sheet=sheet, col=0, row=index)
@@ -2576,7 +2578,7 @@ def test_get_row_range(loader) -> None:
         val = Calc.get_string(cell)
         assert val == test_val
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion get XCell and XCellRange methods
@@ -2629,14 +2631,14 @@ def test_get_cell_pos(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         p1 = Calc.get_cell_pos(sheet=sheet, cell_name="C5")
         p2 = Calc.get_cell_pos(sheet=sheet, cell_name="A1")
         assert p1.X != p2.X
         assert p1.Y != p2.X
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_column_number_str() -> None:
@@ -2697,7 +2699,7 @@ def test_get_cell_address(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         cell_name = "C2"
         cell = Calc.get_cell(sheet=sheet, cell_name=cell_name)
@@ -2743,12 +2745,12 @@ def test_get_cell_address(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_cell_address(sheet=sheet, cellName="B4")
+            Calc.get_cell_address(sheet=sheet, cellName="B4")  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_cell_address(sheet, 2, 1, 4)
+            Calc.get_cell_address(sheet, 2, 1, 4)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_address(loader) -> None:
@@ -2759,7 +2761,7 @@ def test_get_address(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         start_col = 2
         start_row = 2
@@ -2810,12 +2812,12 @@ def test_get_address(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_address(cellRange=rng)
+            Calc.get_address(cellRange=rng)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_address(sheet, start_col, start_row)
+            Calc.get_address(sheet, start_col, start_row)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
@@ -2826,7 +2828,7 @@ def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         print_result = "Cell: Sheet1.D3\n"
         col = 3
         row = 2
@@ -2851,12 +2853,12 @@ def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.print_cell_address(cel=cell)
+            Calc.print_cell_address(cel=cell)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.print_cell_address(1, 2)
+            Calc.print_cell_address(1, 2)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
@@ -2867,7 +2869,7 @@ def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         print_result = "Range: Sheet1.C3:F22\n"
         start_col = 2
         start_row = 2
@@ -2898,12 +2900,12 @@ def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.print_address(cellRange=rng)
+            Calc.print_address(cellRange=rng)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.print_address(1, 2)
+            Calc.print_address(1, 2)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_print_addresses(capsys: pytest.CaptureFixture, loader) -> None:
@@ -2914,7 +2916,7 @@ def test_print_addresses(capsys: pytest.CaptureFixture, loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         print_result = """No of cellrange addresses: 2
 Range: Sheet1.C3:F22
 Range: Sheet1.B26:J45
@@ -2949,7 +2951,7 @@ Range: Sheet1.B26:J45
         captured = capsys.readouterr()
         assert captured.out == print_result
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_cell_series(loader) -> None:
@@ -2961,11 +2963,11 @@ def test_get_cell_series(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         series = Calc.get_cell_series(sheet=sheet, range_name="A2:B6")
         assert Lo.qi(XCellSeries, series) is not None
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_is_equal_addresses(loader) -> None:
@@ -2976,7 +2978,7 @@ def test_is_equal_addresses(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
 
         first_start_col = 2
         first_start_row = 2
@@ -3011,19 +3013,19 @@ def test_is_equal_addresses(loader) -> None:
         assert Calc.is_equal_addresses(first_addr, first_addr)
 
         # is_equal_addresses(addr1: CellRangeAddress, addr2: CellRangeAddress)
-        assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=second_rng) == False
-        assert Calc.is_equal_addresses(first_cr_addr, second_rng) == False
+        assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=second_rng) == False  # type: ignore
+        assert Calc.is_equal_addresses(first_cr_addr, second_rng) == False  # type: ignore
         assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=first_cr_addr)
         assert Calc.is_equal_addresses(first_cr_addr, first_cr_addr)
 
-        # test missmatched
-        assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=second_addr) == False
-        assert Calc.is_equal_addresses(first_cr_addr, second_addr) == False
+        # test mismatched
+        assert Calc.is_equal_addresses(addr1=first_cr_addr, addr2=second_addr) == False  # type: ignore
+        assert Calc.is_equal_addresses(first_cr_addr, second_addr) == False  # type: ignore
 
         # test bad input
-        assert Calc.is_equal_addresses(first_cr_addr, object()) == False
+        assert Calc.is_equal_addresses(first_cr_addr, object()) == False  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion get cell and cell range addresses
@@ -3038,7 +3040,7 @@ def test_get_range_str(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         sheet_name = Calc.get_sheet_name(sheet=sheet)
 
         start_col = 2
@@ -3092,12 +3094,12 @@ def test_get_range_str(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_range_str(cellRange="A2:B5")
+            Calc.get_range_str(cellRange="A2:B5")  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_range_str(cr_addr, sheet, 2)
+            Calc.get_range_str(cr_addr, sheet, 2)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_get_cell_str(loader) -> None:
@@ -3108,7 +3110,7 @@ def test_get_cell_str(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         col = 2
         row = 3
         name = f"{Calc.column_number_str(col=col)}{row+1}"
@@ -3135,12 +3137,12 @@ def test_get_cell_str(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.get_cell_str(adr=addr)
+            Calc.get_cell_str(adr=addr)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.get_cell_str(addr, sheet)
+            Calc.get_cell_str(addr, sheet)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion convert cell range address to string
@@ -3156,14 +3158,15 @@ def test_find_all(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         test_val = "test"
         Calc.set_val(value=test_val, sheet=sheet, cell_name="A1")
         Calc.set_val(value=test_val, sheet=sheet, cell_name="C3")
-        srch = Lo.qi(XSearchable, sheet)
+        srch = Lo.qi(XSearchable, sheet, True)
         sd = srch.createSearchDescriptor()
         sd.setSearchString(test_val)
         results = Calc.find_all(srch=srch, sd=sd)
+        assert results is not None
         assert len(results) == 2
         assert Calc.get_range_str(cell_range=results[0]) == "A1:A1"
         assert Calc.get_range_str(cell_range=results[1]) == "C3:C3"
@@ -3172,7 +3175,7 @@ def test_find_all(loader) -> None:
         results = Calc.find_all(srch=srch, sd=sd)
         assert results is None
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion search
@@ -3197,7 +3200,7 @@ def test_create_cell_style(loader) -> None:
         assert loader is not None
         doc = Calc.create_doc(loader)
         assert doc is not None
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         start_col = 2
         start_row = 2
         end_col = 5
@@ -3234,12 +3237,12 @@ def test_create_cell_style(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.change_style(sheet=sheet, style_name=style, cellRange=cell_range)
+            Calc.change_style(sheet=sheet, style_name=style, cellRange=cell_range)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.change_style(sheet, style, cell_range, rng_str)
+            Calc.change_style(sheet, style, cell_range, rng_str)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_add_remove_border(loader) -> None:
@@ -3255,9 +3258,9 @@ def test_add_remove_border(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
     try:
-        GUI.set_visible(is_visible=visible, odoc=doc)
+        GUI.set_visible(visible=visible, doc=doc)
         Lo.delay(delay)
         rng_name = "B1:F8"
         # add_border(sheet: XSpreadsheet, range_name: str)
@@ -3272,7 +3275,7 @@ def test_add_remove_border(loader) -> None:
 
         rng = Calc.remove_border(sheet=sheet, range_name=rng_name)
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3282,7 +3285,7 @@ def test_add_remove_border(loader) -> None:
 
         cell_rng = Calc.add_border(sheet, rng_name)
         assert cell_rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3291,7 +3294,7 @@ def test_add_remove_border(loader) -> None:
 
         rng = Calc.remove_border(sheet, rng_name)
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3303,7 +3306,7 @@ def test_add_remove_border(loader) -> None:
         Lo.delay(delay)
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng)
         assert cell_rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3312,7 +3315,7 @@ def test_add_remove_border(loader) -> None:
 
         rng = Calc.remove_border(sheet=sheet, cell_range=rng)
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3322,7 +3325,7 @@ def test_add_remove_border(loader) -> None:
 
         cell_rng = Calc.add_border(sheet, rng)
         assert cell_rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3331,7 +3334,7 @@ def test_add_remove_border(loader) -> None:
 
         rng = Calc.remove_border(sheet, rng)
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3342,7 +3345,7 @@ def test_add_remove_border(loader) -> None:
         # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int)
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN)
         assert cell_rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
         assert tbl_border.RightLine.Color == color.CommonColor.GREEN
         assert tbl_border.TopLine.Color == color.CommonColor.GREEN
@@ -3351,7 +3354,7 @@ def test_add_remove_border(loader) -> None:
 
         rng = Calc.remove_border(sheet=sheet, cell_range=rng)
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3361,7 +3364,7 @@ def test_add_remove_border(loader) -> None:
 
         cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE)
         assert cell_rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.RightLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
@@ -3370,7 +3373,7 @@ def test_add_remove_border(loader) -> None:
 
         rng = Calc.remove_border(sheet=sheet, cell_range=rng)
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3381,7 +3384,7 @@ def test_add_remove_border(loader) -> None:
         # add_border(sheet: XSpreadsheet, range_name: str, color: int)
         cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN)
         assert cell_rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
         assert tbl_border.RightLine.Color == color.CommonColor.GREEN
         assert tbl_border.TopLine.Color == color.CommonColor.GREEN
@@ -3397,7 +3400,7 @@ def test_add_remove_border(loader) -> None:
             | Calc.BorderEnum.TOP_BORDER,
         )
         assert rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == 0
         assert tbl_border.RightLine.Color == 0
         assert tbl_border.TopLine.Color == 0
@@ -3407,7 +3410,7 @@ def test_add_remove_border(loader) -> None:
 
         cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE)
         assert cell_rng is not None
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.RightLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
@@ -3420,8 +3423,8 @@ def test_add_remove_border(loader) -> None:
         # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: int)
         bval = Calc.BorderEnum.TOP_BORDER | Calc.BorderEnum.LEFT_BORDER
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
-        cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN, border_vals=int(bval))
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN, border_vals=int(bval))  # type: ignore
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.TopLine.Color == color.CommonColor.GREEN
         assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
         assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -3432,7 +3435,7 @@ def test_add_remove_border(loader) -> None:
         Lo.delay(delay)
 
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
-        cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE, int(bval))
+        cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE, int(bval))  # type: ignore
         tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
         assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
@@ -3446,9 +3449,9 @@ def test_add_remove_border(loader) -> None:
         # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: int)
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
         cell_rng = Calc.add_border(
-            sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN, border_vals=int(bval)
+            sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN, border_vals=int(bval)  # type: ignore
         )
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.TopLine.Color == color.CommonColor.GREEN
         assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
         assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -3459,7 +3462,7 @@ def test_add_remove_border(loader) -> None:
         Lo.delay(delay)
 
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
-        cell_rng = Calc.add_border(sheet, rng_name, color.CommonColor.DARK_BLUE, int(bval))
+        cell_rng = Calc.add_border(sheet, rng_name, color.CommonColor.DARK_BLUE, int(bval))  # type: ignore
         tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
         assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
@@ -3473,7 +3476,7 @@ def test_add_remove_border(loader) -> None:
         # add_border(sheet: XSpreadsheet, cell_range: XCellRange, color: int, border_vals: BorderEnum)
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.GREEN, border_vals=bval)
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.TopLine.Color == color.CommonColor.GREEN
         assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
         assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -3485,7 +3488,7 @@ def test_add_remove_border(loader) -> None:
 
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
         cell_rng = Calc.add_border(sheet, rng, color.CommonColor.DARK_BLUE, bval)
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -3498,7 +3501,7 @@ def test_add_remove_border(loader) -> None:
         # add_border(sheet: XSpreadsheet, range_name: str, color: int, border_vals: BorderEnum)
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
         cell_rng = Calc.add_border(sheet=sheet, range_name=rng_name, color=color.CommonColor.GREEN, border_vals=bval)
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.TopLine.Color == color.CommonColor.GREEN
         assert tbl_border.LeftLine.Color == color.CommonColor.GREEN
         assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -3510,7 +3513,7 @@ def test_add_remove_border(loader) -> None:
 
         cell_rng = Calc.add_border(sheet=sheet, cell_range=rng, color=color.CommonColor.BLACK)  # reset colors
         cell_rng = Calc.add_border(sheet, rng_name, color.CommonColor.DARK_BLUE, bval)
-        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))
+        tbl_border = cast(TableBorder2, Props.get_property(prop_set=cell_rng, name="TableBorder2"))  # type: ignore
         assert tbl_border.TopLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.LeftLine.Color == color.CommonColor.DARK_BLUE
         assert tbl_border.RightLine.Color == color.CommonColor.BLACK
@@ -3519,12 +3522,12 @@ def test_add_remove_border(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.add_border(sheet=sheet, cellRange=rng, color=color.CommonColor.BLACK)
+            Calc.add_border(sheet=sheet, cellRange=rng, color=color.CommonColor.BLACK)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.add_border(sheet=sheet)
+            Calc.add_border(sheet=sheet)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_highlight_range(loader) -> None:
@@ -3559,9 +3562,9 @@ def test_highlight_range(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
 
         rng_name = "B3:F8"
         headline = "Hello World!"
@@ -3572,7 +3575,7 @@ def test_highlight_range(loader) -> None:
         result = Calc.get_string(cell=first)
         assert result == headline
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
     Lo.delay(500)
 
     # highlight_range(sheet: XSpreadsheet,  headline: str, cell_range: XCellRange)
@@ -3583,10 +3586,10 @@ def test_highlight_range(loader) -> None:
             EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTED, highlighted),
             EventArg(CalcNamedEvent.CELLS_BORDER_ADDING, adding_border),
         ):
-            sheet = Calc.get_sheet(doc=doc, index=0)
+            sheet = Calc.get_sheet(doc=doc, idx=0)
             rng = sheet.getCellRangeByName(rng_name)
             if visible:
-                GUI.set_visible(is_visible=visible, odoc=doc)
+                GUI.set_visible(visible=visible, doc=doc)
             first = Calc.highlight_range(sheet, headline, rng)
             Lo.delay(delay)
             assert first is not None
@@ -3595,14 +3598,14 @@ def test_highlight_range(loader) -> None:
             assert is_adding_border
             assert is_highlighted
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
     Lo.delay(500)
 
     doc = Calc.create_doc(loader)
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
 
         rng_name = "B3:F8"
         headline = "Hello World!"
@@ -3615,31 +3618,31 @@ def test_highlight_range(loader) -> None:
         result = Calc.get_string(cell=first)
         assert result == headline
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
     Lo.delay(500)
 
     # highlight_range(sheet: XSpreadsheet,  headline: str, range_name: str)
     doc = Calc.create_doc(loader)
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         rng = sheet.getCellRangeByName(rng_name)
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
         first = Calc.highlight_range(sheet=sheet, headline=headline, range_name=rng_name)
         Lo.delay(delay)
         assert first is not None
         result = Calc.get_string(cell=first)
         assert result == headline
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
     Lo.delay(500)
 
     doc = Calc.create_doc(loader)
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         rng = sheet.getCellRangeByName(rng_name)
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
         first = Calc.highlight_range(sheet, headline, rng_name)
         Lo.delay(delay)
         assert first is not None
@@ -3648,12 +3651,12 @@ def test_highlight_range(loader) -> None:
 
         with pytest.raises(TypeError):
             # error on unused key
-            Calc.highlight_range(sheet=sheet, headline=headline, rangeName=rng_name)
+            Calc.highlight_range(sheet=sheet, headline=headline, rangeName=rng_name)  # type: ignore
         with pytest.raises(TypeError):
             # error on incorrect number of args
-            Calc.highlight_range(sheet, headline)
+            Calc.highlight_range(sheet, headline)  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 def test_set_col_width(loader) -> None:
@@ -3664,16 +3667,16 @@ def test_set_col_width(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
     idx = 3
     width = 12
     cell_range = Calc.set_col_width(sheet=sheet, width=width, idx=idx)
     assert cell_range is not None
     # convert to decimal and use approx to test with a tolerance value.
     # https://docs.pytest.org/en/latest/reference/reference.html?highlight=approx#pytest.approx
-    c_width = Props.get_property(prop_set=cell_range, name="Width")
-    assert c_width / 10000 == pytest.approx(width / 100, rel=1e-2)
-    Lo.close(closeable=doc, deliver_ownership=False)
+    c_width = Props.get_property(prop_set=cell_range, name="Width")  # type: ignore
+    assert c_width / 10000 == pytest.approx(width / 100, rel=1e-2)  # type: ignore
+    Lo.close(doc)  # type: ignore
 
 
 def test_set_row_height(loader) -> None:
@@ -3685,7 +3688,7 @@ def test_set_row_height(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         idx = 3
         height = 14
         cell_range = Calc.set_row_height(sheet=sheet, height=height, idx=idx)
@@ -3701,7 +3704,7 @@ def test_set_row_height(loader) -> None:
         # https://docs.pytest.org/en/latest/reference/reference.html?highlight=approx#pytest.approx
         assert c_height / 10000 == pytest.approx(height / 100, rel=1e-2)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion cell decoration
@@ -3719,16 +3722,16 @@ def test_scenarios(loader) -> None:
     doc = Calc.create_doc(loader)
     assert doc is not None
     try:
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
         vals = [[11, 12], ["Test13", "Test14"]]
         scenario1 = Calc.insert_scenario(
             sheet=sheet, range_name="B10:C11", vals=vals, name="First Scenario", comment="1st scenario."
         )
         Lo.delay(delay)
         assert scenario1 is not None
-        assert scenario1.Name == "First Scenario"
+        assert scenario1.Name == "First Scenario"  # type: ignore
 
         vals[0][0] = "Test21"
         vals[0][1] = "Test22"
@@ -3739,7 +3742,7 @@ def test_scenarios(loader) -> None:
         )
         Lo.delay(delay)
         assert scenario2 is not None
-        assert scenario2.Name == "Second Scenario"
+        assert scenario2.Name == "Second Scenario"  # type: ignore
 
         vals[0][0] = 31
         vals[0][1] = 32
@@ -3750,14 +3753,14 @@ def test_scenarios(loader) -> None:
         )
         Lo.delay(delay)
         assert scenario3 is not None
-        assert scenario3.Name == "Third Scenario"
+        assert scenario3.Name == "Third Scenario"  # type: ignore
 
         scenario_apply = Calc.apply_scenario(sheet=sheet, name="Second Scenario")
         Lo.delay(delay)
         assert scenario_apply is not None
-        assert scenario2.Name == "Second Scenario"
+        assert scenario2.Name == "Second Scenario"  # type: ignore
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(doc)  # type: ignore
 
 
 # endregion scenarios
