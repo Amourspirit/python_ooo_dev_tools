@@ -21,6 +21,10 @@ from ooodev.utils.inst.lo.options import Options as LoOptions
 from ooodev.conn import cache as mCache
 
 # os.environ["NO_HEADLESS"] = "1"
+# os.environ[
+#     "ODEV_CONN_SOFFICE"
+# ] = "D:\\Portables\\PortableApps\\LibreOfficePortable\App\\libreoffice\\program\\soffice.exe"
+# NOTE: No success running a portable version on windows from virtual environment.
 
 
 def remove_readonly(func, path, excinfo):
@@ -33,7 +37,7 @@ def remove_readonly(func, path, excinfo):
 
 @pytest.fixture(scope="session")
 def tmp_path_session():
-    result = Path(tempfile.mkdtemp())
+    result = Path(tempfile.mkdtemp())  # type: ignore
     yield result
     if os.path.exists(result):
         shutil.rmtree(result, onerror=remove_readonly)
@@ -111,7 +115,7 @@ def skip_not_headless_os(request, run_headless: bool):
 @pytest.fixture(scope="session")
 def soffice_path():
     # allow for a little more development flexibility
-    # it is alos fine to return "" or None from this function
+    # it is also fine to return "" or None from this function
     return mPaths.get_soffice_path()
 
 

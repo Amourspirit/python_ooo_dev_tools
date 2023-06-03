@@ -113,8 +113,8 @@ class Write(mSel.Selection):
     # region    get_cursor()
     # https://tinyurl.com/2dlclzqf
     @overload
-    @classmethod
-    def get_cursor(cls) -> XTextCursor:
+    @staticmethod
+    def get_cursor() -> XTextCursor:
         """
         Gets text cursor from the current document.
 
@@ -124,8 +124,8 @@ class Write(mSel.Selection):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+    @staticmethod
+    def get_cursor(cursor_obj: DocOrCursor) -> XTextCursor:
         """
         Gets text cursor
 
@@ -138,8 +138,8 @@ class Write(mSel.Selection):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+    @staticmethod
+    def get_cursor(rng: XTextRange, txt: XText) -> XTextCursor:
         """
         Gets text cursor
 
@@ -153,8 +153,8 @@ class Write(mSel.Selection):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+    @staticmethod
+    def get_cursor(rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
         """
         Gets text cursor
 
@@ -167,8 +167,8 @@ class Write(mSel.Selection):
         """
         ...
 
-    @classmethod
-    def get_cursor(cls, *args, **kwargs) -> XTextCursor:
+    @staticmethod
+    def get_cursor(*args, **kwargs) -> XTextCursor:
         """
         Gets text cursor
 

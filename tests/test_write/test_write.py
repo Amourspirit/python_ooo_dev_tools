@@ -27,7 +27,8 @@ def test_writer_lines(loader, fix_writer_path, tmp_path):
         "The astronomical unit was originally conceived as the average of Earth's aphelion and perihelion; however, since 2012 it has been defined as exactly 149597870700 m.",
     ]
     try:
-        GUI.set_visible(is_visible=True, odoc=doc)
+        if not Lo.bridge_connector.headless:
+            GUI.set_visible(visible=True, doc=doc)
         cursor = Write.get_cursor(doc)
         for line in lines:
             Write.append_para(cursor=cursor, text=line)
@@ -58,7 +59,7 @@ def test_open_no_loader(loader, fix_writer_path):
     doc = Write.open_doc(test_doc)
     try:
         assert doc is not None
-        assert str(doc.Title) == "hello_sunny.odt"
+        assert str(doc.Title) == "hello_sunny.odt"  # type: ignore
     finally:
         Lo.close_doc(doc)
 
@@ -70,6 +71,6 @@ def test_open_no_file_no_loader(loader):
     doc = Write.open_doc()
     try:
         assert doc is not None
-        assert str(doc.Title).startswith("Untitled")
+        assert str(doc.Title).startswith("Untitled")  # type: ignore
     finally:
         Lo.close_doc(doc)

@@ -107,13 +107,21 @@ def get_soffice_install_path() -> Path:
         return _INSTALL_PATH
 
 
-def get_soffice_path() -> Path:
+def get_soffice_path(check_env: bool = True) -> Path:
     """
     Gets path to soffice
 
+    Args:
+        check_env (bool, optional): If True then check environment variable ``ODEV_CONN_SOFFICE`` for path. Defaults to True.
+
     Returns:
         Path: path to soffice
+
+    .. versionchanged:: 0.11.6
+        Added ``check_env`` parameter.
     """
+    if check_env and "ODEV_CONN_SOFFICE" in os.environ:
+        return Path(os.environ["ODEV_CONN_SOFFICE"])
     if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
         return Path(get_lo_path(), "soffice.exe")
     return Path(get_lo_path(), "soffice")
