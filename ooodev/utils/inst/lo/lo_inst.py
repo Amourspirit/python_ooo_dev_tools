@@ -1623,17 +1623,17 @@ class LoInst:
         if mock_g.DOCS_BUILDING:
             self._this_component = None
             return self._this_component
+        if self.is_loaded is False:
+            # attempt to connect direct
+            # failure will result in script error and then exit
+            self.load_office()
 
-        # if self.is_loaded is False:
-        #     # attempt to connect direct
-        #     # failure will result in script error and then exit
-        #     self.load_office()
-
-        # desktop = self.get_desktop()
-        desktop = self.xscript_context.getDesktop()
+        # comp = self.star_desktop.getCurrentComponent()
+        desktop = self.get_desktop()
         if desktop is None:
             return None
-        self._doc = desktop.getCurrentComponent()
+        if self._doc is None:
+            self._doc = desktop.getCurrentComponent()
         if self._doc is None:
             return None
         service_info = self.qi(XServiceInfo, self._doc, True)
