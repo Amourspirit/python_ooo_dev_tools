@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.11.6
+==============
+
+Add environment check to ``ooodev.utils.paths.get_soffice_path`` to  ``ODEV_CONN_SOFFICE`` environment variable is set to LibreOffice soffice.
+
 Version 0.11.5
 ==============
 
