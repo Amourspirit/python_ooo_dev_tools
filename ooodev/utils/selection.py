@@ -273,8 +273,8 @@ class Selection(metaclass=StaticProperty):
 
     # region    get_cursor()
     @overload
-    @classmethod
-    def get_cursor(cls) -> XTextCursor:
+    @staticmethod
+    def get_cursor() -> XTextCursor:
         """
         Gets text cursor from the current document.
 
@@ -284,8 +284,8 @@ class Selection(metaclass=StaticProperty):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+    @staticmethod
+    def get_cursor(cursor_obj: DocOrCursor) -> XTextCursor:
         """
         Gets text cursor
 
@@ -298,8 +298,8 @@ class Selection(metaclass=StaticProperty):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+    @staticmethod
+    def get_cursor(rng: XTextRange, txt: XText) -> XTextCursor:
         """
         Gets text cursor
 
@@ -313,8 +313,8 @@ class Selection(metaclass=StaticProperty):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+    @staticmethod
+    def get_cursor(rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
         """
         Gets text cursor
 
@@ -327,8 +327,8 @@ class Selection(metaclass=StaticProperty):
         """
         ...
 
-    @classmethod
-    def get_cursor(cls, *args, **kwargs) -> XTextCursor | None:
+    @staticmethod
+    def get_cursor(*args, **kwargs) -> XTextCursor | None:
         """
         Gets text cursor
 
@@ -379,19 +379,19 @@ class Selection(metaclass=StaticProperty):
             kargs[ordered_keys[i]] = arg
 
         if count == 0:
-            cursor = cls._get_cursor_obj(Selection.active_doc)
+            cursor = Selection._get_cursor_obj(Selection.active_doc)
             if cursor is None:
                 raise mEx.CursorError("Unable to get cursor")
             return cursor
 
         if count == 1:
-            cursor = cls._get_cursor_obj(kargs[1])
+            cursor = Selection._get_cursor_obj(kargs[1])
             if cursor is None:
                 raise mEx.CursorError("Unable to get cursor")
             return cursor
         txt_doc = mLo.Lo.qi(XTextDocument, kargs[2])
         txt = kargs[2] if txt_doc is None else txt_doc.getText()
-        return cls._get_cursor_txt(rng=kargs[1], txt=txt)
+        return Selection._get_cursor_txt(rng=kargs[1], txt=txt)
 
     @staticmethod
     def _get_cursor_txt(rng: XTextRange, txt: XText) -> XTextCursor:
@@ -803,18 +803,19 @@ class Selection(metaclass=StaticProperty):
         """
         # note:
         # It is not permitted to create weak ref to pyuno objects.
-        try:
-            return Selection._active_doc
-        except AttributeError:
-            Selection._active_doc = Selection.get_text_doc()
-            return Selection._active_doc
+        return Selection.get_text_doc()
+        # try:
+        #     return Selection._active_doc
+        # except AttributeError:
+        #     Selection._active_doc = Selection.get_text_doc()
+        #     return Selection._active_doc
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
     d_attrs = (
         "_text_range_compare",
-        "_active_doc",
+        # "_active_doc",
     )
     for attr in d_attrs:
         if hasattr(Selection, attr):
