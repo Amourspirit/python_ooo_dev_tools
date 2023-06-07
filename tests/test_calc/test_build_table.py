@@ -11,11 +11,10 @@ from ooodev.office.calc import Calc
 def test_build_cells(loader) -> None:
     doc = Calc.create_doc(loader=loader)
     assert doc is not None, "Could not create new document"
-    visible = False
     delay = 0
-    if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    if not Lo.bridge_connector.headless:
+        GUI.set_visible(visible=True, doc=doc)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
 
     header_vals = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
     for i, val in enumerate(header_vals):
@@ -33,16 +32,15 @@ def test_build_cells(loader) -> None:
         assert val == pytest.approx(Calc.get_num(sheet=sheet, col=i, row=1), rel=1e-4)
 
     Lo.delay(delay)
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_build_rows(loader) -> None:
     doc = Calc.create_doc(loader=loader)
-    visible = False
     delay = 0
-    if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    if not Lo.bridge_connector.headless:
+        GUI.set_visible(visible=True, doc=doc)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
 
     vals = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
     col = 1
@@ -50,7 +48,7 @@ def test_build_rows(loader) -> None:
     cell_name = Calc.get_cell_str(col=col, row=row)
     Calc.set_row(sheet=sheet, cell_name=cell_name, values=vals)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col + (len(vals) - 1), end_row=row
+        sheet=sheet, col_start=col, row_start=row, col_end=col + (len(vals) - 1), row_end=row
     )
     sheet_vals = Calc.get_array(cell_range=cell_range)
     assert sheet_vals is not None, "Unable to get values from sheet"
@@ -62,7 +60,7 @@ def test_build_rows(loader) -> None:
     row = 1
     cell_name = Calc.get_cell_str(col=col, row=row)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col + (len(vals) - 1), end_row=row
+        sheet=sheet, col_start=col, row_start=row, col_end=col + (len(vals) - 1), row_end=row
     )
 
     Calc.set_val(sheet=sheet, cell_name="N1", value="SUM")
@@ -83,7 +81,7 @@ def test_build_rows(loader) -> None:
     row = 2
     cell_name = Calc.get_cell_str(col=col, row=row)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col + (len(vals) - 1), end_row=row
+        sheet=sheet, col_start=col, row_start=row, col_end=col + (len(vals) - 1), row_end=row
     )
 
     Calc.set_row(sheet=sheet, col_start=col, row_start=row, values=vals)
@@ -99,7 +97,7 @@ def test_build_rows(loader) -> None:
     row = 3
     cell_name = Calc.get_cell_str(col=col, row=row)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col + (len(vals) - 1), end_row=row
+        sheet=sheet, col_start=col, row_start=row, col_end=col + (len(vals) - 1), row_end=row
     )
     Calc.set_row(sheet=sheet, col_start=col, row_start=row, values=vals)
     Calc.set_val(sheet=sheet, col=13, row=3, value="=SUM(A4:L4)")
@@ -109,24 +107,23 @@ def test_build_rows(loader) -> None:
         assert vals[i] == pytest.approx(val, rel=1e-4)
 
     Lo.delay(delay)
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_build_cols(loader) -> None:
     doc = Calc.create_doc(loader=loader)
     assert doc is not None, "Could not create new document"
-    visible = False
     delay = 0
-    if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    if not Lo.bridge_connector.headless:
+        GUI.set_visible(visible=True, doc=doc)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
 
     vals = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
     col = 0
     row = 1
     cell_name = Calc.get_cell_str(col=col, row=row)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col, end_row=row + (len(vals) - 1)
+        sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row + (len(vals) - 1)
     )
 
     Calc.set_col(
@@ -146,7 +143,7 @@ def test_build_cols(loader) -> None:
     row = 1
     cell_name = Calc.get_cell_str(col=col, row=row)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col, end_row=row + (len(vals) - 1)
+        sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row + (len(vals) - 1)
     )
 
     Calc.set_col(sheet=sheet, cell_name=cell_name, values=vals)
@@ -162,7 +159,7 @@ def test_build_cols(loader) -> None:
     row = 1
     cell_name = Calc.get_cell_str(col=col, row=row)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col, end_row=row + (len(vals) - 1)
+        sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row + (len(vals) - 1)
     )
 
     Calc.set_col(sheet=sheet, col_start=col, row_start=row, values=vals)
@@ -179,7 +176,7 @@ def test_build_cols(loader) -> None:
     row = 1
     cell_name = Calc.get_cell_str(col=col, row=row)
     cell_range = Calc.get_cell_range(
-        sheet=sheet, start_col=col, start_row=row, end_col=col, end_row=row + (len(vals) - 1)
+        sheet=sheet, col_start=col, row_start=row, col_end=col, row_end=row + (len(vals) - 1)
     )
 
     Calc.set_col(sheet=sheet, col_start=col, row_start=row, values=vals)
@@ -190,17 +187,16 @@ def test_build_cols(loader) -> None:
         assert vals[i] == pytest.approx(val, rel=1e-4)
 
     Lo.delay(delay)
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_build_array(loader) -> None:
     doc = Calc.create_doc(loader=loader)
     assert doc is not None, "Could not create new document"
-    visible = False
     delay = 0
-    if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
-    sheet = Calc.get_sheet(doc=doc, index=0)
+    if not Lo.bridge_connector.headless:
+        GUI.set_visible(visible=True, doc=doc)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
 
     vals = (
         ("", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"),
@@ -222,4 +218,4 @@ def test_build_array(loader) -> None:
     assert sheet_vals[1][0] == pytest.approx(218, rel=1e-4)
     assert sheet_vals[2][0] == pytest.approx(-26.65, rel=1e-4)
     Lo.delay(delay)
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore

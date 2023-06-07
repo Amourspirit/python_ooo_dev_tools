@@ -3544,7 +3544,7 @@ class Write(mSel.Selection):
         Set configured Services
 
         Args:
-             lingo_mgr (XLinguServiceManager2): Service Manager
+            lingo_mgr (XLinguServiceManager2): Service Manager
             service (str): Service Name
             impl_name (str): Service implementation name
 
@@ -3560,10 +3560,10 @@ class Write(mSel.Selection):
         Set configured Services
 
         Args:
-             lingo_mgr (XLinguServiceManager2): Service Manager
+            lingo_mgr (XLinguServiceManager2): Service Manager
             service (str): Service Name
             impl_name (str): Service implementation name
-             loc (Locale): Local used to spell words.
+            loc (Locale): Local used to spell words.
 
         Returns:
             bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
