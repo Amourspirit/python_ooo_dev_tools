@@ -7,12 +7,11 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 
-def test_writer_lines(loader, fix_writer_path, tmp_path):
+def test_writer_lines(loader, tmp_path):
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
 
-    test_doc = fix_writer_path("hello_sunny.odt")
     assert loader is not None
     doc = Write.create_doc(loader)
     # if doc is None:
@@ -67,8 +66,11 @@ def test_open_no_loader(loader, fix_writer_path):
 def test_open_no_file_no_loader(loader):
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write
+    from ooodev.utils.gui import GUI
 
     doc = Write.open_doc()
+    if not Lo.bridge_connector.headless:
+        GUI.set_visible(visible=True, doc=doc)
     try:
         assert doc is not None
         assert str(doc.Title).startswith("Untitled")  # type: ignore

@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import annotations
 import os
-from typing import List
+from typing import Dict, List, cast
 from pathlib import Path
 import uuid
 from abc import ABC, abstractmethod
@@ -24,10 +24,11 @@ class ConnectorBridgeBase(ConnectorBase):
         self._headless = bool(kwargs.get("headless", False))
         self._start_as_service = bool(kwargs.get("start_as_service", False))
         self._start_office = bool(kwargs.get("start_office", True))
+        self._env_vars = cast(Dict[str, str], kwargs.get("env_vars", {}))
 
         if soffice := kwargs.get("soffice"):
             # allow empty string or None to be passed
-            self.soffice = soffice
+            self._soffice = soffice
 
     def update_startup_args(self, args: List[str]) -> None:
         if self.no_restore:
@@ -128,6 +129,11 @@ class ConnectorBridgeBase(ConnectorBase):
     def start_as_service(self, value: bool):
         self._start_as_service = value
 
+    @property
+    def env_vars(self) -> Dict[str, str]:
+        """Gets/Sets environment variables to be set when starting office"""
+        return self._env_vars
+
     # endregion startup flags
 
 
@@ -150,7 +156,8 @@ class ConnectSocket(ConnectorBridgeBase):
             headless (bool, optional): Default ``False``
             start_as_service (bool, optional): Default ``False``
             start_office (bool, optional): Default ``True``
-            soffice: (Path | str, optional): Path to soffice
+            soffice (Path | str, optional): Path to soffice
+            env_vars (Dict[str, str], optional): Environment variables to be set when starting office
         """
         super().__init__(**kwargs)
         self._host = host
@@ -201,7 +208,8 @@ class ConnectPipe(ConnectorBridgeBase):
             headless (bool, optional): Default ``False``
             start_as_service (bool, optional): Default ``False``
             start_office (bool, optional): Default ``True``
-            soffice: (Path | str, optional): Path to soffice
+            soffice (Path | str, optional): Path to soffice
+            env_vars (Dict[str, str], optional): Environment variables to be set when starting office
         """
         super().__init__(**kwargs)
         self._pipe = uuid.uuid4().hex if pipe is None else pipe

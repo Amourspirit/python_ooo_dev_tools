@@ -20,6 +20,15 @@ from ooodev.utils.inst.lo.options import Options as LoOptions
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
 
+# Snap Testing
+# Limited Snap testing can be done.
+# Mostly it is limited because the snap can't access the real tmp directory.
+# To test snap the following must be modified:
+# 1. soffice_path()
+# 2. soffice_env()
+# 3. loader()
+# see the comments in each
+
 # os.environ["NO_HEADLESS"] = "1"
 # os.environ[
 #     "ODEV_CONN_SOFFICE"
@@ -116,17 +125,35 @@ def skip_not_headless_os(request, run_headless: bool):
 def soffice_path():
     # allow for a little more development flexibility
     # it is also fine to return "" or None from this function
+
+    # return Path("/snap/bin/libreoffice")
+
     return mPaths.get_soffice_path()
 
 
 @pytest.fixture(scope="session")
-def loader(tmp_path_session, run_headless, soffice_path):
+def soffice_env():
+    # for snap testing the PYTHONPATH must be set to the virtual environment
+    return {}
+    # py_pth = mPaths.get_virtual_env_site_packages_path()
+    # py_pth += f":{Path.cwd()}"
+    # return {"PYTHONPATH": py_pth}
+
+
+@pytest.fixture(scope="session")
+def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
+    # for testing with a snap the cache_obj must be omitted.
+    # This because the snap is not allowed to write to the real tmp directory.
     loader = mLo.load_office(
-        connector=mLo.ConnectPipe(headless=run_headless, soffice=soffice_path),
+        connector=mLo.ConnectPipe(headless=run_headless, soffice=soffice_path, env_vars=soffice_env),
         cache_obj=mCache.Cache(working_dir=tmp_path_session),
         opt=LoOptions(verbose=True),
     )
-    # loader = mLo.load_office(connector=mLo.ConnectSocket(headless=True, soffice=soffice_path), cache_obj=mCache.Cache(working_dir=tmp_path_session))
+    # loader = mLo.load_office(
+    #     connector=mLo.ConnectSocket(headless=run_headless, soffice=soffice_path, env_vars=soffice_env),
+    #     cache_obj=mCache.Cache(working_dir=tmp_path_session),
+    #     opt=LoOptions(verbose=True),
+    # )
     yield loader
     mLo.close_office()
 
