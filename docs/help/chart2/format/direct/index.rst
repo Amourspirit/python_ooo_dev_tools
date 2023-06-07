@@ -9,6 +9,7 @@ Direct
     general/index
     axis/index
     grid/index
+    legend/index
     wall_floor/index
     series/index
     title/index

@@ -2,6 +2,46 @@
 Version History
 ***************
 
+Version 0.11.7
+==============
+
+Add ``env_vars`` options to Bridge base connectors. Now Environment variables can be passed to the subprocess that connects to LibreOffice.
+This makes it possible to connect to a snap instance of LibreOffice and pass in ``PYTHONPATH`` and other environment variables.
+
+Version 0.11.6
+==============
+
+Add environment check to ``ooodev.utils.paths.get_soffice_path`` to  ``ODEV_CONN_SOFFICE`` environment variable is set to LibreOffice soffice.
+
+Update for better support of ``Lo.this_component`` in macros.
+
+Version 0.11.5
+==============
+
+Remove unused module ``ooodev.utils.images``.
+
+Remove unused dependency ``Pillow``.
+
+Version 0.11.4
+==============
+
+Fix for ``Write.get_cursor()`` not working correctly in Snap version of LibreOffice in macros.
+
+Version 0.11.3
+==============
+
+Fix for ``Lo.this_component`` in macros.
+
+Version 0.11.2
+==============
+
+Added ``Calc.print_sheet()`` method that allows printing of a specified cell range directly to a printer.
+
+Version 0.11.1
+==============
+
+Minor tweaks and dependency updates.
+
 Version 0.11.0
 ==============
 

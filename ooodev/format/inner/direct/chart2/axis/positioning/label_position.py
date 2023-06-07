@@ -12,6 +12,10 @@ class LabelPosition(StyleBase):
     """
     Chart Axis Label placement.
 
+    .. seealso::
+
+        - :ref:`help_chart2_format_direct_axis_positioning`
+
     .. versionadded:: 0.9.4
     """
 
@@ -25,6 +29,9 @@ class LabelPosition(StyleBase):
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_chart2_format_direct_axis_positioning`
         """
         super().__init__()
         self.prop_pos = pos

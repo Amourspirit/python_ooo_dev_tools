@@ -5,6 +5,28 @@ from __future__ import annotations
 import os
 from typing import cast, overload, TYPE_CHECKING
 from enum import IntEnum
+import uno
+
+from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XIndexAccess
+from com.sun.star.frame import XModel
+from com.sun.star.i18n import XBreakIterator
+from com.sun.star.lang import XComponent
+from com.sun.star.text import XParagraphCursor
+from com.sun.star.text import XSentenceCursor
+from com.sun.star.text import XText
+from com.sun.star.text import XTextCursor
+from com.sun.star.text import XTextDocument
+from com.sun.star.text import XTextRange
+from com.sun.star.text import XTextRangeCompare
+from com.sun.star.text import XTextViewCursor
+from com.sun.star.text import XTextViewCursorSupplier
+from com.sun.star.text import XWordCursor
+from com.sun.star.view import XSelectionSupplier
+
+from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
+from ooo.dyn.i18n.boundary import Boundary  # struct
+from ooo.dyn.lang.locale import Locale  # struct
 
 
 from ..events.event_singleton import _Events
@@ -22,25 +44,6 @@ from ..events.write_named_event import WriteNamedEvent
 
 
 # if not _DOCS_BUILDING and not _ON_RTD:
-from com.sun.star.beans import XPropertySet
-from com.sun.star.container import XIndexAccess
-from com.sun.star.frame import XModel
-from com.sun.star.i18n import XBreakIterator
-from com.sun.star.text import XParagraphCursor
-from com.sun.star.text import XSentenceCursor
-from com.sun.star.text import XText
-from com.sun.star.text import XTextCursor
-from com.sun.star.text import XTextDocument
-from com.sun.star.text import XTextRange
-from com.sun.star.text import XTextRangeCompare
-from com.sun.star.text import XTextViewCursor
-from com.sun.star.text import XTextViewCursorSupplier
-from com.sun.star.text import XWordCursor
-from com.sun.star.view import XSelectionSupplier
-
-from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
-from ooo.dyn.i18n.boundary import Boundary  # struct
-from ooo.dyn.lang.locale import Locale  # struct
 
 
 if TYPE_CHECKING:
@@ -99,6 +102,51 @@ class Selection(metaclass=StaticProperty):
                 return True
 
         return False
+
+    # region get_text_doc()
+    @overload
+    @classmethod
+    def get_text_doc(cls) -> XTextDocument:
+        ...
+
+    @overload
+    @classmethod
+    def get_text_doc(cls, doc: XComponent) -> XTextDocument:
+        ...
+
+    @classmethod
+    def get_text_doc(cls, doc: XComponent | None = None) -> XTextDocument:
+        """
+        Gets a writer document
+
+        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+
+        Args:
+            doc (XComponent): Component to get writer document from
+
+        Raises:
+            TypeError: doc is None
+            MissingInterfaceError: If doc does not implement XTextDocument interface
+
+        Returns:
+            XTextDocument: Writer document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_TEXT` :eventref:`src-docs-event`
+
+        .. versionchanged:: 0.9.0
+            Added overload ``get_text_doc()``
+        """
+        if doc is None:
+            doc = mLo.Lo.this_component
+
+        text_doc = mLo.Lo.qi(XTextDocument, doc, True)
+        _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Selection.get_text_doc.__qualname__))
+        return text_doc
+
+    # endregion get_text_doc()
 
     @staticmethod
     def get_selected_text_range(text_doc: XTextDocument) -> XTextRange | None:
@@ -225,8 +273,19 @@ class Selection(metaclass=StaticProperty):
 
     # region    get_cursor()
     @overload
-    @classmethod
-    def get_cursor(cls, cursor_obj: DocOrCursor) -> XTextCursor:
+    @staticmethod
+    def get_cursor() -> XTextCursor:
+        """
+        Gets text cursor from the current document.
+
+        Returns:
+            XTextCursor: Cursor
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def get_cursor(cursor_obj: DocOrCursor) -> XTextCursor:
         """
         Gets text cursor
 
@@ -239,8 +298,8 @@ class Selection(metaclass=StaticProperty):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, rng: XTextRange, txt: XText) -> XTextCursor:
+    @staticmethod
+    def get_cursor(rng: XTextRange, txt: XText) -> XTextCursor:
         """
         Gets text cursor
 
@@ -254,8 +313,8 @@ class Selection(metaclass=StaticProperty):
         ...
 
     @overload
-    @classmethod
-    def get_cursor(cls, rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
+    @staticmethod
+    def get_cursor(rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
         """
         Gets text cursor
 
@@ -268,8 +327,8 @@ class Selection(metaclass=StaticProperty):
         """
         ...
 
-    @classmethod
-    def get_cursor(cls, *args, **kwargs) -> XTextCursor | None:
+    @staticmethod
+    def get_cursor(*args, **kwargs) -> XTextCursor | None:
         """
         Gets text cursor
 
@@ -311,7 +370,7 @@ class Selection(metaclass=StaticProperty):
                     break
             return ka
 
-        if count not in (1, 2):
+        if count not in (0, 1, 2):
             raise TypeError("get_cursor() got an invalid number of arguments")
 
         kargs = get_kwargs()
@@ -319,11 +378,20 @@ class Selection(metaclass=StaticProperty):
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        if count == 0:
+            cursor = Selection._get_cursor_obj(Selection.active_doc)
+            if cursor is None:
+                raise mEx.CursorError("Unable to get cursor")
+            return cursor
+
         if count == 1:
-            return cls._get_cursor_obj(kargs[1])
+            cursor = Selection._get_cursor_obj(kargs[1])
+            if cursor is None:
+                raise mEx.CursorError("Unable to get cursor")
+            return cursor
         txt_doc = mLo.Lo.qi(XTextDocument, kargs[2])
         txt = kargs[2] if txt_doc is None else txt_doc.getText()
-        return cls._get_cursor_txt(rng=kargs[1], txt=txt)
+        return Selection._get_cursor_txt(rng=kargs[1], txt=txt)
 
     @staticmethod
     def _get_cursor_txt(rng: XTextRange, txt: XText) -> XTextCursor:
@@ -723,10 +791,32 @@ class Selection(metaclass=StaticProperty):
         _Events().trigger(WriteNamedEvent.WORD_SELECTED, EventArgs.from_args(cargs))
         return result
 
+    @classproperty
+    def active_doc(cls) -> XTextDocument:
+        """
+        Gets current active document
+
+        Returns:
+            XTextDocument: Text Document
+
+        .. versionadded:: 0.9.0
+        """
+        # note:
+        # It is not permitted to create weak ref to pyuno objects.
+        return Selection.get_text_doc()
+        # try:
+        #     return Selection._active_doc
+        # except AttributeError:
+        #     Selection._active_doc = Selection.get_text_doc()
+        #     return Selection._active_doc
+
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    d_attrs = ("_text_range_compare",)
+    d_attrs = (
+        "_text_range_compare",
+        # "_active_doc",
+    )
     for attr in d_attrs:
         if hasattr(Selection, attr):
             delattr(Selection, attr)

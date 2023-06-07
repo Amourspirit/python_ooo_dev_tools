@@ -25,7 +25,7 @@ Submodules
    ooodev.format.inner.common.props.frame_options_properties
    ooodev.format.inner.common.props.frame_options_protect_props
    ooodev.format.inner.common.props.frame_type_anchor_props
-   ooodev.format.inner.common.props.frame_type_positon_props
+   ooodev.format.inner.common.props.frame_type_position_props
    ooodev.format.inner.common.props.frame_type_size_props
    ooodev.format.inner.common.props.frame_wrap_options_props
    ooodev.format.inner.common.props.frame_wrap_settings_props

@@ -34,6 +34,7 @@ def get_soffice_install_path() -> Path:
     Returns:
         Path: install as Path.
     """
+    # sourcery skip: low-code-quality
     global _INSTALL_PATH
     if _INSTALL_PATH is not None:
         return _INSTALL_PATH
@@ -47,7 +48,7 @@ def get_soffice_install_path() -> Path:
             "SOFTWARE\\OpenOffice.org\\UNO\\InstallPath",
         ):
             try:
-                value = winreg.QueryValue(winreg.HKEY_LOCAL_MACHINE, _key)
+                value = winreg.QueryValue(winreg.HKEY_LOCAL_MACHINE, _key)  # type: ignore
             except Exception as detail:
                 value = ""
                 _errMess = f"{detail}"
@@ -107,13 +108,21 @@ def get_soffice_install_path() -> Path:
         return _INSTALL_PATH
 
 
-def get_soffice_path() -> Path:
+def get_soffice_path(check_env: bool = True) -> Path:
     """
     Gets path to soffice
 
+    Args:
+        check_env (bool, optional): If True then check environment variable ``ODEV_CONN_SOFFICE`` for path. Defaults to True.
+
     Returns:
         Path: path to soffice
+
+    .. versionchanged:: 0.11.6
+        Added ``check_env`` parameter.
     """
+    if check_env and "ODEV_CONN_SOFFICE" in os.environ:
+        return Path(os.environ["ODEV_CONN_SOFFICE"])
     if PLATFORM == SysInfo.PlatformEnum.WINDOWS:
         return Path(get_lo_path(), "soffice.exe")
     return Path(get_lo_path(), "soffice")
@@ -225,6 +234,40 @@ def get_lo_python_ex() -> str:
     if not p.is_file():
         raise NotADirectoryError("LibreOffice  python executable is not a file")
     return str(p)
+
+
+def get_virtual_env_path() -> str:
+    """
+    Gets the Virtual Environment Path
+
+    Returns:
+        str: Virtual Environment Path
+
+    Note:
+        If unable to get virtual path from Environment then ``sys.base_exec_prefix`` is returned.
+    """
+    s_path = os.environ.get("VIRTUAL_ENV", None)
+    return s_path if s_path is not None else sys.base_exec_prefix
+
+
+def get_virtual_env_site_packages_path() -> str:
+    """
+    Gets the Virtual Environment ``site_packages`` Path
+
+    Returns:
+        str: Virtual Environment Path
+
+    Note:
+        If unable to get virtual path from Environment then ``sys.base_exec_prefix`` is returned.
+
+    .. versionadded:: 0.11.7
+    """
+    s_path = os.environ.get("VIRTUAL_ENV", None)
+    sys_ver = f"python{sys.version_info[0]}.{sys.version_info[1]}"
+    if s_path is not None:
+        return os.path.join(s_path, "lib", sys_ver, "site-packages")
+    else:
+        return os.path.join(sys.base_exec_prefix, "lib", sys_ver, "site-packages")
 
 
 @overload

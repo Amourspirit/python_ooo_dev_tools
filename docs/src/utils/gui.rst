@@ -1,3 +1,5 @@
+.. _utils_gui:
+
 Class GUI
 =========
 

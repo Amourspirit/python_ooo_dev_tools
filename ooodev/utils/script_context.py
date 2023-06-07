@@ -18,6 +18,14 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XDesktop
     from com.sun.star.frame import XModel
     from com.sun.star.uno import XComponentContext
+    from com.sun.star.lang import XComponent
+    from com.sun.star.document import XScriptInvocationContext
+else:
+    XDesktop = object
+    XModel = object
+    XComponentContext = object
+    XComponent = object
+    XScriptInvocationContext = object
 
 
 class ScriptContext(unohelper.Base, XScriptContext):  # type: ignore
@@ -29,29 +37,34 @@ class ScriptContext(unohelper.Base, XScriptContext):  # type: ignore
     Implements: com.sun.star.script.provider.XScriptContext
     """
 
-    def __init__(self, ctx: XComponentContext, desktop: XDesktop | None, doc):
+    def __init__(
+        self, ctx: XComponentContext, doc: XComponent | None = None, inv: XScriptInvocationContext | None = None
+    ):
+        self._uno_desktop_type = uno.getTypeByName("com.sun.star.frame.XDesktop")
+        self._uno_model_type = uno.getTypeByName("com.sun.star.frame.XModel")
         self.ctx = ctx
-        self.desktop = desktop
-        self.doc = doc
+        self.inv = inv
+        if doc is None:
+            self.doc = None
+        else:
+            self.doc = cast(XModel, doc.queryInterface(self._uno_model_type))
 
     def getComponentContext(self) -> XComponentContext:
         return self.ctx
 
     def getDesktop(self) -> XDesktop:
         # return self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
-        if self.desktop is None:
-            uno_type = uno.getTypeByName("com.sun.star.frame.XDesktop")
-            interface = self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
-            self.desktop = cast(XDesktop, interface.queryInterface(uno_type))
-        return self.desktop
+        interface = self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
+        return cast(XDesktop, interface.queryInterface(self._uno_desktop_type))
 
     def getDocument(self) -> XModel:
         # return self.getDesktop().getCurrentComponent()
-        if self.doc is None:
-            uno_type = uno.getTypeByName("com.sun.star.frame.XModel")
-            component = self.getDesktop().getCurrentComponent()
-            self.doc = cast(XModel, component.queryInterface(uno_type))
-        return self.doc
+        if self.doc is not None:
+            return self.doc
+        component = self.getDesktop().getCurrentComponent()
+        return cast(XModel, component.queryInterface(self._uno_model_type))
 
-    def getInvocationContext(self):
+    def getInvocationContext(self) -> XScriptInvocationContext:
+        if self.inv:
+            return self.inv
         raise NotImplementedError

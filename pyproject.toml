@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.11.0"
+version = "0.11.7"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -14,7 +14,7 @@ authors = [
 keywords = ["odev", "libreoffice", "openoffice", "macro", "uno", "ooouno", "pyuno"]
 homepage = "https://github.com/Amourspirit/python_ooo_dev_tools"
 documentation = "https://python-ooo-dev-tools.readthedocs.io/en/latest/index.html"
-repository = "https://github.com/Amourspirit/python-ooouno-ex"
+repository = "https://github.com/Amourspirit/python_ooo_dev_tools"
 packages = [
     { include = "ooodev" }
 ]
@@ -32,17 +32,19 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-ooouno = ">=2.0.3"
-Pillow = ">=9.2.0"
+ooouno = ">=2.1.2"
 typing-extensions = {version = ">=4.4.0", python = "<3.8"}
 lxml = ">=4.9.2"
 
 [[tool.poetry.source]]
 name = "pypi-test"
 url = "https://test.pypi.org/legacy/"
-default = false
-secondary = false
+priority = "supplemental"
 
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.2.0"
@@ -69,6 +71,7 @@ sphinxcontrib-apidoc = ">=0.3.0"
 esbonio = ">=0.16.1"
 # pygls = {version = ">=0.12.4,<1.0", python = ">=3.7,<3.12"}
 sphinx-substitution-extensions = ">=2022.2.16"
+sphinx-copybutton = "^0.5.2"
 
 [tool.pytest.ini_options]
 testpaths = [

@@ -202,6 +202,7 @@
         "bezierobjectbar",
         "boxtype",
         "calloutshapes",
+        "capsys",
         "cargs",
         "cattrib",
         "cattribs",
@@ -295,6 +296,7 @@
         "odoc",
         "ooodev",
         "oooenv",
+        "oooscript",
         "ooouno",
         "opendocument",
         "paddint",
@@ -307,6 +309,7 @@
         "Protectable",
         "proto",
         "PYPI",
+        "PYTHONPATH",
         "pyuno",
         "pyunointerface",
         "qualname",
@@ -355,6 +358,7 @@
         "unprotect",
         "vals",
         "vcursor",
+        "versionadded",
         "viewcode",
         "xcell",
         "xcursor",
@@ -380,5 +384,6 @@
         "Zagorsky",
         "zoombar",
         "zorder"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "basic"
 }
