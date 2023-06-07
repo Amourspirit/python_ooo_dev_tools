@@ -1,8 +1,6 @@
 # coding: utf-8
 from __future__ import annotations
 import uno
-from com.sun.star.uno import XComponentContext
-from com.sun.star.lang import XComponent
 
 import contextlib
 import os
@@ -10,7 +8,7 @@ import time
 from abc import ABC, abstractmethod
 import subprocess
 import signal
-from typing import List, TYPE_CHECKING, cast, Optional
+from typing import List, TYPE_CHECKING, cast
 import time
 from pathlib import Path
 from com.sun.star.connection import NoConnectException
@@ -25,6 +23,11 @@ if TYPE_CHECKING:
     from com.sun.star.bridge import XBridge
     from com.sun.star.connection import XConnector
     from com.sun.star.lang import XMultiComponentFactory
+    from com.sun.star.uno import XComponentContext
+    from com.sun.star.lang import XComponent
+else:
+    XComponentContext = object
+    XComponent = object
 
 
 class ConnectBase(ABC):
@@ -108,12 +111,14 @@ class LoBridgeCommon(ConnectBase):
         self._soffice_process = None
         self._bridge_component = cast(XComponent, None)
         self._platform = SysInfo.get_platform()
-        self._environment = os.environ
+        self._environment = os.environ.copy()
         self._timeout = 30.0
         self._conn_try_sleep = 0.2
         self._cache = cache.Cache(use_cache=False) if cache_obj is None else cache_obj
         if self._cache.use_cache:
             self._environment["TMPDIR"] = str(self._cache.working_dir)
+        if connector.env_vars:
+            self._environment.update(connector.env_vars)
 
     @abstractmethod
     def _get_connection_str(self) -> str:
