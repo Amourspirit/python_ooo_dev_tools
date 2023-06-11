@@ -27,6 +27,12 @@ Contents
    help/index
 
 .. toctree::
+   :caption: Guides:
+   :maxdepth: 2
+
+   guide/index
+
+.. toctree::
    :maxdepth: 1
    :caption: Misc:
 
