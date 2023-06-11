@@ -1,13 +1,18 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Callable, Sequence, TypeVar, Union, Any, Tuple, List, Dict
+from typing import Callable, Sequence, TypeVar, Union, Any, Tuple, List, Dict, TYPE_CHECKING
 from os import PathLike
 
 import uno
-from com.sun.star.text import XText
-from com.sun.star.text import XTextCursor
-from com.sun.star.text import XTextDocument
 
+if TYPE_CHECKING:
+    from com.sun.star.text import XText
+    from com.sun.star.text import XTextCursor
+    from com.sun.star.text import XTextDocument
+else:
+    XText = object
+    XTextCursor = object
+    XTextDocument = object
 
 PathOrStr = Union[str, PathLike]
 """Path like object or string"""

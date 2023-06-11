@@ -129,7 +129,7 @@ class LoBridgeCommon(ConnectBase):
         ...
 
     def _connect(self):
-        conn_str = self._get_connection_str()
+        # conn_str = self._get_connection_str()
 
         end_time = time.time() + self._timeout
         last_ex = None
@@ -415,7 +415,13 @@ class LoPipeStart(LoBridgeCommon):
         # "--accept='socket,host=localhost,port=2002,tcpNoDelay=1;urp;'" THIS FAILS
         # SEE ALSO: https://tinyurl.com/y5y66462
         prefix = "--unaccept=" if shutdown else "--accept="
-        args = [f'"{self._connector.soffice}"']
+        soffice_str = str(self._connector.soffice)
+        if soffice_str.startswith("flatpak "):
+            # special case for flatpak with a space after flatpak
+            # not checking directly for flatpak run becuase flatpak --verbose run could be used
+            args = [soffice_str]
+        else:
+            args = [f'"{self._connector.soffice}"']
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
@@ -489,7 +495,15 @@ class LoSocketStart(LoBridgeCommon):
         # "--accept='socket,host=localhost,port=2002,tcpNoDelay=1;urp;'" THIS FAILS
         # SEE ALSO: https://tinyurl.com/y5y66462
         prefix = "--unaccept=" if shutdown else "--accept="
-        args = [f'"{self._connector.soffice}"']
+
+        soffice_str = str(self._connector.soffice)
+        if soffice_str.startswith("flatpak "):
+            # special case for flatpak with a space after flatpak
+            # not checking directly for flatpak run becuase flatpak --verbose run could be used
+            args = [soffice_str]
+        else:
+            args = [f'"{self._connector.soffice}"']
+
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
