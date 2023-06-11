@@ -250,6 +250,7 @@ rst_prolog_lst = [
     ".. |app_name_bold| replace:: **OOO Development Tools**",
     "",
     ".. |odev| replace:: OooDev",
+    ".. _odev: https://python-ooo-dev-tools.readthedocs.io/en/latest/index.html",
     "",
     ".. |ooouno| replace:: ooouno library",
     ".. _ooouno: https://pypi.org/project/ooouno/",
