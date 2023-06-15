@@ -1,3 +1,4 @@
+from __future__ import annotations
 import csv
 import os
 import sys
@@ -5,7 +6,7 @@ from pathlib import Path
 import shutil
 import stat
 import tempfile
-from typing import List
+from typing import Any, Dict, List, TYPE_CHECKING, Optional
 import pytest
 from tests.fixtures import __test__path__ as test_fixture_path
 from tests.fixtures.writer import __test__path__ as writer_fixture_path
@@ -16,9 +17,15 @@ from tests.fixtures.presentation import __test__path__ as pres_fixture_path
 from ooodev.utils.lo import Lo as mLo
 from ooodev.utils import paths as mPaths
 from ooodev.utils.inst.lo.options import Options as LoOptions
+from ooodev.conn import connectors
 
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
+
+if TYPE_CHECKING:
+    from com.sun.star.frame import XComponentLoader
+else:
+    XComponentLoader = object
 
 # Snap Testing
 # Limited Snap testing can be done.
@@ -29,6 +36,7 @@ from ooodev.conn import cache as mCache
 # 3. loader()
 # see the comments in each
 
+os.environ["ODEV_TEST_CONN_SOCKET"] = "true"
 # os.environ["NO_HEADLESS"] = "1"
 # os.environ[
 #     "ODEV_CONN_SOFFICE"
@@ -140,22 +148,83 @@ def soffice_env():
     # return {"PYTHONPATH": py_pth}
 
 
+# region Loader methods
+def _get_loader_pipe_default(
+    headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None, verbose: bool = True
+) -> XComponentLoader:
+    return mLo.load_office(
+        connector=connectors.ConnectSocket(headless=headless, soffice=soffice, env_vars=env_vars),
+        cache_obj=mCache.Cache(working_dir=working_dir),
+        opt=LoOptions(verbose=verbose),
+    )
+
+
+def _get_loader_socket_default(
+    headless: bool,
+    soffice: str,
+    working_dir: Any,
+    env_vars: Optional[Dict[str, str]] = None,
+    verbose: bool = True,
+    host: str = "localhost",
+    port: int = 2002,
+) -> XComponentLoader:
+    return mLo.load_office(
+        connector=connectors.ConnectSocket(
+            host=host, port=port, headless=headless, soffice=soffice, env_vars=env_vars
+        ),
+        cache_obj=mCache.Cache(working_dir=working_dir),
+        opt=LoOptions(verbose=verbose),
+    )
+
+
+def _get_loader_socket_no_start(
+    headless: bool,
+    working_dir: Any,
+    env_vars: Optional[Dict[str, str]] = None,
+    verbose: bool = True,
+    host: str = "localhost",
+    port: int = 2002,
+) -> XComponentLoader:
+    return mLo.load_office(
+        connector=connectors.ConnectSocket(
+            host=host, port=port, headless=headless, start_office=False, env_vars=env_vars
+        ),
+        cache_obj=mCache.Cache(working_dir=working_dir),
+        opt=LoOptions(verbose=verbose),
+    )
+
+
 @pytest.fixture(scope="session")
 def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
     # for testing with a snap the cache_obj must be omitted.
     # This because the snap is not allowed to write to the real tmp directory.
-    loader = mLo.load_office(
-        connector=mLo.ConnectPipe(headless=run_headless, soffice=soffice_path, env_vars=soffice_env),
-        cache_obj=mCache.Cache(working_dir=tmp_path_session),
-        opt=LoOptions(verbose=True),
-    )
-    # loader = mLo.load_office(
-    #     connector=mLo.ConnectSocket(headless=run_headless, soffice=soffice_path, env_vars=soffice_env),
-    #     cache_obj=mCache.Cache(working_dir=tmp_path_session),
-    #     opt=LoOptions(verbose=True),
-    # )
+    test_socket = os.environ.get("ODEV_TEST_CONN_SOCKET", "")
+    if test_socket:
+        port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
+        host = os.environ.get("ODEV_TEST_CONN_SOCKET_HOST", "localhost")
+        connect_kind = os.environ.get("ODEV_TEST_CONN_SOCKET_KIND", "default")
+        if connect_kind == "no_start":
+            loader = _get_loader_socket_no_start(
+                headless=run_headless, working_dir=tmp_path_session, env_vars=soffice_env, host=host, port=port
+            )
+        else:
+            loader = _get_loader_socket_default(
+                headless=run_headless,
+                soffice=soffice_path,
+                working_dir=tmp_path_session,
+                env_vars=soffice_env,
+                host=host,
+                port=port,
+            )
+    else:
+        loader = _get_loader_pipe_default(
+            headless=run_headless, soffice=soffice_path, working_dir=tmp_path_session, env_vars=soffice_env
+        )
     yield loader
     mLo.close_office()
+
+
+# endregion Loader methods
 
 
 @pytest.fixture(scope="function")

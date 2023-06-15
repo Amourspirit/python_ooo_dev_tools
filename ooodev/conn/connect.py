@@ -1,7 +1,5 @@
-# coding: utf-8
+"""Connection to LibreOffice/OpenOffice"""
 from __future__ import annotations
-import uno
-
 import contextlib
 import os
 import time
@@ -9,9 +7,9 @@ from abc import ABC, abstractmethod
 import subprocess
 import signal
 from typing import List, TYPE_CHECKING, cast
-import time
 from pathlib import Path
-from com.sun.star.connection import NoConnectException
+import uno
+from com.sun.star.connection import NoConnectException  # type: ignore
 from . import connectors
 from . import cache
 from ..utils.sys_info import SysInfo
@@ -25,9 +23,13 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.uno import XComponentContext
     from com.sun.star.lang import XComponent
+    from com.sun.star.bridge import UnoUrlResolver  # service
 else:
+    XPropertySet = object
+    XMultiComponentFactory = object
     XComponentContext = object
     XComponent = object
+    UnoUrlResolver = object
 
 
 class ConnectBase(ABC):
@@ -129,35 +131,34 @@ class LoBridgeCommon(ConnectBase):
         ...
 
     def _connect(self):
-        # conn_str = self._get_connection_str()
+        conn_str = self._get_connection_str()
 
         end_time = time.time() + self._timeout
         last_ex = None
         while end_time > time.time():
             try:
-                localContext = cast("XComponentContext", uno.getComponentContext())
-                # resolver = cast("XMultiComponentFactory",localContext.ServiceManager.createInstanceWithContext(
-                #     "com.sun.star.bridge.UnoUrlResolver", localContext
-                # ))
+                local_context = cast("XComponentContext", uno.getComponentContext())
+                local_factory = local_context.getServiceManager()
+                resolver = cast(
+                    UnoUrlResolver,
+                    local_context.getServiceManager().createInstanceWithContext(
+                        "com.sun.star.bridge.UnoUrlResolver", local_context
+                    ),
+                )
+                smgr = resolver.resolve(conn_str)
 
-                localFactory = localContext.getServiceManager()
+                props = cast(XPropertySet, smgr.queryInterface(uno.getTypeByName("com.sun.star.beans.XPropertySet")))
+                self._ctx = cast(XComponentContext, props.getPropertyValue("DefaultContext"))
 
-                bridge = self._get_bridge(local_factory=localFactory, local_ctx=localContext)
+                try:
+                    bridge = self._get_bridge(local_factory=local_factory, local_ctx=self._ctx)
+                except Exception as e:
+                    bridge = self._get_bridge(local_factory=local_factory, local_ctx=local_context)
 
                 self._bridge_component = cast(
                     XComponent, bridge.queryInterface(uno.getTypeByName("com.sun.star.lang.XComponent"))
                 )
 
-                # smgr = resolver.resolve(conn_str)
-                smgr = cast(
-                    "XMultiComponentFactory",
-                    bridge.getInstance("StarOffice.ServiceManager").queryInterface(
-                        uno.getTypeByName("com.sun.star.lang.XMultiComponentFactory")
-                    ),
-                )
-                props = cast("XPropertySet", smgr.queryInterface(uno.getTypeByName("com.sun.star.beans.XPropertySet")))
-
-                self._ctx = props.getPropertyValue("DefaultContext")
                 last_ex = None
                 break
             except NoConnectException as e:
