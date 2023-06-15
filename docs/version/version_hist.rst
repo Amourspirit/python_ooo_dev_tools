@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.11.9
+==============
+
+Fix for potential bug when connection to LibreOffice instance.
+
 Version 0.11.8
 ==============
 
