@@ -659,6 +659,10 @@ class Lo(metaclass=StaticProperty):
             - :py:meth:`load_office`
             - :ref:`ch02_open_doc`
 
+        Note:
+            If connection it office is a remote server then File URL must be used,
+            such as ``file:///home/user/fancy.odt``
+
         Example:
             .. code-block:: python
 

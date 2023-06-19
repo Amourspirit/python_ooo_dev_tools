@@ -24,6 +24,39 @@
             }
         },
         {
+            "name": "Python: Current Remote LibreOffice",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "env": {
+                "ODEV_TEST_CONN_SOCKET": "true",
+                "ODEV_TEST_CONN_SOCKET_KIND": "no_start",
+                "ODEV_TEST_CONN_SOCKET_PORT": "2002",
+            }
+        },
+        {
+            "name": "Python: Test Remote LibreOffice",
+            "type": "python",
+            "request": "test",
+            "program": "${file}",
+            "env": {
+                "ODEV_TEST_CONN_SOCKET": "true",
+                "ODEV_TEST_CONN_SOCKET_KIND": "no_start",
+                "ODEV_TEST_CONN_SOCKET_PORT": "2002",
+            }
+        },
+        {
+            "name": "Python: Test Local Default LibreOffice",
+            "type": "python",
+            "request": "test",
+            "program": "${file}",
+            "env": {
+                "ODEV_TEST_CONN_SOCKET": "",
+                "ODEV_TEST_CONN_SOCKET_KIND": "default",
+                "ODEV_TEST_CONN_SOCKET_PORT": "2002",
+            }
+        },
+        {
             "name": "Python: Current All Code",
             "type": "python",
             "request": "launch",
