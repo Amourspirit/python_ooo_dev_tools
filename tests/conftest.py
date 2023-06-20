@@ -36,7 +36,7 @@ else:
 # 3. loader()
 # see the comments in each
 
-os.environ["ODEV_TEST_CONN_SOCKET"] = "true"
+# os.environ["ODEV_TEST_CONN_SOCKET"] = "true"
 # os.environ["NO_HEADLESS"] = "1"
 # os.environ[
 #     "ODEV_CONN_SOFFICE"
@@ -153,7 +153,7 @@ def _get_loader_pipe_default(
     headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None, verbose: bool = True
 ) -> XComponentLoader:
     return mLo.load_office(
-        connector=connectors.ConnectSocket(headless=headless, soffice=soffice, env_vars=env_vars),
+        connector=connectors.ConnectPipe(headless=headless, soffice=soffice, env_vars=env_vars),
         cache_obj=mCache.Cache(working_dir=working_dir),
         opt=LoOptions(verbose=verbose),
     )
@@ -199,10 +199,10 @@ def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
     # for testing with a snap the cache_obj must be omitted.
     # This because the snap is not allowed to write to the real tmp directory.
     test_socket = os.environ.get("ODEV_TEST_CONN_SOCKET", "")
+    connect_kind = os.environ.get("ODEV_TEST_CONN_SOCKET_KIND", "default")
     if test_socket:
         port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
         host = os.environ.get("ODEV_TEST_CONN_SOCKET_HOST", "localhost")
-        connect_kind = os.environ.get("ODEV_TEST_CONN_SOCKET_KIND", "default")
         if connect_kind == "no_start":
             loader = _get_loader_socket_no_start(
                 headless=run_headless, working_dir=tmp_path_session, env_vars=soffice_env, host=host, port=port
@@ -221,6 +221,9 @@ def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
             headless=run_headless, soffice=soffice_path, working_dir=tmp_path_session, env_vars=soffice_env
         )
     yield loader
+    if connect_kind == "no_start":
+        # only close office if it was started by the test
+        return
     mLo.close_office()
 
 
