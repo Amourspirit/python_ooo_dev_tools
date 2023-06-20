@@ -12,6 +12,20 @@ from ..utils import paths
 class ConnectorBase(ABC):
     @abstractmethod
     def get_connection_str(self) -> str:
+        """
+        Gets connection string.
+
+        Such as ``uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager``
+        """
+        ...
+
+    @abstractmethod
+    def get_connection_identifier(self) -> str:
+        """
+        Gets connection identifier
+
+        Such as ``socket,host=localhost,port=2002``
+        """
         ...
 
 
@@ -25,6 +39,7 @@ class ConnectorBridgeBase(ConnectorBase):
         self._start_as_service = bool(kwargs.get("start_as_service", False))
         self._start_office = bool(kwargs.get("start_office", True))
         self._env_vars = cast(Dict[str, str], kwargs.get("env_vars", {}))
+        self._remote_connection = bool(kwargs.get("remote_connection", False))
 
         if extended_args := cast(Iterable[str], kwargs.get("extended_args", [])):
             if isinstance(extended_args, str):
@@ -160,6 +175,11 @@ class ConnectorBridgeBase(ConnectorBase):
         """Extended arguments to be passed to soffice such as ``[--display : 0]``"""
         return self._extended_args
 
+    @property
+    def remote_connection(self) -> bool:
+        """Specifies if the connection is to a remote server. Default is False"""
+        return self._remote_connection
+
     # endregion startup flags
 
 
@@ -185,13 +205,30 @@ class ConnectSocket(ConnectorBridgeBase):
             soffice (Path | str, optional): Path to soffice
             env_vars (Dict[str, str], optional): Environment variables to be set when starting office
             extended_args (List[str], optional): Extended arguments to be passed to soffice, such as ``["--display :0"]``.
+            remote_connection (bool, optional): Specifies if the connection is to a remote server. Default is False
+
+        Returns:
+            None:
         """
         super().__init__(**kwargs)
         self._host = host
         self._port = port
 
+    def get_connection_identifier(self) -> str:
+        """
+        Gets connection identifier
+
+        Such as ``socket,host=localhost,port=2002``
+        """
+        return f"socket,host={self.host},port={self.port}"
+
     def get_connection_str(self) -> str:
-        identifier = f"socket,host={self.host},port={self.port}"
+        """
+        Gets connection string.
+
+        Such as ``uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager``
+        """
+        identifier = self.get_connection_identifier()
         return f"uno:{identifier};urp;StarOffice.ServiceManager"
 
     @property
@@ -238,12 +275,24 @@ class ConnectPipe(ConnectorBridgeBase):
             soffice (Path | str, optional): Path to soffice
             env_vars (Dict[str, str], optional): Environment variables to be set when starting office
             extended_args (List[str], optional): Extended arguments to be passed to soffice, such as ``["--display :0"]``.
+            remote_connection (bool, optional): Specifies if the connection is to a remote server. Default is False
+
+        Returns:
+            None:
         """
         super().__init__(**kwargs)
         self._pipe = uuid.uuid4().hex if pipe is None else pipe
 
+    def get_connection_identifier(self) -> str:
+        """
+        Gets connection identifier
+
+        Such as ``pipe,name="a34rt84y002"``
+        """
+        return f"pipe,name={self.pipe}"
+
     def get_connection_str(self) -> str:
-        identifier = f"pipe,name={self.pipe}"
+        identifier = self.get_connection_identifier()
         return f"uno:{identifier};urp;StarOffice.ServiceManager"
 
     @property

@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.11.9"
+version = "0.11.10"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -87,6 +87,13 @@ extended-select=["ANN", "C4", "N", "SIM", "TCH"]
 ignore=[]
 show-fixes=true
 target="py37"
+
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 120
+disable = """
+    no-name-in-module,
+    no-self-argument
+"""
 
 [tool.pyright]
 pythonVersion = "3.8"

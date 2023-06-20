@@ -14,7 +14,6 @@ from ooodev.utils.images_lo import ImagesLo
 
 
 def test_extract_images(loader, copy_fix_writer, tmp_path_fn):
-    visible = True
     test_doc = copy_fix_writer("build.odt")
 
     doc = Write.open_doc(test_doc, loader)
