@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.11.10
+===============
+
+Updated connection to LibreOffice be more robust. Remote connections have been tested and work.
+
 Version 0.11.9
 ==============
 

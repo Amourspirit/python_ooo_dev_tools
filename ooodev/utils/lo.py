@@ -8,38 +8,37 @@ import time
 from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
 
 import uno
-from com.sun.star.beans import XPropertySet
-from com.sun.star.frame import XDesktop
-from com.sun.star.lang import XMultiServiceFactory
-from com.sun.star.util import XCloseable
-from com.sun.star.frame import XComponentLoader
+from com.sun.star.beans import XPropertySet  # pylint: disable=E0611
+from com.sun.star.frame import XComponentLoader  # noqa E0611
+from com.sun.star.frame import XDesktop  # noqa
 from com.sun.star.frame import XModel
 from com.sun.star.frame import XStorable
-
+from com.sun.star.lang import XComponent
+from com.sun.star.lang import XMultiServiceFactory
+from com.sun.star.util import XCloseable
 
 # if not mock_g.DOCS_BUILDING:
 # not importing for doc building just result in short import name for
 # args that use these.
 # this is also true because docs/conf.py ignores com import for autodoc
-from ..mock import mock_g
+from ooodev.utils.inst.lo.options import Options as LoOptions
+from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
+from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.utils.inst.lo.clsid import CLSID as LoClsid
+from ooodev.conn.connect import ConnectBase
 from .inst.lo import lo_inst
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
 from ..conn import cache as mCache
 from ..conn import connectors
-from ..conn.connect import LoBridgeCommon
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
 from ..formatters.formatter_table import FormatterTable
 from ..meta.static_meta import StaticProperty, classproperty
 from .type_var import PathOrStr, UnoInterface, T, Table
-from ooodev.utils.inst.lo.options import Options as LoOptions
-from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
-from ooodev.utils.inst.lo.service import Service as LoService
-from ooodev.utils.inst.lo.clsid import CLSID as LoClsid
+from ..mock import mock_g
 
-from com.sun.star.lang import XComponent
 
 if TYPE_CHECKING:
     try:
@@ -1894,7 +1893,7 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.loader_current
 
     @classproperty
-    def bridge_connector(cls) -> LoBridgeCommon:
+    def bridge_connector(cls) -> ConnectBase:
         """
         Get the current Bride connection
 

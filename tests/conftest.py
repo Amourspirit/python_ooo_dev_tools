@@ -153,7 +153,7 @@ def _get_loader_pipe_default(
     headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None, verbose: bool = True
 ) -> XComponentLoader:
     return mLo.load_office(
-        connector=connectors.ConnectSocket(headless=headless, soffice=soffice, env_vars=env_vars),
+        connector=connectors.ConnectPipe(headless=headless, soffice=soffice, env_vars=env_vars),
         cache_obj=mCache.Cache(working_dir=working_dir),
         opt=LoOptions(verbose=verbose),
     )
