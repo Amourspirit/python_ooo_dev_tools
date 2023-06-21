@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      # image: ubuntu:jammy
+    volumes:
+      - shared_temp:/tmp
+      - .:/workspace
+    user: root
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+    container_name: app_container
+    # ports:
+    #   - "2002:2002"
+    depends_on:
+      - libreoffice
+    # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
+    network_mode: service:libreoffice
+
+  libreoffice:
+    image: dockdock/libreoffice73pyenvpoetry:lo-7.5.3-RELEASE
+    container_name: libreoffice_container
+    restart: unless-stopped
+    expose:
+      - 2002
+volumes:
+  shared_temp:
+  
+  # network_mode: bridge
+  # container_name: docker
+  # domainname: codespaces.io
+  # hostname: docker

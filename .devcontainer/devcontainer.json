@@ -1,19 +1,15 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Ubuntu",
+	"name": "Custom Ubuntu",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:jammy",
-	"features": {
-		"ghcr.io/devcontainers/features/python:1": {
-			"installTools": true,
-			"version": "3.10"
-		},
-		"ghcr.io/devcontainers-contrib/features/poetry:2": {
-			"version": "latest"
-		}
-	}
-
+	// "image": "dockdock/libre_office_script_provider:22.04-UBUNTU",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	// "dockerComposeFile": "docker-compose.yml",
+	// "service": "app",
+	// "workspaceFolder": "/workspace",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
@@ -27,5 +23,12 @@
 	// "customizations": {},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"remoteUser": "root",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"donjayamanne.python-extension-pack"
+			]
+		}
+	}
 }
