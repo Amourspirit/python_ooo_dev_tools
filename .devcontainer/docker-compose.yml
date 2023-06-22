@@ -3,12 +3,18 @@ version: "3.9"
 services:
   app:
     build: 
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
       # image: ubuntu:jammy
     volumes:
-      - shared_temp:/tmp
-      - .:/workspace
+      - type: bind
+        source: ../
+        target: /workspace/ooouno-dev-tools
+      - type: volume
+        source: shared_temp
+        target: /tmp
+      - type: volume
+        target: /workspace/ooouno-dev-tools/.venv
     user: root
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"  
@@ -21,11 +27,15 @@ services:
     network_mode: service:libreoffice
 
   libreoffice:
-    image: dockdock/libreoffice73pyenvpoetry:lo-7.5.3-RELEASE
+    # image: dockdock/libreoffice73pyenvpoetry:lo-7.5.3-RELEASE
+    image: imiobe/libreoffice:7.5
     container_name: libreoffice_container
     restart: unless-stopped
-    expose:
-      - 2002
+    user: root
+    ports:
+      - "2002:2002"
+    volumes:
+      - shared_temp:/tmp
 volumes:
   shared_temp:
   
