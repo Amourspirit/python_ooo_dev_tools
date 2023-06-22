@@ -17,7 +17,7 @@ FROM dockdock/libre_office_script_provider:22.04-UBUNTU as runner
 WORKDIR /workspace/ooouno-dev-tools
 COPY --from=compiler /app/.venv ./.venv
 
-ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv`
+ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # RUN oooenv cmd-link -a
