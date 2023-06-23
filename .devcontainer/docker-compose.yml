@@ -14,31 +14,38 @@ services:
         target: /tmp
       - type: volume
         target: /workspace/ooouno-dev-tools/.venv
+
     user: root
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"  
     container_name: app_container
-    # ports:
-    #   - "2002:2002"
+    # network-mode: host
     depends_on:
       - libreoffice
-    # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
-    network_mode: service:libreoffice
+    networks:
+      - net1
 
   libreoffice:
-    # image: dockdock/libreoffice73pyenvpoetry:lo-7.5.3-RELEASE
     image: imiobe/libreoffice:7.5
-    container_name: libreoffice_container
+    container_name: libreoffice 
     restart: unless-stopped
-    user: root
+    user: imio
     ports:
       - "2002:2002"
     volumes:
-      - shared_temp:/tmp
+
+      - type: volume
+        source: fixtures
+        target: /home/imio/fixtures
+    networks:
+      - net1
 volumes:
   shared_temp:
-  
-  # network_mode: bridge
-  # container_name: docker
-  # domainname: codespaces.io
-  # hostname: docker
+  fixtures:
+
+networks:
+  # net1:
+  #   external: true
+  #   name: host
+  net1:
+    external: false

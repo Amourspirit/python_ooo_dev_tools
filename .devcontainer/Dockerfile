@@ -20,10 +20,16 @@ ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # RUN oooenv cmd-link -a
+
+WORKDIR /home/user
+
+COPY ./tests/fixtures/ ./
+
 ARG WD=/workspace/ooouno-dev-tools/.venv/lib/python3.9/site-packages
 WORKDIR ${WD}
 
 RUN ln -s /usr/lib/python3/dist-packages/uno.py uno.py \
-    && ln -s /usr/lib/python3/dist-packages/unohelper.py unohelper.py
+    && ln -s /usr/lib/python3/dist-packages/unohelper.py unohelper.py \
+    && echo "/workspace/ooouno-dev-tools" >> ooo_dev_tools.pth
 # Enable venv
 # ENV PATH="/opt/venv/bin:$PATH"
