@@ -1,28 +1,27 @@
-FROM dockdock/libre_office_script_provider:22.04-UBUNTU as compiler
-# FROM mcr.microsoft.com/devcontainers/python:0-3.11
+FROM dockdock/libre_office_script_provider:debian-11.7-slim-1 as compiler
 
-ARG PYTHON_VERSION="3.10"
+# ARG PYTHON_VERSION=3.9
 
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /app
+WORKDIR /workspace/ooouno-dev-tools
 
 COPY ./pyproject.toml ./poetry.lock ./poetry.toml ./
 
 RUN poetry install --no-root
 # /workspace/ooouno-dev-tools
 
-FROM dockdock/libre_office_script_provider:22.04-UBUNTU as runner
+FROM dockdock/libre_office_script_provider:debian-11.7-slim-1 as runner
 
 WORKDIR /workspace/ooouno-dev-tools
-COPY --from=compiler /app/.venv ./.venv
+COPY --from=compiler /workspace/ooouno-dev-tools/.venv ./.venv
 
 ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # RUN oooenv cmd-link -a
-
-WORKDIR /workspace/ooouno-dev-tools/.venv/lib/python$(PYTHON_VERSION)/site-packages
+ARG WD=/workspace/ooouno-dev-tools/.venv/lib/python3.9/site-packages
+WORKDIR ${WD}
 
 RUN ln -s /usr/lib/python3/dist-packages/uno.py uno.py \
     && ln -s /usr/lib/python3/dist-packages/unohelper.py unohelper.py

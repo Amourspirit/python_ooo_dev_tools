@@ -5,7 +5,6 @@ services:
     build: 
       context: ../
       dockerfile: .devcontainer/Dockerfile
-      # image: ubuntu:jammy
     volumes:
       - type: bind
         source: ../
