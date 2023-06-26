@@ -16,6 +16,7 @@ ARG GIT_AUTHOR_NAME=""
 ARG GIT_AUTHOR_EMAIL=""
 
 USER root
+ENV HOME /root
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -37,11 +38,16 @@ WORKDIR /workspace/ooouno-dev-tools
 
 COPY --from=builder /workspace/ooouno-dev-tools/.venv ./.venv
 
+
 ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN if [ x"$GIT_AUTHOR_NAME" != "x" ]; then git config --global user.name "$GIT_AUTHOR_NAME" || true; fi \
     && if [ x"$GIT_AUTHOR_EMAIL" != "x" ]; then git config --global user.email $GIT_AUTHOR_EMAIL || true; fi
+
+WORKDIR $HOME
+
+COPY ./.devcontainer/custom_bash.txt ./.bashrc_custom
 
 ARG WD=/workspace/ooouno-dev-tools/.venv/lib/python$PY_VER/site-packages
 

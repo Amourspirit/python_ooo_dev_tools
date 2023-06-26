@@ -39,6 +39,6 @@
 		}
 	},
 	// Did not work when placed in brackets. Only as string. Brakets need to call /bin/sh -c
-	"initializeCommand": "if which git >/dev/null && [ x\"${HOME}\" != \"x\" ] && [ -n \"$(git config --global user.name)\" ] && [ -n \"$(git config --global user.email)\" ]; then echo \"GIT_AUTHOR_NAME=$(git config --global user.name)\nGIT_AUTHOR_EMAIL=$(git config --global user.email)\" > .devcontainer/.env || true; else touch .devcontainer/.env; fi"
+	"initializeCommand": "if which git >/dev/null && [ x\"${HOME}\" != \"x\" ] && [ -n \"$(git config --global user.name)\" ] && [ -n \"$(git config --global user.email)\" ]; then echo \"GIT_AUTHOR_NAME=$(git config --global user.name)\nGIT_AUTHOR_EMAIL=$(git config --global user.email)\" > .devcontainer/.env || true; else echo \"GIT_AUTHOR_NAME=\"\"\nGIT_AUTHOR_EMAIL=\"\"\" > .devcontainer/.env || true; fi"
 
 }

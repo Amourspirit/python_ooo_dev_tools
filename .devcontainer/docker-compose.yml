@@ -15,15 +15,15 @@ services:
         source: ../
         target: /workspace/ooouno-dev-tools
       - type: volume
-        source: shared_temp
-        target: /tmp
-      - type: volume
+        source: ooodev_venv
         target: /workspace/ooouno-dev-tools/.venv
 
+    # user root is for file sharing. root user is the current user on the host
+    # and the bind volume for ooouno-dev-tools will not work unless root.
     user: root
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"  
-    container_name: app_container
+    container_name: ooodev_container
 
 volumes:
-  shared_temp:
+  ooodev_venv:
