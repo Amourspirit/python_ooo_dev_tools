@@ -2,14 +2,9 @@ version: "3.9"
 
 services:
   app:
-    env_file: .env
     build: 
       context: ../
       dockerfile: .devcontainer/Dockerfile
-      args:
-        GIT_AUTHOR_NAME: ${GIT_AUTHOR_NAME}
-        GIT_AUTHOR_EMAIL: ${GIT_AUTHOR_EMAIL}
-    network_mode: "host"
     volumes:
       - type: bind
         source: ../
@@ -24,6 +19,33 @@ services:
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"  
     container_name: app_container
+    # network-mode: host
+    depends_on:
+      - libreoffice
+    networks:
+      - net1
 
+  libreoffice:
+    image: imiobe/libreoffice:7.5
+    container_name: libreoffice 
+    restart: unless-stopped
+    user: imio
+    ports:
+      - "2002:2002"
+    volumes:
+
+      - type: volume
+        source: fixtures
+        target: /home/imio/fixtures
+    networks:
+      - net1
 volumes:
   shared_temp:
+  fixtures:
+
+networks:
+  # net1:
+  #   external: true
+  #   name: host
+  net1:
+    external: false

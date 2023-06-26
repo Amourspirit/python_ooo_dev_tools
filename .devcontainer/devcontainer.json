@@ -28,8 +28,19 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"donjayamanne.python-extension-pack"
+				"ms-python.python",
+				"njpwerner.autodocstring",
+				"ms-python.black-formatter",
+				"ms-python.vscode-pylance",
+				"littlefoxteam.vscode-python-test-adapter",
+				"ms-vscode.test-adapter-converter",
+				"hbenl.vscode-test-explorer"
 			]
 		}
-	}
+	},
+	// "initializeCommand": "if which git >/dev/null ; then echo \"USERNAME=$USER\nUSER_UID=$(id -u $USER)\nGROUPNAME=$(id -gn $USER)\nGROUP_GID=$(id -g $USER)\" > .devcontainer/.env; fi"
+	// Did not work when placed in brackets. Only as string.
+	"initializeCommand": "if which git >/dev/null && [ -n \"$(git config --global user.name)\" ] && [ -n \"$(git config --global user.email)\" ]; then echo \"GIT_AUTHOR_NAME=$(git config --global user.name)\nGIT_AUTHOR_EMAIL=$(git config --global user.email)\" > .devcontainer/.env; fi"
+	// "postCreateCommand": "if [ -v ${localEnv:GIT_AUTHOR_NAME}]; then git config --global user.name ${localEnv:GIT_AUTHOR_NAME}; fi"
+
 }
