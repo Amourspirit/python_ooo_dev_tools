@@ -40,8 +40,8 @@ COPY --from=builder /workspace/ooouno-dev-tools/.venv ./.venv
 ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN git config --global user.name "$GIT_AUTHOR_NAME" \
-    && git config --global user.email $GIT_AUTHOR_EMAIL
+RUN if [ x"$GIT_AUTHOR_NAME" != "x" ]; then git config --global user.name "$GIT_AUTHOR_NAME" || true; fi \
+    && if [ x"$GIT_AUTHOR_EMAIL" != "x" ]; then git config --global user.email $GIT_AUTHOR_EMAIL || true; fi
 
 ARG WD=/workspace/ooouno-dev-tools/.venv/lib/python$PY_VER/site-packages
 
