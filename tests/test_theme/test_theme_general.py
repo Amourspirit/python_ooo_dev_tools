@@ -1,5 +1,6 @@
 from __future__ import annotations
 import pytest
+from os import getenv
 
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -9,6 +10,8 @@ from ooodev.utils.info import Info
 
 
 def test_theme(loader) -> None:
+    if getenv("DEV_CONTAINER"):
+        pytest.skip("Skip test in container: May be no theme data")
     ver = Info.version_info
     if ver < (7, 5, 0, 0):
         return
@@ -29,6 +32,8 @@ def test_theme(loader) -> None:
 
 
 def test_theme_default(loader) -> None:
+    if getenv("DEV_CONTAINER"):
+        pytest.skip("Skip test in container: May be no theme data")
     ver = Info.version_info
     if ver < (7, 5, 0, 0):
         return
@@ -49,6 +54,8 @@ def test_theme_default(loader) -> None:
 
 
 def test_theme_dark(loader) -> None:
+    if getenv("DEV_CONTAINER"):
+        pytest.skip("Skip test in container: May be no theme data")
     ver = Info.version_info
     if ver < (7, 5, 0, 0):
         return
