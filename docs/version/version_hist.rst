@@ -2,10 +2,25 @@
 Version History
 ***************
 
+Version 0.11.10
+===============
+
+Updated connection to LibreOffice be more robust. Remote connections have been tested and work.
+
+Version 0.11.9
+==============
+
+Fix for potential bug when connection to LibreOffice instance.
+
+Version 0.11.8
+==============
+
+Update to allow connections to LibreOffice Snap and Flatpak versions on Linux.
+
 Version 0.11.7
 ==============
 
-Add ``env_vars`` options to Bridge base connectors. Now Environment variables can be passed to the subprocess that connects to LibreOffice.
+Added ``env_vars`` options to Bridge base connectors. Now Environment variables can be passed to the subprocess that connects to LibreOffice.
 This makes it possible to connect to a snap instance of LibreOffice and pass in ``PYTHONPATH`` and other environment variables.
 
 Version 0.11.6

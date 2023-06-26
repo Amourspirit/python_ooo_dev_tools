@@ -1679,7 +1679,7 @@ class LoInst:
         return self._loader  # type: ignore
 
     @property
-    def bridge_connector(self) -> LoBridgeCommon:
+    def bridge_connector(self) -> ConnectBase:
         return self._lo_inst  # type: ignore
 
     @property

@@ -1,7 +1,5 @@
-# coding: utf-8
+"""Connection to LibreOffice/OpenOffice"""
 from __future__ import annotations
-import uno
-
 import contextlib
 import os
 import time
@@ -9,25 +7,32 @@ from abc import ABC, abstractmethod
 import subprocess
 import signal
 from typing import List, TYPE_CHECKING, cast
-import time
 from pathlib import Path
-from com.sun.star.connection import NoConnectException
+import uno
+from com.sun.star.connection import NoConnectException  # type: ignore
 from . import connectors
 from . import cache
 from ..utils.sys_info import SysInfo
 
 
 if TYPE_CHECKING:
+    from com.sun.star.connection import XConnector
     from com.sun.star.beans import XPropertySet
     from com.sun.star.bridge import XBridgeFactory
     from com.sun.star.bridge import XBridge
-    from com.sun.star.connection import XConnector
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.uno import XComponentContext
     from com.sun.star.lang import XComponent
+    from com.sun.star.bridge import UnoUrlResolver  # service
 else:
+    XConnector = object
+    XBridgeFactory = object
+    XBridge = object
+    XPropertySet = object
+    XMultiComponentFactory = object
     XComponentContext = object
     XComponent = object
+    UnoUrlResolver = object
 
 
 class ConnectBase(ABC):
@@ -101,6 +106,11 @@ class ConnectBase(ABC):
         """Returns ``True`` if a connection to soffice has been established"""
         return self._ctx is not None
 
+    @property
+    def is_remote(self) -> bool:
+        """Returns False"""
+        return False
+
 
 class LoBridgeCommon(ConnectBase):
     """Base Abstract Class for LoSocketStart and LoPipeStart"""
@@ -122,6 +132,20 @@ class LoBridgeCommon(ConnectBase):
 
     @abstractmethod
     def _get_connection_str(self) -> str:
+        """
+        Gets connection string.
+
+        Such as ``uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager``
+        """
+        ...
+
+    @abstractmethod
+    def _get_connection_identifier(self) -> str:
+        """
+        Gets connection identifier
+
+        Such as ``socket,host=localhost,port=2002``
+        """
         ...
 
     @abstractmethod
@@ -129,35 +153,98 @@ class LoBridgeCommon(ConnectBase):
         ...
 
     def _connect(self):
+        # see also: _connect_alternative()
         conn_str = self._get_connection_str()
 
         end_time = time.time() + self._timeout
         last_ex = None
         while end_time > time.time():
             try:
-                localContext = cast("XComponentContext", uno.getComponentContext())
-                # resolver = cast("XMultiComponentFactory",localContext.ServiceManager.createInstanceWithContext(
-                #     "com.sun.star.bridge.UnoUrlResolver", localContext
-                # ))
-
-                localFactory = localContext.getServiceManager()
-
-                bridge = self._get_bridge(local_factory=localFactory, local_ctx=localContext)
-
-                self._bridge_component = cast(
-                    XComponent, bridge.queryInterface(uno.getTypeByName("com.sun.star.lang.XComponent"))
-                )
-
-                # smgr = resolver.resolve(conn_str)
-                smgr = cast(
-                    "XMultiComponentFactory",
-                    bridge.getInstance("StarOffice.ServiceManager").queryInterface(
-                        uno.getTypeByName("com.sun.star.lang.XMultiComponentFactory")
+                local_context = cast("XComponentContext", uno.getComponentContext())
+                local_factory = local_context.getServiceManager()
+                resolver = cast(
+                    UnoUrlResolver,
+                    local_context.getServiceManager().createInstanceWithContext(
+                        "com.sun.star.bridge.UnoUrlResolver", local_context
                     ),
                 )
-                props = cast("XPropertySet", smgr.queryInterface(uno.getTypeByName("com.sun.star.beans.XPropertySet")))
+                smgr = resolver.resolve(conn_str)
 
-                self._ctx = props.getPropertyValue("DefaultContext")
+                props = cast(XPropertySet, smgr.queryInterface(uno.getTypeByName("com.sun.star.beans.XPropertySet")))
+                self._ctx = cast(XComponentContext, props.getPropertyValue("DefaultContext"))
+
+                try:
+                    bridge_instance = self._get_bridge(local_factory=local_factory, local_ctx=self._ctx)
+                except Exception as e:
+                    bridge_instance = self._get_bridge(local_factory=local_factory, local_ctx=local_context)
+
+                self._bridge_component = cast(
+                    XComponent, bridge_instance.queryInterface(uno.getTypeByName("com.sun.star.lang.XComponent"))
+                )
+
+                last_ex = None
+                break
+            except NoConnectException as e:
+                last_ex = e
+                time.sleep(self._conn_try_sleep)
+
+        if last_ex is not None:
+            raise last_ex
+
+    def _connect_alternative(self):
+        # this method is not currently used.
+        # it is an alternative to _connect()
+        # This is basically the connect method from Lo.Java
+        # it has been tested with local and remote connections and works.
+        # Works with Pip and Socket connections.
+        conn_str = self._get_connection_identifier()
+        # conn_str = "socket,host=localhost,port=2002"
+
+        end_time = time.time() + self._timeout
+        last_ex = None
+        while end_time > time.time():
+            try:
+                local_context = cast(XComponentContext, uno.getComponentContext())
+                local_factory = local_context.getServiceManager()
+
+                connector = cast(
+                    XConnector,
+                    local_factory.createInstanceWithContext("com.sun.star.connection.Connector", local_context),
+                )
+
+                connection = connector.connect(conn_str)
+                # create a bridge to Office via the socket
+                bridge_factory = cast(
+                    XBridgeFactory,
+                    local_factory.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", local_context),
+                )
+
+                # create a nameless bridge with no instance provider
+                bridge = bridge_factory.createBridge("socketBridgeAD", "urp", connection, None)  # type: ignore
+                bridge_component = cast(
+                    XBridge, bridge.queryInterface(uno.getTypeByName("com.sun.star.bridge.XBridge"))
+                )
+
+                # get the remote service manager
+                service_manager = cast(
+                    XMultiComponentFactory, bridge_component.getInstance("StarOffice.ServiceManager")
+                )
+
+                # retrieve Office's remote component context as a property
+                props = cast(
+                    XPropertySet, service_manager.queryInterface(uno.getTypeByName("com.sun.star.beans.XPropertySet"))
+                )
+                default_context = cast(XComponentContext, props.getPropertyValue("DefaultContext"))
+                # get the remote interface XComponentContext
+                xcc = cast(
+                    XComponentContext,
+                    default_context.queryInterface(uno.getTypeByName("com.sun.star.uno.XComponentContext")),
+                )
+                self._ctx = xcc
+                self._bridge_component = cast(
+                    XComponent, bridge_component.queryInterface(uno.getTypeByName("com.sun.star.lang.XComponent"))
+                )
+
                 last_ex = None
                 break
             except NoConnectException as e:
@@ -329,6 +416,11 @@ class LoBridgeCommon(ConnectBase):
         """
         return self._connector.start_as_service
 
+    @property
+    def is_remote(self) -> bool:
+        """Gets if connection is connection to remote server. Default is False"""
+        return self._connector.remote_connection
+
     def __del__(self) -> None:
         with contextlib.suppress(Exception):
             self._cache.del_working_dir()
@@ -360,6 +452,11 @@ class LoDirectStart(ConnectBase):
         """
         raise NotImplementedError("kill_soffice is not implemented in this child class")
 
+    @property
+    def is_remote(self) -> bool:
+        """Returns False"""
+        return False
+
 
 class LoPipeStart(LoBridgeCommon):
     def __init__(self, connector: connectors.ConnectPipe | None = None, cache_obj: cache.Cache | None = None) -> None:
@@ -372,6 +469,14 @@ class LoPipeStart(LoBridgeCommon):
 
     def _get_connection_str(self) -> str:
         return self._connector.get_connection_str()
+
+    def _get_connection_identifier(self) -> str:
+        """
+        Gets connection identifier
+
+        Such as ``pipe,name="a34rt84y002"``
+        """
+        return self._connector.get_connection_identifier()
 
     def connect(self) -> None:
         """
@@ -415,7 +520,13 @@ class LoPipeStart(LoBridgeCommon):
         # "--accept='socket,host=localhost,port=2002,tcpNoDelay=1;urp;'" THIS FAILS
         # SEE ALSO: https://tinyurl.com/y5y66462
         prefix = "--unaccept=" if shutdown else "--accept="
-        args = [f'"{self._connector.soffice}"']
+        soffice_str = str(self._connector.soffice)
+        if soffice_str.startswith("flatpak "):
+            # special case for flatpak with a space after flatpak
+            # not checking directly for flatpak run becuase flatpak --verbose run could be used
+            args = [soffice_str]
+        else:
+            args = [f'"{self._connector.soffice}"']
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
@@ -433,6 +544,11 @@ class LoPipeStart(LoBridgeCommon):
         """Gets the current Connector"""
         return self._connector  # type: ignore
 
+    @property
+    def is_remote(self) -> bool:
+        """Gets if the connection is remote"""
+        return self.connector.remote_connection
+
 
 class LoSocketStart(LoBridgeCommon):
     def __init__(
@@ -446,6 +562,14 @@ class LoSocketStart(LoBridgeCommon):
 
     def _get_connection_str(self) -> str:
         return self._connector.get_connection_str()
+
+    def _get_connection_identifier(self) -> str:
+        """
+        Gets connection identifier
+
+        Such as ``socket,host=localhost,port=2002``
+        """
+        return self._connector.get_connection_identifier()
 
     def connect(self) -> None:
         """
@@ -489,7 +613,15 @@ class LoSocketStart(LoBridgeCommon):
         # "--accept='socket,host=localhost,port=2002,tcpNoDelay=1;urp;'" THIS FAILS
         # SEE ALSO: https://tinyurl.com/y5y66462
         prefix = "--unaccept=" if shutdown else "--accept="
-        args = [f'"{self._connector.soffice}"']
+
+        soffice_str = str(self._connector.soffice)
+        if soffice_str.startswith("flatpak "):
+            # special case for flatpak with a space after flatpak
+            # not checking directly for flatpak run becuase flatpak --verbose run could be used
+            args = [soffice_str]
+        else:
+            args = [f'"{self._connector.soffice}"']
+
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
@@ -506,6 +638,11 @@ class LoSocketStart(LoBridgeCommon):
     def connector(self) -> connectors.ConnectSocket:
         """Gets the current Connector"""
         return self._connector  # type: ignore
+
+    @property
+    def is_remote(self) -> bool:
+        """Gets if the connection is remote"""
+        return self.connector.remote_connection
 
 
 class LoManager:

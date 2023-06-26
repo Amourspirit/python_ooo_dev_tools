@@ -1,0 +1,44 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "Custom Ubuntu",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	// "image": "dockdock/libre_office_script_provider:22.04-UBUNTU",
+	// "build": {
+	// 	"dockerfile": "Dockerfile"
+	// },
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspace/ooouno-dev-tools",
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+	// "postCreateCommand": "poetry install && . ./.venv/bin/activate && oooenv cmd-link -a",
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"njpwerner.autodocstring",
+				"ms-python.black-formatter",
+				"ms-python.vscode-pylance",
+				"littlefoxteam.vscode-python-test-adapter",
+				"ms-vscode.test-adapter-converter",
+				"hbenl.vscode-test-explorer"
+			]
+		}
+	},
+	// Did not work when placed in brackets. Only as string. Brakets need to call /bin/sh -c
+	"initializeCommand": "if which git >/dev/null && [ x\"${HOME}\" != \"x\" ] && [ -n \"$(git config --global user.name)\" ] && [ -n \"$(git config --global user.email)\" ]; then echo \"GIT_AUTHOR_NAME=$(git config --global user.name)\nGIT_AUTHOR_EMAIL=$(git config --global user.email)\" > .devcontainer/.env || true; else echo \"GIT_AUTHOR_NAME=\"\"\nGIT_AUTHOR_EMAIL=\"\"\" > .devcontainer/.env || true; fi"
+
+}

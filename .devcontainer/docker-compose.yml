@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  app:
+    env_file: .env
+    build: 
+      context: ../
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        GIT_AUTHOR_NAME: ${GIT_AUTHOR_NAME}
+        GIT_AUTHOR_EMAIL: ${GIT_AUTHOR_EMAIL}
+    environment:
+      - DEV_CONTAINER=1
+    network_mode: "host"
+    volumes:
+      - type: bind
+        source: ../
+        target: /workspace/ooouno-dev-tools
+      - type: volume
+        source: ooodev_venv
+        target: /workspace/ooouno-dev-tools/.venv
+
+    # user root is for file sharing. root user is the current user on the host
+    # and the bind volume for ooouno-dev-tools will not work unless root.
+    user: root
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+    container_name: ooodev_container
+
+volumes:
+  ooodev_venv:
