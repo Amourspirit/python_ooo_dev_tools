@@ -9,6 +9,8 @@ services:
       args:
         GIT_AUTHOR_NAME: ${GIT_AUTHOR_NAME}
         GIT_AUTHOR_EMAIL: ${GIT_AUTHOR_EMAIL}
+    environment:
+      - DEV_CONTAINER=1
     network_mode: "host"
     volumes:
       - type: bind
