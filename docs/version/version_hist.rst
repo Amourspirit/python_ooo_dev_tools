@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.11.11
+===============
+
+Now there is a context manager for macros that set the proper context for the document and |odev|.
+See :ref:`ch02_macro_load`.
+
 Version 0.11.10
 ===============
 

@@ -822,10 +822,10 @@ The following code example demonstrates how to use the :ref:`utils_lo_lo_inst` t
 2.10 Loading for Macro Execution
 ================================
 
-As of |odev| ``0.11.11``, Macros are now loaded using the :py:class:`MacroLoader <ooodev.macro.MacroLoader>` context manager.
+As of |odev| ``0.11.11``, Macros are now loaded using the :py:class:`~ooodev.macro.MacroLoader` context manager.
 This allows for the document context to be manages automatically.
 
-In :numref:`h02_macro_loader_example_01` the ``with MacroLoader()`` context manager is used.
+In :numref:`ch02_macro_loader_example_01` the ``with MacroLoader()`` context manager is used.
 This automatically sets the context for |odev| to the active document.
 This allows for the macro to be executed in the context of the active document.
 
