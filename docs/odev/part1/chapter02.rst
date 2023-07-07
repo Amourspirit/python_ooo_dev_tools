@@ -825,15 +825,13 @@ The following code example demonstrates how to use the :ref:`utils_lo_lo_inst` t
 As of |odev| ``0.11.11``, Macros are now loaded using the :py:class:`~ooodev.macro.MacroLoader` context manager.
 This allows for the document context to be manages automatically.
 
-In :numref:`ch02_macro_loader_example_01` the ``with MacroLoader()`` context manager is used.
+In the example below the ``with MacroLoader()`` context manager is used.
 This automatically sets the context for |odev| to the active document.
 This allows for the macro to be executed in the context of the active document.
 
 Note that only method that are actually called as macros ``show_hello()`` and ``write_hello()`` require the :py:class:`MacroLoader <ooodev.macro.MacroLoader>` context manager.
 The ``write_hello_msg()`` method is call from a macro that already sets the context to the active document and therefore does not require the :py:class:`MacroLoader <ooodev.macro.MacroLoader>` context manager.
 
-
-.. _ch02_macro_loader_example_01:
 
 .. tabs::
 
