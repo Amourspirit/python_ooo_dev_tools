@@ -46,6 +46,9 @@ class ConnectBase(ABC):
         # see https://tinyurl.com/y5y66462
         self._ctx = cast(XComponentContext, None)
 
+    def __eq__(self, other: object) -> bool:
+        return NotImplemented
+
     @abstractmethod
     def connect(self):
         """
@@ -433,6 +436,11 @@ class LoDirectStart(ConnectBase):
         """
         super().__init__()
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, LoDirectStart):
+            return False
+        return True
+
     def connect(self):
         """
         Makes a connection to soffice
@@ -466,6 +474,13 @@ class LoPipeStart(LoBridgeCommon):
             raise TypeError("connector arg must be ConnectPipe class")
 
         super().__init__(connector=connector, cache_obj=cache_obj)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, LoPipeStart):
+            return False
+        local_conn = self._get_connection_str()
+        oth_conn = other._get_connection_str()
+        return local_conn == oth_conn
 
     def _get_connection_str(self) -> str:
         return self._connector.get_connection_str()
@@ -559,6 +574,13 @@ class LoSocketStart(LoBridgeCommon):
         elif not isinstance(connector, connectors.ConnectSocket):
             raise TypeError("connector arg must be ConnectSocket class")
         super().__init__(connector=connector, cache_obj=cache_obj)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, LoSocketStart):
+            return False
+        local_conn = self._get_connection_str()
+        oth_conn = other._get_connection_str()
+        return local_conn == oth_conn
 
     def _get_connection_str(self) -> str:
         return self._connector.get_connection_str()
