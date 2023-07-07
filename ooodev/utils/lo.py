@@ -501,7 +501,15 @@ class Lo(metaclass=StaticProperty):
 
         .. versionchanged:: 0.6.10
 
-                Added ``opt`` parameter.
+            Added ``opt`` parameter.
+
+        .. versionchanged:: 0.11.11
+
+            If office is already loaded and a new call is made to this method,
+            then the new call will return the existing office instance if the following conditions are met:
+
+            Connection must be ConnectorSocket or ConnectorPipe and the connections strings must match.
+
         """
         # sourcery skip: raise-from-previous-error
         # ToDo: Test if mock_g is still needed in Lo load_office now that there is lo_inst.
@@ -516,6 +524,15 @@ class Lo(metaclass=StaticProperty):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
+
+        # if cls._lo_inst is exist then office is already loaded.
+        # Now check to see if options are different.
+        if (
+            cls._lo_inst is not None
+            and (connector is not None and connector == cls._lo_inst.bridge_connector)
+            and not cls._lo_inst.is_macro_mode
+        ):
+            return cls._lo_inst.loader_current
 
         cls._lo_inst = lo_inst.LoInst(opt=opt, events=_Events())
 
@@ -559,6 +576,10 @@ class Lo(metaclass=StaticProperty):
     # endregion office shutdown
 
     # region document opening
+
+    # @classmethod
+    # def load_component(cls, component: XComponent) -> None:
+    #     cls._lo_inst.load_component(component)
 
     # region open_flat_doc()
     @overload

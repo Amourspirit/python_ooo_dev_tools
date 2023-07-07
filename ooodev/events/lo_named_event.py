@@ -84,4 +84,6 @@ class LoNamedEvent:
     """LoInst loaded component see :py:meth:`LoInst.load_component() <.utils.inst.lo.lo_inst.LoInst.load_component>`"""
 
     MACRO_LOADER_ENTER = "lo_macro_loader_enter"
+    """MacroLoader enter see :py:class:`~.macro.MacroLoader`"""
     MACRO_LOADER_EXIT = "lo_macro_loader_exit"
+    """MacroLoader exit see see :py:class:`~.macro.MacroLoader`"""
