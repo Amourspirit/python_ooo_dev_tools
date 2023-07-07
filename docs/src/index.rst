@@ -14,6 +14,7 @@ ooodev
    format/index
    formatters/index
    listeners/index
+   macro/index
    office/index
    proto/index
    theme/index
