@@ -1913,11 +1913,12 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst._opt
 
 
-def _on_bridge_disposed(source: Any, event: EventObject) -> None:
+def _on_connect_dispose(source: Any, event: EventObject) -> None:
     setattr(Lo, "_lo_inst", None)
 
 
-_Events().on(LoNamedEvent.BRIDGE_DISPOSED, _on_bridge_disposed)
+_Events().on(LoNamedEvent.BRIDGE_DISPOSED, _on_connect_dispose)
+_Events().on(LoNamedEvent.MACRO_LOADER_EXIT, _on_connect_dispose)
 
 
 __all__ = ("Lo",)
