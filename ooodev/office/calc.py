@@ -962,7 +962,7 @@ class Calc:
                     break
             if count == 1:
                 return ka
-            ka[2] = ka.get("name")
+            ka[2] = kwargs.get("name")
             return ka
 
         if count not in (1, 2):
