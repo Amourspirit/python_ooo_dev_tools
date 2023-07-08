@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.11.12
+===============
+
+Fix bug in ``Calc.set_sheet_name()`` that was not working correctly.
+
+Add new parameter to ``Calc.get_sheet_name()`` that allows for wrapping of the sheet name in single quotes if it is needed.
+
 Version 0.11.11
 ===============
 
