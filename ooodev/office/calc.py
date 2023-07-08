@@ -856,12 +856,27 @@ class Calc:
 
     @overload
     @classmethod
+    def get_sheet_name(cls, safe_quote: bool) -> str:
+        ...
+
+    @overload
+    @classmethod
     def get_sheet_name(cls, idx: int) -> str:
         ...
 
     @overload
     @classmethod
+    def get_sheet_name(cls, idx: int, safe_quote: bool) -> str:
+        ...
+
+    @overload
+    @classmethod
     def get_sheet_name(cls, sheet: XSpreadsheet) -> str:
+        ...
+
+    @overload
+    @classmethod
+    def get_sheet_name(cls, sheet: XSpreadsheet, safe_quote: bool) -> str:
         ...
 
     @classmethod
@@ -872,6 +887,8 @@ class Calc:
         Args:
             sheet (XSpreadsheet, optional): Spreadsheet
             idx (int, optional): Index of Spreadsheet
+            safe_quote (bool, optional): If True, returns quoted (in single quotes) sheet name if the sheet name is not alphanumeric.
+                Defaults to True.
 
         Raises:
             MissingInterfaceError: If unable to access spreadsheet named interface
@@ -881,7 +898,11 @@ class Calc:
 
         .. versionchanged:: 0.8.6
             Added overload ``get_sheet_name(idx: int) -> str``
+
+        .. versionchanged:: 0.11.12
+            Added safe_quote parameter.
         """
+        safe_quote = bool(kwargs.pop("safe_quote", True))
         ordered_keys = (1,)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -918,7 +939,11 @@ class Calc:
             sheet = cast(XSpreadsheet, arg1)
 
         xnamed = mLo.Lo.qi(XNamed, sheet, True)
-        return xnamed.getName()
+        sheet_name = xnamed.getName()
+        # if sheet_name is not alphanumeric, then quote it
+        if safe_quote and not sheet_name.isalnum():
+            sheet_name = f"'{sheet_name}'"
+        return sheet_name
 
     # endregion get_sheet_name()
     @overload
@@ -2468,7 +2493,7 @@ class Calc:
                     break
             if count == 3:
                 return ka
-            ka[4] = kwargs.get("row", None)
+            ka[4] = kwargs.get("row")
             return ka
 
         if count not in (2, 3, 4):
