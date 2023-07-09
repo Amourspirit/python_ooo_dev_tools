@@ -1,7 +1,7 @@
 OOO Development Tools
 =====================
 
-|lic| |pver| |pwheel| |github|
+|lic| |pver| |pwheel| |test_badge|_ |github|
 
 OOO Development Tools (OooDev) is intended for programmers who want to learn and use the
 Python version of the `LibreOffice`_ API.
@@ -137,3 +137,8 @@ LibreOffice API Typing's
 .. |github| image:: https://img.shields.io/badge/GitHub-100000?style=plastic&logo=github&logoColor=white
     :target: https://github.com/Amourspirit/python_ooo_dev_tools
     :alt: Github
+
+.. |test_badge| image:: https://github.com/Amourspirit/python_ooo_dev_tools/actions/workflows/python-app-test.yml/badge.svg
+    :alt: Test Badge
+
+.. _test_badge: https://github.com/Amourspirit/python_ooo_dev_tools/actions/workflows/python-app-test.yml
