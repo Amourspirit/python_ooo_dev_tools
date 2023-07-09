@@ -1,0 +1,39 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Test
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run test suite
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: .devcontainer/docker-compose.yml
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Make envfile
+      uses: SpicyPizza/create-envfile@v2.0
+      with:
+        envkey_DEBUG: false
+        directory: .devcontainer
+        fail_on_empty: false
+
+    - name: Build docker images
+      run: docker-compose build
+
+    - name: UnitTest with pytest
+      run: |
+        docker-compose up -d
+        docker-compose exec -T ooodev_app pytest

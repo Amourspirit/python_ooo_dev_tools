@@ -1,14 +1,14 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Custom Ubuntu",
+	"name": "OooDev Dev Environment",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	// "image": "dockdock/libre_office_script_provider:22.04-UBUNTU",
 	// "build": {
 	// 	"dockerfile": "Dockerfile"
 	// },
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
+	"service": "ooodev_app",
 	"workspaceFolder": "/workspace/ooouno-dev-tools",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
