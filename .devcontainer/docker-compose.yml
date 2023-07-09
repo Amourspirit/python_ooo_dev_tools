@@ -1,14 +1,14 @@
 version: "3.9"
 
 services:
-  app:
+  ooodev_app:
     env_file: .env
     build: 
       context: ../
       dockerfile: .devcontainer/Dockerfile
       args:
-        GIT_AUTHOR_NAME: ${GIT_AUTHOR_NAME}
-        GIT_AUTHOR_EMAIL: ${GIT_AUTHOR_EMAIL}
+        LOCAL_GIT_AUTHOR_NAME: ${LOCAL_GIT_AUTHOR_NAME}
+        LOCAL_GIT_AUTHOR_EMAIL: ${LOCAL_GIT_AUTHOR_EMAIL}
     environment:
       - DEV_CONTAINER=1
     network_mode: "host"

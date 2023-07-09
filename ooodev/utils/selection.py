@@ -2,6 +2,7 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
+import contextlib
 import os
 from typing import cast, overload, TYPE_CHECKING
 from enum import IntEnum
@@ -141,6 +142,9 @@ class Selection(metaclass=StaticProperty):
         """
         if doc is None:
             doc = mLo.Lo.this_component
+        if doc is None:
+            # most likely headless mode and options dynamic set to True
+            doc = mLo.Lo.lo_component
 
         text_doc = mLo.Lo.qi(XTextDocument, doc, True)
         _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Selection.get_text_doc.__qualname__))
@@ -689,7 +693,12 @@ class Selection(metaclass=StaticProperty):
         try:
             return Selection._text_range_compare  # type: ignore
         except AttributeError:
-            doc = mLo.Lo.xscript_context.getDocument()
+            doc = None
+            with contextlib.suppress(AttributeError):
+                doc = mLo.Lo.xscript_context.getDocument()
+            if doc is None:
+                # most likely in headless mode with dynamic options set to True
+                doc = mLo.Lo.lo_component
             text = doc.getText()  # type: ignore
             Selection._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
         return Selection._text_range_compare  # type: ignore

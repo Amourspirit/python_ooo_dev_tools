@@ -12,8 +12,8 @@ RUN poetry install --no-root
 FROM dockdock/libreoffice-api-dev:LO-7.5 as runner
 
 ARG PY_VER=3.10
-ARG GIT_AUTHOR_NAME=""
-ARG GIT_AUTHOR_EMAIL=""
+ARG LOCAL_GIT_AUTHOR_NAME=""
+ARG LOCAL_GIT_AUTHOR_EMAIL=""
 
 USER root
 ENV HOME /root
@@ -41,9 +41,10 @@ COPY --from=builder /workspace/ooouno-dev-tools/.venv ./.venv
 
 ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+ENV PYTHONUNBUFFERED 1
 
-RUN if [ x"$GIT_AUTHOR_NAME" != "x" ]; then git config --global user.name "$GIT_AUTHOR_NAME" || true; fi \
-    && if [ x"$GIT_AUTHOR_EMAIL" != "x" ]; then git config --global user.email $GIT_AUTHOR_EMAIL || true; fi
+RUN if [ x"$LOCAL_GIT_AUTHOR_NAME" != "x" ]; then git config --global user.name "$LOCAL_GIT_AUTHOR_NAME" || true; fi \
+    && if [ x"$LOCAL_GIT_AUTHOR_EMAIL" != "x" ]; then git config --global user.email $LOCAL_GIT_AUTHOR_EMAIL || true; fi
 
 WORKDIR $HOME
 
@@ -56,6 +57,15 @@ WORKDIR ${WD}
 RUN ln -s /usr/lib/python3/dist-packages/uno.py uno.py \
     && ln -s /usr/lib/python3/dist-packages/unohelper.py unohelper.py \
     && echo "/workspace/ooouno-dev-tools" >> ooo_dev_tools.pth
-# Enable venv
-# ENV PATH="/opt/venv/bin:$PATH"
+
+COPY ./.devcontainer/res $HOME/.tmp/res
+COPY ./.devcontainer/startup.sh /usr/local/bin/startup.sh
+
+RUN chmod -R +x "$HOME/.tmp/res/scripts" \
+    && mv "$HOME/.tmp/res/scripts/unlock.sh" "/usr/local/bin/unlock" \
+    && chmod +x "/usr/local/bin/unlock" \
+    && mkdir -p "$HOME/.config/libreoffice/4/user/" \
+    && mv "$HOME/.tmp/res/defaults/registrymodifications.xcu" "$HOME/.config/libreoffice/4/user/registrymodifications.xcu" \
+    && mkdir -p "/usr/lib/libreoffice/share/extensions" \
+    && chmod +x "/usr/local/bin/startup.sh"
 

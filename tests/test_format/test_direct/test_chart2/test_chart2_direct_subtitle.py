@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 
 
 def test_calc_set_styles_subtitle(loader, copy_fix_calc) -> None:
-    if Info.version_info < (7, 5):
+    if Info.version_info < (7, 5) or Chart2 is None:
         pytest.skip("Not supported in this version, Requires LibreOffice 7.5 or higher.")
 
     delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
@@ -63,7 +63,7 @@ def test_calc_set_styles_subtitle(loader, copy_fix_calc) -> None:
 
         rng_data = Calc.get_range_obj("A2:B8")
         chart_doc = Chart2.insert_chart(
-            cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
+            sheet=sheet, cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
         )
         title_font = TitleFont(b=True, size=16, color=CommonColor.DARK_BLUE)
         title_area_bg_color = ChartTitleBgColor(CommonColor.LIGHT_GREEN)
