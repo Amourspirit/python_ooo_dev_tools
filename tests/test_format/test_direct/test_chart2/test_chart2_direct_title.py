@@ -64,7 +64,7 @@ def test_calc_set_styles_title(loader, copy_fix_calc) -> None:
 
         rng_data = Calc.get_range_obj("A2:B8")
         chart_doc = Chart2.insert_chart(
-            cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
+            sheet=sheet, cells_range=rng_data.get_cell_range_address(), diagram_name=ChartTypes.Column.DEFAULT
         )
         x_axis_title_font = TitleFont(b=True, size=12, color=CommonColor.DARK_ORANGE)
         Chart2.set_title(chart_doc=chart_doc, title=Calc.get_string(sheet=sheet, cell_name="A1"))

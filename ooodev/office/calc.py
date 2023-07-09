@@ -395,10 +395,19 @@ class Calc:
         """
         Gets the current document.
 
+        Raises:
+            NoneError: If no current document
+
         Returns:
             XSpreadsheetDocument: Spreadsheet Document
         """
-        return cls.get_ss_doc(mLo.Lo.this_component)
+        doc = mLo.Lo.this_component
+        if doc is None:
+            # most likely in headless mode with option dynamic set to True
+            doc = mLo.Lo.lo_component
+        if doc is None:
+            raise mEx.NoneError("current document")
+        return cls.get_ss_doc(doc)
 
     # endregion ------------ document methods ------------------
 

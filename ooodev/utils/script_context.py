@@ -38,12 +38,18 @@ class ScriptContext(unohelper.Base, XScriptContext):  # type: ignore
     """
 
     def __init__(
-        self, ctx: XComponentContext, doc: XComponent | None = None, inv: XScriptInvocationContext | None = None
+        self,
+        ctx: XComponentContext,
+        doc: XComponent | None = None,
+        inv: XScriptInvocationContext | None = None,
+        dynamic: bool = True,
     ):
         self._uno_desktop_type = uno.getTypeByName("com.sun.star.frame.XDesktop")
         self._uno_model_type = uno.getTypeByName("com.sun.star.frame.XModel")
         self.ctx = ctx
         self.inv = inv
+        self._dynamic = dynamic
+        self._desktop = None
         if doc is None:
             self.doc = None
         else:
@@ -54,12 +60,15 @@ class ScriptContext(unohelper.Base, XScriptContext):  # type: ignore
 
     def getDesktop(self) -> XDesktop:
         # return self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
+        if not self._dynamic and self._desktop is not None:
+            return self._desktop
         interface = self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
-        return cast(XDesktop, interface.queryInterface(self._uno_desktop_type))
+        self._desktop = cast(XDesktop, interface.queryInterface(self._uno_desktop_type))
+        return self._desktop
 
     def getDocument(self) -> XModel:
         # return self.getDesktop().getCurrentComponent()
-        if self.doc is not None:
+        if not self._dynamic and self.doc is not None:
             return self.doc
         component = self.getDesktop().getCurrentComponent()
         return cast(XModel, component.queryInterface(self._uno_model_type))

@@ -32,9 +32,7 @@
 				"njpwerner.autodocstring",
 				"ms-python.black-formatter",
 				"ms-python.vscode-pylance",
-				"littlefoxteam.vscode-python-test-adapter",
-				"ms-vscode.test-adapter-converter",
-				"hbenl.vscode-test-explorer"
+				"ms-vscode.test-adapter-converter"
 			]
 		}
 	},

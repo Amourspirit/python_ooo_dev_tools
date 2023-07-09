@@ -57,6 +57,7 @@ black = {extras = ["d"], version = ">=23.1.0"}
 oooenv = ">=0.1.1"
 pytest-mock = ">=3.10"
 pyright = ">=1.1.309"
+pytest-dotenv = "^0.5.2"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -80,6 +81,11 @@ testpaths = [
 markers = [
     "skip_headless: skips a test in headless mode",
     "skip_not_headless_os: skips a test in GUI mode for give os"
+]
+
+# https://pypi.org/project/pytest-dotenv/
+env_files = [
+    ".test.env"
 ]
 
 [tool.ruff]

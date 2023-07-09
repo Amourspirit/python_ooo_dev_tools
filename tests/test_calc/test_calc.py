@@ -130,6 +130,7 @@ def test_get_sheet(loader) -> None:
     from ooodev.events.args.event_args import EventArgs
     from ooodev.events.lo_events import event_ctx, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
+    from ooodev.utils.gui import GUI
 
     # from ooodev.utils.gui import GUI
 
@@ -149,11 +150,22 @@ def test_get_sheet(loader) -> None:
     assert loader is not None
     doc = Calc.create_doc(loader)
     try:
+        if Lo.bridge_connector.headless:
+            dynamic_mode = Lo.options.dynamic
+            pass
+        else:
+            dynamic_mode = False
+            GUI.set_visible(visible=True, doc=doc)
+
+        # In Dynamic mode when running headless it is not possible to get `desktop.getCurrentComponent()`
+        # This means that Calc.get_current_doc() will not work when using headless and dynamic together.
+
         sheet_names = Calc.get_sheet_names(doc)
         assert len(sheet_names) == 1
-        sheet_names2 = Calc.get_sheet_names()
-        assert len(sheet_names2) == 1
-        assert sheet_names[0] == sheet_names2[0]
+        if not dynamic_mode:
+            sheet_names2 = Calc.get_sheet_names()
+            assert len(sheet_names2) == 1
+            assert sheet_names[0] == sheet_names2[0]
 
         assert sheet_names[0] == "Sheet1"
         # test overloads
@@ -170,36 +182,36 @@ def test_get_sheet(loader) -> None:
         name_1_1 = Calc.get_sheet_name(sheet_1_1)
         assert name_1_1 == "Sheet1"
 
-        with event_ctx() as events:
-            events.on(CalcNamedEvent.SHEET_GETTING, on)
-            events.on(CalcNamedEvent.SHEET_GET, after)
-            # test overload no doc arg
-            sheet_1_2 = Calc.get_sheet("Sheet1")
-        assert on_firing
-        assert on_fired
-        on_firing = False
-        on_fired = False
+        if not dynamic_mode:
+            with event_ctx() as events:
+                events.on(CalcNamedEvent.SHEET_GETTING, on)
+                events.on(CalcNamedEvent.SHEET_GET, after)
+                # test overload no doc arg
+                sheet_1_2 = Calc.get_sheet("Sheet1")
+                assert sheet_1_2 is not None
+            assert on_firing
+            assert on_fired
+            on_firing = False
+            on_fired = False
 
-        assert sheet_1_2 is not None
+            name_1_2 = Calc.get_sheet_name(0)
+            assert name_1_1 == name_1_2
 
-        name_1_2 = Calc.get_sheet_name(0)
-        assert name_1_1 == name_1_2
+            with event_ctx() as events:
+                events.on(CalcNamedEvent.SHEET_GETTING, on)
+                events.on(CalcNamedEvent.SHEET_GET, after)
+                sheet_1_3 = Calc.get_sheet(doc=doc, idx=0)
+                sheet_1_3 = Calc.get_sheet()
 
-        with event_ctx() as events:
-            events.on(CalcNamedEvent.SHEET_GETTING, on)
-            events.on(CalcNamedEvent.SHEET_GET, after)
-            sheet_1_3 = Calc.get_sheet(doc=doc, idx=0)
-            sheet_1_3 = Calc.get_sheet()
+            assert on_firing
+            assert on_fired
+            on_firing = False
+            on_fired = False
 
-        assert on_firing
-        assert on_fired
-        on_firing = False
-        on_fired = False
+            assert sheet_1_3 is not None
 
-        assert sheet_1_3 is not None
-
-        name_1_3 = Calc.get_sheet_name(sheet_1_3)
-        assert name_1_3 == name_1_1
+            name_1_3 = Calc.get_sheet_name(sheet_1_3)
+            assert name_1_3 == name_1_1
 
         sheet_1_4 = Calc.get_sheet(doc, 0)
         assert sheet_1_4 is not None
