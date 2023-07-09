@@ -675,62 +675,56 @@ class GUI:
     def set_visible(cls, visible: bool, doc: object) -> None:
         ...
 
+    @overload
+    @classmethod
+    def set_visible(cls, *, doc: object) -> None:
+        ...
+
     @classmethod
     def set_visible(cls, *args, **kwargs) -> None:
         """
         Set window visibility.
 
         Args:
-            visible (bool): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
-            doc (object): office document
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
+            doc (object, optional): office document. If omitted the current document is used form ``Lo.lo_component``.
+
+        Returns:
+            None:
         """
-        ordered_keys = (1, 2)
-        kargs_len = len(kwargs)
-        count = len(args) + kargs_len
+        # is_visible and odoc are deprecated but still supported.
+        args_len = len(args)
+        if args_len > 0:
+            kwargs["visible"] = args[0]
+        if args_len > 1:
+            kwargs["doc"] = args[1]
 
-        def get_kwargs() -> dict:
-            ka = {}
-            if kargs_len == 0:
-                return ka
-            valid_keys = ("is_visible", "visible", "doc", "odoc")
-            check = all(key in valid_keys for key in kwargs)
-            if not check:
-                raise TypeError("set_visible() got an unexpected keyword argument")
-            keys = ("is_visible", "visible")
-            for key in keys:
-                if key in kwargs:
-                    ka[1] = kwargs[key]
-                    break
-            if count == 1:
-                return ka
-            keys = ("doc", "odoc")
-            for key in keys:
-                if key in kwargs:
-                    ka[2] = kwargs[key]
-                    break
-            return ka
+        if args_len > 2:
+            raise TypeError(f"set_visible() takes from 0 to 2 positional arguments but {args_len} were given")
 
-        if count not in (0, 1, 2):
-            raise TypeError("set_visible() got an invalid number of arguments")
-
-        kargs = get_kwargs()
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
-
-        is_visible = bool(kargs.get(1, True))
-        odoc = kargs.get(2)
+        keys = {"is_visible", "visible"}
+        is_visible = next((bool(kwargs.pop(key)) for key in keys if key in kwargs), True)
+        keys = {"doc", "odoc"}
+        odoc = next((kwargs.pop(key) for key in keys if key in kwargs), None)
+        if kwargs:
+            raise TypeError(f"set_visible() got an unexpected keyword argument {kwargs.popitem()[0]}")
 
         if odoc is None:
-            odoc = mLo.Lo.this_component
+            # odoc = mLo.Lo.get_relative_doc()
+            odoc = mLo.Lo.lo_component
 
         component = mLo.Lo.qi(XComponent, odoc)
         if component is None:
             return
-        window = cls.get_frame(component).getContainerWindow()
+        try:
+            window = cls.get_frame(component).getContainerWindow()
 
-        if window is not None:
-            window.setVisible(is_visible)
-            window.setFocus()
+            if window is not None:
+                window.setVisible(is_visible)
+                window.setFocus()
+        except Exception as e:
+            mLo.Lo.print("Unable to get window to set visibility")
+            mLo.Lo.print(f"  {e}")
 
     # endregion set_visible()
 

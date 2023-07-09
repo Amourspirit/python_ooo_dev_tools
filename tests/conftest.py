@@ -37,7 +37,7 @@ else:
 # see the comments in each
 
 # os.environ["ODEV_TEST_CONN_SOCKET"] = "true"
-# os.environ["NO_HEADLESS"] = "1"
+# os.environ["ODEV_TEST_HEADLESS"] = "0"
 # os.environ[
 #     "ODEV_CONN_SOFFICE"
 # ] = "D:\\Portables\\PortableApps\\LibreOfficePortable\App\\libreoffice\\program\\soffice.exe"
@@ -66,10 +66,7 @@ def run_headless():
     #   $env:NO_HEADLESS='1'; pytest; Remove-Item Env:\NO_HEADLESS
     # linux
     #  NO_HEADLESS="1" pytest
-    no_headless = os.environ.get("NO_HEADLESS", "")
-    if no_headless == "1":
-        return False
-    return True
+    return os.environ.get("ODEV_TEST_HEADLESS", "1") == "1"
 
 
 @pytest.fixture(scope="session")
@@ -150,47 +147,49 @@ def soffice_env():
 
 # region Loader methods
 def _get_loader_pipe_default(
-    headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None, verbose: bool = True
+    headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None
 ) -> XComponentLoader:
+    dynamic = os.environ.get("ODEV_TEST_OPT_DYNAMIC", "") == "1"
+    verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
+    visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
     return mLo.load_office(
-        connector=connectors.ConnectPipe(headless=headless, soffice=soffice, env_vars=env_vars),
+        connector=connectors.ConnectPipe(headless=headless, soffice=soffice, env_vars=env_vars, invisible=not visible),
         cache_obj=mCache.Cache(working_dir=working_dir),
-        opt=LoOptions(verbose=verbose),
+        opt=LoOptions(verbose=verbose, dynamic=dynamic),
     )
 
 
 def _get_loader_socket_default(
-    headless: bool,
-    soffice: str,
-    working_dir: Any,
-    env_vars: Optional[Dict[str, str]] = None,
-    verbose: bool = True,
-    host: str = "localhost",
-    port: int = 2002,
+    headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None
 ) -> XComponentLoader:
+    dynamic = os.environ.get("ODEV_TEST_OPT_DYNAMIC", "") == "1"
+    host = os.environ.get("ODEV_TEST_CONN_SOCKET_HOST", "localhost")
+    port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
+    verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
+    visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
     return mLo.load_office(
         connector=connectors.ConnectSocket(
-            host=host, port=port, headless=headless, soffice=soffice, env_vars=env_vars
+            host=host, port=port, headless=headless, soffice=soffice, env_vars=env_vars, invisible=not visible
         ),
         cache_obj=mCache.Cache(working_dir=working_dir),
-        opt=LoOptions(verbose=verbose),
+        opt=LoOptions(verbose=verbose, dynamic=dynamic),
     )
 
 
 def _get_loader_socket_no_start(
-    headless: bool,
-    working_dir: Any,
-    env_vars: Optional[Dict[str, str]] = None,
-    verbose: bool = True,
-    host: str = "localhost",
-    port: int = 2002,
+    headless: bool, working_dir: Any, env_vars: Optional[Dict[str, str]] = None
 ) -> XComponentLoader:
+    dynamic = os.environ.get("ODEV_TEST_OPT_DYNAMIC", "") == "1"
+    host = os.environ.get("ODEV_TEST_CONN_SOCKET_HOST", "localhost")
+    port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
+    verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
+    visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
     return mLo.load_office(
         connector=connectors.ConnectSocket(
-            host=host, port=port, headless=headless, start_office=False, env_vars=env_vars
+            host=host, port=port, headless=headless, start_office=False, env_vars=env_vars, invisible=not visible
         ),
         cache_obj=mCache.Cache(working_dir=working_dir),
-        opt=LoOptions(verbose=verbose),
+        opt=LoOptions(verbose=verbose, dynamic=dynamic),
     )
 
 
@@ -198,23 +197,16 @@ def _get_loader_socket_no_start(
 def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
     # for testing with a snap the cache_obj must be omitted.
     # This because the snap is not allowed to write to the real tmp directory.
-    test_socket = os.environ.get("ODEV_TEST_CONN_SOCKET", "")
+    test_socket = os.environ.get("ODEV_TEST_CONN_SOCKET", "0")
     connect_kind = os.environ.get("ODEV_TEST_CONN_SOCKET_KIND", "default")
-    if test_socket:
-        port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
-        host = os.environ.get("ODEV_TEST_CONN_SOCKET_HOST", "localhost")
+    if test_socket == "1":
         if connect_kind == "no_start":
             loader = _get_loader_socket_no_start(
-                headless=run_headless, working_dir=tmp_path_session, env_vars=soffice_env, host=host, port=port
+                headless=run_headless, working_dir=tmp_path_session, env_vars=soffice_env
             )
         else:
             loader = _get_loader_socket_default(
-                headless=run_headless,
-                soffice=soffice_path,
-                working_dir=tmp_path_session,
-                env_vars=soffice_env,
-                host=host,
-                port=port,
+                headless=run_headless, soffice=soffice_path, working_dir=tmp_path_session, env_vars=soffice_env
             )
     else:
         loader = _get_loader_pipe_default(

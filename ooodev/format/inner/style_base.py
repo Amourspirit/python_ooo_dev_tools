@@ -1423,8 +1423,12 @@ class StyleName(StyleBase):
 
         .. versionadded:: 0.9.2
         """
+        doc = mLo.Lo.this_component
+        if doc is None:
+            # most likely in headless mode with option dynamic set to True
+            doc = mLo.Lo.lo_component
         return mInfo.Info.get_style_props(
-            doc=mLo.Lo.this_component, family_style_name=self._get_family_style_name(), prop_set_nm=self.prop_name
+            doc=doc, family_style_name=self._get_family_style_name(), prop_set_nm=self.prop_name
         )
 
     # endregion methods

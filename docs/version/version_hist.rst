@@ -2,6 +2,12 @@
 Version History
 ***************
 
+
+Version 0.11.13
+===============
+
+Updates for better support of ``Lo.this_component`` in and ``Lo.XSCRIPTCONTEXT``.
+
 Version 0.11.12
 ===============
 

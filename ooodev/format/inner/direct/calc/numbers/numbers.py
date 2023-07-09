@@ -70,6 +70,9 @@ class Numbers(StyleBase):
             lang_locale = Locale()
         if component is None:
             component = mLo.Lo.this_component
+        if component is None:
+            # this is only likely if both headless and options dynamic is set for Lo class
+            component = mLo.Lo.lo_component
         self._num_cat = int(num_format)
         self._num_cat = max(self._num_cat, 0)
         self._num_format_index = int(num_format_index)
