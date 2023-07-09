@@ -1606,8 +1606,7 @@ class LoInst:
         return True
 
     def has_controllers_locked(self) -> bool:
-        doc = self.xscript_context.getDocument() if self._opt.dynamic else self._doc
-        xmodel = self.qi(XModel, doc, True)
+        xmodel = self.qi(XModel, self.lo_component, True)
         return xmodel.hasControllersLocked()
 
     def print(self, *args, **kwargs) -> None:
@@ -1738,7 +1737,7 @@ class LoInst:
                 self.load_office()
                 ctx = self.get_context()
 
-            self._xscript_context = script_context.ScriptContext(ctx=ctx, doc=self._doc, dynamic=self._opt.dynamic)
+            self._xscript_context = script_context.ScriptContext(ctx=ctx)
         return self._xscript_context
 
     XSCRIPTCONTEXT = xscript_context

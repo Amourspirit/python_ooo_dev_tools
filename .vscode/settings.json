@@ -9,7 +9,7 @@
         "editor.formatOnSaveMode": "file",
         "editor.formatOnSave": true
     },
-    "python.defaultInterpreterPath": "${workspaceRoot}/.venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceRoot}/.venv/bin/python3",
     "autoDocstring.docstringFormat": "google",
     "workbench.colorCustomizations": {
         "[Monokai]": {

@@ -35,7 +35,8 @@
 				"njpwerner.autodocstring",
 				"ms-python.black-formatter",
 				"ms-python.vscode-pylance",
-				"ms-vscode.test-adapter-converter"
+				"ms-vscode.test-adapter-converter",
+				"streetsidesoftware.code-spell-checker"
 			]
 		}
 	},

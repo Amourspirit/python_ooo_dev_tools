@@ -2,7 +2,7 @@
 # Origin class https://gitlab.com/LibreOfficiant/ide_utils/-/blob/master/IDE_utils.py
 # Original Author: LibreOfficiant: https://gitlab.com/LibreOfficiant
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno
 import os
 
@@ -18,13 +18,11 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XDesktop
     from com.sun.star.frame import XModel
     from com.sun.star.uno import XComponentContext
-    from com.sun.star.lang import XComponent
     from com.sun.star.document import XScriptInvocationContext
 else:
     XDesktop = object
     XModel = object
     XComponentContext = object
-    XComponent = object
     XScriptInvocationContext = object
 
 
@@ -40,40 +38,29 @@ class ScriptContext(unohelper.Base, XScriptContext):  # type: ignore
     def __init__(
         self,
         ctx: XComponentContext,
-        doc: XComponent | None = None,
-        inv: XScriptInvocationContext | None = None,
-        dynamic: bool = True,
+        **kwargs,
     ):
         self._uno_desktop_type = uno.getTypeByName("com.sun.star.frame.XDesktop")
         self._uno_model_type = uno.getTypeByName("com.sun.star.frame.XModel")
-        self.ctx = ctx
-        self.inv = inv
-        self._dynamic = dynamic
+        self._ctx = ctx
+        self._inv: Any = kwargs.get("inv", None)
         self._desktop = None
-        if doc is None:
-            self.doc = None
-        else:
-            self.doc = cast(XModel, doc.queryInterface(self._uno_model_type))
 
     def getComponentContext(self) -> XComponentContext:
-        return self.ctx
+        return self._ctx
 
     def getDesktop(self) -> XDesktop:
-        # return self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
-        if not self._dynamic and self._desktop is not None:
+        if self._desktop:
             return self._desktop
-        interface = self.ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
+        interface = self._ctx.getServiceManager().createInstanceWithContext("com.sun.star.frame.Desktop", self._ctx)
         self._desktop = cast(XDesktop, interface.queryInterface(self._uno_desktop_type))
         return self._desktop
 
     def getDocument(self) -> XModel:
-        # return self.getDesktop().getCurrentComponent()
-        if not self._dynamic and self.doc is not None:
-            return self.doc
         component = self.getDesktop().getCurrentComponent()
         return cast(XModel, component.queryInterface(self._uno_model_type))
 
     def getInvocationContext(self) -> XScriptInvocationContext:
-        if self.inv:
-            return self.inv
+        if self._inv:
+            return self._inv
         raise NotImplementedError
