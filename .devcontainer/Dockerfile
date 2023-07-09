@@ -69,3 +69,4 @@ RUN chmod -R +x "$HOME/.tmp/res/scripts" \
     && mkdir -p "/usr/lib/libreoffice/share/extensions" \
     && chmod +x "/usr/local/bin/startup.sh"
 
+WORKDIR /workspace/ooouno-dev-tools
