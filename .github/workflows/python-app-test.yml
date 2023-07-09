@@ -36,4 +36,4 @@ jobs:
     - name: UnitTest with pytest
       run: |
         docker-compose up -d
-        docker-compose exec -T ooodev_app pytest ./tests
+        docker-compose exec -T ooodev_app pytest tests
