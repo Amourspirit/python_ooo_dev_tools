@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.11.13"
+version = "0.11.14"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -58,6 +58,7 @@ oooenv = ">=0.1.1"
 pytest-mock = ">=3.10"
 pyright = ">=1.1.309"
 pytest-dotenv = "^0.5.2"
+sphobjinv = "^2.3.1"
 
 
 [tool.poetry.group.docs.dependencies]

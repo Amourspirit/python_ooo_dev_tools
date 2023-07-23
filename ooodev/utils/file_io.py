@@ -18,6 +18,8 @@ from com.sun.star.packages.zip import XZipFileAccess
 from com.sun.star.uno import Exception as UnoException
 from com.sun.star.uno import RuntimeException as UnoRuntimeException
 
+from ooo.dyn.util.the_macro_expander import theMacroExpander
+
 if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
@@ -221,6 +223,33 @@ class FileIO:
             mLo.Lo.print(f"Unable to get name for '{path}'")
             mLo.Lo.print(f"    {e}")
         return ""
+
+    @staticmethod
+    def expand_macro(fnm: str) -> str:
+        """
+        Expands macros in a file path if needed
+
+        Args:
+            fnm (str): file path
+
+        Returns:
+            str: expanded path
+
+        Example:
+            .. code-block:: python
+
+                >>> print(FileIO.expand_macro("vnd.sun.star.expand:$BUNDLED_EXTENSIONS/wiki-publisher/templates"))
+                'file:///usr/lib/libreoffice/share/extensions/wiki-publisher/templates'
+
+        .. versionadded:: 0.11.14
+        """
+        if not fnm:
+            return ""
+        if not fnm.startswith("vnd.sun.star.expand:"):
+            return fnm
+        # drop the prefix
+        fnm = fnm[20:]
+        return theMacroExpander().expandMacros(fnm)
 
     # endregion ---------- file path methods ---------------------------
 
