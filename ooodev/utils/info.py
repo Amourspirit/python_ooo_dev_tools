@@ -116,7 +116,9 @@ class Info(metaclass=StaticProperty):
         Returns:
             Tuple[FontDescriptor, ...]: Font Descriptors
         """
-        xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit", raise_err=True)
+        xtoolkit = mLo.Lo.create_instance_mcf(
+            XToolkit, "com.sun.star.awt.Toolkit", raise_err=True
+        )
         device = xtoolkit.createScreenCompatibleDevice(0, 0)
         if device is None:
             mLo.Lo.print("Could not access graphical output device")
@@ -239,7 +241,9 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str:
+    def get_reg_item_prop(
+        cls, item: str, prop: str, node: str, kind: Info.RegPropKind
+    ) -> str:
         ...
 
     @classmethod
@@ -286,7 +290,9 @@ class Info(metaclass=StaticProperty):
         # This xpath doesn't deal with all cases in the XCU file, which sometimes
         # has many node levels between the item and the prop
         if mLo.Lo.is_macro_mode:
-            raise mEx.NotSupportedMacroModeError("get_reg_item_prop() is not supported from a macro")
+            raise mEx.NotSupportedMacroModeError(
+                "get_reg_item_prop() is not supported from a macro"
+            )
         try:
             from lxml import etree as XML_ETREE  # type: ignore[import]
         except ImportError as e:
@@ -308,7 +314,9 @@ class Info(metaclass=StaticProperty):
                 elif kind == Info.RegPropKind.VALUE:
                     xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/value'
                     xpath = f"//item[/prop[@oor:name='{item}']/node[@oor:name='{node}']/value"
-            value = tree.xpath(xpath, namespaces={"oor": "http://openoffice.org/2001/registry"})
+            value = tree.xpath(
+                xpath, namespaces={"oor": "http://openoffice.org/2001/registry"}
+            )
             if not value:
                 raise Exception("Item Property not found")
             else:
@@ -317,7 +325,9 @@ class Info(metaclass=StaticProperty):
                     raise Exception("Item Property is white space (?)")
             return value
         except Exception as e:
-            raise ValueError("unable to get value from registrymodifications.xcu") from e
+            raise ValueError(
+                "unable to get value from registrymodifications.xcu"
+            ) from e
 
     @overload
     @classmethod
@@ -421,13 +431,19 @@ class Info(metaclass=StaticProperty):
         """
         try:
             con_prov = mLo.Lo.create_instance_mcf(
-                XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider", raise_err=True
+                XMultiServiceFactory,
+                "com.sun.star.configuration.ConfigurationProvider",
+                raise_err=True,
             )
             p = mProps.Props.make_props(nodepath=node_path)
-            ca = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", p)
+            ca = con_prov.createInstanceWithArguments(
+                "com.sun.star.configuration.ConfigurationAccess", p
+            )
             return mLo.Lo.qi(XPropertySet, ca, True)
         except Exception as e:
-            raise mEx.PropertyError(node_path, f"Unable to access config properties for\n\n  '{node_path}'") from e
+            raise mEx.PropertyError(
+                node_path, f"Unable to access config properties for\n\n  '{node_path}'"
+            ) from e
 
     @staticmethod
     def get_paths(setting: str | InfoPathsKind) -> str:
@@ -471,7 +487,9 @@ class Info(metaclass=StaticProperty):
 
         # Replaced by thePathSetting in LibreOffice 4.3
         try:
-            prop_set = mLo.Lo.create_instance_mcf(XPropertySet, "com.sun.star.util.PathSettings", raise_err=True)
+            prop_set = mLo.Lo.create_instance_mcf(
+                XPropertySet, "com.sun.star.util.PathSettings", raise_err=True
+            )
             result = prop_set.getPropertyValue(str(setting))
             if result is None:
                 raise ValueError(f"getPropertyValue() for {setting} yielded None")
@@ -494,6 +512,9 @@ class Info(metaclass=StaticProperty):
             :py:meth:`~.Info.get_paths`
 
             `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
+
+        .. versionchanged:: 0.11.14
+            - Added support for expanding macros.
         """
         try:
             paths = cls.get_paths(setting)
@@ -503,8 +524,17 @@ class Info(metaclass=StaticProperty):
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Could not split paths for '{setting}'")
-            return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(paths))]
-        return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(el)) for el in paths_arr]
+            return [
+                mFileIO.FileIO.uri_to_path(
+                    mFileIO.FileIO.uri_absolute(mFileIO.FileIO.expand_macro(paths))
+                )
+            ]
+        return [
+            mFileIO.FileIO.uri_to_path(
+                mFileIO.FileIO.uri_absolute(mFileIO.FileIO.expand_macro(el))
+            )
+            for el in paths_arr
+        ]
 
     @classmethod
     def get_office_dir(cls) -> str:
@@ -606,14 +636,18 @@ class Info(metaclass=StaticProperty):
             if con_prov is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
             _props = mProps.Props.make_props(nodepath=path)
-            root = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", _props)
+            root = con_prov.createInstanceWithArguments(
+                "com.sun.star.configuration.ConfigurationAccess", _props
+            )
             # cls.show_services(obj_name="ConfigurationAccess", obj=root)
             ps = mLo.Lo.qi(XHierarchicalPropertySet, root)
             if ps is None:
                 raise mEx.MissingInterfaceError(XHierarchicalPropertySet)
             return ps
         except Exception as e:
-            raise mEx.ConfigError(f"Unable to get configuration view for '{path}'") from e
+            raise mEx.ConfigError(
+                f"Unable to get configuration view for '{path}'"
+            ) from e
 
     # =================== update configuration settings ================
 
@@ -638,13 +672,17 @@ class Info(metaclass=StaticProperty):
             if con_prov is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
             _props = mProps.Props.make_props(nodepath=node_path)
-            ca = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", _props)
+            ca = con_prov.createInstanceWithArguments(
+                "com.sun.star.configuration.ConfigurationAccess", _props
+            )
             ps = mLo.Lo.qi(XPropertySet, ca)
             if ps is None:
                 raise mEx.MissingInterfaceError(XPropertySet)
             return ps
         except Exception as e:
-            raise mEx.ConfigError(f"Unable to set configuration property for '{node_path}'") from e
+            raise mEx.ConfigError(
+                f"Unable to set configuration property for '{node_path}'"
+            ) from e
 
     @classmethod
     def set_config(cls, node_path: str, node_str: str, val: object) -> bool:
@@ -1026,7 +1064,9 @@ class Info(metaclass=StaticProperty):
     def _get_service_names2(service_name: str) -> List[str]:
         names: List[str] = []
         try:
-            enum_access = mLo.Lo.qi(XContentEnumerationAccess, mLo.Lo.get_component_factory(), True)
+            enum_access = mLo.Lo.qi(
+                XContentEnumerationAccess, mLo.Lo.get_component_factory(), True
+            )
             x_enum = enum_access.createContentEnumeration(service_name)
             while x_enum.hasMoreElements():
                 si = mLo.Lo.qi(XServiceInfo, x_enum.nextElement(), True)
@@ -1382,7 +1422,9 @@ class Info(metaclass=StaticProperty):
                 print(f'"{length.name}" does not convert')
 
     @staticmethod
-    def get_methods_obj(obj: Any, property_concept: PropertyConceptEnum | None = None) -> List[str]:
+    def get_methods_obj(
+        obj: Any, property_concept: PropertyConceptEnum | None = None
+    ) -> List[str]:
         """
         Get Methods of an object such as a doc.
 
@@ -1473,7 +1515,9 @@ class Info(metaclass=StaticProperty):
             print(f"  {method}")
 
     @classmethod
-    def show_methods_obj(cls, obj: Any, property_concept: PropertyConceptEnum | None = None) -> None:
+    def show_methods_obj(
+        cls, obj: Any, property_concept: PropertyConceptEnum | None = None
+    ) -> None:
         """
         Prints method to console for an object such as a doc.
 
@@ -1554,7 +1598,9 @@ class Info(metaclass=StaticProperty):
             XNameContainer: Style Family container
         """
         name_acc = cls.get_style_families(doc)
-        return mLo.Lo.qi(XNameContainer, name_acc.getByName(family_style_name), raise_err=True)
+        return mLo.Lo.qi(
+            XNameContainer, name_acc.getByName(family_style_name), raise_err=True
+        )
 
     @classmethod
     def get_style_names(cls, doc: Any, family_style_name: str) -> List[str]:
@@ -1573,14 +1619,18 @@ class Info(metaclass=StaticProperty):
         """
         # sourcery skip: raise-specific-error
         try:
-            style_container = cls.get_style_container(doc=doc, family_style_name=family_style_name)
+            style_container = cls.get_style_container(
+                doc=doc, family_style_name=family_style_name
+            )
             names = style_container.getElementNames()
             return sorted(names)
         except Exception as e:
             raise Exception("Could not access style names") from e
 
     @classmethod
-    def get_style_props(cls, doc: Any, family_style_name: str, prop_set_nm: str) -> XPropertySet:
+    def get_style_props(
+        cls, doc: Any, family_style_name: str, prop_set_nm: str
+    ) -> XPropertySet:
         """
         Get style properties for a family of styles
 
@@ -1689,7 +1739,9 @@ class Info(metaclass=StaticProperty):
         ]
         print(f"  Locale: {'; '.join(loc)}")
 
-        print(f"  Modification Date: {mDate.DateUtil.str_date_time(dps.ModificationDate)}")
+        print(
+            f"  Modification Date: {mDate.DateUtil.str_date_time(dps.ModificationDate)}"
+        )
         print(f"  Creation Date: {mDate.DateUtil.str_date_time(dps.CreationDate)}")
         print(f"  Print Date: {mDate.DateUtil.str_date_time(dps.PrintDate)}")
         print(f"  Template Date: {mDate.DateUtil.str_date_time(dps.TemplateDate)}")
@@ -1776,7 +1828,9 @@ class Info(metaclass=StaticProperty):
         ctx = mLo.Lo.get_context()
         return mLo.Lo.qi(
             XPackageInformationProvider,
-            ctx.getValueByName("/singletons/com.sun.star.deployment.PackageInformationProvider"),
+            ctx.getValueByName(
+                "/singletons/com.sun.star.deployment.PackageInformationProvider"
+            ),
             True,
         )
         # return pip.get(mLo.Lo.get_context())
@@ -1850,7 +1904,9 @@ class Info(metaclass=StaticProperty):
         Returns:
             Tuple[str, ...]: Filter names
         """
-        na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
+        na = mLo.Lo.create_instance_mcf(
+            XNameAccess, "com.sun.star.document.FilterFactory"
+        )
         if na is None:
             mLo.Lo.print("No Filter factory found")
             return ()
@@ -1867,7 +1923,9 @@ class Info(metaclass=StaticProperty):
         Returns:
             List[PropertyValue]: List of PropertyValue
         """
-        na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
+        na = mLo.Lo.create_instance_mcf(
+            XNameAccess, "com.sun.star.document.FilterFactory"
+        )
         if na is None:
             mLo.Lo.print("No Filter factory found")
             return []
@@ -1992,7 +2050,9 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: True if flag is set; Otherwise, False
         """
-        return (filter_flags & cls.Filter.SUPPORTSSELECTION) == cls.Filter.SUPPORTSSELECTION
+        return (
+            filter_flags & cls.Filter.SUPPORTSSELECTION
+        ) == cls.Filter.SUPPORTSSELECTION
 
     @classmethod
     def is_not_in_file_dialog(cls, filter_flags: Info.Filter) -> bool:
@@ -2044,7 +2104,9 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: True if flag is set; Otherwise, False
         """
-        return (filter_flags & cls.Filter.THIRDPARTYFILTER) == cls.Filter.THIRDPARTYFILTER
+        return (
+            filter_flags & cls.Filter.THIRDPARTYFILTER
+        ) == cls.Filter.THIRDPARTYFILTER
 
     @classmethod
     def is_preferred(cls, filter_flags: Info.Filter) -> bool:
@@ -2136,7 +2198,9 @@ class Info(metaclass=StaticProperty):
     # region is_type_enum_multi()
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool:
+    def is_type_enum_multi(
+        alt_type: str, enum_type: Type[Enum], enum_val: Enum
+    ) -> bool:
         ...
 
     @overload
@@ -2146,16 +2210,22 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
+    def is_type_enum_multi(
+        alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str
+    ) -> bool:
         ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool:
+    def is_type_enum_multi(
+        alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str
+    ) -> bool:
         ...
 
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum | str, arg_name: str = "") -> bool:
+    def is_type_enum_multi(
+        alt_type: str, enum_type: Type[Enum], enum_val: Enum | str, arg_name: str = ""
+    ) -> bool:
         """
         Gets if an multiple inheritance enum, such as a ``str, Enum`` is of expected type.
 
@@ -2189,7 +2259,9 @@ class Info(metaclass=StaticProperty):
         if type(enum_val).__name__ != alt_type and not isinstance(enum_val, enum_type):
             if arg_name:
                 name = enum_type.__name__
-                raise TypeError(f'Parameter "{arg_name}" must be of type "{alt_type}" or "{name}"')
+                raise TypeError(
+                    f'Parameter "{arg_name}" must be of type "{alt_type}" or "{name}"'
+                )
             else:
                 return False
         return True
@@ -2285,9 +2357,14 @@ class Info(metaclass=StaticProperty):
             return cls._language
         except AttributeError:
             # sourcery skip: use-or-for-fallback
-            lang = cls.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N")
+            lang = cls.get_config(
+                node_str="ooLocale", node_path="/org.openoffice.Setup/L10N"
+            )
             if not lang:
-                lang = cls.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
+                lang = cls.get_config(
+                    node_str="ooSetupSystemLocale",
+                    node_path="/org.openoffice.Setup/L10N",
+                )
             if not lang:
                 # default to en-us
                 lang = "en-US"
