@@ -2,6 +2,10 @@
 Version History
 ***************
 
+Version 0.11.14
+===============
+
+Added ``FileIO.expand_macro()`` method that can be used to expand macro paths.
 
 Version 0.11.13
 ===============
