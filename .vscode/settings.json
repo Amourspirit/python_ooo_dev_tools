@@ -25,7 +25,7 @@
             "titleBar.activeForeground": "#e49df4"
         }
     },
-    "workbench.colorTheme": "Visual Studio Light - C++",
+    "workbench.colorTheme": "Monokai",
     "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
     "esbonio.server.enabled": true,
     "python.testing.pytestArgs": [

@@ -283,6 +283,14 @@ If neither ``soffice`` or ``ODEV_CONN_SOFFICE`` are set then the default ``soffi
 This is useful to test a LO development version.
 
 
+ODEV_MACRO_LOADER_OVERRIDE
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The :py:class:`~.macro.macro_loader.MacroLoader` context manager is used to load and reset context for macros.
+Sometimes it is useful to override the default ``MacroLoader`` context manager such as when testing or running macros code outside of LibreOffice.
+Setting the environment variable to ``ODEV_MACRO_LOADER_OVERRIDE=1`` will override the default ``MacroLoader`` context manager and return
+``ooodev.lo.Lo.loader_current`` if available.
+
 Testing
 -------
 
