@@ -73,3 +73,11 @@ Class Lo
         Get the current Bride connection
 
         :rtype: LoBridgeCommon
+    
+    .. py:property:: Lo.loader_current
+
+        Static read-only property
+
+        Gets the current ``XComponentLoader`` instance.
+
+        :rtype: XComponentLoader
