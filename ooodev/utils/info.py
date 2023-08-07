@@ -6,7 +6,7 @@ import contextlib
 from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
-from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional
+from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional, Set
 import uno
 
 from com.sun.star.awt import XToolkit
@@ -1277,10 +1277,10 @@ class Info(metaclass=StaticProperty):
 
             types = cast(Tuple[uno.Type, ...], type_provider.getTypes())
             # use a set to exclude duplicate names
-            names_set = set()
+            names_set: Set[str] = set()
             for t in types:
                 names_set.add(t.typeName)
-            type_names = sorted(names_set)
+            type_names = sorted(list(names_set))
             return type_names
         except Exception as e:
             mLo.Lo.print("Unable to get interfaces")
