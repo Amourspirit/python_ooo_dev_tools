@@ -1344,6 +1344,17 @@ files = [
 setuptools = "*"
 
 [[package]]
+name = "ooo-dev-odh"
+version = "0.1.4"
+description = "Command Line Help for my OooDev Project"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "ooo_dev_odh-0.1.4-py3-none-any.whl", hash = "sha256:2b49bd61c1a37add4b41a04c46aeac9aa549a565fe441b512597b3e5f68a5395"},
+    {file = "ooo_dev_odh-0.1.4.tar.gz", hash = "sha256:11327f38e602a6a04547fbf25e82bfaa25af6920a468fa54709db9be19f1b40c"},
+]
+
+[[package]]
 name = "oooenv"
 version = "0.2.2"
 description = "Configures a project python environment for LibreOffice UNO."
@@ -2644,4 +2655,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "66062b8d8b1b2dc6b2c14f835353a36c3ce85986933ce555c32fb741d8f224f6"
+content-hash = "c31f33f587ab97432fd349f779f06896e7a3d013be94526cda238cb2d18ac198"
