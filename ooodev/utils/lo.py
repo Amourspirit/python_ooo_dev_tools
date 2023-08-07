@@ -1232,7 +1232,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :py:meth:`~.Lo.store_doc`
         """
-        if password is None:
+        if not password:
             return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format)
         return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format, password=password)
 
@@ -1873,7 +1873,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True if running as a macro; Otherwise, False
         """
-        return cls._lo_inst.is_macro_mode
+        try:
+            return cls._lo_inst.is_macro_mode
+        except AttributeError:
+            return False
 
     @classproperty
     def star_desktop(cls) -> XDesktop:
