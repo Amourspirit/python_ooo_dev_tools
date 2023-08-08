@@ -57,7 +57,6 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
-from ooodev.utils import xml_util as mXML
 from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
 from ooodev.utils.inst.lo.options import Options as LoOptions
 from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
@@ -647,7 +646,7 @@ class LoInst:
     ) -> XComponent:
         if loader is None:
             loader = cast(XComponentLoader, self._loader)
-        nn = mXML.XML.get_flat_filter_name(doc_type=doc_type.get_doc_type_str())
+        nn = self.get_flat_filter_name(doc_type=doc_type.get_doc_type_str())
         self.print(f"Flat filter Name: {nn}")
         # do not set Hidden=True property here.
         # there is a strange error that pops up conditionally and it seems
@@ -1617,6 +1616,33 @@ class LoInst:
         if cargs.cancel:
             return
         print(*args, **kwargs)
+
+    # region XML
+    def get_flat_filter_name(self, doc_type: LoDocTypeStr) -> str:
+        """
+        Gets the Flat XML filter name for the doc type.
+
+        Args:
+            doc_type (DocTypeStr): Document type.
+
+        Returns:
+            str: Flat XML filter name.
+
+        .. versionadded:: 0.12.0
+        """
+        if doc_type == LoDocTypeStr.WRITER:
+            return "OpenDocument Text Flat XML"
+        elif doc_type == LoDocTypeStr.CALC:
+            return "OpenDocument Spreadsheet Flat XML"
+        elif doc_type == LoDocTypeStr.DRAW:
+            return "OpenDocument Drawing Flat XML"
+        elif doc_type == LoDocTypeStr.IMPRESS:
+            return "OpenDocument Presentation Flat XML"
+        else:
+            print("No Flat XML filter for this document type; using Flat text")
+            return "OpenDocument Text Flat XML"
+
+    # endregion XML
 
     @property
     def null_date(self) -> datetime:

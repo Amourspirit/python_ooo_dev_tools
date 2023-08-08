@@ -1,13 +1,13 @@
 {
     "terminal.integrated.shellIntegration.enabled": true,
-    "python.formatting.provider": "black",
     "testExplorer.useNativeTesting": false,
     "restructuredtext.preview.scrollPreviewWithEditor": false,
     "restructuredtext.preview.scrollEditorWithPreview": false,
     "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
         "editor.formatOnPaste": false,
-        "editor.formatOnSaveMode": "file",
-        "editor.formatOnSave": true
+        "editor.formatOnSaveMode": "file"
     },
     "python.defaultInterpreterPath": "${workspaceRoot}/.venv/bin/python3",
     "autoDocstring.docstringFormat": "google",
@@ -36,7 +36,7 @@
     "spellchecker.ignoreWordsList": [
         "LibreOffice"
     ],
-    "python.formatting.blackArgs": [
+    "black-formatter.args": [
         "--line-length",
         "119"
     ],

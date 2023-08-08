@@ -1841,6 +1841,24 @@ class Lo(metaclass=StaticProperty):
         """
         cls._lo_inst.print(*args, **kwargs)
 
+    # region XML
+    @classmethod
+    def get_flat_filter_name(cls, doc_type: LoDocTypeStr) -> str:
+        """
+        Gets the Flat XML filter name for the doc type.
+
+        Args:
+            doc_type (DocTypeStr): Document type.
+
+        Returns:
+            str: Flat XML filter name.
+
+        .. versionadded:: 0.12.0
+        """
+        return cls._lo_inst.get_flat_filter_name(doc_type=doc_type)
+
+    # endregion XML
+
     @classproperty
     def null_date(cls) -> datetime:
         """

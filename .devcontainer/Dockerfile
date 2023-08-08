@@ -4,7 +4,8 @@ USER root
 
 WORKDIR /workspace/ooouno-dev-tools
 
-COPY ./pyproject.toml ./poetry.lock ./poetry.toml ./
+# COPY ./pyproject.toml ./poetry.lock ./poetry.toml ./
+COPY ./*.toml ./*.lock ./
 
 RUN poetry install --no-root
 
@@ -34,14 +35,12 @@ RUN apt-get update \
 
 WORKDIR /workspace/ooouno-dev-tools
 
-# ENV PYTHONUNBUFFERED 1
-
 COPY --from=builder /workspace/ooouno-dev-tools/.venv ./.venv
 
-
 ENV VIRTUAL_ENV=/workspace/ooouno-dev-tools/.venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-ENV PYTHONUNBUFFERED 1
+    # do not combine ENV here
+ENV PATH="$VIRTUAL_ENV/bin:$PATH" \
+    PYTHONUNBUFFERED=1
 
 RUN if [ x"$LOCAL_GIT_AUTHOR_NAME" != "x" ]; then git config --global user.name "$LOCAL_GIT_AUTHOR_NAME" || true; fi \
     && if [ x"$LOCAL_GIT_AUTHOR_EMAIL" != "x" ]; then git config --global user.email $LOCAL_GIT_AUTHOR_EMAIL || true; fi
@@ -54,7 +53,8 @@ ARG WD=/workspace/ooouno-dev-tools/.venv/lib/python$PY_VER/site-packages
 
 WORKDIR ${WD}
 
-RUN ln -s /usr/lib/python3/dist-packages/uno.py uno.py \
+RUN poetry config virtualenvs.in-project true \
+    && ln -s /usr/lib/python3/dist-packages/uno.py uno.py \
     && ln -s /usr/lib/python3/dist-packages/unohelper.py unohelper.py \
     && echo "/workspace/ooouno-dev-tools" >> ooo_dev_tools.pth
 
