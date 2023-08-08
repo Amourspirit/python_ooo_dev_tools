@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.12.0
+==============
+
+This version saw the removal of ``lxml`` as a dependency. Now the Library has no external binary dependencies.
+
+The ``ooodev.utils.xml_util`` module was removed and all methods were moved to `Ooo Dev Xml <https://pypi.org/project/ooo-dev-xml/>` package.
+
+If you were using the class directly from the ``ooodev.utils.xml_util`` module, you can now use the class from the ``ooodev_xml.odxml`` module.
+
 Version 0.11.14
 ===============
 

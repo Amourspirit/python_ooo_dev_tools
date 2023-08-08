@@ -1,4 +1,0 @@
-payment  purpose: "CD"  amount: "12.95"  tax: "19.1234"  maturity: "2008-03-01"
-payment  purpose: "DVD"  amount: "19.95"  tax: "19.4321"  maturity: "2008-03-02"
-payment  purpose: "Clothes"  amount: "99.95"  tax: "18.5678"  maturity: "2008-03-03"
-payment  purpose: "Book"  amount: "9.49"  tax: "18.9876"  maturity: "2008-03-04"

@@ -1232,7 +1232,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :py:meth:`~.Lo.store_doc`
         """
-        if password is None:
+        if not password:
             return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format)
         return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format, password=password)
 
@@ -1841,6 +1841,24 @@ class Lo(metaclass=StaticProperty):
         """
         cls._lo_inst.print(*args, **kwargs)
 
+    # region XML
+    @classmethod
+    def get_flat_filter_name(cls, doc_type: LoDocTypeStr) -> str:
+        """
+        Gets the Flat XML filter name for the doc type.
+
+        Args:
+            doc_type (DocTypeStr): Document type.
+
+        Returns:
+            str: Flat XML filter name.
+
+        .. versionadded:: 0.12.0
+        """
+        return cls._lo_inst.get_flat_filter_name(doc_type=doc_type)
+
+    # endregion XML
+
     @classproperty
     def null_date(cls) -> datetime:
         """
@@ -1873,7 +1891,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True if running as a macro; Otherwise, False
         """
-        return cls._lo_inst.is_macro_mode
+        try:
+            return cls._lo_inst.is_macro_mode
+        except AttributeError:
+            return False
 
     @classproperty
     def star_desktop(cls) -> XDesktop:

@@ -5,8 +5,25 @@ Dev Docs
 
 .. _dev_doc_virtulal_env:
 
+Development Container
+---------------------
+
+|odev| has a development container that can be used to develop and test code. The container is pre-configured with all the necessary tools to develop and test code.
+This development container is best suited for use with Vs Code.
+
+In the development container it is possible to run LibreOffice in Gui mode (tested on Ubuntu 22.04) or in headless mode
+Running LibreOffice in headless mode also will work in a GitHub Codespace, even in the web browser.
+
+When developing using the development container it is not needed to install LibreOffice on the host machine.
+Also, no need to set up virtual environment.
+
+Note: The development container isolates the ``.venv`` folder from the host machine. This is done to prevent conflicts with the host machine
+in the event the host machine has a virtual environment set up.
+
 Virtual Environment
 -------------------
+
+Setting up virtual environment is not needed when running as a development container.
 
 It is assumed `<https://github.com/Amourspirit/python_ooo_dev_tools>`__ has been cloned or unzipped to a folder.
 
@@ -211,7 +228,7 @@ Viewing docs
 ^^^^^^^^^^^^
 
 |online_docs|_ are available.
-Viewing local docs can be done by starting a local webserver.
+Viewing local docs can be done by starting a local web-server.
 
 |odev| has a script to make this easier. In a separate terminal window run:
 

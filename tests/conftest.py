@@ -314,10 +314,10 @@ def fix_image_path():
 @pytest.fixture(scope="session")
 def props_str_to_dict():
     """
-    Convets a property string such as produced by
+    Converts a property string such as produced by
     Props.show_obj_props() into a key value pair.
 
-    First line is excpected to be Property Name and
+    First line is expected to be Property Name and
     is added as Key TEST_NAME
 
     Returns:
