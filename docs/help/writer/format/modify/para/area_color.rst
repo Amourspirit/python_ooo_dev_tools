@@ -26,7 +26,7 @@ Setup
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):
                 doc = Write.create_doc()
-                GUI.set_visible(doc)
+                GUI.set_visible(doc=doc)
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
 
@@ -90,8 +90,8 @@ Apply style
             .. group-tab:: None
 
 
-After appling style
-^^^^^^^^^^^^^^^^^^^
+After applying style
+^^^^^^^^^^^^^^^^^^^^
 
 .. cssclass:: screen_shot
 

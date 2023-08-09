@@ -47,7 +47,7 @@ General function used to run these examples.
         def main() -> int:
            with Lo.Loader(Lo.ConnectPipe()):
                 doc = Write.create_doc()
-                GUI.set_visible(doc)
+                GUI.set_visible(doc=doc)
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 

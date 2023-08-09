@@ -57,7 +57,7 @@ General function used to run these examples:
 
                 with Lo.Loader(Lo.ConnectPipe()):
                     doc = Write.create_doc()
-                    GUI.set_visible(doc)
+                    GUI.set_visible(doc=doc)
                     Lo.delay(300)
                     GUI.zoom(GUI.ZoomEnum.ZOOM_100_PERCENT)
                     cursor = Write.get_cursor(doc)

@@ -30,7 +30,7 @@ Setup
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe(Lo.Options(verbose=True))):
                 doc = Write.create_doc()
-                GUI.set_visible(doc)
+                GUI.set_visible(doc=doc)
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.PAGE_WIDTH)
                 cursor = Write.get_cursor(doc)
