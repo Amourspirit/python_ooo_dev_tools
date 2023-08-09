@@ -111,6 +111,7 @@ class Gradient(StyleMulti):
         end_color: int,
         end_intensity: Intensity | int,
     ) -> GradientStruct:
+        # pylint: disable=unexpected-keyword-arg
         return GradientStruct(
             style=style,
             step_count=step_count,
