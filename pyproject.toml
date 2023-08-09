@@ -98,7 +98,10 @@ target="py37"
 max-line-length = 120
 disable = """
     no-name-in-module,
-    no-self-argument
+    no-self-argument,
+    attribute-defined-outside-init,
+    line-too-long,
+    W2301
 """
 [tool.pylint.format]
 allow-reexport-from-package=true
