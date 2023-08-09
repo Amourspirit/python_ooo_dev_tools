@@ -25,6 +25,7 @@ from com.sun.star.text import XTextCursor
 from ooo.dyn.style.line_spacing import LineSpacing
 from ooo.dyn.style.line_spacing_mode import LineSpacingMode
 
+
 def test_story_creator(loader, copy_fix_writer, tmp_path_fn):
     visible = True
     delay = 4_000
@@ -33,25 +34,28 @@ def test_story_creator(loader, copy_fix_writer, tmp_path_fn):
     Write.create_doc(loader)
     # could have captured doc as: doc = Write.open_doc(fnm=test_doc, loader=loader)
     # just confirming that Lo.XSCRIPTCONTEXT is working.
-    doc = Lo.qi(XTextDocument, Lo.XSCRIPTCONTEXT.getDocument(), raise_err=True)
+    # Document is not visibe at this point os it is not available via Lo.XSCRIPTCONTEXT.getDocument()
+    # or Lo.this_component
+    doc = Lo.lo_component
+    assert doc is not None
 
     try:
         if visible:
             GUI.set_visible(visible, doc)
         create_para_style(doc, "adParagraph")
-        
+
         xtext_range = doc.getText().getStart()
         Props.set_property(xtext_range, "ParaStyleName", "adParagraph")
-        
+
         Write.set_header(text_doc=doc, text=f"From: {test_doc.name}")
         Write.set_a4_page_format(doc)
         Write.set_page_numbers(doc)
-        
+
         cursor = Write.get_cursor(doc)
-        
+
         read_text(fnm=test_doc, cursor=cursor)
         Write.end_paragraph(cursor)
-        
+
         Write.append_para(cursor, f"Timestamp: {DateUtil.time_stamp()}")
 
         Lo.delay(delay)
@@ -60,15 +64,16 @@ def test_story_creator(loader, copy_fix_writer, tmp_path_fn):
     finally:
         Lo.close_doc(doc, False)
 
+
 def read_text(fnm: Path, cursor: XTextCursor) -> None:
     sb: List[str] = []
-    with open(fnm, 'r') as file:
+    with open(fnm, "r") as file:
         i = 0
         for ln in file:
-            line = ln.rstrip() # remove new line \n
+            line = ln.rstrip()  # remove new line \n
             if len(line) == 0:
                 if len(sb) > 0:
-                    Write.append_para(cursor, ' '.join(sb))
+                    Write.append_para(cursor, " ".join(sb))
                 sb.clear()
             elif line.startswith("Title: "):
                 Write.append_para(cursor, line[7:])
@@ -85,28 +90,24 @@ def read_text(fnm: Path, cursor: XTextCursor) -> None:
             # if i > 20:
             #     break
         if len(sb) > 0:
-            Write.append_para(cursor, ' '.join(sb))
-            
-
-
+            Write.append_para(cursor, " ".join(sb))
 
 
 def create_para_style(doc: XTextDocument, style_name: str) -> None:
     para_styles = Info.get_style_container(doc=doc, family_style_name="ParagraphStyles")
-    
+
     # create new paragraph style properties set
     para_style = Lo.create_instance_msf(XStyle, "com.sun.star.style.ParagraphStyle", raise_err=True)
     props = Lo.qi(XPropertySet, para_style, raise_err=True)
-    
+
     # set some properties
     props.setPropertyValue("CharFontName", Info.get_font_general_name())
     props.setPropertyValue("CharHeight", 12.0)
-    props.setPropertyValue("ParaBottomMargin", 400) # 4mm, in 100th mm
+    props.setPropertyValue("ParaBottomMargin", 400)  # 4mm, in 100th mm
 
     line_spacing = LineSpacing(Mode=LineSpacingMode.FIX, Height=600)
     props.setPropertyValue("ParaLineSpacing", line_spacing)
-    
+
     para_styles.insertByName(style_name, props)
-    
-    # set paragraph line spacing to 6mm 
-    
+
+    # set paragraph line spacing to 6mm

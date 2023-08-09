@@ -1,15 +1,15 @@
 {
     "terminal.integrated.shellIntegration.enabled": true,
-    "python.formatting.provider": "black",
     "testExplorer.useNativeTesting": false,
     "restructuredtext.preview.scrollPreviewWithEditor": false,
     "restructuredtext.preview.scrollEditorWithPreview": false,
     "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
         "editor.formatOnPaste": false,
-        "editor.formatOnSaveMode": "file",
-        "editor.formatOnSave": true
+        "editor.formatOnSaveMode": "file"
     },
-    "python.defaultInterpreterPath": "${workspaceRoot}/.venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceRoot}/.venv/bin/python3",
     "autoDocstring.docstringFormat": "google",
     "workbench.colorCustomizations": {
         "[Monokai]": {
@@ -26,7 +26,7 @@
         }
     },
     "workbench.colorTheme": "Monokai",
-    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
+    "esbonio.sphinx.confDir": "${workspaceFolder}/docs",
     "esbonio.server.enabled": true,
     "python.testing.pytestArgs": [
         "tests"
@@ -36,7 +36,7 @@
     "spellchecker.ignoreWordsList": [
         "LibreOffice"
     ],
-    "python.formatting.blackArgs": [
+    "black-formatter.args": [
         "--line-length",
         "119"
     ],
@@ -214,6 +214,7 @@
         "CLIPCHILDREN",
         "CLSID",
         "cmds",
+        "Codespace",
         "colorbar",
         "combapility",
         "COMMANDBUTTON",
@@ -333,6 +334,7 @@
         "SMALLCAPS",
         "smgr",
         "soffice",
+        "sourcery",
         "sphinxcontrib",
         "SPINBUTTON",
         "spreadsheetview",

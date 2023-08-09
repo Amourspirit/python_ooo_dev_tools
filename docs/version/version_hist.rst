@@ -2,6 +2,32 @@
 Version History
 ***************
 
+Version 0.12.0
+==============
+
+This version saw the removal of ``lxml`` as a dependency. Now the Library has no external binary dependencies.
+
+The ``ooodev.utils.xml_util`` module was removed and all methods were moved to `Ooo Dev Xml <https://pypi.org/project/ooo-dev-xml/>` package.
+
+If you were using the class directly from the ``ooodev.utils.xml_util`` module, you can now use the class from the ``ooodev_xml.odxml`` module.
+
+Version 0.11.14
+===============
+
+Added ``FileIO.expand_macro()`` method that can be used to expand macro paths.
+
+Version 0.11.13
+===============
+
+Updates for better support of ``Lo.this_component`` in and ``Lo.XSCRIPTCONTEXT``.
+
+Version 0.11.12
+===============
+
+Fix bug in ``Calc.set_sheet_name()`` that was not working correctly.
+
+Add new parameter to ``Calc.get_sheet_name()`` that allows for wrapping of the sheet name in single quotes if it is needed.
+
 Version 0.11.11
 ===============
 

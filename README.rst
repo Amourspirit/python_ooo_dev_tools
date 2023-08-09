@@ -1,7 +1,7 @@
 OOO Development Tools
 =====================
 
-|lic| |pver| |pwheel| |github|
+|lic| |pver| |pwheel| |test_badge|_ |github|
 
 OOO Development Tools (OooDev) is intended for programmers who want to learn and use the
 Python version of the `LibreOffice`_ API.
@@ -39,8 +39,40 @@ This makes Python and excellent choice with maximum flexibility.
 Documentation
 -------------
 
+Docs
+^^^^
+
 Read `documentation <https://python-ooo-dev-tools.readthedocs.io/en/latest/>`_
 
+Command Line Help
+^^^^^^^^^^^^^^^^^
+
+There are many classes and methods in this project.
+For this reason OooDev has a command line tool |cli_hlp|_.
+that can be used to search the documentation for classes and methods this project.
+Choosing a number from a search result opens you web browser to that class or method in the documentation.
+
+|cli_hlp|_ is built from `Sphinx CLI Help <https://github.com/Amourspirit/python-sphinx-cli-help>`__, so see the `Wiki Searching help <https://github.com/Amourspirit/python-sphinx-cli-help/wiki/Searching>`__ and substitute ``cli-hlp`` with ``odh`` on command line instructions.
+
+Example Usage:
+
+.. code-block:: bash
+
+    odh hlp -s Write.append
+
+    Choose an option (default 1):
+    [0],  Cancel (or press q followed by enter)
+    [1],  ooodev.office.write.Write.append                                 - method     - py
+    [2],  ooodev.office.write.Write.append_date_time                       - method     - py
+    [3],  ooodev.office.write.Write.append_line                            - method     - py
+    [4],  ooodev.office.write.Write.append_para                            - method     - py
+
+
+Note that |cli_hlp|_ is a separate project and is not required to use this project.
+Also |cli_hlp|_ use python built in ``sqlite`` which is not shipped with LibreOffices's python on Windows.
+This means some configurations will not allow |cli_hlp|_ to run on Windows. In this case you can install |cli_hlp|_ on a global scope and use it that way if needed.
+
+See Also: `LibreOffice Developer Search <https://pypi.org/project/lo-dev-search/>`__
 
 Installation
 ------------
@@ -137,3 +169,11 @@ LibreOffice API Typing's
 .. |github| image:: https://img.shields.io/badge/GitHub-100000?style=plastic&logo=github&logoColor=white
     :target: https://github.com/Amourspirit/python_ooo_dev_tools
     :alt: Github
+
+.. |test_badge| image:: https://github.com/Amourspirit/python_ooo_dev_tools/actions/workflows/python-app-test.yml/badge.svg
+    :alt: Test Badge
+
+.. _test_badge: https://github.com/Amourspirit/python_ooo_dev_tools/actions/workflows/python-app-test.yml
+
+.. |cli_hlp| replace:: OooDev CLI Help
+.. _cli_hlp: https://github.com/Amourspirit/python-ooodev-cli-hlp#readme

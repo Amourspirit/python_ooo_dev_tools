@@ -142,7 +142,7 @@ Install ooo-dev-tools_
     python -m pip install ooo-dev-tools
 
 Run an automation script
-""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 We will create a simple script to automate LibreOffice FlatPak by the Name of ``hello_world.py``.
 
@@ -248,3 +248,4 @@ Related Links
 
 .. _oooenv: https://pypi.org/project/oooenv/
 .. _ooo-dev-tools: https://pypi.org/project/ooo-dev-tools/
+.. _pyenv: https://github.com/pyenv/pyenv#readme

@@ -6,7 +6,7 @@ import contextlib
 from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
-from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional
+from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional, Set
 import uno
 
 from com.sun.star.awt import XToolkit
@@ -214,6 +214,11 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
+    def get_reg_item_prop(cls, item: str) -> str:
+        ...
+
+    @overload
+    @classmethod
     def get_reg_item_prop(cls, item: str, prop: str) -> str:
         ...
 
@@ -288,36 +293,44 @@ class Info(metaclass=StaticProperty):
         if mLo.Lo.is_macro_mode:
             raise mEx.NotSupportedMacroModeError("get_reg_item_prop() is not supported from a macro")
         try:
-            from lxml import etree as XML_ETREE  # type: ignore[import]
+            import xml.etree.ElementTree as ET  # type: ignore[import]
         except ImportError as e:
-            raise Exception("get_reg_item_prop() requires lxml python package") from e
+            raise Exception("get_reg_item_prop() requires xml python package") from e
 
         try:
-            _xml_parser = XML_ETREE.XMLParser(remove_blank_text=True)
             fnm = cls.get_reg_mods_path()
-            tree: XML_ETREE._ElementTree = XML_ETREE.parse(fnm, parser=_xml_parser)
-
+            tree = ET.parse(fnm)
+            xpath = ""
+            if not prop:
+                kind = Info.RegPropKind.VALUE
             if node is None:
                 if kind == Info.RegPropKind.PROPERTY:
-                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/prop[@oor:name="{prop}"]/value'
+                    xpath = f'.//item[@oor:path="/org.openoffice.Office.{item}"]/prop[@oor:name="{prop}"]/value'
                 elif kind == Info.RegPropKind.VALUE:
-                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/value'
+                    xpath = f'.//item[@oor:path="/org.openoffice.Office.{item}"]/value'
             else:
                 if kind == Info.RegPropKind.PROPERTY:
-                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/prop[@oor:name="{prop}"]/value'
+                    xpath = f'.//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/prop[@oor:name="{prop}"]/value'
                 elif kind == Info.RegPropKind.VALUE:
-                    xpath = f'//item[@oor:path="/org.openoffice.Office.{item}"]/node[@oor:name="{node}"]/value'
-                    xpath = f"//item[/prop[@oor:name='{item}']/node[@oor:name='{node}']/value"
-            value = tree.xpath(xpath, namespaces={"oor": "http://openoffice.org/2001/registry"})
+                    xpath = f".//item[/prop[@oor:name='{item}']/node[@oor:name='{node}']/value"
+            if not xpath:
+                raise ValueError("Unable to create xpath. Recheck arguments.")
+            value = tree.findall(xpath, namespaces={"oor": "http://openoffice.org/2001/registry"})
             if not value:
                 raise Exception("Item Property not found")
             else:
-                value = value[idx].text.strip()
+                try:
+                    first = value[idx]
+                except IndexError:
+                    raise
+                if first.text is None:
+                    raise Exception("Item Property is None (?)")
+                value = first.text.strip()
                 if value == "":
                     raise Exception("Item Property is white space (?)")
             return value
         except Exception as e:
-            raise ValueError("unable to get value from registrymodifications.xcu") from e
+            raise ValueError("Unable to get value from registrymodifications.xcu") from e
 
     @overload
     @classmethod
@@ -421,7 +434,9 @@ class Info(metaclass=StaticProperty):
         """
         try:
             con_prov = mLo.Lo.create_instance_mcf(
-                XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider", raise_err=True
+                XMultiServiceFactory,
+                "com.sun.star.configuration.ConfigurationProvider",
+                raise_err=True,
             )
             p = mProps.Props.make_props(nodepath=node_path)
             ca = con_prov.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", p)
@@ -494,6 +509,9 @@ class Info(metaclass=StaticProperty):
             :py:meth:`~.Info.get_paths`
 
             `Wiki Path Settings <https://wiki.openoffice.org/w/index.php?title=Documentation/DevGuide/OfficeDev/Path_Settings>`_
+
+        .. versionchanged:: 0.11.14
+            - Added support for expanding macros.
         """
         try:
             paths = cls.get_paths(setting)
@@ -503,8 +521,11 @@ class Info(metaclass=StaticProperty):
         paths_arr = paths.split(";")
         if len(paths_arr) == 0:
             mLo.Lo.print(f"Could not split paths for '{setting}'")
-            return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(paths))]
-        return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(el)) for el in paths_arr]
+            return [mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(mFileIO.FileIO.expand_macro(paths)))]
+        return [
+            mFileIO.FileIO.uri_to_path(mFileIO.FileIO.uri_absolute(mFileIO.FileIO.expand_macro(el)))
+            for el in paths_arr
+        ]
 
     @classmethod
     def get_office_dir(cls) -> str:
@@ -1237,10 +1258,10 @@ class Info(metaclass=StaticProperty):
 
             types = cast(Tuple[uno.Type, ...], type_provider.getTypes())
             # use a set to exclude duplicate names
-            names_set = set()
+            names_set: Set[str] = set()
             for t in types:
                 names_set.add(t.typeName)
-            type_names = sorted(names_set)
+            type_names = sorted(list(names_set))
             return type_names
         except Exception as e:
             mLo.Lo.print("Unable to get interfaces")
@@ -2287,7 +2308,10 @@ class Info(metaclass=StaticProperty):
             # sourcery skip: use-or-for-fallback
             lang = cls.get_config(node_str="ooLocale", node_path="/org.openoffice.Setup/L10N")
             if not lang:
-                lang = cls.get_config(node_str="ooSetupSystemLocale", node_path="/org.openoffice.Setup/L10N")
+                lang = cls.get_config(
+                    node_str="ooSetupSystemLocale",
+                    node_path="/org.openoffice.Setup/L10N",
+                )
             if not lang:
                 # default to en-us
                 lang = "en-US"

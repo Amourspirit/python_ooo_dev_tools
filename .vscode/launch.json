@@ -32,24 +32,6 @@
                 "debug-test"
             ],
             "program": "${file}",
-            "env": {
-                "NO_HEADLESS": "0",
-                "ODEV_TEST_CONN_SOCKET": "",
-                "ODEV_TEST_CONN_SOCKET_KIND": "default",
-                "ODEV_TEST_CONN_SOCKET_PORT": "2002",
-            }
-        },
-        {
-            "name": "Python: Current Remote LibreOffice",
-            "type": "python",
-            "console": "integratedTerminal",
-            "request": "launch",
-            "program": "${file}",
-            "env": {
-                "ODEV_TEST_CONN_SOCKET": "true",
-                "ODEV_TEST_CONN_SOCKET_KIND": "no_start",
-                "ODEV_TEST_CONN_SOCKET_PORT": "2002",
-            }
         },
         {
             "name": "Python: Current All Code",

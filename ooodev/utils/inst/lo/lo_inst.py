@@ -57,7 +57,6 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
-from ooodev.utils import xml_util as mXML
 from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
 from ooodev.utils.inst.lo.options import Options as LoOptions
 from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
@@ -216,6 +215,8 @@ class LoInst:
         """
         Gets current LO Desktop
         """
+        if self._opt.dynamic:
+            return self.xscript_context.getDesktop()
         return self._xdesktop  # type: ignore
 
     def get_component_factory(self) -> XMultiComponentFactory:
@@ -226,6 +227,34 @@ class LoInst:
         """Gets current multi service factory"""
         # return cls._bridge_component
         return self._ms_factory  # type: ignore
+
+    def get_relative_doc(self) -> XComponent:
+        """
+        Gets current document.
+
+        If the current options are set to dynamic,
+        then the current document is returned from the script context.
+        Otherwise, the current internal document is returned.
+        The internal document is set when a new document is created via the Write, Calc, etc.
+
+        In most instances the internal document is the same as the xscript context document.
+
+        By Default the dynamic option is set to ``False``.
+
+        Raises:
+            NoneError: If the document is ``None``.
+
+        Returns:
+            XComponent: Current Document
+        """
+        if self._opt.dynamic:
+            doc = self.xscript_context.getDesktop().getCurrentComponent()
+            if doc is None:
+                raise mEx.NoneError("Document is None")
+            return doc
+        if self._doc is None:
+            raise mEx.NoneError("Document is None")
+        return self._doc
 
     # region interface object creation
 
@@ -586,6 +615,10 @@ class LoInst:
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.COMPONENT_LOADING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.COMPONENT_LOADED` :eventref:`src-docs-event`
 
+        Note:
+            When and instance of this class is created for the purpose of loading a component then
+            the :py:class:`~ooodev.utils.inst.lo.options` should have it ``dynamic`` property set to ``False``.
+
         .. versionadded:: 0.9.8
         """
         cargs = CancelEventArgs(self.open_doc.__qualname__)
@@ -613,7 +646,7 @@ class LoInst:
     ) -> XComponent:
         if loader is None:
             loader = cast(XComponentLoader, self._loader)
-        nn = mXML.XML.get_flat_filter_name(doc_type=doc_type.get_doc_type_str())
+        nn = self.get_flat_filter_name(doc_type=doc_type.get_doc_type_str())
         self.print(f"Flat filter Name: {nn}")
         # do not set Hidden=True property here.
         # there is a strange error that pops up conditionally and it seems
@@ -1538,11 +1571,14 @@ class LoInst:
         # sourcery skip: raise-specific-error
         if self.star_desktop is None:
             raise Exception("No desktop found")
-        return self.XSCRIPTCONTEXT.getDesktop().getCurrentFrame()
-        # return cast(XDesktop, cls.star_desktop).getCurrentFrame()
+        if self._opt.dynamic:
+            return self.XSCRIPTCONTEXT.getDesktop().getCurrentFrame()
+        return self.get_desktop().getCurrentFrame()
 
     def get_model(self) -> XModel:
-        return self.XSCRIPTCONTEXT.getDocument()
+        if self._opt.dynamic:
+            return self.XSCRIPTCONTEXT.getDocument()
+        return self.qi(XModel, self._doc, True)
 
     def lock_controllers(self) -> bool:
         # much faster updates as screen is basically suspended
@@ -1550,7 +1586,8 @@ class LoInst:
         self._events.trigger(LoNamedEvent.CONTROLLERS_LOCKING, cargs)
         if cargs.cancel:
             return False
-        xmodel = self.qi(XModel, self._doc, True)
+        # doc = self.xscript_context.getDocument() if self._opt.dynamic else self.lo_component
+        xmodel = self.qi(XModel, self.lo_component, True)
         xmodel.lockControllers()
         self._events.trigger(LoNamedEvent.CONTROLLERS_LOCKED, EventArgs(self))
         return True
@@ -1560,14 +1597,15 @@ class LoInst:
         self._events.trigger(LoNamedEvent.CONTROLLERS_UNLOCKING, cargs)
         if cargs.cancel:
             return False
-        xmodel = self.qi(XModel, self._doc, True)
+        # doc = self.xscript_context.getDocument() if self._opt.dynamic else self.lo_component
+        xmodel = self.qi(XModel, self.lo_component, True)
         if xmodel.hasControllersLocked():
             xmodel.unlockControllers()
         self._events.trigger(LoNamedEvent.CONTROLLERS_UNLOCKED, EventArgs.from_args(cargs))
         return True
 
     def has_controllers_locked(self) -> bool:
-        xmodel = self.qi(XModel, self._doc, True)
+        xmodel = self.qi(XModel, self.lo_component, True)
         return xmodel.hasControllersLocked()
 
     def print(self, *args, **kwargs) -> None:
@@ -1578,6 +1616,33 @@ class LoInst:
         if cargs.cancel:
             return
         print(*args, **kwargs)
+
+    # region XML
+    def get_flat_filter_name(self, doc_type: LoDocTypeStr) -> str:
+        """
+        Gets the Flat XML filter name for the doc type.
+
+        Args:
+            doc_type (DocTypeStr): Document type.
+
+        Returns:
+            str: Flat XML filter name.
+
+        .. versionadded:: 0.12.0
+        """
+        if doc_type == LoDocTypeStr.WRITER:
+            return "OpenDocument Text Flat XML"
+        elif doc_type == LoDocTypeStr.CALC:
+            return "OpenDocument Spreadsheet Flat XML"
+        elif doc_type == LoDocTypeStr.DRAW:
+            return "OpenDocument Drawing Flat XML"
+        elif doc_type == LoDocTypeStr.IMPRESS:
+            return "OpenDocument Presentation Flat XML"
+        else:
+            print("No Flat XML filter for this document type; using Flat text")
+            return "OpenDocument Text Flat XML"
+
+    # endregion XML
 
     @property
     def null_date(self) -> datetime:
@@ -1619,7 +1684,45 @@ class LoInst:
     StarDesktop, stardesktop = star_desktop, star_desktop
 
     @property
+    def lo_component(self) -> XComponent | None:
+        """
+        Gets the internal component.
+
+        Unlike the :py:attr:`this_component` property this property will not autoload
+        and it will not observe the dynamic option for this instance.
+
+        This property will always return the current internal component document.
+
+        In most cases the :py:attr:`this_component` property should be used instead of this property.
+
+        Returns:
+            XComponent | None: Component or None if not loaded.
+        """
+        return self._doc
+
+    @property
     def this_component(self) -> XComponent | None:
+        """
+        This component is similar to the ThisComponent in Basic.
+
+        It is functionally the same as ``XSCRIPTCONTEXT.getDesktop().getCurrentComponent()``.
+
+        When running in a macro this property can be access directly to get the current document.
+        When not in a macro then load_office() must be called first
+
+        This property differs from :py:attr:`lo_component` in the following ways.
+
+        1. It will autoload if called in a macro.
+        2. It will observe the dynamic option for this instance.
+
+        When this class options are set to dynamic then this property will always return the current document
+        from internal XSCRIPTCONTEXT; otherwise, it will return the current internal document.
+        In most cases this property should be used instead of :py:attr:`lo_component`.
+        Also in most cases this property will return the same component :py:attr:`lo_component`.
+
+        Returns:
+            XComponent | None: Component or None if not loaded.
+        """
         if mock_g.DOCS_BUILDING:
             self._this_component = None
             return self._this_component
@@ -1632,16 +1735,19 @@ class LoInst:
         desktop = self.get_desktop()
         if desktop is None:
             return None
-        if self._doc is None:
-            self._doc = desktop.getCurrentComponent()
-        if self._doc is None:
+        if not self._opt.dynamic and self._doc is None or self._opt.dynamic:
+            doc = desktop.getCurrentComponent()
+        else:
+            doc = self._doc
+        if doc is None:
             return None
-        service_info = self.qi(XServiceInfo, self._doc, True)
+        service_info = self.qi(XServiceInfo, doc, True)
         # impl = self._doc.ImplementationName
         impl = service_info.getImplementationName()
+        # com.sun.star.comp.sfx2.BackingComp is the Main Launcher App.
         if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
             return None  # None when Basic IDE or welcome screen
-        return self._doc
+        return doc
 
     ThisComponent, thiscomponent = this_component, this_component
 
@@ -1657,7 +1763,7 @@ class LoInst:
                 self.load_office()
                 ctx = self.get_context()
 
-            self._xscript_context = script_context.ScriptContext(ctx=ctx, doc=self._doc)
+            self._xscript_context = script_context.ScriptContext(ctx=ctx)
         return self._xscript_context
 
     XSCRIPTCONTEXT = xscript_context

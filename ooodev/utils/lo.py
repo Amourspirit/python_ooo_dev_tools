@@ -5,7 +5,7 @@
 from __future__ import annotations
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type
+from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type, cast
 
 import uno
 from com.sun.star.beans import XPropertySet  # pylint: disable=E0611
@@ -91,11 +91,11 @@ class Lo(metaclass=StaticProperty):
         """
 
         def __init__(self):
-            self.component = Lo.this_component
+            self.component = Lo.lo_component
             Lo.lock_controllers()
 
         def __enter__(self) -> XComponent:
-            return self.component
+            return cast(XComponent, self.component)
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             Lo.unlock_controllers()
@@ -275,6 +275,28 @@ class Lo(metaclass=StaticProperty):
         """Gets current multi service factory"""
         # return cls._bridge_component
         return cls._lo_inst.get_service_factory()
+
+    @classmethod
+    def get_relative_doc(cls) -> XComponent:
+        """
+        Gets current document.
+
+        If the current options are set to dynamic,
+        then the current document is returned from the script context.
+        Otherwise, the current internal document is returned.
+        The internal document is set when a new document is created via the Write, Calc, etc.
+
+        In most instances the internal document is the same as the xscript context document.
+
+        By Default the dynamic option is set to ``False``.
+
+        Raises:
+            NoneError: If the document is ``None``.
+
+        Returns:
+            XComponent: Current Document
+        """
+        return cls._lo_inst.get_relative_doc()
 
     # region interface object creation
 
@@ -1210,7 +1232,7 @@ class Lo(metaclass=StaticProperty):
         See Also:
             :py:meth:`~.Lo.store_doc`
         """
-        if password is None:
+        if not password:
             return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format)
         return cls._lo_inst.store_doc_format(store=store, fnm=fnm, format=format, password=password)
 
@@ -1748,7 +1770,7 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: False if ``CONTROLLERS_LOCKING`` event is canceled; Otherwise, True
 
-         :events:
+        :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.CONTROLLERS_LOCKING` :eventref:`src-docs-event-cancel`
@@ -1819,6 +1841,24 @@ class Lo(metaclass=StaticProperty):
         """
         cls._lo_inst.print(*args, **kwargs)
 
+    # region XML
+    @classmethod
+    def get_flat_filter_name(cls, doc_type: LoDocTypeStr) -> str:
+        """
+        Gets the Flat XML filter name for the doc type.
+
+        Args:
+            doc_type (DocTypeStr): Document type.
+
+        Returns:
+            str: Flat XML filter name.
+
+        .. versionadded:: 0.12.0
+        """
+        return cls._lo_inst.get_flat_filter_name(doc_type=doc_type)
+
+    # endregion XML
+
     @classproperty
     def null_date(cls) -> datetime:
         """
@@ -1851,7 +1891,10 @@ class Lo(metaclass=StaticProperty):
         Returns:
             bool: True if running as a macro; Otherwise, False
         """
-        return cls._lo_inst.is_macro_mode
+        try:
+            return cls._lo_inst.is_macro_mode
+        except AttributeError:
+            return False
 
     @classproperty
     def star_desktop(cls) -> XDesktop:
@@ -1861,18 +1904,44 @@ class Lo(metaclass=StaticProperty):
     StarDesktop, stardesktop = star_desktop, star_desktop
 
     @classproperty
-    def this_component(cls) -> XComponent:
+    def lo_component(cls) -> XComponent | None:
         """
-        When the current component is the Basic IDE, the ThisComponent object returns
-        in Basic the component owning the currently run user script.
-        Above behavior cannot be reproduced in Python.
+        Gets the internal component.
 
-        When running in a macro this property can be access directly to get the current document.
+        Unlike the :py:attr:`this_component` property this property will not autoload
+        and it will not observe the dynamic option for this instance.
 
-        When not in a macro then load_office() must be called first
+        This property will always return the current internal component document.
+
+        In most cases the :py:attr:`this_component` property should be used instead of this property.
 
         Returns:
-            the current component or None when not a document
+            XComponent | None: Component or None if not loaded.
+        """
+        return cls._lo_inst.lo_component
+
+    @classproperty
+    def this_component(cls) -> XComponent:
+        """
+        This component is similar to the ThisComponent in Basic.
+
+        It is functionally the same as ``XSCRIPTCONTEXT.getDesktop().getCurrentComponent()``.
+
+        When running in a macro this property can be access directly to get the current document.
+        When not in a macro then load_office() must be called first
+
+        This property differs from :py:attr:`lo_component` in the following ways.
+
+        1. It will autoload if called in a macro.
+        2. It will observe the dynamic option for this instance.
+
+        When this class options are set to dynamic then this property will always return the current document
+        from internal XSCRIPTCONTEXT; otherwise, it will return the current internal document.
+        In most cases this property should be used instead of :py:attr:`lo_component`.
+        Also in most cases this property will return the same component :py:attr:`lo_component`.
+
+        Returns:
+            XComponent | None: Component or None if not loaded.
         """
         if cls._lo_inst is None:
             # for macro mode auto load office
