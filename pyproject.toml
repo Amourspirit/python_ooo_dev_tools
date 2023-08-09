@@ -100,6 +100,8 @@ disable = """
     no-name-in-module,
     no-self-argument
 """
+[tool.pylint.format]
+allow-reexport-from-package=true
 
 [tool.pyright]
 pythonVersion = "3.8"
