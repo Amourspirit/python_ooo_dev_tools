@@ -10,6 +10,7 @@ loapi
 lodoc
 loguide
 Naber
+octicon
 optimizers
 Pitonyak
 pizazz
@@ -24,3 +25,4 @@ uncomment
 uncommented
 ungrouped
 Uyghur
+versionchanged

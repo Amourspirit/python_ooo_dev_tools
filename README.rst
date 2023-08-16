@@ -135,12 +135,12 @@ Inspiration
 -----------
 
 Much of this project is inspired by the work of Dr. Andrew Davison.
-An archive archive of the Java code is available at `<https://github.com/Amourspirit/libreoffice_lop_java>`__.
+An archive archive of the Java code is available at `GitHub - LibreOffice Java Programming <https://github.com/Amourspirit/libreoffice_lop_java>`__.
 
 See Also:
 
 - `LibreOffice Programming <https://flywire.github.io/lo-p/>`_ that aims to gradually explain this content in a python context.
-- `Python LibreOffice Programming Preface <https://python-ooo-dev-tools.readthedocs.io/en/latest/odev/preface.html>`__
+- `Python LibreOffice Programming - Preface <https://python-ooo-dev-tools.readthedocs.io/en/latest/odev/preface.html>`__
 
 
 Other

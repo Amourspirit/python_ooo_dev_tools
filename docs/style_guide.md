@@ -1,4 +1,49 @@
-# ODEV Sytle Guide
+# OooDev Style Guide
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [OooDev Style Guide](#ooodev-style-guide)
+  - [Book Naming conventions](#book-naming-conventions)
+    - [References](#references)
+      - [Chapter, ch01](#chapter-ch01)
+      - [Sub Section](#sub-section)
+      - [Sub, sub section](#sub-sub-section)
+    - [Chapter figures](#chapter-figures)
+    - [Chapter tables](#chapter-tables)
+    - [Note](#note)
+  - [Headings](#headings)
+  - [List](#list)
+    - [General](#general)
+    - [Multi-line list item](#multi-line-list-item)
+  - [Image Classes](#image-classes)
+  - [Spelling](#spelling)
+  - [Sphinx](#sphinx)
+  - [Code Spell Checker](#code-spell-checker)
+  - [Abbreviations](#abbreviations)
+  - [TODO](#todo)
+  - [Comments](#comments)
+  - [Linking to Source code](#linking-to-source-code)
+  - [External Sources via sphinx.ext.intersphinx](#external-sources-via-sphinxextintersphinx)
+  - [Code Blocks](#code-blocks)
+    - [Tabs](#tabs)
+    - [Tab None](#tab-none)
+  - [Collapse sections](#collapse-sections)
+  - [Other](#other)
+  - [CSS](#css)
+    - [Custom CSS](#custom-css)
+    - [Color](#color)
+      - [Inline color text](#inline-color-text)
+      - [Block color text](#block-color-text)
+  - [Code Changes](#code-changes)
+    - [NEW](#new)
+    - [Changed](#changed)
+      - [Example usage](#example-usage)
+  - [SuperScript / SubScript](#superscript--subscript)
+
+<!-- /code_chunk_output -->
+
 
 ## Book Naming conventions
 
@@ -16,7 +61,7 @@ Example:
 
 #### Sub Section
 
-``ch`` followed by two digits folowed by `_` followed by section short name.
+``ch`` followed by two digits followed by `_` followed by section short name.
 
 Example:
 
@@ -31,7 +76,7 @@ sub section followed by `_` followed by sub section short name
 Example:
 
 ```rst
-.. _ch03_examine_office_cofig_prop:
+.. _ch03_examine_office_config_prop:
 ```
 
 ### Chapter figures
@@ -81,7 +126,7 @@ Example:
 - `-` for subsections
 - `^` for sub-subsections
 - `“` for paragraphs
-- `~` Next Level 
+- `~` Next Level
 
 See Also:
 <https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html#headings>
@@ -92,7 +137,7 @@ See Also:
 
 ### General
 
-By default rdt-theme displays un-ordered list without any list type formating.
+By default rdt-theme displays un-ordered list without any list type formatting.
 To create an un-ordered list with bullets us the `ul-list` class from `readthedocs_custom.css`
 
 ```rst
@@ -109,13 +154,13 @@ Nested unordered list example. There needs to be a least two indents for nested 
 ```rst
 .. cssclass:: ul-list
 
-    * outtter item 1
+    * outer item 1
 
         * inner item 1
         * inner item 2
 
-    * outter item 2
-    * outter itme 3
+    * outer item 2
+    * outer item 3
 ```
 
 ### Multi-line list item
@@ -138,7 +183,6 @@ Note There is custom `css` to go with multi line for margin.
     margin-bottom: 0px;
 }
 ```
-
 
 ## Image Classes
 
@@ -218,6 +262,8 @@ Animated gif is not to be darkened using css styles
 
 ## Spelling
 
+## Sphinx
+
 To run spell check from `docs/` command line
 
 ```ps
@@ -239,6 +285,15 @@ See src/conn/index.rst as an example
 
 `.. spelling:word-list::` can be at the end of a `rst` file.
 
+## Code Spell Checker
+
+The [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) extension is recommended for this project.
+
+It has some powerful features that allow adding of words to custom dictionaries.
+Also I can share dictionaries with `sphinxcontrib.spelling` extension.
+
+In the root of the project a custom `cspell.json` has been created. It contains links to the `./docs/internal/dict/**` dictionaries and the `cspell.json` also contains a words list. To use extended features try right clicking on a misspelled word and check the spelling options from the popup menu.
+
 ## Abbreviations
 
 Abbreviations are handled by the `:abbreviation:` role.
@@ -257,13 +312,13 @@ Docs that still need work such linking to chapter not yet created are to use the
 ```
 
 To see the todo set `todo_include_todos = True` in `conf.py` and regenerate docs.
-A master list of todo's will be on bottom of main page, also each document that contains a todo will disply it on its doc page.
+A master list of todo's will be on bottom of main page, also each document that contains a todo will display it on its doc page.
 
 See Also: [sphinx.ext.todo](https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#module-sphinx.ext.todo)
 
 ## Comments
 
-Adding comments to doc is straight forward. Use `..` followed by comment on a new intented line.
+Adding comments to doc is straight forward. Use `..` followed by comment on a new intended line.
 In this example adding a comment for a diagram.
 
 ```rst
@@ -319,7 +374,7 @@ This work because there is custom css (`.admonition` class) for list inside `.. 
 
 **Note:**
 
-`sphinx.ext.extlinks` by defalult creates external links.
+`sphinx.ext.extlinks` by default creates external links.
 
 The `custom.js` file converts source code links back to internal links.
 
@@ -361,7 +416,7 @@ See Also: <https://sphinx-tabs.readthedocs.io/en/latest/>
             RobotKeys.send_current(SendKeyInfo(WriterKeyCodes.KB_SIDE_BAR))
 ```
 
-Hilighting can be added to lines by using `:emphasize-lines:`
+Highlighting can be added to lines by using `:emphasize-lines:`
 
 ```rst
 .. tabs::
@@ -383,7 +438,7 @@ This option should only be used in conjunction with code tabs.
 If one code tab on a page gets this option then all code tabs on the page should get this option.
 If a None Tab is used this should be prefixed by `.. cssclass:: tab-none` for formatting purposes.
 
-`.. only:: html` is used to indicate to Sphinx that this tab is to only be renedred for html.
+`.. only:: html` is used to indicate to Sphinx that this tab is to only be rendered for html.
 
 ```rst
 .. tabs::
@@ -402,7 +457,7 @@ If a None Tab is used this should be prefixed by `.. cssclass:: tab-none` for fo
 
 ## Collapse sections
 
-Creates a generic collape section
+Creates a generic collapse section
 
 ```rst
 .. collapse:: Some Text
@@ -445,9 +500,10 @@ Creates collapse section with special css formatting applied, mostly for spacing
 Allows setting icon ``:octicon:`code-square;1em;sd-text-info` ``
 
 ## CSS
+
 ### Custom CSS
 
-These are extra css style that can be added as seperate `.. cssclass::` styles.
+These are extra css style that can be added as separate `.. cssclass::` styles.
 
 Available Custom css;
 
@@ -538,8 +594,9 @@ Example Fixed color block.
 .. cssclass:: green
 
     My green text goes here.
-    Multil line is all green.
+    Multi line is all green.
 ```
+
 Example Theme color block.
 
 ```rst
@@ -556,7 +613,7 @@ Example Theme color block.
 New Class, function, modules etc should include [version added](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionadded).
 
 ```rst
-.. versionadded:: 0.6.6
+.. versionadded:: 0.10.4
 ```
 
 See Also: [.. versionadded](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionadded)
@@ -566,7 +623,7 @@ See Also: [.. versionadded](https://www.sphinx-doc.org/en/master/usage/restructu
 Changed method, function etc should include [version changed](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-versionchanged).
 
 ```rst
-.. versionchanged:: 0.6.6
+.. versionchanged:: 0.12.4
 ```
 
 #### Example usage
@@ -586,7 +643,7 @@ See Also:
     - :ref:`ch21_format_data_console`
     - :py:data:`~.type_var.Table`
 
-.. versionchanged:: 0.6.7
+.. versionchanged:: 0.12.4
     Added ``format_opt`` parameter
 ```
 
