@@ -49,7 +49,7 @@ Note that in order to apply a style, the document footer must be turned on as se
         def main() -> int:
            with Lo.Loader(Lo.ConnectPipe()):
                 doc = Write.create_doc()
-                GUI.set_visible(doc)
+                GUI.set_visible(doc=doc)
                 Lo.delay(300)
                 GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
 

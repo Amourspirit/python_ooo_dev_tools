@@ -67,6 +67,7 @@ class ConnectBase(ABC):
 
     @property
     def ctx(self) -> XComponentContext:
+        """Gets instance Component Context"""
         return self._ctx
 
     @property
@@ -178,7 +179,7 @@ class LoBridgeCommon(ConnectBase):
 
                 try:
                     bridge_instance = self._get_bridge(local_factory=local_factory, local_ctx=self._ctx)
-                except Exception as e:
+                except Exception:  # pylint: disable=broad-except
                     bridge_instance = self._get_bridge(local_factory=local_factory, local_ctx=local_context)
 
                 self._bridge_component = cast(
@@ -187,7 +188,7 @@ class LoBridgeCommon(ConnectBase):
 
                 last_ex = None
                 break
-            except NoConnectException as e:
+            except NoConnectException as e:  # pylint: disable=invalid-name
                 last_ex = e
                 time.sleep(self._conn_try_sleep)
 
@@ -250,7 +251,7 @@ class LoBridgeCommon(ConnectBase):
 
                 last_ex = None
                 break
-            except NoConnectException as e:
+            except NoConnectException as e:  # pylint: disable=invalid-name
                 last_ex = e
                 time.sleep(self._conn_try_sleep)
 
@@ -258,6 +259,10 @@ class LoBridgeCommon(ConnectBase):
             raise last_ex
 
     def _popen_from_args(self, args: List[str], shutdown: bool):
+        # modified in version 0.12.1
+        #  preexec_fn=os.setsid was removed from subprocess.Popen
+        # see: https://pastebin.com/tJDwiwvx
+
         if shutdown:
             if self._platform == SysInfo.PlatformEnum.WINDOWS:
                 cmd_str = " ".join(args)
@@ -266,7 +271,7 @@ class LoBridgeCommon(ConnectBase):
                 self._soffice_process_shutdown = subprocess.Popen(
                     " ".join(args),
                     env=self._environment,
-                    preexec_fn=os.setsid,  # type: ignore
+                    # preexec_fn=os.setsid,  # type: ignore
                     shell=True,
                 )
         else:
@@ -285,7 +290,7 @@ class LoBridgeCommon(ConnectBase):
                 self._soffice_process = subprocess.Popen(
                     cmd_str,
                     env=self._environment,
-                    preexec_fn=os.setsid,  # type: ignore
+                    # preexec_fn=os.setsid,  # type: ignore
                     shell=True,
                 )
 
@@ -355,7 +360,7 @@ class LoBridgeCommon(ConnectBase):
             if self._check_pid(pid=pid):
                 # no SIGLILL on windows.
                 os.kill(pid, signal.SIGKILL)  # type: ignore
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name
             # print(e)
             raise e
 
@@ -372,6 +377,7 @@ class LoBridgeCommon(ConnectBase):
 
     @property
     def bridge_component(self) -> XComponent:
+        """Gets Bridge Component"""
         return self._bridge_component
 
     @property
@@ -430,16 +436,14 @@ class LoBridgeCommon(ConnectBase):
 
 
 class LoDirectStart(ConnectBase):
-    def __init__(self):
-        """
-        Constructor
-        """
-        super().__init__()
+    """
+    LO Direct Start Connection.
+
+    Used in macros.
+    """
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, LoDirectStart):
-            return False
-        return True
+        return isinstance(other, LoDirectStart)
 
     def connect(self):
         """
@@ -467,6 +471,8 @@ class LoDirectStart(ConnectBase):
 
 
 class LoPipeStart(LoBridgeCommon):
+    """Pipe Start"""
+
     def __init__(self, connector: connectors.ConnectPipe | None = None, cache_obj: cache.Cache | None = None) -> None:
         if connector is None:
             connector = connectors.ConnectPipe()
@@ -505,7 +511,7 @@ class LoPipeStart(LoBridgeCommon):
             self._popen()
         try:
             self._connect()
-        except NoConnectException as e:
+        except NoConnectException as e:  # pylint: disable=invalid-name
             if self._connector.start_office:
                 self.kill_soffice()
             raise e
@@ -518,14 +524,14 @@ class LoPipeStart(LoBridgeCommon):
                 uno.getTypeByName("com.sun.star.connection.XConnector")
             ),
         )
-        bridgeFactory = cast(
+        bridge_factory = cast(
             "XBridgeFactory",
             local_factory.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", local_ctx).queryInterface(
                 uno.getTypeByName("com.sun.star.bridge.XBridgeFactory")
             ),
         )
         conn = connector.connect(f"pipe,name={self.connector.pipe}")
-        return bridgeFactory.createBridge("PipeBridgeAD", "urp", conn, None)  # type: ignore
+        return bridge_factory.createBridge("PipeBridgeAD", "urp", conn, None)  # type: ignore
 
     def _popen(self, shutdown=False) -> None:
         # it is important that quotes be placed in the correct place.
@@ -566,6 +572,8 @@ class LoPipeStart(LoBridgeCommon):
 
 
 class LoSocketStart(LoBridgeCommon):
+    """Socket Start"""
+
     def __init__(
         self, connector: connectors.ConnectSocket | None = None, cache_obj: cache.Cache | None = None
     ) -> None:
@@ -605,7 +613,7 @@ class LoSocketStart(LoBridgeCommon):
             self._popen()
         try:
             self._connect()
-        except NoConnectException as e:
+        except NoConnectException as e:  # pylint: disable=invalid-name
             if self._connector.start_office:
                 self.kill_soffice()
             raise e
@@ -618,14 +626,14 @@ class LoSocketStart(LoBridgeCommon):
                 uno.getTypeByName("com.sun.star.connection.XConnector")
             ),
         )
-        bridgeFactory = cast(
+        bridge_factory = cast(
             "XBridgeFactory",
             local_factory.createInstanceWithContext("com.sun.star.bridge.BridgeFactory", local_ctx).queryInterface(
                 uno.getTypeByName("com.sun.star.bridge.XBridgeFactory")
             ),
         )
         conn = connector.connect(f"socket,host={self.connector.host},port={self.connector.port},tcpNoDelay=1")
-        return bridgeFactory.createBridge("socketBridgeAD", "urp", conn, None)  # type: ignore
+        return bridge_factory.createBridge("socketBridgeAD", "urp", conn, None)  # type: ignore
 
     def _popen(self, shutdown=False) -> None:
         # it is important that quotes be placed in the correct place.

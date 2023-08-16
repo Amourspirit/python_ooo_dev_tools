@@ -1,5 +1,10 @@
+"""Abstract Document Module"""
+# pylint: disable=broad-exception-raised
+# pylint: disable=unused-import
+
 # region Import
 from __future__ import annotations
+from typing import Tuple
 
 import uno
 from com.sun.star.text import XTextDocument
@@ -24,6 +29,12 @@ class AbstractDocument(StyleBase):
     """
 
     # region methods
+    def _container_get_service_name(self) -> str:
+        raise NotImplementedError
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        raise NotImplementedError
+
     def _get_doc_family_style_name(self) -> str:
         try:
             return self._doc_family_style_name
@@ -74,8 +85,8 @@ class AbstractDocument(StyleBase):
             text_height = height - (top_margin + btm_margin)
 
             return Size(text_width, text_height)
-        except Exception as e:
-            raise Exception("Could not access standard page style dimensions") from e
+        except Exception as err:
+            raise Exception("Could not access standard page style dimensions") from err
 
     def get_page_size(self) -> Size:
         """
@@ -100,8 +111,8 @@ class AbstractDocument(StyleBase):
             width = int(props.getPropertyValue("Width"))
             height = int(props.getPropertyValue("Height"))
             return Size(width, height)
-        except Exception as e:
-            raise Exception("Could not access standard page style dimensions") from e
+        except Exception as err:
+            raise Exception("Could not access standard page style dimensions") from err
 
     def get_text_frames(self) -> XNameAccess | None:
         """

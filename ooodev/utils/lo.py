@@ -1,4 +1,5 @@
-# coding: utf-8
+"""Lo Module - General entry point for all LibreOffice related functionality."""
+# pylint: disable=too-many-lines
 # Python conversion of Lo.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 
@@ -7,7 +8,7 @@ from datetime import datetime
 import time
 from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type, cast
 
-import uno
+import uno  # pylint: disable=W0611
 from com.sun.star.beans import XPropertySet  # pylint: disable=E0611
 from com.sun.star.frame import XComponentLoader  # noqa E0611
 from com.sun.star.frame import XDesktop  # noqa
@@ -52,7 +53,6 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XTypeProvider
-    from com.sun.star.lang import XComponent
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
@@ -165,7 +165,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def qi(cls, atype: Type[T], obj: Any) -> T | None:
+    def qi(cls, atype: Type[T], obj: Any) -> T | None:  # pylint: disable=invalid-name
         """
         Generic method that get an interface instance from  an object.
 
@@ -180,7 +180,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def qi(cls, atype: Type[T], obj: Any, raise_err: Literal[True]) -> T:
+    def qi(cls, atype: Type[T], obj: Any, raise_err: Literal[True]) -> T:  # pylint: disable=invalid-name
         """
         Generic method that get an interface instance from  an object.
 
@@ -199,7 +199,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def qi(cls, atype: Type[T], obj: Any, raise_err: Literal[False]) -> T | None:
+    def qi(cls, atype: Type[T], obj: Any, raise_err: Literal[False]) -> T | None:  # pylint: disable=invalid-name
         """
         Generic method that get an interface instance from  an object.
 
@@ -216,6 +216,7 @@ class Lo(metaclass=StaticProperty):
         """
         ...
 
+    # pylint: disable=invalid-name
     @classmethod
     def qi(cls, atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
         """
@@ -561,7 +562,7 @@ class Lo(metaclass=StaticProperty):
         try:
             return cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
         except Exception:
-            raise SystemExit(1)
+            raise SystemExit(1)  # pylint: disable=W0707
 
     # endregion Start Office
 
@@ -942,7 +943,7 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing ``doc``.
+            Event args ``event_data`` is a dictionary containing ``doc``.
         """
         return cls._lo_inst.save(doc)
 
@@ -982,7 +983,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def save_doc(cls, doc: object, fnm: PathOrStr, password: str, format: str) -> bool:
+    def save_doc(cls, doc: object, fnm: PathOrStr, password: str, format: str) -> bool:  # pylint: disable=W0622
         """
         Save document
 
@@ -997,6 +998,7 @@ class Lo(metaclass=StaticProperty):
         """
         ...
 
+    # pylint: disable=W0622
     @classmethod
     def save_doc(cls, doc: object, fnm: PathOrStr, password: str | None = None, format: str | None = None) -> bool:
         """
@@ -1166,7 +1168,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str) -> bool:
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str) -> bool:  # pylint: disable=W0622
         """
         Store document as format.
 
@@ -1185,7 +1187,9 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str) -> bool:
+    def store_doc_format(
+        cls, store: XStorable, fnm: PathOrStr, format: str, password: str
+    ) -> bool:  # pylint: disable=W0622
         """
         Store document as format.
 
@@ -1366,14 +1370,14 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
         """
         return cls._lo_inst.addon_initialize(addon_xcc=addon_xcc)
 
     # ============= initialization via script context ======================
 
     @classmethod
-    def script_initialize(cls, sc: XScriptContext) -> XComponent:
+    def script_initialize(cls, sc: XScriptContext) -> XComponent:  # pylint: disable=invalid-name
         """
         Initialize script
 
@@ -1528,7 +1532,7 @@ class Lo(metaclass=StaticProperty):
     # ================== other utils =============================
 
     @staticmethod
-    def delay(ms: int) -> None:
+    def delay(ms: int) -> None:  # pylint: disable=invalid-name
         """
         Delay execution for a given number of milliseconds.
 
@@ -1544,7 +1548,7 @@ class Lo(metaclass=StaticProperty):
     wait = delay
 
     @staticmethod
-    def is_none_or_empty(s: str) -> bool:
+    def is_none_or_empty(s: str) -> bool:  # pylint: disable=invalid-name
         """
         Gets is a string is None or Empty
 
@@ -1581,7 +1585,7 @@ class Lo(metaclass=StaticProperty):
     # endregion document opening
 
     @staticmethod
-    def capitalize(s: str) -> str:
+    def capitalize(s: str) -> str:  # pylint: disable=invalid-name
         """
         Capitalizes a string
 
@@ -1594,7 +1598,7 @@ class Lo(metaclass=StaticProperty):
         return s.capitalize()
 
     @staticmethod
-    def parse_int(s: str) -> int:
+    def parse_int(s: str) -> int:  # pylint: disable=invalid-name
         """
         Converts string into int.
 
@@ -1638,7 +1642,7 @@ class Lo(metaclass=StaticProperty):
         Example:
             Given a list of ``20`` names the output is similar to:
 
-            ::
+            .. code-block:: text
 
                 No. of names: 20
                   ----------|-----------|-----------|-----------
@@ -1703,7 +1707,7 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.get_container_names(con)
 
     @classmethod
-    def find_container_props(cls, con: XIndexAccess, nm: str) -> XPropertySet | None:
+    def find_container_props(cls, con: XIndexAccess, nm: str) -> XPropertySet | None:  # pylint: disable=invalid-name
         """
         Find as Property Set in a container
 
@@ -2000,10 +2004,11 @@ class Lo(metaclass=StaticProperty):
         Returns:
             LoOptions: Options
         """
+        # pylint: disable=protected-access
         return cls._lo_inst._opt
 
 
-def _on_connect_dispose(source: Any, event: EventObject) -> None:
+def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
     setattr(Lo, "_lo_inst", None)
 
 

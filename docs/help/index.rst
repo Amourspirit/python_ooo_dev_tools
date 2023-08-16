@@ -8,5 +8,6 @@ Help Documentation
 
     calc/index
     chart2/index
+    draw/index
     writer/index
     common/index

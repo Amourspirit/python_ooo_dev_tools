@@ -1,6 +1,11 @@
-# coding: utf-8
+"""Lo Instance Module - General entry point for all LibreOffice related functionality as an instance."""
 # Python conversion of Lo.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
+
+# pylint: disable=too-many-lines
+# pylint: disable=missing-function-docstring
+# pylint: disable=broad-exception-raised
+# pylint: disable=broad-exception-caught
 
 from __future__ import annotations
 import contextlib
@@ -41,7 +46,7 @@ from ooodev.mock import mock_g
 from ooodev.adapter.lang.event_listener import EventListener
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
-from ooodev.conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart, LoBridgeCommon
+from ooodev.conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
@@ -72,7 +77,6 @@ if TYPE_CHECKING:
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
     from com.sun.star.lang import EventObject
-    from com.sun.star.lang import XComponent
     from com.sun.star.lang import XMultiComponentFactory
     from com.sun.star.lang import XTypeProvider
     from com.sun.star.script.provider import XScriptContext
@@ -149,17 +153,18 @@ class LoInst:
         self._events.on(LoNamedEvent.OFFICE_LOADED, self._fn_on_lo_loaded)
         self._events.on(LoNamedEvent.BRIDGE_DISPOSED, self._fn_on_lo_disposed)
 
-    def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:
+    def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:  # pylint: disable=unused-argument
         # clears Lo Attributes that are dynamically created
         data_attrs = ("_xscript_context", "_is_macro_mode", "_this_component", "_bridge_component", "_null_date")
         for attr in data_attrs:
             if hasattr(self, attr):
                 delattr(self, attr)
 
+    # pylint: disable=unused-argument
     def on_lo_disposing_bridge(self, src: EventListener, event: EventObject) -> None:
         self._events.trigger(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(self.on_lo_disposing_bridge.__qualname__))
 
-    def on_lo_disposed(self, source: Any, event: EventObject) -> None:
+    def on_lo_disposed(self, source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
         self.print("Office bridge has gone!!")
         data_attrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop", "_loader")
         data_vals = (None, None, None, None, None, None, None)
@@ -167,11 +172,11 @@ class LoInst:
             setattr(self, attr, val)
         setattr(self, "_disposed", True)
 
-    def on_lo_loaded(self, source: Any, event: EventObject) -> None:
+    def on_lo_loaded(self, source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
         if self.bridge is not None:
             self.bridge.addEventListener(self._event_listener)
 
-    def on_lo_loading(self, source: Any, event: CancelEventArgs) -> None:
+    def on_lo_loading(self, source: Any, event: CancelEventArgs) -> None:  # pylint: disable=unused-argument
         with contextlib.suppress(Exception):
             if hasattr(self, "_bridge_component") and self.bridge is not None:
                 self.bridge.removeEventListener(self._event_listener)
@@ -180,10 +185,12 @@ class LoInst:
 
     # region    qi()
 
+    # pylint: disable=invalid-name
     @overload
     def qi(self, atype: Type[T], obj: Any) -> T | None:
         ...
 
+    # pylint: disable=invalid-name
     @overload
     def qi(self, atype: Type[T], obj: Any, raise_err: Literal[True]) -> T:
         ...
@@ -193,6 +200,23 @@ class LoInst:
         ...
 
     def qi(self, atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
+        """
+        Generic method that get an interface instance from  an object.
+
+        Args:
+            atype (T): Interface type to query obj for. Any Uno class that starts with 'X' such as XInterface
+            obj (object): Object that implements interface.
+            raise_err (bool, optional): If True then raises MissingInterfaceError if result is None. Default False
+
+        Raises:
+            MissingInterfaceError: If 'raise_err' is 'True' and result is None
+
+        Returns:
+            T | None: instance of interface if supported; Otherwise, None
+
+        Note:
+            When ``raise_err=True`` return value will never be ``None``.
+        """
         result = None
         if uno.isInterface(atype) and hasattr(obj, "queryInterface"):
             uno_t = uno.getTypeByName(atype.__pyunointerface__)  # type: ignore
@@ -296,7 +320,7 @@ class LoInst:
             else:
                 obj = msf.createInstance(service_name)
             if raise_err and obj is None:
-                mEx.CreateInstanceMsfError(atype, service_name)
+                raise mEx.CreateInstanceMsfError(atype, service_name)
             interface_obj = self.qi(atype=atype, obj=obj)
             if raise_err and interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
@@ -354,7 +378,7 @@ class LoInst:
             else:
                 obj = self._mc_factory.createInstanceWithContext(service_name, self._xcc)
             if raise_err and obj is None:
-                mEx.CreateInstanceMcfError(atype, service_name)
+                raise mEx.CreateInstanceMcfError(atype, service_name)
             interface_obj = self.qi(atype=atype, obj=obj)
             if raise_err and interface_obj is None:
                 raise mEx.MissingInterfaceError(atype)
@@ -572,7 +596,7 @@ class LoInst:
             else:
                 self.print(f"{num_tries}. Office failed to terminate")
             return is_dead
-        except DisposedException as e:
+        except DisposedException:
             self.print("Office link disposed")
             return True
         except Exception as e:
@@ -943,9 +967,10 @@ class LoInst:
         ...
 
     @overload
-    def save_doc(self, doc: object, fnm: PathOrStr, password: str, format: str) -> bool:
+    def save_doc(self, doc: object, fnm: PathOrStr, password: str, format: str) -> bool:  # pylint: disable=W0622
         ...
 
+    # pylint: disable=W0622
     def save_doc(self, doc: object, fnm: PathOrStr, password: str | None = None, format: str | None = None) -> bool:
         # sourcery skip: avoid-builtin-shadow
         cargs = CancelEventArgs(self.save_doc.__qualname__)
@@ -1124,14 +1149,16 @@ class LoInst:
     # region    store_doc_format()
 
     @overload
-    def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str) -> bool:
+    def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str) -> bool:  # pylint: disable=W0622
         ...
 
     @overload
     def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str, password: str) -> bool:
         ...
 
-    def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str, password: str | None = None) -> bool:
+    def store_doc_format(
+        self, store: XStorable, fnm: PathOrStr, format: str, password: str | None = None
+    ) -> bool:  # pylint: disable=W0622
         # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.store_doc_format.__qualname__)
         cargs.event_data = {
@@ -1471,7 +1498,7 @@ class LoInst:
         indent = "  "
         print(f"No. of names: {len(names)}")
         if format_opt:
-            actual_count = len(lst_2d[0])
+            actual_count = len(lst_2d[0])  # pylint: disable=unsubscriptable-object
             if actual_count > 1:
                 # if this is more then on colum then print header
                 #  -----------|-----------|-----------
@@ -1485,7 +1512,7 @@ class LoInst:
                 col_str = format_opt.get_formatted(idx_row=i, row_data=row, join_str="| ")
                 print(f"{indent}{col_str}")
         else:
-            for row in lst_2d:
+            for row in lst_2d:  # pylint: disable=not-an-iterable
                 for col in row:
                     print(f'{indent}"{col}"', end="")
                 print()

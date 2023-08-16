@@ -1,3 +1,4 @@
+# pylint: disable=wrong-import-order
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
@@ -6,8 +7,6 @@ from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
-from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor as Color
-from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as Gradient
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as Hatch
 from ooodev.format.inner.direct.write.fill.area.img import Img as Img
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
@@ -22,5 +21,7 @@ from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
+from .color import Color as Color
+from .gradient import Gradient as Gradient
 
 __all__ = ["Color", "Gradient", "Hatch", "Img", "Pattern"]

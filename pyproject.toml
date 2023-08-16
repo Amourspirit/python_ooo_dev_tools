@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.12.0"
+version = "0.12.1"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -98,8 +98,15 @@ target="py37"
 max-line-length = 120
 disable = """
     no-name-in-module,
-    no-self-argument
+    no-self-argument,
+    attribute-defined-outside-init,
+    line-too-long,
+    unnecessary-pass,
+    missing-docstring,
+    W2301
 """
+[tool.pylint.format]
+allow-reexport-from-package=true
 
 [tool.pyright]
 pythonVersion = "3.8"

@@ -3,6 +3,10 @@ Module for Paragraph Gradient Color.
 
 .. versionadded:: 0.9.0
 """
+# pylint: disable=wrong-import-order
+# pylint: disable=wrong-import-position
+# pylint: disable=unused-import
+# pylint: disable=useless-import-alias
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, TypeVar, overload
@@ -32,7 +36,7 @@ from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 
 # endregion Import
 
-_TGradient = TypeVar(name="_TGradient", bound="Gradient")
+_TGradient = TypeVar(name="_TGradient", bound="Gradient")  # pylint: disable=invalid-name
 
 
 class Gradient(StyleMulti):
@@ -83,7 +87,7 @@ class Gradient(StyleMulti):
 
             - :ref:`help_writer_format_direct_para_area_gradient`
         """
-        fs = self._get_inner_class(
+        inner_cls = self._get_inner_class(
             style=style,
             step_count=step_count,
             x_offset=offset.x,
@@ -103,9 +107,9 @@ class Gradient(StyleMulti):
         if name == "__constructor_default__":
             # __constructor_default__ means the values will never be used.
             self._set(self._props.name, "Gradient 9999")
-            self._set_style("fill_style", fs, *fs.get_attrs())
+            self._set_style("fill_style", inner_cls, *inner_cls.get_attrs())
         else:
-            fill_struct = self._get_fill_struct(fill_struct=fs, name=name, auto_name=False)
+            fill_struct = self._get_fill_struct(fill_struct=inner_cls, name=name, auto_name=False)
             self._set(self._props.name, self._name)
             self._set_style("fill_style", fill_struct, *fill_struct.get_attrs())
 
@@ -137,37 +141,39 @@ class Gradient(StyleMulti):
                 # This is why we need to check if the name is a preset gradient and then get the
                 # gradient struct from the preset.
                 preset_kind = PresetGradientKind.from_str(name)
-                gs = GradientStruct.from_preset(preset_kind)
+                grad_struct = GradientStruct.from_preset(preset_kind)
                 return self._get_inner_class(
-                    style=gs.prop_style,
-                    step_count=gs.prop_step_count,
-                    x_offset=gs.prop_x_offset,
-                    y_offset=gs.prop_y_offset,
-                    angle=gs.prop_angle,
-                    border=gs.prop_border,
-                    start_color=gs.prop_start_color,
-                    start_intensity=gs.prop_start_intensity,
-                    end_color=gs.prop_end_color,
-                    end_intensity=gs.prop_end_intensity,
+                    style=grad_struct.prop_style,
+                    step_count=grad_struct.prop_step_count,
+                    x_offset=grad_struct.prop_x_offset,
+                    y_offset=grad_struct.prop_y_offset,
+                    angle=grad_struct.prop_angle,
+                    border=grad_struct.prop_border,
+                    start_color=grad_struct.prop_start_color,
+                    start_intensity=grad_struct.prop_start_intensity,
+                    end_color=grad_struct.prop_end_color,
+                    end_intensity=grad_struct.prop_end_intensity,
                 )
         else:
             auto_name = True
             name = self._container_get_default_name()
-        nc = self._container_get_inst()
+        name_container = self._container_get_inst()
         if auto_name:
             name = f"{name.rstrip()} "
-            self._name = self._container_get_unique_el_name(name, nc)
+            self._name = self._container_get_unique_el_name(name, name_container)
 
-        grad = self._container_get_value(self._name, nc)  # raises value error if name is empty
+        grad = self._container_get_value(self._name, name_container)  # raises value error if name is empty
         if grad is not None:
             return self._get_gradient_from_uno_struct(grad, _cattribs=self._get_gradient_struct_cattrib())
         if fill_struct is None:
             raise ValueError(
                 f'No Gradient could be found in container for "{name}". In this case a Gradient is required.'
             )
-        self._container_add_value(name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=nc)
+        self._container_add_value(
+            name=self._name, obj=fill_struct.get_uno_struct(), allow_update=False, nc=name_container
+        )
         return self._get_gradient_from_uno_struct(
-            self._container_get_value(self._name, nc),
+            self._container_get_value(self._name, name_container),
             _cattribs=self._get_gradient_struct_cattrib(),
         )
 
@@ -184,6 +190,7 @@ class Gradient(StyleMulti):
         end_color: Color,
         end_intensity: Intensity | int,
     ) -> GradientStruct:
+        # pylint: disable=unexpected-keyword-arg
         return GradientStruct(
             style=style,
             step_count=step_count,
@@ -195,7 +202,7 @@ class Gradient(StyleMulti):
             start_intensity=start_intensity,
             end_color=end_color,
             end_intensity=end_intensity,
-            _cattribs=self._get_gradient_struct_cattrib(),
+            _cattribs=self._get_gradient_struct_cattrib(),  # type: ignore
         )
 
     # endregion Internal Methods
@@ -204,6 +211,9 @@ class Gradient(StyleMulti):
     def _container_get_service_name(self) -> str:
         # https://github.com/LibreOffice/core/blob/d9e044f04ac11b76b9a3dac575f4e9155b67490e/chart2/source/tools/PropertyHelper.cxx#L229
         return "com.sun.star.drawing.GradientTable"
+
+    def _get_service_name(self) -> str:
+        raise NotImplementedError
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -221,10 +231,10 @@ class Gradient(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifying(source, event)
+        return super()._on_modifying(source, event_args)
 
     # region copy()
     @overload
@@ -237,9 +247,9 @@ class Gradient(StyleMulti):
 
     def copy(self: _TGradient, **kwargs) -> _TGradient:
         """Gets a copy of instance as a new instance"""
-        cp = super().copy(**kwargs)
-        cp._name = self._name
-        return cp
+        inst_copy = super().copy(**kwargs)
+        inst_copy._name = self._name  # pylint: disable=protected-access
+        return inst_copy
 
     # endregion copy()
     # endregion override methods
@@ -273,17 +283,18 @@ class Gradient(StyleMulti):
         """
         # this nu is only used to get Property Name
         inst = cls(name="__constructor_default__", **kwargs)
+        # pylint: disable=protected-access
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         grad_fill = cast(UNOGradient, mProps.Props.get(obj, inst._props.grad_prop_name))
-        gs = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
+        gradient_struct = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
 
         fill_gradient_name = cast(str, mProps.Props.get(obj, inst._props.name))
 
         inst._set(inst._props.step_count, grad_fill.StepCount)
         inst._set(inst._props.name, fill_gradient_name)
-        inst._set_style("fill_style", gs, *gs.get_attrs())
+        inst._set_style("fill_style", gradient_struct, *gradient_struct.get_attrs())
         inst._name = fill_gradient_name
         return inst
 
@@ -307,8 +318,9 @@ class Gradient(StyleMulti):
         auto_name = not name
         inst = cls(name="__constructor_default__", **kwargs)
         grad_fill = struct.get_uno_struct()
-        gs = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
-        fill_struct = inst._get_fill_struct(fill_struct=gs, name=name, auto_name=auto_name)
+        # pylint: disable=protected-access
+        grad_struct = GradientStruct.from_uno_struct(grad_fill, _cattribs=inst._get_gradient_struct_cattrib())
+        fill_struct = inst._get_fill_struct(fill_struct=grad_struct, name=name, auto_name=auto_name)
 
         inst._set(inst._props.step_count, grad_fill.StepCount)
         inst._set(inst._props.name, inst._name)
@@ -389,6 +401,7 @@ class Gradient(StyleMulti):
         try:
             return self._default_inst
         except AttributeError:
+            # pylint: disable=unexpected-keyword-arg
             inst = self.__class__(
                 style=GradientStyle.LINEAR,
                 step_count=0,
@@ -397,8 +410,9 @@ class Gradient(StyleMulti):
                 border=0,
                 grad_color=ColorRange(Color(0), Color(16777215)),
                 grad_intensity=IntensityRange(100, 100),
-                _cattribs=self._get_gradient_struct_cattrib(),
+                _cattribs=self._get_gradient_struct_cattrib(),  # type: ignore
             )
+            # pylint: disable=protected-access
             inst._set(inst._props.style, FillStyle.NONE)
             inst._set(inst._props.name, "")
             inst._is_default_inst = True

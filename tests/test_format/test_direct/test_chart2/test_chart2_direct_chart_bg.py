@@ -1,3 +1,8 @@
+# pylint: disable=wrong-import-order
+# pylint: disable=wrong-import-position
+# pylint: disable=unused-import
+# pylint: disable=useless-import-alias
+# pylint: disable=import-outside-toplevel
 from __future__ import annotations
 import pytest
 from typing import cast, TYPE_CHECKING
@@ -44,7 +49,7 @@ if TYPE_CHECKING:
 
 
 def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:
-    if Info.version_info < (7, 5):
+    if Chart2 is None or Info.version_info < (7, 5):
         pytest.skip("Not supported in this version, Requires LibreOffice 7.5 or higher.")
 
     delay = 0  # 0 if Lo.bridge_connector.headless else 5_000
@@ -55,7 +60,7 @@ def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:
     doc = Calc.open_doc(fix_path)
     try:
         sheet = Calc.get_sheet(doc)
-        if not Lo.bridge_connector.headless:
+        if not Lo.bridge_connector.headless:  # pylint: disable=no-member
             GUI.set_visible()
             Lo.delay(500)
             Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
@@ -68,22 +73,22 @@ def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_color, chart_bdr_line])
 
         bg_ps = chart_doc.getPageBackground()
-        assert bg_ps.FillColor == StandardColor.GREEN_LIGHT2
+        assert bg_ps.FillColor == StandardColor.GREEN_LIGHT2  # type: ignore
 
         chart_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.NEON_LIGHT)
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad])
         bg_ps = chart_doc.getPageBackground()
-        assert bg_ps.FillGradientName == PresetGradientKind.NEON_LIGHT.value
+        assert bg_ps.FillGradientName == PresetGradientKind.NEON_LIGHT.value  # type: ignore
 
         chart_hatch = ChartHatch.from_preset(chart_doc, PresetHatchKind.GREEN_30_DEGREES)
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_hatch])
         bg_ps = chart_doc.getPageBackground()
-        assert bg_ps.FillHatchName == chart_hatch.prop_hatch_name
+        assert bg_ps.FillHatchName == chart_hatch.prop_hatch_name  # type: ignore
 
         chart_img = ChartImg.from_preset(chart_doc, PresetImageKind.ICE_LIGHT)
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_img])
         bg_ps = chart_doc.getPageBackground()
-        assert bg_ps.FillBitmapName == str(PresetImageKind.ICE_LIGHT)
+        assert bg_ps.FillBitmapName == str(PresetImageKind.ICE_LIGHT)  # type: ignore
 
         chart_pattern = ChartPattern.from_preset(chart_doc, PresetPatternKind.HORIZONTAL_BRICK)
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_pattern])
@@ -91,7 +96,7 @@ def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:
         chart_transparency = ChartTransparency(value=50)
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_color, chart_transparency])
         bg_ps = chart_doc.getPageBackground()
-        assert bg_ps.FillTransparence == 50
+        assert bg_ps.FillTransparence == 50  # type: ignore
 
         # ChartTransparencyGradient 1
         chart_grad_transparent = ChartGradientTransparency(
@@ -99,9 +104,9 @@ def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:
         )
         Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad_transparent])
         bg_ps = chart_doc.getPageBackground()
-        assert bg_ps.FillTransparenceGradientName.startswith("ChartTransparencyGradient")
+        assert bg_ps.FillTransparenceGradientName.startswith("ChartTransparencyGradient")  # type: ignore
 
-        if not Lo.bridge_connector.headless:
+        if not Lo.bridge_connector.headless:  # pylint: disable=no-member
             # The chart does not always update correctly after style changes.
             # To refresh the chart, we can do a recalculation by calling the dispatch_recalculate() method.
             Calc.dispatch_recalculate()

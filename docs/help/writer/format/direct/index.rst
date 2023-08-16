@@ -8,4 +8,5 @@ Direct
 
     char/index
     para/index
+    shape/index
     table/index
