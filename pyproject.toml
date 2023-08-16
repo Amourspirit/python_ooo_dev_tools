@@ -101,6 +101,8 @@ disable = """
     no-self-argument,
     attribute-defined-outside-init,
     line-too-long,
+    unnecessary-pass,
+    missing-docstring,
     W2301
 """
 [tool.pylint.format]

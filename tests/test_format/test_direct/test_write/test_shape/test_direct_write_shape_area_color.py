@@ -1,3 +1,12 @@
+"""Test for ooodev.format.writer.direct.shape.area.Color"""
+# pylint: disable=no-member
+# pylint: disable=unused-import
+# pylint: disable=unused-argument
+# pylint: disable=wrong-import-order
+# pylint: disable=wrong-import-position
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=invalid-name
 from __future__ import annotations
 import pytest
 
@@ -23,7 +32,6 @@ def test_write(loader) -> None:
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
     try:
-
         style = Color(color=StandardColor.GREEN_LIGHT2)
 
         page = Write.get_draw_page(doc)

@@ -1,3 +1,11 @@
+# pylint: disable=no-member
+# pylint: disable=unused-import
+# pylint: disable=unused-argument
+# pylint: disable=wrong-import-order
+# pylint: disable=wrong-import-position
+# pylint: disable=missing-function-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=invalid-name
 from __future__ import annotations
 import pytest
 
