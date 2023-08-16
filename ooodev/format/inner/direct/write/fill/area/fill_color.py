@@ -3,6 +3,9 @@ Module for Fill Properties Fill Color.
 
 .. versionadded:: 0.9.0
 """
+# pylint: disable=unexpected-keyword-arg
+# pylint: disable=invalid-name
+
 from __future__ import annotations
 from typing import Any, Tuple, TypeVar
 
@@ -10,6 +13,7 @@ from ooodev.utils import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
+from ooodev.utils import color as mColor
 
 
 _TFillColor = TypeVar(name="_TFillColor", bound="FillColor")
@@ -19,8 +23,30 @@ class FillColor(AbstractColor):
     """
     Class for Fill Properties Fill Color.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_shape_color`
+
     .. versionadded:: 0.9.0
     """
+
+    def __init__(self, color: mColor.Color = mColor.StandardColor.AUTO_COLOR) -> None:
+        """
+        Constructor
+
+        Args:
+            color (:py:data:`~.utils.color.Color`, optional): FillColor Color.
+
+        Returns:
+            None:
+
+        See Also:
+            :ref:`help_writer_format_direct_shape_color`
+        """
+        super().__init__(color=color)
+
+    def _container_get_service_name(self) -> str:
+        return super()._container_get_service_name()
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -66,6 +92,6 @@ class FillColor(AbstractColor):
         try:
             return self._empty_props
         except AttributeError:
-            self._empty_props = self.__class__(_cattribs=self._get_internal_cattribs())
-            self._empty_props._is_default_inst = True
+            self._empty_props = self.__class__(_cattribs=self._get_internal_cattribs())  # type: ignore
+            self._empty_props._is_default_inst = True  # pylint: disable=protected-access
         return self._empty_props

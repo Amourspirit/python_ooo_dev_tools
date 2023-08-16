@@ -1,8 +1,4 @@
-"""Internal Draw Area Color"""
-# pylint: disable=unnecessary-pass
-# pylint: disable=unused-import
-from __future__ import annotations
-import uno
+"""Writer Direct Shape Area Color Class."""
 from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor
 from ooodev.utils import color as mColor
 
@@ -13,12 +9,14 @@ class Color(FillColor):
 
     .. seealso::
 
-        - :ref:`help_draw_format_direct_shape_color`
+        - :ref:`help_writer_format_direct_shape_color`
 
     .. versionadded:: 0.9.3
     """
 
-    def __init__(self, color: mColor.Color = mColor.StandardColor.AUTO_COLOR) -> None:
+    def __init__(
+        self, color: mColor.Color = mColor.StandardColor.AUTO_COLOR  # pylint: disable=redefined-outer-name
+    ) -> None:
         """
         Constructor
 
@@ -30,6 +28,6 @@ class Color(FillColor):
 
         See Also:
 
-            - :ref:`help_draw_format_direct_shape_color`
+            - :ref:`help_writer_format_direct_shape_color`
         """
         super().__init__(color=color)

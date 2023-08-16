@@ -1,3 +1,6 @@
+"""Abstract Fill Color Module"""
+# pylint: disable=broad-exception-raised
+# pylint: disable=unused-import
 # region Import
 from __future__ import annotations
 from typing import Any, overload, Type, TypeVar
@@ -45,10 +48,10 @@ class AbstractColor(StyleBase):
 
     # region Overrides
 
-    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifying(source, event)
+        return super()._on_modifying(source, event_args)
 
     # region apply()
 
@@ -73,9 +76,9 @@ class AbstractColor(StyleBase):
     def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
+        except mEx.MultiError as multi_err:
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
+            for err in multi_err.errors:
                 mLo.Lo.print(f"  {err}")
 
     # endregion Overrides
@@ -106,12 +109,13 @@ class AbstractColor(StyleBase):
         Returns:
             Color: ``Color`` instance that represents ``obj`` Color properties.
         """
-        nu = cls(**kwargs)
+        new_class = cls(**kwargs)
 
-        if not nu._is_valid_obj(obj):
+        # pylint: disable=protected-access
+        if not new_class._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        color = mProps.Props.get(obj, nu._props.color, None)
+        color = mProps.Props.get(obj, new_class._props.color, None)
 
         return cls(**kwargs) if color is None else cls(color=color, **kwargs)
 
@@ -151,7 +155,9 @@ class AbstractColor(StyleBase):
         try:
             return self._default_inst
         except AttributeError:
-            self._default_inst = self.__class__(color=-1, _cattribs=self._get_internal_cattribs())
+            # pylint: disable=unexpected-keyword-arg
+            self._default_inst = self.__class__(color=-1, _cattribs=self._get_internal_cattribs())  # type: ignore
+            # pylint: disable=protected-access
             self._default_inst._is_default_inst = True
         return self._default_inst
 

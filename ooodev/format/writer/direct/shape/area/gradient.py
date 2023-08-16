@@ -1,31 +1,33 @@
+# pylint: disable=wrong-import-order
+# pylint: disable=wrong-import-position
+# pylint: disable=unused-import
+# pylint: disable=useless-import-alias
 # region Import
 from __future__ import annotations
 
-# pylint: disable=unused-import
-# pylint: disable=abstract-method
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
-
-from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as FillGradient
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle
-from ooodev.utils.data_type.color_range import ColorRange
-from ooodev.utils.data_type.intensity import Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange
-from ooodev.utils.data_type.offset import Offset
+from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.utils.data_type.color_range import ColorRange as ColorRange
+from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
+from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as ShapeGradient
 
 # endregion Import
 
 
-class Gradient(FillGradient):
+# pylint: disable=abstract-method
+class Gradient(ShapeGradient):
     """
     Paragraph Gradient Color
 
     .. seealso::
 
-        - :ref:`help_draw_format_direct_shape_gradient`
+        - :ref:`help_writer_format_direct_shape_gradient`
 
-    .. versionadded:: 0.9.3
+    .. versionadded:: 0.9.0
     """
 
     def __init__(
@@ -62,7 +64,8 @@ class Gradient(FillGradient):
             None:
 
         See Also:
-            - :ref:`help_draw_format_direct_shape_gradient`
+
+            - :ref:`help_writer_format_direct_shape_gradient`
         """
         super().__init__(
             style=style,

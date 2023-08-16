@@ -1,3 +1,8 @@
+"""Base Styles class"""
+# pylint: disable=too-many-lines
+# pylint: disable=broad-exception-raised
+# pylint: disable=unused-import
+# pylint: disable=useless-import-alias
 # region Imports
 from __future__ import annotations
 from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
@@ -31,15 +36,17 @@ if TYPE_CHECKING:
 # endregion Imports
 
 # region Type Vars
-TStyleBase = TypeVar(name="TStyleBase", bound="StyleBase")
-TStyleMulti = TypeVar(name="TStyleMulti", bound="StyleMulti")
-TStyleName = TypeVar(name="TStyleName", bound="StyleName")
-_TStyleModifyMulti = TypeVar(name="_TStyleModifyMulti", bound="StyleModifyMulti")
+TStyleBase = TypeVar(name="TStyleBase", bound="StyleBase")  # pylint: disable=invalid-name
+TStyleMulti = TypeVar(name="TStyleMulti", bound="StyleMulti")  # pylint: disable=invalid-name
+TStyleName = TypeVar(name="TStyleName", bound="StyleName")  # pylint: disable=invalid-name
+_TStyleModifyMulti = TypeVar(name="_TStyleModifyMulti", bound="StyleModifyMulti")  # pylint: disable=invalid-name
 # endregion Type Vars
 
 
 # region Meta
 class MetaStyle(type):
+    """Meta class for styles"""
+
     def __call__(cls, *args, **kw):
         # sourcery skip: instance-method-first-arg-name
         custom_args = kw.pop("_cattribs", None)
@@ -203,8 +210,8 @@ class StyleBase(metaclass=MetaStyle):
             return False
         if cargs.cancel:
             return False
-        dv = self._get_properties()
-        dv[kvargs.key] = kvargs.value
+        data_values = self._get_properties()
+        data_values[kvargs.key] = kvargs.value
         self._events.trigger(FormatNamedEvent.STYLE_SET, KeyValArgs.from_args(kvargs))
         return True
 
@@ -215,8 +222,8 @@ class StyleBase(metaclass=MetaStyle):
         self._events.trigger(FormatNamedEvent.STYLE_CLEARING, cargs)
         if cargs.cancel:
             return
-        dv = self._get_properties()
-        dv.clear()
+        data_values = self._get_properties()
+        data_values.clear()
 
     def _has(self, key: str) -> bool:
         """Gets if a property exist"""
@@ -231,8 +238,8 @@ class StyleBase(metaclass=MetaStyle):
         if cargs.cancel:
             return False
         if self._has(key):
-            dv = self._get_properties()
-            del dv[key]
+            data_values = self._get_properties()
+            del data_values[key]
             return True
         return False
 
@@ -244,7 +251,7 @@ class StyleBase(metaclass=MetaStyle):
                 self._on_deleting_attrib(self, kvargs)
                 if kvargs.cancel:
                     continue
-                delattr(self.__class_, attrib)  # type: ignore
+                delattr(self.__class__, attrib)  # type: ignore
         for attrib in attribs:
             if hasattr(self, attrib):
                 kvargs = KeyValCancelArgs("style_base", key=attrib, value=getattr(self, attrib, None))
@@ -261,11 +268,12 @@ class StyleBase(metaclass=MetaStyle):
         self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         if cargs.cancel:
             return
-        dv = self._get_properties()
+        data_dict = self._get_properties()
         if isinstance(cargs.event_data, StyleBase):
-            dv.update(cargs.event_data._dv)
+            # pylint: disable=protected-access
+            data_dict.update(cargs.event_data._dv)
             return
-        dv.update(cargs.event_data)
+        data_dict.update(cargs.event_data)
 
     # endregion style property methods
 
@@ -317,8 +325,8 @@ class StyleBase(metaclass=MetaStyle):
         Returns:
             bool: ``True`` if has a required service; Otherwise, ``False``
         """
-        if rs := self._supported_services():
-            return mInfo.Info.support_service(obj, *rs)
+        if services := self._supported_services():
+            return mInfo.Info.support_service(obj, *services)
         # if style class has no required services then return True
         return True
 
@@ -329,13 +337,13 @@ class StyleBase(metaclass=MetaStyle):
         Args:
             method_name (str, optional): Calling method name.
         """
-        rs = self._supported_services()
-        rs_len = len(rs)
+        services = self._supported_services()
+        rs_len = len(services)
         name = f".{method_name}()" if method_name else ""
         if rs_len == 0:
             mLo.Lo.print(f"{self.__class__.__name__}{name}: object is not valid.")
             return
-        services = ", ".join(rs)
+        services = ", ".join(services)
         srv = "service" if rs_len == 1 else "services"
         mLo.Lo.print(f"{self.__class__.__name__}{name}: object must support {srv}: {services}")
 
@@ -347,9 +355,9 @@ class StyleBase(metaclass=MetaStyle):
         # may be useful to wrap in try statements in child classes
         try:
             mProps.Props.set(obj, **kwargs)
-        except mEx.MultiError as e:
+        except mEx.MultiError as multi_err:
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
+            for err in multi_err.errors:
                 mLo.Lo.print(f"  {err}")
 
     def _copy_missing_attribs(self, src: TStyleBase, dst: TStyleBase, *args: str) -> None:
@@ -420,10 +428,10 @@ class StyleBase(metaclass=MetaStyle):
         """
         validate = bool(kwargs.get("validate", True))
         if "override_dv" in kwargs:
-            dv = kwargs["override_dv"]
+            data_values = kwargs["override_dv"]
         else:
-            dv = self._get_properties()
-        if len(dv) > 0:
+            data_values = self._get_properties()
+        if len(data_values) > 0:
             if not validate or self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
                 cargs.event_data = self
@@ -434,7 +442,7 @@ class StyleBase(metaclass=MetaStyle):
                 events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
                 events.on(PropsNamedEvent.PROP_SET, _on_props_set)
                 events.on(PropsNamedEvent.PROP_SET_ERROR, _on_props_set_error)
-                self._props_set(obj, **dv)
+                self._props_set(obj, **data_values)
                 events = None
                 eargs = EventArgs.from_args(cargs)
                 self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
@@ -464,23 +472,25 @@ class StyleBase(metaclass=MetaStyle):
     def copy(self: TStyleBase, **kwargs) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
         # sourcery skip: low-code-quality
+        # pylint: disable=protected-access
         cargs = CancelEventArgs(self)
         self._events.trigger(FormatNamedEvent.STYLE_COPYING, cargs)
         if cargs.cancel:
             if cargs.handled:
                 return cargs.event_data
             else:
-                mEx.CancelEventError(cargs)
-        nu = self.__class__(**kwargs)
-        nu._prop_parent = self._prop_parent
-        if dv := self._get_properties():
+                raise mEx.CancelEventError(cargs)
+        new_class = self.__class__(**kwargs)
+        new_class._prop_parent = self._prop_parent
+        # pylint: disable=unused-variable
+        if data_values := self._get_properties():
             # it is possible that that a new instance will have different property names then the current instance.
             # This can happen because this class inherits from MetaStyle.
             # if ne contains a _props attribute (tuple of prop names) then use them to remap keys.
             # For instance a key of BorderLength may become ParaBorderLength.
 
             key_map = None
-            p_len = len(nu._props)
+            p_len = len(new_class._props)
             if p_len > 0 and p_len == len(self._props):
                 key_map = {}
                 for i, p_val in enumerate(self._props):
@@ -488,21 +498,21 @@ class StyleBase(metaclass=MetaStyle):
                         # some prop value may not be used in which case they are empty strings.
                         continue
                     if isinstance(p_val, PropPair):
-                        nu_pair = cast(PropPair, nu._props[i])
+                        nu_pair = cast(PropPair, new_class._props[i])
                         if p_val.first:
                             key_map[p_val.first] = nu_pair.first
                         if p_val.second:
                             key_map[p_val.second] = nu_pair.second
                     else:
-                        key_map[p_val] = nu._props[i]
+                        key_map[p_val] = new_class._props[i]
 
             if key_map:
                 for key, nu_val in key_map.items():
                     if self._has(key):
-                        nu._set(nu_val, self._get(key))
+                        new_class._set(nu_val, self._get(key))
             else:
-                nu._update(self._get_properties())
-        return nu
+                new_class._update(self._get_properties())
+        return new_class
 
     # endregion Copy()
 
@@ -726,11 +736,11 @@ class StyleBase(metaclass=MetaStyle):
             return NotImplemented
         result = False
         try:
-            for k, v in self._get_properties().items():
-                if oth._get(k) != v:
+            for key, value in self._get_properties().items():
+                if oth._get(key) != value:
                     return False
             result = True
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             return False
         return result
 
@@ -753,7 +763,11 @@ class StyleBase(metaclass=MetaStyle):
         return None
 
     def _container_add_value(
-        self, name: str, obj: Any, allow_update: bool = True, nc: XNameContainer | None = None
+        self,
+        name: str,
+        obj: Any,
+        allow_update: bool = True,
+        nc: XNameContainer | None = None,  # pylint: disable=invalid-name
     ) -> None:
         if nc is None:
             nc = self._container_get_inst()
@@ -764,7 +778,9 @@ class StyleBase(metaclass=MetaStyle):
         else:
             nc.insertByName(name, obj)
 
-    def _container_get_unique_el_name(self, prefix: str, nc: XNameContainer | None = None) -> str:
+    def _container_get_unique_el_name(
+        self, prefix: str, nc: XNameContainer | None = None  # pylint: disable=invalid-name
+    ) -> str:
         """
         Gets the next name that does not exist in the container.
 
@@ -788,7 +804,7 @@ class StyleBase(metaclass=MetaStyle):
             name = f"{prefix}{i}"
         return name
 
-    def _container_get_value(self, name: str, nc: XNameContainer | None = None) -> Any:
+    def _container_get_value(self, name: str, nc: XNameContainer | None = None) -> Any:  # pylint: disable=invalid-name
         if not name:
             raise ValueError("Name is empty value. Expected a string name.")
         if nc is None:
@@ -826,6 +842,7 @@ class StyleBase(metaclass=MetaStyle):
 
     @property
     def _events(self) -> Events:
+        # pylint: disable=no-member
         return self._internal_events  # type: ignore
 
     # endregion Properties
@@ -892,6 +909,11 @@ class StyleMulti(StyleBase):
     # endregion Init
 
     # region Overrides
+    def _get_service_name(self) -> str:
+        raise NotImplementedError
+
+    def _supported_services(self) -> Tuple[str, ...]:
+        raise NotImplementedError
 
     def _set_style_internal_events(self) -> None:
         super()._set_style_internal_events()
@@ -957,9 +979,9 @@ class StyleMulti(StyleBase):
             self._events.trigger(FormatNamedEvent.STYLE_MULTI_CHILD_APPLYING, kvargs)
             if kvargs.cancel:
                 continue
-            style, kw = info
-            if kw:
-                style.apply(obj, **kw.kwargs)
+            style, key_word = info
+            if key_word:
+                style.apply(obj, **key_word.kwargs)
             else:
                 style.apply(obj)
             self._events.trigger(FormatNamedEvent.STYLE_MULTI_CHILD_APPLIED, KeyValArgs.from_args(kvargs))
@@ -980,15 +1002,16 @@ class StyleMulti(StyleBase):
 
     def copy(self: TStyleMulti, **kwargs) -> TStyleMulti:
         """Gets a copy of instance as a new instance"""
-        cp = super().copy(**kwargs)
+        # pylint: disable=protected-access
+        instance_copy = super().copy(**kwargs)
         styles = self._get_multi_styles()
         for key, info in styles.items():
-            style, kw = info
-            if kw:
-                cp._set_style(key, style.copy(**kwargs), **kw.kwargs)
+            style, key_words = info
+            if key_words:
+                instance_copy._set_style(key, style.copy(**kwargs), **key_words.kwargs)
             else:
-                cp._set_style(key, style.copy(**kwargs))
-        return cp
+                instance_copy._set_style(key, style.copy(**kwargs))
+        return instance_copy
 
     # endregion Copy()
 
@@ -1027,6 +1050,7 @@ class StyleMulti(StyleBase):
                 This is used for backup and restore in Write Module.
             kwargs: Expandable key value args to that are to be passed to style when ``apply_style()`` is called.
         """
+        # pylint: disable=protected-access
         kvargs = KeyValCancelArgs("_set_style", key=key, value=style)
         self._events.trigger(FormatNamedEvent.MULTI_STYLE_SETTING, kvargs)
         if kvargs.cancel:
@@ -1041,6 +1065,7 @@ class StyleMulti(StyleBase):
         self._events.trigger(FormatNamedEvent.MULTI_STYLE_SET, KeyValArgs.from_args(kvargs))
 
     def _update_style(self, value: StyleMulti) -> None:
+        # pylint: disable=protected-access
         cargs = CancelEventArgs("_update_style")
         cargs.event_data = value
         self._events.trigger(FormatNamedEvent.MULTI_STYLE_UPDATING, cargs)
@@ -1244,6 +1269,7 @@ class StyleModifyMulti(StyleMulti):
     def _is_valid_obj(self, obj: Any) -> bool:
         if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.style.XStyle"):
             return self._is_obj_service(obj)
+        # pylint: disable=unused-variable
         if valid := self._is_obj_service(obj):
             return True
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
@@ -1251,12 +1277,13 @@ class StyleModifyMulti(StyleMulti):
     def _props_set(self, obj: Any, **kwargs: Any) -> None:
         try:
             super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
+        except mEx.MultiError as multi_err:
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
+            for err in multi_err.errors:
                 mLo.Lo.print(f"  {err}")
 
     # region apply()
+    # pylint: disable=arguments-differ
     @overload
     def apply(self, obj: Any) -> None:
         ...
@@ -1280,8 +1307,8 @@ class StyleModifyMulti(StyleMulti):
             if not self._is_obj_service(obj):
                 self._print_not_valid_srv(method_name="apply")
                 return
-            p = mLo.Lo.qi(XPropertySet, obj)
-            if p is None:
+            props = mLo.Lo.qi(XPropertySet, obj)
+            if props is None:
                 mLo.Lo.print(
                     f"{self.__class__.__name__}.apply(): Not a UNO Object for style. Unable to set Style Properties"
                 )
@@ -1292,8 +1319,8 @@ class StyleModifyMulti(StyleMulti):
                     f"{self.__class__.__name__}.apply(): Not a UNO Object for style. Unable to set Style Properties"
                 )
                 return
-            p = self.get_style_props(obj)
-        super().apply(p, **kwargs)
+            props = self.get_style_props(obj)
+        super().apply(props, **kwargs)
 
     # endregion apply()
 
@@ -1308,9 +1335,9 @@ class StyleModifyMulti(StyleMulti):
 
     def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti:
         """Gets a copy of instance as a new instance"""
-        cp = super().copy(**kwargs)
-        cp.prop_style_name = self.prop_style_name
-        return cp
+        inst_copy = super().copy(**kwargs)
+        inst_copy.prop_style_name = self.prop_style_name
+        return inst_copy
 
     # endregion copy()
 
@@ -1318,7 +1345,7 @@ class StyleModifyMulti(StyleMulti):
 
     # region internal methods
 
-    def _is_valid_doc(self, obj: Any) -> bool:
+    def _is_valid_doc(self, obj: Any) -> bool:  # pylint: disable=unused-argument
         return True
         # return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 
@@ -1442,15 +1469,16 @@ class StyleName(StyleBase):
         try:
             return self._style_property_name  # type: ignore
         except AttributeError:
+            # pylint: disable=raise-missing-from
             raise NotImplementedError
 
     # endregion internal methods
 
     # region Overrides
-    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifying(source, event)
+        return super()._on_modifying(source, event_args)
 
     # endregion Overrides
 
@@ -1480,14 +1508,14 @@ class StyleName(StyleBase):
         Returns:
             TStyleName: ``TStyleName`` instance that represents ``obj`` style.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
 
         if mInfo.Info.support_service(obj, "com.sun.star.style.CellStyle"):
-            cs = cast("CellStyle", obj)
-            name = cs.getName()
+            cell_style = cast("CellStyle", obj)
+            name = cell_style.getName()
             inst.prop_name = name
             return inst
-
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
@@ -1527,31 +1555,44 @@ class StyleName(StyleBase):
 
 
 # region Props Property event handlers
-def _on_props_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+def _on_props_setting(
+    source: Any, event_args: KeyValCancelArgs, *args, **kwargs  # pylint: disable=unused-argument
+) -> None:
+    # pylint: disable=protected-access
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_setting(source, event_args)
     instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_APPLYING, event_args)
 
 
-def _on_props_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
+def _on_props_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:  # pylint: disable=unused-argument
+    # pylint: disable=protected-access
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_set(source, event_args)
     instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_APPLIED, event_args)
 
 
-def _on_props_set_error(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+def _on_props_set_error(
+    source: Any, event_args: KeyValCancelArgs, *args, **kwargs  # pylint: disable=unused-argument
+) -> None:
+    # pylint: disable=protected-access
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_set_error(source, event_args)
     instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_ERROR, event_args)
 
 
-def _on_props_restore_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+def _on_props_restore_setting(
+    source: Any, event_args: KeyValCancelArgs, *args, **kwargs  # pylint: disable=unused-argument
+) -> None:
+    # pylint: disable=protected-access
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_restore_setting(source, event_args)
     instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_RESTORING, event_args)
 
 
-def _on_props_restore_set(source: Any, event_args: KeyValArgs, *args, **kwargs) -> None:
+def _on_props_restore_set(
+    source: Any, event_args: KeyValArgs, *args, **kwargs  # pylint: disable=unused-argument
+) -> None:
+    # pylint: disable=protected-access
     instance = cast(StyleBase, event_args.event_source)
     instance.on_property_restore_set(source, event_args)
     instance._events.trigger(FormatNamedEvent.STYLE_PROPERTY_RESTORED, event_args)
