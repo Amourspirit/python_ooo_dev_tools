@@ -19,8 +19,8 @@
     - [Multi-line list item](#multi-line-list-item)
   - [Image Classes](#image-classes)
   - [Spelling](#spelling)
-  - [Sphinx](#sphinx)
-  - [Code Spell Checker](#code-spell-checker)
+    - [Sphinx](#sphinx)
+    - [Code Spell Checker](#code-spell-checker)
   - [Abbreviations](#abbreviations)
   - [TODO](#todo)
   - [Comments](#comments)
@@ -202,6 +202,7 @@ Screen shots typically have class `screen_shot`, `invert`
 .. cssclass:: screen_shot invert
 
     .. _ch03fig_detail_prop_lst:
+
     .. figure:: https://images.com/myimg.png
         :alt: Details Properties List for algs.odp
         :figclass: align-center
@@ -217,6 +218,7 @@ Diagrams typically have class `diagram`, `invert`
 .. cssclass:: diagram invert
 
     .. _ch03fig_peek_services_interface:
+
     .. figure:: https://images.com/myimg.png
         :alt: Alt Description
         :figclass: align-center
@@ -235,6 +237,7 @@ The default width that should be used for oversize images is `:width: 550px`
 .. cssclass:: diagram invert
 
     .. _ch03fig_peek_services_interface:
+
     .. figure:: https://images.com/myimg.png
         :width: 550px
         :alt: Alt Description
@@ -253,6 +256,7 @@ Animated gif is not to be darkened using css styles
 .. cssclass:: a_gif
 
     .. _ch02fig_lo_qi_auto_demo:
+
     .. figure:: https://images.com/myimg.gif
         :alt: Lo.qi autocomplete demo image
         :figclass: align-center
@@ -262,7 +266,7 @@ Animated gif is not to be darkened using css styles
 
 ## Spelling
 
-## Sphinx
+### Sphinx
 
 To run spell check from `docs/` command line
 
@@ -285,7 +289,7 @@ See src/conn/index.rst as an example
 
 `.. spelling:word-list::` can be at the end of a `rst` file.
 
-## Code Spell Checker
+### Code Spell Checker
 
 The [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) extension is recommended for this project.
 
@@ -328,6 +332,7 @@ In this example adding a comment for a diagram.
 .. cssclass:: diagram invert
 
     .. _ch03fig_peek_services_interface:
+
     .. figure:: https://somedomain.com/img.png
         :alt: Methods to Investigate the Service and Interface
         :figclass: align-center
@@ -524,6 +529,7 @@ Example:
         .. cssclass:: a_gif
 
             .. _ch02fig_lo_qi_auto_demo:
+
             .. figure:: https://somedomain.com/img.gif
                 :alt: Lo.qi autocomplete demo image
                 :figclass: align-center
