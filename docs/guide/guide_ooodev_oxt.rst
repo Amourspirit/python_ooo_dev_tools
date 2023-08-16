@@ -20,7 +20,7 @@ Overview
 When |odev| is installed as an extension it will be available to all of the LibreOffice Suite via python Macros.
 The extension make is so you can use |odev| in any LibreOffice application without having to Pip install |odev| or `compile scripts <https://oooscript.readthedocs.io/en/latest/>`__ that use |odev|.
 
-The OOO Development Tools extension is available on `GitHub <OOO Development Tools Extension>`__ and `LibreOffice Extensions <https://extensions.libreoffice.org/en/extensions/show/41700>`__.
+The OOO Development Tools extension is available on `GitHub <https://github.com/Amourspirit/libreoffice_ooodev_ext#readme>`__ and `LibreOffice Extensions <https://extensions.libreoffice.org/en/extensions/show/41700>`__.
 
 .. note::
 
