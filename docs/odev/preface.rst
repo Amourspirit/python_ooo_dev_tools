@@ -2,8 +2,10 @@
 Preface
 *******
 
-.. image:: https://user-images.githubusercontent.com/4193389/177222844-cf92599a-2fca-4d67-931b-e237f04a3817.png
+.. image:: https://user-images.githubusercontent.com/4193389/260558706-6a975af5-0815-4d85-987a-6f8b3ff20609.png
     :alt: Header Image
+    :width: 150px
+    :align: center
 
 Scripting support for any programming language is implemented in LibreOffice and OpenOffice using respective UNO (Universal Network Objects) bridges.
 This means that other supported languages, including python, must negotiate a UNO bridge.

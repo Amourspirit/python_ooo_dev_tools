@@ -1,5 +1,3 @@
-Dascalescu
-Davison
 decrementing
 endnote
 endnotes
@@ -12,6 +10,7 @@ loapi
 lodoc
 loguide
 Naber
+octicon
 optimizers
 Pitonyak
 pizazz
@@ -25,3 +24,5 @@ tooltip
 uncomment
 uncommented
 ungrouped
+Uyghur
+versionchanged
