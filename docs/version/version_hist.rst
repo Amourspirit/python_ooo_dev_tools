@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.12.1
+==============
+
+Doc updates, minor bug fixes and updates.
+
+Add guide for installing OooDev as a LibreOffice `Extension <https://github.com/Amourspirit/libreoffice_ooodev_ext/tree/main>`__.
+
 Version 0.12.0
 ==============
 
