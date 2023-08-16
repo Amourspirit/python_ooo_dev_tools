@@ -81,7 +81,7 @@ EXTENSION
 ^^^^^^^^^
 
 This project is also available as an extension for LibreOffice.
-The OOO Development Tools extension is available on `GitHub <OOO Development Tools Extension>`__ and `LibreOffice Extensions <https://extensions.libreoffice.org/en/extensions/show/41700>`__.
+The OOO Development Tools extension is available on `GitHub <https://github.com/Amourspirit/libreoffice_ooodev_ext>`__ and `LibreOffice Extensions <https://extensions.libreoffice.org/en/extensions/show/41700>`__.
 
 See the `Guide <https://python-ooo-dev-tools.readthedocs.io/en/main/guide/guide_ooodev_oxt.html>`__ for installation and usage.
 
