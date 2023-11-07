@@ -1,9 +1,11 @@
 # coding: utf-8
 from __future__ import annotations
 import datetime
-from typing import cast
+import time
+from typing import cast, Any, Tuple
 from . import lo as mLo
-from com.sun.star.util import DateTime as UnoDateTime
+from ooo.dyn.util.date_time import DateTime as UnoDateTime
+from ooo.dyn.util.date import Date as UnoDate
 
 
 class DateUtil:
@@ -149,6 +151,79 @@ class DateUtil:
             microsecond=0 if uno_dt.NanoSeconds == 0 else int(uno_dt.NanoSeconds / 1000),
             tzinfo=datetime.timezone.utc if uno_dt.IsUTC else None,
         )
+
+    @staticmethod
+    def date_to_uno_date_time(date: Any) -> UnoDateTime:
+        """
+        Converts a date representation into the com.sun.star.util.DateTime date format
+        Acceptable boundaries: ``year >= 1900`` and ``<= 32767``
+
+        Args:
+            date (Any): ``datetime.datetime``, ``datetime.date``, ``datetime.time``, ``float`` (time.time) or ``time.struct_time``
+
+        Returns:
+            DateTime: A ``com.sun.star.util.DateTime`` if conversion was successful; Otherwise, ``date``
+        """
+        uno_date = UnoDateTime()
+        uno_date.Year = 1899
+        uno_date.Month = 12
+        uno_date.Day = 30
+        uno_date.Hours = 0
+        uno_date.Minutes = 0
+        uno_date.Seconds = 0
+        uno_date.NanoSeconds = 0
+        uno_date.IsUTC = False
+
+        if isinstance(date, float):
+            date = time.localtime(date)
+        if isinstance(date, time.struct_time):
+            if 1900 <= date[0] <= 32767:
+                (
+                    uno_date.Year,
+                    uno_date.Month,
+                    uno_date.Day,
+                    uno_date.Hours,
+                    uno_date.Minutes,
+                    uno_date.Seconds,
+                ) = date[0:6]
+            else:  # Copy only the time related part
+                uno_date.Hours, uno_date.Minutes, uno_date.Seconds = cast(Tuple[int, int, int], date[3:3])
+        elif isinstance(date, (datetime.datetime, datetime.date, datetime.time)):
+            if isinstance(date, (datetime.datetime, datetime.date)):
+                if 1900 <= date.year <= 32767:
+                    uno_date.Year, uno_date.Month, uno_date.Day = (
+                        date.year,
+                        date.month,
+                        date.day,
+                    )
+            if isinstance(date, (datetime.datetime, datetime.time)):
+                (
+                    uno_date.Hours,
+                    uno_date.Minutes,
+                    uno_date.Seconds,
+                    uno_date.NanoSeconds,
+                ) = (date.hour, date.minute, date.second, date.microsecond * 1000)
+        else:
+            return date  # Not recognized as a date
+        return uno_date
+
+    @classmethod
+    def date_to_uno_date(cls, date: Any) -> UnoDate:
+        """
+        Converts a date representation into the com.sun.star.util.DateTime date format
+        Acceptable boundaries: ``year >= 1900`` and ``<= 32767``
+
+        Args:
+            date (Any): ``datetime.datetime``, ``datetime.date``, ``datetime.time``, ``float`` (time.time) or ``time.struct_time``
+
+        Returns:
+            Date: A ``com.sun.star.util.Time`` if conversion was successful; Otherwise, ``date``
+        """
+        try:
+            dt = cls.date_to_uno_date_time(date)
+            return UnoDate(dt.Day, dt.Month, dt.Year)
+        except Exception:
+            return date
 
     @classmethod
     def str_date_time(cls, uno_dt: UnoDateTime) -> str:

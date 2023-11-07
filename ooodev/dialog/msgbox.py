@@ -1,10 +1,8 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import cast
 from ..utils import lo as mLo
 
 from com.sun.star.awt import XToolkit2
-from com.sun.star.awt import XMessageBox
 
 from ooo.dyn.awt.message_box_results import MessageBoxResultsEnum as MessageBoxResultsEnum
 from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum as MessageBoxButtonsEnum

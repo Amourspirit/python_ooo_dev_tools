@@ -1,6 +1,10 @@
 from typing import TYPE_CHECKING, cast
-from .dialogs import Dialogs
-from ..utils import lo as mLo
+from ooodev.utils.dialogs import Dialogs
+from ooodev.utils import lo as mLo
+from ooodev.utils import sys_info as mSysInfo
+from ooodev.utils.gui import GUI
+from ooodev.office.calc import Calc
+
 
 from com.sun.star.awt import XControlModel
 from com.sun.star.awt import XDialog
@@ -93,3 +97,14 @@ class Input:
         ret = txt_input.getModel().Text if dialog.execute() else ""  # type: ignore
         dialog.dispose()
         return ret
+
+
+def main():
+    with mLo.Lo.Loader(mLo.Lo.ConnectSocket(), opt=mLo.Lo.Options(verbose=True)):
+        doc = Calc.create_doc()
+        GUI.set_visible(visible=True, doc=doc)
+        print(Input.get_input("title", "msg", "input_value"))
+
+
+if __name__ == "__main__":
+    main()
