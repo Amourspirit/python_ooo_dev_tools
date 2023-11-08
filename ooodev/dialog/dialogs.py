@@ -453,6 +453,7 @@ class Dialogs:
         width: int,
         height: int = 20,
         btn_type: PushButtonType | None = None,
+        name: str = "",
         **props: Any,
     ) -> UnoControlButton:
         """
@@ -466,6 +467,7 @@ class Dialogs:
             width (int): width
             height (int, optional): Height. Defaults to 20.
             btn_type (PushButtonType | None, optional): Type of Button.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -486,7 +488,8 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "CommandButton")
+            if not name:
+                name = cls.create_name(name_con, "CommandButton")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -496,20 +499,20 @@ class Dialogs:
             # ctl_props.setPropertyValue("PushButtonType", btn_type)
             uno_any = uno.Any("short", btn_type)  # type: ignore
             uno.invoke(ctl_props, "setPropertyValue", ("PushButtonType", uno_any))  # type: ignore
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlButton, ctrl_con.getControl(nm))
+            result = cast(UnoControlButton, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -527,6 +530,7 @@ class Dialogs:
         height: int = 8,
         tri_state: bool = True,
         state: Dialogs.StateEnum = StateEnum.CHECKED,
+        name: str = "",
         **props: Any,
     ) -> UnoControlCheckBox:
         """
@@ -538,9 +542,10 @@ class Dialogs:
             x (int): X coordinate
             y (int): Y coordinate
             width (int): Width
-            height (int, optional): Height. Defaults to 8.
+            height (int, optional): Height. Defaults to ``8``.
             tri_state (StateEnum, optional): Specifies that the control may have the state "don't know". Defaults to ``StateEnum.CHECKED``.
-            state (int, optional): specifies the state of the control. Defaults to 1.
+            state (int, optional): specifies the state of the control. Defaults to ``1``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -557,13 +562,14 @@ class Dialogs:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlCheckBoxModel", msf.createInstance("com.sun.star.awt.UnoControlCheckBoxModel"))
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "CheckBox")
+            if not name:
+                name = cls.create_name(name_con, "CheckBox")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
 
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("Label", label)
             ctl_props.setPropertyValue("TriState", tri_state)
             ctl_props.setPropertyValue("State", int(state))
@@ -573,13 +579,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlCheckBox, ctrl_con.getControl(nm))
+            result = cast(UnoControlCheckBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -599,6 +605,7 @@ class Dialogs:
         drop_down: bool = True,
         read_only: bool = False,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlComboBox:
         """
@@ -615,6 +622,7 @@ class Dialogs:
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to True.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to False.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -632,13 +640,14 @@ class Dialogs:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlComboBoxModel", msf.createInstance("com.sun.star.awt.UnoControlComboBoxModel"))
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "ComboBox")
+            if not name:
+                name = cls.create_name(name_con, "ComboBox")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
 
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("Dropdown", drop_down)
             ctl_props.setPropertyValue("MaxTextLen", max_text_len)
             ctl_props.setPropertyValue("Border", int(border))
@@ -653,13 +662,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlComboBox, ctrl_con.getControl(nm))
+            result = cast(UnoControlComboBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -681,6 +690,7 @@ class Dialogs:
         increment: int = 1,
         accuracy: int = 2,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlCurrencyField:
         """
@@ -699,6 +709,7 @@ class Dialogs:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -714,7 +725,8 @@ class Dialogs:
                 "UnoControlCurrencyFieldModel", msf.createInstance("com.sun.star.awt.UnoControlCurrencyFieldModel")
             )
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "CurrencyField")
+            if not name:
+                name = cls.create_name(name_con, "CurrencyField")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -727,20 +739,20 @@ class Dialogs:
             ctl_props.setPropertyValue("Value", value)
             ctl_props.setPropertyValue("DecimalAccuracy", accuracy)
             ctl_props.setPropertyValue("Border", int(border))
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlCurrencyField, ctrl_con.getControl(nm))
+            result = cast(UnoControlCurrencyField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -760,6 +772,7 @@ class Dialogs:
         max_date: datetime.datetime = datetime.datetime(2200, 12, 31, 0, 0, 0, 0),
         drop_down: bool = True,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlDateField:
         """
@@ -776,6 +789,7 @@ class Dialogs:
             max_date (datetime.datetime, optional): _description_. Defaults to datetime.datetime(2200, 12, 31, 0, 0, 0, 0).
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to True.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -789,15 +803,15 @@ class Dialogs:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlDateFieldModel", msf.createInstance("com.sun.star.awt.UnoControlDateFieldModel"))
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "DateField")
+            if not name:
+                name = cls.create_name(name_con, "DateField")
 
             # set properties in the model
-            # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
 
             ctl_props.setPropertyValue("Dropdown", drop_down)
             ctl_props.setPropertyValue("Border", int(border))
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("DateMin", DateUtil.date_to_uno_date(min_date))
             ctl_props.setPropertyValue("DateMax", DateUtil.date_to_uno_date(max_date))
             if date_value is not None:
@@ -808,13 +822,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlDateField, ctrl_con.getControl(nm))
+            result = cast(UnoControlDateField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -830,6 +844,7 @@ class Dialogs:
         width: int,
         height: int = 20,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlFileControl:
         """
@@ -842,6 +857,7 @@ class Dialogs:
             width (int): width
             height (int, optional): Height. Defaults to ``20``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -858,7 +874,8 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "FileControl")
+            if not name:
+                name = cls.create_name(name_con, "FileControl")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -870,13 +887,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFileControl, ctrl_con.getControl(nm))
+            result = cast(UnoControlFileControl, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -892,6 +909,7 @@ class Dialogs:
         width: int,
         height: int = 1,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
+        name: str = "",
         **props: Any,
     ) -> UnoControlFixedLine:
         """
@@ -904,6 +922,7 @@ class Dialogs:
             width (int): width
             height (int, optional): Height. Defaults to ``1``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -918,7 +937,8 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "FixedLine")
+            if not name:
+                name = cls.create_name(name_con, "FixedLine")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -930,13 +950,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFixedLine, ctrl_con.getControl(nm))
+            result = cast(UnoControlFixedLine, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -956,6 +976,7 @@ class Dialogs:
         max: float = 1000000.0,
         spin_button: bool = False,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlFormattedField:
         """
@@ -972,6 +993,7 @@ class Dialogs:
             max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -988,7 +1010,8 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "FormattedField")
+            if not name:
+                name = cls.create_name(name_con, "FormattedField")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -1005,13 +1028,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFormattedField, ctrl_con.getControl(nm))
+            result = cast(UnoControlFormattedField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1027,6 +1050,7 @@ class Dialogs:
         width: int,
         height: int,
         label: str = "",
+        name: str = "",
         **props: Any,
     ) -> UnoControlGroupBox:
         """
@@ -1038,6 +1062,7 @@ class Dialogs:
             y (int): Y coordinate
             width (int): width
             height (int, optional): Height.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1052,7 +1077,8 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "GroupBox")
+            if not name:
+                name = cls.create_name(name_con, "GroupBox")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -1065,13 +1091,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlGroupBox, ctrl_con.getControl(nm))
+            result = cast(UnoControlGroupBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1092,6 +1118,7 @@ class Dialogs:
         vert_align: VerticalAlignment = VerticalAlignment.TOP,
         multiline: bool = False,
         border: BorderKind = BorderKind.NONE,
+        name: str = "",
         **props: Any,
     ) -> UnoControlFixedHyperlink:
         """
@@ -1109,6 +1136,7 @@ class Dialogs:
             vert_align (VerticalAlignment, optional): Vertical alignment. Defaults to ``VerticalAlignment.TOP``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1125,7 +1153,8 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "Hyperlink")
+            if not name:
+                name = cls.create_name(name_con, "Hyperlink")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -1145,13 +1174,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFixedHyperlink, ctrl_con.getControl(nm))
+            result = cast(UnoControlFixedHyperlink, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1169,6 +1198,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         scale: int | ImageScaleModeEnum = ImageScaleModeEnum.NONE,
         image_url: str = "",
+        name: str = "",
         **props: Any,
     ) -> UnoControlImageControl:
         """
@@ -1181,6 +1211,7 @@ class Dialogs:
             width (int): width
             height (int, optional): Height. Defaults to ``20``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1197,13 +1228,13 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "ImageControl")
+            if not name:
+                name = cls.create_name(name_con, "ImageControl")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
 
-            ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("Border", int(border))
 
             scale = int(scale)
@@ -1221,13 +1252,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlImageControl, ctrl_con.getControl(nm))
+            result = cast(UnoControlImageControl, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1243,6 +1274,7 @@ class Dialogs:
         y: int,
         width: int,
         height: int = 20,
+        name: str = "",
         **props: Any,
     ) -> UnoControlFixedText:
         """
@@ -1254,7 +1286,8 @@ class Dialogs:
             x (int): X coordinate
             y (int): Y coordinate
             width (int): Width
-            height (int, optional): Height. Default 8
+            height (int, optional): Height. Default ``20``
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1273,22 +1306,23 @@ class Dialogs:
             model = cast("UnoControlFixedTextModel", msf.createInstance("com.sun.star.awt.UnoControlFixedTextModel"))
 
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "FixedText")
+            if not name:
+                name = cls.create_name(name_con, "FixedText")
 
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Label", label)
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
-            result = cast(UnoControlFixedText, ctrl_con.getControl(nm))
+            result = cast(UnoControlFixedText, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1309,6 +1343,7 @@ class Dialogs:
         line_count: int = 5,
         multi_select: bool = False,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlListBox:
         """
@@ -1326,6 +1361,7 @@ class Dialogs:
             line_count (int, optional): Specifies the number of lines to display. Defaults to 5.
             multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to False.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1339,12 +1375,13 @@ class Dialogs:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlListBoxModel", msf.createInstance("com.sun.star.awt.UnoControlListBoxModel"))
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "ListBox")
+            if not name:
+                name = cls.create_name(name_con, "ListBox")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("LineCount", line_count)
             ctl_props.setPropertyValue("Dropdown", drop_down)
             ctl_props.setPropertyValue("MultiSelection", multi_select)
@@ -1360,13 +1397,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlListBox, ctrl_con.getControl(nm))
+            result = cast(UnoControlListBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1383,6 +1420,7 @@ class Dialogs:
         width: int,
         height: int = 12,
         border: BorderKind = BorderKind.NONE,
+        name: str = "",
         **props: Any,
     ) -> UnoControlEdit:
         """
@@ -1396,6 +1434,7 @@ class Dialogs:
             width (int): Width
             height (int, optional): Height. Defaults to ``12``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1416,6 +1455,7 @@ class Dialogs:
             height=height,
             echo_char="*",
             border=border,
+            name=name,
             **props,
         )
 
@@ -1431,6 +1471,7 @@ class Dialogs:
         edit_mask: str = "",
         literal_mask: str = "",
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlPatternField:
         """
@@ -1445,6 +1486,7 @@ class Dialogs:
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1461,27 +1503,28 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "PatternField")
+            if not name:
+                name = cls.create_name(name_con, "PatternField")
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("EditMask", edit_mask)
             ctl_props.setPropertyValue("LiteralMask", literal_mask)
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlPatternField, ctrl_con.getControl(nm))
+            result = cast(UnoControlPatternField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1503,6 +1546,7 @@ class Dialogs:
         increment: int = 1,
         accuracy: int = 2,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlNumericField:
         """
@@ -1521,6 +1565,7 @@ class Dialogs:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1537,7 +1582,8 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "NumericField")
+            if not name:
+                name = cls.create_name(name_con, "NumericField")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -1548,7 +1594,7 @@ class Dialogs:
             ctl_props.setPropertyValue("ValueStep", increment)
             ctl_props.setPropertyValue("DecimalAccuracy", accuracy)
             ctl_props.setPropertyValue("Spin", spin_button)
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
             if not value is None:
                 ctl_props.setPropertyValue("Value", value)
 
@@ -1557,13 +1603,13 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlNumericField, ctrl_con.getControl(nm))
+            result = cast(UnoControlNumericField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1582,6 +1628,7 @@ class Dialogs:
         max: int = 100,
         value: int = 0,
         border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlProgressBar:
         """
@@ -1597,6 +1644,7 @@ class Dialogs:
             max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             value (int, optional): The value initial value of the progress bar. Defaults to ``0``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1613,27 +1661,28 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "ProgressBar")
+            if not name:
+                name = cls.create_name(name_con, "ProgressBar")
             # set properties in the model
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("ProgressValueMin", min)
             ctl_props.setPropertyValue("ProgressValueMax", max)
             ctl_props.setPropertyValue("ProgressValue", value)
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # get the dialog's container holding all the control views
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlProgressBar, ctrl_con.getControl(nm))
+            result = cast(UnoControlProgressBar, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1650,6 +1699,7 @@ class Dialogs:
         width: int,
         height: int = 20,
         multiline: bool = False,
+        name: str = "",
         **props: Any,
     ) -> UnoControlRadioButton:
         """
@@ -1663,6 +1713,7 @@ class Dialogs:
             width (int): Width
             height (int, optional): Height. Default ``20``
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1680,23 +1731,24 @@ class Dialogs:
             )
 
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "RadioButton")
+            if not name:
+                name = cls.create_name(name_con, "RadioButton")
 
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Label", label)
             ctl_props.setPropertyValue("MultiLine", multiline)
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
-            result = cast(UnoControlRadioButton, ctrl_con.getControl(nm))
+            result = cast(UnoControlRadioButton, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
@@ -1711,7 +1763,7 @@ class Dialogs:
         y: int,
         width: int,
         height: int = 1,
-        **props: Any,
+        name: str = "",
     ) -> UnoControlTabPageContainer:
         """
         Create a new control of type tab in the actual dialog.
@@ -1722,6 +1774,7 @@ class Dialogs:
             y (int): Y coordinate
             width (int): width
             height (int, optional): Height. Defaults to ``1``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
 
         Raises:
             Exception: If unable to create file control control
@@ -1741,11 +1794,10 @@ class Dialogs:
 
             # generate a unique name for the control
             name_con = cls.get_dialog_nm_con(dialog)
-            model.Name = cls.create_name(name_con, "TabControl")
-            model.PositionX = x
-            model.PositionY = y
-            model.Width = width
-            model.Height = height
+            if name:
+                model.Name = name
+            else:
+                model.Name = cls.create_name(name_con, "TabControl")
 
             # Add the model to the dialog
             dialog_model.insertByName(model.Name, model)
@@ -1768,7 +1820,7 @@ class Dialogs:
         tab_ctrl: UnoControlTabPageContainer,
         title: str,
         tab_position: int,
-        border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
         **props: Any,
     ) -> UnoControlTabPage:
         """
@@ -1777,6 +1829,7 @@ class Dialogs:
         Args:
             tab_ctrl (UnoControlTabPageContainer): Tab Container
             title (str): Tab title
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1823,13 +1876,14 @@ class Dialogs:
             model.Title = title
             name_con = cls.get_dialog_nm_con(dialog)
             # nm = cls.create_name(name_con, "TabPage")
-            nm = create_name(tab_ctrl, "TabPage")
+            if not name:
+                name = create_name(tab_ctrl, "TabPage")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
             # ctl_props.setPropertyValue("Title", title)
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
             # ctl_props.setPropertyValue("Border", int(border))
 
             # set any extra user properties
@@ -1842,15 +1896,8 @@ class Dialogs:
             controls = cast(Tuple[UnoControlTabPage, ...], tab_ctrl.Controls)  # type: ignore
             if len(controls) > index:
                 return controls[index]
-            return None
+            return None  # type: ignore
 
-            # get the dialog's container holding all the control views
-            ctrl_con = mLo.Lo.qi(XControlContainer, dialog, True)
-
-            # use the model's name to get its view inside the dialog
-            result = cast(UnoControlTabPage, ctrl_con.getControl(nm))
-            # result.getModel().initialize((tab_position,))
-            return result
         except Exception as e:
             raise Exception(f"Could not create Tab control: {e}") from e
 
@@ -1866,6 +1913,7 @@ class Dialogs:
         height: int = 12,
         echo_char: str = "",
         border: BorderKind = BorderKind.NONE,
+        name: str = "",
         **props: Any,
     ) -> UnoControlEdit:
         """
@@ -1880,6 +1928,7 @@ class Dialogs:
             height (int, optional): Height. Defaults to ``12``.
             echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -1896,7 +1945,8 @@ class Dialogs:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
             model = cast("UnoControlEditModel", msf.createInstance("com.sun.star.awt.UnoControlEditModel"))
             name_con = cls.get_dialog_nm_con(dialog_ctrl)
-            nm = cls.create_name(name_con, "TextField")
+            if not name:
+                name = cls.create_name(name_con, "TextField")
 
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
@@ -1904,7 +1954,7 @@ class Dialogs:
 
             ctl_props.setPropertyValue("Text", text)
             ctl_props.setPropertyValue("Border", int(border))
-            ctl_props.setPropertyValue("Name", nm)
+            ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1914,13 +1964,13 @@ class Dialogs:
                 ctl_props.setPropertyValue("EchoChar", ord(echo_char))
 
             # Add the model to the dialog
-            name_con.insertByName(nm, model)
+            name_con.insertByName(name, model)
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlEdit, ctrl_con.getControl(nm))
+            result = cast(UnoControlEdit, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return result
         except Exception as e:
