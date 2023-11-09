@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, cast
-from ooodev.utils.dialogs import Dialogs
+from ooodev.dialog import Dialogs
 from ooodev.utils import lo as mLo
-from ooodev.utils import sys_info as mSysInfo
 from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
 

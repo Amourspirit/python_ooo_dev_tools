@@ -1,6 +1,8 @@
 {
     "version": "0.2",
-    "ignorePaths": ["./docs/internal/dict"],
+    "ignorePaths": [
+        "./docs/internal/dict"
+    ],
     "dictionaryDefinitions": [
         {
             "name": "code-dictionary",
@@ -148,8 +150,8 @@
         "opendocument",
         "paddint",
         "PATTERNFIELD",
-        "Pitonyak's",
         "Pitonyak",
+        "Pitonyak's",
         "Popen",
         "POSSIZE",
         "presnt",
@@ -171,6 +173,7 @@
         "RGAB",
         "sandboxed",
         "Scriptforge",
+        "Scrollbars",
         "sdbc",
         "seealos",
         "SMALLCAPS",

@@ -2,13 +2,16 @@
 # region Imports
 from __future__ import annotations
 import datetime
-from typing import TYPE_CHECKING, Any, Iterable, Tuple, cast
+from typing import TYPE_CHECKING, Any, Iterable, Sequence, Tuple, cast
 from enum import IntEnum
 from ..utils import lo as mLo
+from ..utils import info as mInfo
 from ..utils.date_time_util import DateUtil
 from ..utils.kind.border_kind import BorderKind as BorderKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
+from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.align_kind import AlignKind as AlignKind
+from ..utils.type_var import Table
 
 import uno
 
@@ -20,6 +23,8 @@ from com.sun.star.awt import XDialogProvider
 from com.sun.star.awt import XToolkit
 from com.sun.star.awt import XTopWindow
 from com.sun.star.awt import XWindow
+from com.sun.star.awt.grid import XMutableGridDataModel
+from com.sun.star.awt.grid import XGridDataModel
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 from com.sun.star.lang import XInitialization
@@ -32,6 +37,10 @@ from ooo.dyn.awt.pos_size import PosSize as PosSize
 from ooo.dyn.style.vertical_alignment import VerticalAlignment as VerticalAlignment
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
+from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
+
+# from com.sun.star.style import HorizontalAlignment as HorizontalAlignment
+
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlButton  # service
     from com.sun.star.awt import UnoControlButtonModel  # service
@@ -43,6 +52,8 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlCurrencyFieldModel  # service
     from com.sun.star.awt import UnoControlDateField
     from com.sun.star.awt import UnoControlDateFieldModel
+    from com.sun.star.awt import UnoControlDialog  # service
+    from com.sun.star.awt import UnoControlDialogModel  # service
     from com.sun.star.awt import UnoControlEdit  # service
     from com.sun.star.awt import UnoControlEditModel  # service
     from com.sun.star.awt import UnoControlFileControl  # service
@@ -63,18 +74,21 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlListBoxModel  # service
     from com.sun.star.awt import UnoControlNumericField  # service
     from com.sun.star.awt import UnoControlNumericFieldModel  # service
-    from com.sun.star.awt import UnoControlRadioButton  # service
-    from com.sun.star.awt import UnoControlRadioButtonModel  # service
     from com.sun.star.awt import UnoControlPatternField  # service
     from com.sun.star.awt import UnoControlPatternFieldModel  # service
     from com.sun.star.awt import UnoControlProgressBar  # service
     from com.sun.star.awt import UnoControlProgressBarModel  # service
+    from com.sun.star.awt import UnoControlRadioButton  # service
+    from com.sun.star.awt import UnoControlRadioButtonModel  # service
+    from com.sun.star.awt import UnoControlScrollBar  # service
+    from com.sun.star.awt import UnoControlScrollBarModel  # service
+    from com.sun.star.awt.grid import UnoControlGrid  # service
+    from com.sun.star.awt.grid import UnoControlGridModel  # service
+    from com.sun.star.awt.tab import UnoControlTabPage  # service
     from com.sun.star.awt.tab import UnoControlTabPageContainer  # service
     from com.sun.star.awt.tab import UnoControlTabPageContainerModel  # service
-    from com.sun.star.awt.tab import UnoControlTabPage  # service
     from com.sun.star.awt.tab import UnoControlTabPageModel  # service
-    from com.sun.star.awt import UnoControlDialog  # service
-    from com.sun.star.awt import UnoControlDialogModel  # service
+    from com.sun.star.awt.grid import DefaultGridDataModel  # service
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
 else:
@@ -83,22 +97,24 @@ else:
     UnoControlComboBox = object
     UnoControlCurrencyField = object
     UnoControlDateField = object
+    UnoControlDialog = object
     UnoControlEdit = object
     UnoControlFileControl = object
     UnoControlFixedHyperlink = object
     UnoControlFixedLine = object
     UnoControlFixedText = object
     UnoControlFormattedField = object
+    UnoControlGrid = object
     UnoControlGroupBox = object
     UnoControlImageControl = object
     UnoControlListBox = object
     UnoControlNumericField = object
-    UnoControlRadioButton = object
     UnoControlPatternField = object
     UnoControlProgressBar = object
-    UnoControlTabPageContainer = object
+    UnoControlRadioButton = object
+    UnoControlScrollBar = object
     UnoControlTabPage = object
-    UnoControlDialog = object
+    UnoControlTabPageContainer = object
 # endregion Imports
 
 
@@ -1640,7 +1656,7 @@ class Dialogs:
             y (int): Y coordinate
             width (int): width
             height (int, optional): Height.
-            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to `01``.
+            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``1``.
             max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             value (int, optional): The value initial value of the progress bar. Defaults to ``0``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -1755,6 +1771,75 @@ class Dialogs:
             raise Exception(f"Could not create radio button control: {e}") from e
 
     @classmethod
+    def insert_scroll_bar(
+        cls,
+        dialog_ctrl: XControl,
+        *,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        min: int = 0,
+        max: int = 100,
+        orientation: OrientationKind = OrientationKind.HORIZONTAL,
+        border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
+        **props: Any,
+    ) -> UnoControlScrollBar:
+        """
+        Create a new control of type ScrollBar in the actual dialog.
+
+        Args:
+            dialog_ctrl (XControl): control
+            x (int): X coordinate
+            y (int): Y coordinate
+            width (int): width
+            height (int, optional): Height.
+            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
+            max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
+            orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
+            props (dict, optional): Extra properties to set for control.
+
+        Raises:
+            Exception: If unable to create numeric field control control
+
+        Returns:
+            UnoControlScrollBar: Group box Control
+        """
+        try:
+            msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
+            model = cast("UnoControlScrollBarModel", msf.createInstance("com.sun.star.awt.UnoControlScrollBarModel"))
+            name_con = cls.get_dialog_nm_con(dialog_ctrl)
+            if not name:
+                name = cls.create_name(name_con, "ScrollBar")
+            # set properties in the model
+            ctl_props = cls.get_control_props(model)
+            ctl_props.setPropertyValue("Border", int(border))
+            ctl_props.setPropertyValue("Orientation", int(orientation))
+            ctl_props.setPropertyValue("ScrollValueMin", min)
+            ctl_props.setPropertyValue("ScrollValueMax", max)
+            ctl_props.setPropertyValue("Name", name)
+
+            # set any extra user properties
+            for k, v in props.items():
+                ctl_props.setPropertyValue(k, v)
+
+            # Add the model to the dialog
+            name_con.insertByName(name, model)
+
+            # get the dialog's container holding all the control views
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
+
+            # use the model's name to get its view inside the dialog
+            result = cast(UnoControlScrollBar, ctrl_con.getControl(name))
+            cls._set_size_pos(result, x, y, width, height)
+            return result
+        except Exception as e:
+            raise Exception(f"Could not create numeric field control: {e}") from e
+
+    @classmethod
     def insert_tab_control(
         cls,
         dialog_ctrl: XControl,
@@ -1763,6 +1848,7 @@ class Dialogs:
         y: int,
         width: int,
         height: int = 1,
+        border: BorderKind = BorderKind.NONE,
         name: str = "",
     ) -> UnoControlTabPageContainer:
         """
@@ -1774,6 +1860,7 @@ class Dialogs:
             y (int): Y coordinate
             width (int): width
             height (int, optional): Height. Defaults to ``1``.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
 
         Raises:
@@ -1798,7 +1885,8 @@ class Dialogs:
                 model.Name = name
             else:
                 model.Name = cls.create_name(name_con, "TabControl")
-
+            if border != BorderKind.NONE and hasattr(model, "Border"):
+                setattr(model, "Border", int(border))
             # Add the model to the dialog
             dialog_model.insertByName(model.Name, model)
 
@@ -1902,6 +1990,88 @@ class Dialogs:
             raise Exception(f"Could not create Tab control: {e}") from e
 
     @classmethod
+    def insert_table_control(
+        cls,
+        dialog_ctrl: XControl,
+        *,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        row_header: bool = True,
+        col_header: bool = True,
+        grid_lines: bool = False,
+        scroll_bars: HorzVertKind = HorzVertKind.NONE,
+        border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
+        **props: Any,
+    ) -> UnoControlGrid:
+        """
+        Create a new control of type TableControl in the actual dialog.
+
+        Args:
+            dialog_ctrl (XControl): control
+            x (int): X coordinate
+            y (int): Y coordinate
+            width (int): width
+            height (int, optional): Height.
+            row_header (bool, optional): Specifies if the control has a row header. Defaults to ``True``.
+            col_header (bool, optional): Specifies if the control has a column header. Defaults to ``True``.
+            grid_lines (bool, optional): Specifies if the control has grid lines. when True horizontal and vertical lines are painted between the grid cells. Defaults to ``False``.
+            scroll_bars (HorzVertKind, optional): Specifies if the control has scroll bars. Scrollbars always appear dynamically when they are needed. Defaults to ``HorzVertKind.NONE``.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
+            props (dict, optional): Extra properties to set for control.
+
+        Raises:
+            Exception: If unable to create table control control
+
+        Returns:
+            UnoControlGrid: Table Control
+        """
+        try:
+            msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
+            model = cast("UnoControlGridModel", msf.createInstance("com.sun.star.awt.grid.UnoControlGridModel"))
+
+            # generate a unique name for the control
+            name_con = cls.get_dialog_nm_con(dialog_ctrl)
+            if not name:
+                name = cls.create_name(name_con, "Grid")
+
+            # set properties in the model
+            if hasattr(model, "Border"):
+                setattr(model, "Border", int(border))
+
+            ctl_props = cls.get_control_props(model)
+            ctl_props.setPropertyValue("HScroll", HorzVertKind.HORIZONTAL in scroll_bars)
+            ctl_props.setPropertyValue("VScroll", HorzVertKind.VERTICAL in scroll_bars)
+            ctl_props.setPropertyValue("ShowColumnHeader", col_header)
+            ctl_props.setPropertyValue("ShowRowHeader", row_header)
+            ctl_props.setPropertyValue("UseGridLines", grid_lines)
+
+            # set any extra user properties
+            for k, v in props.items():
+                ctl_props.setPropertyValue(k, v)
+
+            # set the data model
+            model.GridDataModel = mLo.Lo.create_instance_mcf(
+                XGridDataModel, "com.sun.star.awt.grid.DefaultGridDataModel", raise_err=True
+            )
+
+            # Add the model to the dialog
+            name_con.insertByName(name, model)
+
+            # get the dialog's container holding all the control views
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
+
+            # use the model's name to get its view inside the dialog
+            result = cast(UnoControlGrid, ctrl_con.getControl(name))
+            cls._set_size_pos(result, x, y, width, height)
+            return result
+        except Exception as e:
+            raise Exception(f"Could not create Table control: {e}") from e
+
+    @classmethod
     def insert_text_field(
         cls,
         dialog_ctrl: XControl,
@@ -1977,6 +2147,134 @@ class Dialogs:
             raise Exception(f"Could not create text field control: {e}") from e
 
     # endregion    add components to a dialog
+
+    # region Data
+    @staticmethod
+    def set_table_data(
+        table: UnoControlGrid,
+        data: Table,
+        widths: Sequence[int] | None = None,
+        align: Iterable[HorizontalAlignment] | str | None = None,
+        row_header_width: int = 10,
+    ) -> None:
+        if not mInfo.Info.support_service(table, "com.sun.star.awt.grid.UnoControlGrid"):
+            raise ValueError("Not a valid UnoControlGrid")
+
+        tbl_size = table.getSize()
+
+        model = cast("UnoControlGridModel", table.getModel())
+        data_model = model.GridDataModel
+        if not data_model:
+            raise ValueError("No data model")
+        data_model = mLo.Lo.qi(XMutableGridDataModel, data_model, True)
+
+        # Erase any pre-existing data and columns
+        data_model.removeAllRows()
+        if data_model.ColumnCount > 0:
+            # reverse indexes to start removing from the end
+            for i in range(data_model.ColumnCount - 1, -1, -1):
+                model.ColumnModel.removeColumn(i)
+
+        # Get the headers from data
+        headers = data[0]
+
+        # Create the columns
+        for header in headers:
+            column = model.ColumnModel.createColumn()
+            if model.ShowColumnHeader:
+                column.Title = str(header)
+            model.ColumnModel.addColumn(column)
+
+        # Manage row headers width
+        if model.ShowRowHeader:
+            header_width = row_header_width
+            model.RowHeaderWidth = header_width
+        else:
+            header_width = 0
+
+        # Size the columns. Column sizing cannot be done before all the columns are added
+        len_headers = len(headers)
+        len_widths = 0
+        if widths:
+            len_widths = len(widths)
+            # Size the columns proportionally with their relative widths
+            rel_width = 0.0
+            # Compute the sum of the relative widths
+            for i, width in enumerate(widths):
+                if i + 1 >= len_headers:
+                    break
+                rel_width += width
+            # if widths have less values then columns, add the rest with the last value of widths.
+            if len_widths < len_headers:
+                last_width = widths[-1]
+                for i in range(len_widths, len_headers):
+                    rel_width += last_width
+
+            # Set absolute column widths
+            if rel_width > 0:
+                width_factor = (tbl_size.Width - header_width) / rel_width
+            else:
+                width_factor = 1.0
+
+            for i, width in enumerate(widths):
+                if i + 1 > len_headers:
+                    break
+                model.ColumnModel.getColumn(i).ColumnWidth = int(width * width_factor)
+            # if widths have less values then columns, calculate the rest with the last value of widths.
+            if len_widths < len_headers:
+                last_width = widths[-1]
+                for i in range(len_widths, len_headers):
+                    model.ColumnModel.getColumn(i).ColumnWidth = int(last_width * width_factor)
+        else:
+            # Size header and columns evenly
+            width = (tbl_size.Width - header_width) // len_headers
+            for i in range(len_headers):
+                model.ColumnModel.getColumn(i).ColumnWidth = width
+
+        # Initialize the column alignment
+
+        def get_align(s: str):
+            s = s.lower()
+            if s == "l":
+                return HorizontalAlignment.LEFT
+            elif s == "r":
+                return HorizontalAlignment.RIGHT
+            elif s == "c":
+                return HorizontalAlignment.CENTER
+            return HorizontalAlignment.LEFT
+
+        if align:
+            if isinstance(align, str):
+                align = list(get_align(s) for s in align.replace(" ", ""))
+            elif not isinstance(align, list):
+                align = list(align)
+        else:
+            align = list(HorizontalAlignment.LEFT for _ in range(len_headers))
+
+        while len(align) > len_headers:
+            _ = align.pop()
+
+        while len(align) < len_headers:
+            align.append(HorizontalAlignment.LEFT)
+
+        # Feed the table with data
+        # skip column headers row
+        for i in range(1, len(data), 1):
+            row = data[i]
+            if not isinstance(row, tuple):
+                row = tuple(row)
+            if len(row) != len_headers:
+                raise ValueError("Invalid data. Number of columns does not match the number of headers")
+            if model.ShowRowHeader:
+                # data_model.addRow(str(headers[i]), row)
+                data_model.addRow(str(i), row)
+            else:
+                data_model.addRow("", row)
+
+        for i, alignment in enumerate(align):
+            model.ColumnModel.getColumn(i).HorizontalAlign = alignment  # type: ignore
+
+    # endregion Data
 
     @staticmethod
     def _set_size_pos(ctl: XWindow, x: int = -1, y: int = -1, width: int = -1, height: int = -1) -> None:
