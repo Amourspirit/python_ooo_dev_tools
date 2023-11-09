@@ -4,15 +4,15 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING, Any, Iterable, Sequence, Tuple, cast
 from enum import IntEnum
-from ..utils import lo as mLo
 from ..utils import info as mInfo
+from ..utils import lo as mLo
 from ..utils.date_time_util import DateUtil
-from ..utils.kind.border_kind import BorderKind as BorderKind
-from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
-from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.align_kind import AlignKind as AlignKind
+from ..utils.kind.border_kind import BorderKind as BorderKind
+from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
+from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
+from ..utils.table_helper import TableHelper
 from ..utils.type_var import Table
-
 import uno
 
 from com.sun.star.awt import XControl
@@ -1868,6 +1868,9 @@ class Dialogs:
 
         Returns:
             UnoControlTabPageContainer: Tab Control
+
+        See Also:
+            :py:meth:`~.dialogs.Dialogs.insert_tab_page`
         """
         try:
             dialog = cast(UnoControlDialog, cls.get_dialog(dialog_ctrl))
@@ -1925,6 +1928,9 @@ class Dialogs:
 
         Returns:
             UnoControlTabPage: Tab Control
+
+        See Also:
+            :py:meth:`~.dialogs.Dialogs.insert_tab_control`
         """
 
         def create_name(ctl: UnoControlTabPageContainer, name: str) -> str:
@@ -2009,6 +2015,8 @@ class Dialogs:
         """
         Create a new control of type TableControl in the actual dialog.
 
+        To add data to the table use :py:meth:`~.dialogs.Dialogs.set_table_data`.
+
         Args:
             dialog_ctrl (XControl): control
             x (int): X coordinate
@@ -2028,6 +2036,9 @@ class Dialogs:
 
         Returns:
             UnoControlGrid: Table Control
+
+        See Also:
+            :py:meth:`~.dialogs.Dialogs.set_table_data`
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -2108,7 +2119,7 @@ class Dialogs:
             UnoControlEdit: Text Field Control
 
         See Also:
-            `API UnoControlEditModel  Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
+            `API UnoControlEditModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
         """
         # sourcery skip: raise-specific-error
         try:
@@ -2153,11 +2164,81 @@ class Dialogs:
     def set_table_data(
         table: UnoControlGrid,
         data: Table,
+        *,
         widths: Sequence[int] | None = None,
         align: Iterable[HorizontalAlignment] | str | None = None,
         row_header_width: int = 10,
+        has_colum_headers: bool | None = None,
+        has_row_headers: bool | None = None,
     ) -> None:
-        # set_table_data() will handel to many or to few widths
+        """
+        Set the data in a table control. Preexisting data is cleared.
+
+        Args:
+            table (UnoControlGrid): Table control
+            data (Table): 2D Sequence of data that is the data to set.
+            widths (Sequence[int] | None, optional): Specifies Column Widths. If number of widths is less then the number of columns,
+                the last width is used for the remaining columns.
+                If omitted then each column is auto-sized to fill out the table width.
+            align (Iterable[HorizontalAlignment] | str | None, optional): Specifies column alignments. See Note Below.
+            row_header_width (int, optional): Specifies the width of the row header. Defaults to ``10``.
+            has_colum_headers (bool | None, optional): Specifies if the data has a column header. If omitted the table's ShowColumnHeader property is used. Defaults to ``None``.
+            has_row_headers (bool | None, optional): Specifies if the data has a row header. If omitted the table's ShowRowHeader property is used. Defaults to ``None``.
+
+        Raises:
+            ValueError: if not a valid UnoControlGrid or if no data model.
+
+        Returns:
+            None:
+
+        Note:
+            ``align`` can be a string of ``"L"``, ``"R"``, or ``"C"`` for left, right, or center alignment or
+            a list of ``HorizontalAlignment`` values. If ``align`` values is lest then the number of columns,
+            then the remaining columns will be aligned left.
+
+            If ``has_colum_headers`` is ``True`` then the first row of data is used for the column headers.
+            If ``table.Model.ShowColumnHeader`` is ``False``, then the column header row is not used.
+
+            If ``has_colum_headers`` is ``False`` and ``table.Model.ShowColumnHeader`` is ``True``
+            then the column headers are set to the default column names such as (A, B, C, D).
+
+            If ``has_row_headers`` is ``True`` then the first row of data is used for the row headers.
+            If ``table.Model.ShowRowHeader`` is ``False``, then the row header is not used.
+
+
+            If ``has_row_headers`` is ``False`` and ``table.Model.ShowRowHeader`` is ``True``
+            then the row headers are set to the default row names such as (1, 2, 3, 4).
+
+        Example:
+            .. code-block:: python
+
+                # other code
+                tab_sz = self._ctl_tab.getPosSize()
+                ctl_table1 = Dialogs.insert_table_control(
+                    dialog_ctrl=self._tab_table,
+                    x=tab_sz.X + self._padding,
+                    y=tab_sz.Y + self._padding,
+                    width=tab_sz.Width - (self._padding * 2),
+                    height=300,
+                    grid_lines=True,
+                    col_header=True,
+                    row_header=True,
+                )
+
+            tbl = ... # get data as 2d sequence
+            Dialogs.set_table_data(
+                table=ctl_table1,
+                data=tbl,
+                align="RLC", # first column right, second left, third center. All others left
+                widths=(75, 60, 100, 40), # does not need to add up to total width, a factor will be used to auto size where needed.
+                has_row_headers=True,
+                has_colum_headers=True,
+            )
+
+        See Also:
+            :py:meth:`~.dialogs.Dialogs.insert_table_control`
+        """
+        # set_table_data() will handle to many or to few widths
         # widths are applied by using a scale factor to the table width
         if not mInfo.Info.support_service(table, "com.sun.star.awt.grid.UnoControlGrid"):
             raise ValueError("Not a valid UnoControlGrid")
@@ -2178,24 +2259,40 @@ class Dialogs:
                 model.ColumnModel.removeColumn(i)
 
         # Get the headers from data
-        headers = data[0]
+        use_col_headers = False
+        use_row_headers = False
+        if has_colum_headers is None:
+            if model.ShowColumnHeader:
+                use_col_headers = True
+        elif has_colum_headers:
+            use_col_headers = True
+
+        if has_row_headers is None:
+            if model.ShowRowHeader:
+                use_row_headers = True
+        elif has_row_headers:
+            use_row_headers = True
+
+        col_headers = data[0][1:] if has_row_headers else data[0]
 
         # Create the columns
-        for header in headers:
+        for i, header in enumerate(col_headers):
             column = model.ColumnModel.createColumn()
-            if model.ShowColumnHeader:
+            if use_col_headers:
                 column.Title = str(header)
+            elif model.ShowColumnHeader:
+                column.Title = TableHelper.make_column_name(i, zero_index=True)
             model.ColumnModel.addColumn(column)
 
         # Manage row headers width
-        if model.ShowRowHeader:
-            header_width = row_header_width
-            model.RowHeaderWidth = header_width
+        if has_row_headers and model.ShowRowHeader:
+            header_width_row = row_header_width
+            model.RowHeaderWidth = header_width_row
         else:
-            header_width = 0
+            header_width_row = 0
 
         # Size the columns. Column sizing cannot be done before all the columns are added
-        len_headers = len(headers)
+        len_col_headers = len(col_headers)
         len_widths = 0
         if widths:
             len_widths = len(widths)
@@ -2203,34 +2300,36 @@ class Dialogs:
             rel_width = 0.0
             # Compute the sum of the relative widths
             for i, width in enumerate(widths):
-                if i + 1 >= len_headers:
+                if i + 1 >= len_col_headers:
                     break
                 rel_width += width
             # if widths have less values then columns, add the rest with the last value of widths.
-            if len_widths < len_headers:
+            if len_widths < len_col_headers:
                 last_width = widths[-1]
-                for i in range(len_widths, len_headers):
+                for i in range(len_widths, len_col_headers):
                     rel_width += last_width
 
             # Set absolute column widths
+            # initial testing showed that columns are sized using this factor method even
+            # if the factoring is not done here.
             if rel_width > 0:
-                width_factor = (tbl_size.Width - header_width) / rel_width
+                width_factor = (tbl_size.Width - header_width_row) / rel_width
             else:
                 width_factor = 1.0
 
             for i, width in enumerate(widths):
-                if i + 1 > len_headers:
+                if i + 1 > len_col_headers:
                     break
                 model.ColumnModel.getColumn(i).ColumnWidth = int(width * width_factor)
             # if widths have less values then columns, calculate the rest with the last value of widths.
-            if len_widths < len_headers:
+            if len_widths < len_col_headers:
                 last_width = widths[-1]
-                for i in range(len_widths, len_headers):
+                for i in range(len_widths, len_col_headers):
                     model.ColumnModel.getColumn(i).ColumnWidth = int(last_width * width_factor)
         else:
             # Size header and columns evenly
-            width = (tbl_size.Width - header_width) // len_headers
-            for i in range(len_headers):
+            width = (tbl_size.Width - header_width_row) // len_col_headers
+            for i in range(len_col_headers):
                 model.ColumnModel.getColumn(i).ColumnWidth = width
 
         # Initialize the column alignment
@@ -2247,31 +2346,37 @@ class Dialogs:
 
         if align:
             if isinstance(align, str):
-                align = list(get_align(s) for s in align.replace(" ", ""))
+                align = [get_align(s) for s in align.replace(" ", "")]
             elif not isinstance(align, list):
                 align = list(align)
         else:
-            align = list(HorizontalAlignment.LEFT for _ in range(len_headers))
+            align = [HorizontalAlignment.LEFT for _ in range(len_col_headers)]
 
-        while len(align) > len_headers:
+        while len(align) > len_col_headers:
             _ = align.pop()
 
-        while len(align) < len_headers:
+        while len(align) < len_col_headers:
             align.append(HorizontalAlignment.LEFT)
 
         # Feed the table with data
         # skip column headers row
-        for i in range(1, len(data), 1):
-            row = data[i]
+        if use_col_headers is False:
+            rng_start = 0
+        else:
+            rng_start = 1
+        for i in range(rng_start, len(data)):
+            row = data[i][1:] if use_row_headers else data[i]
             if not isinstance(row, tuple):
                 row = tuple(row)
-            if len(row) != len_headers:
-                raise ValueError("Invalid data. Number of columns does not match the number of headers")
-            if model.ShowRowHeader:
-                # data_model.addRow(str(headers[i]), row)
-                data_model.addRow(str(i), row)
-            else:
-                data_model.addRow("", row)
+            row_header_text = ""
+            if use_row_headers and model.ShowRowHeader:
+                row_header_text = str(data[i][0])
+            elif model.ShowRowHeader:
+                if rng_start == 0:
+                    row_header_text = str(i + 1)
+                else:
+                    row_header_text = str(i)
+            data_model.addRow(row_header_text, row)
 
         for i, alignment in enumerate(align):
             model.ColumnModel.getColumn(i).HorizontalAlign = alignment  # type: ignore

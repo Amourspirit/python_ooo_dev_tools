@@ -111,17 +111,28 @@ class Tabs:
             width=tab_sz.Width - (self._padding * 2),
             height=300,
             grid_lines=True,
+            col_header=True,
+            row_header=True,
         )
         num_cols = 5
-        tbl = TableHelper.make_2d_array(num_rows=20, num_cols=num_cols)
-        headers = [f"Column {i + 1}" for i in range(num_cols)]
-        widths = [150 for _ in range(num_cols)]
+        num_rows = 10
+        tbl = TableHelper.make_2d_array(num_rows=num_rows, num_cols=num_cols)
+        has_row_headers = False
+        headers = [f"Column {i if has_row_headers else i + 1}" for i in range(num_cols)]
+        widths = [220 for _ in range(num_cols)]
         widths[0] = 200
         # set_table_data() will handel to many or to few widths
         # widths.pop()
         # widths.append(100)
         tbl.insert(0, headers)
-        Dialogs.set_table_data(table=ctl_table1, data=tbl, align="RLC", widths=widths)
+        Dialogs.set_table_data(
+            table=ctl_table1,
+            data=tbl,
+            align="RLC",
+            widths=widths,
+            has_row_headers=has_row_headers,
+            has_colum_headers=True,
+        )
         # test that grid clears and adds new data
         # widths[0] = 100
         # Dialogs.set_table_data(table=ctl_table1, data=tbl, align="RLC", widths=widths)
