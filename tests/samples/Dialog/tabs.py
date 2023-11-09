@@ -72,10 +72,10 @@ class Tabs:
         )
         model = self._ctl_tab.getModel()
         # model.Border = BorderKind.BORDER_3D.value
+        self._init_tab_table()
         self._init_tab_scroll_bar()
         self._init_tab_main()
         self._init_tab_oth()
-        self._init_tab_table()
 
     def _init_tab_main(self) -> None:
         self._tab_count += 1
@@ -115,8 +115,16 @@ class Tabs:
         num_cols = 5
         tbl = TableHelper.make_2d_array(num_rows=20, num_cols=num_cols)
         headers = [f"Column {i + 1}" for i in range(num_cols)]
+        widths = [150 for _ in range(num_cols)]
+        widths[0] = 200
+        # set_table_data() will handel to many or to few widths
+        # widths.pop()
+        # widths.append(100)
         tbl.insert(0, headers)
-        Dialogs.set_table_data(table=ctl_table1, data=tbl, align="RLC")
+        Dialogs.set_table_data(table=ctl_table1, data=tbl, align="RLC", widths=widths)
+        # test that grid clears and adds new data
+        # widths[0] = 100
+        # Dialogs.set_table_data(table=ctl_table1, data=tbl, align="RLC", widths=widths)
 
     def _init_tab_scroll_bar(self) -> None:
         self._tab_count += 1

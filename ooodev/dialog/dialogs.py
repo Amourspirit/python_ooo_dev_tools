@@ -2157,6 +2157,8 @@ class Dialogs:
         align: Iterable[HorizontalAlignment] | str | None = None,
         row_header_width: int = 10,
     ) -> None:
+        # set_table_data() will handel to many or to few widths
+        # widths are applied by using a scale factor to the table width
         if not mInfo.Info.support_service(table, "com.sun.star.awt.grid.UnoControlGrid"):
             raise ValueError("Not a valid UnoControlGrid")
 
