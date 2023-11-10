@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any
 
 import uno
 from ..events.args.event_args import EventArgs as EventArgs
@@ -11,9 +11,6 @@ if mock_g.DOCS_BUILDING:
     from ..mock import unohelper
 else:
     import unohelper
-
-if TYPE_CHECKING:
-    from com.sun.star.lang import EventObject
 
 
 class AdapterBase(unohelper.Base):  # type: ignore
@@ -31,7 +28,7 @@ class AdapterBase(unohelper.Base):  # type: ignore
         super().__init__()
         self._events = Events(source=self, trigger_args=trigger_args)
 
-    def _trigger_event(self, name: str, event: EventObject) -> None:
+    def _trigger_event(self, name: str, event: Any) -> None:
         # any trigger args passed in will be passed to callback event via Events class.
         event_arg = EventArgs(self.__class__.__qualname__)
         event_arg.event_data = event

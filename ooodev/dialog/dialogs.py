@@ -4,6 +4,8 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING, Any, Iterable, Sequence, Tuple, cast
 from enum import IntEnum
+import uno
+
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils.date_time_util import DateUtil
@@ -11,9 +13,15 @@ from ..utils.kind.align_kind import AlignKind as AlignKind
 from ..utils.kind.border_kind import BorderKind as BorderKind
 from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
+from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import Table
-import uno
+from .dl_control.ctl_fixed_line import CtlFixedLine
+from .dl_control.ctl_fixed_text import CtlFixedText
+from .dl_control.ctl_button import CtlButton
+from .dl_control.ctl_check_box import CtlCheckBox
+from .dl_control.ctl_combo_box import CtlComboBox
+from .dl_control.ctl_currency_field import CtlCurrencyField
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -88,7 +96,6 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tab import UnoControlTabPageContainer  # service
     from com.sun.star.awt.tab import UnoControlTabPageContainerModel  # service
     from com.sun.star.awt.tab import UnoControlTabPageModel  # service
-    from com.sun.star.awt.grid import DefaultGridDataModel  # service
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
 else:
@@ -119,13 +126,7 @@ else:
 
 
 class Dialogs:
-    class StateEnum(IntEnum):
-        NOT_CHECKED = 0
-        """State not checked"""
-        CHECKED = 1
-        """State checked"""
-        DONT_KNOW = 2
-        """State don't know"""
+    StateEnum = TriStateKind
 
     # region    load & execute a dialog
     @staticmethod
@@ -159,7 +160,7 @@ class Dialogs:
             extension_id (str): Addon id
             dialog_fnm (str): Addon file path
 
-         Raises:
+        Raises:
             Exception: if unable to create dialog
 
         Returns:
@@ -471,7 +472,7 @@ class Dialogs:
         btn_type: PushButtonType | None = None,
         name: str = "",
         **props: Any,
-    ) -> UnoControlButton:
+    ) -> CtlButton:
         """
         Insert Button Control
 
@@ -490,7 +491,7 @@ class Dialogs:
             Exception: If unable to create button control
 
         Returns:
-            XControl: Button control
+            CtlButton: Button control
 
         See Also:
             `API UnoControlButtonModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlButtonModel.html>`_
@@ -530,7 +531,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlButton, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlButton(result)
         except Exception as e:
             raise Exception(f"Could not create button control: {e}") from e
 
@@ -545,10 +546,11 @@ class Dialogs:
         width: int,
         height: int = 8,
         tri_state: bool = True,
-        state: Dialogs.StateEnum = StateEnum.CHECKED,
+        state: TriStateKind = TriStateKind.CHECKED,
+        border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlCheckBox:
+    ) -> CtlCheckBox:
         """
         Inserts a check box control
 
@@ -559,8 +561,9 @@ class Dialogs:
             y (int): Y coordinate
             width (int): Width
             height (int, optional): Height. Defaults to ``8``.
-            tri_state (StateEnum, optional): Specifies that the control may have the state "don't know". Defaults to ``StateEnum.CHECKED``.
+            tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``TriStateKind.CHECKED``.
             state (int, optional): specifies the state of the control. Defaults to ``1``.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
@@ -568,7 +571,7 @@ class Dialogs:
             Exception: If unable to create checkbox control.
 
         Returns:
-            UnoControlCheckBox: Check box control
+            CtlCheckBox: Check box control
 
         See Also:
             `API UnoControlCheckBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlCheckBoxModel.html>`_
@@ -584,7 +587,8 @@ class Dialogs:
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
-
+            # Checkboxes do not have a border property but does have a VisualEffect property that is basically the same
+            ctl_props.setPropertyValue("VisualEffect", int(border))
             ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("Label", label)
             ctl_props.setPropertyValue("TriState", tri_state)
@@ -603,7 +607,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlCheckBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlCheckBox(result)
         except Exception as e:
             raise Exception(f"Could not create check box control: {e}") from e
 
@@ -623,7 +627,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlComboBox:
+    ) -> CtlComboBox:
         """
         Insert a combo box control
 
@@ -645,7 +649,7 @@ class Dialogs:
             Exception: If unable to create combo box control
 
         Returns:
-            UnoControlComboBox: Combo box control
+            CtlComboBox: Combo box control
 
         See Also:
             `API UnoControlComboBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlComboBoxModel.html>`_
@@ -686,7 +690,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlComboBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlComboBox(result)
         except Exception as e:
             raise Exception(f"Could not create combo box control: {e}") from e
 
@@ -708,7 +712,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlCurrencyField:
+    ) -> CtlCurrencyField:
         """
         Inserts a currency control
 
@@ -732,7 +736,7 @@ class Dialogs:
             Exception: If unable to create currency field box control
 
         Returns:
-            UnoControlCurrencyField: Currency field control.
+            CtlCurrencyField: Currency field control.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -770,7 +774,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlCurrencyField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlCurrencyField(result)
         except Exception as e:
             raise Exception(f"Could not create text field control: {e}") from e
 
@@ -927,7 +931,7 @@ class Dialogs:
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
         name: str = "",
         **props: Any,
-    ) -> UnoControlFixedLine:
+    ) -> CtlFixedLine:
         """
         Create a new control of type Fixed Line in the actual dialog
 
@@ -945,7 +949,7 @@ class Dialogs:
             Exception: If unable to create file control control
 
         Returns:
-            UnoControlFixedLine: Fixed Line Control
+            CtlFixedLine: Fixed Line Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -974,7 +978,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlFixedLine, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlFixedLine(result)
         except Exception as e:
             raise Exception(f"Could not create fixed line control: {e}") from e
 
@@ -1036,7 +1040,7 @@ class Dialogs:
             ctl_props.setPropertyValue("EffectiveMax", max)
             ctl_props.setPropertyValue("Spin", spin_button)
             ctl_props.setPropertyValue("Border", int(border))
-            if not value is None:
+            if value is not None:
                 ctl_props.setPropertyValue("EffectiveValue", value)
 
             # set any extra user properties
@@ -1292,7 +1296,7 @@ class Dialogs:
         height: int = 20,
         name: str = "",
         **props: Any,
-    ) -> UnoControlFixedText:
+    ) -> CtlFixedText:
         """
         Insert a label into a control
 
@@ -1310,7 +1314,7 @@ class Dialogs:
             Exception: If unable to create label
 
         Returns:
-            UnoControlFixedText: control
+            CtlFixedText: control
 
         See Also:
             `API UnoControlFixedTextModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlFixedTextModel.html>`_
@@ -1340,7 +1344,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
             result = cast(UnoControlFixedText, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlFixedText(result)
         except Exception as e:
             raise Exception(f"Could not create fixed text control: {e}") from e
 
@@ -2225,15 +2229,15 @@ class Dialogs:
                     row_header=True,
                 )
 
-            tbl = ... # get data as 2d sequence
-            Dialogs.set_table_data(
-                table=ctl_table1,
-                data=tbl,
-                align="RLC", # first column right, second left, third center. All others left
-                widths=(75, 60, 100, 40), # does not need to add up to total width, a factor will be used to auto size where needed.
-                has_row_headers=True,
-                has_colum_headers=True,
-            )
+                tbl = ... # get data as 2d sequence
+                Dialogs.set_table_data(
+                    table=ctl_table1,
+                    data=tbl,
+                    align="RLC", # first column right, second left, third center. All others left
+                    widths=(75, 60, 100, 40), # does not need to add up to total width, a factor will be used to auto size where needed.
+                    has_row_headers=True,
+                    has_colum_headers=True,
+                )
 
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_table_control`

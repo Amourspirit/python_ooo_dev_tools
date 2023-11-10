@@ -27,8 +27,8 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
         Constructor:
 
         Arguments:
-            add_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            add_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
         """
         super().__init__(trigger_args=trigger_args)
         # assigning tk to class is important.
@@ -38,6 +38,15 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
             self._tk = mLo.Lo.create_instance_mcf(XExtendedToolkit, "com.sun.star.awt.Toolkit", raise_err=True)
             if self._tk is not None:
                 self._tk.addTopWindowListener(self)
+
+    # region overrides
+    def _trigger_event(self, name: str, event: EventObject) -> None:
+        # any trigger args passed in will be passed to callback event via Events class.
+        event_arg = EventArgs(self.__class__.__qualname__)
+        event_arg.event_data = event
+        self._events.trigger(name, event_arg)
+
+    # endregion overrides
 
     def windowOpened(self, event: EventObject) -> None:
         """Is invoked when a window is activated."""

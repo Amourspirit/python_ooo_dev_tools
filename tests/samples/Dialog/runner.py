@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, cast
+from typing import Any, TYPE_CHECKING, cast
 from pathlib import Path
 import datetime
 from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind
@@ -7,7 +7,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
 from ooodev.utils.file_io import FileIO
-
+from ooodev.events.args.event_args import EventArgs
 
 from com.sun.star.awt import XControlModel
 from com.sun.star.awt import XDialog
@@ -16,7 +16,78 @@ from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 
 if TYPE_CHECKING:
+    from ooodev.dialog.dl_control.ctl_button import CtlButton
+    from ooodev.dialog.dl_control.ctl_check_box import CtlCheckBox
+    from ooodev.dialog.dl_control.ctl_combo_box import CtlComboBox
     from com.sun.star.awt import UnoControlDialog
+    from com.sun.star.awt import ItemEvent
+
+
+# region Event Handlers
+def on_check_box_state(src: Any, event: EventArgs, control_src: CtlCheckBox, *args, **kwargs) -> None:
+    itm_event = cast("ItemEvent", event.event_data)
+    print("Selected:", itm_event.Selected)
+    print("Source state:", control_src.state)
+    # control_src.visible = False
+    print("Control Name:", control_src.name)
+
+
+def on_ok(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    # print(event)
+    print("OK:", control_src.name)
+
+
+def on_mouse_entered(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    # print(control_src)
+    print("Mouse Entered:", control_src.name)
+
+
+def on_mouse_exit(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    # print(control_src)
+    print("Mouse Exited:", control_src.name)
+
+
+def on_cancel(src: Any, event: EventArgs, control_src: CtlButton, *args, **kwargs) -> None:
+    # print(kwargs)
+    # print(src)
+    # print(event.event_source)
+    # print(event.source)
+    # print(type(event.event_data))
+    # event.event_data is com.sun.star.awt.ActionEvent
+    try:
+        print("Cancel:", control_src.name)
+        print("control_src", control_src)
+        print(event.event_data)
+        print(event.event_data.value.ActionCommand)
+    except Exception as e:
+        print(e)
+    # dialog.dispose()
+
+
+def on_text_combobox_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
+    print("Combo Text Changed:", control_src.name)
+    print("Combo Text Value:", control_src.text)
+
+
+def on_combobox_item_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
+    print("Combo Item Changed:", control_src.name)
+    itm_event = cast("ItemEvent", event.event_data)
+    print("Selected:", itm_event.Selected)
+    print("Highlighted:", itm_event.Highlighted)
+    print("ItemId:", itm_event.ItemId)
+
+
+def on_up(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    print("Up:", control_src.name)
+    print("Value:", control_src.value)
+
+
+def on_down(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    print("Down:", control_src.name)
+    print("Value:", control_src.value)
+
+
+# endregion Event Handlers
 
 
 class Input:
@@ -43,6 +114,7 @@ class Input:
         Returns:
             str: The value of input or empty string.
         """
+
         dialog = cast(
             "UnoControlDialog",
             mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
@@ -52,7 +124,7 @@ class Input:
         )
 
         dialog.setModel(dialog_model)
-        border_kind = BorderKind.BORDER_3D
+        border_kind = BorderKind.NONE
         width = 800
         height = 700
         btn_width = 100
@@ -67,7 +139,9 @@ class Input:
         ctl_lbl = Dialogs.insert_label(
             dialog_ctrl=dialog, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
         )
-        sz = ctl_lbl.getPosSize()
+        ctl_lbl.add_event_mouse_entered(on_mouse_entered)
+        ctl_lbl.add_event_mouse_exited(on_mouse_exit)
+        sz = ctl_lbl.view.getPosSize()
         if is_password:
             txt_input = Dialogs.insert_password_field(
                 dialog_ctrl=dialog,
@@ -95,10 +169,14 @@ class Input:
             y=height - btn_height - margin,
             width=btn_width,
             height=btn_height,
-            btn_type=PushButtonType.CANCEL,
+            # btn_type=PushButtonType.CANCEL,
         )
-        sz = ctl_btn_cancel.getPosSize()
-        _ = Dialogs.insert_button(
+        ctl_btn_cancel.view.setActionCommand("Cancel")
+        ctl_btn_cancel.add_event_action_performed(on_cancel)
+        ctl_btn_cancel.add_event_mouse_entered(on_mouse_entered)
+        ctl_btn_cancel.add_event_mouse_exited(on_mouse_exit)
+        sz = ctl_btn_cancel.view.getPosSize()
+        ctl_button_ok = Dialogs.insert_button(
             dialog_ctrl=dialog,
             label=ok_lbl,
             x=sz.X - sz.Width - margin,
@@ -108,7 +186,9 @@ class Input:
             btn_type=PushButtonType.OK,
             DefaultButton=True,
         )
-
+        ctl_button_ok.add_event_action_performed(on_ok)
+        ctl_button_ok.add_event_mouse_entered(on_mouse_entered)
+        ctl_button_ok.add_event_mouse_exited(on_mouse_exit)
         sz = txt_input.getPosSize()
         ctl_chk1 = Dialogs.insert_check_box(
             dialog_ctrl=dialog,
@@ -119,9 +199,10 @@ class Input:
             height=20,
             tri_state=False,
             state=Dialogs.StateEnum.CHECKED,
+            border=border_kind,
         )
 
-        sz = ctl_chk1.getPosSize()
+        sz = ctl_chk1.view.getPosSize()
         ctl_chk2 = Dialogs.insert_check_box(
             dialog_ctrl=dialog,
             label="Check Box 2",
@@ -131,9 +212,10 @@ class Input:
             height=sz.Height,
             tri_state=False,
             state=Dialogs.StateEnum.NOT_CHECKED,
+            border=border_kind,
         )
 
-        sz = ctl_chk2.getPosSize()
+        sz = ctl_chk2.view.getPosSize()
         ctl_chk3 = Dialogs.insert_check_box(
             dialog_ctrl=dialog,
             label="Check Box 3",
@@ -143,9 +225,13 @@ class Input:
             height=sz.Height,
             tri_state=True,
             state=Dialogs.StateEnum.DONT_KNOW,
+            border=border_kind,
         )
+        ctl_chk1.add_event_item_state_changed(on_check_box_state)
+        ctl_chk2.add_event_item_state_changed(on_check_box_state)
+        ctl_chk3.add_event_item_state_changed(on_check_box_state)
 
-        sz = ctl_chk1.getPosSize()
+        sz = ctl_chk1.view.getPosSize()
         ctl_date = Dialogs.insert_date_field(
             dialog_ctrl=dialog,
             x=sz.Width + padding,
@@ -166,7 +252,9 @@ class Input:
             spin_button=True,
             border=border_kind,
         )
-        sz = ctl_currency.getPosSize()
+        sz = ctl_currency.view.getPosSize()
+        ctl_currency.add_event_down(on_down)
+        ctl_currency.add_event_up(on_up)
         ctl_pattern = Dialogs.insert_pattern_field(
             dialog_ctrl=dialog,
             x=sz.X,
@@ -201,8 +289,10 @@ class Input:
             entries=["Item 1", "Item 2", "Item 3"],
             border=border_kind,
         )
+        ctl_combo1.add_event_text_changed(on_text_combobox_changed)
+        ctl_combo1.add_event_item_state_changed(on_combobox_item_changed)
 
-        sz = ctl_combo1.getPosSize()
+        sz = ctl_combo1.view.getPosSize()
 
         ctl_progress = Dialogs.insert_progress_bar(
             dialog_ctrl=dialog,
@@ -232,7 +322,7 @@ class Input:
             height=1,
         )
 
-        sz = ctl_ln.getPosSize()
+        sz = ctl_ln.view.getPosSize()
         ctl_formatted = Dialogs.insert_formatted_field(
             dialog_ctrl=dialog,
             x=margin,
