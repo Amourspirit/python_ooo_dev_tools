@@ -10,21 +10,21 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from .ctl_base import CtlBase
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlCurrencyField  # service
-    from com.sun.star.awt import UnoControlCurrencyFieldModel  # service
+    from com.sun.star.awt import UnoControlDateField  # service
+    from com.sun.star.awt import UnoControlDateFieldModel  # service
 # endregion imports
 
 
-class CtlCurrencyField(CtlBase, SpinEvents, TextEvents):
-    """Class for CurrencyField Control"""
+class CtlDateField(CtlBase, SpinEvents, TextEvents):
+    """Class for Button Control"""
 
     # region init
-    def __init__(self, ctl: UnoControlCurrencyField) -> None:
+    def __init__(self, ctl: UnoControlDateField) -> None:
         """
         Constructor
 
         Args:
-            ctl (UnoControlCurrencyField): Button Control
+            ctl (UnoControlDateField): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         CtlBase.__init__(self, ctl)
@@ -53,39 +53,26 @@ class CtlCurrencyField(CtlBase, SpinEvents, TextEvents):
     # endregion Lazy Listeners
 
     # region Overrides
-
-    def get_view_ctl(self) -> UnoControlCurrencyField:
-        return cast("UnoControlCurrencyField", super().get_view_ctl())
+    def get_view_ctl(self) -> UnoControlDateField:
+        return cast("UnoControlDateField", super().get_view_ctl())
 
     def get_uno_srv_name(self) -> str:
-        """Returns ``com.sun.star.awt.UnoControlCurrencyField``"""
-        return "com.sun.star.awt.UnoControlCurrencyField"
+        """Returns ``com.sun.star.awt.UnoControlDateField``"""
+        return "com.sun.star.awt.UnoControlDateField"
 
-    def get_model(self) -> UnoControlCurrencyFieldModel:
+    def get_model(self) -> UnoControlDateFieldModel:
         """Gets the Model for the control"""
-        return cast("UnoControlCurrencyFieldModel", self.get_view_ctl().getModel())
+        return cast("UnoControlDateFieldModel", self.get_view_ctl().getModel())
 
     # endregion Overrides
 
     # region Properties
     @property
-    def view(self) -> UnoControlCurrencyField:
+    def view(self) -> UnoControlDateField:
         return self.get_view_ctl()
 
     @property
-    def model(self) -> UnoControlCurrencyFieldModel:
+    def model(self) -> UnoControlDateFieldModel:
         return self.get_model()
 
-    @property
-    def value(self) -> float:
-        """Gets/Sets the value"""
-        return self.model.Value
-
-    @value.setter
-    def value(self, value: float) -> None:
-        self.model.Value = value
-
     # endregion Properties
-
-
-# ctl = CtlButton(None)

@@ -2,18 +2,25 @@ from __future__ import annotations
 
 from .properties_change_listener import PropertiesChangeListener
 from ooodev.adapter.adapter_base import GenericArgs
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.utils.type_var import EventArgsCallbackT
+from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class PropertiesChangeEvents:
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    """
+    Class for managing Properties Change Events.
+    """
+
+    def __init__(self, trigger_args: GenericArgs | None = None, cb: ListenerEventCallbackT | None = None) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
+        self.__callback = cb
+        self.__name = "ooodev.adapter.beans.PropertiesChangeEvents"
         self.__properties_change_listener = PropertiesChangeListener(trigger_args=trigger_args)
 
     # region Manage Events
@@ -25,12 +32,19 @@ class PropertiesChangeEvents:
 
         The callback ``EventArgs.event_data`` will contain a tuple of ``PropertyChangeEvent`` objects.
         """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="propertiesChange")
+            self.__callback(self, args)
         self.__properties_change_listener.on("propertiesChange", cb)
 
     def remove_event_properties_change(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="propertiesChange", is_add=False)
+            self.__callback(self, args)
         self.__properties_change_listener.off("propertiesChange", cb)
 
     # endregion Manage Events

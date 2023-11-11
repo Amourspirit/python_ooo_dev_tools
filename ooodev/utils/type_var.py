@@ -11,11 +11,13 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextDocument
     from ooodev.events.args.event_args import EventArgs
+    from ooodev.events.args.listener_event_args import ListenerEventArgs
 else:
     XText = object
     XTextCursor = object
     XTextDocument = object
     EventArgs = object
+    ListenerEventArgs = object
 
 PathOrStr = Union[str, PathLike]
 """Path like object or string"""
@@ -65,6 +67,9 @@ DocOrText = Union[XTextDocument, XText]
 
 EventCallback = Callable[[Any, Any], None]
 """Event Callback"""
+
+ListenerEventCallbackT = Callable[[Any, ListenerEventArgs], None]
+"""Listener Event Callback"""
 
 
 class EventArgsCallbackT(Protocol):

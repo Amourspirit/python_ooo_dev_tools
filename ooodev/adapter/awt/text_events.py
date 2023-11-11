@@ -2,18 +2,27 @@ from __future__ import annotations
 
 from .text_listener import TextListener
 from ooodev.adapter.adapter_base import GenericArgs
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.utils.type_var import EventArgsCallbackT
+from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class TextEvents:
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    """
+    Class for managing Text Events.
+
+    This class is usually inherited by control classes that implement ``com.sun.star.awt.XTextListener``.
+    """
+
+    def __init__(self, trigger_args: GenericArgs | None = None, cb: ListenerEventCallbackT | None = None) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
+        self.__callback = cb
+        self.__name = "ooodev.adapter.awt.TextEvents"
         self.__text_listener = TextListener(trigger_args=trigger_args)
 
     # region Manage Events
@@ -25,12 +34,18 @@ class TextEvents:
 
         The callback ``EventArgs.event_data`` will contain a UNO ``TextEvent`` struct.
         """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="textChanged")
+            self.__callback(self, args)
         self.__text_listener.on("textChanged", cb)
 
     def remove_event_text_changed(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="textChanged", is_add=False)
+            self.__callback(self, args)
         self.__text_listener.off("textChanged", cb)
 
     @property

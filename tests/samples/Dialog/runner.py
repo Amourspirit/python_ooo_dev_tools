@@ -190,6 +190,8 @@ class Input:
         ctl_button_ok.add_event_mouse_entered(on_mouse_entered)
         ctl_button_ok.add_event_mouse_exited(on_mouse_exit)
         sz = txt_input.getPosSize()
+        # ctl_button_ok.width += 30
+        # ctl_button_ok.x -= 30
         ctl_chk1 = Dialogs.insert_check_box(
             dialog_ctrl=dialog,
             label="Check Box 1",
