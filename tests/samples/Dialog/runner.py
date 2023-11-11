@@ -264,7 +264,9 @@ class Runner:
             height=self._box_height,
             border=border_kind,
         )
-        sz = self._ctl_file.getPosSize()
+        self._ctl_file.text = "file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png"
+        self._ctl_file.add_event_text_changed(self._fn_on_text_changed)
+        sz = self._ctl_file.view.getPosSize()
         self._ctl_ln = Dialogs.insert_fixed_line(
             dialog_ctrl=self._dialog,
             x=self._margin,

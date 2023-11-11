@@ -24,6 +24,7 @@ from .dl_control.ctl_check_box import CtlCheckBox
 from .dl_control.ctl_combo_box import CtlComboBox
 from .dl_control.ctl_currency_field import CtlCurrencyField
 from .dl_control.ctl_date_field import CtlDateField
+from .dl_control.ctl_file import CtlFile
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -872,7 +873,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlFileControl:
+    ) -> CtlFile:
         """
         Create a new control of type FileControl in the actual dialog
 
@@ -890,7 +891,7 @@ class Dialogs:
             Exception: If unable to create file control control
 
         Returns:
-            UnoControlFileControl: File Control
+            CtlFile: File Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -921,7 +922,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlFileControl, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlFile(result)
         except Exception as e:
             raise Exception(f"Could not create file control: {e}") from e
 

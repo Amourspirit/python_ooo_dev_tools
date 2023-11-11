@@ -5,7 +5,6 @@ import datetime
 
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
-from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ooodev.utils.date_time_util import DateUtil
