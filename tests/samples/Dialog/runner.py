@@ -301,7 +301,7 @@ class Runner:
         )
 
         # insert radio buttons into group box one
-        sz = self._ctl_gb1.getPosSize()
+        sz = self._ctl_gb1.view.getPosSize()
         rb1 = Dialogs.insert_radio_button(
             dialog_ctrl=self._dialog,
             label="Radio Button 1",
@@ -321,7 +321,7 @@ class Runner:
                 height=rb_sz.Height,
             )
 
-        sz = self._ctl_gb1.getPosSize()
+        sz = self._ctl_gb1.view.getPosSize()
         self._ctl_gb2 = Dialogs.insert_group_box(
             dialog_ctrl=self._dialog,
             x=sz.X + sz.Width + self._padding,
@@ -332,7 +332,7 @@ class Runner:
         )
 
         # insert radio buttons into group box two
-        sz = self._ctl_gb2.getPosSize()
+        sz = self._ctl_gb2.view.getPosSize()
         self._rb2 = Dialogs.insert_radio_button(
             dialog_ctrl=self._dialog,
             label="Radio Button 1",

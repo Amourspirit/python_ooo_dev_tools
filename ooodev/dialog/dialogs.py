@@ -26,6 +26,7 @@ from .dl_control.ctl_currency_field import CtlCurrencyField
 from .dl_control.ctl_date_field import CtlDateField
 from .dl_control.ctl_file import CtlFile
 from .dl_control.ctl_formatted_field import CtlFormattedField
+from .dl_control.ctl_group_box import CtlGroupBox
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1080,7 +1081,7 @@ class Dialogs:
         label: str = "",
         name: str = "",
         **props: Any,
-    ) -> UnoControlGroupBox:
+    ) -> CtlGroupBox:
         """
         Create a new control of type GroupBox in the actual dialog.
 
@@ -1097,7 +1098,7 @@ class Dialogs:
             Exception: If unable to create group box control control
 
         Returns:
-            UnoControlGroupBox: Group box Control
+            CtlGroupBox: Group box Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1127,7 +1128,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlGroupBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlGroupBox(result)
         except Exception as e:
             raise Exception(f"Could not create Group box control: {e}") from e
 
