@@ -9,6 +9,7 @@ from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
 from ooodev.utils.file_io import FileIO
 from ooodev.events.args.event_args import EventArgs
+from ooodev.utils.color import StandardColor
 
 from com.sun.star.awt import XControlModel
 from com.sun.star.awt import XDialog
@@ -265,6 +266,9 @@ class Runner:
             value=67,
             border=border_kind,
         )
+        self._ctl_progress.fill_color = StandardColor.GREEN
+        self._ctl_progress.add_event_mouse_entered(self._fn_on_mouse_entered)
+        self._ctl_progress.add_event_mouse_exited(self._fn_on_mouse_exit)
 
         self._ctl_file = Dialogs.insert_file_control(
             dialog_ctrl=self._dialog,

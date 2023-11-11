@@ -33,6 +33,7 @@ from .dl_control.ctl_list_box import CtlListBox
 from .dl_control.ctl_numeric_field import CtlNumericField
 from .dl_control.ctl_text_edit import CtlTextEdit
 from .dl_control.ctl_pattern_field import CtlPatternField
+from .dl_control.ctl_progress_bar import CtlProgressBar
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1669,7 +1670,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlProgressBar:
+    ) -> CtlProgressBar:
         """
         Create a new control of type GroupBox in the actual dialog.
 
@@ -1690,7 +1691,7 @@ class Dialogs:
             Exception: If unable to create numeric field control control
 
         Returns:
-            UnoControlProgressBar: Group box Control
+            CtlProgressBar: Group box Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1723,7 +1724,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlProgressBar, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlProgressBar(result)
         except Exception as e:
             raise Exception(f"Could not create numeric field control: {e}") from e
 
