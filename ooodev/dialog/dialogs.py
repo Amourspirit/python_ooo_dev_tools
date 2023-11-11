@@ -28,6 +28,7 @@ from .dl_control.ctl_file import CtlFile
 from .dl_control.ctl_formatted_field import CtlFormattedField
 from .dl_control.ctl_group_box import CtlGroupBox
 from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
+from .dl_control.ctl_image import CtlImage
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1231,7 +1232,7 @@ class Dialogs:
         image_url: str = "",
         name: str = "",
         **props: Any,
-    ) -> UnoControlImageControl:
+    ) -> CtlImage:
         """
         Create a new control of type ImageControl in the actual dialog.
 
@@ -1249,7 +1250,7 @@ class Dialogs:
             Exception: If unable to create image control
 
         Returns:
-            UnoControlImageControl: Image Control
+            CtlImage: Image Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1292,7 +1293,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlImageControl, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlImage(result)
         except Exception as e:
             raise Exception(f"Could not create file control: {e}") from e
 

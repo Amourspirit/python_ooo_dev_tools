@@ -377,8 +377,10 @@ class Runner:
             scale=ImageScaleModeEnum.ANISOTROPIC,
             border=border_kind,
         )
+        self._ctl_img.add_event_mouse_entered(self._fn_on_mouse_entered)
+        self._ctl_img.add_event_mouse_exited(self._fn_on_mouse_exit)
 
-        sz = self._ctl_img.getPosSize()
+        sz = self._ctl_img.view.getPosSize()
         self._ctl_list_box = Dialogs.insert_list_box(
             dialog_ctrl=self._dialog,
             x=sz.X + sz.Width + self._padding,
