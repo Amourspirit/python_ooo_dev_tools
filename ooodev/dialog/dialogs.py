@@ -3,7 +3,6 @@
 from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING, Any, Iterable, Sequence, Tuple, cast
-from enum import IntEnum
 import uno
 
 from ..utils import info as mInfo
@@ -11,10 +10,11 @@ from ..utils import lo as mLo
 from ..utils.date_time_util import DateUtil
 from ..utils.kind.align_kind import AlignKind as AlignKind
 from ..utils.kind.border_kind import BorderKind as BorderKind
+from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
+from ..utils.kind.state_kind import StateKind as StateKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
-from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import Table
 from .dl_control.ctl_fixed_line import CtlFixedLine
@@ -34,6 +34,7 @@ from .dl_control.ctl_numeric_field import CtlNumericField
 from .dl_control.ctl_text_edit import CtlTextEdit
 from .dl_control.ctl_pattern_field import CtlPatternField
 from .dl_control.ctl_progress_bar import CtlProgressBar
+from .dl_control.ctl_radio_button import CtlRadioButton
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1741,7 +1742,7 @@ class Dialogs:
         multiline: bool = False,
         name: str = "",
         **props: Any,
-    ) -> UnoControlRadioButton:
+    ) -> CtlRadioButton:
         """
         Create a new control of type RadioButton in the actual dialog.
 
@@ -1760,7 +1761,7 @@ class Dialogs:
             Exception: If unable to create radio button
 
         Returns:
-            UnoControlRadioButton: Radio button control
+            CtlRadioButton: Radio button control
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1790,7 +1791,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
             result = cast(UnoControlRadioButton, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlRadioButton(result)
         except Exception as e:
             raise Exception(f"Could not create radio button control: {e}") from e
 

@@ -9,6 +9,7 @@ from ..utils.kind.border_kind import BorderKind as BorderKind
 from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
+from ..utils.kind.state_kind import StateKind as StateKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from .dialogs import Dialogs as Dialogs
 

@@ -4,28 +4,28 @@ from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
-from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ooodev.utils.kind.state_kind import StateKind as StateKind
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 from .ctl_base import CtlBase
 
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlCheckBox  # service
-    from com.sun.star.awt import UnoControlCheckBoxModel  # service
+    from com.sun.star.awt import UnoControlRadioButton  # service
+    from com.sun.star.awt import UnoControlRadioButtonModel  # service
 # endregion imports
 
 
-class CtlCheckBox(CtlBase, ItemEvents):
-    """Class for CheckBox Control"""
+class CtlRadioButton(CtlBase, ItemEvents):
+    """Class for Radio Button Control"""
 
     # region init
-    def __init__(self, ctl: UnoControlCheckBox) -> None:
+    def __init__(self, ctl: UnoControlRadioButton) -> None:
         """
         Constructor
 
         Args:
-            ctl (UnoControlCheckBox): Check Box Control
+            ctl (UnoControlRadioButton): Radio Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         CtlBase.__init__(self, ctl)
@@ -46,26 +46,26 @@ class CtlCheckBox(CtlBase, ItemEvents):
     # endregion Lazy Listeners
 
     # region Overrides
-    def get_view_ctl(self) -> UnoControlCheckBox:
-        return cast("UnoControlCheckBox", super().get_view_ctl())
+    def get_view_ctl(self) -> UnoControlRadioButton:
+        return cast("UnoControlRadioButton", super().get_view_ctl())
 
     def get_uno_srv_name(self) -> str:
-        """Returns ``com.sun.star.awt.UnoControlCheckBox``"""
-        return "com.sun.star.awt.UnoControlCheckBox"
+        """Returns ``com.sun.star.awt.UnoControlRadioButton``"""
+        return "com.sun.star.awt.UnoControlRadioButton"
 
-    def get_model(self) -> UnoControlCheckBoxModel:
+    def get_model(self) -> UnoControlRadioButtonModel:
         """Gets the Model for the control"""
-        return cast("UnoControlCheckBoxModel", self.get_view_ctl().getModel())
+        return cast("UnoControlRadioButtonModel", self.get_view_ctl().getModel())
 
     # endregion Overrides
 
     # region Properties
     @property
-    def view(self) -> UnoControlCheckBox:
+    def view(self) -> UnoControlRadioButton:
         return self.get_view_ctl()
 
     @property
-    def model(self) -> UnoControlCheckBoxModel:
+    def model(self) -> UnoControlRadioButtonModel:
         return self.get_model()
 
     @property
@@ -78,12 +78,12 @@ class CtlCheckBox(CtlBase, ItemEvents):
         self.model.VisualEffect = value.value
 
     @property
-    def state(self) -> TriStateKind:
+    def state(self) -> StateKind:
         """Gets/Sets the state"""
-        return TriStateKind(self.model.State)
+        return StateKind(self.model.State)
 
     @state.setter
-    def state(self, value: TriStateKind) -> None:
+    def state(self, value: StateKind) -> None:
         self.model.State = value.value
 
     # endregion Properties

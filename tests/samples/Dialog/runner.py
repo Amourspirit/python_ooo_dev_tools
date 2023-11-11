@@ -324,9 +324,10 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
-        rb_sz = rb1.getPosSize()
+        rb1.add_event_item_state_changed(self._fn_on_item_changed)
+        rb_sz = rb1.view.getPosSize()
         for i in range(1, 4):
-            _ = Dialogs.insert_radio_button(
+            radio_btn = Dialogs.insert_radio_button(
                 dialog_ctrl=self._dialog,
                 label=f"Radio Button {i + 1}",
                 x=rb_sz.X,
@@ -334,6 +335,7 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
+            radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
         self._ctl_gb2 = Dialogs.insert_group_box(
@@ -355,9 +357,10 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
-        rb_sz = self._rb2.getPosSize()
+        self._rb2.add_event_item_state_changed(self._fn_on_item_changed)
+        rb_sz = self._rb2.view.getPosSize()
         for i in range(1, 4):
-            _ = Dialogs.insert_radio_button(
+            radio_btn = Dialogs.insert_radio_button(
                 dialog_ctrl=self._dialog,
                 label=f"Radio Button {i + 1}",
                 x=rb_sz.X,
@@ -365,6 +368,7 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
+            radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
         self._ctl_link = Dialogs.insert_hyperlink(

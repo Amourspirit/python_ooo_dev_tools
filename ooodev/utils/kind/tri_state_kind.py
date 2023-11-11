@@ -4,7 +4,7 @@ from . import kind_helper
 
 class TriStateKind(IntEnum):
     """
-    Specifies state of a tri-state control such as a check box or a radio button.
+    Specifies state of a tri-state control such as a check box.
     """
 
     NOT_CHECKED = 0
