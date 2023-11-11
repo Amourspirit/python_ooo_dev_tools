@@ -9,21 +9,21 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from .ctl_base import CtlBase
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlCurrencyField  # service
-    from com.sun.star.awt import UnoControlCurrencyFieldModel  # service
+    from com.sun.star.awt import UnoControlNumericField  # service
+    from com.sun.star.awt import UnoControlNumericFieldModel  # service
 # endregion imports
 
 
-class CtlCurrencyField(CtlBase, SpinEvents, TextEvents):
-    """Class for Currency Field Control"""
+class CtlNumericField(CtlBase, SpinEvents, TextEvents):
+    """Class for Numeric Field Control"""
 
     # region init
-    def __init__(self, ctl: UnoControlCurrencyField) -> None:
+    def __init__(self, ctl: UnoControlNumericField) -> None:
         """
         Constructor
 
         Args:
-            ctl (UnoControlCurrencyField): Button Control
+            ctl (UnoControlNumericField): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         CtlBase.__init__(self, ctl)
@@ -53,26 +53,26 @@ class CtlCurrencyField(CtlBase, SpinEvents, TextEvents):
 
     # region Overrides
 
-    def get_view_ctl(self) -> UnoControlCurrencyField:
-        return cast("UnoControlCurrencyField", super().get_view_ctl())
+    def get_view_ctl(self) -> UnoControlNumericField:
+        return cast("UnoControlNumericField", super().get_view_ctl())
 
     def get_uno_srv_name(self) -> str:
-        """Returns ``com.sun.star.awt.UnoControlCurrencyField``"""
-        return "com.sun.star.awt.UnoControlCurrencyField"
+        """Returns ``com.sun.star.awt.UnoControlNumericField``"""
+        return "com.sun.star.awt.UnoControlNumericField"
 
-    def get_model(self) -> UnoControlCurrencyFieldModel:
+    def get_model(self) -> UnoControlNumericFieldModel:
         """Gets the Model for the control"""
-        return cast("UnoControlCurrencyFieldModel", self.get_view_ctl().getModel())
+        return cast("UnoControlNumericFieldModel", self.get_view_ctl().getModel())
 
     # endregion Overrides
 
     # region Properties
     @property
-    def view(self) -> UnoControlCurrencyField:
+    def view(self) -> UnoControlNumericField:
         return self.get_view_ctl()
 
     @property
-    def model(self) -> UnoControlCurrencyFieldModel:
+    def model(self) -> UnoControlNumericFieldModel:
         return self.get_model()
 
     @property

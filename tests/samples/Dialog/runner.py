@@ -228,8 +228,11 @@ class Runner:
             spin_button=True,
             border=border_kind,
         )
+        self._ctl_num_field.add_event_down(self._fn_on_down)
+        self._ctl_num_field.add_event_up(self._fn_on_up)
+        self._ctl_num_field.add_event_text_changed(self._fn_on_text_changed)
 
-        sz_numeric = self._ctl_num_field.getPosSize()
+        sz_numeric = self._ctl_num_field.view.getPosSize()
         # sz_fmt = ctl_formatted.getPosSize()
         self._ctl_combo1 = Dialogs.insert_combo_box(
             dialog_ctrl=self._dialog,
@@ -489,9 +492,12 @@ class Runner:
         # print(control_src)
         print("Mouse Exited:", control_src.name)
 
-    def on_text_changed(self, src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
+    def on_text_changed(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
         print("Text Changed:", control_src.name)
-        print("Text Value:", control_src.text)
+        if hasattr(control_src, "text"):
+            print("Text Value:", control_src.text)
+        if hasattr(control_src, "value"):
+            print("Value:", control_src.value)
 
     def on_item_changed(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
         print("Item Changed:", control_src.name)

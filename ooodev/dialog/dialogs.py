@@ -30,6 +30,7 @@ from .dl_control.ctl_group_box import CtlGroupBox
 from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
 from .dl_control.ctl_image import CtlImage
 from .dl_control.ctl_list_box import CtlListBox
+from .dl_control.ctl_numeric_field import CtlNumericField
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1583,7 +1584,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlNumericField:
+    ) -> CtlNumericField:
         """
         Create a new control of type GroupBox in the actual dialog.
 
@@ -1607,7 +1608,7 @@ class Dialogs:
             Exception: If unable to create numeric field control control
 
         Returns:
-            UnoControlNumericField: Group box Control
+            CtlNumericField: Group box Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1646,7 +1647,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlNumericField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlNumericField(result)
         except Exception as e:
             raise Exception(f"Could not create numeric field control: {e}") from e
 
