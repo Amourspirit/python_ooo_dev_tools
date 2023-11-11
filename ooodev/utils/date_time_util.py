@@ -153,6 +153,23 @@ class DateUtil:
         )
 
     @staticmethod
+    def uno_date_to_date(uno_date: UnoDate) -> datetime.datetime:
+        """
+        Converts a uno Date struct to a datetime instance
+
+        Args:
+            uno_date (UnoDate): uno Date struct
+
+        Returns:
+            datetime.datetime: Python DateTime
+        """
+        if uno_date.Year <= 0 or uno_date.Month <= 0 or uno_date.Day <= 0:
+            return mLo.Lo.null_date
+        return datetime.datetime(
+            year=uno_date.Year, month=uno_date.Month, day=uno_date.Day, hour=0, minute=0, second=0, microsecond=0
+        )
+
+    @staticmethod
     def date_to_uno_date_time(date: Any) -> UnoDateTime:
         """
         Converts a date representation into the com.sun.star.util.DateTime date format

@@ -14,6 +14,7 @@ from ..utils.kind.border_kind import BorderKind as BorderKind
 from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ..utils.table_helper import TableHelper
 from ..utils.type_var import Table
 from .dl_control.ctl_fixed_line import CtlFixedLine
@@ -22,6 +23,7 @@ from .dl_control.ctl_button import CtlButton
 from .dl_control.ctl_check_box import CtlCheckBox
 from .dl_control.ctl_combo_box import CtlComboBox
 from .dl_control.ctl_currency_field import CtlCurrencyField
+from .dl_control.ctl_date_field import CtlDateField
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -791,10 +793,11 @@ class Dialogs:
         min_date: datetime.datetime = datetime.datetime(1900, 1, 1, 0, 0, 0, 0),
         max_date: datetime.datetime = datetime.datetime(2200, 12, 31, 0, 0, 0, 0),
         drop_down: bool = True,
+        date_format: DateFormatKind = DateFormatKind.SYSTEM_SHORT,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlDateField:
+    ) -> CtlDateField:
         """
         Create a new control of type DateField in the actual dialog.
 
@@ -808,6 +811,7 @@ class Dialogs:
             min_date (datetime.datetime, optional): _description_. Defaults to datetime.datetime(1900, 1, 1, 0, 0, 0, 0).
             max_date (datetime.datetime, optional): _description_. Defaults to datetime.datetime(2200, 12, 31, 0, 0, 0, 0).
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to True.
+            date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -816,7 +820,7 @@ class Dialogs:
             Exception: If unable to create date field control
 
         Returns:
-            UnoControlDateField: Date field control
+            CtlDateField: Date field control
         """
         # sourcery skip: raise-specific-error
         try:
@@ -850,7 +854,9 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlDateField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            ctl = CtlDateField(result)
+            ctl.date_format = date_format
+            return ctl
         except Exception as e:
             raise Exception(f"Could not create text field control: {e}") from e
 

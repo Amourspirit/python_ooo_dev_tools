@@ -1,8 +1,9 @@
 from __future__ import annotations
+import datetime
 from typing import Any, TYPE_CHECKING, cast
 from pathlib import Path
 import datetime
-from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind
+from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
@@ -72,7 +73,7 @@ class Runner:
         else:
             self._padding = 14
 
-        ctl_lbl = Dialogs.insert_label(
+        self._ctl_lbl = Dialogs.insert_label(
             dialog_ctrl=self._dialog,
             label=msg,
             x=self._margin,
@@ -80,11 +81,11 @@ class Runner:
             width=self._width - (self._margin * 2),
             height=20,
         )
-        ctl_lbl.add_event_mouse_entered(self._fn_on_mouse_entered)
-        ctl_lbl.add_event_mouse_exited(self._fn_on_mouse_exit)
-        sz = ctl_lbl.view.getPosSize()
+        self._ctl_lbl.add_event_mouse_entered(self._fn_on_mouse_entered)
+        self._ctl_lbl.add_event_mouse_exited(self._fn_on_mouse_exit)
+        sz = self._ctl_lbl.view.getPosSize()
         if is_password:
-            txt_input = Dialogs.insert_password_field(
+            self._txt_input = Dialogs.insert_password_field(
                 dialog_ctrl=self._dialog,
                 text=input_value,
                 x=sz.X,
@@ -94,7 +95,7 @@ class Runner:
                 border=border_kind,
             )
         else:
-            txt_input = Dialogs.insert_text_field(
+            self._txt_input = Dialogs.insert_text_field(
                 dialog_ctrl=self._dialog,
                 text=input_value,
                 x=sz.X,
@@ -103,7 +104,7 @@ class Runner:
                 height=sz.Height,
                 border=border_kind,
             )
-        ctl_btn_cancel = Dialogs.insert_button(
+        self._ctl_btn_cancel = Dialogs.insert_button(
             dialog_ctrl=self._dialog,
             label=cancel_lbl,
             x=self._width - self._btn_width - self._margin,
@@ -112,12 +113,12 @@ class Runner:
             height=self._btn_height,
             # btn_type=PushButtonType.CANCEL,
         )
-        ctl_btn_cancel.view.setActionCommand("Cancel")
-        ctl_btn_cancel.add_event_action_performed(self._fn_on_action_cancel)
-        ctl_btn_cancel.add_event_mouse_entered(self._fn_on_mouse_entered)
-        ctl_btn_cancel.add_event_mouse_exited(self._fn_on_mouse_exit)
-        sz = ctl_btn_cancel.view.getPosSize()
-        ctl_button_ok = Dialogs.insert_button(
+        self._ctl_btn_cancel.view.setActionCommand("Cancel")
+        self._ctl_btn_cancel.add_event_action_performed(self._fn_on_action_cancel)
+        self._ctl_btn_cancel.add_event_mouse_entered(self._fn_on_mouse_entered)
+        self._ctl_btn_cancel.add_event_mouse_exited(self._fn_on_mouse_exit)
+        sz = self._ctl_btn_cancel.view.getPosSize()
+        self._ctl_button_ok = Dialogs.insert_button(
             dialog_ctrl=self._dialog,
             label=ok_lbl,
             x=sz.X - sz.Width - self._margin,
@@ -127,13 +128,13 @@ class Runner:
             btn_type=PushButtonType.OK,
             DefaultButton=True,
         )
-        ctl_button_ok.add_event_action_performed(self._fn_on_action_ok)
-        ctl_button_ok.add_event_mouse_entered(self._fn_on_mouse_entered)
-        ctl_button_ok.add_event_mouse_exited(self._fn_on_mouse_exit)
-        sz = txt_input.getPosSize()
+        self._ctl_button_ok.add_event_action_performed(self._fn_on_action_ok)
+        self._ctl_button_ok.add_event_mouse_entered(self._fn_on_mouse_entered)
+        self._ctl_button_ok.add_event_mouse_exited(self._fn_on_mouse_exit)
+        sz = self._txt_input.getPosSize()
         # ctl_button_ok.width += 30
         # ctl_button_ok.x -= 30
-        ctl_chk1 = Dialogs.insert_check_box(
+        self._ctl_chk1 = Dialogs.insert_check_box(
             dialog_ctrl=self._dialog,
             label="Check Box 1",
             x=sz.X,
@@ -145,8 +146,8 @@ class Runner:
             border=border_kind,
         )
 
-        sz = ctl_chk1.view.getPosSize()
-        ctl_chk2 = Dialogs.insert_check_box(
+        sz = self._ctl_chk1.view.getPosSize()
+        self._ctl_chk2 = Dialogs.insert_check_box(
             dialog_ctrl=self._dialog,
             label="Check Box 2",
             x=sz.X,
@@ -158,8 +159,8 @@ class Runner:
             border=border_kind,
         )
 
-        sz = ctl_chk2.view.getPosSize()
-        ctl_chk3 = Dialogs.insert_check_box(
+        sz = self._ctl_chk2.view.getPosSize()
+        self._ctl_chk3 = Dialogs.insert_check_box(
             dialog_ctrl=self._dialog,
             label="Check Box 3",
             x=sz.X,
@@ -170,12 +171,12 @@ class Runner:
             state=Dialogs.StateEnum.DONT_KNOW,
             border=border_kind,
         )
-        ctl_chk1.add_event_item_state_changed(self._fn_on_check_box_state)
-        ctl_chk2.add_event_item_state_changed(self._fn_on_check_box_state)
-        ctl_chk3.add_event_item_state_changed(self._fn_on_check_box_state)
+        self._ctl_chk1.add_event_item_state_changed(self._fn_on_check_box_state)
+        self._ctl_chk2.add_event_item_state_changed(self._fn_on_check_box_state)
+        self._ctl_chk3.add_event_item_state_changed(self._fn_on_check_box_state)
 
-        sz = ctl_chk1.view.getPosSize()
-        ctl_date = Dialogs.insert_date_field(
+        sz = self._ctl_chk1.view.getPosSize()
+        self._ctl_date = Dialogs.insert_date_field(
             dialog_ctrl=self._dialog,
             x=sz.Width + self._padding,
             y=sz.Y,
@@ -184,8 +185,15 @@ class Runner:
             date_value=datetime.datetime.now(),
             border=border_kind,
         )
-        sz = ctl_date.getPosSize()
-        ctl_currency = Dialogs.insert_currency_field(
+        self._ctl_date.date_format = DateFormatKind.DIN_5008_YY_MM_DD
+        dt = datetime.datetime.now()
+        self._ctl_date.date = datetime.datetime(dt.year - 1, dt.month, dt.day)
+
+        self._ctl_date.add_event_down(self._fn_on_down)
+        self._ctl_date.add_event_up(self._fn_on_up)
+        self._ctl_date.add_event_text_changed(self._fn_on_text_changed)
+        sz = self._ctl_date.view.getPosSize()
+        self._ctl_currency = Dialogs.insert_currency_field(
             dialog_ctrl=self._dialog,
             x=sz.Width + sz.X + self._padding,
             y=sz.Y,
@@ -195,10 +203,10 @@ class Runner:
             spin_button=True,
             border=border_kind,
         )
-        sz = ctl_currency.view.getPosSize()
-        ctl_currency.add_event_down(self._fn_on_down)
-        ctl_currency.add_event_up(self._fn_on_up)
-        ctl_pattern = Dialogs.insert_pattern_field(
+        sz = self._ctl_currency.view.getPosSize()
+        self._ctl_currency.add_event_down(self._fn_on_down)
+        self._ctl_currency.add_event_up(self._fn_on_up)
+        self._ctl_pattern = Dialogs.insert_pattern_field(
             dialog_ctrl=self._dialog,
             x=sz.X,
             y=sz.Y + sz.Height + self._padding,
@@ -209,8 +217,8 @@ class Runner:
             border=border_kind,
         )
 
-        sz_date = ctl_date.getPosSize()
-        ctl_num_field = Dialogs.insert_numeric_field(
+        sz_date = self._ctl_date.getPosSize()
+        self._ctl_num_field = Dialogs.insert_numeric_field(
             dialog_ctrl=self._dialog,
             x=sz_date.X,
             y=sz_date.Y + sz_date.Height + self._padding,
@@ -221,9 +229,9 @@ class Runner:
             border=border_kind,
         )
 
-        sz_numeric = ctl_num_field.getPosSize()
+        sz_numeric = self._ctl_num_field.getPosSize()
         # sz_fmt = ctl_formatted.getPosSize()
-        ctl_combo1 = Dialogs.insert_combo_box(
+        self._ctl_combo1 = Dialogs.insert_combo_box(
             dialog_ctrl=self._dialog,
             x=self._margin,
             y=sz_numeric.Height + sz_numeric.Y + self._padding,
@@ -232,12 +240,12 @@ class Runner:
             entries=["Item 1", "Item 2", "Item 3"],
             border=border_kind,
         )
-        ctl_combo1.add_event_text_changed(self._fn_on_text_combobox_changed)
-        ctl_combo1.add_event_item_state_changed(self._fn_on_combobox_item_changed)
+        self._ctl_combo1.add_event_text_changed(self._fn_on_text_changed)
+        self._ctl_combo1.add_event_item_state_changed(self._fn_on_combobox_item_changed)
 
-        sz = ctl_combo1.view.getPosSize()
+        sz = self._ctl_combo1.view.getPosSize()
 
-        ctl_progress = Dialogs.insert_progress_bar(
+        self._ctl_progress = Dialogs.insert_progress_bar(
             dialog_ctrl=self._dialog,
             x=sz_date.X,
             y=sz.Y,
@@ -248,7 +256,7 @@ class Runner:
             border=border_kind,
         )
 
-        ctl_file = Dialogs.insert_file_control(
+        self._ctl_file = Dialogs.insert_file_control(
             dialog_ctrl=self._dialog,
             x=sz.X,
             y=sz.Height + sz.Y + self._padding,
@@ -256,8 +264,8 @@ class Runner:
             height=self._box_height,
             border=border_kind,
         )
-        sz = ctl_file.getPosSize()
-        ctl_ln = Dialogs.insert_fixed_line(
+        sz = self._ctl_file.getPosSize()
+        self._ctl_ln = Dialogs.insert_fixed_line(
             dialog_ctrl=self._dialog,
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
@@ -265,8 +273,8 @@ class Runner:
             height=1,
         )
 
-        sz = ctl_ln.view.getPosSize()
-        ctl_formatted = Dialogs.insert_formatted_field(
+        sz = self._ctl_ln.view.getPosSize()
+        self._ctl_formatted = Dialogs.insert_formatted_field(
             dialog_ctrl=self._dialog,
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
@@ -277,8 +285,8 @@ class Runner:
             border=border_kind,
         )
 
-        sz = ctl_formatted.getPosSize()
-        ctl_gb1 = Dialogs.insert_group_box(
+        sz = self._ctl_formatted.getPosSize()
+        self._ctl_gb1 = Dialogs.insert_group_box(
             dialog_ctrl=self._dialog,
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
@@ -288,7 +296,7 @@ class Runner:
         )
 
         # insert radio buttons into group box one
-        sz = ctl_gb1.getPosSize()
+        sz = self._ctl_gb1.getPosSize()
         rb1 = Dialogs.insert_radio_button(
             dialog_ctrl=self._dialog,
             label="Radio Button 1",
@@ -308,8 +316,8 @@ class Runner:
                 height=rb_sz.Height,
             )
 
-        sz = ctl_gb1.getPosSize()
-        ctl_gb2 = Dialogs.insert_group_box(
+        sz = self._ctl_gb1.getPosSize()
+        self._ctl_gb2 = Dialogs.insert_group_box(
             dialog_ctrl=self._dialog,
             x=sz.X + sz.Width + self._padding,
             y=sz.Y,
@@ -319,8 +327,8 @@ class Runner:
         )
 
         # insert radio buttons into group box two
-        sz = ctl_gb2.getPosSize()
-        rb2 = Dialogs.insert_radio_button(
+        sz = self._ctl_gb2.getPosSize()
+        self._rb2 = Dialogs.insert_radio_button(
             dialog_ctrl=self._dialog,
             label="Radio Button 1",
             x=sz.X + self._padding,
@@ -328,7 +336,7 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
-        rb_sz = rb2.getPosSize()
+        rb_sz = self._rb2.getPosSize()
         for i in range(1, 4):
             _ = Dialogs.insert_radio_button(
                 dialog_ctrl=self._dialog,
@@ -339,8 +347,8 @@ class Runner:
                 height=rb_sz.Height,
             )
 
-        sz = ctl_gb1.getPosSize()
-        ctl_link = Dialogs.insert_hyperlink(
+        sz = self._ctl_gb1.getPosSize()
+        self._ctl_link = Dialogs.insert_hyperlink(
             dialog_ctrl=self._dialog,
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
@@ -350,10 +358,10 @@ class Runner:
             url="https://python-ooo-dev-tools.readthedocs.io/en/latest/index.html",
             # Enabled=False,
         )
-        sz = ctl_gb2.getPosSize()
+        sz = self._ctl_gb2.getPosSize()
         # file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png
         pth = Path(__file__).parent.parent.parent / "fixtures" / "image" / "img_brick.png"
-        ctl_img = Dialogs.insert_image_control(
+        self._ctl_img = Dialogs.insert_image_control(
             dialog_ctrl=self._dialog,
             x=sz.X,
             y=sz.Y + sz.Height + self._padding,
@@ -364,8 +372,8 @@ class Runner:
             border=border_kind,
         )
 
-        sz = ctl_img.getPosSize()
-        ctl_list_box = Dialogs.insert_list_box(
+        sz = self._ctl_img.getPosSize()
+        self._ctl_list_box = Dialogs.insert_list_box(
             dialog_ctrl=self._dialog,
             x=sz.X + sz.Width + self._padding,
             y=sz.Y,
@@ -383,7 +391,7 @@ class Runner:
         self._dialog.setTitle(self._title)
         self._dialog.setPosSize(x, y, self._width, self._height, PosSize.POSSIZE)
         self._dialog.setVisible(True)
-        ret = txt_input.getModel().Text if self._dialog.execute() else ""  # type: ignore
+        ret = self._txt_input.getModel().Text if self._dialog.execute() else ""  # type: ignore
         self._dialog.dispose()
         return ret
 
@@ -404,8 +412,8 @@ class Runner:
         def _on_mouse_exit(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
             self.on_mouse_exit(src, event, control_src, *args, **kwargs)
 
-        def _on_text_combobox_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
-            self.on_text_combobox_changed(src, event, control_src, *args, **kwargs)
+        def _on_text_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
+            self.on_text_changed(src, event, control_src, *args, **kwargs)
 
         def _on_combobox_item_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
             self.on_combobox_item_changed(src, event, control_src, *args, **kwargs)
@@ -421,7 +429,7 @@ class Runner:
         self._fn_on_action_cancel = _on_action_cancel
         self._fn_on_mouse_entered = _on_mouse_entered
         self._fn_on_mouse_exit = _on_mouse_exit
-        self._fn_on_text_combobox_changed = _on_text_combobox_changed
+        self._fn_on_text_changed = _on_text_changed
         self._fn_on_combobox_item_changed = _on_combobox_item_changed
         self._fn_on_up = _on_up
         self._fn_on_down = _on_down
@@ -461,9 +469,9 @@ class Runner:
         # print(control_src)
         print("Mouse Exited:", control_src.name)
 
-    def on_text_combobox_changed(self, src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
-        print("Combo Text Changed:", control_src.name)
-        print("Combo Text Value:", control_src.text)
+    def on_text_changed(self, src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
+        print("Text Changed:", control_src.name)
+        print("Text Value:", control_src.text)
 
     def on_combobox_item_changed(self, src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
         print("Combo Item Changed:", control_src.name)

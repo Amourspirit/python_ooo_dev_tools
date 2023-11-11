@@ -1,12 +1,14 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import datetime
 
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-
+from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
+from ooodev.utils.date_time_util import DateUtil
 from .ctl_base import CtlBase
 
 if TYPE_CHECKING:
@@ -74,5 +76,50 @@ class CtlDateField(CtlBase, SpinEvents, TextEvents):
     @property
     def model(self) -> UnoControlDateFieldModel:
         return self.get_model()
+
+    @property
+    def text(self) -> str:
+        """Gets/Sets the text"""
+        return self.model.Text
+
+    @text.setter
+    def text(self, value: str) -> None:
+        self.model.Text = value
+
+    @property
+    def date(self) -> datetime.date:
+        """Gets/Sets the date"""
+        return DateUtil.uno_date_to_date(self.model.Date)
+
+    @date.setter
+    def date(self, value: datetime.date) -> None:
+        self.model.Date = DateUtil.date_to_uno_date(value)
+
+    @property
+    def date_min(self) -> datetime.date:
+        """Gets/Sets the min date"""
+        return DateUtil.uno_date_to_date(self.model.DateMin)
+
+    @date_min.setter
+    def date_min(self, value: datetime.date) -> None:
+        self.model.DateMin = DateUtil.date_to_uno_date(value)
+
+    @property
+    def date_max(self) -> datetime.date:
+        """Gets/Sets the min date"""
+        return DateUtil.uno_date_to_date(self.model.DateMax)
+
+    @date_max.setter
+    def date_max(self, value: datetime.date) -> None:
+        self.model.DateMax = DateUtil.date_to_uno_date(value)
+
+    @property
+    def date_format(self) -> DateFormatKind:
+        """Gets/Sets the format"""
+        return DateFormatKind(self.model.DateFormat)
+
+    @date_format.setter
+    def date_format(self, value: DateFormatKind) -> None:
+        self.model.DateFormat = value.value
 
     # endregion Properties

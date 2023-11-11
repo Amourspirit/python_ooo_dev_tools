@@ -3,6 +3,7 @@
         "github.copilot",
         "github.copilot-chat",
         "streetsidesoftware.code-spell-checker",
-        "oderwat.indent-rainbow"
+        "oderwat.indent-rainbow",
+        "mgesbert.python-path"
     ]
 }
