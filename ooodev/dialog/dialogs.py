@@ -35,6 +35,7 @@ from .dl_control.ctl_text_edit import CtlTextEdit
 from .dl_control.ctl_pattern_field import CtlPatternField
 from .dl_control.ctl_progress_bar import CtlProgressBar
 from .dl_control.ctl_radio_button import CtlRadioButton
+from .dl_control.ctl_scroll_bar import CtlScrollBar
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1810,7 +1811,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlScrollBar:
+    ) -> CtlScrollBar:
         """
         Create a new control of type ScrollBar in the actual dialog.
 
@@ -1831,7 +1832,7 @@ class Dialogs:
             Exception: If unable to create numeric field control control
 
         Returns:
-            UnoControlScrollBar: Group box Control
+            CtlScrollBar: Group box Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1860,7 +1861,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlScrollBar, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlScrollBar(result)
         except Exception as e:
             raise Exception(f"Could not create numeric field control: {e}") from e
 

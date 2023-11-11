@@ -21,8 +21,10 @@ if TYPE_CHECKING:
     from ooodev.dialog.dl_control.ctl_button import CtlButton
     from ooodev.dialog.dl_control.ctl_check_box import CtlCheckBox
     from ooodev.dialog.dl_control.ctl_combo_box import CtlComboBox
+    from ooodev.dialog.dl_control.ctl_scroll_bar import CtlScrollBar
     from com.sun.star.awt import UnoControlDialog
     from com.sun.star.awt import ItemEvent
+    from com.sun.star.awt import AdjustmentEvent
 
 
 class Runner:
@@ -270,6 +272,18 @@ class Runner:
         self._ctl_progress.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_progress.add_event_mouse_exited(self._fn_on_mouse_exit)
 
+        self._scroll_progress = Dialogs.insert_scroll_bar(
+            dialog_ctrl=self._dialog,
+            x=self._ctl_progress.x,
+            y=self._ctl_progress.y + self._ctl_progress.height + self._padding,
+            width=self._ctl_progress.width,
+            height=self._box_height,
+            min=self._ctl_progress.model.ProgressValueMin,
+            max=self._ctl_progress.model.ProgressValueMax,
+        )
+        self._scroll_progress.value = self._ctl_progress.value
+        self._scroll_progress.add_event_adjustment_value_changed(self._fn_on_scroll_adjustment)
+
         self._ctl_file = Dialogs.insert_file_control(
             dialog_ctrl=self._dialog,
             x=sz.X,
@@ -458,6 +472,9 @@ class Runner:
         def _on_up(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
             self.on_up(src, event, control_src, *args, **kwargs)
 
+        def _on_scroll_adjustment(src: Any, event: EventArgs, control_src: CtlScrollBar, *args, **kwargs) -> None:
+            self.on_scroll_adjustment(src, event, control_src, *args, **kwargs)
+
         self._fn_on_check_box_state = _on_check_box_state
         self._fn_on_action_ok = _on_action_ok
         self._fn_on_action_cancel = _on_action_cancel
@@ -468,6 +485,7 @@ class Runner:
         self._fn_on_item_changed = _on_item_changed
         self._fn_on_up = _on_up
         self._fn_on_down = _on_down
+        self._fn_on_scroll_adjustment = _on_scroll_adjustment
 
     def on_check_box_state(self, src: Any, event: EventArgs, control_src: CtlCheckBox, *args, **kwargs) -> None:
         itm_event = cast("ItemEvent", event.event_data)
@@ -528,6 +546,11 @@ class Runner:
     def on_down(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
         print("Down:", control_src.name)
         print("Value:", control_src.value)
+
+    def on_scroll_adjustment(self, src: Any, event: EventArgs, control_src: CtlScrollBar, *args, **kwargs) -> None:
+        # print("Scroll:", control_src.name)
+        a_event = cast("AdjustmentEvent", event.event_data)
+        self._ctl_progress.value = a_event.Value
 
     # endregion Event Handlers
 
