@@ -8,21 +8,21 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from .ctl_base import CtlBase
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlButton  # service
-    from com.sun.star.awt import UnoControlButtonModel  # service
+    from com.sun.star.awt import UnoControlFixedHyperlink  # service
+    from com.sun.star.awt import UnoControlFixedHyperlinkModel  # service
 # endregion imports
 
 
-class CtlButton(CtlBase, ActionEvents):
-    """Class for Button Control"""
+class CtlHyperlinkFixed(CtlBase, ActionEvents):
+    """Class for Fixed Hyperlink Control"""
 
     # region init
-    def __init__(self, ctl: UnoControlButton) -> None:
+    def __init__(self, ctl: UnoControlFixedHyperlink) -> None:
         """
         Constructor
 
         Args:
-            ctl (UnoControlButton): Button Control
+            ctl (UnoControlFixedHyperlink): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         CtlBase.__init__(self, ctl)
@@ -43,26 +43,48 @@ class CtlButton(CtlBase, ActionEvents):
     # endregion Lazy Listeners
 
     # region Overrides
-    def get_view_ctl(self) -> UnoControlButton:
-        return cast("UnoControlButton", super().get_view_ctl())
+    def get_view_ctl(self) -> UnoControlFixedHyperlink:
+        return cast("UnoControlFixedHyperlink", super().get_view_ctl())
 
     def get_uno_srv_name(self) -> str:
-        """Returns ``com.sun.star.awt.UnoControlButton``"""
-        return "com.sun.star.awt.UnoControlButton"
+        """Returns ``com.sun.star.awt.UnoControlFixedHyperlink``"""
+        return "com.sun.star.awt.UnoControlFixedHyperlink"
 
-    def get_model(self) -> UnoControlButtonModel:
+    def get_model(self) -> UnoControlFixedHyperlinkModel:
         """Gets the Model for the control"""
-        return cast("UnoControlButtonModel", self.get_view_ctl().getModel())
+        return cast("UnoControlFixedHyperlinkModel", self.get_view_ctl().getModel())
 
     # endregion Overrides
 
     # region Properties
     @property
-    def view(self) -> UnoControlButton:
+    def view(self) -> UnoControlFixedHyperlink:
         return self.get_view_ctl()
 
     @property
-    def model(self) -> UnoControlButtonModel:
+    def model(self) -> UnoControlFixedHyperlinkModel:
         return self.get_model()
+
+    @property
+    def label(self) -> str:
+        """
+        Gets/Sets the label of the control.
+        """
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
+    @property
+    def url(self) -> str:
+        """
+        Gets/Sets the URL to be opened when the hyperlink is activated.
+        """
+        return self.model.URL
+
+    @url.setter
+    def url(self, value: str) -> None:
+        self.model.URL = value
 
     # endregion Properties

@@ -363,7 +363,8 @@ class Runner:
             url="https://python-ooo-dev-tools.readthedocs.io/en/latest/index.html",
             # Enabled=False,
         )
-        sz = self._ctl_gb2.getPosSize()
+        self._ctl_link.add_event_action_performed(self._fn_on_action_general)
+        sz = self._ctl_gb2.view.getPosSize()
         # file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png
         pth = Path(__file__).parent.parent.parent / "fixtures" / "image" / "img_brick.png"
         self._ctl_img = Dialogs.insert_image_control(
@@ -411,6 +412,9 @@ class Runner:
         def _on_action_cancel(src: Any, event: EventArgs, control_src: CtlButton, *args, **kwargs) -> None:
             self.on_action_cancel(src, event, control_src, *args, **kwargs)
 
+        def _on_action_general(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+            self.on_action_general(src, event, control_src, *args, **kwargs)
+
         def _on_mouse_entered(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
             self.on_mouse_entered(src, event, control_src, *args, **kwargs)
 
@@ -432,6 +436,7 @@ class Runner:
         self._fn_on_check_box_state = _on_check_box_state
         self._fn_on_action_ok = _on_action_ok
         self._fn_on_action_cancel = _on_action_cancel
+        self._fn_on_action_general = _on_action_general
         self._fn_on_mouse_entered = _on_mouse_entered
         self._fn_on_mouse_exit = _on_mouse_exit
         self._fn_on_text_changed = _on_text_changed
@@ -449,6 +454,9 @@ class Runner:
     def on_action_ok(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
         # print(event)
         print("OK:", control_src.name)
+
+    def on_action_general(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+        print("Action:", control_src.name)
 
     def on_action_cancel(self, src: Any, event: EventArgs, control_src: CtlButton, *args, **kwargs) -> None:
         # print(kwargs)

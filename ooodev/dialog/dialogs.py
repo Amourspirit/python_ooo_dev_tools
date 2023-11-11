@@ -27,6 +27,7 @@ from .dl_control.ctl_date_field import CtlDateField
 from .dl_control.ctl_file import CtlFile
 from .dl_control.ctl_formatted_field import CtlFormattedField
 from .dl_control.ctl_group_box import CtlGroupBox
+from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1149,7 +1150,7 @@ class Dialogs:
         border: BorderKind = BorderKind.NONE,
         name: str = "",
         **props: Any,
-    ) -> UnoControlFixedHyperlink:
+    ) -> CtlHyperlinkFixed:
         """
         Create a new control of type Hyperlink in the actual dialog.
 
@@ -1172,7 +1173,7 @@ class Dialogs:
             Exception: If unable to create group box control control
 
         Returns:
-            UnoControlFixedHyperlink: Group box Control
+            CtlHyperlinkFixed: Group box Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1192,6 +1193,7 @@ class Dialogs:
             ctl_props.setPropertyValue("VerticalAlign", vert_align)
             ctl_props.setPropertyValue("MultiLine", multiline)
             ctl_props.setPropertyValue("Border", int(border))
+            ctl_props.setPropertyValue("Name", name)
 
             if label:
                 ctl_props.setPropertyValue("Label", label)
@@ -1211,7 +1213,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlFixedHyperlink, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlHyperlinkFixed(result)
         except Exception as e:
             raise Exception(f"Could not create Group box control: {e}") from e
 
@@ -1265,6 +1267,7 @@ class Dialogs:
             ctl_props = cls.get_control_props(model)
 
             ctl_props.setPropertyValue("Border", int(border))
+            ctl_props.setPropertyValue("Name", name)
 
             scale = int(scale)
             if scale != ImageScaleModeEnum.NONE.value:
