@@ -32,6 +32,7 @@ from .dl_control.ctl_image import CtlImage
 from .dl_control.ctl_list_box import CtlListBox
 from .dl_control.ctl_numeric_field import CtlNumericField
 from .dl_control.ctl_text_edit import CtlTextEdit
+from .dl_control.ctl_pattern_field import CtlPatternField
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1511,7 +1512,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlPatternField:
+    ) -> CtlPatternField:
         """
         Create a new control of type PatternField in the actual dialog.
 
@@ -1531,7 +1532,7 @@ class Dialogs:
             Exception: If unable to create pattern field control control
 
         Returns:
-            UnoControlPatternField: Pattern Field Control
+            CtlPatternField: Pattern Field Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1564,7 +1565,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlPatternField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlPatternField(result)
         except Exception as e:
             raise Exception(f"Could not create numeric field control: {e}") from e
 

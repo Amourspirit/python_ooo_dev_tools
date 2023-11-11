@@ -220,7 +220,11 @@ class Runner:
             border=border_kind,
         )
 
-        sz_date = self._ctl_date.getPosSize()
+        self._ctl_pattern.add_event_down(self._fn_on_down)
+        self._ctl_pattern.add_event_up(self._fn_on_up)
+        self._ctl_pattern.add_event_text_changed(self._fn_on_text_changed)
+
+        sz_date = self._ctl_date.view.getPosSize()
         self._ctl_num_field = Dialogs.insert_numeric_field(
             dialog_ctrl=self._dialog,
             x=sz_date.X,
