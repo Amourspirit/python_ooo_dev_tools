@@ -31,6 +31,7 @@ from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
 from .dl_control.ctl_image import CtlImage
 from .dl_control.ctl_list_box import CtlListBox
 from .dl_control.ctl_numeric_field import CtlNumericField
+from .dl_control.ctl_text_edit import CtlTextEdit
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -53,6 +54,7 @@ from ooo.dyn.awt.push_button_type import PushButtonType as PushButtonType
 from ooo.dyn.awt.pos_size import PosSize as PosSize
 from ooo.dyn.style.vertical_alignment import VerticalAlignment as VerticalAlignment
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
+from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
 
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
 
@@ -1458,7 +1460,7 @@ class Dialogs:
         border: BorderKind = BorderKind.NONE,
         name: str = "",
         **props: Any,
-    ) -> UnoControlEdit:
+    ) -> CtlTextEdit:
         """
         Inserts a password field.
 
@@ -1477,7 +1479,7 @@ class Dialogs:
             Exception: If unable to create text field
 
         Returns:
-            UnoControlEdit: Text Field Control
+            CtlTextEdit: Text Field Control
 
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_text_field`
@@ -2116,7 +2118,7 @@ class Dialogs:
         border: BorderKind = BorderKind.NONE,
         name: str = "",
         **props: Any,
-    ) -> UnoControlEdit:
+    ) -> CtlTextEdit:
         """
         Inserts a text Field
 
@@ -2136,7 +2138,7 @@ class Dialogs:
             Exception: If unable to create text field
 
         Returns:
-            UnoControlEdit: Text Field Control
+            CtlTextEdit: Text Field Control
 
         See Also:
             `API UnoControlEditModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
@@ -2173,7 +2175,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlEdit, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlTextEdit(result)
         except Exception as e:
             raise Exception(f"Could not create text field control: {e}") from e
 

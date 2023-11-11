@@ -104,6 +104,9 @@ class Runner:
                 height=sz.Height,
                 border=border_kind,
             )
+
+        self._txt_input.add_event_text_changed(self._fn_on_text_changed)
+
         self._ctl_btn_cancel = Dialogs.insert_button(
             dialog_ctrl=self._dialog,
             label=cancel_lbl,
@@ -131,7 +134,7 @@ class Runner:
         self._ctl_button_ok.add_event_action_performed(self._fn_on_action_ok)
         self._ctl_button_ok.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_button_ok.add_event_mouse_exited(self._fn_on_mouse_exit)
-        sz = self._txt_input.getPosSize()
+        sz = self._txt_input.view.getPosSize()
         # ctl_button_ok.width += 30
         # ctl_button_ok.x -= 30
         self._ctl_chk1 = Dialogs.insert_check_box(
