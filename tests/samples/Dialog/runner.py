@@ -287,7 +287,10 @@ class Runner:
             border=border_kind,
         )
 
-        sz = self._ctl_formatted.getPosSize()
+        self._ctl_formatted.add_event_text_changed(self._fn_on_text_changed)
+        self._ctl_formatted.add_event_down(self._fn_on_down)
+        self._ctl_formatted.add_event_up(self._fn_on_up)
+        sz = self._ctl_formatted.view.getPosSize()
         self._ctl_gb1 = Dialogs.insert_group_box(
             dialog_ctrl=self._dialog,
             x=self._margin,

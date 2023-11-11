@@ -25,6 +25,7 @@ from .dl_control.ctl_combo_box import CtlComboBox
 from .dl_control.ctl_currency_field import CtlCurrencyField
 from .dl_control.ctl_date_field import CtlDateField
 from .dl_control.ctl_file import CtlFile
+from .dl_control.ctl_formatted_field import CtlFormattedField
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1005,7 +1006,7 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlFormattedField:
+    ) -> CtlFormattedField:
         """
         Create a new control of type FormattedField in the actual dialog.
 
@@ -1027,7 +1028,7 @@ class Dialogs:
             Exception: If unable to create formatted field control control
 
         Returns:
-            UnoControlFileControl: File Control
+            CtlFormattedField: File Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1063,7 +1064,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlFormattedField, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlFormattedField(result)
         except Exception as e:
             raise Exception(f"Could not create formatted field control control: {e}") from e
 

@@ -9,21 +9,21 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from .ctl_base import CtlBase
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlCurrencyField  # service
-    from com.sun.star.awt import UnoControlCurrencyFieldModel  # service
+    from com.sun.star.awt import UnoControlFormattedField  # service
+    from com.sun.star.awt import UnoControlFormattedFieldModel  # service
 # endregion imports
 
 
-class CtlCurrencyField(CtlBase, SpinEvents, TextEvents):
-    """Class for CurrencyField Control"""
+class CtlFormattedField(CtlBase, SpinEvents, TextEvents):
+    """Class for Formatted Field Control"""
 
     # region init
-    def __init__(self, ctl: UnoControlCurrencyField) -> None:
+    def __init__(self, ctl: UnoControlFormattedField) -> None:
         """
         Constructor
 
         Args:
-            ctl (UnoControlCurrencyField): Button Control
+            ctl (UnoControlFormattedField): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         CtlBase.__init__(self, ctl)
@@ -53,36 +53,45 @@ class CtlCurrencyField(CtlBase, SpinEvents, TextEvents):
 
     # region Overrides
 
-    def get_view_ctl(self) -> UnoControlCurrencyField:
-        return cast("UnoControlCurrencyField", super().get_view_ctl())
+    def get_view_ctl(self) -> UnoControlFormattedField:
+        return cast("UnoControlFormattedField", super().get_view_ctl())
 
     def get_uno_srv_name(self) -> str:
-        """Returns ``com.sun.star.awt.UnoControlCurrencyField``"""
-        return "com.sun.star.awt.UnoControlCurrencyField"
+        """Returns ``com.sun.star.awt.UnoControlFormattedField``"""
+        return "com.sun.star.awt.UnoControlFormattedField"
 
-    def get_model(self) -> UnoControlCurrencyFieldModel:
+    def get_model(self) -> UnoControlFormattedFieldModel:
         """Gets the Model for the control"""
-        return cast("UnoControlCurrencyFieldModel", self.get_view_ctl().getModel())
+        return cast("UnoControlFormattedFieldModel", self.get_view_ctl().getModel())
 
     # endregion Overrides
 
     # region Properties
     @property
-    def view(self) -> UnoControlCurrencyField:
+    def view(self) -> UnoControlFormattedField:
         return self.get_view_ctl()
 
     @property
-    def model(self) -> UnoControlCurrencyFieldModel:
+    def model(self) -> UnoControlFormattedFieldModel:
         return self.get_model()
+
+    @property
+    def text(self) -> str:
+        """Gets/Sets the text"""
+        return self.model.Text
+
+    @text.setter
+    def text(self, value: str) -> None:
+        self.model.Text = value
 
     @property
     def value(self) -> float:
         """Gets/Sets the value"""
-        return self.model.Value
+        return self.model.EffectiveValue
 
     @value.setter
     def value(self, value: float) -> None:
-        self.model.Value = value
+        self.model.EffectiveValue = value
 
     # endregion Properties
 
