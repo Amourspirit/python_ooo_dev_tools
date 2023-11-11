@@ -241,7 +241,7 @@ class Runner:
             border=border_kind,
         )
         self._ctl_combo1.add_event_text_changed(self._fn_on_text_changed)
-        self._ctl_combo1.add_event_item_state_changed(self._fn_on_combobox_item_changed)
+        self._ctl_combo1.add_event_item_state_changed(self._fn_on_item_changed)
 
         sz = self._ctl_combo1.view.getPosSize()
 
@@ -352,7 +352,7 @@ class Runner:
                 height=rb_sz.Height,
             )
 
-        sz = self._ctl_gb1.getPosSize()
+        sz = self._ctl_gb1.view.getPosSize()
         self._ctl_link = Dialogs.insert_hyperlink(
             dialog_ctrl=self._dialog,
             x=self._margin,
@@ -391,6 +391,11 @@ class Runner:
             border=border_kind,
         )
 
+        self._ctl_list_box.add_event_action_performed(self._fn_on_action_general)
+        self._ctl_list_box.add_event_mouse_entered(self._fn_on_mouse_entered)
+        self._ctl_list_box.add_event_mouse_exited(self._fn_on_mouse_exit)
+        self._ctl_list_box.add_event_item_state_changed(self._fn_on_item_changed)
+
     def show(self) -> str:
         window = mLo.Lo.get_frame().getContainerWindow()
         ps = window.getPosSize()
@@ -426,8 +431,8 @@ class Runner:
         def _on_text_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
             self.on_text_changed(src, event, control_src, *args, **kwargs)
 
-        def _on_combobox_item_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
-            self.on_combobox_item_changed(src, event, control_src, *args, **kwargs)
+        def _on_item_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
+            self.on_item_changed(src, event, control_src, *args, **kwargs)
 
         def _on_down(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
             self.on_down(src, event, control_src, *args, **kwargs)
@@ -442,7 +447,7 @@ class Runner:
         self._fn_on_mouse_entered = _on_mouse_entered
         self._fn_on_mouse_exit = _on_mouse_exit
         self._fn_on_text_changed = _on_text_changed
-        self._fn_on_combobox_item_changed = _on_combobox_item_changed
+        self._fn_on_item_changed = _on_item_changed
         self._fn_on_up = _on_up
         self._fn_on_down = _on_down
 
@@ -488,8 +493,8 @@ class Runner:
         print("Text Changed:", control_src.name)
         print("Text Value:", control_src.text)
 
-    def on_combobox_item_changed(self, src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
-        print("Combo Item Changed:", control_src.name)
+    def on_item_changed(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+        print("Item Changed:", control_src.name)
         itm_event = cast("ItemEvent", event.event_data)
         print("Selected:", itm_event.Selected)
         print("Highlighted:", itm_event.Highlighted)

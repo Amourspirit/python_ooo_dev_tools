@@ -29,6 +29,7 @@ from .dl_control.ctl_formatted_field import CtlFormattedField
 from .dl_control.ctl_group_box import CtlGroupBox
 from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
 from .dl_control.ctl_image import CtlImage
+from .dl_control.ctl_list_box import CtlListBox
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1378,13 +1379,13 @@ class Dialogs:
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
-    ) -> UnoControlListBox:
+    ) -> CtlListBox:
         """
-        Insert a combo box control
+        Insert a list box control
 
         Args:
             dialog_ctrl (XControl): Control
-            entries (Iterable[str]): Combo box entries
+            entries (Iterable[str]): List box entries
             x (int): X coordinate
             y (int): Y coordinate
             width (int): Width
@@ -1401,7 +1402,7 @@ class Dialogs:
             Exception: If unable to create list box control
 
         Returns:
-            UnoControlListBox: List box control
+            CtlListBox: List box control
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1420,10 +1421,9 @@ class Dialogs:
             ctl_props.setPropertyValue("MultiSelection", multi_select)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("ReadOnly", read_only)
-            if entries:
-                uno_strings = uno.Any("[]string", tuple(entries))  # type: ignore
-                uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
-                # ctl_props.setPropertyValue("StringItemList", tuple(entries))
+            # if entries:
+            #     uno_strings = uno.Any("[]string", tuple(entries))  # type: ignore
+            #     uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
 
             # set any extra user properties
             for k, v in props.items():
@@ -1438,7 +1438,9 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlListBox, ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            ctl = CtlListBox(result)
+            ctl.set_list_data(entries)
+            return ctl
         except Exception as e:
             raise Exception(f"Could not create list box control: {e}") from e
 
