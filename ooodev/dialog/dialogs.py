@@ -14,7 +14,6 @@ from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
 from ..utils.kind.state_kind import StateKind as StateKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
-from ..utils.type_var import Table
 from .dl_control.ctl_button import CtlButton
 from .dl_control.ctl_check_box import CtlCheckBox
 from .dl_control.ctl_combo_box import CtlComboBox
@@ -113,30 +112,6 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tab import UnoControlTabPageModel  # service
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
-else:
-    UnoControlButton = object
-    UnoControlCheckBox = object
-    UnoControlComboBox = object
-    UnoControlCurrencyField = object
-    UnoControlDateField = object
-    UnoControlDialog = object
-    UnoControlEdit = object
-    UnoControlFileControl = object
-    UnoControlFixedHyperlink = object
-    UnoControlFixedLine = object
-    UnoControlFixedText = object
-    UnoControlFormattedField = object
-    UnoControlGrid = object
-    UnoControlGroupBox = object
-    UnoControlImageControl = object
-    UnoControlListBox = object
-    UnoControlNumericField = object
-    UnoControlPatternField = object
-    UnoControlProgressBar = object
-    UnoControlRadioButton = object
-    UnoControlScrollBar = object
-    UnoControlTabPage = object
-    UnoControlTabPageContainer = object
 # endregion Imports
 
 
@@ -381,7 +356,7 @@ class Dialogs:
         # sourcery skip: raise-specific-error
         try:
             dialog_ctrl = cast(
-                UnoControlDialog,
+                "UnoControlDialog",
                 mLo.Lo.create_instance_mcf(XControl, "com.sun.star.awt.UnoControlDialog", raise_err=True),
             )
             control_model = mLo.Lo.create_instance_mcf(
@@ -544,7 +519,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlButton, ctrl_con.getControl(name))
+            result = cast("UnoControlButton", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlButton(result)
         except Exception as e:
@@ -620,7 +595,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlCheckBox, ctrl_con.getControl(name))
+            result = cast("UnoControlCheckBox", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlCheckBox(result)
         except Exception as e:
@@ -703,7 +678,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlComboBox, ctrl_con.getControl(name))
+            result = cast("UnoControlComboBox", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlComboBox(result)
         except Exception as e:
@@ -787,7 +762,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlCurrencyField, ctrl_con.getControl(name))
+            result = cast("UnoControlCurrencyField", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlCurrencyField(result)
         except Exception as e:
@@ -865,7 +840,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlDateField, ctrl_con.getControl(name))
+            result = cast("UnoControlDateField", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             ctl = CtlDateField(result)
             ctl.date_format = date_format
@@ -932,7 +907,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFileControl, ctrl_con.getControl(name))
+            result = cast("UnoControlFileControl", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlFile(result)
         except Exception as e:
@@ -995,7 +970,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFixedLine, ctrl_con.getControl(name))
+            result = cast("UnoControlFixedLine", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlFixedLine(result)
         except Exception as e:
@@ -1073,7 +1048,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFormattedField, ctrl_con.getControl(name))
+            result = cast("UnoControlFormattedField", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlFormattedField(result)
         except Exception as e:
@@ -1136,7 +1111,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlGroupBox, ctrl_con.getControl(name))
+            result = cast("UnoControlGroupBox", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlGroupBox(result)
         except Exception as e:
@@ -1220,7 +1195,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlFixedHyperlink, ctrl_con.getControl(name))
+            result = cast("UnoControlFixedHyperlink", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlHyperlinkFixed(result)
         except Exception as e:
@@ -1299,7 +1274,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlImageControl, ctrl_con.getControl(name))
+            result = cast("UnoControlImageControl", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlImage(result)
         except Exception as e:
@@ -1363,7 +1338,7 @@ class Dialogs:
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
-            result = cast(UnoControlFixedText, ctrl_con.getControl(name))
+            result = cast("UnoControlFixedText", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlFixedText(result)
         except Exception as e:
@@ -1443,7 +1418,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlListBox, ctrl_con.getControl(name))
+            result = cast("UnoControlListBox", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             ctl = CtlListBox(result)
             ctl.set_list_data(entries)
@@ -1566,7 +1541,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlPatternField, ctrl_con.getControl(name))
+            result = cast("UnoControlPatternField", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlPatternField(result)
         except Exception as e:
@@ -1651,7 +1626,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlNumericField, ctrl_con.getControl(name))
+            result = cast("UnoControlNumericField", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlNumericField(result)
         except Exception as e:
@@ -1724,7 +1699,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlProgressBar, ctrl_con.getControl(name))
+            result = cast("UnoControlProgressBar", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlProgressBar(result)
         except Exception as e:
@@ -1790,7 +1765,7 @@ class Dialogs:
 
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
-            result = cast(UnoControlRadioButton, ctrl_con.getControl(name))
+            result = cast("UnoControlRadioButton", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlRadioButton(result)
         except Exception as e:
@@ -1859,7 +1834,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlScrollBar, ctrl_con.getControl(name))
+            result = cast("UnoControlScrollBar", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlScrollBar(result)
         except Exception as e:
@@ -1899,7 +1874,7 @@ class Dialogs:
             :py:meth:`~.dialogs.Dialogs.insert_tab_page`
         """
         try:
-            dialog = cast(UnoControlDialog, cls.get_dialog(dialog_ctrl))
+            dialog = cast("UnoControlDialog", cls.get_dialog(dialog_ctrl))
             if not dialog or not cast(XServiceInfo, dialog).supportsService("com.sun.star.awt.UnoControlDialog"):
                 raise Exception("Could not get dialog")
             dialog_model = cast("UnoControlDialogModel", dialog.getModel())
@@ -1923,7 +1898,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlTabPageContainer, ctrl_con.getControl(model.Name))
+            result = cast("UnoControlTabPageContainer", ctrl_con.getControl(model.Name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlTabPageContainer(result)
         except Exception as e:
@@ -1960,7 +1935,7 @@ class Dialogs:
         """
 
         def create_name(ctl: UnoControlTabPageContainer, name: str) -> str:
-            items = cast(Tuple[UnoControlTabPage, ...], ctl.Controls)  # type: ignore
+            items = cast("Tuple[UnoControlTabPage, ...]", ctl.Controls)  # type: ignore
             i = 1
             nm = f"{name}{i}"
             for itm in items:
@@ -1981,7 +1956,7 @@ class Dialogs:
                 "com.sun.star.awt.tab.UnoControlTabPageContainer"
             ):
                 raise Exception("Not a valid UnoControlTabPageContainer")
-            dialog = cast(UnoControlDialog, cls.get_dialog(dialog_ctrl))
+            dialog = cast("UnoControlDialog", cls.get_dialog(dialog_ctrl))
             if not dialog or not cast(XServiceInfo, dialog).supportsService("com.sun.star.awt.UnoControlDialog"):
                 raise Exception("Could not get dialog")
             dialog_model = cast("UnoControlDialogModel", dialog.getModel())
@@ -2008,7 +1983,7 @@ class Dialogs:
             # Add the model to the dialog
             index = tab_position - 1
             tab_ctrl_model.insertByIndex(index, model)
-            controls = cast(Tuple[UnoControlTabPage, ...], tab_ctrl.Controls)  # type: ignore
+            controls = cast("Tuple[UnoControlTabPage, ...]", tab_ctrl.Controls)  # type: ignore
             if len(controls) > index:
                 return CtlTabPage(controls[index])
             return None  # type: ignore
@@ -2097,7 +2072,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlGrid, ctrl_con.getControl(name))
+            result = cast("UnoControlGrid", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlGrid(result)
         except Exception as e:
@@ -2172,7 +2147,7 @@ class Dialogs:
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
 
             # use the model's name to get its view inside the dialog
-            result = cast(UnoControlEdit, ctrl_con.getControl(name))
+            result = cast("UnoControlEdit", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlTextEdit(result)
         except Exception as e:
