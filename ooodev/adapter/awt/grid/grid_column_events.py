@@ -3,12 +3,13 @@ from __future__ import annotations
 from .grid_column_listener import GridColumnListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class GridColumnEvents:
     """
-    Class for managing Grid Selection Events.
+    Class for managing Grid Column Events.
 
     This class is usually inherited by control classes that implement ``com.sun.star.awt.grid.XGridColumnListener``.
     """
@@ -23,7 +24,7 @@ class GridColumnEvents:
         """
         self.__callback = cb
         self.__listener = GridColumnListener(trigger_args=trigger_args)
-        self.__name = "ooodev.adapter.awt.grid.GridColumnEvents"
+        self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
     def add_event_column_changed(self, cb: EventArgsCallbackT) -> None:

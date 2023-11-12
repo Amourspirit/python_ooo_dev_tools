@@ -2,6 +2,7 @@ from __future__ import annotations
 from .focus_listener import FocusListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 # from ooodev.events.args.event_args
@@ -23,7 +24,7 @@ class FocusEvents:
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
         self.__callback = cb
-        self.__name = "ooodev.adapter.awt.FocusEvents"
+        self.__name = gUtil.Util.generate_random_string(10)
         self.__focus_listener = FocusListener(trigger_args=trigger_args)
 
     # region Manage Events

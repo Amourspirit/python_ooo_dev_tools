@@ -3,6 +3,7 @@ from __future__ import annotations
 from .mouse_listener import MouseListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
@@ -23,7 +24,7 @@ class MouseEvents:
         """
         self.__callback = cb
         self.__mouse_listener = MouseListener(trigger_args=trigger_args)
-        self.__name = "ooodev.adapter.awt.MouseEvents"
+        self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
     def add_event_mouse_entered(self, cb: EventArgsCallbackT) -> None:

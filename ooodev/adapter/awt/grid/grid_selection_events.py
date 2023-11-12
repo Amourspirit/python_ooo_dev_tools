@@ -3,6 +3,7 @@ from __future__ import annotations
 from .grid_selection_listener import GridSelectionListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
@@ -23,7 +24,7 @@ class GridSelectionEvents:
         """
         self.__callback = cb
         self.__listener = GridSelectionListener(trigger_args=trigger_args)
-        self.__name = "ooodev.adapter.awt.grid.GridSelectionEvents"
+        self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
     def add_event_selection_changed(self, cb: EventArgsCallbackT) -> None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from .key_listener import KeyListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
@@ -23,7 +24,7 @@ class KeyEvents:
         """
         self.__callback = cb
         self.__key_listener = KeyListener(trigger_args=trigger_args)
-        self.__name = "ooodev.adapter.awt.KeyEvents"
+        self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
     def add_event_key_pressed(self, cb: EventArgsCallbackT) -> None:

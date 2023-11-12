@@ -3,6 +3,7 @@ from __future__ import annotations
 from .text_listener import TextListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
@@ -22,7 +23,7 @@ class TextEvents:
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
         self.__callback = cb
-        self.__name = "ooodev.adapter.awt.TextEvents"
+        self.__name = gUtil.Util.generate_random_string(10)
         self.__text_listener = TextListener(trigger_args=trigger_args)
 
     # region Manage Events

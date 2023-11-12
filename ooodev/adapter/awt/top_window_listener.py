@@ -48,37 +48,37 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
 
     # endregion overrides
 
-    def windowOpened(self, event: EventObject) -> None:
-        """Is invoked when a window is activated."""
-        self._trigger_event("windowOpened", event)
-
     def windowActivated(self, event: EventObject) -> None:
-        """Is invoked when a window is activated."""
+        """Event is invoked when a window is activated."""
         self._trigger_event("windowActivated", event)
 
-    def windowDeactivated(self, event: EventObject) -> None:
-        """Is invoked when a window is deactivated."""
-        self._trigger_event("windowDeactivated", event)
-
-    def windowMinimized(self, event: EventObject) -> None:
-        """is invoked when a window is iconified."""
-        self._trigger_event("windowMinimized", event)
-
-    def windowNormalized(self, event: EventObject) -> None:
-        """Is invoked when a window is deiconified."""
-        self._trigger_event("windowNormalized", event)
+    def windowClosed(self, event: EventObject) -> None:
+        """Event is invoked when a window has been closed."""
+        self._trigger_event("windowClosed", event)
 
     def windowClosing(self, event: EventObject) -> None:
         """
-        Is invoked when a window is in the process of being closed.
+        Event is invoked when a window is in the process of being closed.
 
         The close operation can be overridden at this point.
         """
         self._trigger_event("windowClosing", event)
 
-    def windowClosed(self, event: EventObject) -> None:
-        """Is invoked when a window has been closed."""
-        self._trigger_event("windowClosed", event)
+    def windowDeactivated(self, event: EventObject) -> None:
+        """Event is invoked when a window is deactivated."""
+        self._trigger_event("windowDeactivated", event)
+
+    def windowMinimized(self, event: EventObject) -> None:
+        """Event is invoked when a window is iconified."""
+        self._trigger_event("windowMinimized", event)
+
+    def windowNormalized(self, event: EventObject) -> None:
+        """Event is invoked when a window is deiconified."""
+        self._trigger_event("windowNormalized", event)
+
+    def windowOpened(self, event: EventObject) -> None:
+        """Event is is invoked when a window has been opened."""
+        self._trigger_event("windowOpened", event)
 
     def disposing(self, event: EventObject) -> None:
         """
