@@ -36,6 +36,8 @@ from .dl_control.ctl_pattern_field import CtlPatternField
 from .dl_control.ctl_progress_bar import CtlProgressBar
 from .dl_control.ctl_radio_button import CtlRadioButton
 from .dl_control.ctl_scroll_bar import CtlScrollBar
+from .dl_control.ctl_tab_page_container import CtlTabPageContainer
+from .dl_control.ctl_tab_page import CtlTabPage
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -1876,7 +1878,7 @@ class Dialogs:
         height: int = 1,
         border: BorderKind = BorderKind.NONE,
         name: str = "",
-    ) -> UnoControlTabPageContainer:
+    ) -> CtlTabPageContainer:
         """
         Create a new control of type tab in the actual dialog.
 
@@ -1893,7 +1895,7 @@ class Dialogs:
             Exception: If unable to create file control control
 
         Returns:
-            UnoControlTabPageContainer: Tab Control
+            CtlTabPageContainer: Tab Control
 
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_tab_page`
@@ -1925,7 +1927,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast(UnoControlTabPageContainer, ctrl_con.getControl(model.Name))
             cls._set_size_pos(result, x, y, width, height)
-            return result
+            return CtlTabPageContainer(result)
         except Exception as e:
             raise Exception(f"Could not create Tab control: {e}") from e
 
@@ -1934,17 +1936,17 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        tab_ctrl: UnoControlTabPageContainer,
+        tab_ctrl: CtlTabPageContainer,
         title: str,
         tab_position: int,
         name: str = "",
         **props: Any,
-    ) -> UnoControlTabPage:
+    ) -> CtlTabPage:
         """
         Create a new control of type Tab in the actual tab control.
 
         Args:
-            tab_ctrl (UnoControlTabPageContainer): Tab Container
+            tab_ctrl (CtlTabPageContainer): Tab Container
             title (str): Tab title
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -1953,7 +1955,7 @@ class Dialogs:
             Exception: If unable to create file control control
 
         Returns:
-            UnoControlTabPage: Tab Control
+            CtlTabPage: Tab Control
 
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_tab_control`
@@ -1977,7 +1979,7 @@ class Dialogs:
             return nm
 
         try:
-            if not tab_ctrl or not cast(XServiceInfo, tab_ctrl).supportsService(
+            if not tab_ctrl or not cast(XServiceInfo, tab_ctrl.view).supportsService(
                 "com.sun.star.awt.tab.UnoControlTabPageContainer"
             ):
                 raise Exception("Not a valid UnoControlTabPageContainer")
@@ -1989,22 +1991,17 @@ class Dialogs:
                 "UnoControlTabPageModel", dialog_model.createInstance("com.sun.star.awt.tab.UnoControlTabPageModel")
             )
 
-            tab_ctrl_model = cast("UnoControlTabPageContainerModel", tab_ctrl.getModel())
+            tab_ctrl_model = tab_ctrl.model
             model_init = mLo.Lo.qi(XInitialization, model, True)
             model_init.initialize((tab_position,))
 
             model.Title = title
-            name_con = cls.get_dialog_nm_con(dialog)
-            # nm = cls.create_name(name_con, "TabPage")
             if not name:
-                name = create_name(tab_ctrl, "TabPage")
+                name = create_name(tab_ctrl.view, "TabPage")
 
             # set properties in the model
-            # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
-            # ctl_props.setPropertyValue("Title", title)
             ctl_props.setPropertyValue("Name", name)
-            # ctl_props.setPropertyValue("Border", int(border))
 
             # set any extra user properties
             for k, v in props.items():
@@ -2015,7 +2012,7 @@ class Dialogs:
             tab_ctrl_model.insertByIndex(index, model)
             controls = cast(Tuple[UnoControlTabPage, ...], tab_ctrl.Controls)  # type: ignore
             if len(controls) > index:
-                return controls[index]
+                return CtlTabPage(controls[index])
             return None  # type: ignore
 
         except Exception as e:

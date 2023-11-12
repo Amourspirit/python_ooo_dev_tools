@@ -10,7 +10,7 @@ class AdjustmentEvents:
     """
     Class for managing Adjustment Events.
 
-    This class is usually inherited by control classes that implement ``com.sun.star.awt.XActionListener``.
+    This class is usually inherited by control classes that implement ``com.sun.star.awt.XAdjustmentListener``.
     """
 
     def __init__(self, trigger_args: GenericArgs | None = None, cb: ListenerEventCallbackT | None = None) -> None:

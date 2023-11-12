@@ -85,9 +85,9 @@ class Tabs:
             title="Main",
             tab_position=self._tab_count,
         )
-        tab_sz = self._ctl_tab.getPosSize()
+        tab_sz = self._ctl_tab.view.getPosSize()
         ctl_main_lbl = Dialogs.insert_label(
-            dialog_ctrl=self._tab_main,
+            dialog_ctrl=self._tab_main.view,
             label=self._msg,
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
@@ -105,7 +105,7 @@ class Tabs:
         )
         tab_sz = self._ctl_tab.getPosSize()
         ctl_table1 = Dialogs.insert_table_control(
-            dialog_ctrl=self._tab_table,
+            dialog_ctrl=self._tab_table.view,
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
             width=tab_sz.Width - (self._padding * 2),
@@ -147,7 +147,7 @@ class Tabs:
         )
         tab_sz = self._ctl_tab.getPosSize()
         ctl_scroll_bar1 = Dialogs.insert_scroll_bar(
-            dialog_ctrl=self._tab_scroll_bar,
+            dialog_ctrl=self._tab_scroll_bar.view,
             # x=tab_sz.X + self._padding,
             x=0,
             y=0,
@@ -157,7 +157,7 @@ class Tabs:
         )
 
         ctl_scroll_bar2 = Dialogs.insert_scroll_bar(
-            dialog_ctrl=self._tab_scroll_bar,
+            dialog_ctrl=self._tab_scroll_bar.view,
             x=tab_sz.Width - 22,
             # y=tab_sz.Y,
             y=0,
@@ -177,7 +177,7 @@ class Tabs:
         )
         tab_sz = self._tab_oth.getPosSize()
         ctl_oth_lbl = Dialogs.insert_label(
-            dialog_ctrl=self._tab_oth,
+            dialog_ctrl=self._tab_oth.view,
             label="Nice Day!",
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
@@ -186,7 +186,7 @@ class Tabs:
         )
 
     def show(self) -> int:
-        self._ctl_tab.ActiveTabPageID = 1
+        self._ctl_tab.active_tab_page_id = 1
         self._dialog.setVisible(True)
         result = self._dialog.execute()
         self._dialog.dispose()

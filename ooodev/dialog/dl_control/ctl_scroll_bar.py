@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class CtlScrollBar(CtlBase, AdjustmentEvents):
-    """Class for Button Control"""
+    """Class for Scroll Bar Control"""
 
     # region init
     def __init__(self, ctl: UnoControlScrollBar) -> None:
@@ -22,7 +22,7 @@ class CtlScrollBar(CtlBase, AdjustmentEvents):
         Constructor
 
         Args:
-            ctl (UnoControlScrollBar): Button Control
+            ctl (UnoControlScrollBar): Scroll Bar Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         CtlBase.__init__(self, ctl)
