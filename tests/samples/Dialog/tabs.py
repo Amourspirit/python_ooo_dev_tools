@@ -1,9 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, cast
+from typing import Any, TYPE_CHECKING, cast
 from ooodev.dialog import Dialogs, BorderKind, OrientationKind, HorzVertKind
+from ooodev.events.args.event_args import EventArgs
+from ooodev.office.calc import Calc
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
-from ooodev.office.calc import Calc
 from ooodev.utils.table_helper import TableHelper
 
 
@@ -16,6 +17,7 @@ from ooo.dyn.awt.push_button_type import PushButtonType
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog
     from com.sun.star.awt import UnoControlDialogModel
+    from com.sun.star.awt.tab import TabPageActivatedEvent
 
 
 class Tabs:
@@ -37,6 +39,8 @@ class Tabs:
         self._init_dialog()
 
     def _init_dialog(self) -> None:
+        self._init_handlers()
+
         self._dialog = cast(
             "UnoControlDialog",
             mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
@@ -61,6 +65,7 @@ class Tabs:
         # tab offset will vary depending on border kind and Operating System
         self._tab_offset_vert = (self._margin * 3) + 30
         self._init_tab_control()
+        self._active_page_page_id = 1
 
     def _init_tab_control(self) -> None:
         self._ctl_tab = Dialogs.insert_tab_control(
@@ -70,8 +75,7 @@ class Tabs:
             width=self._width - (self._margin * 2),
             height=self._height - (self._margin * 2),
         )
-        model = self._ctl_tab.getModel()
-        # model.Border = BorderKind.BORDER_3D.value
+        self._ctl_tab.add_event_tab_page_activated(self._fn_tab_activated)
         self._init_tab_table()
         self._init_tab_scroll_bar()
         self._init_tab_main()
@@ -103,7 +107,7 @@ class Tabs:
             title="Table",
             tab_position=self._tab_count,
         )
-        tab_sz = self._ctl_tab.getPosSize()
+        tab_sz = self._ctl_tab.view.getPosSize()
         ctl_table1 = Dialogs.insert_table_control(
             dialog_ctrl=self._tab_table.view,
             x=tab_sz.X + self._padding,
@@ -145,7 +149,7 @@ class Tabs:
             title="Scroll",
             tab_position=self._tab_count,
         )
-        tab_sz = self._ctl_tab.getPosSize()
+        tab_sz = self._ctl_tab.view.getPosSize()
         ctl_scroll_bar1 = Dialogs.insert_scroll_bar(
             dialog_ctrl=self._tab_scroll_bar.view,
             # x=tab_sz.X + self._padding,
@@ -175,7 +179,7 @@ class Tabs:
             title="Other",
             tab_position=self._tab_count,
         )
-        tab_sz = self._tab_oth.getPosSize()
+        tab_sz = self._tab_oth.view.getPosSize()
         ctl_oth_lbl = Dialogs.insert_label(
             dialog_ctrl=self._tab_oth.view,
             label="Nice Day!",
@@ -186,11 +190,26 @@ class Tabs:
         )
 
     def show(self) -> int:
-        self._ctl_tab.active_tab_page_id = 1
+        self._ctl_tab.active_tab_page_id = self._active_page_page_id
         self._dialog.setVisible(True)
         result = self._dialog.execute()
         self._dialog.dispose()
         return result
+
+    # region Event Handlers
+    def _init_handlers(self) -> None:
+        def on_tab_activated(src: Any, event: EventArgs, control_src: Any, *args, **kwargs):
+            self.on_tab_activated(src, event, control_src, *args, **kwargs)
+
+        self._fn_tab_activated = on_tab_activated
+
+    def on_tab_activated(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+        print("Tab Changed:", control_src.name)
+        itm_event = cast("TabPageActivatedEvent", event.event_data)
+        self._active_page_page_id = itm_event.TabPageID
+        print("Active ID:", self._active_page_page_id)
+
+    # endregion Event Handlers
 
 
 def main():
