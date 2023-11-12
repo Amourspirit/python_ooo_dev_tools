@@ -36,6 +36,7 @@ from .dl_control.ctl_scroll_bar import CtlScrollBar
 from .dl_control.ctl_tab_page import CtlTabPage
 from .dl_control.ctl_tab_page_container import CtlTabPageContainer
 from .dl_control.ctl_text_edit import CtlTextEdit
+from .dl_control.ctl_tree import CtlTree
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -110,6 +111,8 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tab import UnoControlTabPageContainer  # service
     from com.sun.star.awt.tab import UnoControlTabPageContainerModel  # service
     from com.sun.star.awt.tab import UnoControlTabPageModel  # service
+    from com.sun.star.awt.tree import TreeControl # service
+    from com.sun.star.awt.tree import TreeControlModel # service
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
 # endregion Imports
@@ -1076,6 +1079,7 @@ class Dialogs:
             y (int): Y coordinate
             width (int): width
             height (int, optional): Height.
+            label (str, optional): Group box label.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
@@ -1097,6 +1101,7 @@ class Dialogs:
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
+            ctl_props.setPropertyValue("Name", name)
             if label:
                 ctl_props.setPropertyValue("Label", label)
 
@@ -2152,6 +2157,71 @@ class Dialogs:
             return CtlTextEdit(result)
         except Exception as e:
             raise Exception(f"Could not create text field control: {e}") from e
+
+    @classmethod
+    def insert_tree_control(
+        cls,
+        dialog_ctrl: XControl,
+        *,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
+        **props: Any,
+    ) -> CtlTree:
+        """
+        Create a new control of type GroupBox in the actual dialog.
+
+        Args:
+            dialog_ctrl (XControl): control
+            x (int): X coordinate
+            y (int): Y coordinate
+            width (int): width
+            height (int, optional): Height.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
+            props (dict, optional): Extra properties to set for control.
+
+        Raises:
+            Exception: If unable to create group box control control
+
+        Returns:
+            CtlTree: Group box Control
+        """
+        try:
+            msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
+            model = cast("TreeControlModel", msf.createInstance("com.sun.star.awt.tree.TreeControlModel"))
+
+            # generate a unique name for the control
+            name_con = cls.get_dialog_nm_con(dialog_ctrl)
+            if not name:
+                name = cls.create_name(name_con, "Tree")
+
+            # set properties in the model
+            # inherited from UnoControlDialogElement and UnoControlButtonModel
+            ctl_props = cls.get_control_props(model)
+            ctl_props.setPropertyValue("Name", name)
+            ctl_props.setPropertyValue("Border", int(border))
+
+            # set any extra user properties
+            for k, v in props.items():
+                ctl_props.setPropertyValue(k, v)
+
+            # Add the model to the dialog
+            name_con.insertByName(name, model)
+
+            # get the dialog's container holding all the control views
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
+
+            # use the model's name to get its view inside the dialog
+            result = cast("TreeControl", ctrl_con.getControl(name))
+            # TreeControl does implement XWindows event thought it is documented
+            cls._set_size_pos(result, x, y, width, height) # type: ignore
+            return CtlTree(result)
+        except Exception as e:
+            raise Exception(f"Could not create Group box control: {e}") from e
 
     # endregion    add components to a dialog
 

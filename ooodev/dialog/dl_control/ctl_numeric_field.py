@@ -6,7 +6,7 @@ from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlNumericField  # service
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlNumericField(CtlBase, SpinEvents, TextEvents):
+class CtlNumericField(CtlListenerBase, SpinEvents, TextEvents):
     """Class for Numeric Field Control"""
 
     # region init
@@ -26,7 +26,7 @@ class CtlNumericField(CtlBase, SpinEvents, TextEvents):
             ctl (UnoControlNumericField): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)

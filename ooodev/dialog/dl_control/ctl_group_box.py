@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlGroupBox  # service
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlGroupBox(CtlBase):
+class CtlGroupBox(CtlListenerBase):
     """Class for Group Box Control"""
 
     # region init
@@ -22,7 +22,7 @@ class CtlGroupBox(CtlBase):
             ctl (UnoControlGroupBox): Fixed Line Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
 
     # endregion init
 

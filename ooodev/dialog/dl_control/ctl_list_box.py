@@ -8,7 +8,7 @@ from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlListBox  # service
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlListBox(CtlBase, ActionEvents, ItemEvents):
+class CtlListBox(CtlListenerBase, ActionEvents, ItemEvents):
     """Class for ListBox Control"""
 
     # region init
@@ -28,7 +28,7 @@ class CtlListBox(CtlBase, ActionEvents, ItemEvents):
             ctl (UnoControlListBox): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)

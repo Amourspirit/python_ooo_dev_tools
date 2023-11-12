@@ -4,7 +4,7 @@ from typing import Any, cast, TYPE_CHECKING
 
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlImageControl  # service
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlImage(CtlBase):
+class CtlImage(CtlListenerBase):
     """Class for Image Control"""
 
     # region init
@@ -24,7 +24,7 @@ class CtlImage(CtlBase):
             ctl (UnoControlImageControl): Image Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
 
     # endregion init
 

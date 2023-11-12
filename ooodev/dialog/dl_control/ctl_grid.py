@@ -7,7 +7,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
 from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.type_var import Table
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlGrid(CtlBase, GridSelectionEvents):
+class CtlGrid(CtlListenerBase, GridSelectionEvents):
     """Class for Grid Control"""
 
     # region init
@@ -32,7 +32,7 @@ class CtlGrid(CtlBase, GridSelectionEvents):
             ctl (UnoControlGrid): Grid Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         GridSelectionEvents.__init__(self, trigger_args=generic_args, cb=self._on_grid_listener_add_remove)

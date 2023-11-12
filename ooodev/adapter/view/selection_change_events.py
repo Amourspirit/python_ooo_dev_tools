@@ -50,7 +50,7 @@ class SelectionChangeEvents:
         self.__listener.off("selectionChanged", cb)
 
     @property
-    def events_listener_modify(self) -> SelectionChangeListener:
+    def events_listener_selection_change(self) -> SelectionChangeListener:
         """
         Returns listener
         """

@@ -8,9 +8,9 @@ from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
-class NodeEditEvents:
+class TreeEditEvents:
     """
-    Class for managing Node Edit Events.
+    Class for managing Tree Node Edit Events.
 
     This class is usually inherited by control classes that implement ``com.sun.star.awt.tree.XTreeEditListener``.
     """
@@ -74,7 +74,7 @@ class NodeEditEvents:
         self.__listener.off("nodeEditing", cb)
 
     @property
-    def events_listener_tab_page_container(self) -> TreeEditListener:
+    def events_listener_tree_edit(self) -> TreeEditListener:
         """
         Returns listener
         """

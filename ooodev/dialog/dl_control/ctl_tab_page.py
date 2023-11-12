@@ -6,7 +6,7 @@ from ooodev.adapter.container.container_events import ContainerEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import info as mInfo
 
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tab import UnoControlTabPage  # service
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlTabPage(CtlBase, ContainerEvents):
+class CtlTabPage(CtlListenerBase, ContainerEvents):
     """Class for Tab Page Control"""
 
     # region init
@@ -26,7 +26,7 @@ class CtlTabPage(CtlBase, ContainerEvents):
             ctl (UnoControlTabPage): Tab Page Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ContainerEvents.__init__(self, trigger_args=generic_args, cb=self._on_container_listener_add_remove)

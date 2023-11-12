@@ -8,7 +8,7 @@ from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ooodev.utils.date_time_util import DateUtil
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDateField  # service
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlDateField(CtlBase, SpinEvents, TextEvents):
+class CtlDateField(CtlListenerBase, SpinEvents, TextEvents):
     """Class for Button Control"""
 
     # region init
@@ -28,7 +28,7 @@ class CtlDateField(CtlBase, SpinEvents, TextEvents):
             ctl (UnoControlDateField): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)

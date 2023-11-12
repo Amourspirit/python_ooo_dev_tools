@@ -7,7 +7,7 @@ from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlCheckBox(CtlBase, ItemEvents):
+class CtlCheckBox(CtlListenerBase, ItemEvents):
     """Class for CheckBox Control"""
 
     # region init
@@ -28,7 +28,7 @@ class CtlCheckBox(CtlBase, ItemEvents):
             ctl (UnoControlCheckBox): Check Box Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_event_listener_add_remove)

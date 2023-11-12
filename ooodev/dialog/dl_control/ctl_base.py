@@ -28,28 +28,10 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlBase(
-    unohelper.Base,
-    FocusEvents,
-    KeyEvents,
-    MouseEvents,
-    MouseMotionEvents,
-    PaintEvents,
-    WindowEvents,
-):
-    """Dialog Control Base Class"""
-
+class CtlBase(unohelper.Base):
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
         self._ctl_view = ctl
-        generic_args = self._get_generic_args()
-        # The Events callback methods are invoked when any event is added or removed.
-        FocusEvents.__init__(self, trigger_args=generic_args, cb=self._on_focus_listener_add_remove)
-        KeyEvents.__init__(self, trigger_args=generic_args, cb=self._on_key_events_listener_add_remove)
-        MouseEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_listener_add_remove)
-        MouseMotionEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_motion_listener_add_remove)
-        PaintEvents.__init__(self, trigger_args=generic_args, cb=self._on_paint_listener_add_remove)
-        WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_event_listener_add_remove)
         self._set_listeners = set()
 
     def __getattr__(self, name: str) -> Any:
@@ -60,79 +42,8 @@ class CtlBase(
 
     # endregion Dunder Methods
 
-    # region Lazy Listeners
-
-    # Listeners such as mouse, mouse motion, focus, key, paint, and window are added lazily.
-    # Some listeners such as mouse motion may be expensive.
-    # Each time the mouse moves, the listener is invoked.
-    # By lazy loading listeners are only added when needed.
-    # For example:
-    #     ctl_button_ok.add_event_mouse_entered(on_mouse_entered)
-    # This would call _on_mouse_listener_add_remove() below, which would add the mouse listener to the class in a lazy manor.
-
-    def _has_listener(self, key: str) -> bool:
-        """Gets if the listener key has been added"""
-        if not key:
-            raise ValueError("key cannot be empty")
-        return key in self._set_listeners
-
-    def _add_listener(self, key: str) -> None:
-        """Adds a listener key to the set of listeners"""
-        if not key:
-            raise ValueError("key cannot be empty")
-        self._set_listeners.add(key)
-
-    def _on_mouse_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
-        view = cast(Any, self.get_view_ctl())
-        view.addMouseListener(self.events_listener_mouse)
-        self._add_listener(key)
-
-    def _on_mouse_motion_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
-        view = cast(Any, self.get_view_ctl())
-        view.addMouseMotionListener(self.events_listener_mouse_motion)
-        self._add_listener(key)
-
-    def _on_focus_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
-        view = cast(Any, self.get_view_ctl())
-        view.addFocusListener(self.events_listener_focus)
-        self._add_listener(key)
-
-    def _on_key_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
-        view = cast(Any, self.get_view_ctl())
-        view.addKeyListener(self.events_listener_key)
-        self._add_listener(key)
-
-    def _on_paint_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
-        view = cast(Any, self.get_view_ctl())
-        view.addPaintListener(self.events_listener_paint)
-        self._add_listener(key)
-
-    def _on_window_event_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
-        view = cast(Any, self.get_view_ctl())
-        view.addWindowListener(self.events_listener_window)
-        self._add_listener(key)
-
-    # endregion Lazy Listeners
-
     # region other methods
+
     def _get_generic_args(self) -> GenericArgs:
         try:
             return self.__generic_args
@@ -164,9 +75,36 @@ class CtlBase(
 
     # endregion other methods
 
+    # region Lazy Listeners
+
+    # Listeners such as mouse, mouse motion, focus, key, paint, and window are added lazily.
+    # Some listeners such as mouse motion may be expensive.
+    # Each time the mouse moves, the listener is invoked.
+    # By lazy loading listeners are only added when needed.
+    # For example:
+    #     ctl_button_ok.add_event_mouse_entered(on_mouse_entered)
+    # This would call _on_mouse_listener_add_remove() below, which would add the mouse listener to the class in a lazy manor.
+
+    def _has_listener(self, key: str) -> bool:
+        """Gets if the listener key has been added"""
+        if not key:
+            raise ValueError("key cannot be empty")
+        return key in self._set_listeners
+
+    def _add_listener(self, key: str) -> None:
+        """Adds a listener key to the set of listeners"""
+        if not key:
+            raise ValueError("key cannot be empty")
+        self._set_listeners.add(key)
+
+    # endregion Lazy Listeners
+
+    # region Other Methods
     def get_model(self) -> XControlModel:
         """Gets the Model for the control"""
         return self.get_view_ctl().getModel()
+
+    # endregion Other Methods
 
     # region Properties
     @property
@@ -257,3 +195,89 @@ class CtlBase(
             return ""
 
     # endregion Properties
+
+
+class CtlListenerBase(
+    CtlBase,
+    FocusEvents,
+    KeyEvents,
+    MouseEvents,
+    MouseMotionEvents,
+    PaintEvents,
+    WindowEvents,
+):
+    """Dialog Control Base Class"""
+
+    # region Dunder Methods
+    def __init__(self, ctl: Any) -> None:
+        CtlBase.__init__(self, ctl)
+        generic_args = self._get_generic_args()
+        # The Events callback methods are invoked when any event is added or removed.
+        FocusEvents.__init__(self, trigger_args=generic_args, cb=self._on_focus_listener_add_remove)
+        KeyEvents.__init__(self, trigger_args=generic_args, cb=self._on_key_events_listener_add_remove)
+        MouseEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_listener_add_remove)
+        MouseMotionEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_motion_listener_add_remove)
+        PaintEvents.__init__(self, trigger_args=generic_args, cb=self._on_paint_listener_add_remove)
+        WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_event_listener_add_remove)
+
+    # endregion Dunder Methods
+
+    # region Lazy Listeners
+
+    # Listeners such as mouse, mouse motion, focus, key, paint, and window are added lazily.
+    # Some listeners such as mouse motion may be expensive.
+    # Each time the mouse moves, the listener is invoked.
+    # By lazy loading listeners are only added when needed.
+    # For example:
+    #     ctl_button_ok.add_event_mouse_entered(on_mouse_entered)
+    # This would call _on_mouse_listener_add_remove() below, which would add the mouse listener to the class in a lazy manor.
+
+    def _on_mouse_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        key = cast(str, event.source)
+        if self._has_listener(key):
+            return
+        view = cast(Any, self.get_view_ctl())
+        view.addMouseListener(self.events_listener_mouse)
+        self._add_listener(key)
+
+    def _on_mouse_motion_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        key = cast(str, event.source)
+        if self._has_listener(key):
+            return
+        view = cast(Any, self.get_view_ctl())
+        view.addMouseMotionListener(self.events_listener_mouse_motion)
+        self._add_listener(key)
+
+    def _on_focus_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        key = cast(str, event.source)
+        if self._has_listener(key):
+            return
+        view = cast(Any, self.get_view_ctl())
+        view.addFocusListener(self.events_listener_focus)
+        self._add_listener(key)
+
+    def _on_key_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        key = cast(str, event.source)
+        if self._has_listener(key):
+            return
+        view = cast(Any, self.get_view_ctl())
+        view.addKeyListener(self.events_listener_key)
+        self._add_listener(key)
+
+    def _on_paint_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        key = cast(str, event.source)
+        if self._has_listener(key):
+            return
+        view = cast(Any, self.get_view_ctl())
+        view.addPaintListener(self.events_listener_paint)
+        self._add_listener(key)
+
+    def _on_window_event_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        key = cast(str, event.source)
+        if self._has_listener(key):
+            return
+        view = cast(Any, self.get_view_ctl())
+        view.addWindowListener(self.events_listener_window)
+        self._add_listener(key)
+
+    # endregion Lazy Listeners

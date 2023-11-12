@@ -4,7 +4,7 @@ from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFileControl  # service
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlFile(CtlBase, TextEvents):
+class CtlFile(CtlListenerBase, TextEvents):
     """Class for file Control"""
 
     # region init
@@ -24,7 +24,7 @@ class CtlFile(CtlBase, TextEvents):
             ctl (UnoControlFileControl): File Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
 

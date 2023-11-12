@@ -77,6 +77,7 @@ class Tabs:
             height=self._height - (self._margin * 2),
         )
         self._ctl_tab.add_event_tab_page_activated(self._fn_tab_activated)
+        self._init_tab_tree()
         self._init_tab_table()
         self._init_tab_scroll_bar()
         self._init_tab_main()
@@ -98,6 +99,24 @@ class Tabs:
             y=tab_sz.Y + self._padding,
             width=100,
             height=20,
+        )
+
+    def _init_tab_tree(self) -> None:
+        self._tab_count += 1
+        self._tab_tree = Dialogs.insert_tab_page(
+            dialog_ctrl=self._dialog,
+            tab_ctrl=self._ctl_tab,
+            title="Tree",
+            tab_position=self._tab_count,
+        )
+        tab_sz = self._ctl_tab.view.getPosSize()
+        self._tree1 = Dialogs.insert_tree_control(
+            dialog_ctrl=self._tab_tree.view,
+            x=tab_sz.X + self._padding,
+            y=tab_sz.Y + self._padding,
+            width=tab_sz.Width - (self._padding * 2),
+            height=300,
+            border=self._border_kind,
         )
 
     def _init_tab_table(self) -> None:

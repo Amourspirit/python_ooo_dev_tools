@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
 from ooodev.utils.color import Color
-from .ctl_base import CtlBase
+from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlProgressBar  # service
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlProgressBar(CtlBase):
+class CtlProgressBar(CtlListenerBase):
     """Class for Progress Bar Control"""
 
     # region init
@@ -23,7 +23,7 @@ class CtlProgressBar(CtlBase):
             ctl (UnoControlProgressBar): Progress Bar Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlBase.__init__(self, ctl)
+        CtlListenerBase.__init__(self, ctl)
 
     # endregion init
 
