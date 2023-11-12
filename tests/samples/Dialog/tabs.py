@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog
     from com.sun.star.awt import UnoControlDialogModel
     from com.sun.star.awt.tab import TabPageActivatedEvent
+    from com.sun.star.awt.grid import GridSelectionEvent
 
 
 class Tabs:
@@ -129,14 +130,14 @@ class Tabs:
         # widths.pop()
         # widths.append(100)
         tbl.insert(0, headers)
-        Dialogs.set_table_data(
-            table=ctl_table1,
+        ctl_table1.set_table_data(
             data=tbl,
             align="RLC",
             widths=widths,
             has_row_headers=has_row_headers,
             has_colum_headers=True,
         )
+        ctl_table1.add_event_selection_changed(self._fn_grid_selection_changed)
         # test that grid clears and adds new data
         # widths[0] = 100
         # Dialogs.set_table_data(table=ctl_table1, data=tbl, align="RLC", widths=widths)
@@ -201,13 +202,23 @@ class Tabs:
         def on_tab_activated(src: Any, event: EventArgs, control_src: Any, *args, **kwargs):
             self.on_tab_activated(src, event, control_src, *args, **kwargs)
 
+        def on_grid_selection_changed(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+            self.on_grid_selection_changed(src, event, control_src, *args, **kwargs)
+
         self._fn_tab_activated = on_tab_activated
+        self._fn_grid_selection_changed = on_grid_selection_changed
 
     def on_tab_activated(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
         print("Tab Changed:", control_src.name)
         itm_event = cast("TabPageActivatedEvent", event.event_data)
         self._active_page_page_id = itm_event.TabPageID
         print("Active ID:", self._active_page_page_id)
+
+    def on_grid_selection_changed(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+        print("Grid Selection Changed:", control_src.name)
+        itm_event = cast("GridSelectionEvent", event.event_data)
+        print("Selected row indexes:", itm_event.SelectedRowIndexes)
+        print("Selected column indexes:", itm_event.SelectedColumnIndexes)
 
     # endregion Event Handlers
 
