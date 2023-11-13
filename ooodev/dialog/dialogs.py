@@ -47,6 +47,7 @@ from com.sun.star.awt import XToolkit
 from com.sun.star.awt import XTopWindow
 from com.sun.star.awt import XWindow
 from com.sun.star.awt.grid import XGridDataModel
+from com.sun.star.awt.tree import XMutableTreeDataModel
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 from com.sun.star.lang import XInitialization
@@ -59,6 +60,7 @@ from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
 from ooo.dyn.awt.pos_size import PosSize as PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType as PushButtonType
 from ooo.dyn.style.vertical_alignment import VerticalAlignment as VerticalAlignment
+from ooo.dyn.view.selection_type import SelectionType as SelectionType
 
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
 
@@ -111,8 +113,8 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tab import UnoControlTabPageContainer  # service
     from com.sun.star.awt.tab import UnoControlTabPageContainerModel  # service
     from com.sun.star.awt.tab import UnoControlTabPageModel  # service
-    from com.sun.star.awt.tree import TreeControl # service
-    from com.sun.star.awt.tree import TreeControlModel # service
+    from com.sun.star.awt.tree import TreeControl  # service
+    from com.sun.star.awt.tree import TreeControlModel  # service
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
 # endregion Imports
@@ -2204,10 +2206,19 @@ class Dialogs:
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("Border", int(border))
+            ctl_props.setPropertyValue("SelectionType", SelectionType.SINGLE)
+            ctl_props.setPropertyValue("Editable", False)
+            ctl_props.setPropertyValue("ShowsHandles", True)
+            ctl_props.setPropertyValue("ShowsRootHandles", True)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
+
+            # set the data model
+            model.DataModel = mLo.Lo.create_instance_mcf(
+                XMutableTreeDataModel, "com.sun.star.awt.tree.MutableTreeDataModel", raise_err=True
+            )
 
             # Add the model to the dialog
             name_con.insertByName(name, model)
@@ -2218,7 +2229,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast("TreeControl", ctrl_con.getControl(name))
             # TreeControl does implement XWindows event thought it is documented
-            cls._set_size_pos(result, x, y, width, height) # type: ignore
+            cls._set_size_pos(result, x, y, width, height)  # type: ignore
             return CtlTree(result)
         except Exception as e:
             raise Exception(f"Could not create Group box control: {e}") from e

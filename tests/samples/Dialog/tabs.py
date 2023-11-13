@@ -118,6 +118,16 @@ class Tabs:
             height=300,
             border=self._border_kind,
         )
+        root1 = self._tree1.create_root(display_value="Root 1")
+        if root1:
+            _ = self._tree1.add_sub_node(parent_node=root1, display_value="Node 1")
+            _ = self._tree1.add_sub_node(parent_node=root1, display_value="Node 3")
+            _ = self._tree1.add_sub_node(parent_node=root1, display_value="Node 3")
+        root2 = self._tree1.create_root(display_value="Root 2")
+        if root2:
+            _ = self._tree1.add_sub_node(parent_node=root2, display_value="Node 1")
+            _ = self._tree1.add_sub_node(parent_node=root2, display_value="Node 3")
+            _ = self._tree1.add_sub_node(parent_node=root2, display_value="Node 3")
 
     def _init_tab_table(self) -> None:
         self._tab_count += 1
