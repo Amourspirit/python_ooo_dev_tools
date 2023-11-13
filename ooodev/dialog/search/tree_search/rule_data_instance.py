@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tree import XTreeNode
 
 
-class RuleDataIsInstance:
+class RuleDataInstance:
     """Rule for matching a node's data type with a specified type."""
 
     def is_match(self, node: XTreeNode, match_value: Any) -> bool:

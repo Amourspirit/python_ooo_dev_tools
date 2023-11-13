@@ -3,7 +3,7 @@ import datetime
 from typing import Any, TYPE_CHECKING, cast
 from pathlib import Path
 import datetime
-from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind
+from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
@@ -381,6 +381,23 @@ class Runner:
             # Enabled=False,
         )
         self._ctl_link.add_event_action_performed(self._fn_on_action_general)
+
+        sz = self._ctl_link.view.getPosSize()
+        self._ctl_time = Dialogs.insert_time_field(
+            dialog_ctrl=self._dialog,
+            x=sz.X,
+            y=sz.Y + sz.Height + self._padding,
+            width=sz.Width,
+            height=self._box_height,
+            border=border_kind,
+            time_value=datetime.datetime.now().time(),
+            time_format=TimeFormatKind.LONG_12H,
+        )
+
+        self._ctl_time.add_event_text_changed(self._fn_on_text_changed)
+        self._ctl_time.add_event_down(self._fn_on_down)
+        self._ctl_time.add_event_up(self._fn_on_up)
+
         sz = self._ctl_gb2.view.getPosSize()
         # file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png
         pth = Path(__file__).parent.parent.parent / "fixtures" / "image" / "img_brick.png"
@@ -394,6 +411,7 @@ class Runner:
             scale=ImageScaleModeEnum.ANISOTROPIC,
             border=border_kind,
         )
+
         self._ctl_img.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_img.add_event_mouse_exited(self._fn_on_mouse_exit)
 

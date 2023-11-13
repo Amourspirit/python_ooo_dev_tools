@@ -13,19 +13,17 @@ class SearchTree:
         """
         Constructor
         """
-        self._rules: List[Type[RuleT]] = []
+        self._rules: List[RuleT] = []
         self._match_all = match_all
         # self._node = node
         self._match_value = match_value
-        self._rules_inst: List[RuleT] = []
-        self._rules_init = False
 
     def __len__(self) -> int:
         return len(self._rules)
 
     # region Methods
 
-    def register_rule(self, rule: Type[RuleT]) -> None:
+    def register_rule(self, rule: RuleT) -> None:
         """
         Register rule
 
@@ -37,14 +35,7 @@ class SearchTree:
         self._reg_rule(rule=rule)
         self._rules_init = False
 
-    def _init_rules(self) -> None:
-        self._rules_inst.clear()
-        for rule in self._rules:
-            inst = rule()
-            self._rules_inst.append(inst)
-        self._rules_init = True
-
-    def unregister_rule(self, rule: Type[RuleT]):
+    def unregister_rule(self, rule: RuleT):
         """
         Unregister Rule
 
@@ -61,19 +52,19 @@ class SearchTree:
             msg = f"{self.__class__.__name__}.unregister_rule() Unable to unregister rule."
             raise ValueError(msg) from e
 
-    def _reg_rule(self, rule: Type[RuleT]):
+    def _reg_rule(self, rule: RuleT):
         self._rules.append(rule)
 
     def _get_is_match(self, node: XTreeNode) -> bool:
-        for rule in self._rules_inst:
+        for rule in self._rules:
             if rule.is_match(node, self._match_value):
                 return True
         return False
 
     def _get_is_match_all(self, node: XTreeNode) -> bool:
-        if not self._rules_inst:
+        if not self._rules:
             return False
-        for rule in self._rules_inst:
+        for rule in self._rules:
             if not rule.is_match(node, self._match_value):
                 return False
 
@@ -89,8 +80,6 @@ class SearchTree:
         Returns:
             XTreeNode | None: The node if found, None otherwise
         """
-        if not self._rules_init:
-            self._init_rules()
         if self._match_all:
             found = self._get_is_match_all(node)
         else:

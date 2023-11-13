@@ -3,12 +3,16 @@ from typing import Any, TYPE_CHECKING
 import re
 import contextlib
 
+from ooodev.utils import lo as mLo
+
+from com.sun.star.awt.tree import XMutableTreeNode
+
 if TYPE_CHECKING:
     from com.sun.star.awt.tree import XTreeNode
 
 
-class RuleTextRegex:
-    """Rule for matching a node's text value with a regular expression pattern."""
+class RuleDataRegex:
+    """Rule for matching a node's data value with a regular expression pattern."""
 
     def __init__(self, regex: re.Pattern | str = "") -> None:
         """
@@ -36,7 +40,7 @@ class RuleTextRegex:
             match_value (Any): Value to match. Must be a regular expression pattern to match.
 
         Returns:
-            bool: True if the node's text value matches the match value; Otherwise, False.
+            bool: True if the node's data value matches the match value; Otherwise, False.
         """
         if self._regex:
             rx = self._regex
@@ -50,7 +54,14 @@ class RuleTextRegex:
                 return False
             if not isinstance(rx, re.Pattern):
                 return False
+        tree_node = mLo.Lo.qi(XMutableTreeNode, node)
+        if not tree_node:
+            return False
+        data_value = tree_node.DataValue
+        if not data_value:
+            return False
+        if not isinstance(data_value, str):
+            return False
         with contextlib.suppress(Exception):
-            node_text = node.getDisplayValue()
-            return rx.search(node_text) is not None
+            return rx.search(data_value) is not None
         return False

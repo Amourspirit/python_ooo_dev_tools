@@ -10,7 +10,11 @@ if TYPE_CHECKING:
 
 
 class RuleDataInsensitive:
-    """Rule for matching a node's data value with a case-insensitive string."""
+    """
+    Rule for matching a node's data value with a case-insensitive string.
+
+    For case sensitive matching, use :py:class:`~.RuleDataCompare`.
+    """
 
     def is_match(self, node: XTreeNode, match_value: Any) -> bool:
         """

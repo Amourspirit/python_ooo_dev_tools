@@ -6,6 +6,7 @@ from typing import cast, Any, Tuple
 from . import lo as mLo
 from ooo.dyn.util.date_time import DateTime as UnoDateTime
 from ooo.dyn.util.date import Date as UnoDate
+from ooo.dyn.util.time import Time as UnoTime
 
 
 class DateUtil:
@@ -163,10 +164,77 @@ class DateUtil:
         Returns:
             datetime.datetime: Python DateTime
         """
+
         if uno_date.Year <= 0 or uno_date.Month <= 0 or uno_date.Day <= 0:
             return mLo.Lo.null_date
         return datetime.datetime(
             year=uno_date.Year, month=uno_date.Month, day=uno_date.Day, hour=0, minute=0, second=0, microsecond=0
+        )
+
+    @staticmethod
+    def uno_time_to_date_time(uno_time: UnoTime) -> datetime.datetime:
+        """
+        Converts a uno Time struct to a datetime instance
+
+        Args:
+            uno_time (UnoTime): uno Time struct
+
+        Returns:
+            datetime.datetime: Python DateTime
+        """
+        null_date = mLo.Lo.null_date
+        dt = datetime.datetime(
+            year=null_date.year,
+            month=null_date.month,
+            day=null_date.day,
+            hour=uno_time.Hours,
+            minute=uno_time.Minutes,
+            second=uno_time.Seconds,
+            microsecond=0 if uno_time.NanoSeconds == 0 else int(uno_time.NanoSeconds / 1000),
+            tzinfo=datetime.timezone.utc if uno_time.IsUTC else None,
+        )
+
+        return dt
+
+    @staticmethod
+    def uno_time_to_time(uno_time: UnoTime) -> datetime.time:
+        """
+        Converts a uno Time struct to a time instance
+
+        Args:
+            uno_time (UnoTime): uno Time struct
+
+        Returns:
+            datetime.time: Python Time
+        """
+        tm = datetime.time(
+            hour=uno_time.Hours,
+            minute=uno_time.Minutes,
+            second=uno_time.Seconds,
+            microsecond=0 if uno_time.NanoSeconds == 0 else int(uno_time.NanoSeconds / 1000),
+            tzinfo=datetime.timezone.utc if uno_time.IsUTC else None,
+        )
+
+        return tm
+
+    @classmethod
+    def time_to_uno_time(cls, time: datetime.time) -> UnoTime:
+        """
+        Converts a python time to  UNO Time struct instance
+
+        Args:
+            time (UnoTime): Python time
+
+        Returns:
+            Time: UNO Time struct
+        """
+        dt = cls.date_to_uno_date_time(time)
+        return UnoTime(
+            dt.NanoSeconds,
+            dt.Seconds,
+            dt.Minutes,
+            dt.Hours,
+            dt.IsUTC,
         )
 
     @staticmethod

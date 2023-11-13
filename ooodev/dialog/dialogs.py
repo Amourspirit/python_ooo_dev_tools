@@ -13,6 +13,7 @@ from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
 from ..utils.kind.state_kind import StateKind as StateKind
+from ..utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from .dl_control.ctl_button import CtlButton
 from .dl_control.ctl_check_box import CtlCheckBox
@@ -36,6 +37,7 @@ from .dl_control.ctl_scroll_bar import CtlScrollBar
 from .dl_control.ctl_tab_page import CtlTabPage
 from .dl_control.ctl_tab_page_container import CtlTabPageContainer
 from .dl_control.ctl_text_edit import CtlTextEdit
+from .dl_control.ctl_time_field import CtlTimeField
 from .dl_control.ctl_tree import CtlTree
 
 from com.sun.star.awt import XControl
@@ -107,6 +109,8 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlRadioButtonModel  # service
     from com.sun.star.awt import UnoControlScrollBar  # service
     from com.sun.star.awt import UnoControlScrollBarModel  # service
+    from com.sun.star.awt import UnoControlTimeField  # service
+    from com.sun.star.awt import UnoControlTimeFieldModel  # service
     from com.sun.star.awt.grid import UnoControlGrid  # service
     from com.sun.star.awt.grid import UnoControlGridModel  # service
     from com.sun.star.awt.tab import UnoControlTabPage  # service
@@ -800,10 +804,10 @@ class Dialogs:
             y (int): Y coordinate
             width (int): Width
             height (int, optional): Height. Defaults to ``20``.
-            date_value (datetime.datetime | None, optional): _description_. Defaults to None.
-            min_date (datetime.datetime, optional): _description_. Defaults to datetime.datetime(1900, 1, 1, 0, 0, 0, 0).
-            max_date (datetime.datetime, optional): _description_. Defaults to datetime.datetime(2200, 12, 31, 0, 0, 0, 0).
-            drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to True.
+            date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
+            min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
+            max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
+            drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
             date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
@@ -2233,6 +2237,86 @@ class Dialogs:
             return CtlTree(result)
         except Exception as e:
             raise Exception(f"Could not create Group box control: {e}") from e
+
+    @classmethod
+    def insert_time_field(
+        cls,
+        dialog_ctrl: XControl,
+        *,
+        x: int,
+        y: int,
+        width: int,
+        height: int = 20,
+        time_value: datetime.time | None = None,
+        min_time: datetime.time = datetime.time(0, 0, 0, 0),
+        max_time: datetime.time = datetime.time(23, 59, 59, 999_999),
+        time_format: TimeFormatKind = TimeFormatKind.SHORT_24H,
+        spin_button: bool = True,
+        border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
+        **props: Any,
+    ) -> CtlTimeField:
+        """
+        Create a new control of type DateField in the actual dialog.
+
+        Args:
+            dialog_ctrl (XControl): Control
+            x (int): X coordinate
+            y (int): Y coordinate
+            width (int): Width
+            height (int, optional): Height. Defaults to ``20``.
+            time_value (datetime.datetime | None, optional): Specifics the control time. Defaults to ``None``.
+            min_time (datetime.datetime, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
+            max_time (datetime.datetime, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
+            time_format (DateFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
+            spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
+            props (dict, optional): Extra properties to set for control.
+
+        Raises:
+            Exception: If unable to create date field control
+
+        Returns:
+            CtlTimeField: Date field control
+        """
+        # sourcery skip: raise-specific-error
+        try:
+            msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
+            model = cast("UnoControlTimeFieldModel", msf.createInstance("com.sun.star.awt.UnoControlTimeFieldModel"))
+            name_con = cls.get_dialog_nm_con(dialog_ctrl)
+            if not name:
+                name = cls.create_name(name_con, "TimeField")
+
+            # set properties in the model
+            ctl_props = cls.get_control_props(model)
+
+            ctl_props.setPropertyValue("Border", int(border))
+            ctl_props.setPropertyValue("Name", name)
+            ctl_props.setPropertyValue("TimeMin", DateUtil.time_to_uno_time(min_time))
+            ctl_props.setPropertyValue("TimeMax", DateUtil.time_to_uno_time(max_time))
+            ctl_props.setPropertyValue("Spin", spin_button)
+            if time_value is not None:
+                ctl_props.setPropertyValue("Time", DateUtil.time_to_uno_time(time_value))
+
+            # set any extra user properties
+            for k, v in props.items():
+                ctl_props.setPropertyValue(k, v)
+
+            # Add the model to the dialog
+            name_con.insertByName(name, model)
+
+            # reference the control by name
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
+
+            # use the model's name to get its view inside the dialog
+            result = cast("UnoControlTimeField", ctrl_con.getControl(name))
+            cls._set_size_pos(result, x, y, width, height)
+            ctl = CtlTimeField(result)
+            ctl.time_format = time_format
+            return ctl
+        except Exception as e:
+            raise Exception(f"Could not create text field control: {e}") from e
 
     # endregion    add components to a dialog
 

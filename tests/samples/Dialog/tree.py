@@ -13,9 +13,9 @@ from ooo.dyn.awt.pos_size import PosSize
 
 
 from ooodev.dialog.search.tree_search.search_tree import SearchTree
-from ooodev.dialog.search.tree_search.rule_data_insensitive import RuleDataInsensitive
-from ooodev.dialog.search.tree_search.rule_data_sensitive import RuleDataSensitive
-from ooodev.dialog.search.tree_search.rule_text_insensitive import RuleTextInsensitive
+from ooodev.dialog.search.tree_search import RuleDataInsensitive
+from ooodev.dialog.search.tree_search import RuleDataCompare, RuleTextRegex
+from ooodev.dialog.search.tree_search import RuleTextInsensitive
 
 
 if TYPE_CHECKING:
@@ -76,6 +76,7 @@ class Tree:
             ["A2", "B3", "C4"],
             ["A2", "B3", "C5"],
             ["A2", "B3", "C6"],
+            ["A2", "B4", "Razor"],
         ]
         self._tree1.add_sub_tree(flat_tree=flat_list, parent_node=None)
         self._tree1.add_sub_tree(flat_tree=flat_list, parent_node=self._root2)
@@ -89,12 +90,21 @@ class Tree:
     def _search(self) -> None:
         se = SearchTree("C5", match_all=True)
         se.match_all = False
-        se.register_rule(RuleDataInsensitive)
-        se.register_rule(RuleTextInsensitive)
+        se.register_rule(RuleDataInsensitive())
+        se.register_rule(RuleTextInsensitive())
         # se.register_rule(RuleDataSensitive)
         result = se.find_node(self._root2)
         if result:
-            print("Search Result:", result)
+            print("Search Result:", result.getDisplayValue())
+        else:
+            print("Search Value, Not found")
+
+        se = SearchTree("")
+        se.register_rule(RuleTextRegex("R.zor"))
+
+        result = se.find_node(self._root2)
+        if result:
+            print("Search Result:", result.getDisplayValue())
         else:
             print("Search Value, Not found")
 

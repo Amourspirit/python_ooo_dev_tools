@@ -86,6 +86,7 @@
         "elems",
         "elif",
         "endcolor",
+        "endregion",
         "ERRORBOX",
         "eventref",
         "extlinks",

@@ -6,26 +6,26 @@ import datetime
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
+from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ooodev.utils.date_time_util import DateUtil
 from .ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlDateField  # service
-    from com.sun.star.awt import UnoControlDateFieldModel  # service
+    from com.sun.star.awt import UnoControlTimeField  # service
+    from com.sun.star.awt import UnoControlTimeFieldModel  # service
 # endregion imports
 
 
-class CtlDateField(CtlListenerBase, SpinEvents, TextEvents):
-    """Class for Date Field Control"""
+class CtlTimeField(CtlListenerBase, SpinEvents, TextEvents):
+    """Class for Time Field Control"""
 
     # region init
-    def __init__(self, ctl: UnoControlDateField) -> None:
+    def __init__(self, ctl: UnoControlTimeField) -> None:
         """
         Constructor
 
         Args:
-            ctl (UnoControlDateField): Date Field Control
+            ctl (UnoControlTimeField): Time Field Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         CtlListenerBase.__init__(self, ctl)
@@ -54,26 +54,26 @@ class CtlDateField(CtlListenerBase, SpinEvents, TextEvents):
     # endregion Lazy Listeners
 
     # region Overrides
-    def get_view_ctl(self) -> UnoControlDateField:
-        return cast("UnoControlDateField", super().get_view_ctl())
+    def get_view_ctl(self) -> UnoControlTimeField:
+        return cast("UnoControlTimeField", super().get_view_ctl())
 
     def get_uno_srv_name(self) -> str:
-        """Returns ``com.sun.star.awt.UnoControlDateField``"""
-        return "com.sun.star.awt.UnoControlDateField"
+        """Returns ``com.sun.star.awt.UnoControlTimeField``"""
+        return "com.sun.star.awt.UnoControlTimeField"
 
-    def get_model(self) -> UnoControlDateFieldModel:
+    def get_model(self) -> UnoControlTimeFieldModel:
         """Gets the Model for the control"""
-        return cast("UnoControlDateFieldModel", self.get_view_ctl().getModel())
+        return cast("UnoControlTimeFieldModel", self.get_view_ctl().getModel())
 
     # endregion Overrides
 
     # region Properties
     @property
-    def view(self) -> UnoControlDateField:
+    def view(self) -> UnoControlTimeField:
         return self.get_view_ctl()
 
     @property
-    def model(self) -> UnoControlDateFieldModel:
+    def model(self) -> UnoControlTimeFieldModel:
         return self.get_model()
 
     @property
@@ -86,39 +86,39 @@ class CtlDateField(CtlListenerBase, SpinEvents, TextEvents):
         self.model.Text = value
 
     @property
-    def date(self) -> datetime.date:
-        """Gets/Sets the date"""
-        return DateUtil.uno_date_to_date(self.model.Date)
+    def time(self) -> datetime.time:
+        """Gets/Sets the time"""
+        return DateUtil.uno_time_to_time(self.model.Time)
 
-    @date.setter
-    def date(self, value: datetime.date) -> None:
-        self.model.Date = DateUtil.date_to_uno_date(value)
-
-    @property
-    def date_min(self) -> datetime.date:
-        """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.model.DateMin)
-
-    @date_min.setter
-    def date_min(self, value: datetime.date) -> None:
-        self.model.DateMin = DateUtil.date_to_uno_date(value)
+    @time.setter
+    def time(self, value: datetime.time) -> None:
+        self.model.Time = DateUtil.time_to_uno_time(value)
 
     @property
-    def date_max(self) -> datetime.date:
-        """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.model.DateMax)
+    def time_min(self) -> datetime.time:
+        """Gets/Sets the min time"""
+        return DateUtil.uno_time_to_time(self.model.TimeMin)
+
+    @time_min.setter
+    def time_min(self, value: datetime.time) -> None:
+        self.model.TimeMin = DateUtil.time_to_uno_time(value)
+
+    @property
+    def date_max(self) -> datetime.time:
+        """Gets/Sets the min time"""
+        return DateUtil.uno_time_to_time(self.model.TimeMax)
 
     @date_max.setter
-    def date_max(self, value: datetime.date) -> None:
-        self.model.DateMax = DateUtil.date_to_uno_date(value)
+    def date_max(self, value: datetime.time) -> None:
+        self.model.TimeMax = DateUtil.time_to_uno_time(value)
 
     @property
-    def date_format(self) -> DateFormatKind:
+    def time_format(self) -> TimeFormatKind:
         """Gets/Sets the format"""
-        return DateFormatKind(self.model.DateFormat)
+        return TimeFormatKind(self.model.TimeFormat)
 
-    @date_format.setter
-    def date_format(self, value: DateFormatKind) -> None:
-        self.model.DateFormat = value.value
+    @time_format.setter
+    def time_format(self, value: TimeFormatKind) -> None:
+        self.model.TimeFormat = value.value
 
     # endregion Properties
