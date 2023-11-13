@@ -1,8 +1,6 @@
 from typing import TYPE_CHECKING, cast
-from ..utils.dialogs import Dialogs
+from .dialogs import Dialogs
 from ..utils import lo as mLo
-from ..utils import sys_info as mSysInfo
-
 
 from com.sun.star.awt import XControlModel
 from com.sun.star.awt import XDialog
@@ -47,43 +45,43 @@ class Input:
         )
 
         dialog.setModel(dialog_model)
-        platform = mSysInfo.SysInfo.get_platform()
-        if platform == mSysInfo.SysInfo.PlatformEnum.WINDOWS:
-            width = 420
-            height = 130
-        else:
-            width = 500
-            height = 140
-        btn_width = 50
-        btn_height = 18
+        width = 500
+        height = 80
+        btn_width = 80
+        btn_height = 20
+        margin = 4
 
-        _ = Dialogs.insert_label(dialog_ctrl=dialog, label=msg, x=4, y=4, width=200, height=8)
+        ctl_lbl = Dialogs.insert_label(
+            dialog_ctrl=dialog, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
+        )
+        sz = ctl_lbl.getPosSize()
         if is_password:
             txt_input = Dialogs.insert_password_field(
-                dialog_ctrl=dialog, text=input_value, x=4, y=18, width=200, height=12
+                dialog_ctrl=dialog, text=input_value, x=sz.X, y=sz.Height + sz.Y + 4, width=sz.Width, height=sz.Height
             )
         else:
             txt_input = Dialogs.insert_text_field(
-                dialog_ctrl=dialog, text=input_value, x=4, y=18, width=200, height=12
+                dialog_ctrl=dialog, text=input_value, x=sz.X, y=sz.Height + sz.Y + 4, width=sz.Width, height=sz.Height
             )
+        ctl_btn_cancel = Dialogs.insert_button(
+            dialog_ctrl=dialog,
+            label=cancel_lbl,
+            x=width - btn_width - margin,
+            y=height - btn_height - margin,
+            width=btn_width,
+            height=btn_height,
+            btn_type=PushButtonType.CANCEL,
+        )
+        sz = ctl_btn_cancel.getPosSize()
         _ = Dialogs.insert_button(
             dialog_ctrl=dialog,
             label=ok_lbl,
-            x=98,
-            y=40,
+            x=sz.X - sz.Width - margin,
+            y=sz.Y,
             width=btn_width,
             height=btn_height,
             btn_type=PushButtonType.OK,
             DefaultButton=True,
-        )
-        _ = Dialogs.insert_button(
-            dialog_ctrl=dialog,
-            label=cancel_lbl,
-            x=152,
-            y=40,
-            width=btn_width,
-            height=btn_height,
-            btn_type=PushButtonType.CANCEL,
         )
         window = mLo.Lo.get_frame().getContainerWindow()
         ps = window.getPosSize()
