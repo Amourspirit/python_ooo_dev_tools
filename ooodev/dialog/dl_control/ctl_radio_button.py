@@ -91,4 +91,13 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
     def state(self, value: StateKind) -> None:
         self.model.State = value.value
 
+    @property
+    def tab_index(self) -> int:
+        """Gets/Sets the tab index"""
+        return self.model.TabIndex
+
+    @tab_index.setter
+    def tab_index(self, value: int) -> None:
+        self.model.TabIndex = value
+
     # endregion Properties

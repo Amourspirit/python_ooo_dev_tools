@@ -3,8 +3,9 @@
 # region Imports
 from __future__ import annotations
 import datetime
-from typing import TYPE_CHECKING, Any, Iterable, Tuple, cast
+from typing import TYPE_CHECKING, Any, Iterable, List, Type, Tuple, cast, TypeVar
 import uno
+
 
 # pylint: disable=useless-import-alias
 # pylint: disable=unused-import
@@ -46,6 +47,9 @@ from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
 from ..utils.kind.state_kind import StateKind as StateKind
 from ..utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ..utils.kind.dialog_control_kind import DialogControlKind
+from ..utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from .dl_control.ctl_base import DialogControlBase
 from .dl_control.ctl_button import CtlButton
 from .dl_control.ctl_check_box import CtlCheckBox
 from .dl_control.ctl_combo_box import CtlComboBox
@@ -128,6 +132,8 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
 # endregion Imports
 
+ControlT = TypeVar("ControlT", bound=DialogControlBase)
+
 
 class Dialogs:
     """Manages creating, accessing and inserting controls into dialogs"""
@@ -180,7 +186,7 @@ class Dialogs:
     # region    access a control/component inside a dialog
 
     @staticmethod
-    def find_control(dialog_ctrl: XControl, name: str) -> XControl:
+    def find_control(dialog_ctrl: XControl, name: str) -> XControl | None:
         """
         Finds control by name
 
@@ -189,10 +195,102 @@ class Dialogs:
             name (str): Name to find
 
         Returns:
-            XControl: Control
+            XControl: Control if found, else ``None``
         """
         ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
         return ctrl_con.getControl(name)
+
+    @classmethod
+    def find_controls(cls, dialog_ctrl: XControl, control_type: Type[ControlT]) -> List[ControlT]:
+        """
+        Finds controls by type
+
+        Args:
+            dialog_ctrl (XControl): Control
+            control_type (ControlT): Control type
+
+        Returns:
+            List[ControlT]: List of controls
+        """
+        ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
+        controls = ctrl_con.getControls()
+        result: List[ControlT] = []
+        if not controls:
+            return result
+        for ctrl in controls:
+            control = cls.get_dialog_control_instance(ctrl)
+            if control and isinstance(control, control_type):
+                result.append(control)
+        return result
+
+    @staticmethod
+    def get_dialog_control_instance(
+        dialog_ctrl: XControl,
+    ) -> DialogControlBase | None:
+        """
+        Gets a control as a ``DialogControlBase`` control
+
+        Args:
+            dialog_ctrl (XControl): Control
+
+        Returns:
+            XControl: Returns a ``DialogControlBase`` such as ``CtlButton`` or ``CtlCheckBox`` if found, else ``None``
+        """
+        si = mLo.Lo.qi(XServiceInfo, dialog_ctrl)
+        if not si:
+            return None
+        named = DialogControlNamedKind.from_value(si.getImplementationName())
+        if named == DialogControlNamedKind.UNKNOWN:
+            return None
+        if named == DialogControlNamedKind.BUTTON:
+            return CtlButton(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.CHECKBOX:
+            return CtlCheckBox(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.COMBOBOX:
+            return CtlComboBox(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.CURRENCY:
+            return CtlCurrencyField(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.DATE_FIELD:
+            return CtlDateField(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.FILE_CONTROL:
+            return CtlFile(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.FIXED_LINE:
+            return CtlFixedLine(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.FIXED_TEXT:
+            return CtlFixedText(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.FORMATTED_TEXT:
+            return CtlFormattedField(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.GRID_CONTROL:
+            return CtlGrid(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.GROUP_BOX:
+            return CtlGroupBox(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.HYPERLINK:
+            return CtlHyperlinkFixed(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.IMAGE:
+            return CtlImage(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.LIST_BOX:
+            return CtlListBox(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.NUMERIC:
+            return CtlNumericField(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.PATTERN:
+            return CtlPatternField(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.PROGRESS_BAR:
+            return CtlProgressBar(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.RADIO_BUTTON:
+            return CtlRadioButton(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.SCROLL_BAR:
+            return CtlScrollBar(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.TAB_PAGE_CONTAINER:
+            return CtlTabPageContainer(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.TAB_PAGE:
+            return CtlTabPage(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.EDIT:
+            return CtlTextEdit(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.TIME:
+            return CtlTimeField(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.TREE:
+            return CtlTree(dialog_ctrl)  # type: ignore
+        return None
 
     @classmethod
     def show_control_info(cls, dialog_ctrl: XControl) -> None:
@@ -225,6 +323,15 @@ class Dialogs:
         """
         ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
         return ctrl_con.getControls()
+
+    # @staticmethod
+    # def get_controls(dialog_ctrl: XControl, control_name: str = "") -> Tuple[str, ...]:
+    #     na = mLo.Lo.qi(XNameAccess, dialog_ctrl.getModel(), True)
+    #     element_names = na.getElementNames()
+    #     if not control_name:
+    #         return element_names
+    #     if na.hasByName(control_name):
+    #         return [na.getByName(control_name)]
 
     @staticmethod
     def get_control_props(control_model: Any) -> XPropertySet:
@@ -2355,3 +2462,70 @@ class Dialogs:
             pos_size = PosSize.SIZE
         if pos_size is not None:
             ctl.setPosSize(x, y, width, height, pos_size)
+
+    @classmethod
+    def get_radio_group_value(cls, dialog_ctrl: XControl, radio_button: str) -> List[CtlRadioButton]:
+        """
+        Get a radio button group. Similar to :py:meth:`~.dialogs.Dialogs.find_radio_siblings` but alos includes first radio button.
+
+        Args:
+            dialog_ctrl (XControl): Control
+            radio_button (str): Name of the first radio button of the group
+
+        Returns:
+            Any: Value of the selected radio button
+
+
+        See Also:
+            :py:meth:`~.dialogs.Dialogs.find_radio_siblings`
+        """
+        result: List[CtlRadioButton] = []
+        ctl = cls.find_control(dialog_ctrl, radio_button)
+        if not ctl:
+            return result
+        first_radio_btn = cast(CtlRadioButton, cls.get_dialog_control_instance(ctl))
+        if first_radio_btn is None:
+            return result
+        result.append(first_radio_btn)
+        result.extend(cls.find_radio_siblings(dialog_ctrl, radio_button))
+        return result
+
+    @classmethod
+    def find_radio_siblings(cls, dialog_ctrl: XControl, radio_button: str) -> List[CtlRadioButton]:
+        """
+        Given the name of the first radio button of a group, return all the controls of the group
+
+        For dialogs, radio buttons are considered of the same group when their tab indexes are contiguous.
+
+        Args:
+            dialog_ctrl (XControl): Control
+            radio_button (str): Specifies the exact name of the 1st radio button of the group
+
+        Returns:
+            List[CtlRadioButton]: List of the names of the 1st and the next radio buttons
+            belonging to the same group in their tab index order. does not include the first button.
+
+        See Also:
+            :py:meth:`~.dialogs.Dialogs.get_radio_group_value`
+        """
+        ctl = cls.find_control(dialog_ctrl, radio_button)
+        result: List[CtlRadioButton] = []
+        if not ctl:
+            return result
+        first_radio_btn = cast(CtlRadioButton, cls.get_dialog_control_instance(ctl))
+        if first_radio_btn is None:
+            return result
+        if first_radio_btn.get_control_kind() != DialogControlKind.RADIO_BUTTON:
+            return result
+
+        tab_index = first_radio_btn.tab_index
+        next_tab_index = tab_index + 1
+        controls = cls.find_controls(dialog_ctrl, CtlRadioButton)
+        if not controls:
+            return result
+        # controls.pop(0)
+        for ctrl in controls:
+            if ctrl.tab_index == next_tab_index:
+                result.append(ctrl)
+                next_tab_index += 1
+        return result

@@ -139,7 +139,7 @@ class Tabs:
             tab_position=self._tab_count,
         )
         tab_sz = self._ctl_tab.view.getPosSize()
-        ctl_table1 = Dialogs.insert_table_control(
+        self._ctl_table1 = Dialogs.insert_table_control(
             dialog_ctrl=self._tab_table.view,
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
@@ -160,14 +160,14 @@ class Tabs:
         # widths.pop()
         # widths.append(100)
         tbl.insert(0, headers)
-        ctl_table1.set_table_data(
+        self._ctl_table1.set_table_data(
             data=tbl,
             align="RLC",
             widths=widths,
             has_row_headers=has_row_headers,
             has_colum_headers=True,
         )
-        ctl_table1.add_event_selection_changed(self._fn_grid_selection_changed)
+        self._ctl_table1.add_event_selection_changed(self._fn_grid_selection_changed)
         # test that grid clears and adds new data
         # widths[0] = 100
         # Dialogs.set_table_data(table=ctl_table1, data=tbl, align="RLC", widths=widths)

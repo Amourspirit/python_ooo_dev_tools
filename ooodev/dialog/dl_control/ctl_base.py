@@ -19,6 +19,8 @@ from ooodev.adapter.awt.paint_events import PaintEvents
 from ooodev.adapter.awt.window_events import WindowEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 
 if TYPE_CHECKING:
@@ -308,3 +310,60 @@ class DialogControlBase(CtlListenerBase):
         raise NotImplementedError
 
     # endregion Overrides
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind"""
+        return DialogControlKind.from_value(self.get_uno_srv_name())
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind"""
+        kind = self.get_control_kind()
+        if kind == DialogControlKind.BUTTON:
+            return DialogControlNamedKind.BUTTON
+        if kind == DialogControlKind.CHECKBOX:
+            return DialogControlNamedKind.CHECKBOX
+        if kind == DialogControlKind.COMBOBOX:
+            return DialogControlNamedKind.COMBOBOX
+        if kind == DialogControlKind.CURRENCY:
+            return DialogControlNamedKind.CURRENCY
+        if kind == DialogControlKind.DATE_FIELD:
+            return DialogControlNamedKind.DATE_FIELD
+        if kind == DialogControlKind.FILE_CONTROL:
+            return DialogControlNamedKind.FILE_CONTROL
+        if kind == DialogControlKind.FIXED_LINE:
+            return DialogControlNamedKind.FIXED_LINE
+        if kind == DialogControlKind.FIXED_TEXT:
+            return DialogControlNamedKind.FIXED_TEXT
+        if kind == DialogControlKind.FORMATTED_TEXT:
+            return DialogControlNamedKind.FORMATTED_TEXT
+        if kind == DialogControlKind.GRID_CONTROL:
+            return DialogControlNamedKind.GRID_CONTROL
+        if kind == DialogControlKind.GROUP_BOX:
+            return DialogControlNamedKind.GROUP_BOX
+        if kind == DialogControlKind.HYPERLINK:
+            return DialogControlNamedKind.HYPERLINK
+        if kind == DialogControlKind.IMAGE:
+            return DialogControlNamedKind.IMAGE
+        if kind == DialogControlKind.LIST_BOX:
+            return DialogControlNamedKind.LIST_BOX
+        if kind == DialogControlKind.NUMERIC:
+            return DialogControlNamedKind.NUMERIC
+        if kind == DialogControlKind.PATTERN:
+            return DialogControlNamedKind.PATTERN
+        if kind == DialogControlKind.PROGRESS_BAR:
+            return DialogControlNamedKind.PROGRESS_BAR
+        if kind == DialogControlKind.RADIO_BUTTON:
+            return DialogControlNamedKind.RADIO_BUTTON
+        if kind == DialogControlKind.SCROLL_BAR:
+            return DialogControlNamedKind.SCROLL_BAR
+        if kind == DialogControlKind.TAB_PAGE_CONTAINER:
+            return DialogControlNamedKind.TAB_PAGE_CONTAINER
+        if kind == DialogControlKind.TAB_PAGE:
+            return DialogControlNamedKind.TAB_PAGE
+        if kind == DialogControlKind.EDIT:
+            return DialogControlNamedKind.EDIT
+        if kind == DialogControlKind.TIME:
+            return DialogControlNamedKind.TIME
+        if kind == DialogControlKind.TREE:
+            return DialogControlNamedKind.TREE
+        return DialogControlNamedKind.UNKNOWN

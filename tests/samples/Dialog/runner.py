@@ -325,7 +325,7 @@ class Runner:
 
         # insert radio buttons into group box one
         sz = self._ctl_gb1.view.getPosSize()
-        rb1 = Dialogs.insert_radio_button(
+        self._rb1 = Dialogs.insert_radio_button(
             dialog_ctrl=self._dialog.control,
             label="Radio Button 1",
             x=sz.X + self._padding,
@@ -333,8 +333,10 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
-        rb1.add_event_item_state_changed(self._fn_on_item_changed)
-        rb_sz = rb1.view.getPosSize()
+        self._rb1.tab_index = 30
+        self._rb1.add_event_item_state_changed(self._fn_on_item_changed)
+        rb_sz = self._rb1.view.getPosSize()
+        group_tab_index = self._rb1.tab_index + 1
         for i in range(1, 4):
             radio_btn = Dialogs.insert_radio_button(
                 dialog_ctrl=self._dialog.control,
@@ -344,6 +346,8 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
+            radio_btn.tab_index = group_tab_index
+            group_tab_index += 1
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
@@ -366,6 +370,8 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
+        group_tab_index += 2  # make sure not contiguous with other group
+        self._rb2.tab_index = group_tab_index
         self._rb2.add_event_item_state_changed(self._fn_on_item_changed)
         rb_sz = self._rb2.view.getPosSize()
         for i in range(1, 4):
@@ -377,6 +383,8 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
+            radio_btn.tab_index = group_tab_index
+            group_tab_index += 1
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
@@ -443,6 +451,9 @@ class Runner:
 
         self._dialog.add_event_window_moved(self._fn_on_window_moved)
         self._dialog.add_event_window_closed(self._fn_on_window_closed)
+
+        # results = Dialogs.get_radio_group_value(self._dialog.control, self._rb1.model.Name)
+        # print(results)
 
     def show(self) -> str:
         # Dialogs.create_dialog_peer(self._dialog)
