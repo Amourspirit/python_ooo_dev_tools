@@ -1,15 +1,16 @@
 from typing import TYPE_CHECKING, cast
-from ooodev.dialog import Dialogs
-from ooodev.utils import lo as mLo
-from ooodev.utils.gui import GUI
-from ooodev.office.calc import Calc
-
-
+import uno  # pylint: disable=unused-import
 from com.sun.star.awt import XControlModel
 from com.sun.star.awt import XDialog
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
+
+from ooodev.dialog import Dialogs, BorderKind
+from ooodev.utils import lo as mLo
+from ooodev.utils.gui import GUI
+from ooodev.office.calc import Calc
+
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog
@@ -48,23 +49,36 @@ class Input:
         )
 
         dialog.setModel(dialog_model)
-        width = 500
-        height = 80
-        btn_width = 80
-        btn_height = 20
+        width = 450
+        height = 90
+        btn_width = 100
+        btn_height = 30
         margin = 4
+        border_kind = BorderKind.BORDER_SIMPLE
 
         ctl_lbl = Dialogs.insert_label(
             dialog_ctrl=dialog, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
         )
-        sz = ctl_lbl.getPosSize()
+        sz = ctl_lbl.view.getPosSize()
         if is_password:
             txt_input = Dialogs.insert_password_field(
-                dialog_ctrl=dialog, text=input_value, x=sz.X, y=sz.Height + sz.Y + 4, width=sz.Width, height=sz.Height
+                dialog_ctrl=dialog,
+                text=input_value,
+                x=sz.X,
+                y=sz.Height + sz.Y + 4,
+                width=sz.Width,
+                height=sz.Height,
+                border=border_kind,
             )
         else:
             txt_input = Dialogs.insert_text_field(
-                dialog_ctrl=dialog, text=input_value, x=sz.X, y=sz.Height + sz.Y + 4, width=sz.Width, height=sz.Height
+                dialog_ctrl=dialog,
+                text=input_value,
+                x=sz.X,
+                y=sz.Height + sz.Y + 4,
+                width=sz.Width,
+                height=sz.Height,
+                border=border_kind,
             )
         ctl_btn_cancel = Dialogs.insert_button(
             dialog_ctrl=dialog,
@@ -75,7 +89,7 @@ class Input:
             height=btn_height,
             btn_type=PushButtonType.CANCEL,
         )
-        sz = ctl_btn_cancel.getPosSize()
+        sz = ctl_btn_cancel.view.getPosSize()
         _ = Dialogs.insert_button(
             dialog_ctrl=dialog,
             label=ok_lbl,

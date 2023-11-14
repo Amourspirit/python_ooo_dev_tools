@@ -1,20 +1,16 @@
 from __future__ import annotations
-import datetime
-from typing import Any, TYPE_CHECKING, cast
-from pathlib import Path
-import datetime
-from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind
+from typing import Any, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
+from ooo.dyn.awt.pos_size import PosSize
+from ooodev.dialog import Dialogs, BorderKind
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
 from ooodev.events.args.event_args import EventArgs
 
-from ooo.dyn.awt.pos_size import PosSize
-
-
 from ooodev.dialog.search.tree_search.search_tree import SearchTree
 from ooodev.dialog.search.tree_search import RuleDataInsensitive
-from ooodev.dialog.search.tree_search import RuleDataCompare, RuleTextRegex
+from ooodev.dialog.search.tree_search import RuleTextRegex
 from ooodev.dialog.search.tree_search import RuleTextInsensitive
 
 
@@ -23,11 +19,12 @@ if TYPE_CHECKING:
 
 
 class Tree:
+    # pylint: disable=unused-argument
     def __init__(self) -> None:
-        self._border_kind = BorderKind.NONE
+        self._border_kind = BorderKind.BORDER_SIMPLE
         self._title = "Tree Example"
-        self._width = 800
-        self._height = 700
+        self._width = 600
+        self._height = 500
         self._btn_width = 100
         self._btn_height = 30
         self._margin = 4
@@ -125,15 +122,15 @@ class Tree:
         self._fn_on_mouse_exit = _on_mouse_exit
         self._fn__on_tree_selection_changed = _on_tree_selection_changed
 
-    def on_mouse_entered(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    def on_mouse_entered(self, src: Any, event: EventArgs, control_src: CtlTree, *args, **kwargs) -> None:
         # print(control_src)
         print("Mouse Entered:", control_src.name)
 
-    def on_mouse_exit(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    def on_mouse_exit(self, src: Any, event: EventArgs, control_src: CtlTree, *args, **kwargs) -> None:
         # print(control_src)
         print("Mouse Exited:", control_src.name)
 
-    def on_tree_selection_changed(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+    def on_tree_selection_changed(self, src: Any, event: EventArgs, control_src: CtlTree, *args, **kwargs) -> None:
         # print(control_src)
         print("Selection changed:", control_src.name)
 

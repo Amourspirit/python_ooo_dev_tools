@@ -1,18 +1,18 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, cast
-from ooodev.dialog import Dialogs, BorderKind, OrientationKind, HorzVertKind
+import uno  # pylint: disable=unused-import
+from com.sun.star.awt import XControlModel
+from com.sun.star.awt import XDialog
+
+from ooo.dyn.awt.pos_size import PosSize
+
+from ooodev.dialog import Dialogs, BorderKind, OrientationKind
 from ooodev.events.args.event_args import EventArgs
 from ooodev.office.calc import Calc
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.utils.table_helper import TableHelper
 
-
-from com.sun.star.awt import XControlModel
-from com.sun.star.awt import XDialog
-
-from ooo.dyn.awt.pos_size import PosSize
-from ooo.dyn.awt.push_button_type import PushButtonType
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog
@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
 
 class Tabs:
+    # pylint: disable=unused-argument
     def __init__(self) -> None:
         self._border_kind = BorderKind.BORDER_SIMPLE
         self._width = 600
