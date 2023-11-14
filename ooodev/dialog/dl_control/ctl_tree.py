@@ -11,6 +11,13 @@ from ooodev.adapter.awt.tree.tree_edit_events import TreeEditEvents
 from ooodev.adapter.awt.tree.tree_expansion_events import TreeExpansionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
+from ooodev.dialog.search.tree_search import (
+    SearchTree,
+    RuleDataCompare,
+    RuleDataInsensitive,
+    RuleTextSensitive,
+    RuleTextInsensitive,
+)
 from .ctl_base import DialogControlBase
 
 
@@ -206,25 +213,42 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
             add(root, path)
         return root
 
-    def find_node(self, node: XTreeNode, value: str, case_sensitive: bool = False) -> XTreeNode | None:
-        """Perform a DFS on a tree from a given node, looking for a node with a specific value."""
+    def find_node(
+        self, node: XTreeNode, value: str, case_sensitive: bool = False, search_data_value: bool = True
+    ) -> XTreeNode | None:
+        """
+        Perform a search on a tree from a given node, looking for a node with a specific value.
+
+        Args:
+            node (XTreeNode): Node to start search from.
+            value (str): Value to search for.
+            case_sensitive (bool, optional): Specifies if the search is case sensitive. Defaults to ``False``.
+            search_data_value (bool, optional): Specifies if ``DataValue`` of nodes are to be include in search. Defaults to ``True``.
+
+        Returns:
+            XTreeNode | None: Tree node if found; Otherwise, None.
+
+        Note:
+            :py:class:`~ooodev.dialog.search.tree_search.SearchTree` is a much more powerful search tool.
+            It can be used to search for other types of match such as regular expressions.
+
+            Custom rules can be created if the exiting rules do no cover you search needs.
+
+        See Also:
+            :ref:`ns_dialog_search_tree_search_`
+        """
         # Check the current node
-        node_text = node.getDisplayValue()
-        if not case_sensitive:
-            value = value.casefold()
-            node_text = node_text.casefold()
+        search = SearchTree(match_value=value, match_all=False)
+        if case_sensitive:
+            search.register_rule(RuleTextSensitive())
+            if search_data_value:
+                search.register_rule(RuleDataCompare("="))
+        else:
+            search.register_rule(RuleTextInsensitive())
+            if search_data_value:
+                search.register_rule(RuleDataInsensitive())
 
-        if node_text == value:
-            return node
-
-        # Recursively check the children
-        for i in range(node.getChildCount()):
-            result = self.find_node(node.getChildAt(i), value, case_sensitive)
-            if result is not None:
-                return result
-
-        # The value was not found in this branch
-        return None
+        return search.find_node(node)
 
     # endregion Tree Nodes
 
