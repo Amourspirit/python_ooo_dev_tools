@@ -2,7 +2,11 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING
+import os
 import uno  # pylint: disable=unused-import
+
+# com.sun.star.awt.Selection
+from ooo.dyn.awt.selection import Selection
 
 # pylint: disable=useless-import-alias
 from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
@@ -64,6 +68,43 @@ class CtlTextEdit(DialogControlBase, TextEvents):
 
     # endregion Overrides
 
+    # region Text Methods
+    def write_line(self, line: str = "") -> bool:
+        """
+        Add a new line to a multi-line text control
+
+        Args:
+            line (str, optional): Specifies a line to insert at the end of the text box
+                a newline character will be inserted before the line, if relevant.
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        # if not self.model.MultiLine:
+        #     return False
+        with contextlib.suppress(Exception):
+            # will raise an exception if not multi-line
+            self.model.HardLineBreaks = True
+            sel = Selection()
+            text_len = len(self.text)
+            if text_len == 0:
+                sel.Min = 0
+                sel.Max = 0
+                self.text = line
+            else:
+                # Put cursor at the end of the actual text
+                sel.Min = text_len
+                sel.Max = text_len
+                self.view.insertText(sel, f"{os.linesep}{line}")
+            # Put the cursor at the end of the inserted text
+            sel.Max = len(os.linesep) + len(line)
+            sel.Min = sel.Max
+            self.view.setSelection(sel)
+            return True
+        return False
+
+    # endregion Text Methods
+
     # region Properties
     @property
     def view(self) -> UnoControlEdit:
@@ -107,11 +148,11 @@ class CtlTextEdit(DialogControlBase, TextEvents):
     @property
     def text(self) -> str:
         """Gets/Sets the text"""
-        return self.model.Text
+        return self.view.getText()
 
     @text.setter
     def text(self, value: str) -> None:
-        self.model.Text = value
+        self.view.setText(value)
 
     # endregion Properties
 
