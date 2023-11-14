@@ -125,6 +125,8 @@ if TYPE_CHECKING:
 
 
 class Dialogs:
+    """Manages creating, accessing and inserting controls into dialogs"""
+
     StateEnum = TriStateKind
 
     # region    load & execute a dialog

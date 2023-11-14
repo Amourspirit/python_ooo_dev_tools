@@ -6,5 +6,8 @@ if TYPE_CHECKING:
 
 
 class RuleT(Protocol):
+    """Search rule protocol."""
+
     def is_match(self, node: XTreeNode, match_value: Any) -> bool:
+        """Protocol for search rule."""
         ...

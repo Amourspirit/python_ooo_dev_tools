@@ -29,6 +29,8 @@ if TYPE_CHECKING:
 
 
 class CtlBase(unohelper.Base):
+    """Control Base Class"""
+
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
         self._ctl_view = ctl
@@ -206,7 +208,7 @@ class CtlListenerBase(
     PaintEvents,
     WindowEvents,
 ):
-    """Dialog Control Base Class"""
+    """Dialog Control Listener Base Class"""
 
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:

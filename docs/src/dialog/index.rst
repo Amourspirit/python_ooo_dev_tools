@@ -1,3 +1,5 @@
+.. _ns_dialog:
+
 dialog
 ======
 
@@ -5,4 +7,6 @@ dialog
     :titlesonly:
     :glob:
 
+    dl_control/index
+    search/index
     *

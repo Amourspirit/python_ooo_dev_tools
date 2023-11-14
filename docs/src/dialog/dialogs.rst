@@ -3,5 +3,5 @@
 Class Dialogs
 =============
 
-.. autoclass:: ooodev.dialogs.Dialogs
+.. autoclass:: ooodev.dialog.dialogs.Dialogs
     :members:
