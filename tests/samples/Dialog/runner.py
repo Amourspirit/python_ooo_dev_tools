@@ -2,7 +2,11 @@ from __future__ import annotations
 import datetime
 from typing import Any, TYPE_CHECKING, cast
 from pathlib import Path
-import datetime
+import uno  # pylint: disable=unused-import
+
+from ooo.dyn.awt.pos_size import PosSize
+from ooo.dyn.awt.push_button_type import PushButtonType
+
 from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
@@ -10,24 +14,20 @@ from ooodev.office.calc import Calc
 from ooodev.utils.file_io import FileIO
 from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.color import StandardColor
+from ooodev.dialog.dl_control.ctl_date_field import CtlDateField
 
-from com.sun.star.awt import XControlModel
-from com.sun.star.awt import XDialog
-
-from ooo.dyn.awt.pos_size import PosSize
-from ooo.dyn.awt.push_button_type import PushButtonType
 
 if TYPE_CHECKING:
     from ooodev.dialog.dl_control.ctl_button import CtlButton
     from ooodev.dialog.dl_control.ctl_check_box import CtlCheckBox
     from ooodev.dialog.dl_control.ctl_combo_box import CtlComboBox
     from ooodev.dialog.dl_control.ctl_scroll_bar import CtlScrollBar
-    from com.sun.star.awt import UnoControlDialog
     from com.sun.star.awt import ItemEvent
     from com.sun.star.awt import AdjustmentEvent
 
 
 class Runner:
+    # pylint: disable=unused-argument
     def __init__(
         self,
         title: str,
@@ -39,16 +39,16 @@ class Runner:
     ) -> None:
         self._init_handlers()
 
-        self._dialog = cast(
-            "UnoControlDialog",
-            mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
-        )
-        dialog_model = mLo.Lo.create_instance_mcf(
-            XControlModel, "com.sun.star.awt.UnoControlDialogModel", raise_err=True
-        )
+        # self._dialog = cast(
+        #     "UnoControlDialog",
+        #     mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
+        # )
+        # dialog_model = mLo.Lo.create_instance_mcf(
+        #     XControlModel, "com.sun.star.awt.UnoControlDialogModel", raise_err=True
+        # )
 
-        self._dialog.setModel(dialog_model)
-        border_kind = BorderKind.NONE
+        # self._dialog.setModel(dialog_model)
+        border_kind = BorderKind.BORDER_SIMPLE
         self._title = title
         self._width = 800
         self._height = 700
@@ -60,6 +60,13 @@ class Runner:
             self._padding = 10
         else:
             self._padding = 14
+        self._dialog = Dialogs.create_dialog(
+            x=-1,
+            y=-1,
+            width=self._width,
+            height=self._height,
+            title=self._title,
+        )
 
         self._ctl_lbl = Dialogs.insert_label(
             dialog_ctrl=self._dialog,
@@ -183,6 +190,7 @@ class Runner:
         self._ctl_date.add_event_down(self._fn_on_down)
         self._ctl_date.add_event_up(self._fn_on_up)
         self._ctl_date.add_event_text_changed(self._fn_on_text_changed)
+        self._ctl_date.add_event_mouse_exited(self._fn_on_mouse_exit)
         sz = self._ctl_date.view.getPosSize()
         self._ctl_currency = Dialogs.insert_currency_field(
             dialog_ctrl=self._dialog,
@@ -432,6 +440,7 @@ class Runner:
         self._ctl_list_box.add_event_item_state_changed(self._fn_on_item_changed)
 
     def show(self) -> str:
+        # Dialogs.create_dialog_peer(self._dialog)
         window = mLo.Lo.get_frame().getContainerWindow()
         ps = window.getPosSize()
         x = round(ps.Width / 2 - self._width / 2)
@@ -439,7 +448,7 @@ class Runner:
         self._dialog.setTitle(self._title)
         self._dialog.setPosSize(x, y, self._width, self._height, PosSize.POSSIZE)
         self._dialog.setVisible(True)
-        ret = self._txt_input.getModel().Text if self._dialog.execute() else ""  # type: ignore
+        ret = self._txt_input.text if self._dialog.execute() else ""  # type: ignore
         self._dialog.dispose()
         return ret
 
@@ -511,6 +520,7 @@ class Runner:
         # print(event.source)
         # print(type(event.event_data))
         # event.event_data is com.sun.star.awt.ActionEvent
+        # pylint: disable=broad-except
         try:
             print("Cancel:", control_src.name)
             print("control_src", control_src)
@@ -527,6 +537,8 @@ class Runner:
     def on_mouse_exit(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
         # print(control_src)
         print("Mouse Exited:", control_src.name)
+        if isinstance(control_src, CtlDateField):
+            print("Date Mouse Exited")
 
     def on_text_changed(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
         print("Text Changed:", control_src.name)

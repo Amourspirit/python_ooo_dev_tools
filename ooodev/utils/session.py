@@ -3,8 +3,14 @@ from __future__ import annotations, unicode_literals
 import sys
 from typing import TYPE_CHECKING, cast
 from enum import Enum
+import getpass
+import os
+import os.path
+
 import uno
-import getpass, os, os.path
+from com.sun.star.util import XStringSubstitution
+from ooo.dyn.uno.deployment_exception import DeploymentException
+
 from ..meta.static_meta import StaticProperty, classproperty
 from ..events.args.event_args import EventArgs
 from ..events.lo_named_event import LoNamedEvent
@@ -12,14 +18,14 @@ from ..events.event_singleton import _Events
 from . import lo as mLo
 from ..exceptions import ex as mEx
 
-from com.sun.star.util import XStringSubstitution
-from ooo.dyn.uno.deployment_exception import DeploymentException
 
 # com.sun.star.uno.DeploymentException
 
 if TYPE_CHECKING:
     from com.sun.star.util import PathSubstitution  # service
     from com.sun.star.uno import XComponentContext
+
+# pylint: disable=unused-argument
 
 
 class PathKind(Enum):
@@ -83,6 +89,7 @@ class Session(metaclass=StaticProperty):
         Raises:
             com.sun.star.container.NoSuchElementException: ``NoSuchElementException``
         """
+        # pylint: disable=no-member
         return Session.path_sub.getSubstituteVariableValue(var_name)
 
     @classproperty
@@ -95,7 +102,7 @@ class Session(metaclass=StaticProperty):
             return cls._share
         except AttributeError:
             inst = uno.fileUrlToSystemPath(Session.substitute("$(prog)"))
-            cls._share = os.path.normpath(inst.replace("program", "Share"))
+            cls._share = os.path.normpath(inst.replace("program", "share"))
         return cls._share
 
     @classproperty
