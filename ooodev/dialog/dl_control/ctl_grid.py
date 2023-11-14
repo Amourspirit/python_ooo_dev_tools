@@ -1,17 +1,18 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, Iterable, Sequence, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
+
+# pylint: disable=useless-import-alias
+from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
+from com.sun.star.awt.grid import XMutableGridDataModel
 
 from ooodev.adapter.awt.grid.grid_selection_events import GridSelectionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
 from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.type_var import Table
-from .ctl_base import CtlListenerBase
-
-from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
-
-from com.sun.star.awt.grid import XMutableGridDataModel
+from .ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:
@@ -20,8 +21,10 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlGrid(CtlListenerBase, GridSelectionEvents):
+class CtlGrid(DialogControlBase, GridSelectionEvents):
     """Class for Grid Control"""
+
+    # pylint: disable=unused-argument
 
     # region init
     def __init__(self, ctl: UnoControlGrid) -> None:
@@ -32,7 +35,7 @@ class CtlGrid(CtlListenerBase, GridSelectionEvents):
             ctl (UnoControlGrid): Grid Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         GridSelectionEvents.__init__(self, trigger_args=generic_args, cb=self._on_grid_listener_add_remove)

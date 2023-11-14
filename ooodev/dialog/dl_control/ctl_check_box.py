@@ -1,13 +1,15 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-
+import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.item_events import ItemEvents
+
+# pylint: disable=useless-import-alias
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:
@@ -16,8 +18,10 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlCheckBox(CtlListenerBase, ItemEvents):
+class CtlCheckBox(DialogControlBase, ItemEvents):
     """Class for CheckBox Control"""
+
+    # pylint: disable=unused-argument
 
     # region init
     def __init__(self, ctl: UnoControlCheckBox) -> None:
@@ -28,7 +32,7 @@ class CtlCheckBox(CtlListenerBase, ItemEvents):
             ctl (UnoControlCheckBox): Check Box Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_event_listener_add_remove)

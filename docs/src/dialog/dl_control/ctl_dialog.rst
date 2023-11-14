@@ -1,7 +1,7 @@
-Class CtlButton
+Class CtlDialog
 ===============
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_button.CtlButton
+.. autoclass:: ooodev.dialog.dl_control.ctl_dialog.CtlDialog
     :members:
     :undoc-members:
     :show-inheritance:

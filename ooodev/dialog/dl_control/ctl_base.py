@@ -2,12 +2,13 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING
-import uno
+import uno  # pylint: disable=unused-import
 import unohelper
 
 from com.sun.star.awt import XView
 from com.sun.star.awt import XWindow
 from com.sun.star.beans import XPropertySet
+from ooo.dyn.awt.pos_size import PosSize
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.adapter.awt.focus_events import FocusEvents
@@ -19,13 +20,13 @@ from ooodev.adapter.awt.window_events import WindowEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
 
-from ooo.dyn.awt.pos_size import PosSize
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControlModel
     from com.sun.star.awt import XControl
-
 # endregion imports
+
+# pylint: disable=unused-argument
 
 
 class CtlBase(unohelper.Base):
@@ -33,8 +34,11 @@ class CtlBase(unohelper.Base):
 
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
-        self._ctl_view = ctl
         self._set_listeners = set()
+        self._set_control(ctl)
+
+    def _set_control(self, ctl: Any) -> None:
+        self._ctl_view = ctl
 
     def __getattr__(self, name: str) -> Any:
         # this is mostly for backwards compatibility
@@ -224,6 +228,13 @@ class CtlListenerBase(
 
     # endregion Dunder Methods
 
+    # region Overrides
+    def get_uno_srv_name(self) -> str:
+        """Get Uno service name"""
+        raise NotImplementedError
+
+    # endregion Overrides
+
     # region Lazy Listeners
 
     # Listeners such as mouse, mouse motion, focus, key, paint, and window are added lazily.
@@ -283,3 +294,17 @@ class CtlListenerBase(
         self._add_listener(key)
 
     # endregion Lazy Listeners
+
+
+class DialogControlBase(CtlListenerBase):
+    """Dialog Control Base Class. Only for Controls that have a model that can be added to a dialog"""
+
+    def __init__(self, ctl: Any) -> None:
+        CtlListenerBase.__init__(self, ctl)
+
+    # region Overrides
+    def get_uno_srv_name(self) -> str:
+        """Get Uno service name"""
+        raise NotImplementedError
+
+    # endregion Overrides

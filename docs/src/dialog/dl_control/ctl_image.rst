@@ -5,3 +5,4 @@ Class CtlImage
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

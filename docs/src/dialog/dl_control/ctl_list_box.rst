@@ -5,3 +5,4 @@ Class CtlListBox
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

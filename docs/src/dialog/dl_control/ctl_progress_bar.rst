@@ -5,3 +5,4 @@ Class CtlProgressBar
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

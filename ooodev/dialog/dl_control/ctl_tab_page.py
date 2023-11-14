@@ -1,12 +1,13 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.container.container_events import ContainerEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import info as mInfo
 
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tab import UnoControlTabPage  # service
@@ -14,8 +15,10 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlTabPage(CtlListenerBase, ContainerEvents):
+class CtlTabPage(DialogControlBase, ContainerEvents):
     """Class for Tab Page Control"""
+
+    # pylint: disable=unused-argument
 
     # region init
     def __init__(self, ctl: UnoControlTabPage) -> None:
@@ -26,7 +29,7 @@ class CtlTabPage(CtlListenerBase, ContainerEvents):
             ctl (UnoControlTabPage): Tab Page Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ContainerEvents.__init__(self, trigger_args=generic_args, cb=self._on_container_listener_add_remove)

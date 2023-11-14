@@ -48,7 +48,7 @@ class Tree:
         _ = Dialogs.create_dialog_peer(self._dialog)
 
         self._tree1 = Dialogs.insert_tree_control(
-            dialog_ctrl=self._dialog,
+            dialog_ctrl=self._dialog.control,
             x=self._padding,
             y=self._padding,
             width=self._width - (self._padding * 2),

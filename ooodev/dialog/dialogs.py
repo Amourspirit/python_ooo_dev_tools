@@ -1,44 +1,13 @@
 # coding: utf-8
+# pylint: disable=too-many-lines
 # region Imports
 from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING, Any, Iterable, Tuple, cast
 import uno
 
-from ..utils import lo as mLo
-from ..utils.date_time_util import DateUtil
-from ..utils.kind.align_kind import AlignKind as AlignKind
-from ..utils.kind.border_kind import BorderKind as BorderKind
-from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
-from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
-from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
-from ..utils.kind.state_kind import StateKind as StateKind
-from ..utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
-from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
-from .dl_control.ctl_button import CtlButton
-from .dl_control.ctl_check_box import CtlCheckBox
-from .dl_control.ctl_combo_box import CtlComboBox
-from .dl_control.ctl_currency_field import CtlCurrencyField
-from .dl_control.ctl_date_field import CtlDateField
-from .dl_control.ctl_file import CtlFile
-from .dl_control.ctl_fixed_line import CtlFixedLine
-from .dl_control.ctl_fixed_text import CtlFixedText
-from .dl_control.ctl_formatted_field import CtlFormattedField
-from .dl_control.ctl_grid import CtlGrid
-from .dl_control.ctl_group_box import CtlGroupBox
-from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
-from .dl_control.ctl_image import CtlImage
-from .dl_control.ctl_list_box import CtlListBox
-from .dl_control.ctl_numeric_field import CtlNumericField
-from .dl_control.ctl_pattern_field import CtlPatternField
-from .dl_control.ctl_progress_bar import CtlProgressBar
-from .dl_control.ctl_radio_button import CtlRadioButton
-from .dl_control.ctl_scroll_bar import CtlScrollBar
-from .dl_control.ctl_tab_page import CtlTabPage
-from .dl_control.ctl_tab_page_container import CtlTabPageContainer
-from .dl_control.ctl_text_edit import CtlTextEdit
-from .dl_control.ctl_time_field import CtlTimeField
-from .dl_control.ctl_tree import CtlTree
+# pylint: disable=useless-import-alias
+# pylint: disable=unused-import
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
@@ -63,10 +32,46 @@ from ooo.dyn.awt.pos_size import PosSize as PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType as PushButtonType
 from ooo.dyn.style.vertical_alignment import VerticalAlignment as VerticalAlignment
 from ooo.dyn.view.selection_type import SelectionType as SelectionType
-
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
+from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
-# from com.sun.star.style import HorizontalAlignment as HorizontalAlignment
+from ..exceptions import ex as mEx
+from ..utils import lo as mLo
+from ..utils.date_time_util import DateUtil
+from ..utils.kind.align_kind import AlignKind as AlignKind
+from ..utils.kind.border_kind import BorderKind as BorderKind
+from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
+from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
+from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
+from ..utils.kind.state_kind import StateKind as StateKind
+from ..utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
+from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from .dl_control.ctl_button import CtlButton
+from .dl_control.ctl_check_box import CtlCheckBox
+from .dl_control.ctl_combo_box import CtlComboBox
+from .dl_control.ctl_currency_field import CtlCurrencyField
+from .dl_control.ctl_date_field import CtlDateField
+from .dl_control.ctl_dialog import CtlDialog
+from .dl_control.ctl_file import CtlFile
+from .dl_control.ctl_fixed_line import CtlFixedLine
+from .dl_control.ctl_fixed_text import CtlFixedText
+from .dl_control.ctl_formatted_field import CtlFormattedField
+from .dl_control.ctl_grid import CtlGrid
+from .dl_control.ctl_group_box import CtlGroupBox
+from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
+from .dl_control.ctl_image import CtlImage
+from .dl_control.ctl_list_box import CtlListBox
+from .dl_control.ctl_numeric_field import CtlNumericField
+from .dl_control.ctl_pattern_field import CtlPatternField
+from .dl_control.ctl_progress_bar import CtlProgressBar
+from .dl_control.ctl_radio_button import CtlRadioButton
+from .dl_control.ctl_scroll_bar import CtlScrollBar
+from .dl_control.ctl_tab_page import CtlTabPage
+from .dl_control.ctl_tab_page_container import CtlTabPageContainer
+from .dl_control.ctl_text_edit import CtlTextEdit
+from .dl_control.ctl_time_field import CtlTimeField
+from .dl_control.ctl_tree import CtlTree
+
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlButton  # service
@@ -343,23 +348,23 @@ class Dialogs:
         height: int,
         title: str,
         **props: Any,
-    ) -> UnoControlDialog:
+    ) -> CtlDialog:
         """
         Creates a dialog
 
         Args:
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int): Height
-            title (str): title
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int): Height. If ``-1``, the dialog Size is not set.
+            title (str): Dialog title.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create dialog.
+            DialogError: If unable to create dialog.
 
         Returns:
-            UnoControlDialog: Control
+            CtlDialog: Control
 
         See Also:
             `API UnoControlDialogModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogModel.html>`_
@@ -389,12 +394,12 @@ class Dialogs:
                 ctl_props.setPropertyValue(k, v)
 
             cls._set_size_pos(dialog_ctrl, x, y, width, height)
-            return dialog_ctrl
+            return CtlDialog(dialog_ctrl)
         except Exception as e:
-            raise Exception(f"Could not create dialog control: {e}") from e
+            raise mEx.DialogError(f"Could not create dialog control: {e}") from e
 
     @classmethod
-    def create_dialog_peer(cls, dialog_ctrl: XControl) -> XDialog:
+    def create_dialog_peer(cls, dialog_ctrl: XControl | CtlDialog) -> XDialog:
         """
         Gets a dialog
 
@@ -404,7 +409,11 @@ class Dialogs:
         Returns:
             XDialog: Dialog
         """
-        xwindow = mLo.Lo.qi(XWindow, dialog_ctrl, True)
+        if isinstance(dialog_ctrl, CtlDialog):
+            ctrl = dialog_ctrl.control
+        else:
+            ctrl = dialog_ctrl
+        xwindow = mLo.Lo.qi(XWindow, ctrl, True)
         # set the dialog window invisible until it is executed
         xwindow.setVisible(False)
 
@@ -417,7 +426,7 @@ class Dialogs:
         # dialog_component.dispose() # free window resources
         # commented out or the Add-on dialog crashes when called a second time
         # because createPeer() cannot find a model
-        return cls.get_dialog(dialog_ctrl)
+        return cls.get_dialog(ctrl)
 
     # endregion create a dialog
 
@@ -480,16 +489,16 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): control
             label (str): Button Label
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height. Defaults to 20.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             btn_type (PushButtonType | None, optional): Type of Button.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create button control
+            DialogError: If unable to create button control
 
         Returns:
             CtlButton: Button control
@@ -534,7 +543,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlButton(result)
         except Exception as e:
-            raise Exception(f"Could not create button control: {e}") from e
+            raise mEx.DialogError(f"Could not create button control: {e}") from e
 
     @classmethod
     def insert_check_box(
@@ -558,10 +567,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control
             label (str): Checkbox label text
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to ``8``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``8``. If ``-1``, the dialog Size is not set.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``TriStateKind.CHECKED``.
             state (int, optional): specifies the state of the control. Defaults to ``1``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -569,7 +578,7 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create checkbox control.
+            DialogError: If unable to create checkbox control.
 
         Returns:
             CtlCheckBox: Check box control
@@ -610,7 +619,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlCheckBox(result)
         except Exception as e:
-            raise Exception(f"Could not create check box control: {e}") from e
+            raise mEx.DialogError(f"Could not create check box control: {e}") from e
 
     @classmethod
     def insert_combo_box(
@@ -621,7 +630,7 @@ class Dialogs:
         x: int,
         y: int,
         width: int,
-        height: int = 12,
+        height: int = 20,
         max_text_len: int = 0,
         drop_down: bool = True,
         read_only: bool = False,
@@ -635,10 +644,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control
             entries (Iterable[str]): Combo box entries
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to 12.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to 0.
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to True.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to False.
@@ -647,7 +656,7 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create combo box control
+            DialogError: If unable to create combo box control
 
         Returns:
             CtlComboBox: Combo box control
@@ -693,7 +702,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlComboBox(result)
         except Exception as e:
-            raise Exception(f"Could not create combo box control: {e}") from e
+            raise mEx.DialogError(f"Could not create combo box control: {e}") from e
 
     @classmethod
     def insert_currency_field(
@@ -703,10 +712,10 @@ class Dialogs:
         x: int,
         y: int,
         width: int,
-        height: int = 12,
+        height: int = 20,
         value: float = 0.0,
-        min: float = -1000000.0,
-        max: float = 1000000.0,
+        min_value: float = -1000000.0,
+        max_value: float = 1000000.0,
         spin_button: bool = False,
         increment: int = 1,
         accuracy: int = 2,
@@ -719,13 +728,13 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to ``12``.
-            value (float, optional): Control Value. Defaults to 0.0.
-            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
-            max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            value (float, optional): Control Value. Defaults to ``0.0``.
+            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
+            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
@@ -734,7 +743,7 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create currency field box control
+            DialogError: If unable to create currency field box control
 
         Returns:
             CtlCurrencyField: Currency field control.
@@ -753,8 +762,8 @@ class Dialogs:
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
 
-            ctl_props.setPropertyValue("ValueMin", min)
-            ctl_props.setPropertyValue("ValueMax", max)
+            ctl_props.setPropertyValue("ValueMin", min_value)
+            ctl_props.setPropertyValue("ValueMax", max_value)
             ctl_props.setPropertyValue("ValueStep", increment)
             ctl_props.setPropertyValue("Spin", spin_button)
             ctl_props.setPropertyValue("Value", value)
@@ -777,7 +786,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlCurrencyField(result)
         except Exception as e:
-            raise Exception(f"Could not create text field control: {e}") from e
+            raise mEx.DialogError(f"Could not create currency field control: {e}") from e
 
     @classmethod
     def insert_date_field(
@@ -802,10 +811,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to ``20``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
             min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
             max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
@@ -816,7 +825,7 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create date field control
+            DialogError: If unable to create date field control
 
         Returns:
             CtlDateField: Date field control
@@ -857,7 +866,7 @@ class Dialogs:
             ctl.date_format = date_format
             return ctl
         except Exception as e:
-            raise Exception(f"Could not create text field control: {e}") from e
+            raise mEx.DialogError(f"Could not create text field control: {e}") from e
 
     @classmethod
     def insert_file_control(
@@ -877,16 +886,16 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height. Defaults to ``20``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create file control control
+            DialogError: If unable to create file control
 
         Returns:
             CtlFile: File Control
@@ -922,7 +931,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlFile(result)
         except Exception as e:
-            raise Exception(f"Could not create file control: {e}") from e
+            raise mEx.DialogError(f"Could not create file control: {e}") from e
 
     @classmethod
     def insert_fixed_line(
@@ -942,16 +951,16 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height. Defaults to ``1``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``1``. If ``-1``, the dialog Size is not set.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create file control control
+            DialogError: If unable to create fixed line control
 
         Returns:
             CtlFixedLine: Fixed Line Control
@@ -985,7 +994,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlFixedLine(result)
         except Exception as e:
-            raise Exception(f"Could not create fixed line control: {e}") from e
+            raise mEx.DialogError(f"Could not create fixed line control: {e}") from e
 
     @classmethod
     def insert_formatted_field(
@@ -997,8 +1006,8 @@ class Dialogs:
         width: int,
         height: int = 20,
         value: float | None = None,
-        min: float = -1000000.0,
-        max: float = 1000000.0,
+        min_value: float = -1000000.0,
+        max_value: float = 1000000.0,
         spin_button: bool = False,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
@@ -1009,23 +1018,23 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to ``12``.
-            value (float, optional): Control Value. Defaults to 0.0.
-            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
-            max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            value (float, optional): Control Value. Defaults to ``0.0``.
+            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
+            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create formatted field control control
+            DialogError: If unable to create formatted field control
 
         Returns:
-            CtlFormattedField: File Control
+            CtlFormattedField: Formatted Field
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1041,8 +1050,8 @@ class Dialogs:
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
-            ctl_props.setPropertyValue("EffectiveMin", min)
-            ctl_props.setPropertyValue("EffectiveMax", max)
+            ctl_props.setPropertyValue("EffectiveMin", min_value)
+            ctl_props.setPropertyValue("EffectiveMax", max_value)
             ctl_props.setPropertyValue("Spin", spin_button)
             ctl_props.setPropertyValue("Border", int(border))
             if value is not None:
@@ -1063,7 +1072,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlFormattedField(result)
         except Exception as e:
-            raise Exception(f"Could not create formatted field control control: {e}") from e
+            raise mEx.DialogError(f"Could not create formatted field control: {e}") from e
 
     @classmethod
     def insert_group_box(
@@ -1083,16 +1092,16 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. If ``-1``, the dialog Size is not set.
             label (str, optional): Group box label.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create group box control control
+            DialogError: If unable to create group box control
 
         Returns:
             CtlGroupBox: Group box Control
@@ -1128,7 +1137,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlGroupBox(result)
         except Exception as e:
-            raise Exception(f"Could not create Group box control: {e}") from e
+            raise mEx.DialogError(f"Could not create Group box control: {e}") from e
 
     @classmethod
     def insert_hyperlink(
@@ -1155,10 +1164,10 @@ class Dialogs:
             dialog_ctrl (XControl): control
             label (str): Hyperlink label
             url (str): Hyperlink URL
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height. Defaults to ``20``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             align (AlignKind, optional): Horizontal alignment. Defaults to ``AlignKind.LEFT``.
             vert_align (VerticalAlignment, optional): Vertical alignment. Defaults to ``VerticalAlignment.TOP``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
@@ -1167,10 +1176,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create group box control control
+            DialogError: If unable to create Hyperlink control
 
         Returns:
-            CtlHyperlinkFixed: Group box Control
+            CtlHyperlinkFixed: Hyperlink Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1212,7 +1221,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlHyperlinkFixed(result)
         except Exception as e:
-            raise Exception(f"Could not create Group box control: {e}") from e
+            raise mEx.DialogError(f"Could not create Hyperlink control: {e}") from e
 
     @classmethod
     def insert_image_control(
@@ -1234,16 +1243,17 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height. Defaults to ``20``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            scale (int | ImageScaleModeEnum, optional): Image scale mode. Defaults to ``ImageScaleModeEnum.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create image control
+            DialogError: If unable to create image control
 
         Returns:
             CtlImage: Image Control
@@ -1291,7 +1301,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlImage(result)
         except Exception as e:
-            raise Exception(f"Could not create file control: {e}") from e
+            raise mEx.DialogError(f"Could not create image control: {e}") from e
 
     @classmethod
     def insert_label(
@@ -1307,28 +1317,27 @@ class Dialogs:
         **props: Any,
     ) -> CtlFixedText:
         """
-        Insert a label into a control
+        Insert a Fixed Text into a control
 
         Args:
             dialog_ctrl (XControl): Control
             label (str): Contents of label
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Default ``20``
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create label
+            DialogError: If unable to create Fixed Text
 
         Returns:
-            CtlFixedText: control
+            CtlFixedText: Fixed Text Control
 
         See Also:
             `API UnoControlFixedTextModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlFixedTextModel.html>`_
         """
-        # sourcery skip: raise-specific-error
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
 
@@ -1355,7 +1364,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlFixedText(result)
         except Exception as e:
-            raise Exception(f"Could not create fixed text control: {e}") from e
+            raise mEx.DialogError(f"Could not create Fixed Text control: {e}") from e
 
     @classmethod
     def insert_list_box(
@@ -1381,20 +1390,20 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control
             entries (Iterable[str]): List box entries
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to 40.
-            drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to True.
-            read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to False.
-            line_count (int, optional): Specifies the number of lines to display. Defaults to 5.
-            multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to False.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``100``. If ``-1``, the dialog Size is not set.
+            drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``False``.
+            read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
+            line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
+            multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create list box control
+            DialogError: If unable to create list box control
 
         Returns:
             CtlListBox: List box control
@@ -1437,7 +1446,7 @@ class Dialogs:
             ctl.set_list_data(entries)
             return ctl
         except Exception as e:
-            raise Exception(f"Could not create list box control: {e}") from e
+            raise mEx.DialogError(f"Could not create list box control: {e}") from e
 
     @classmethod
     def insert_password_field(
@@ -1448,7 +1457,7 @@ class Dialogs:
         x: int,
         y: int,
         width: int,
-        height: int = 12,
+        height: int = 20,
         border: BorderKind = BorderKind.NONE,
         name: str = "",
         **props: Any,
@@ -1459,16 +1468,16 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control
             text (str): Text value
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to ``12``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create text field
+            DialogError: If unable to create text field
 
         Returns:
             CtlTextEdit: Text Field Control
@@ -1497,7 +1506,7 @@ class Dialogs:
         x: int,
         y: int,
         width: int,
-        height: int,
+        height: int = 20,
         edit_mask: str = "",
         literal_mask: str = "",
         border: BorderKind = BorderKind.BORDER_3D,
@@ -1509,10 +1518,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Default``20``. If ``-1``, the dialog Size is not set.
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -1520,7 +1529,7 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create pattern field control control
+            DialogError: If unable to create pattern field control
 
         Returns:
             CtlPatternField: Pattern Field Control
@@ -1558,7 +1567,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlPatternField(result)
         except Exception as e:
-            raise Exception(f"Could not create numeric field control: {e}") from e
+            raise mEx.DialogError(f"Could not create pattern field control: {e}") from e
 
     @classmethod
     def insert_numeric_field(
@@ -1568,10 +1577,10 @@ class Dialogs:
         x: int,
         y: int,
         width: int,
-        height: int,
+        height: int = 20,
         value: float | None = None,
-        min: float = -1000000.0,
-        max: float = 1000000.0,
+        min_value: float = -1000000.0,
+        max_value: float = 1000000.0,
         spin_button: bool = False,
         increment: int = 1,
         accuracy: int = 2,
@@ -1580,17 +1589,17 @@ class Dialogs:
         **props: Any,
     ) -> CtlNumericField:
         """
-        Create a new control of type GroupBox in the actual dialog.
+        Create a new control of type NumericField in the actual dialog.
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height.
-            value (float, optional): Control Value. Defaults to 0.0.
-            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
-            max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
+            value (float, optional): Control Value. Defaults to ``0.0``.
+            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
+            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
@@ -1599,10 +1608,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create numeric field control control
+            DialogError: If unable to create numeric field control
 
         Returns:
-            CtlNumericField: Group box Control
+            CtlNumericField: Numeric Field Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1619,8 +1628,8 @@ class Dialogs:
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Border", int(border))
-            ctl_props.setPropertyValue("ValueMin", min)
-            ctl_props.setPropertyValue("ValueMax", max)
+            ctl_props.setPropertyValue("ValueMin", min_value)
+            ctl_props.setPropertyValue("ValueMax", max_value)
             ctl_props.setPropertyValue("ValueStep", increment)
             ctl_props.setPropertyValue("DecimalAccuracy", accuracy)
             ctl_props.setPropertyValue("Spin", spin_button)
@@ -1643,7 +1652,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlNumericField(result)
         except Exception as e:
-            raise Exception(f"Could not create numeric field control: {e}") from e
+            raise mEx.DialogError(f"Could not create numeric field control: {e}") from e
 
     @classmethod
     def insert_progress_bar(
@@ -1654,34 +1663,34 @@ class Dialogs:
         y: int,
         width: int,
         height: int,
-        min: int = 0,
-        max: int = 100,
+        min_value: int = 0,
+        max_value: int = 100,
         value: int = 0,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
     ) -> CtlProgressBar:
         """
-        Create a new control of type GroupBox in the actual dialog.
+        Create a new control of type Progress Control in the actual dialog.
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height.
-            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``1``.
-            max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int): Height. If ``-1``, the dialog Size is not set.
+            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
+            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             value (int, optional): The value initial value of the progress bar. Defaults to ``0``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create numeric field control control
+            DialogError: If unable to create numeric field control
 
         Returns:
-            CtlProgressBar: Group box Control
+            CtlProgressBar: Progress Bar Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1696,8 +1705,8 @@ class Dialogs:
             # set properties in the model
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Border", int(border))
-            ctl_props.setPropertyValue("ProgressValueMin", min)
-            ctl_props.setPropertyValue("ProgressValueMax", max)
+            ctl_props.setPropertyValue("ProgressValueMin", min_value)
+            ctl_props.setPropertyValue("ProgressValueMax", max_value)
             ctl_props.setPropertyValue("ProgressValue", value)
             ctl_props.setPropertyValue("Name", name)
 
@@ -1716,7 +1725,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlProgressBar(result)
         except Exception as e:
-            raise Exception(f"Could not create numeric field control: {e}") from e
+            raise mEx.DialogError(f"Could not create Progress Bar control: {e}") from e
 
     @classmethod
     def insert_radio_button(
@@ -1738,16 +1747,16 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control
             label (str): Contents of label
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Default ``20``
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create radio button
+            DialogError: If unable to create radio button
 
         Returns:
             CtlRadioButton: Radio button control
@@ -1782,7 +1791,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlRadioButton(result)
         except Exception as e:
-            raise Exception(f"Could not create radio button control: {e}") from e
+            raise mEx.DialogError(f"Could not create radio button control: {e}") from e
 
     @classmethod
     def insert_scroll_bar(
@@ -1793,8 +1802,8 @@ class Dialogs:
         y: int,
         width: int,
         height: int,
-        min: int = 0,
-        max: int = 100,
+        min_value: int = 0,
+        max_value: int = 100,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
@@ -1805,22 +1814,22 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height.
-            min (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
-            max (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int): Height. If ``-1``, the dialog Size is not set.
+            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
+            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create numeric field control control
+            DialogError: If unable to create scroll bar control
 
         Returns:
-            CtlScrollBar: Group box Control
+            CtlScrollBar: Scroll Bar Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1832,8 +1841,8 @@ class Dialogs:
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("Orientation", int(orientation))
-            ctl_props.setPropertyValue("ScrollValueMin", min)
-            ctl_props.setPropertyValue("ScrollValueMax", max)
+            ctl_props.setPropertyValue("ScrollValueMin", min_value)
+            ctl_props.setPropertyValue("ScrollValueMax", max_value)
             ctl_props.setPropertyValue("Name", name)
 
             # set any extra user properties
@@ -1851,7 +1860,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlScrollBar(result)
         except Exception as e:
-            raise Exception(f"Could not create numeric field control: {e}") from e
+            raise mEx.DialogError(f"Could not create scroll bar control: {e}") from e
 
     @classmethod
     def insert_tab_control(
@@ -1870,15 +1879,15 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height. Defaults to ``1``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``1``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
 
         Raises:
-            Exception: If unable to create file control control
+            DialogError: If unable to create tab control
 
         Returns:
             CtlTabPageContainer: Tab Control
@@ -1889,7 +1898,7 @@ class Dialogs:
         try:
             dialog = cast("UnoControlDialog", cls.get_dialog(dialog_ctrl))
             if not dialog or not cast(XServiceInfo, dialog).supportsService("com.sun.star.awt.UnoControlDialog"):
-                raise Exception("Could not get dialog")
+                raise mEx.DialogError("Could not get dialog")
             dialog_model = cast("UnoControlDialogModel", dialog.getModel())
             model = cast(
                 "UnoControlTabPageContainerModel",
@@ -1915,7 +1924,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlTabPageContainer(result)
         except Exception as e:
-            raise Exception(f"Could not create Tab control: {e}") from e
+            raise mEx.DialogError(f"Could not create Tab control: {e}") from e
 
     @classmethod
     def insert_tab_page(
@@ -1929,7 +1938,7 @@ class Dialogs:
         **props: Any,
     ) -> CtlTabPage:
         """
-        Create a new control of type Tab in the actual tab control.
+        Create a new control of type Tab Page in the actual tab control.
 
         Args:
             tab_ctrl (CtlTabPageContainer): Tab Container
@@ -1938,10 +1947,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create file control control
+            DialogError: If unable to create tab page control
 
         Returns:
-            CtlTabPage: Tab Control
+            CtlTabPage: Tab Page Control
 
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_tab_control`
@@ -1968,10 +1977,10 @@ class Dialogs:
             if not tab_ctrl or not cast(XServiceInfo, tab_ctrl.view).supportsService(
                 "com.sun.star.awt.tab.UnoControlTabPageContainer"
             ):
-                raise Exception("Not a valid UnoControlTabPageContainer")
+                raise mEx.DialogError("Not a valid UnoControlTabPageContainer")
             dialog = cast("UnoControlDialog", cls.get_dialog(dialog_ctrl))
             if not dialog or not cast(XServiceInfo, dialog).supportsService("com.sun.star.awt.UnoControlDialog"):
-                raise Exception("Could not get dialog")
+                raise mEx.DialogError("Could not get dialog")
             dialog_model = cast("UnoControlDialogModel", dialog.getModel())
             model = cast(
                 "UnoControlTabPageModel", dialog_model.createInstance("com.sun.star.awt.tab.UnoControlTabPageModel")
@@ -2002,7 +2011,7 @@ class Dialogs:
             return None  # type: ignore
 
         except Exception as e:
-            raise Exception(f"Could not create Tab control: {e}") from e
+            raise mEx.DialogError(f"Could not create Tab Page control: {e}") from e
 
     @classmethod
     def insert_table_control(
@@ -2028,10 +2037,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int): Height. If ``-1``, the dialog Size is not set.
             row_header (bool, optional): Specifies if the control has a row header. Defaults to ``True``.
             col_header (bool, optional): Specifies if the control has a column header. Defaults to ``True``.
             grid_lines (bool, optional): Specifies if the control has grid lines. when True horizontal and vertical lines are painted between the grid cells. Defaults to ``False``.
@@ -2041,7 +2050,7 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create table control control
+            DialogError: If unable to create table control
 
         Returns:
             CtlGrid: Table Control
@@ -2089,7 +2098,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlGrid(result)
         except Exception as e:
-            raise Exception(f"Could not create Table control: {e}") from e
+            raise mEx.DialogError(f"Could not create Table control: {e}") from e
 
     @classmethod
     def insert_text_field(
@@ -2100,7 +2109,7 @@ class Dialogs:
         x: int,
         y: int,
         width: int,
-        height: int = 12,
+        height: int = 20,
         echo_char: str = "",
         border: BorderKind = BorderKind.NONE,
         name: str = "",
@@ -2112,17 +2121,17 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control
             text (str): Text value
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to ``12``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create text field
+            DialogError: If unable to create text field
 
         Returns:
             CtlTextEdit: Text Field Control
@@ -2164,7 +2173,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)
             return CtlTextEdit(result)
         except Exception as e:
-            raise Exception(f"Could not create text field control: {e}") from e
+            raise mEx.DialogError(f"Could not create text field control: {e}") from e
 
     @classmethod
     def insert_tree_control(
@@ -2180,23 +2189,23 @@ class Dialogs:
         **props: Any,
     ) -> CtlTree:
         """
-        Create a new control of type GroupBox in the actual dialog.
+        Create a new control of type Tree in the actual dialog.
 
         Args:
             dialog_ctrl (XControl): control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): width
-            height (int, optional): Height.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int): Height. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create group box control control
+            DialogError: If unable to create Tree control
 
         Returns:
-            CtlTree: Group box Control
+            CtlTree: Tree Control
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -2238,7 +2247,7 @@ class Dialogs:
             cls._set_size_pos(result, x, y, width, height)  # type: ignore
             return CtlTree(result)
         except Exception as e:
-            raise Exception(f"Could not create Group box control: {e}") from e
+            raise mEx.DialogError(f"Could not create Tree control: {e}") from e
 
     @classmethod
     def insert_time_field(
@@ -2259,28 +2268,28 @@ class Dialogs:
         **props: Any,
     ) -> CtlTimeField:
         """
-        Create a new control of type DateField in the actual dialog.
+        Create a new control of type TimeField in the actual dialog.
 
         Args:
             dialog_ctrl (XControl): Control
-            x (int): X coordinate
-            y (int): Y coordinate
-            width (int): Width
-            height (int, optional): Height. Defaults to ``20``.
-            time_value (datetime.datetime | None, optional): Specifics the control time. Defaults to ``None``.
-            min_time (datetime.datetime, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
-            max_time (datetime.datetime, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
-            time_format (DateFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
+            min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
+            max_time (datetime.time, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
+            time_format (TimeFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            Exception: If unable to create date field control
+            DialogError: If unable to create time field control
 
         Returns:
-            CtlTimeField: Date field control
+            CtlTimeField: Time field control
         """
         # sourcery skip: raise-specific-error
         try:
@@ -2318,7 +2327,7 @@ class Dialogs:
             ctl.time_format = time_format
             return ctl
         except Exception as e:
-            raise Exception(f"Could not create text field control: {e}") from e
+            raise mEx.DialogError(f"Could not create text field control: {e}") from e
 
     # endregion    add components to a dialog
 

@@ -1,17 +1,18 @@
 # region imports
 from __future__ import annotations
 from collections import defaultdict
-import re
 from typing import Any, cast, Dict, Sequence, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
+
+from com.sun.star.awt.tree import XMutableTreeDataModel
 
 from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
 from ooodev.adapter.awt.tree.tree_edit_events import TreeEditEvents
 from ooodev.adapter.awt.tree.tree_expansion_events import TreeExpansionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
-from com.sun.star.awt.tree import XMutableTreeDataModel
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tree import TreeControl  # service
@@ -21,10 +22,12 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlTree(CtlListenerBase, SelectionChangeEvents, TreeEditEvents, TreeExpansionEvents):
+class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpansionEvents):
     """Class for Tree Control"""
 
     # The API docs does not show it but the Tree Control does support the standard UNO events in CtlListenerBase.
+
+    # pylint: disable=unused-argument
 
     # region init
     def __init__(self, ctl: TreeControl) -> None:
@@ -35,7 +38,7 @@ class CtlTree(CtlListenerBase, SelectionChangeEvents, TreeEditEvents, TreeExpans
             ctl (TreeControl): Tree Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SelectionChangeEvents.__init__(

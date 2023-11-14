@@ -2,13 +2,16 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import datetime
+import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+
+# pylint: disable=useless-import-alias
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ooodev.utils.date_time_util import DateUtil
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDateField  # service
@@ -16,8 +19,10 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlDateField(CtlListenerBase, SpinEvents, TextEvents):
+class CtlDateField(DialogControlBase, SpinEvents, TextEvents):
     """Class for Date Field Control"""
+
+    # pylint: disable=unused-argument
 
     # region init
     def __init__(self, ctl: UnoControlDateField) -> None:
@@ -28,7 +33,7 @@ class CtlDateField(CtlListenerBase, SpinEvents, TextEvents):
             ctl (UnoControlDateField): Date Field Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)

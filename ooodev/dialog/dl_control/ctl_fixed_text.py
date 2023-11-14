@@ -1,8 +1,9 @@
 # region imports
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFixedText  # service
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlFixedText(CtlListenerBase):
+class CtlFixedText(DialogControlBase):
     """Class for Fixed Text Control"""
 
     # region init
@@ -22,7 +23,7 @@ class CtlFixedText(CtlListenerBase):
             ctl (UnoControlFixedText): Fixed Text Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
 
     # endregion init
 

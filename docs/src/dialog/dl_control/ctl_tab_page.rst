@@ -5,3 +5,4 @@ Class CtlTabPage
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

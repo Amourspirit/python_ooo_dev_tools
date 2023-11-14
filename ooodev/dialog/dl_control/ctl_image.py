@@ -1,10 +1,12 @@
 # region imports
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 
+# pylint: disable=useless-import-alias
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlImageControl  # service
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlImage(CtlListenerBase):
+class CtlImage(DialogControlBase):
     """Class for Image Control"""
 
     # region init
@@ -24,7 +26,7 @@ class CtlImage(CtlListenerBase):
             ctl (UnoControlImageControl): Image Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
 
     # endregion init
 

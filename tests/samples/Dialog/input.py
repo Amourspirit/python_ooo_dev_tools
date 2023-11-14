@@ -40,58 +40,57 @@ class Input:
         Returns:
             str: The value of input or empty string.
         """
-        dialog = cast(
-            "UnoControlDialog",
-            mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
-        )
-        dialog_model = mLo.Lo.create_instance_mcf(
-            XControlModel, "com.sun.star.awt.UnoControlDialogModel", raise_err=True
-        )
-
-        dialog.setModel(dialog_model)
         width = 450
-        height = 90
+        height = 120
         btn_width = 100
         btn_height = 30
-        margin = 4
+        margin = 6
+        vert_margin = 12
         border_kind = BorderKind.BORDER_SIMPLE
+        dialog = Dialogs.create_dialog(
+            x=-1,
+            y=-1,
+            width=width,
+            height=height,
+            title=title,
+        )
 
         ctl_lbl = Dialogs.insert_label(
-            dialog_ctrl=dialog, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
+            dialog_ctrl=dialog.control, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
         )
         sz = ctl_lbl.view.getPosSize()
         if is_password:
             txt_input = Dialogs.insert_password_field(
-                dialog_ctrl=dialog,
+                dialog_ctrl=dialog.control,
                 text=input_value,
                 x=sz.X,
-                y=sz.Height + sz.Y + 4,
+                y=sz.Height + sz.Y + vert_margin,
                 width=sz.Width,
                 height=sz.Height,
                 border=border_kind,
             )
         else:
             txt_input = Dialogs.insert_text_field(
-                dialog_ctrl=dialog,
+                dialog_ctrl=dialog.control,
                 text=input_value,
                 x=sz.X,
-                y=sz.Height + sz.Y + 4,
+                y=sz.Height + sz.Y + vert_margin,
                 width=sz.Width,
                 height=sz.Height,
                 border=border_kind,
             )
         ctl_btn_cancel = Dialogs.insert_button(
-            dialog_ctrl=dialog,
+            dialog_ctrl=dialog.control,
             label=cancel_lbl,
             x=width - btn_width - margin,
-            y=height - btn_height - margin,
+            y=height - btn_height - vert_margin,
             width=btn_width,
             height=btn_height,
             btn_type=PushButtonType.CANCEL,
         )
         sz = ctl_btn_cancel.view.getPosSize()
         _ = Dialogs.insert_button(
-            dialog_ctrl=dialog,
+            dialog_ctrl=dialog.control,
             label=ok_lbl,
             x=sz.X - sz.Width - margin,
             y=sz.Y,
@@ -104,10 +103,9 @@ class Input:
         ps = window.getPosSize()
         x = round(ps.Width / 2 - width / 2)
         y = round(ps.Height / 2 - height / 2)
-        dialog.setTitle(title)
-        dialog.setPosSize(x, y, width, height, PosSize.POSSIZE)
-        dialog.setVisible(True)
-        ret = txt_input.getModel().Text if dialog.execute() else ""  # type: ignore
+        dialog.set_pos_size(x, y, width, height, PosSize.POSSIZE)
+        dialog.set_visible(True)
+        ret = txt_input.text if dialog.execute() else ""  # type: ignore
         dialog.dispose()
         return ret
 

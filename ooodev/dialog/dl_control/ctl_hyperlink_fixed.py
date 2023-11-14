@@ -1,11 +1,11 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-
+import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFixedHyperlink  # service
@@ -13,8 +13,10 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlHyperlinkFixed(CtlListenerBase, ActionEvents):
+class CtlHyperlinkFixed(DialogControlBase, ActionEvents):
     """Class for Fixed Hyperlink Control"""
+
+    # pylint: disable=unused-argument
 
     # region init
     def __init__(self, ctl: UnoControlFixedHyperlink) -> None:
@@ -25,7 +27,7 @@ class CtlHyperlinkFixed(CtlListenerBase, ActionEvents):
             ctl (UnoControlFixedHyperlink): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)

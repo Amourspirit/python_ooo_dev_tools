@@ -1,6 +1,7 @@
+# pylint: disable=wrong-import-order
 # region dialogs
 from ooo.dyn.awt.push_button_type import PushButtonType as PushButtonType
-from ooo.dyn.awt.pos_size import PosSize as PosSize
+from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment as VerticalAlignment
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum

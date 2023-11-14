@@ -5,3 +5,4 @@ Class CtlRadioButton
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

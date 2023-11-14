@@ -5,3 +5,4 @@ Class CtlDateField
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

@@ -5,3 +5,4 @@ Class CtlCheckBox
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:

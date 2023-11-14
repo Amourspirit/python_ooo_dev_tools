@@ -2,14 +2,15 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
+
+# pylint: disable=useless-import-alias
+from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
 
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
-# com.sun.star.awt.LineEndFormat
-from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
-
-from .ctl_base import CtlListenerBase
+from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlEdit  # service
@@ -17,8 +18,10 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlTextEdit(CtlListenerBase, TextEvents):
+class CtlTextEdit(DialogControlBase, TextEvents):
     """Class for Text Edit Control"""
+
+    # pylint: disable=unused-argument
 
     # region init
     def __init__(self, ctl: UnoControlEdit) -> None:
@@ -29,7 +32,7 @@ class CtlTextEdit(CtlListenerBase, TextEvents):
             ctl (UnoControlEdit): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
-        CtlListenerBase.__init__(self, ctl)
+        DialogControlBase.__init__(self, ctl)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
