@@ -1,7 +1,7 @@
 .. _adapter:
 
-ooodev.adapter package
-======================
+adapter
+=======
 
 Subpackages
 -----------

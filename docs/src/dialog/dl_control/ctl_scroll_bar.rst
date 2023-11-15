@@ -15,16 +15,21 @@ A callback can be in the format of:
 
 .. code-block:: python
 
-    def on_some_event(self, src: Any, event: EventArgs, control_src: CtlScrollBar, *args, **kwargs) -> None:
+    def on_some_event(
+        src: Any, event: EventArgs, control_src: CtlScrollBar, *args, **kwargs
+    ) -> None:
         pass
 
 or
 
 .. code-block:: python
 
-    def on_some_event(self, src: Any, event: EventArgs, *args, **kwargs) -> None:
+    def on_some_event(src: Any, event: EventArgs, *args, **kwargs) -> None:
         # can get control from kwargs
         ctl = cast(CtlScrollBar, kwargs['control_src'])
+
+Class
+-----
 
 .. autoclass:: ooodev.dialog.dl_control.ctl_scroll_bar.CtlScrollBar
     :members:
