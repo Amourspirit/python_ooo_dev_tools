@@ -1,13 +1,20 @@
 from __future__ import annotations
 from typing import Dict, Any
 from enum import Enum
-import uno
+import uno  # pylint: disable=no-name-in-module
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils.data_type.offset import Offset
 from ooodev.utils.data_type.color_range import ColorRange
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.kind import kind_helper
 from ooodev.utils.color import Color
+
+# See Also:
+# MCGR - MultiColorGradients in LibreOffice - LibreOffice Conference 2023
+# https://www.youtube.com/watch?v=xULTLVm2CAM
+#
+# Using multicolor gradients in file markup - LibreOffice Conference 2023
+# https://youtu.be/X54R73Y7-Vs?si=9k5uD869PqHShr88
 
 
 class PresetGradientKind(Enum):

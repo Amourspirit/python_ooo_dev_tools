@@ -1,8 +1,0 @@
-view
-====
-
-.. toctree::
-    :titlesonly:
-    :glob:
-
-    *

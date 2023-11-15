@@ -4,8 +4,10 @@
 from __future__ import annotations
 import contextlib
 import re
-from typing import Iterable, Iterator, NamedTuple, Any, Sequence, Type, TypeVar
+from typing import Iterator, NamedTuple, Any, Sequence, TypeVar
 from inspect import isclass
+import secrets
+import string
 
 # match:
 #   Any uppercase character that is not at the start of a line
@@ -31,6 +33,38 @@ class ArgsHelper:
 
 
 class Util:
+    @staticmethod
+    def get_obj_full_name(obj: Any) -> str:
+        """
+        Gets the full name of an object. The full name is the module and class name.
+
+        Args:
+            obj (Any): Object to get full name of.
+
+        Returns:
+            str: Full name of object on success; Otherwise, empty string.
+        """
+        if not obj:
+            return ""
+        with contextlib.suppress(Exception):
+            return f"{obj.__class__.__module__}.{obj.__class__.__name__}"
+        with contextlib.suppress(Exception):
+            return f"{obj.__module__}.{obj.__name__}"
+        return ""
+
+    @staticmethod
+    def generate_random_string(length: int = 8) -> str:
+        """
+        Generates a random string.
+
+        Args:
+            length (int, optional): Length of string to generate. Default ``8``
+
+        Returns:
+            str: Random string
+        """
+        return "".join(secrets.choice(string.ascii_letters) for _ in range(length))
+
     @classmethod
     def is_iterable(cls, arg: Any, excluded_types: Sequence[type] | None = None) -> bool:
         """

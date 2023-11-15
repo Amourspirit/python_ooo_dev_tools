@@ -27,8 +27,8 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
         Constructor:
 
         Arguments:
-            add_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            add_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
         """
         super().__init__(trigger_args=trigger_args)
         # assigning tk to class is important.
@@ -39,37 +39,46 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
             if self._tk is not None:
                 self._tk.addTopWindowListener(self)
 
-    def windowOpened(self, event: EventObject) -> None:
-        """Is invoked when a window is activated."""
-        self._trigger_event("windowOpened", event)
+    # region overrides
+    def _trigger_event(self, name: str, event: EventObject) -> None:
+        # any trigger args passed in will be passed to callback event via Events class.
+        event_arg = EventArgs(self.__class__.__qualname__)
+        event_arg.event_data = event
+        self._events.trigger(name, event_arg)
+
+    # endregion overrides
 
     def windowActivated(self, event: EventObject) -> None:
-        """Is invoked when a window is activated."""
+        """Event is invoked when a window is activated."""
         self._trigger_event("windowActivated", event)
 
-    def windowDeactivated(self, event: EventObject) -> None:
-        """Is invoked when a window is deactivated."""
-        self._trigger_event("windowDeactivated", event)
-
-    def windowMinimized(self, event: EventObject) -> None:
-        """is invoked when a window is iconified."""
-        self._trigger_event("windowMinimized", event)
-
-    def windowNormalized(self, event: EventObject) -> None:
-        """Is invoked when a window is deiconified."""
-        self._trigger_event("windowNormalized", event)
+    def windowClosed(self, event: EventObject) -> None:
+        """Event is invoked when a window has been closed."""
+        self._trigger_event("windowClosed", event)
 
     def windowClosing(self, event: EventObject) -> None:
         """
-        Is invoked when a window is in the process of being closed.
+        Event is invoked when a window is in the process of being closed.
 
         The close operation can be overridden at this point.
         """
         self._trigger_event("windowClosing", event)
 
-    def windowClosed(self, event: EventObject) -> None:
-        """Is invoked when a window has been closed."""
-        self._trigger_event("windowClosed", event)
+    def windowDeactivated(self, event: EventObject) -> None:
+        """Event is invoked when a window is deactivated."""
+        self._trigger_event("windowDeactivated", event)
+
+    def windowMinimized(self, event: EventObject) -> None:
+        """Event is invoked when a window is iconified."""
+        self._trigger_event("windowMinimized", event)
+
+    def windowNormalized(self, event: EventObject) -> None:
+        """Event is invoked when a window is deiconified."""
+        self._trigger_event("windowNormalized", event)
+
+    def windowOpened(self, event: EventObject) -> None:
+        """Event is is invoked when a window has been opened."""
+        self._trigger_event("windowOpened", event)
 
     def disposing(self, event: EventObject) -> None:
         """

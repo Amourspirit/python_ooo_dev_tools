@@ -1,18 +1,23 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import Callable, Sequence, TypeVar, Union, Any, Tuple, List, Dict, TYPE_CHECKING
+from typing import Callable, Protocol, Sequence, TypeVar, Union, Any, Tuple, List, Dict, TYPE_CHECKING
 from os import PathLike
 
 import uno
+
 
 if TYPE_CHECKING:
     from com.sun.star.text import XText
     from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextDocument
+    from ooodev.events.args.event_args import EventArgs
+    from ooodev.events.args.listener_event_args import ListenerEventArgs
 else:
     XText = object
     XTextCursor = object
     XTextDocument = object
+    EventArgs = object
+    ListenerEventArgs = object
 
 PathOrStr = Union[str, PathLike]
 """Path like object or string"""
@@ -62,3 +67,14 @@ DocOrText = Union[XTextDocument, XText]
 
 EventCallback = Callable[[Any, Any], None]
 """Event Callback"""
+
+ListenerEventCallbackT = Callable[[Any, ListenerEventArgs], None]
+"""Listener Event Callback"""
+
+
+class EventArgsCallbackT(Protocol):
+    def __call__(self, src: Any, event: EventArgs, *args: Any, **kwargs: Any) -> None:
+        ...
+
+
+# EventArgsCallbackT = Callable[[Any, EventArgs], None]

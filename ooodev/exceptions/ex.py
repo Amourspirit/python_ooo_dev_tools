@@ -430,10 +430,10 @@ class ServiceNotSupported(ServiceError):
 
     def __str__(self) -> str:
         msg = ""
-        serv_len = len(self.service)
-        if serv_len == 1:
+        service_len = len(self.service)
+        if service_len == 1:
             msg = f"Service not supported for: {self.service[0]}"
-        elif serv_len > 1:
+        elif service_len > 1:
             msg = "Services not supported for: "
             msg += ", ".join(self.service)
 
@@ -495,5 +495,11 @@ class DeletedAttributeError(AttributeError):
 
 class DisabledMethodError(AttributeError):
     """Generic error raise when method has been disabled."""
+
+    pass
+
+
+class DialogError(Exception):
+    """Generic Dialog Error"""
 
     pass

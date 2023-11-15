@@ -1,14 +1,15 @@
 # coding: utf-8
 from __future__ import annotations
-from typing import cast
-from ..utils import lo as mLo
+import uno  # pylint: disable=unused-import
 
 from com.sun.star.awt import XToolkit2
-from com.sun.star.awt import XMessageBox
 
+# pylint: disable=useless-import-alias
 from ooo.dyn.awt.message_box_results import MessageBoxResultsEnum as MessageBoxResultsEnum
 from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum as MessageBoxButtonsEnum
 from ooo.dyn.awt.message_box_type import MessageBoxType as MessageBoxType
+
+from ..utils import lo as mLo
 
 
 class MsgBox:

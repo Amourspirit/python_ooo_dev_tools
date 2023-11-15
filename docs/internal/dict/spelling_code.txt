@@ -35,6 +35,7 @@ Img
 iterable
 json
 kerning
+kwargs
 LineShape
 Lingu
 localhost
