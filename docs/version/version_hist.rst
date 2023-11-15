@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.13.0
+==============
+
+Dialog Module added. Many new classes for working with dialogs.
+Many new adapters added into the adapter module.
+
+Other minor bug fixes and updates.
+
 Version 0.12.1
 ==============
 
