@@ -279,55 +279,9 @@ class DialogControlBase(CtlListenerBase):
 
     def get_control_named_kind(self) -> DialogControlNamedKind:
         """Gets the control named kind"""
-        kind = self.get_control_kind()
-        if kind == DialogControlKind.BUTTON:
-            return DialogControlNamedKind.BUTTON
-        if kind == DialogControlKind.CHECKBOX:
-            return DialogControlNamedKind.CHECKBOX
-        if kind == DialogControlKind.COMBOBOX:
-            return DialogControlNamedKind.COMBOBOX
-        if kind == DialogControlKind.CURRENCY:
-            return DialogControlNamedKind.CURRENCY
-        if kind == DialogControlKind.DATE_FIELD:
-            return DialogControlNamedKind.DATE_FIELD
-        if kind == DialogControlKind.FILE_CONTROL:
-            return DialogControlNamedKind.FILE_CONTROL
-        if kind == DialogControlKind.FIXED_LINE:
-            return DialogControlNamedKind.FIXED_LINE
-        if kind == DialogControlKind.FIXED_TEXT:
-            return DialogControlNamedKind.FIXED_TEXT
-        if kind == DialogControlKind.FORMATTED_TEXT:
-            return DialogControlNamedKind.FORMATTED_TEXT
-        if kind == DialogControlKind.GRID_CONTROL:
-            return DialogControlNamedKind.GRID_CONTROL
-        if kind == DialogControlKind.GROUP_BOX:
-            return DialogControlNamedKind.GROUP_BOX
-        if kind == DialogControlKind.HYPERLINK:
-            return DialogControlNamedKind.HYPERLINK
-        if kind == DialogControlKind.IMAGE:
-            return DialogControlNamedKind.IMAGE
-        if kind == DialogControlKind.LIST_BOX:
-            return DialogControlNamedKind.LIST_BOX
-        if kind == DialogControlKind.NUMERIC:
-            return DialogControlNamedKind.NUMERIC
-        if kind == DialogControlKind.PATTERN:
-            return DialogControlNamedKind.PATTERN
-        if kind == DialogControlKind.PROGRESS_BAR:
-            return DialogControlNamedKind.PROGRESS_BAR
-        if kind == DialogControlKind.RADIO_BUTTON:
-            return DialogControlNamedKind.RADIO_BUTTON
-        if kind == DialogControlKind.SCROLL_BAR:
-            return DialogControlNamedKind.SCROLL_BAR
-        if kind == DialogControlKind.TAB_PAGE_CONTAINER:
-            return DialogControlNamedKind.TAB_PAGE_CONTAINER
-        if kind == DialogControlKind.TAB_PAGE:
-            return DialogControlNamedKind.TAB_PAGE
-        if kind == DialogControlKind.EDIT:
-            return DialogControlNamedKind.EDIT
-        if kind == DialogControlKind.TIME:
-            return DialogControlNamedKind.TIME
-        if kind == DialogControlKind.TREE:
-            return DialogControlNamedKind.TREE
+        with contextlib.suppress(Exception):
+            kind = self.get_control_kind()
+            return DialogControlNamedKind.from_str(kind.name)
         return DialogControlNamedKind.UNKNOWN
 
     # region Properties

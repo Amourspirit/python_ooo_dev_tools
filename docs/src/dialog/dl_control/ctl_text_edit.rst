@@ -28,6 +28,11 @@ or
         # can get control from kwargs
         ctl = cast(CtlTextEdit, kwargs['control_src'])
 
+Example
+-------
+
+For an example see `Tab and Tree Dialog Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/dialog/tree>`__
+
 Class
 -----
 
