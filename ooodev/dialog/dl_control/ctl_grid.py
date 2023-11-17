@@ -10,6 +10,8 @@ from com.sun.star.awt.grid import XMutableGridDataModel
 from ooodev.adapter.awt.grid.grid_selection_events import GridSelectionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.type_var import Table
 from .ctl_base import DialogControlBase
@@ -44,11 +46,9 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
 
     # region Lazy Listeners
     def _on_grid_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addSelectionListener(self.events_listener_grid_selection)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -63,6 +63,14 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
     def get_model(self) -> UnoControlGridModel:
         """Gets the Model for the control"""
         return cast("UnoControlGridModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.GRID_CONTROL``"""
+        return DialogControlKind.GRID_CONTROL
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.GRID_CONTROL``"""
+        return DialogControlNamedKind.GRID_CONTROL
 
     # endregion Overrides
 

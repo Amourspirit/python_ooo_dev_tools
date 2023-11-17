@@ -13,6 +13,8 @@ from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
 
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 from .ctl_base import DialogControlBase
 
@@ -45,11 +47,9 @@ class CtlTextEdit(DialogControlBase, TextEvents):
 
     # region Lazy Listeners
     def _on_text_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTextListener(self.events_listener_text)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -65,6 +65,14 @@ class CtlTextEdit(DialogControlBase, TextEvents):
     def get_model(self) -> UnoControlEditModel:
         """Gets the Model for the control"""
         return cast("UnoControlEditModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.EDIT``"""
+        return DialogControlKind.EDIT
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.EDIT``"""
+        return DialogControlNamedKind.EDIT
 
     # endregion Overrides
 

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .paint_listener import PaintListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .paint_listener import PaintListener
 
 
 class PaintEvents:
@@ -24,7 +24,7 @@ class PaintEvents:
         """
         self.__callback = cb
         self.__name = gUtil.Util.generate_random_string(10)
-        self.__paint_listener = PaintListener(trigger_args=trigger_args)
+        self.__listener = PaintListener(trigger_args=trigger_args)
 
     # region Manage Events
     def add_event_window_paint(self, cb: EventArgsCallbackT) -> None:
@@ -39,7 +39,9 @@ class PaintEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowPaint")
             self.__callback(self, args)
-        self.__paint_listener.on("windowPaint", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("windowPaint", cb)
 
     def remove_event_window_paint(self, cb: EventArgsCallbackT) -> None:
         """
@@ -48,7 +50,9 @@ class PaintEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowPaint", is_add=False)
             self.__callback(self, args)
-        self.__paint_listener.off("windowPaint", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("windowPaint", cb)
 
     # endregion Manage Events
 
@@ -57,4 +61,4 @@ class PaintEvents:
         """
         Returns listener
         """
-        return self.__paint_listener
+        return self.__listener

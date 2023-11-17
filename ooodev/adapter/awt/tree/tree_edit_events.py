@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from .tree_edit_listener import TreeEditListener
-from .tree_edit_listener import NodeEditedArgs as NodeEditedArgs
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .tree_edit_listener import TreeEditListener
+
+# pylint: disable=useless-import-alias, unused-import
+from .tree_edit_listener import NodeEditedArgs as NodeEditedArgs
 
 
 class TreeEditEvents:
@@ -40,6 +42,8 @@ class TreeEditEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="nodeEdited")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("nodeEdited", cb)
 
     def add_event_node_editing(self, cb: EventArgsCallbackT) -> None:
@@ -53,6 +57,8 @@ class TreeEditEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="nodeEditing")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("nodeEditing", cb)
 
     def remove_event_node_edited(self, cb: EventArgsCallbackT) -> None:
@@ -62,6 +68,8 @@ class TreeEditEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="nodeEdited", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("nodeEdited", cb)
 
     def remove_event_node_editing(self, cb: EventArgsCallbackT) -> None:
@@ -71,6 +79,8 @@ class TreeEditEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="nodeEditing", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("nodeEditing", cb)
 
     @property

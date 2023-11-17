@@ -5,6 +5,8 @@ import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
@@ -36,11 +38,9 @@ class CtlHyperlinkFixed(DialogControlBase, ActionEvents):
 
     # region Lazy Listeners
     def _on_action_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addActionListener(self.events_listener_action)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -55,6 +55,14 @@ class CtlHyperlinkFixed(DialogControlBase, ActionEvents):
     def get_model(self) -> UnoControlFixedHyperlinkModel:
         """Gets the Model for the control"""
         return cast("UnoControlFixedHyperlinkModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.HYPERLINK``"""
+        return DialogControlKind.HYPERLINK
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.HYPERLINK``"""
+        return DialogControlNamedKind.HYPERLINK
 
     # endregion Overrides
 

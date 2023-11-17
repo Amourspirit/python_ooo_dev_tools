@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .grid_selection_listener import GridSelectionListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .grid_selection_listener import GridSelectionListener
 
 
 class GridSelectionEvents:
@@ -38,6 +38,8 @@ class GridSelectionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="selectionChanged")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("selectionChanged", cb)
 
     def remove_event_selection_changed(self, cb: EventArgsCallbackT) -> None:
@@ -47,6 +49,8 @@ class GridSelectionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="selectionChanged", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("selectionChanged", cb)
 
     @property

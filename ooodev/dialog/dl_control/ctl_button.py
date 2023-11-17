@@ -36,11 +36,9 @@ class CtlButton(DialogControlBase, ActionEvents):
 
     # region Lazy Listeners
     def _on_action_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addActionListener(self.events_listener_action)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 

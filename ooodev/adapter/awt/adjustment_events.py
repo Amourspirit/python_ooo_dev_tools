@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .adjustment_listener import AdjustmentListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .adjustment_listener import AdjustmentListener
 
 
 class AdjustmentEvents:
@@ -23,7 +23,7 @@ class AdjustmentEvents:
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
         self.__callback = cb
-        self.__adjustment_listener = AdjustmentListener(trigger_args=trigger_args)
+        self.__listener = AdjustmentListener(trigger_args=trigger_args)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
@@ -38,7 +38,9 @@ class AdjustmentEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="adjustmentValueChanged")
             self.__callback(self, args)
-        self.__adjustment_listener.on("adjustmentValueChanged", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("adjustmentValueChanged", cb)
 
     def remove_event_adjustment_value_changed(self, cb: EventArgsCallbackT) -> None:
         """
@@ -47,13 +49,15 @@ class AdjustmentEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="adjustmentValueChanged", is_add=False)
             self.__callback(self, args)
-        self.__adjustment_listener.off("adjustmentValueChanged", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("adjustmentValueChanged", cb)
 
     @property
     def events_listener_adjustment(self) -> AdjustmentListener:
         """
         Returns listener
         """
-        return self.__adjustment_listener
+        return self.__listener
 
     # endregion Manage Events

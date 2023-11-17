@@ -1,11 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
-from ...events.args.event_args import EventArgs as EventArgs
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
-
+import uno  # pylint: disable=unused-import
 from com.sun.star.lang import XEventListener
+
+# pylint: disable=useless-import-alias
+# pylint: disable=unused-import
+from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
+
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

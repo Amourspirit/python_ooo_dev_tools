@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .terminate_listener import TerminateListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .terminate_listener import TerminateListener
 
 
 class TerminateEvents:
@@ -38,6 +38,8 @@ class TerminateEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="notifyTermination")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("notifyTermination", cb)
 
     def add_event_query_termination(self, cb: EventArgsCallbackT) -> None:
@@ -51,6 +53,8 @@ class TerminateEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="queryTermination")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("queryTermination", cb)
 
     def remove_event_notify_termination(self, cb: EventArgsCallbackT) -> None:
@@ -60,6 +64,8 @@ class TerminateEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="notifyTermination", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("notifyTermination", cb)
 
     def remove_event_query_termination(self, cb: EventArgsCallbackT) -> None:
@@ -69,6 +75,8 @@ class TerminateEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="queryTermination", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("queryTermination", cb)
 
     @property

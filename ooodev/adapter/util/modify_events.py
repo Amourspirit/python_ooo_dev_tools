@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .modify_listener import ModifyListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .modify_listener import ModifyListener
 
 
 class ModifyEvents:
@@ -38,6 +38,8 @@ class ModifyEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="modified")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("modified", cb)
 
     def remove_event_modified(self, cb: EventArgsCallbackT) -> None:
@@ -47,6 +49,8 @@ class ModifyEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="queryTermination", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("queryTermination", cb)
 
     @property

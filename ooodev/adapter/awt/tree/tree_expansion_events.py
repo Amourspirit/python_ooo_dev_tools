@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .tree_expansion_listener import TreeExpansionListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .tree_expansion_listener import TreeExpansionListener
 
 
 class TreeExpansionEvents:
@@ -38,6 +38,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="requestChildNodes")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("requestChildNodes", cb)
 
     def add_event_tree_collapsed(self, cb: EventArgsCallbackT) -> None:
@@ -51,6 +53,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeCollapsed")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("treeCollapsed", cb)
 
     def add_event_tree_collapsing(self, cb: EventArgsCallbackT) -> None:
@@ -64,6 +68,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeCollapsing")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("treeCollapsing", cb)
 
     def add_event_tree_expanded(self, cb: EventArgsCallbackT) -> None:
@@ -77,6 +83,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeExpanded")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("treeExpanded", cb)
 
     def add_event_tree_expanding(self, cb: EventArgsCallbackT) -> None:
@@ -90,6 +98,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeExpanding")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("treeExpanding", cb)
 
     def remove_event_request_child_nodes(self, cb: EventArgsCallbackT) -> None:
@@ -108,6 +118,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeCollapsed", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("treeCollapsed", cb)
 
     def remove_event_tree_collapsing(self, cb: EventArgsCallbackT) -> None:
@@ -117,6 +129,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeCollapsing", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("treeCollapsing", cb)
 
     def remove_event_tree_expanded(self, cb: EventArgsCallbackT) -> None:
@@ -126,6 +140,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeExpanded", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("treeExpanded", cb)
 
     def remove_event_tree_expanding(self, cb: EventArgsCallbackT) -> None:
@@ -135,6 +151,8 @@ class TreeExpansionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeExpanding", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("treeExpanding", cb)
 
     @property

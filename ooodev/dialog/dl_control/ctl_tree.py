@@ -6,11 +6,13 @@ import uno  # pylint: disable=unused-import
 
 from com.sun.star.awt.tree import XMutableTreeDataModel
 
-from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
 from ooodev.adapter.awt.tree.tree_edit_events import TreeEditEvents
 from ooodev.adapter.awt.tree.tree_expansion_events import TreeExpansionEvents
+from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.dialog.search.tree_search import (
     SearchTree,
     RuleDataCompare,
@@ -60,25 +62,19 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
 
     # region Lazy Listeners
     def _on_selection_change_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addSelectionChangeListener(self.events_listener_selection_change)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_tree_edit_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTreeEditListener(self.events_listener_tree_edit)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_tree_expansion_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTreeExpansionListener(self.events_listener_tree_expansion)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -94,6 +90,14 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
         """Gets the Model for the control"""
         # Tree Control does have getModel() method even thought it is not documented
         return cast("TreeControlModel", self.get_view_ctl().getModel())  # type: ignore
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.TREE``"""
+        return DialogControlKind.TREE
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.TREE``"""
+        return DialogControlNamedKind.TREE
 
     # endregion Overrides
 

@@ -5,10 +5,11 @@ import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.item_events import ItemEvents
 
 # pylint: disable=useless-import-alias
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
-from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from .ctl_base import DialogControlBase
 
 
@@ -41,11 +42,9 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
 
     # region Lazy Listeners
     def _on_item_event_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addItemListener(self.events_listener_item)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -60,6 +59,14 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
     def get_model(self) -> UnoControlCheckBoxModel:
         """Gets the Model for the control"""
         return cast("UnoControlCheckBoxModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.CHECKBOX``"""
+        return DialogControlKind.CHECKBOX
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.CHECKBOX``"""
+        return DialogControlNamedKind.CHECKBOX
 
     # endregion Overrides
 

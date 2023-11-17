@@ -6,6 +6,8 @@ import uno  # pylint: disable=unused-import
 # pylint: disable=useless-import-alias
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
@@ -41,6 +43,14 @@ class CtlImage(DialogControlBase):
     def get_model(self) -> UnoControlImageControlModel:
         """Gets the Model for the control"""
         return cast("UnoControlImageControlModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.IMAGE``"""
+        return DialogControlKind.IMAGE
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.IMAGE``"""
+        return DialogControlNamedKind.IMAGE
 
     # endregion Overrides
 

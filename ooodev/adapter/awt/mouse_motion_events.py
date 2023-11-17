@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .mouse_motion_listener import MouseMotionListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .mouse_motion_listener import MouseMotionListener
 
 
 class MouseMotionEvents:
@@ -23,7 +23,7 @@ class MouseMotionEvents:
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
         self.__callback = cb
-        self.__mouse_motion_listener = MouseMotionListener(trigger_args=trigger_args)
+        self.__listener = MouseMotionListener(trigger_args=trigger_args)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
@@ -38,7 +38,9 @@ class MouseMotionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="mouseDragged")
             self.__callback(self, args)
-        self.__mouse_motion_listener.on("mouseDragged", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("mouseDragged", cb)
 
     def add_event_mouse_moved(self, cb: EventArgsCallbackT) -> None:
         """
@@ -51,7 +53,9 @@ class MouseMotionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="mouseMoved")
             self.__callback(self, args)
-        self.__mouse_motion_listener.on("mouseMoved", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("mouseMoved", cb)
 
     def remove_event_mouse_dragged(self, cb: EventArgsCallbackT) -> None:
         """
@@ -60,7 +64,9 @@ class MouseMotionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="mouseDragged", is_add=False)
             self.__callback(self, args)
-        self.__mouse_motion_listener.off("mouseDragged", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("mouseDragged", cb)
 
     def remove_event_mouse_moved(self, cb: EventArgsCallbackT) -> None:
         """
@@ -69,7 +75,9 @@ class MouseMotionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="mouseMoved", is_add=False)
             self.__callback(self, args)
-        self.__mouse_motion_listener.off("mouseMoved", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("mouseMoved", cb)
 
     # endregion Manage Events
 
@@ -78,4 +86,4 @@ class MouseMotionEvents:
         """
         Returns listener
         """
-        return self.__mouse_motion_listener
+        return self.__listener

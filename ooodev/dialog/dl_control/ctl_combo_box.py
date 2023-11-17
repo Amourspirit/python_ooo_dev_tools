@@ -5,6 +5,8 @@ import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.adapter.awt.text_events import TextEvents
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
@@ -41,25 +43,19 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
 
     # region Lazy Listeners
     def _on_action_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addActionListener(self.events_listener_action)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_item_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addItemListener(self.events_listener_item)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_text_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTextListener(self.events_listener_text)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -74,6 +70,14 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
     def get_model(self) -> UnoControlComboBoxModel:
         """Gets the Model for the control"""
         return cast("UnoControlComboBoxModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.COMBOBOX``"""
+        return DialogControlKind.COMBOBOX
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.COMBOBOX``"""
+        return DialogControlNamedKind.COMBOBOX
 
     # endregion Overrides
 

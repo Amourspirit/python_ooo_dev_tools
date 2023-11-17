@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from .properties_change_listener import PropertiesChangeListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .properties_change_listener import PropertiesChangeListener
 
 
 class PropertiesChangeEvents:
@@ -21,7 +21,7 @@ class PropertiesChangeEvents:
         """
         self.__callback = cb
         self.__name = "ooodev.adapter.beans.PropertiesChangeEvents"
-        self.__properties_change_listener = PropertiesChangeListener(trigger_args=trigger_args)
+        self.__listener = PropertiesChangeListener(trigger_args=trigger_args)
 
     # region Manage Events
     def add_event_properties_change(self, cb: EventArgsCallbackT) -> None:
@@ -35,7 +35,9 @@ class PropertiesChangeEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="propertiesChange")
             self.__callback(self, args)
-        self.__properties_change_listener.on("propertiesChange", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("propertiesChange", cb)
 
     def remove_event_properties_change(self, cb: EventArgsCallbackT) -> None:
         """
@@ -45,7 +47,9 @@ class PropertiesChangeEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="propertiesChange", is_add=False)
             self.__callback(self, args)
-        self.__properties_change_listener.off("propertiesChange", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("propertiesChange", cb)
 
     # endregion Manage Events
 
@@ -54,4 +58,4 @@ class PropertiesChangeEvents:
         """
         Returns listener
         """
-        return self.__properties_change_listener
+        return self.__listener

@@ -11,6 +11,8 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 # pylint: disable=useless-import-alias
 from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ooodev.utils.date_time_util import DateUtil
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
@@ -43,18 +45,14 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
 
     # region Lazy Listeners
     def _on_spin_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addSpinListener(self.events_listener_spin)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_text_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTextListener(self.events_listener_text)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -69,6 +67,14 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
     def get_model(self) -> UnoControlTimeFieldModel:
         """Gets the Model for the control"""
         return cast("UnoControlTimeFieldModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.TIME``"""
+        return DialogControlKind.TIME
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.TIME``"""
+        return DialogControlNamedKind.TIME
 
     # endregion Overrides
 

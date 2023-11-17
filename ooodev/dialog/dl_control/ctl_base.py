@@ -26,6 +26,7 @@ from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 if TYPE_CHECKING:
     from com.sun.star.awt import XControlModel
     from com.sun.star.awt import XControl
+    from com.sun.star.awt import UnoControlDialogElement  # service
 # endregion imports
 
 # pylint: disable=unused-argument
@@ -36,7 +37,6 @@ class CtlBase(unohelper.Base):
 
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
-        self._set_listeners = set()
         self._set_control(ctl)
 
     def _set_control(self, ctl: Any) -> None:
@@ -83,30 +83,6 @@ class CtlBase(unohelper.Base):
 
     # endregion other methods
 
-    # region Lazy Listeners
-
-    # Listeners such as mouse, mouse motion, focus, key, paint, and window are added lazily.
-    # Some listeners such as mouse motion may be expensive.
-    # Each time the mouse moves, the listener is invoked.
-    # By lazy loading listeners are only added when needed.
-    # For example:
-    #     ctl_button_ok.add_event_mouse_entered(on_mouse_entered)
-    # This would call _on_mouse_listener_add_remove() below, which would add the mouse listener to the class in a lazy manor.
-
-    def _has_listener(self, key: str) -> bool:
-        """Gets if the listener key has been added"""
-        if not key:
-            raise ValueError("key cannot be empty")
-        return key in self._set_listeners
-
-    def _add_listener(self, key: str) -> None:
-        """Adds a listener key to the set of listeners"""
-        if not key:
-            raise ValueError("key cannot be empty")
-        self._set_listeners.add(key)
-
-    # endregion Lazy Listeners
-
     # region Other Methods
     def get_model(self) -> XControlModel:
         """Gets the Model for the control"""
@@ -123,7 +99,7 @@ class CtlBase(unohelper.Base):
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        model = cast(Any, self.get_view_ctl().getModel())
+        model = cast(Any, self.get_model())
         if hasattr(model, "Enabled"):
             model.Enabled = value
 
@@ -189,18 +165,16 @@ class CtlBase(unohelper.Base):
     @visible.setter
     def visible(self, value: bool) -> None:
         with contextlib.suppress(Exception):
-            model = cast(Any, self.get_view_ctl().getModel())
-            if hasattr(model, "EnableVisible"):
-                model.EnableVisible = value
+            model = cast(Any, self.get_model())
+            model.EnableVisible = value
 
     @property
     def name(self) -> str:
         """Gets the name for the control model"""
-        try:
-            model = cast(Any, self.get_view_ctl().getModel())
+        with contextlib.suppress(Exception):
+            model = cast(Any, self.get_model())
             return model.Name
-        except Exception:
-            return ""
+        return ""
 
     # endregion Properties
 
@@ -248,52 +222,40 @@ class CtlListenerBase(
     # This would call _on_mouse_listener_add_remove() below, which would add the mouse listener to the class in a lazy manor.
 
     def _on_mouse_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         view = cast(Any, self.get_view_ctl())
         view.addMouseListener(self.events_listener_mouse)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_mouse_motion_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         view = cast(Any, self.get_view_ctl())
         view.addMouseMotionListener(self.events_listener_mouse_motion)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_focus_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         view = cast(Any, self.get_view_ctl())
         view.addFocusListener(self.events_listener_focus)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_key_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         view = cast(Any, self.get_view_ctl())
         view.addKeyListener(self.events_listener_key)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_paint_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         view = cast(Any, self.get_view_ctl())
         view.addPaintListener(self.events_listener_paint)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_window_event_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         view = cast(Any, self.get_view_ctl())
         view.addWindowListener(self.events_listener_window)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -367,3 +329,48 @@ class DialogControlBase(CtlListenerBase):
         if kind == DialogControlKind.TREE:
             return DialogControlNamedKind.TREE
         return DialogControlNamedKind.UNKNOWN
+
+    # region Properties
+    @property
+    def tab_index(self) -> int:
+        """Gets/Sets the tab index"""
+        with contextlib.suppress(Exception):
+            model = cast("UnoControlDialogElement", self.get_model())
+            return model.TabIndex
+        return -1
+
+    @tab_index.setter
+    def tab_index(self, value: int) -> None:
+        with contextlib.suppress(Exception):
+            model = cast("UnoControlDialogElement", self.get_model())
+            model.TabIndex = value
+
+    @property
+    def step(self) -> int:
+        """Gets/Sets the step"""
+        with contextlib.suppress(Exception):
+            model = cast("UnoControlDialogElement", self.get_model())
+            return model.Step
+        return 1
+
+    @step.setter
+    def step(self, value: int) -> None:
+        with contextlib.suppress(Exception):
+            model = cast("UnoControlDialogElement", self.get_model())
+            model.Step = value
+
+    @property
+    def tag(self) -> str:
+        """Gets/Sets the tag"""
+        with contextlib.suppress(Exception):
+            model = cast("UnoControlDialogElement", self.get_model())
+            return model.Tag
+        return ""
+
+    @tag.setter
+    def tag(self, value: str) -> None:
+        with contextlib.suppress(Exception):
+            model = cast("UnoControlDialogElement", self.get_model())
+            model.Tag = value
+
+    # endregion Properties

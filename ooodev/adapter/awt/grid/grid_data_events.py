@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .grid_data_listener import GridDataListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .grid_data_listener import GridDataListener
 
 
 class GridDataEvents:
@@ -38,6 +38,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="dataChanged")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("dataChanged", cb)
 
     def add_event_row_heading_changed(self, cb: EventArgsCallbackT) -> None:
@@ -51,6 +53,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowHeadingChanged")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("rowHeadingChanged", cb)
 
     def add_event_rows_inserted(self, cb: EventArgsCallbackT) -> None:
@@ -64,6 +68,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowsInserted")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("rowsInserted", cb)
 
     def add_event_rows_removed(self, cb: EventArgsCallbackT) -> None:
@@ -77,6 +83,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowsRemoved")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("rowsRemoved", cb)
 
     def remove_event_data_changed(self, cb: EventArgsCallbackT) -> None:
@@ -86,6 +94,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="dataChanged", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("dataChanged", cb)
 
     def remove_event_row_heading_changed(self, cb: EventArgsCallbackT) -> None:
@@ -95,6 +105,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowHeadingChanged", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("rowHeadingChanged", cb)
 
     def remove_event_rows_inserted(self, cb: EventArgsCallbackT) -> None:
@@ -104,6 +116,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowsInserted", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("rowsInserted", cb)
 
     def remove_event_rows_removed(self, cb: EventArgsCallbackT) -> None:
@@ -113,6 +127,8 @@ class GridDataEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowsRemoved", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("rowsRemoved", cb)
 
     @property

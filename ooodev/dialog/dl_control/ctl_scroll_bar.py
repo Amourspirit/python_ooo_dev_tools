@@ -5,6 +5,8 @@ import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 from .ctl_base import DialogControlBase
 
@@ -37,11 +39,9 @@ class CtlScrollBar(DialogControlBase, AdjustmentEvents):
 
     # region Lazy Listeners
     def _on_adjustment_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addAdjustmentListener(self.events_listener_adjustment)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -56,6 +56,14 @@ class CtlScrollBar(DialogControlBase, AdjustmentEvents):
     def get_model(self) -> UnoControlScrollBarModel:
         """Gets the Model for the control"""
         return cast("UnoControlScrollBarModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.SCROLL_BAR``"""
+        return DialogControlKind.SCROLL_BAR
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.SCROLL_BAR``"""
+        return DialogControlNamedKind.SCROLL_BAR
 
     # endregion Overrides
 
