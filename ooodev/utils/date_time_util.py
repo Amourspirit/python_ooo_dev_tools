@@ -3,10 +3,11 @@ from __future__ import annotations
 import datetime
 import time
 from typing import cast, Any, Tuple
-from . import lo as mLo
+import uno  # pylint: disable=unused-import
 from ooo.dyn.util.date_time import DateTime as UnoDateTime
 from ooo.dyn.util.date import Date as UnoDate
 from ooo.dyn.util.time import Time as UnoTime
+from . import lo as mLo
 
 
 class DateUtil:
@@ -68,7 +69,7 @@ class DateUtil:
         if isinstance(date, datetime.datetime):
             delta = date - null_date
         elif isinstance(date, datetime.date):
-            delta = date - null_date.date()
+            delta = date - null_date.date()  # pylint: disable=no-member
         else:
             raise TypeError(f"Incorrect type. Expected 'date' or 'datetime' got {type(date).__name__}")
         return delta.days + delta.seconds / (24.0 * 60 * 60)
@@ -182,6 +183,7 @@ class DateUtil:
         Returns:
             datetime.datetime: Python DateTime
         """
+        # pylint: disable=no-member
         null_date = mLo.Lo.null_date
         dt = datetime.datetime(
             year=null_date.year,

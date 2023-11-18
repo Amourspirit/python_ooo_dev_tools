@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import datetime
 import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
@@ -14,6 +15,7 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.office.calc import Calc
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
+from ooodev.utils.date_time_util import DateUtil
 
 
 if TYPE_CHECKING:
@@ -59,16 +61,16 @@ class Tree:
             border=self._border_kind,
         )
         # dm = self._ctl_tree.data_model
-        self._root1 = self._ctl_tree.create_root(display_value="Root 1")
-        if self._root1:
-            _ = self._ctl_tree.add_sub_node(parent_node=self._root1, display_value="Node 1")
-            _ = self._ctl_tree.add_sub_node(parent_node=self._root1, display_value="Node 3")
-            _ = self._ctl_tree.add_sub_node(parent_node=self._root1, display_value="Node 3")
-        self._root2 = self._ctl_tree.create_root(display_value="Root 2")
-        if self._root2:
-            _ = self._ctl_tree.add_sub_node(parent_node=self._root2, display_value="Node 1")
-            _ = self._ctl_tree.add_sub_node(parent_node=self._root2, display_value="Node 3")
-            _ = self._ctl_tree.add_sub_node(parent_node=self._root2, display_value="Node 3")
+        self._root1 = self._ctl_tree.create_root(display_value="Root")
+        # if self._root1:
+        #     _ = self._ctl_tree.add_sub_node(parent_node=self._root1, display_value="Node 1")
+        #     _ = self._ctl_tree.add_sub_node(parent_node=self._root1, display_value="Node 3")
+        #     _ = self._ctl_tree.add_sub_node(parent_node=self._root1, display_value="Node 3")
+        # self._root2 = self._ctl_tree.create_root(display_value="Root 2")
+        # if self._root2:
+        #     _ = self._ctl_tree.add_sub_node(parent_node=self._root2, display_value="Node 1")
+        #     _ = self._ctl_tree.add_sub_node(parent_node=self._root2, display_value="Node 3")
+        #     _ = self._ctl_tree.add_sub_node(parent_node=self._root2, display_value="Node 3")
 
         flat_list = [
             ["A1", "B1", "C1"],
@@ -79,9 +81,33 @@ class Tree:
             ["A2", "B3", "C6"],
             ["A2", "B4", "Razor"],
         ]
-        self._ctl_tree.add_sub_tree(flat_tree=flat_list, parent_node=None)
-        self._ctl_tree.add_sub_tree(flat_tree=flat_list, parent_node=self._root2)
+        # result = self._ctl_tree.convert_to_tree(flat_list)
+        # print(result)
+
         # tree = self._tree1.convert_to_tree(flat_list)
+
+        # flat_list = [
+        #     [("A1", "Data1"), ("B1", "Data2"), ("C1", "Data3")],
+        #     [("A1", "Data1"), ("B1", "Data2"), ("C2", "Data4")],
+        #     [("A1", "Data1"), ("B2", "Data5"), ("C3", "Data6")],
+        #     [("A2", "Data7"), ("B3", "Data8"), ("C4", "Data9")],
+        #     [("A2", "Data7"), ("B3", "Data8"), ("C5", "Data10")],
+        #     [("A2", "Data7"), ("B3", "Data8"), ("C6", "Data11")],
+        # ]
+        now_date = DateUtil.date_to_uno_date_time(datetime.datetime.now())
+        flat_list = [
+            [("A1", 1), ["B1", now_date], ("C1", "Data3", 3)],
+            [("A1",), ("B1",), ("C2", "Data4")],
+            [["A1"], ("B2", "Data5"), ("C3", "Data6")],
+            [("A2", "Data7"), ("B3", "Data8"), ("C4", "Data9")],
+            [("A2", None), ("B3", None), ("C5", "Data10")],
+            [("A2", None), ("B3", None), ("C6", "Data11")],
+        ]
+        self._ctl_tree.add_sub_tree(flat_tree=flat_list, parent_node=self._root1)
+        # self._ctl_tree.add_sub_tree(flat_tree=flat_list, parent_node=self._root2)
+        # result = self._ctl_tree.convert_to_tree_with_data(flat_list)
+        # self._ctl_tree.add_nodes_from_tree_data(result, self._root1)
+        # print(result)
 
         self._ctl_tree.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_tree.add_event_mouse_exited(self._fn_on_mouse_exit)
@@ -130,7 +156,7 @@ class Tree:
         se.register_rule(RuleDataInsensitive())
         se.register_rule(RuleTextInsensitive())
         # se.register_rule(RuleDataSensitive)
-        result = se.find_node(self._root2)
+        result = se.find_node(self._root1)
         if result:
             print("Search Result:", result.getDisplayValue())
         else:
@@ -139,7 +165,7 @@ class Tree:
         se = SearchTree("")
         se.register_rule(RuleTextRegex("R.zor"))
 
-        result = se.find_node(self._root2)
+        result = se.find_node(self._root1)
         if result:
             print("Search Result:", result.getDisplayValue())
         else:
@@ -172,9 +198,12 @@ class Tree:
         if itm_event.ActionCommand == "INFO":
             node = self._ctl_tree.current_selection
             if node:
+                msg = f"Selected node: {node.getDisplayValue()}"
+                if node.DataValue:
+                    msg += f"\nData: {node.DataValue}"
                 _ = MsgBox.msgbox(
                     title="Info",
-                    msg=f"Selected node: {node.getDisplayValue()}",
+                    msg=msg,
                     boxtype=MessageBoxType.INFOBOX,
                     buttons=MessageBoxResultsEnum.OK,
                 )
