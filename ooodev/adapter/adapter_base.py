@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any
 
+# pylint: disable=unused-import, useless-import-alias
 import uno
 from ..events.args.event_args import EventArgs as EventArgs
 from ..events.lo_events import Events, EventCallback

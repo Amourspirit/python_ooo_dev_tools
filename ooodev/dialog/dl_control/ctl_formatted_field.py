@@ -1,6 +1,7 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import contextlib
 import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.spin_events import SpinEvents
@@ -101,6 +102,19 @@ class CtlFormattedField(DialogControlBase, SpinEvents, TextEvents):
     @value.setter
     def value(self, value: float) -> None:
         self.model.EffectiveValue = value
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
 
     # endregion Properties
 

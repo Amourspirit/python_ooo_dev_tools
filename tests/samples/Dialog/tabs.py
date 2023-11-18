@@ -261,7 +261,8 @@ def main():
 
 
 def run() -> None:
-    Tabs().show()
+    tabs = Tabs()
+    tabs.show()
 
 
 if __name__ == "__main__":

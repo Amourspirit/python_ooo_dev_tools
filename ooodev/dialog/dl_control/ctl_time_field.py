@@ -1,6 +1,7 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import contextlib
 import datetime
 import uno  # pylint: disable=unused-import
 
@@ -131,5 +132,18 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
     @time_format.setter
     def time_format(self, value: TimeFormatKind) -> None:
         self.model.TimeFormat = value.value
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
 
     # endregion Properties

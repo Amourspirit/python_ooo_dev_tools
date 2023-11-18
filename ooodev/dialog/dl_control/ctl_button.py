@@ -1,9 +1,13 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import contextlib
+from pathlib import Path
 import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.type_var import PathOrStr
+from ooodev.utils.file_io import FileIO
 
 from .ctl_base import DialogControlBase
 
@@ -64,5 +68,37 @@ class CtlButton(DialogControlBase, ActionEvents):
     @property
     def model(self) -> UnoControlButtonModel:
         return self.get_model()
+
+    @property
+    def picture(self) -> str:
+        """
+        Gets/Sets the picture for the control
+
+        When setting the value it can be a string or a Path object.
+        If a string is passed it can be a URL or a path to a file.
+        Value such as ``file:///path/to/image.png`` and ``/path/to/image.png`` are valid.
+        Relative paths are supported.
+
+        Returns:
+            str: The picture URL in the format of ``file:///path/to/image.png`` or empty string if no picture is set.
+        """
+        with contextlib.suppress(Exception):
+            return self.model.ImageURL
+        return ""
+
+    @picture.setter
+    def picture(self, value: PathOrStr) -> None:
+        pth_str = str(value)
+        if pth_str == "":
+            self.model.ImageURL = ""
+            return
+        if isinstance(value, str):
+            if value.startswith("file://"):
+                self.model.ImageURL = value
+                return
+            value = Path(value)
+        if not FileIO.is_valid_path_or_str(value):
+            raise ValueError(f"Invalid path or str: {value}")
+        self.model.ImageURL = FileIO.fnm_to_url(value)
 
     # endregion Properties

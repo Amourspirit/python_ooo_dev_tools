@@ -98,7 +98,7 @@ class FileIO:
             Exception: If unable to get url form fnm.
 
         Returns:
-            str: Converted path if conversion is successful; Otherwise None.
+            str: Converted path.
         """
         # sourcery skip: raise-specific-error
         try:

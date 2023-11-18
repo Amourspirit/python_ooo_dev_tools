@@ -7,7 +7,7 @@ from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .event_listener import EventListener
 
 
-class ModifyEvents:
+class EventEvents:
     """
     Class for managing Events.
 
@@ -27,7 +27,7 @@ class ModifyEvents:
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
-    def add_disposing(self, cb: EventArgsCallbackT) -> None:
+    def add_event_disposing(self, cb: EventArgsCallbackT) -> None:
         """
         Adds a listener for an event.
 
@@ -42,7 +42,7 @@ class ModifyEvents:
                 self.__callback = None
         self.__listener.on("disposing", cb)
 
-    def remove_disposing(self, cb: EventArgsCallbackT) -> None:
+    def remove_event_disposing(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """

@@ -1,10 +1,12 @@
 # region imports
 from __future__ import annotations
 from collections import defaultdict
+import contextlib
 from typing import Any, cast, Dict, Sequence, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
 from com.sun.star.awt.tree import XMutableTreeDataModel
+from ooo.dyn.view.selection_type import SelectionType  # enum
 
 from ooodev.adapter.awt.tree.tree_edit_events import TreeEditEvents
 from ooodev.adapter.awt.tree.tree_expansion_events import TreeExpansionEvents
@@ -13,6 +15,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.adapter.tree.tree_data_model_comp import TreeDataModelComp
 from ooodev.dialog.search.tree_search import (
     SearchTree,
     RuleDataCompare,
@@ -24,6 +27,8 @@ from .ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:
+    from com.sun.star.awt.tree import MutableTreeNode  # service
+    from com.sun.star.awt.tree import MutableTreeDataModel  # service
     from com.sun.star.awt.tree import TreeControl  # service
     from com.sun.star.awt.tree import TreeControlModel  # service
     from com.sun.star.awt.tree import XMutableTreeNode
@@ -264,5 +269,39 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
     @property
     def model(self) -> TreeControlModel:
         return self.get_model()
+
+    @property
+    def current_selection(self) -> MutableTreeNode | None:
+        """Gets the current selected node"""
+        with contextlib.suppress(Exception):
+            model = self.model
+            if model.SelectionType != SelectionType.NONE:
+                sel = self.view.getSelection()
+                if sel is None:
+                    return None
+                if model.SelectionType == SelectionType.SINGLE:
+                    return cast("MutableTreeNode", sel)  # expected to be MutableTreeNode
+                if isinstance(sel, tuple) and len(sel) > 0:
+                    return cast("MutableTreeNode", sel[0])
+        return None
+
+    @property
+    def root_node(self) -> MutableTreeNode | None:
+        """Gets the root node of the tree"""
+        with contextlib.suppress(Exception):
+            if not self.model.DataModel:
+                return None
+            dm = mLo.Lo.qi(XMutableTreeDataModel, self.model.DataModel, True)
+            return cast("MutableTreeNode", dm.getRoot())
+        return None
+
+    @property
+    def data_model(self) -> TreeDataModelComp | None:
+        """Gets the data model for the tree"""
+        with contextlib.suppress(Exception):
+            if not self.model.DataModel:
+                return None
+            return TreeDataModelComp(self.model.DataModel)
+        return None
 
     # endregion Properties

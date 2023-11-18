@@ -461,10 +461,12 @@ class Runner:
             y=sz.Y + sz.Height + self._padding,
             width=120,
             height=120,
-            image_url=FileIO.fnm_to_url(pth),
+            # image_url=FileIO.fnm_to_url(pth),
             scale=ImageScaleModeEnum.ANISOTROPIC,
             border=border_kind,
         )
+        # self._ctl_img.picture = FileIO.fnm_to_url(pth)
+        self._ctl_img.picture = pth
         self._set_tab_index(self._ctl_img)
 
         self._ctl_img.add_event_mouse_entered(self._fn_on_mouse_entered)

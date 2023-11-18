@@ -1,10 +1,12 @@
 # region imports
 from __future__ import annotations
-from typing import Any, cast, Iterable, Sequence, TYPE_CHECKING
+from typing import Any, cast, Iterable, Sequence, TYPE_CHECKING, Tuple
+import contextlib
 import uno  # pylint: disable=unused-import
 
 # pylint: disable=useless-import-alias
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
+from ooo.dyn.view.selection_type import SelectionType
 from com.sun.star.awt.grid import XMutableGridDataModel
 
 from ooodev.adapter.awt.grid.grid_selection_events import GridSelectionEvents
@@ -323,5 +325,29 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
     @vertical_scrollbar.setter
     def vertical_scrollbar(self, value: bool) -> None:
         self.model.VScroll = value
+
+    @property
+    def list_count(self) -> int:
+        """Gets the number of items in the combo box"""
+        with contextlib.suppress(Exception):
+            return self.model.GridDataModel.RowCount
+        return 0
+
+    @property
+    def list_index(self) -> int:
+        """
+        Gets which row index is selected in the gird.
+
+        Returns:
+            Index of the first selected row or ``-1`` if no rows are selected.
+        """
+        with contextlib.suppress(Exception):
+            model = self.model
+            if model.SelectionModel == SelectionType.SINGLE:
+                return self.view.getCurrentRow()
+            sel = cast(Tuple[int, ...], self.view.getSelectedRows())
+            if sel:
+                return sel[0]
+        return -1
 
     # endregion Properties

@@ -97,4 +97,17 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
     def state(self, value: TriStateKind) -> None:
         self.model.State = value.value
 
+    @property
+    def triple_state(self) -> bool:
+        """
+        Gets/Sets the triple state.
+
+        Specifies if the checkbox control may appear dimmed (grayed) or not.
+        """
+        return self.model.TriState
+
+    @triple_state.setter
+    def triple_state(self, value: bool) -> None:
+        self.model.TriState = value
+
     # endregion Properties

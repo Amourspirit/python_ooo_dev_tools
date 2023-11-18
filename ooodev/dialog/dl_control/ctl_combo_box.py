@@ -1,7 +1,9 @@
 # region imports
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
+from typing import Any, Iterable, Tuple, cast, TYPE_CHECKING
+import contextlib
+
+import uno
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.adapter.awt.text_events import TextEvents
@@ -81,6 +83,25 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
 
     # endregion Overrides
 
+    # region Methods
+
+    def set_list_data(self, data: Iterable[str]) -> None:
+        """
+        Sets the list data
+
+        Args:
+            data (Iterable[str]): List box entries
+        """
+        if not data:
+            return
+        ctl_props = self.get_control_props()
+        if ctl_props is None:
+            return
+        uno_strings = uno.Any("[]string", tuple(data))  # type: ignore
+        uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
+
+    # endregion Methods
+
     # region Properties
     @property
     def view(self) -> UnoControlComboBox:
@@ -93,11 +114,70 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
     @property
     def text(self) -> str:
         """Gets/Sets the text"""
-        return self.model.Text
+        with contextlib.suppress(Exception):
+            return self.model.Text
+        return ""
 
     @text.setter
     def text(self, value: str) -> None:
         self.model.Text = value
+
+    @property
+    def list_count(self) -> int:
+        """Gets the number of items in the combo box"""
+        with contextlib.suppress(Exception):
+            items = self.model.StringItemList
+            if items:
+                return len(items)
+        return 0
+
+    @property
+    def list_index(self) -> int:
+        """
+        Gets which item index is selected
+
+        Returns:
+            Index of the first selected item or ``-1`` if no items are selected.
+        """
+        text = self.text
+        if not text:
+            return -1
+        with contextlib.suppress(Exception):
+            items = self.model.StringItemList
+            if items:
+                return items.index(text)
+        return -1
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
+
+    @property
+    def row_source(self) -> Tuple[str, ...]:
+        """
+        Gets/Sets the row source.
+
+        When setting the row source, the combobox will be cleared and the new items will be added.
+
+        The value passed in can be any iterable string such as a list or tuple of strings.
+        """
+        with contextlib.suppress(Exception):
+            return self.model.StringItemList
+        return ()
+
+    @row_source.setter
+    def row_source(self, value: Iterable[str]) -> None:
+        """Sets the row source"""
+        self.set_list_data(value)
 
     # endregion Properties
 

@@ -1,7 +1,8 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, Iterable, TYPE_CHECKING, Tuple
-import uno  # pylint: disable=unused-import
+import contextlib
+import uno
 
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
@@ -114,9 +115,11 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
         self.model.Dropdown = value
 
     @property
-    def item_count(self) -> int:
+    def list_count(self) -> int:
         """Gets the number of items in the list"""
-        return self.view.getItemCount()
+        with contextlib.suppress(Exception):
+            return self.view.getItemCount()
+        return 0
 
     @property
     def multi_selection(self) -> bool:
@@ -133,6 +136,53 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
         """Gets the selected items"""
         return cast(Tuple[int, ...], self.model.SelectedItems)
 
+    @property
+    def list_index(self) -> int:
+        """
+        Gets which item is selected
+
+        Returns:
+            Index of the first selected item or ``-1`` if no items are selected.
+        """
+        with contextlib.suppress(Exception):
+            selected_items = self.selected_items
+            if len(selected_items) > 0:
+                return selected_items[0]
+        return -1
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
+
+    @property
+    def row_source(self) -> Tuple[str, ...]:
+        """
+        Gets/Sets the row source.
+
+        When setting the row source, the list box will be cleared and the new items will be added.
+
+        The value passed in can be any iterable string such as a list or tuple of strings.
+        """
+        with contextlib.suppress(Exception):
+            return self.model.StringItemList
+        return ()
+
+    @row_source.setter
+    def row_source(self, value: Iterable[str]) -> None:
+        """Sets the row source"""
+        self.set_list_data(value)
+
+    # item_count was renamed to list_count in 0.13.2
+    item_count = list_count
     # endregion Properties
 
 

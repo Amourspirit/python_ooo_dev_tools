@@ -37,6 +37,7 @@
         "atype",
         "autoclass",
         "Autoload",
+        "automodule",
         "autonamedtuple",
         "autoprotocol",
         "basicshapes",

@@ -305,7 +305,7 @@ class DialogControlBase(CtlListenerBase):
         with contextlib.suppress(Exception):
             model = cast("UnoControlDialogElement", self.get_model())
             return model.Step
-        return 1
+        return 0
 
     @step.setter
     def step(self, value: int) -> None:
@@ -327,4 +327,20 @@ class DialogControlBase(CtlListenerBase):
             model = cast("UnoControlDialogElement", self.get_model())
             model.Tag = value
 
+    @property
+    def tip_text(self) -> str:
+        """Gets/Sets the tip text"""
+        with contextlib.suppress(Exception):
+            model = cast(Any, self.get_model())
+            return model.HelpText
+        return ""
+
+    @tip_text.setter
+    def tip_text(self, value: str) -> None:
+        with contextlib.suppress(Exception):
+            model = cast(Any, self.get_model())
+            model.HelpText = value
+
+    # useful alias
+    help_text = tip_text
     # endregion Properties
