@@ -105,7 +105,7 @@ class CtlTextEdit(DialogControlBase, TextEvents):
                 sel.Max = text_len
                 self.view.insertText(sel, f"{os.linesep}{line}")
             # Put the cursor at the end of the inserted text
-            sel.Max = len(os.linesep) + len(line)
+            sel.Max += len(os.linesep) + len(line)
             sel.Min = sel.Max
             self.view.setSelection(sel)
             return True

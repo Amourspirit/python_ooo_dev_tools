@@ -43,7 +43,7 @@ class FocusListener(AdapterBase, XFocusListener):
         """
         is invoked when a window loses the keyboard focus.
         """
-        self._trigger_event("focusGained", event)
+        self._trigger_event("focusLost", event)
 
     def disposing(self, event: EventObject) -> None:
         """

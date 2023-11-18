@@ -31,6 +31,12 @@ or
 Example
 -------
 
+.. cssclass:: screen_shot
+
+    .. image:: https://user-images.githubusercontent.com/4193389/284018833-91fdd4ac-a2c2-4105-a32b-922480240a12.png
+        :alt: Tab and Dialog Example
+        :align: center
+
 For an example see `Tab and Tree Dialog Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/dialog/tree>`__
 
 Class
