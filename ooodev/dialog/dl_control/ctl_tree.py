@@ -148,11 +148,8 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
                 Must be a type understood by UNO, such as a string, int, float, a struct such as ``UnoDateTime``, etc.
                 Defaults to None.
 
-        Raises:
-            ValueError: _description_
-
         Returns:
-            XMutableTreeNode: _description_
+            XMutableTreeNode: MutableTreeNode
         """
         if not self.model.DataModel:
             raise ValueError("DataModel is not set")
@@ -172,22 +169,23 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
             parent_node (XMutableTreeNode): Parent node.
             flat_tree (Sequence[Sequence[str]]): FlatTree: a 2D sequence of strings, sorted on the columns containing the DisplayValues
             width_data (bool, optional): _description_. Defaults to False.
+
+        Note:
+            The same data structure for ``tree_data`` can be used to add sub-nodes as shown in :py:meth:`~.CtlTree.convert_to_tree`.
         """
         if not flat_tree:
             return
         tree_data = self.convert_to_tree(flat_tree)
-        self.add_nodes_from_tree_data(tree_data, parent_node)
+        self._add_nodes_from_tree_data(tree_data, parent_node)
 
-    def add_nodes_from_tree_data(self, tree_data: dict, parent_node: XMutableTreeNode | None = None) -> None:
+    def _add_nodes_from_tree_data(self, tree_data: dict, parent_node: XMutableTreeNode | None = None) -> None:
         """
         Adds nodes to the control from a tree data structure.
 
         Args:
             tree_data (Dict[str, str]): A tree data structure.
-            parent_node (XMutableTreeNode, optional): The parent node to add the nodes to. If None, adds nodes to the root of the control. Defaults to None.
-
-        Note:
-            The same data structure for ``tree_data`` can be used to add sub-nodes as shown in :py:meth:`~.CtlTree.convert_to_tree`.
+            parent_node (XMutableTreeNode, optional): The parent node to add the nodes to.
+                If None, adds nodes to the root of the control. Defaults to None.
         """
         # if parent_node is None and add_root_nodes is False:
         #     parent_node = self.create_root("Root")
@@ -210,7 +208,7 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
                 else:
                     node = self.add_sub_node(parent_node, key)
             if is_val_dict:
-                self.add_nodes_from_tree_data(value, node)
+                self._add_nodes_from_tree_data(value, node)
             else:
                 self.add_sub_node(node, value)
 
