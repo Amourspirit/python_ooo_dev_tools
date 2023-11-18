@@ -39,7 +39,7 @@ class VetoableChangeEvents:
 
         Event Is invoked when bound properties are changed.
 
-        The callback ``EventArgs.event_data`` will contain a ``PropertyChangeEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a ``com.sun.star.beans.PropertyChangeEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="vetoableChange")
@@ -47,6 +47,22 @@ class VetoableChangeEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("vetoableChange", cb)
+
+    def add_event_vetoable_change_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_vetoable_change(self, cb: EventArgsCallbackT) -> None:
         """
@@ -58,6 +74,17 @@ class VetoableChangeEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("vetoableChange", cb)
+
+    def remove_event_vetoable_change_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     # endregion Manage Events
 

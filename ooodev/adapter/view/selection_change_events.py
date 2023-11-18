@@ -43,14 +43,31 @@ class SelectionChangeEvents:
 
         Event is invoked when the selection changes.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``EventObject`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
+        # sourcery skip: class-extract-method
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="selectionChanged")
             self.__callback(self, args)
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("selectionChanged", cb)
+
+    def add_event_selection_change_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_modified(self, cb: EventArgsCallbackT) -> None:
         """
@@ -62,6 +79,17 @@ class SelectionChangeEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("selectionChanged", cb)
+
+    def remove_event_selection_change_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_selection_change(self) -> SelectionChangeListener:

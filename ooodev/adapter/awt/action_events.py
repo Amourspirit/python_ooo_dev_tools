@@ -43,7 +43,7 @@ class ActionEvents:
 
         Event is invoked when an action is performed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``ActionEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.ActionEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="actionPerformed")
@@ -51,6 +51,22 @@ class ActionEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("actionPerformed", cb)
+
+    def add_event_action_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_action_performed(self, cb: EventArgsCallbackT) -> None:
         """
@@ -62,6 +78,17 @@ class ActionEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("actionPerformed", cb)
+
+    def remove_event_action_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_action(self) -> ActionListener:

@@ -6,6 +6,8 @@ from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .top_window_listener import TopWindowListener
 
+# sourcery skip: class-extract-method
+
 
 class TopWindowEvents:
     """
@@ -46,7 +48,7 @@ class TopWindowEvents:
 
         Event is invoked when a window is activated.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``WindowEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.langEventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowActivated")
@@ -61,7 +63,7 @@ class TopWindowEvents:
 
         Event is invoked when a window has been closed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``WindowEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowActivated")
@@ -76,7 +78,7 @@ class TopWindowEvents:
 
         Event is invoked when a window is in the process of being closed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``WindowEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowClosing")
@@ -91,7 +93,7 @@ class TopWindowEvents:
 
         Event is invoked when a window is deactivated.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``WindowEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowDeactivated")
@@ -106,7 +108,7 @@ class TopWindowEvents:
 
         Event is invoked when a window is iconified.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``WindowEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowMinimized")
@@ -121,7 +123,7 @@ class TopWindowEvents:
 
         Event is invoked when a window is deiconified.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``WindowEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowNormalized")
@@ -136,7 +138,7 @@ class TopWindowEvents:
 
         Event is invoked when a window has been opened.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``WindowEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowOpened")
@@ -144,6 +146,22 @@ class TopWindowEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("windowOpened", cb)
+
+    def add_event_top_window_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_window_activated(self, cb: EventArgsCallbackT) -> None:
         """
@@ -219,6 +237,17 @@ class TopWindowEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("windowOpened", cb)
+
+    def remove_event_top_window_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     # endregion Manage Events
 

@@ -43,7 +43,7 @@ class SpinEvents:
 
         Event is invoked when the spin field is spun down.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``SpinEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.SpinEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="down")
@@ -58,7 +58,7 @@ class SpinEvents:
 
         Event is invoked when the spin field is set to the lower value.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``SpinEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.SpinEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="first")
@@ -71,7 +71,7 @@ class SpinEvents:
 
         Event is invoked when the spin field is set to the upper value.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``SpinEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.SpinEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="last")
@@ -86,7 +86,7 @@ class SpinEvents:
 
         Event is invoked when the spin field is spun up.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``SpinEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.SpinEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="up")
@@ -94,6 +94,22 @@ class SpinEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("up", cb)
+
+    def add_event_spin_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_down(self, cb: EventArgsCallbackT) -> None:
         """
@@ -138,6 +154,17 @@ class SpinEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("last", cb)
+
+    def remove_event_spin_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_spin(self) -> SpinListener:

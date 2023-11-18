@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .grid_column_listener import GridColumnListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .grid_column_listener import GridColumnListener
 
 
 class GridColumnEvents:
@@ -43,14 +43,31 @@ class GridColumnEvents:
 
         Event is invoked after a column was modified.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``GridColumnEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.grid.GridColumnEvent`` struct.
         """
+        # sourcery skip: class-extract-method
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="columnChanged")
             self.__callback(self, args)
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("columnChanged", cb)
+
+    def add_event_grid_column_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_column_changed(self, cb: EventArgsCallbackT) -> None:
         """
@@ -62,6 +79,17 @@ class GridColumnEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("columnChanged", cb)
+
+    def remove_event_grid_column_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_grid_column(self) -> GridColumnListener:

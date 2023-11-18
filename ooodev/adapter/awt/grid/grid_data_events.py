@@ -43,8 +43,9 @@ class GridDataEvents:
 
         Event is invoked when existing data in a grid control's data model has been modified.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``GridDataEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.grid.GridDataEvent`` struct.
         """
+        # sourcery skip: class-extract-method
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="dataChanged")
             self.__callback(self, args)
@@ -58,7 +59,7 @@ class GridDataEvents:
 
         EEvent is invoked when the title of one or more rows changed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``GridDataEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.grid.GridDataEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowHeadingChanged")
@@ -73,7 +74,7 @@ class GridDataEvents:
 
         Event is invoked when one or more rows of data have been inserted into a grid control's data model.is invoked when the title of one or more rows changed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``GridDataEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.grid.GridDataEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowsInserted")
@@ -88,7 +89,7 @@ class GridDataEvents:
 
         Event is is invoked when one or more rows of data have been removed from a grid control's data model.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``GridDataEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.grid.GridDataEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="rowsRemoved")
@@ -96,6 +97,22 @@ class GridDataEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("rowsRemoved", cb)
+
+    def add_event_grid_data_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_data_changed(self, cb: EventArgsCallbackT) -> None:
         """
@@ -140,6 +157,17 @@ class GridDataEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("rowsRemoved", cb)
+
+    def remove_event_grid_data_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_grid_data(self) -> GridDataListener:

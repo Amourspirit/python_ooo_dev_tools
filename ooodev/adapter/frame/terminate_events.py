@@ -43,7 +43,7 @@ class TerminateEvents:
 
         Event is invoked when the master environment is finally terminated.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``EventObject`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="notifyTermination")
@@ -58,7 +58,7 @@ class TerminateEvents:
 
         Event is invoked when the master environment (e.g., desktop) is about to terminate.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``EventObject`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="queryTermination")
@@ -66,6 +66,22 @@ class TerminateEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("queryTermination", cb)
+
+    def add_event_terminate_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_notify_termination(self, cb: EventArgsCallbackT) -> None:
         """
@@ -88,6 +104,17 @@ class TerminateEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("queryTermination", cb)
+
+    def remove_event_terminate_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_terminate(self) -> TerminateListener:
