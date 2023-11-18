@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .action_listener import ActionListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .action_listener import ActionListener
 
 
 class ActionEvents:
@@ -23,7 +23,7 @@ class ActionEvents:
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
         self.__callback = cb
-        self.__action_listener = ActionListener(trigger_args=trigger_args)
+        self.__listener = ActionListener(trigger_args=trigger_args)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
@@ -38,7 +38,9 @@ class ActionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="actionPerformed")
             self.__callback(self, args)
-        self.__action_listener.on("actionPerformed", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("actionPerformed", cb)
 
     def remove_event_action_performed(self, cb: EventArgsCallbackT) -> None:
         """
@@ -47,13 +49,15 @@ class ActionEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="actionPerformed", is_add=False)
             self.__callback(self, args)
-        self.__action_listener.off("actionPerformed", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("actionPerformed", cb)
 
     @property
     def events_listener_action(self) -> ActionListener:
         """
         Returns listener
         """
-        return self.__action_listener
+        return self.__listener
 
     # endregion Manage Events

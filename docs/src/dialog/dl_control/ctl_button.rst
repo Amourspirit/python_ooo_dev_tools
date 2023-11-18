@@ -28,6 +28,18 @@ or
         # can get control from kwargs
         ctl = cast(CtlButton, kwargs['control_src'])
 
+Example
+-------
+
+.. cssclass:: screen_shot
+
+    .. image:: https://user-images.githubusercontent.com/4193389/283562180-33f4293a-408d-43d8-92db-d287a4168050.png
+        :alt: List Box Examples Screen Shot
+        :align: center
+        :width: 550px
+
+For an example see `Tab and List Box Dialog Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/dialog/tabs_list_box>`__
+
 Class
 -----
 

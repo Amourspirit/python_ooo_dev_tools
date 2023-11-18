@@ -1,10 +1,13 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import contextlib
 import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
@@ -35,11 +38,9 @@ class CtlFile(DialogControlBase, TextEvents):
 
     # region Lazy Listeners
     def _on_text_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTextListener(self.events_listener_text)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -54,6 +55,14 @@ class CtlFile(DialogControlBase, TextEvents):
     def get_model(self) -> UnoControlFileControlModel:
         """Gets the Model for the control"""
         return cast("UnoControlFileControlModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.FILE_CONTROL``"""
+        return DialogControlKind.FILE_CONTROL
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.FILE_CONTROL``"""
+        return DialogControlNamedKind.FILE_CONTROL
 
     # endregion Overrides
 
@@ -74,5 +83,18 @@ class CtlFile(DialogControlBase, TextEvents):
     @text.setter
     def text(self, value: str) -> None:
         self.model.Text = value
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
 
     # endregion Properties

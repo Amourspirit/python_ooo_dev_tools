@@ -1,12 +1,15 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import contextlib
 import datetime
 import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 # pylint: disable=useless-import-alias
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
@@ -43,18 +46,14 @@ class CtlDateField(DialogControlBase, SpinEvents, TextEvents):
 
     # region Lazy Listeners
     def _on_spin_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addSpinListener(self.events_listener_spin)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_text_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTextListener(self.events_listener_text)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -69,6 +68,14 @@ class CtlDateField(DialogControlBase, SpinEvents, TextEvents):
     def get_model(self) -> UnoControlDateFieldModel:
         """Gets the Model for the control"""
         return cast("UnoControlDateFieldModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.DATE_FIELD``"""
+        return DialogControlKind.DATE_FIELD
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.DATE_FIELD``"""
+        return DialogControlNamedKind.DATE_FIELD
 
     # endregion Overrides
 
@@ -125,5 +132,18 @@ class CtlDateField(DialogControlBase, SpinEvents, TextEvents):
     @date_format.setter
     def date_format(self, value: DateFormatKind) -> None:
         self.model.DateFormat = value.value
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
 
     # endregion Properties

@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
@@ -38,6 +40,14 @@ class CtlGroupBox(DialogControlBase):
     def get_model(self) -> UnoControlGroupBoxModel:
         """Gets the Model for the control"""
         return cast("UnoControlGroupBoxModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.GROUP_BOX``"""
+        return DialogControlKind.GROUP_BOX
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.GROUP_BOX``"""
+        return DialogControlNamedKind.GROUP_BOX
 
     # endregion Overrides
 

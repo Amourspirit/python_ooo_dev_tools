@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .tab_page_container_listener import TabPageContainerListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .tab_page_container_listener import TabPageContainerListener
 
 
 class TabPageContainerEvents:
@@ -38,6 +38,8 @@ class TabPageContainerEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="tabPageActivated")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("tabPageActivated", cb)
 
     def remove_event_tab_page_activated(self, cb: EventArgsCallbackT) -> None:
@@ -47,6 +49,8 @@ class TabPageContainerEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="tabPageActivated", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("tabPageActivated", cb)
 
     @property

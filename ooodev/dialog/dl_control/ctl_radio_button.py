@@ -6,9 +6,11 @@ import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.item_events import ItemEvents
 
 # pylint: disable=useless-import-alias
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
-from ooodev.utils.kind.state_kind import StateKind as StateKind
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.utils.kind.state_kind import StateKind as StateKind
 
 from .ctl_base import DialogControlBase
 
@@ -42,11 +44,9 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
 
     # region Lazy Listeners
     def _on_item_event_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addItemListener(self.events_listener_item)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -61,6 +61,14 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
     def get_model(self) -> UnoControlRadioButtonModel:
         """Gets the Model for the control"""
         return cast("UnoControlRadioButtonModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.RADIO_BUTTON``"""
+        return DialogControlKind.RADIO_BUTTON
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.RADIO_BUTTON``"""
+        return DialogControlNamedKind.RADIO_BUTTON
 
     # endregion Overrides
 
@@ -90,14 +98,5 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
     @state.setter
     def state(self, value: StateKind) -> None:
         self.model.State = value.value
-
-    @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.model.TabIndex
-
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
 
     # endregion Properties

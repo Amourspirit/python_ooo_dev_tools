@@ -14,6 +14,7 @@ Subpackages
    ooodev.adapter.container
    ooodev.adapter.frame
    ooodev.adapter.lang
+   ooodev.adapter.tree
    ooodev.adapter.util
    ooodev.adapter.view
 
@@ -24,6 +25,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.adapter.adapter_base
+   ooodev.adapter.component_base
 
 Module contents
 ---------------

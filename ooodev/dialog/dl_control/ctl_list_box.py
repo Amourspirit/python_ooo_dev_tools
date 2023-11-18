@@ -1,12 +1,15 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, Iterable, TYPE_CHECKING, Tuple
-import uno  # pylint: disable=unused-import
+import contextlib
+import uno
 
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 from .ctl_base import DialogControlBase
 
@@ -40,18 +43,14 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
 
     # region Lazy Listeners
     def _on_action_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addActionListener(self.events_listener_action)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_item_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addItemListener(self.events_listener_item)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -66,6 +65,14 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
     def get_model(self) -> UnoControlListBoxModel:
         """Gets the Model for the control"""
         return cast("UnoControlListBoxModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.LIST_BOX``"""
+        return DialogControlKind.LIST_BOX
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.LIST_BOX``"""
+        return DialogControlNamedKind.LIST_BOX
 
     # endregion Overrides
 
@@ -108,9 +115,11 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
         self.model.Dropdown = value
 
     @property
-    def item_count(self) -> int:
+    def list_count(self) -> int:
         """Gets the number of items in the list"""
-        return self.view.getItemCount()
+        with contextlib.suppress(Exception):
+            return self.view.getItemCount()
+        return 0
 
     @property
     def multi_selection(self) -> bool:
@@ -127,6 +136,53 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
         """Gets the selected items"""
         return cast(Tuple[int, ...], self.model.SelectedItems)
 
+    @property
+    def list_index(self) -> int:
+        """
+        Gets which item is selected
+
+        Returns:
+            Index of the first selected item or ``-1`` if no items are selected.
+        """
+        with contextlib.suppress(Exception):
+            selected_items = self.selected_items
+            if len(selected_items) > 0:
+                return selected_items[0]
+        return -1
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
+
+    @property
+    def row_source(self) -> Tuple[str, ...]:
+        """
+        Gets/Sets the row source.
+
+        When setting the row source, the list box will be cleared and the new items will be added.
+
+        The value passed in can be any iterable string such as a list or tuple of strings.
+        """
+        with contextlib.suppress(Exception):
+            return self.model.StringItemList
+        return ()
+
+    @row_source.setter
+    def row_source(self, value: Iterable[str]) -> None:
+        """Sets the row source"""
+        self.set_list_data(value)
+
+    # item_count was renamed to list_count in 0.13.2
+    item_count = list_count
     # endregion Properties
 
 

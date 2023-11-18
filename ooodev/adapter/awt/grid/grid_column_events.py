@@ -38,6 +38,8 @@ class GridColumnEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="columnChanged")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("columnChanged", cb)
 
     def remove_event_column_changed(self, cb: EventArgsCallbackT) -> None:
@@ -47,6 +49,8 @@ class GridColumnEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="columnChanged", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("columnChanged", cb)
 
     @property

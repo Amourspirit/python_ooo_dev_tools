@@ -7,7 +7,7 @@ import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 
-from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind
+from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind, StateKind
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.office.calc import Calc
@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from ooodev.dialog.dl_control.ctl_combo_box import CtlComboBox
     from ooodev.dialog.dl_control.ctl_scroll_bar import CtlScrollBar
     from ooodev.dialog.dl_control.ctl_dialog import CtlDialog
+    from ooodev.dialog.dl_control.ctl_base import DialogControlBase
     from com.sun.star.awt import ItemEvent
     from com.sun.star.awt import AdjustmentEvent
     from com.sun.star.awt import WindowEvent
@@ -62,6 +63,7 @@ class Runner:
             self._padding = 10
         else:
             self._padding = 14
+        self._tab_index = 1
         self._dialog = Dialogs.create_dialog(
             x=-1,
             y=-1,
@@ -78,6 +80,7 @@ class Runner:
             width=self._width - (self._margin * 2),
             height=20,
         )
+        self._set_tab_index(self._ctl_lbl)
         self._ctl_lbl.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_lbl.add_event_mouse_exited(self._fn_on_mouse_exit)
         sz = self._ctl_lbl.view.getPosSize()
@@ -101,7 +104,7 @@ class Runner:
                 height=sz.Height,
                 border=border_kind,
             )
-
+        self._set_tab_index(self._txt_input)
         self._txt_input.add_event_text_changed(self._fn_on_text_changed)
 
         self._ctl_btn_cancel = Dialogs.insert_button(
@@ -113,6 +116,7 @@ class Runner:
             height=self._btn_height,
             # btn_type=PushButtonType.CANCEL,
         )
+        self._set_tab_index(self._ctl_btn_cancel)
         self._ctl_btn_cancel.view.setActionCommand("Cancel")
         self._ctl_btn_cancel.add_event_action_performed(self._fn_on_action_cancel)
         self._ctl_btn_cancel.add_event_mouse_entered(self._fn_on_mouse_entered)
@@ -128,6 +132,7 @@ class Runner:
             btn_type=PushButtonType.OK,
             DefaultButton=True,
         )
+        self._set_tab_index(self._ctl_button_ok)
         self._ctl_button_ok.add_event_action_performed(self._fn_on_action_ok)
         self._ctl_button_ok.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_button_ok.add_event_mouse_exited(self._fn_on_mouse_exit)
@@ -145,6 +150,7 @@ class Runner:
             state=Dialogs.StateEnum.CHECKED,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_chk1)
 
         sz = self._ctl_chk1.view.getPosSize()
         self._ctl_chk2 = Dialogs.insert_check_box(
@@ -158,6 +164,7 @@ class Runner:
             state=Dialogs.StateEnum.NOT_CHECKED,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_chk2)
 
         sz = self._ctl_chk2.view.getPosSize()
         self._ctl_chk3 = Dialogs.insert_check_box(
@@ -171,6 +178,7 @@ class Runner:
             state=Dialogs.StateEnum.DONT_KNOW,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_chk3)
         self._ctl_chk1.add_event_item_state_changed(self._fn_on_check_box_state)
         self._ctl_chk2.add_event_item_state_changed(self._fn_on_check_box_state)
         self._ctl_chk3.add_event_item_state_changed(self._fn_on_check_box_state)
@@ -185,6 +193,7 @@ class Runner:
             date_value=datetime.datetime.now(),
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_date)
         self._ctl_date.date_format = DateFormatKind.DIN_5008_YY_MM_DD
         dt = datetime.datetime.now()
         self._ctl_date.date = datetime.datetime(dt.year - 1, dt.month, dt.day)
@@ -204,6 +213,7 @@ class Runner:
             spin_button=True,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_currency)
         sz = self._ctl_currency.view.getPosSize()
         self._ctl_currency.add_event_down(self._fn_on_down)
         self._ctl_currency.add_event_up(self._fn_on_up)
@@ -217,7 +227,7 @@ class Runner:
             literal_mask="__.__.2025",
             border=border_kind,
         )
-
+        self._set_tab_index(self._ctl_pattern)
         self._ctl_pattern.add_event_down(self._fn_on_down)
         self._ctl_pattern.add_event_up(self._fn_on_up)
         self._ctl_pattern.add_event_text_changed(self._fn_on_text_changed)
@@ -233,6 +243,7 @@ class Runner:
             spin_button=True,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_num_field)
         self._ctl_num_field.add_event_down(self._fn_on_down)
         self._ctl_num_field.add_event_up(self._fn_on_up)
         self._ctl_num_field.add_event_text_changed(self._fn_on_text_changed)
@@ -248,6 +259,7 @@ class Runner:
             entries=["Item 1", "Item 2", "Item 3"],
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_combo1)
         self._ctl_combo1.add_event_text_changed(self._fn_on_text_changed)
         self._ctl_combo1.add_event_item_state_changed(self._fn_on_item_changed)
 
@@ -263,11 +275,12 @@ class Runner:
             value=67,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_progress)
         self._ctl_progress.fill_color = StandardColor.GREEN
         self._ctl_progress.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_progress.add_event_mouse_exited(self._fn_on_mouse_exit)
 
-        self._scroll_progress = Dialogs.insert_scroll_bar(
+        self._ctl_scroll_progress = Dialogs.insert_scroll_bar(
             dialog_ctrl=self._dialog.control,
             x=self._ctl_progress.x,
             y=self._ctl_progress.y + self._ctl_progress.height + self._padding,
@@ -276,8 +289,9 @@ class Runner:
             min_value=self._ctl_progress.model.ProgressValueMin,
             max_value=self._ctl_progress.model.ProgressValueMax,
         )
-        self._scroll_progress.value = self._ctl_progress.value
-        self._scroll_progress.add_event_adjustment_value_changed(self._fn_on_scroll_adjustment)
+        self._set_tab_index(self._ctl_scroll_progress)
+        self._ctl_scroll_progress.value = self._ctl_progress.value
+        self._ctl_scroll_progress.add_event_adjustment_value_changed(self._fn_on_scroll_adjustment)
 
         self._ctl_file = Dialogs.insert_file_control(
             dialog_ctrl=self._dialog.control,
@@ -287,6 +301,7 @@ class Runner:
             height=self._box_height,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_file)
         self._ctl_file.text = "file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png"
         self._ctl_file.add_event_text_changed(self._fn_on_text_changed)
         sz = self._ctl_file.view.getPosSize()
@@ -297,6 +312,7 @@ class Runner:
             width=self._width - (self._margin * 2),
             height=1,
         )
+        self._set_tab_index(self._ctl_ln)
 
         sz = self._ctl_ln.view.getPosSize()
         self._ctl_formatted = Dialogs.insert_formatted_field(
@@ -309,11 +325,27 @@ class Runner:
             value=3,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_formatted)
 
         self._ctl_formatted.add_event_text_changed(self._fn_on_text_changed)
         self._ctl_formatted.add_event_down(self._fn_on_down)
         self._ctl_formatted.add_event_up(self._fn_on_up)
         sz = self._ctl_formatted.view.getPosSize()
+        # Inserts radio buttons into dialog.
+
+        # Inserting more then a single group of radio buttons into a dialog can be a bit buggy.
+        # This in part has to do with how LibreOffice handles the Tab Indexes for the radio controls.
+
+        # The easies solution is to set the group box tab index right before adding a set of radio controls.
+        # This way between radio control set a different control is assigned a tab index before the next
+        # set of radio controls is created and added.
+
+        # When using tab indexes the tab indexes must be contiguous for each group but the next group must not
+        # pick up from the same tab index that the last group finished on.
+
+        # Alternatively it seems radio control groups can also be added with out setting a tab index as well.
+        # In order for this to work a different control such as a group box must be added to the dialog between
+        # adding radio control groups.
         self._ctl_gb1 = Dialogs.insert_group_box(
             dialog_ctrl=self._dialog.control,
             x=self._margin,
@@ -322,6 +354,7 @@ class Runner:
             height=100,
             label="Group Box One",
         )
+        self._set_tab_index(self._ctl_gb1)
 
         # insert radio buttons into group box one
         sz = self._ctl_gb1.view.getPosSize()
@@ -333,10 +366,10 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
-        self._rb1.tab_index = 30
+        self._set_tab_index(self._rb1)
+        self._rb1.state = StateKind.CHECKED
         self._rb1.add_event_item_state_changed(self._fn_on_item_changed)
         rb_sz = self._rb1.view.getPosSize()
-        group_tab_index = self._rb1.tab_index + 1
         for i in range(1, 4):
             radio_btn = Dialogs.insert_radio_button(
                 dialog_ctrl=self._dialog.control,
@@ -346,8 +379,7 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
-            radio_btn.tab_index = group_tab_index
-            group_tab_index += 1
+            self._set_tab_index(radio_btn)
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
@@ -359,6 +391,8 @@ class Runner:
             height=sz.Height,
             label="Group Box Two",
         )
+        # simplest way to break contiguous tab order and have it work
+        self._set_tab_index(self._ctl_gb2)
 
         # insert radio buttons into group box two
         sz = self._ctl_gb2.view.getPosSize()
@@ -370,8 +404,9 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
-        group_tab_index += 2  # make sure not contiguous with other group
-        self._rb2.tab_index = group_tab_index
+
+        self._set_tab_index(self._rb2)
+        self._rb2.state = StateKind.CHECKED
         self._rb2.add_event_item_state_changed(self._fn_on_item_changed)
         rb_sz = self._rb2.view.getPosSize()
         for i in range(1, 4):
@@ -383,8 +418,7 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
-            radio_btn.tab_index = group_tab_index
-            group_tab_index += 1
+            self._set_tab_index(radio_btn)
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
@@ -398,6 +432,7 @@ class Runner:
             url="https://python-ooo-dev-tools.readthedocs.io/en/latest/index.html",
             # Enabled=False,
         )
+        self._set_tab_index(self._ctl_link)
         self._ctl_link.add_event_action_performed(self._fn_on_action_general)
 
         sz = self._ctl_link.view.getPosSize()
@@ -411,6 +446,7 @@ class Runner:
             time_value=datetime.datetime.now().time(),
             time_format=TimeFormatKind.LONG_12H,
         )
+        self._set_tab_index(self._ctl_time)
 
         self._ctl_time.add_event_text_changed(self._fn_on_text_changed)
         self._ctl_time.add_event_down(self._fn_on_down)
@@ -425,10 +461,13 @@ class Runner:
             y=sz.Y + sz.Height + self._padding,
             width=120,
             height=120,
-            image_url=FileIO.fnm_to_url(pth),
+            # image_url=FileIO.fnm_to_url(pth),
             scale=ImageScaleModeEnum.ANISOTROPIC,
             border=border_kind,
         )
+        # self._ctl_img.picture = FileIO.fnm_to_url(pth)
+        self._ctl_img.picture = pth
+        self._set_tab_index(self._ctl_img)
 
         self._ctl_img.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_img.add_event_mouse_exited(self._fn_on_mouse_exit)
@@ -443,6 +482,7 @@ class Runner:
             drop_down=False,
             border=border_kind,
         )
+        self._set_tab_index(self._ctl_list_box)
 
         self._ctl_list_box.add_event_action_performed(self._fn_on_action_general)
         self._ctl_list_box.add_event_mouse_entered(self._fn_on_mouse_entered)
@@ -470,58 +510,19 @@ class Runner:
 
     # region Event Handlers
     def _init_handlers(self) -> None:
-        def _on_check_box_state(src: Any, event: EventArgs, control_src: CtlCheckBox, *args, **kwargs):
-            self.on_check_box_state(src, event, control_src, *args, **kwargs)
-
-        def _on_action_ok(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
-            self.on_action_ok(src, event, control_src, *args, **kwargs)
-
-        def _on_action_cancel(src: Any, event: EventArgs, control_src: CtlButton, *args, **kwargs) -> None:
-            self.on_action_cancel(src, event, control_src, *args, **kwargs)
-
-        def _on_action_general(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
-            self.on_action_general(src, event, control_src, *args, **kwargs)
-
-        def _on_mouse_entered(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
-            self.on_mouse_entered(src, event, control_src, *args, **kwargs)
-
-        def _on_mouse_exit(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
-            self.on_mouse_exit(src, event, control_src, *args, **kwargs)
-
-        def _on_text_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
-            self.on_text_changed(src, event, control_src, *args, **kwargs)
-
-        def _on_item_changed(src: Any, event: EventArgs, control_src: CtlComboBox, *args, **kwargs) -> None:
-            self.on_item_changed(src, event, control_src, *args, **kwargs)
-
-        def _on_down(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
-            self.on_down(src, event, control_src, *args, **kwargs)
-
-        def _on_up(src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
-            self.on_up(src, event, control_src, *args, **kwargs)
-
-        def _on_scroll_adjustment(src: Any, event: EventArgs, control_src: CtlScrollBar, *args, **kwargs) -> None:
-            self.on_scroll_adjustment(src, event, control_src, *args, **kwargs)
-
-        def _on_window_moved(src: Any, event: EventArgs, control_src: CtlDialog, *args, **kwargs) -> None:
-            self.on_window_moved(src, event, control_src, *args, **kwargs)
-
-        def _on_window_closed(src: Any, event: EventArgs, control_src: CtlDialog, *args, **kwargs) -> None:
-            self.on_window_closed(src, event, control_src, *args, **kwargs)
-
-        self._fn_on_check_box_state = _on_check_box_state
-        self._fn_on_action_ok = _on_action_ok
-        self._fn_on_action_cancel = _on_action_cancel
-        self._fn_on_action_general = _on_action_general
-        self._fn_on_mouse_entered = _on_mouse_entered
-        self._fn_on_mouse_exit = _on_mouse_exit
-        self._fn_on_text_changed = _on_text_changed
-        self._fn_on_item_changed = _on_item_changed
-        self._fn_on_up = _on_up
-        self._fn_on_down = _on_down
-        self._fn_on_scroll_adjustment = _on_scroll_adjustment
-        self._fn_on_window_moved = _on_window_moved
-        self._fn_on_window_closed = _on_window_closed
+        self._fn_on_check_box_state = self.on_check_box_state
+        self._fn_on_action_ok = self.on_action_ok
+        self._fn_on_action_cancel = self.on_action_cancel
+        self._fn_on_action_general = self.on_action_general
+        self._fn_on_mouse_entered = self.on_mouse_entered
+        self._fn_on_mouse_exit = self.on_mouse_exit
+        self._fn_on_text_changed = self.on_text_changed
+        self._fn_on_item_changed = self.on_item_changed
+        self._fn_on_up = self.on_up
+        self._fn_on_down = self.on_down
+        self._fn_on_scroll_adjustment = self.on_scroll_adjustment
+        self._fn_on_window_moved = self.on_window_moved
+        self._fn_on_window_closed = self.on_window_closed
 
     def on_check_box_state(self, src: Any, event: EventArgs, control_src: CtlCheckBox, *args, **kwargs) -> None:
         itm_event = cast("ItemEvent", event.event_data)
@@ -600,9 +601,16 @@ class Runner:
         print("Window Y:", a_event.Y)
 
     def on_window_closed(self, src: Any, event: EventArgs, control_src: CtlDialog, *args, **kwargs) -> None:
+        # a_event = cast("WindowEvent", event.event_data)
+        # this event seems to get called if the application (calc) looses focus. Not sure why.
+
         print("Window Closed")
 
     # endregion Event Handlers
+
+    def _set_tab_index(self, ctl: DialogControlBase) -> None:
+        ctl.tab_index = self._tab_index
+        self._tab_index += 1
 
 
 def main():

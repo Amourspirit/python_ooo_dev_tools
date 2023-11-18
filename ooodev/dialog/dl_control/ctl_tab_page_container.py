@@ -5,6 +5,8 @@ import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.tab.tab_page_container_events import TabPageContainerEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 from .ctl_base import DialogControlBase
 
@@ -39,11 +41,9 @@ class CtlTabPageContainer(DialogControlBase, TabPageContainerEvents):
 
     # region Lazy Listeners
     def _on_tab_page_container_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addTabPageContainerListener(self.events_listener_tab_page_container)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -58,6 +58,14 @@ class CtlTabPageContainer(DialogControlBase, TabPageContainerEvents):
     def get_model(self) -> UnoControlTabPageContainerModel:
         """Gets the Model for the control"""
         return cast("UnoControlTabPageContainerModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.TAB_PAGE_CONTAINER``"""
+        return DialogControlKind.TAB_PAGE_CONTAINER
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.TAB_PAGE_CONTAINER``"""
+        return DialogControlNamedKind.TAB_PAGE_CONTAINER
 
     # endregion Overrides
 

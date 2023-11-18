@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .key_listener import KeyListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .key_listener import KeyListener
 
 
 class KeyEvents:
@@ -23,7 +23,7 @@ class KeyEvents:
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
         """
         self.__callback = cb
-        self.__key_listener = KeyListener(trigger_args=trigger_args)
+        self.__listener = KeyListener(trigger_args=trigger_args)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
@@ -38,7 +38,9 @@ class KeyEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="keyPressed")
             self.__callback(self, args)
-        self.__key_listener.on("keyPressed", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("keyPressed", cb)
 
     def add_event_key_released(self, cb: EventArgsCallbackT) -> None:
         """
@@ -51,7 +53,7 @@ class KeyEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="keyReleased")
             self.__callback(self, args)
-        self.__key_listener.on("keyReleased", cb)
+        self.__listener.on("keyReleased", cb)
 
     def remove_event_key_pressed(self, cb: EventArgsCallbackT) -> None:
         """
@@ -60,7 +62,9 @@ class KeyEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="keyPressed", is_add=False)
             self.__callback(self, args)
-        self.__key_listener.off("keyPressed", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("keyPressed", cb)
 
     def remove_event_key_released(self, cb: EventArgsCallbackT) -> None:
         """
@@ -69,7 +73,9 @@ class KeyEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="keyReleased", is_add=False)
             self.__callback(self, args)
-        self.__key_listener.off("keyReleased", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("keyReleased", cb)
 
     # endregion Manage Events
 
@@ -78,4 +84,4 @@ class KeyEvents:
         """
         Returns listener
         """
-        return self.__key_listener
+        return self.__listener

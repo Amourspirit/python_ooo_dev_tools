@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.lang.event_events
    ooodev.adapter.lang.event_listener
 
 Module contents

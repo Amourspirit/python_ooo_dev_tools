@@ -230,6 +230,8 @@ autodoc_type_aliases = {
 
 autodoc_typehints_format = "short"
 
+autodoc_default_options = {"member-order": "groupwise"}
+
 
 # https://stackoverflow.com/questions/9698702/how-do-i-create-a-global-role-roles-in-sphinx
 # custom global roles or any other rst to include

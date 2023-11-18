@@ -42,18 +42,14 @@ class CtlDialog(CtlListenerBase, TopWindowEvents, WindowEvents):
 
     # region Lazy Listeners
     def _on_top_window_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.control.addTopWindowListener(self.events_listener_top_window)
-        self._add_listener(key)
+        event.remove_callback = True
 
     def _on_window_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.control.addWindowListener(self.events_listener_window)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 

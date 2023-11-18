@@ -3,11 +3,14 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFixedLine  # service
     from com.sun.star.awt import UnoControlFixedLineModel  # service
+
 # endregion imports
 
 
@@ -40,6 +43,14 @@ class CtlFixedLine(DialogControlBase):
     def get_model(self) -> UnoControlFixedLineModel:
         """Gets the Model for the control"""
         return cast("UnoControlFixedLineModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.FIXED_LINE``"""
+        return DialogControlKind.FIXED_LINE
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.FIXED_LINE``"""
+        return DialogControlNamedKind.FIXED_LINE
 
     # endregion Overrides
 

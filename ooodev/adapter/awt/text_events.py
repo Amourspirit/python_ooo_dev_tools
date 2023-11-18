@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .text_listener import TextListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .text_listener import TextListener
 
 
 class TextEvents:
@@ -24,7 +24,7 @@ class TextEvents:
         """
         self.__callback = cb
         self.__name = gUtil.Util.generate_random_string(10)
-        self.__text_listener = TextListener(trigger_args=trigger_args)
+        self.__listener = TextListener(trigger_args=trigger_args)
 
     # region Manage Events
     def add_event_text_changed(self, cb: EventArgsCallbackT) -> None:
@@ -38,7 +38,9 @@ class TextEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="textChanged")
             self.__callback(self, args)
-        self.__text_listener.on("textChanged", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("textChanged", cb)
 
     def remove_event_text_changed(self, cb: EventArgsCallbackT) -> None:
         """
@@ -47,13 +49,15 @@ class TextEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="textChanged", is_add=False)
             self.__callback(self, args)
-        self.__text_listener.off("textChanged", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("textChanged", cb)
 
     @property
     def events_listener_text(self) -> TextListener:
         """
         Returns listener
         """
-        return self.__text_listener
+        return self.__listener
 
     # endregion Manage Events

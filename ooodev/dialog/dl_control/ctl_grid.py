@@ -1,15 +1,19 @@
 # region imports
 from __future__ import annotations
-from typing import Any, cast, Iterable, Sequence, TYPE_CHECKING
+from typing import Any, cast, Iterable, Sequence, TYPE_CHECKING, Tuple
+import contextlib
 import uno  # pylint: disable=unused-import
 
 # pylint: disable=useless-import-alias
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
+from ooo.dyn.view.selection_type import SelectionType
 from com.sun.star.awt.grid import XMutableGridDataModel
 
 from ooodev.adapter.awt.grid.grid_selection_events import GridSelectionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.type_var import Table
 from .ctl_base import DialogControlBase
@@ -44,11 +48,9 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
 
     # region Lazy Listeners
     def _on_grid_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-        key = cast(str, event.source)
-        if self._has_listener(key):
-            return
+        # will only ever fire once
         self.view.addSelectionListener(self.events_listener_grid_selection)
-        self._add_listener(key)
+        event.remove_callback = True
 
     # endregion Lazy Listeners
 
@@ -63,6 +65,14 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
     def get_model(self) -> UnoControlGridModel:
         """Gets the Model for the control"""
         return cast("UnoControlGridModel", self.get_view_ctl().getModel())
+
+    def get_control_kind(self) -> DialogControlKind:
+        """Gets the control kind. Returns ``DialogControlKind.GRID_CONTROL``"""
+        return DialogControlKind.GRID_CONTROL
+
+    def get_control_named_kind(self) -> DialogControlNamedKind:
+        """Gets the control named kind. Returns ``DialogControlNamedKind.GRID_CONTROL``"""
+        return DialogControlNamedKind.GRID_CONTROL
 
     # endregion Overrides
 
@@ -315,5 +325,29 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
     @vertical_scrollbar.setter
     def vertical_scrollbar(self, value: bool) -> None:
         self.model.VScroll = value
+
+    @property
+    def list_count(self) -> int:
+        """Gets the number of items in the combo box"""
+        with contextlib.suppress(Exception):
+            return self.model.GridDataModel.RowCount
+        return 0
+
+    @property
+    def list_index(self) -> int:
+        """
+        Gets which row index is selected in the gird.
+
+        Returns:
+            Index of the first selected row or ``-1`` if no rows are selected.
+        """
+        with contextlib.suppress(Exception):
+            model = self.model
+            if model.SelectionModel == SelectionType.SINGLE:
+                return self.view.getCurrentRow()
+            sel = cast(Tuple[int, ...], self.view.getSelectedRows())
+            if sel:
+                return sel[0]
+        return -1
 
     # endregion Properties

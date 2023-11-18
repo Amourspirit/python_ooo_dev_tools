@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .window_listener import WindowListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .window_listener import WindowListener
 
 
 class WindowEvents:
@@ -38,6 +38,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowHidden")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("windowHidden", cb)
 
     def add_event_window_moved(self, cb: EventArgsCallbackT) -> None:
@@ -51,6 +53,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowMoved")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("windowMoved", cb)
 
     def add_event_window_resized(self, cb: EventArgsCallbackT) -> None:
@@ -64,6 +68,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowResized")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("windowResized", cb)
 
     def add_event_window_shown(self, cb: EventArgsCallbackT) -> None:
@@ -77,6 +83,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowShown")
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.on("windowShown", cb)
 
     def remove_event_window_hidden(self, cb: EventArgsCallbackT) -> None:
@@ -86,6 +94,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowHidden", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("windowHidden", cb)
 
     def remove_event_window_moved(self, cb: EventArgsCallbackT) -> None:
@@ -95,6 +105,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowMoved", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("windowMoved", cb)
 
     def remove_event_window_resized(self, cb: EventArgsCallbackT) -> None:
@@ -104,6 +116,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowResized", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("windowResized", cb)
 
     def remove_event_window_shown(self, cb: EventArgsCallbackT) -> None:
@@ -113,6 +127,8 @@ class WindowEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowShown", is_add=False)
             self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
         self.__listener.off("windowShown", cb)
 
     # endregion Manage Events

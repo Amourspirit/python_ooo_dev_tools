@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .spin_listener import SpinListener
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from .spin_listener import SpinListener
 
 
 class SpinEvents:
@@ -24,7 +24,7 @@ class SpinEvents:
         """
         self.__callback = cb
         self.__name = gUtil.Util.generate_random_string(10)
-        self.__spin_listener = SpinListener(trigger_args=trigger_args)
+        self.__listener = SpinListener(trigger_args=trigger_args)
 
     # region Manage Events
     def add_event_down(self, cb: EventArgsCallbackT) -> None:
@@ -38,7 +38,9 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="down")
             self.__callback(self, args)
-        self.__spin_listener.on("down", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("down", cb)
 
     def add_event_first(self, cb: EventArgsCallbackT) -> None:
         """
@@ -51,7 +53,7 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="first")
             self.__callback(self, args)
-        self.__spin_listener.on("first", cb)
+        self.__listener.on("first", cb)
 
     def add_event_last(self, cb: EventArgsCallbackT) -> None:
         """
@@ -64,7 +66,9 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="last")
             self.__callback(self, args)
-        self.__spin_listener.on("last", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("last", cb)
 
     def add_event_up(self, cb: EventArgsCallbackT) -> None:
         """
@@ -77,7 +81,9 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="up")
             self.__callback(self, args)
-        self.__spin_listener.on("up", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("up", cb)
 
     def remove_event_down(self, cb: EventArgsCallbackT) -> None:
         """
@@ -86,7 +92,9 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="down", is_add=False)
             self.__callback(self, args)
-        self.__spin_listener.off("down", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("down", cb)
 
     def remove_event_first(self, cb: EventArgsCallbackT) -> None:
         """
@@ -95,7 +103,9 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="first", is_add=False)
             self.__callback(self, args)
-        self.__spin_listener.off("first", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("first", cb)
 
     def remove_event_up(self, cb: EventArgsCallbackT) -> None:
         """
@@ -104,7 +114,9 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="up", is_add=False)
             self.__callback(self, args)
-        self.__spin_listener.off("up", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("up", cb)
 
     def remove_event_last(self, cb: EventArgsCallbackT) -> None:
         """
@@ -113,13 +125,15 @@ class SpinEvents:
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="last", is_add=False)
             self.__callback(self, args)
-        self.__spin_listener.off("last", cb)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("last", cb)
 
     @property
     def events_listener_spin(self) -> SpinListener:
         """
         Returns listener
         """
-        return self.__spin_listener
+        return self.__listener
 
     # endregion Manage Events
