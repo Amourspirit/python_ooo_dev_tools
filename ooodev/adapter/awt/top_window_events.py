@@ -14,17 +14,30 @@ class TopWindowEvents:
     This class is usually inherited by control classes that implement ``com.sun.star.awt.XWindowListener``.
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, cb: ListenerEventCallbackT | None = None) -> None:
+    def __init__(
+        self,
+        trigger_args: GenericArgs | None = None,
+        cb: ListenerEventCallbackT | None = None,
+        listener: TopWindowListener | None = None,
+        add_window_listener: bool = False,
+    ) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+                This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
+            listener (TopWindowListener | None, optional): Listener that is used to manage events.
+            add_window_listener (bool, optional): If ``True`` Top window listener is automatically added. Default ``True``.
+                This only applies if the listener is not passed.
         """
         self.__callback = cb
+        if listener:
+            self.__listener = listener
+        else:
+            self.__listener = TopWindowListener(trigger_args=trigger_args, add_listener=add_window_listener)
         self.__name = gUtil.Util.generate_random_string(10)
-        self.__listener = TopWindowListener(trigger_args=trigger_args, add_listener=False)
 
     # region Manage Events
     def add_event_window_activated(self, cb: EventArgsCallbackT) -> None:
