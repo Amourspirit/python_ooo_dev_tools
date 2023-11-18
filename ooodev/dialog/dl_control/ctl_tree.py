@@ -371,7 +371,7 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
             Custom rules can be created if the exiting rules do no cover you search needs.
 
         See Also:
-            :ref:`ns_dialog_search_tree_search_`
+            :ref:`ns_dialog_search_tree_search`
         """
         # Check the current node
         search = SearchTree(match_value=value, match_all=False)
