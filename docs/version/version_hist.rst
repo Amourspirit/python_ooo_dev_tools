@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.13.3
+==============
+
+Update to ``CtlTree`` for better flat list loading of data.
+
+Other minor bug fixes and updates.
+
 Version 0.13.2
 ==============
 
