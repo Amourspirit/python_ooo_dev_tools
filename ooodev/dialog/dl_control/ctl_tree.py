@@ -275,37 +275,37 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
                 [("A2", "Data7"), ("B3", "Data8"), ("C6", "Data11")],
             ]
 
-            The result will be as follows:
+        The result will be as follows:
 
-            .. cssclass:: screen_shot
+        .. cssclass:: screen_shot
 
-                .. image:: https://user-images.githubusercontent.com/4193389/283976966-ba27195e-58b7-4b98-8b16-ba64a86076e6.png
-                    :alt: Tree Control
-                    :align: center
+            .. image:: https://user-images.githubusercontent.com/4193389/283976966-ba27195e-58b7-4b98-8b16-ba64a86076e6.png
+                :alt: Tree Control
+                :align: center
 
-            The ``B1`` Node will look something like this:
+        The ``B1`` Node will look something like this:
 
-            .. cssclass:: screen_shot
+        .. cssclass:: screen_shot
 
-                .. image:: https://user-images.githubusercontent.com/4193389/283977539-f22517ab-8b3e-4d42-8eb5-2425a0e3b065.png
-                    :alt: Tree Control
-                    :align: center
+            .. image:: https://user-images.githubusercontent.com/4193389/283977539-f22517ab-8b3e-4d42-8eb5-2425a0e3b065.png
+                :alt: Tree Control
+                :align: center
 
-            The input is rather flexible. The following would also work:
+        The input is rather flexible. The following would also work:
 
-            Note that ``A2`` contains too many values. The first two will be used and the rest ignored.
-            The ``A2`` node will have a text value of ``A2`` and a data value of ``33``.
+        Note that ``A2`` contains too many values. The first two will be used and the rest ignored.
+        The ``A2`` node will have a text value of ``A2`` and a data value of ``33``.
 
-            .. code-block:: python
+        .. code-block:: python
 
-                [
-                    [["A1", 1], ["B1", now_date], ["C1"]],
-                    [["A1"], ["B1"], ["C2"]],
-                    [["A1"], ["B2"], ["C3"]],
-                    [["A2", 33, 66, 127], ["B3", "Data8"], ["C4", "Data9"]],
-                    [["A2"], ["B3", "Data8"], ["C5", "Data10"]],
-                    [["A2"], ["B3", None], ["C6", "Data11"]],
-                ]
+            [
+                [["A1", 1], ["B1", now_date], ["C1"]],
+                [["A1"], ["B1"], ["C2"]],
+                [["A1"], ["B2"], ["C3"]],
+                [["A2", 33, 66, 127], ["B3", "Data8"], ["C4", "Data9"]],
+                [["A2"], ["B3", "Data8"], ["C5", "Data10"]],
+                [["A2"], ["B3", None], ["C6", "Data11"]],
+            ]
 
         See Also:
             :py:meth:`~.CtlTree.add_nodes_from_tree_data`
