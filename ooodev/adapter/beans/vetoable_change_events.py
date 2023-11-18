@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .vetoable_change_listener import VetoableChangeListener
 
@@ -9,17 +10,27 @@ from .vetoable_change_listener import VetoableChangeListener
 class VetoableChangeEvents:
     """Class for managing Vetoable Change Events."""
 
-    def __init__(self, trigger_args: GenericArgs | None = None, cb: ListenerEventCallbackT | None = None) -> None:
+    def __init__(
+        self,
+        trigger_args: GenericArgs | None = None,
+        cb: ListenerEventCallbackT | None = None,
+        listener: VetoableChangeListener | None = None,
+    ) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+                This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
+            listener (VetoableChangeListener | None, optional): Listener that is used to manage events.
         """
         self.__callback = cb
-        self.__name = "ooodev.adapter.beans.VetoableChangeEvents"
-        self.__listener = VetoableChangeListener(trigger_args=trigger_args)
+        if listener:
+            self.__listener = listener
+        else:
+            self.__listener = VetoableChangeListener(trigger_args=trigger_args)
+        self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
     def add_event_vetoable_change(self, cb: EventArgsCallbackT) -> None:

@@ -1,6 +1,6 @@
 Class HorzVertKind
 ==================
 
-.. autoclass:: ooodev.utils.kind.horz_vert_kind.HorzVertKind
+.. autoclass:: ooodev.utils.kind.horz_ver_kind.HorzVertKind
     :members:
     :undoc-members:

@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.13.4
+==============
+
+New options for event classes in the ``adapter`` module.
+
 Version 0.13.3
 ==============
 

@@ -17,16 +17,26 @@ class TreeEditEvents:
     This class is usually inherited by control classes that implement ``com.sun.star.awt.tree.XTreeEditListener``.
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, cb: ListenerEventCallbackT | None = None) -> None:
+    def __init__(
+        self,
+        trigger_args: GenericArgs | None = None,
+        cb: ListenerEventCallbackT | None = None,
+        listener: TreeEditListener | None = None,
+    ) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+                This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
+            listener (TreeEditListener | None, optional): Listener that is used to manage events.
         """
         self.__callback = cb
-        self.__listener = TreeEditListener(trigger_args=trigger_args)
+        if listener:
+            self.__listener = listener
+        else:
+            self.__listener = TreeEditListener(trigger_args=trigger_args)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

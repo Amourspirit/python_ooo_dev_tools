@@ -14,17 +14,27 @@ class PaintEvents:
     This class is usually inherited by control classes that implement ``com.sun.star.awt.XPaintListener``.
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, cb: ListenerEventCallbackT | None = None) -> None:
+    def __init__(
+        self,
+        trigger_args: GenericArgs | None = None,
+        cb: ListenerEventCallbackT | None = None,
+        listener: PaintListener | None = None,
+    ) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+                This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
+            listener (PaintListener | None, optional): Listener that is used to manage events.
         """
         self.__callback = cb
+        if listener:
+            self.__listener = listener
+        else:
+            self.__listener = PaintListener(trigger_args=trigger_args)
         self.__name = gUtil.Util.generate_random_string(10)
-        self.__listener = PaintListener(trigger_args=trigger_args)
 
     # region Manage Events
     def add_event_window_paint(self, cb: EventArgsCallbackT) -> None:
