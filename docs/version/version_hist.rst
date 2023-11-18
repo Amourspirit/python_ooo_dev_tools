@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.13.2
+==============
+
+Add new properties to several Dialog control classes.
+
+Add new classes in ``adapters`` module.
+
 Version 0.13.0
 ==============
 
