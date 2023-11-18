@@ -966,9 +966,9 @@ and these can be easily translated into key presses and releases in :external+od
 .. |exmonitor| replace:: Office Window Monitor
 .. _exmonitor: https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/general/odev_monitor
 
-.. |top_window_listener| replace:: :ref:`TopWindowListener <adapter_awt_top_window_listener>`
-.. |terminate_listener| replace:: :ref:`TerminateListener <adapter_frame_terminate_listener>`
-.. |event_listener| replace:: :ref:`EventListener <adapter_lang_event_listener>`
+.. |top_window_listener| replace:: :py:class:`~ooodev.adapter.awt.top_window_listener.TopWindowListener`
+.. |terminate_listener| replace:: :py:class:`~ooodev.adapter.frame.terminate_listener.TerminateListener`
+.. |event_listener| replace:: :py:class:`~ooodev.adapter.lang.event_listener.EventListener`
 .. |generic_args| replace:: :ref:`GenericArgs <events_args_generic_args>`
 
 
