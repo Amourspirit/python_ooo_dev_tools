@@ -43,8 +43,9 @@ class TreeExpansionEvents:
 
         Event is invoked when a node with children on demand is about to be expanded.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``TreeExpansionEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.tree.TreeExpansionEvent`` struct.
         """
+        # sourcery skip: class-extract-method
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="requestChildNodes")
             self.__callback(self, args)
@@ -58,7 +59,7 @@ class TreeExpansionEvents:
 
         Event is invoked whenever a node in the tree has been successfully collapsed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``TreeExpansionEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.tree.TreeExpansionEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeCollapsed")
@@ -73,7 +74,7 @@ class TreeExpansionEvents:
 
         Event is invoked whenever a node in the tree is about to be collapsed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``TreeExpansionEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.tree.TreeExpansionEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeCollapsing")
@@ -88,7 +89,7 @@ class TreeExpansionEvents:
 
         Event is invoked whenever a node in the tree has been successfully expanded.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``TreeExpansionEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.tree.TreeExpansionEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeExpanded")
@@ -103,7 +104,7 @@ class TreeExpansionEvents:
 
         Event is invoked whenever a node in the tree is about to be expanded.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``TreeExpansionEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.tree.TreeExpansionEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="treeExpanding")
@@ -111,6 +112,22 @@ class TreeExpansionEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("treeExpanding", cb)
+
+    def add_event_tree_expansion_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
 
     def remove_event_request_child_nodes(self, cb: EventArgsCallbackT) -> None:
         """
@@ -164,6 +181,17 @@ class TreeExpansionEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("treeExpanding", cb)
+
+    def remove_event_tree_expansion_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_tree_expansion(self) -> TreeExpansionListener:

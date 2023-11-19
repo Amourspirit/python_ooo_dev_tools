@@ -43,7 +43,7 @@ class KeyEvents:
 
         Event is invoked when a key has been pressed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``KeyEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.KeyEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="keyPressed")
@@ -58,17 +58,34 @@ class KeyEvents:
 
         Event is invoked when a key has been released.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``KeyEvent`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.KeyEvent`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="keyReleased")
             self.__callback(self, args)
         self.__listener.on("keyReleased", cb)
 
+    def add_event_key_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
+
     def remove_event_key_pressed(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """
+        # sourcery skip: class-extract-method
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="keyPressed", is_add=False)
             self.__callback(self, args)
@@ -86,6 +103,17 @@ class KeyEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("keyReleased", cb)
+
+    def remove_event_key_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     # endregion Manage Events
 

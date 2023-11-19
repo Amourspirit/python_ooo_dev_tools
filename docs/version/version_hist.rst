@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.13.5
+==============
+
+Event classes now implement dispose method in the ``adapter`` module classes.
+
 Version 0.13.4
 ==============
 

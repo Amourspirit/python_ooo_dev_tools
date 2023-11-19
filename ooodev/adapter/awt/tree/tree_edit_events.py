@@ -49,6 +49,7 @@ class TreeEditEvents:
         Note:
             The callback ``EventArgs.event_data`` will contain a :py:class:`~ooodev.adapter.awt.tab.tree_edit_listener.NodeEditedArgs` object.
         """
+        # sourcery skip: class-extract-method
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="nodeEdited")
             self.__callback(self, args)
@@ -71,6 +72,22 @@ class TreeEditEvents:
                 self.__callback = None
         self.__listener.on("nodeEditing", cb)
 
+    def add_event_tree_edit_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Adds a listener for an event.
+
+        Event is invoked when the broadcaster is about to be disposed.
+
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        """
+
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing")
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.on("disposing", cb)
+
     def remove_event_node_edited(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
@@ -92,6 +109,17 @@ class TreeEditEvents:
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("nodeEditing", cb)
+
+    def remove_event_tree_edit_events_disposing(self, cb: EventArgsCallbackT) -> None:
+        """
+        Removes a listener for an event
+        """
+        if self.__callback:
+            args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)
+            self.__callback(self, args)
+            if args.remove_callback:
+                self.__callback = None
+        self.__listener.off("disposing", cb)
 
     @property
     def events_listener_tree_edit(self) -> TreeEditListener:
