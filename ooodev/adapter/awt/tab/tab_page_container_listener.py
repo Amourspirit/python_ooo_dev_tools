@@ -10,6 +10,7 @@ from com.sun.star.awt.tab import XTabPageContainerListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.awt.tab import TabPageActivatedEvent
+    from com.sun.star.awt.tab import XTabPageContainer
 
 
 class TabPageContainerListener(AdapterBase, XTabPageContainerListener):
@@ -24,14 +25,18 @@ class TabPageContainerListener(AdapterBase, XTabPageContainerListener):
         `API XTabPageContainerListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1tab_1_1XTabPageContainerListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XTabPageContainer | None = None) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XTabPageContainer, optional): An UNO object that implements the ``XTabPageContainer`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addTabPageContainerListener(self)
 
     # region XTabPageContainerListener
     def tabPageActivated(self, event: TabPageActivatedEvent) -> None:

@@ -6,6 +6,7 @@ from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
 
 from com.sun.star.awt.grid import XGridSelectionListener
+from com.sun.star.awt.grid import XGridRowSelection
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
@@ -20,14 +21,18 @@ class GridSelectionListener(AdapterBase, XGridSelectionListener):
         `API XGridSelectionListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1grid_1_1XGridSelectionListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XGridRowSelection | None = None) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XGridRowSelection, optional): An UNO object that implements the ``XGridRowSelection`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addSelectionListener(self)
 
     # region XGridSelectionListener
     def selectionChanged(self, event: GridSelectionEvent) -> None:

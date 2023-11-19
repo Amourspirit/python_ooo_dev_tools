@@ -10,6 +10,7 @@ from com.sun.star.container import XContainerListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.container import ContainerEvent
+    from com.sun.star.container import XContainer
 
 
 class ContainerListener(AdapterBase, XContainerListener):
@@ -20,14 +21,18 @@ class ContainerListener(AdapterBase, XContainerListener):
         `API XContainerListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1container_1_1XContainerListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XContainer | None = None) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XContainer, optional): An UNO object that implements the ``XContainer`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addContainerListener(self)
 
     # region XContainerListener
     def elementInserted(self, event: ContainerEvent) -> None:

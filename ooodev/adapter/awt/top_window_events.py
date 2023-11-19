@@ -1,9 +1,12 @@
 from __future__ import annotations
+import uno
+from com.sun.star.awt import XExtendedToolkit
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from ooodev.utils import gen_util as gUtil
+from ooodev.utils import lo as mLo
 from .top_window_listener import TopWindowListener
 
 # sourcery skip: class-extract-method
@@ -32,11 +35,20 @@ class TopWindowEvents:
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (TopWindowListener | None, optional): Listener that is used to manage events.
             add_window_listener (bool, optional): If ``True`` Top window listener is automatically added. Default ``True``.
-                This only applies if the listener is not passed.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if add_window_listener:
+                # if the listener has a toolkit then a listener has already been added.
+                if self.__listener.toolkit is None:
+                    self.__tool_kit = mLo.Lo.create_instance_mcf(
+                        XExtendedToolkit, "com.sun.star.awt.Toolkit", raise_err=True
+                    )
+                    if self.__tool_kit is not None:
+                        self.__tool_kit.addTopWindowListener(self.__listener)
+                else:
+                    self.__listener.toolkit.addTopWindowListener(self.__listener)
         else:
             self.__listener = TopWindowListener(trigger_args=trigger_args, add_listener=add_window_listener)
         self.__name = gUtil.Util.generate_random_string(10)

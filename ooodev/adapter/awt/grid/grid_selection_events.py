@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import uno
+from com.sun.star.awt.grid import XGridRowSelection
+
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
@@ -19,6 +22,7 @@ class GridSelectionEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: GridSelectionListener | None = None,
+        subscriber: XGridRowSelection | None = None,
     ) -> None:
         """
         Constructor
@@ -28,12 +32,16 @@ class GridSelectionEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (GridSelectionListener | None, optional): Listener that is used to manage events.
+            subscriber (XGridRowSelection, optional): An UNO object that implements the ``XGridRowSelection`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if subscriber:
+                subscriber.addSelectionListener(self.__listener)
         else:
-            self.__listener = GridSelectionListener(trigger_args=trigger_args)
+            self.__listener = GridSelectionListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

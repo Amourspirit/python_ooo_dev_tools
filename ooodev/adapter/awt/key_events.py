@@ -1,10 +1,13 @@
 from __future__ import annotations
-
+from typing import TYPE_CHECKING
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .key_listener import KeyListener
+
+if TYPE_CHECKING:
+    from com.sun.star.awt import XWindow
 
 
 class KeyEvents:
@@ -19,6 +22,7 @@ class KeyEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: KeyListener | None = None,
+        subscriber: XWindow | None = None,
     ) -> None:
         """
         Constructor
@@ -28,12 +32,16 @@ class KeyEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (KeyListener | None, optional): Listener that is used to manage events.
+            subscriber (XWindow, optional): An UNO object that implements the ``XWindow`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if subscriber:
+                subscriber.addKeyListener(self.__listener)
         else:
-            self.__listener = KeyListener(trigger_args=trigger_args)
+            self.__listener = KeyListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

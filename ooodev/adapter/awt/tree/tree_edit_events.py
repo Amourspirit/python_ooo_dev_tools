@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -8,6 +9,9 @@ from .tree_edit_listener import TreeEditListener
 
 # pylint: disable=useless-import-alias, unused-import
 from .tree_edit_listener import NodeEditedArgs as NodeEditedArgs
+
+if TYPE_CHECKING:
+    from com.sun.star.awt.tree import XTreeControl
 
 
 class TreeEditEvents:
@@ -22,6 +26,7 @@ class TreeEditEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: TreeEditListener | None = None,
+        subscriber: XTreeControl | None = None,
     ) -> None:
         """
         Constructor
@@ -31,12 +36,16 @@ class TreeEditEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (TreeEditListener | None, optional): Listener that is used to manage events.
+            subscriber (XTreeControl, optional): An UNO object that implements the ``XTreeControl`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if subscriber:
+                subscriber.addTreeEditListener(self.__listener)
         else:
-            self.__listener = TreeEditListener(trigger_args=trigger_args)
+            self.__listener = TreeEditListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

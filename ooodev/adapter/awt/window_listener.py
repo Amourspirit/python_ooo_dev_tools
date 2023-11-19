@@ -10,6 +10,7 @@ from com.sun.star.awt import XWindowListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.awt import WindowEvent
+    from com.sun.star.awt import XWindow
 
 
 class WindowListener(AdapterBase, XWindowListener):
@@ -24,14 +25,18 @@ class WindowListener(AdapterBase, XWindowListener):
         `API XWindowListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XWindowListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XWindow | None = None) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XWindow, optional): An UNO object that implements the ``XWindow`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addWindowListener(self)
 
     # region XPaintListener
     def windowHidden(self, event: EventObject) -> None:

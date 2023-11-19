@@ -10,6 +10,7 @@ from com.sun.star.awt.tree import XTreeExpansionListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.awt.tree import TreeExpansionEvent
+    from com.sun.star.awt.tree import XTreeControl
 
 
 class TreeExpansionListener(AdapterBase, XTreeExpansionListener):
@@ -20,14 +21,18 @@ class TreeExpansionListener(AdapterBase, XTreeExpansionListener):
         `API XTreeExpansionListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1tree_1_1XTreeExpansionListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XTreeControl | None = None) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XTreeControl, optional): An UNO object that implements the ``XTreeControl`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addTreeExpansionListener(self)
 
     # region XTreeExpansionListener
     def requestChildNodes(self, event: TreeExpansionEvent) -> None:

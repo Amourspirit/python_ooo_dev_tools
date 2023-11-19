@@ -10,6 +10,8 @@ from com.sun.star.awt import XPaintListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.awt import PaintEvent
+    from com.sun.star.presentation import XSlideShowView
+    from com.sun.star.awt import XWindow
 
 
 class PaintListener(AdapterBase, XPaintListener):
@@ -20,14 +22,20 @@ class PaintListener(AdapterBase, XPaintListener):
         `API XPaintListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XPaintListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(
+        self, trigger_args: GenericArgs | None = None, subscriber: XSlideShowView | XWindow | None = None
+    ) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XSlideShowView, XWindow, optional): An UNO object that implements ``XSlideShowView`` or ``XWindow`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addPaintListener(self)
 
     # region XPaintListener
     def windowPaint(self, event: PaintEvent) -> None:

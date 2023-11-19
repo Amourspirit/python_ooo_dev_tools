@@ -43,7 +43,7 @@ class EventEvents:
 
         Event is invoked when the broadcaster is about to be disposed.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``EventObject`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="disposing")

@@ -10,6 +10,8 @@ from com.sun.star.awt import XFocusListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.awt import FocusEvent
+    from com.sun.star.awt import XExtendedToolkit
+    from com.sun.star.awt import XWindow
 
 
 class FocusListener(AdapterBase, XFocusListener):
@@ -22,14 +24,20 @@ class FocusListener(AdapterBase, XFocusListener):
         `API XFocusListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XFocusListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(
+        self, trigger_args: GenericArgs | None = None, subscriber: XExtendedToolkit | XWindow | None = None
+    ) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XExtendedToolkit, XWindow, optional): An UNO object that implements the ``XExtendedToolkit`` or ``XWindow`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addFocusListener(self)
 
     # region XFocusListener
 

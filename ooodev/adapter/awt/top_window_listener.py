@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from ...events.args.event_args import EventArgs as EventArgs
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
-from ...utils import lo as mLo
+from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.utils import lo as mLo
 
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XTopWindowListener
@@ -93,3 +93,18 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
         """
         # from com.sun.star.lang.XEventListener
         self._trigger_event("disposing", event)
+
+    # region Properties
+    @property
+    def toolkit(self) -> XExtendedToolkit | None:
+        """
+        Gets the toolkit instance if it was created in the constructor by setting the ``add_listener`` parameter to ``True``.
+
+        Returns:
+            XExtendedToolkit: Toolkit instance.
+
+        .. versionadded:: 0.13.6
+        """
+        return self._tk
+
+    # endregion Properties

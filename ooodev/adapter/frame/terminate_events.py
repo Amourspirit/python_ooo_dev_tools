@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from ooodev.utils import lo as mLo
 from .terminate_listener import TerminateListener
+
+if TYPE_CHECKING:
+    from com.sun.star.frame import XDesktop
 
 
 class TerminateEvents:
@@ -19,6 +25,8 @@ class TerminateEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: TerminateListener | None = None,
+        add_terminate_listener: bool = True,
+        subscriber: XDesktop | None = None,
     ) -> None:
         """
         Constructor
@@ -28,12 +36,22 @@ class TerminateEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (TerminateListener | None, optional): Listener that is used to manage events.
+            add_terminate_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
+            subscriber (XDesktop, optional): An UNO object that implements the ``XDesktop`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if add_terminate_listener:
+                desktop = mLo.Lo.get_desktop()
+                desktop.addTerminateListener(self.__listener)
+            if subscriber:
+                subscriber.addTerminateListener(self.__listener)
         else:
-            self.__listener = TerminateListener(trigger_args=trigger_args)
+            self.__listener = TerminateListener(
+                trigger_args=trigger_args, add_listener=add_terminate_listener, subscriber=subscriber
+            )
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

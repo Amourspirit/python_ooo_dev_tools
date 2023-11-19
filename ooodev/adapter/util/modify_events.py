@@ -1,9 +1,13 @@
 from __future__ import annotations
+from typing import Any, cast
+import uno
+from com.sun.star.util import XModifyBroadcaster
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from ooodev.utils import lo as mLo
 from .modify_listener import ModifyListener
 
 
@@ -19,6 +23,7 @@ class ModifyEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: ModifyListener | None = None,
+        subscriber: XModifyBroadcaster | None = None,
     ) -> None:
         """
         Constructor
@@ -28,12 +33,17 @@ class ModifyEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (ModifyListener | None, optional): Listener that is used to manage events.
+            subscriber (XModifyBroadcaster, optional): An UNO object that implements the ``XModifyBroadcaster`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if subscriber:
+                mb = mLo.Lo.qi(XModifyBroadcaster, subscriber, True)
+                mb.addModifyListener(self.__listener)
         else:
-            self.__listener = ModifyListener(trigger_args=trigger_args)
+            self.__listener = ModifyListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

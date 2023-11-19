@@ -1,10 +1,21 @@
 from __future__ import annotations
 
+from typing import Any, TYPE_CHECKING
+
+import uno
+from com.sun.star.view import XSelectionChangeListener
+from com.sun.star.view import XSelectionSupplier
+from com.sun.star.frame import XModel
+
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+from ooodev.utils import lo as mLo
 from .selection_change_listener import SelectionChangeListener
+
+if TYPE_CHECKING:
+    from com.sun.star.lang import XComponent
 
 
 class SelectionChangeEvents:
@@ -19,6 +30,7 @@ class SelectionChangeEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: SelectionChangeListener | None = None,
+        doc: Any = None,
     ) -> None:
         """
         Constructor
@@ -28,12 +40,25 @@ class SelectionChangeEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (SelectionChangeListener | None, optional): Listener that is used to manage events.
+            doc (Any, Optional): Office Document. If document is passed then ``SelectionChangeListener`` instance
+                is automatically added.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if doc:
+                model = mLo.Lo.qi(XModel, doc)
+                if model is None:
+                    mLo.Lo.print("Could not get model for doc")
+                    return
+
+                supp = mLo.Lo.qi(XSelectionSupplier, model.getCurrentController())
+                if supp is None:
+                    mLo.Lo.print("Could not attach selection change listener")
+                    return
+                supp.addSelectionChangeListener(self.__listener)
         else:
-            self.__listener = SelectionChangeListener(trigger_args=trigger_args)
+            self.__listener = SelectionChangeListener(trigger_args=trigger_args, doc=doc)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
