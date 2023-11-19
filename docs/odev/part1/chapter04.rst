@@ -451,9 +451,9 @@ as seen in |exmonitor|_ example.
             .. group-tab:: None
 
 
-Behind the scenes |top_window_events| creates an instance of |terminate_listener| which inherits XTerminateListener_ and is attached to the XDesktop_ instance.
+Behind the scenes |terminate_events| creates an instance of |terminate_listener| which inherits XTerminateListener_ and is attached to the XDesktop_ instance.
 
-The |top_window_events| class has a ``add_terminate_listener`` option in the constructor that defaults to ``True``.
+The |terminate_events| class has a ``add_terminate_listener`` option in the constructor that defaults to ``True``.
 This means when a class instance is created it will automatically attach a listener to the current XDesktop_ instance.
 
 The program's output is:
