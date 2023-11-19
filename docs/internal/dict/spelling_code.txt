@@ -1,10 +1,12 @@
 Addin
 Addon
+argparse
 Args
 attribs
 bezier
 Calc
 callout
+casefold
 CellRangeAddress
 config
 Config
