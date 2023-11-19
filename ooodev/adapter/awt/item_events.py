@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import cast
+import contextlib
+from typing import Any
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -20,6 +21,7 @@ class ItemEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: ItemListener | None = None,
+        subscriber: Any = None,
     ) -> None:
         """
         Constructor
@@ -29,12 +31,19 @@ class ItemEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (ItemListener | None, optional): Listener that is used to manage events.
+            subscriber (Any, optional): An UNO object that has a ``addItemListener()`` Method.
+                If passed in then this instance listener is automatically added to it.
+                Valid objects are: RadioButton, ComboBox, CheckBox,
+                XItemEventBroadcaster or any other UNO object that has ``addItemListener()`` method.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if subscriber:
+                with contextlib.suppress(AttributeError):
+                    subscriber.addItemListener(self.__listener)
         else:
-            self.__listener = ItemListener(trigger_args=trigger_args)
+            self.__listener = ItemListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

@@ -10,6 +10,8 @@ from com.sun.star.awt import XMouseListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.awt import MouseEvent
+    from com.sun.star.presentation import XSlideShowView
+    from com.sun.star.awt import XWindow
 
 
 class MouseListener(AdapterBase, XMouseListener):
@@ -22,14 +24,20 @@ class MouseListener(AdapterBase, XMouseListener):
         `API XMouseListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XMouseListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(
+        self, trigger_args: GenericArgs | None = None, subscriber: XSlideShowView | XWindow | None = None
+    ) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XSlideShowView, XWindow, optional): An UNO object that implements ``XSlideShowView`` or ``XWindow`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addMouseListener(self)
 
     # region XMouseListener
     def mouseEntered(self, event: MouseEvent) -> None:

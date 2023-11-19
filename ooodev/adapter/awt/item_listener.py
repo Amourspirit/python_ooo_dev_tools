@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-
+from typing import Any, TYPE_CHECKING
+import contextlib
 import uno
 from ...events.args.event_args import EventArgs as EventArgs
 from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
@@ -20,14 +20,23 @@ class ItemListener(AdapterBase, XItemListener):
         `API XItemListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XItemListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: Any = None) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (Any, optional): An UNO object that has a ``addItemListener()`` Method.
+                If passed in then this listener instance is automatically added to it.
+                Valid objects are: RadioButton, ComboBox, CheckBox,
+                XItemEventBroadcaster or any other UNO object that has ``addItemListener()`` method.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            # several object such as Listbox, Combobox, Button, etc. can add an ActionListener.
+            # There is no common interface for this, so we have to try them all.
+            with contextlib.suppress(AttributeError):
+                subscriber.addItemListener(self)
 
     # region XItemListener
     def itemStateChanged(self, event: ItemEvent) -> None:

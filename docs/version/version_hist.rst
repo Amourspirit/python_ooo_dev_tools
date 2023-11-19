@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.13.6
+==============
+
+Added subscriber to constructor of many classes in the ``adapter`` module.
+
 Version 0.13.5
 ==============
 

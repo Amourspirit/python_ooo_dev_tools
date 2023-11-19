@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.util import XModifyListener
 from com.sun.star.util import XModifyBroadcaster
-from com.sun.star.lang import XComponent
 
 from ooodev.utils import lo as mLo
 
@@ -23,16 +22,23 @@ class ModifyListener(AdapterBase, XModifyListener):
         - `API XModifyListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XModifyListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, doc: XComponent | None = None) -> None:
+    def __init__(
+        self, trigger_args: GenericArgs | None = None, subscriber: XModifyBroadcaster | None = None, **kwargs
+    ) -> None:
         """
         Constructor
 
         Args:
-            doc (XComponent, Optional): Office Document. If document is passed then ``ModifyListener`` instance
-                is automatically added.
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
+            subscriber (XModifyBroadcaster, optional): An UNO object that implements the ``XModifyBroadcaster`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        # doc parameter was renamed to subscriber in version 0.13.6
+        if subscriber is None:
+            doc = kwargs.get("doc", None)
+        else:
+            doc = subscriber
         if doc is None:
             return
 

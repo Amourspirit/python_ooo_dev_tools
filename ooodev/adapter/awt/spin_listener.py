@@ -10,6 +10,7 @@ from com.sun.star.awt import XSpinListener
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from com.sun.star.awt import SpinEvent
+    from com.sun.star.awt import XSpinField
 
 
 class SpinListener(AdapterBase, XSpinListener):
@@ -20,14 +21,18 @@ class SpinListener(AdapterBase, XSpinListener):
         `API XSpinListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1awt_1_1XSpinListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XSpinField | None = None) -> None:
         """
         Constructor:
 
         Arguments:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            subscriber (XSpinField, optional): An UNO object that implements the ``XSpinField`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            subscriber.addSpinListener(self)
 
     # region XSpinListener
     def down(self, event: SpinEvent) -> None:

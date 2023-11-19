@@ -1,10 +1,14 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .tab_page_container_listener import TabPageContainerListener
+
+if TYPE_CHECKING:
+    from com.sun.star.awt.tab import XTabPageContainer
 
 
 class TabPageContainerEvents:
@@ -19,6 +23,7 @@ class TabPageContainerEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: TabPageContainerListener | None = None,
+        subscriber: XTabPageContainer | None = None,
     ) -> None:
         """
         Constructor
@@ -28,12 +33,16 @@ class TabPageContainerEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (GridColumnListener | None, optional): Listener that is used to manage events.
+            subscriber (XTabPageContainer, optional): An UNO object that implements the ``XTabPageContainer`` interface.
+                If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if subscriber:
+                subscriber.addTabPageContainerListener(self.__listener)
         else:
-            self.__listener = TabPageContainerListener(trigger_args=trigger_args)
+            self.__listener = TabPageContainerListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events

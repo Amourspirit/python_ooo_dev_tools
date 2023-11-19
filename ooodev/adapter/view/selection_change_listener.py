@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 import uno
 from com.sun.star.frame import XModel
-from com.sun.star.lang import XComponent
 from com.sun.star.view import XSelectionChangeListener
 from com.sun.star.view import XSelectionSupplier
 
@@ -12,6 +11,7 @@ from ooodev.utils import lo as mLo
 from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
 
 if TYPE_CHECKING:
+    from com.sun.star.lang import XComponent
     from com.sun.star.lang import EventObject
 
 
@@ -24,14 +24,14 @@ class SelectionChangeListener(AdapterBase, XSelectionChangeListener):
         - `API XSelectionChangeListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1view_1_1XSelectionChangeListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, doc: XComponent | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, doc: Any | None = None) -> None:
         """
         Constructor
 
         Args:
-            doc (XComponent, Optional): Office Document. If document is passed then ``SelectionChangeListener`` instance
-                is automatically added.
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
+            doc (Any, Optional): Office Document. If document is passed then ``SelectionChangeListener`` instance
+                is automatically added.
         """
         super().__init__(trigger_args=trigger_args)
         if doc is None:

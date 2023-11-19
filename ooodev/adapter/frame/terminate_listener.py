@@ -2,14 +2,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from ...events.args.event_args import EventArgs as EventArgs
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
-from ...utils import lo as mLo
+from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.utils import lo as mLo
 
 from com.sun.star.frame import XTerminateListener
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
+    from com.sun.star.frame import XDesktop
 
 
 class TerminateListener(AdapterBase, XTerminateListener):
@@ -22,19 +23,26 @@ class TerminateListener(AdapterBase, XTerminateListener):
         - `API XTerminateListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTerminateListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, add_listener: bool = True) -> None:
+    def __init__(
+        self, trigger_args: GenericArgs | None = None, add_listener: bool = True, subscriber: XDesktop | None = None
+    ) -> None:
         """
         Constructor
 
         Args:
-            add_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
+            add_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
+            subscriber (XDesktop, optional): An UNO object that implements the ``XDesktop`` interface.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
 
         if add_listener:
             desktop = mLo.Lo.get_desktop()
             desktop.addTerminateListener(self)
+
+        if subscriber:
+            subscriber.addTerminateListener(self)
 
     def notifyTermination(self, event: EventObject) -> None:
         """
