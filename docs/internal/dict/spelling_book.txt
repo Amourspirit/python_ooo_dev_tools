@@ -15,6 +15,7 @@ optimizers
 Pitonyak
 pizazz
 programmatically
+pythonic
 Redline
 Redlines
 scrollbar

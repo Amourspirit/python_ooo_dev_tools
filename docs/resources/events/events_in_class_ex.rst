@@ -8,34 +8,36 @@
         import sys
         from typing import Any
 
-        from ooodev.utils.lo import Lo
-        from ooodev.utils.gui import GUI
-        from ooodev.office.calc import Calc
+        from ooodev.adapter.lang.event_events import EventEvents
         from ooodev.events.args.event_args import EventArgs
         from ooodev.events.lo_events import Events
         from ooodev.events.lo_named_event import LoNamedEvent
+        from ooodev.office.calc import Calc
+        from ooodev.utils.gui import GUI
+        from ooodev.utils.lo import Lo
 
 
         class DocMonitor:
             def __init__(self) -> None:
-                super().__init__()
+                self.closed = False
                 self.bridge_disposed = False
-                loader = Lo.load_office(Lo.ConnectPipe())
-
-                self.events = Events(source=self)
-
-                def _on_disposed(source: Any, event_args: EventArgs) -> None:
-                    self.on_disposed(source=source, event_args=event_args)
-
-                self._fn_on_disposed = _on_disposed
-
-                self.events.on(LoNamedEvent.BRIDGE_DISPOSED, _on_disposed)
+                loader = Lo.load_office(Lo.ConnectPipe(), opt=Lo.Options(verbose=True))
 
                 self.doc = Calc.create_doc(loader=loader)
 
+                self._fn_on_disposed = self.on_disposed
+
+                self.events = Events(source=self)
+                self.events.on(LoNamedEvent.BRIDGE_DISPOSED, self._fn_on_disposed)
+
+                self._bridge_events = EventEvents()
+                self._bridge_events.add_event_disposing(self._fn_on_disposing)
+                Lo.bridge.addEventListener(self._bridge_events.events_listener_event)
+
                 GUI.set_visible(True, self.doc)
 
-            def on_disposed(self, source: Any, event: EventArgs) -> None:
+            def on_disposed(self, source: Any, event_args: EventArgs) -> None:
+                # just another way of knowing when bridge is gone.
                 print("LO: Office bridge has gone!!")
                 self.bridge_disposed = True
 
@@ -64,7 +66,7 @@
             except SystemExit as e:
                 SystemExit(e.code)
             except KeyboardInterrupt:
-                # ctrl+c exitst the script earily
+                # ctrl+c exist the script early
                 print("\nExiting by user request.\n", file=sys.stderr)
                 SystemExit(0)
 
