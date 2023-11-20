@@ -23,7 +23,7 @@ class SpreadsheetViewComp(
     SelectionChangeEvents,
 ):
     """
-    Class for managing Tree Data Model Component.
+    Class for managing Spreadsheet View Component.
     """
 
     # pylint: disable=unused-argument
@@ -33,7 +33,7 @@ class SpreadsheetViewComp(
         Constructor
 
         Args:
-            component (XTreeDataModel): Tree Data Model Component
+            component (SpreadsheetView): UNO Spreadsheet View Component
         """
         ComponentBase.__init__(self, component)
         generic_args = self._get_generic_args()
