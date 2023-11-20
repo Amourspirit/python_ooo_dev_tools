@@ -526,8 +526,10 @@ class Dialogs:
 
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit", raise_err=True)
         window_parent_peer = xtoolkit.getDesktopWindow()
-
-        dialog_ctrl.createPeer(xtoolkit, window_parent_peer)
+        if isinstance(dialog_ctrl, CtlDialog):
+            dialog_ctrl.control.createPeer(xtoolkit, window_parent_peer)
+        else:
+            dialog_ctrl.createPeer(xtoolkit, window_parent_peer)
 
         # dialog_component = mLo.Lo.qi(XComponent, dialog_ctrl)
         # dialog_component.dispose() # free window resources
@@ -2112,7 +2114,7 @@ class Dialogs:
             # Add the model to the dialog
             index = tab_position - 1
             tab_ctrl_model.insertByIndex(index, model)
-            controls = cast("Tuple[UnoControlTabPage, ...]", tab_ctrl.Controls)  # type: ignore
+            controls = cast("Tuple[UnoControlTabPage, ...]", tab_ctrl.view.Controls)  # type: ignore
             if len(controls) > index:
                 return CtlTabPage(controls[index])
             return None  # type: ignore

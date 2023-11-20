@@ -32,7 +32,7 @@ class PropertyChangeListener(AdapterBase, XPropertyChangeListener):
     # region XPropertyChangeListener
     def propertyChange(self, event: PropertyChangeEvent) -> None:
         """
-        Gets called when bound properties are changed.
+        Gets called when bound property is changed.
         """
         self._trigger_event("propertyChange", event)
 

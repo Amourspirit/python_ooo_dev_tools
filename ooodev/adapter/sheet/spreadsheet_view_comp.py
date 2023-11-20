@@ -6,6 +6,7 @@ from ooodev.adapter.awt.enhanced_mouse_click_events import EnhancedMouseClickEve
 from ooodev.adapter.awt.key_events import KeyEvents
 from ooodev.adapter.awt.mouse_click_events import MouseClickEvents
 from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
+from ooodev.adapter.beans.property_change_collection import PropertyChangeCollection
 from .activation_event_events import ActivationEventEvents
 from .range_selection_change_events import RangeSelectionChangeEvents
 
@@ -21,6 +22,7 @@ class SpreadsheetViewComp(
     MouseClickEvents,
     RangeSelectionChangeEvents,
     SelectionChangeEvents,
+    PropertyChangeCollection,
 ):
     """
     Class for managing Spreadsheet View Component.
@@ -45,6 +47,7 @@ class SpreadsheetViewComp(
             self, trigger_args=generic_args, cb=self._on_range_selection_change_add_remove
         )
         SelectionChangeEvents.__init__(self, trigger_args=generic_args, cb=self._on_selection_change_add_remove)
+        PropertyChangeCollection.__init__(self, component=self.component)
 
     # region Lazy Listeners
     def _on_activation_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:

@@ -42,12 +42,6 @@ class CtlBase(unohelper.Base):
     def _set_control(self, ctl: Any) -> None:
         self._ctl_view = ctl
 
-    def __getattr__(self, name: str) -> Any:
-        # this is mostly for backwards compatibility
-        if hasattr(self._ctl_view, name):
-            return getattr(self._ctl_view, name)
-        raise AttributeError(name)
-
     # endregion Dunder Methods
 
     # region other methods

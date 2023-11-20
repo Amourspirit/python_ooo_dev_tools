@@ -16,6 +16,7 @@ class ComponentBase(ABC):
 
     def __init__(self, component: Any) -> None:
         self._set_component(component)
+        self.__generic_args = None
 
     def _set_component(self, component: XComponent) -> None:
         """
@@ -35,11 +36,9 @@ class ComponentBase(ABC):
         return self._component
 
     def _get_generic_args(self) -> GenericArgs:
-        try:
-            return self.__generic_args
-        except AttributeError:
+        if self.__generic_args is None:
             self.__generic_args = GenericArgs(control_src=self)
-            return self.__generic_args
+        return self.__generic_args
 
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
@@ -61,19 +60,3 @@ class ComponentBase(ABC):
         if not srv_name:
             return True
         return mInfo.Info.support_service(component, *srv_name)
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name == "_component":
-            super().__setattr__(name, value)
-        else:
-            comp = self._get_component()
-            if hasattr(comp, name):
-                setattr(comp, name, value)
-                return
-        raise AttributeError(name)
-
-    def __getattr__(self, name: str) -> Any:
-        comp = self._get_component()
-        if hasattr(comp, name):
-            return getattr(comp, name)
-        raise AttributeError(name)
