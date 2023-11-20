@@ -1,19 +1,20 @@
 from __future__ import annotations
-from typing import Any, cast
+from typing import TYPE_CHECKING
 import uno
-from com.sun.star.util import XModifyBroadcaster
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
-from ooodev.utils import lo as mLo
-from .modify_listener import ModifyListener
+from .print_job_listener import PrintJobListener
+
+if TYPE_CHECKING:
+    from com.sun.star.view import XPrintJobBroadcaster
 
 
-class ModifyEvents:
+class PrintJobEvents:
     """
-    Class for managing Modify Events.
+    Class for managing Print Job Events.
 
     This class is usually inherited by control classes that implement ``com.sun.star.util.XModifyListener``.
     """
@@ -22,8 +23,8 @@ class ModifyEvents:
         self,
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
-        listener: ModifyListener | None = None,
-        subscriber: XModifyBroadcaster | None = None,
+        listener: PrintJobListener | None = None,
+        subscriber: XPrintJobBroadcaster | None = None,
     ) -> None:
         """
         Constructor
@@ -32,37 +33,36 @@ class ModifyEvents:
             trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
-            listener (ModifyListener | None, optional): Listener that is used to manage events.
-            subscriber (XModifyBroadcaster, optional): An UNO object that implements the ``XModifyBroadcaster`` interface.
+            listener (PrintJobListener | None, optional): Listener that is used to manage events.
+            subscriber (XPrintJobBroadcaster, optional): An UNO object that implements the ``XPrintJobBroadcaster`` interface.
                 If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
             if subscriber:
-                mb = mLo.Lo.qi(XModifyBroadcaster, subscriber, True)
-                mb.addModifyListener(self.__listener)
+                subscriber.addPrintJobListener(self.__listener)
         else:
-            self.__listener = ModifyListener(trigger_args=trigger_args, subscriber=subscriber)
+            self.__listener = PrintJobListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
-    def add_event_modified(self, cb: EventArgsCallbackT) -> None:
+    def add_event_print_job_event(self, cb: EventArgsCallbackT) -> None:
         """
         Adds a listener for an event.
 
-        Event is invoked when something changes in the object.
+        Informs the user about the creation or the progress of a PrintJob.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.lang.EventObject`` struct.
+        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.view.PrintJobEvent`` struct.
         """
         if self.__callback:
-            args = ListenerEventArgs(source=self.__name, trigger_name="modified")
+            args = ListenerEventArgs(source=self.__name, trigger_name="printJobEvent")
             self.__callback(self, args)
             if args.remove_callback:
                 self.__callback = None
-        self.__listener.on("modified", cb)
+        self.__listener.on("printJobEvent", cb)
 
-    def add_event_modify_events_disposing(self, cb: EventArgsCallbackT) -> None:
+    def add_event_print_job_events_disposing(self, cb: EventArgsCallbackT) -> None:
         """
         Adds a listener for an event.
 
@@ -78,18 +78,18 @@ class ModifyEvents:
                 self.__callback = None
         self.__listener.on("disposing", cb)
 
-    def remove_event_modified(self, cb: EventArgsCallbackT) -> None:
+    def remove_event_print_job_event(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """
         if self.__callback:
-            args = ListenerEventArgs(source=self.__name, trigger_name="modified", is_add=False)
+            args = ListenerEventArgs(source=self.__name, trigger_name="printJobEvent", is_add=False)
             self.__callback(self, args)
             if args.remove_callback:
                 self.__callback = None
-        self.__listener.off("modified", cb)
+        self.__listener.off("printJobEvent", cb)
 
-    def remove_event_modify_events_disposing(self, cb: EventArgsCallbackT) -> None:
+    def remove_event_print_job_events_disposing(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """
@@ -101,7 +101,7 @@ class ModifyEvents:
         self.__listener.off("disposing", cb)
 
     @property
-    def events_listener_modify(self) -> ModifyListener:
+    def events_listener_print_job(self) -> PrintJobListener:
         """
         Returns listener
         """

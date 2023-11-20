@@ -2,42 +2,41 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from com.sun.star.sheet import XRangeSelectionChangeListener
+from com.sun.star.util import XRefreshListener
 
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
-    from com.sun.star.sheet import RangeSelectionEvent
-    from com.sun.star.sheet import XRangeSelection
+    from com.sun.star.util import XRefreshable
 
 
-class RangeSelectionChangeListener(AdapterBase, XRangeSelectionChangeListener):
+class RefreshListener(AdapterBase, XRefreshListener):
     """
-    allows notification when the selected range is changed.
+    Makes it possible to receive refreshed events.
 
     See Also:
-        `API XRangeSelectionChangeListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XRangeSelectionChangeListener.html>`_
+        `API XRefreshListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XRefreshListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XRangeSelection | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XRefreshable | None = None) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
-            subscriber (XRangeSelection, optional): An UNO object that implements the ``XRangeSelection`` interface.
+            subscriber (XRefreshable, optional): An UNO object that implements the ``XRefreshable`` interface.
                 If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
         if subscriber:
-            subscriber.addRangeSelectionChangeListener(self)
+            subscriber.addRefreshListener(self)
 
-    def descriptorChanged(self, event: RangeSelectionEvent) -> None:
+    def refreshed(self, event: EventObject) -> None:
         """
-        Event is invoked when the selected range is changed while range selection is active.
+        Event is invoked when when the object data is refreshed.
         """
-        self._trigger_event("descriptorChanged", event)
+        self._trigger_event("refreshed", event)
 
     def disposing(self, event: EventObject) -> None:
         """
@@ -50,4 +49,5 @@ class RangeSelectionChangeListener(AdapterBase, XRangeSelectionChangeListener):
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at ``XComponent``.
         """
+        # from com.sun.star.lang.XEventListener
         self._trigger_event("disposing", event)

@@ -25,7 +25,7 @@ class ActivationEventListener(AdapterBase, XActivationEventListener):
     """
 
     def __init__(
-        self, trigger_args: GenericArgs | None = None, subscriber: XActivationBroadcaster | None = None, **kwargs
+        self, trigger_args: GenericArgs | None = None, subscriber: XActivationBroadcaster | None = None
     ) -> None:
         """
         Constructor

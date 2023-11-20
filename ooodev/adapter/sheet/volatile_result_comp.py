@@ -2,35 +2,35 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
-from ooodev.adapter.util.modify_events import ModifyEvents
+from .result_events import ResultEvents
 
 
 if TYPE_CHECKING:
-    from com.sun.star.sheet import SheetCell  # service
+    from com.sun.star.sheet import VolatileResult  # service
 
 
-class SheetCellComp(ComponentBase, ModifyEvents):
+class VolatileResultComp(ComponentBase, ResultEvents):
     """
-    Class for managing Sheet Cell Component.
+    Class for managing Volatile Result Component.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: SheetCell) -> None:
+    def __init__(self, component: VolatileResult) -> None:
         """
         Constructor
 
         Args:
-            component (SheetCell): UNO Sheet Cell Component
+            component (VolatileResult): UNO Volatile Result Component
         """
         ComponentBase.__init__(self, component)
         generic_args = self._get_generic_args()
-        ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
+        ResultEvents.__init__(self, trigger_args=generic_args, cb=self._on_result_events_add_remove)
 
     # region Lazy Listeners
-    def _on_modify_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+    def _on_result_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
         # will only ever fire once
-        self.component.addModifyListener(self.events_listener_modify)
+        self.component.addResultListener(self.events_listener_result)
         event.remove_callback = True
 
     # endregion Lazy Listeners
@@ -38,13 +38,13 @@ class SheetCellComp(ComponentBase, ModifyEvents):
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.sheet.SheetCell",)
+        return ("com.sun.star.sheet.VolatileResult",)
 
     # endregion Overrides
     # region Properties
     @property
-    def component(self) -> SheetCell:
+    def component(self) -> VolatileResult:
         """Tree Data Model Component"""
-        return cast("SheetCell", self._get_component())
+        return cast("VolatileResult", self._get_component())
 
     # endregion Properties

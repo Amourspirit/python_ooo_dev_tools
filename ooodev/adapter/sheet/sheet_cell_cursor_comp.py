@@ -7,22 +7,22 @@ from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeE
 
 
 if TYPE_CHECKING:
-    from com.sun.star.sheet import SheetCellRange  # service
+    from com.sun.star.sheet import SheetCellCursor  # service
 
 
-class SheetCellRangeComp(ComponentBase, ModifyEvents, ChartDataChangeEventEvents):
+class SheetCellCursorComp(ComponentBase, ModifyEvents, ChartDataChangeEventEvents):
     """
-    Class for managing Sheet Cell Range Component.
+    Class for managing Sheet Cell Cursor Component.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: SheetCellRange) -> None:
+    def __init__(self, component: SheetCellCursor) -> None:
         """
         Constructor
 
         Args:
-            component (SheetCellRange): UNO Sheet Cell Range Component
+            component (SheetCellCursor): UNO Sheet Cell Cursor Component
         """
         ComponentBase.__init__(self, component)
         generic_args = self._get_generic_args()
@@ -47,15 +47,13 @@ class SheetCellRangeComp(ComponentBase, ModifyEvents, ChartDataChangeEventEvents
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.sheet.SheetCellRange",)
+        return ("com.sun.star.sheet.SheetCellCursor",)
 
     # endregion Overrides
-
     # region Properties
-
     @property
-    def component(self) -> SheetCellRange:
+    def component(self) -> SheetCellCursor:
         """Tree Data Model Component"""
-        return cast("SheetCellRange", self._get_component())
+        return cast("SheetCellCursor", self._get_component())
 
     # endregion Properties

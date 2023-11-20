@@ -2,45 +2,44 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from com.sun.star.chart import XChartDataChangeEventListener
+from com.sun.star.document import XDocumentEventListener
 
 from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
-    from com.sun.star.chart import ChartDataChangeEvent
-    from com.sun.star.chart import XChartData
+    from com.sun.star.document import DocumentEvent
+    from com.sun.star.document import XDocumentEventBroadcaster
 
 
-class ChartDataChangeEventListener(AdapterBase, XChartDataChangeEventListener):
+class DocumentEventListener(AdapterBase, XDocumentEventListener):
     """
-    Makes it possible to receive events when chart data changes.
+    allows notification when the selected range is changed.
 
     See Also:
-        `API XChartDataChangeEventListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1chart_1_1XChartDataChangeEventListener.html>`_
+        `API XDocumentEventListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XRangeSelectionChangeListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XChartData | None = None) -> None:
+    def __init__(
+        self, trigger_args: GenericArgs | None = None, subscriber: XDocumentEventBroadcaster | None = None
+    ) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
-            subscriber (XChartData, optional): An UNO object that implements the ``XChartData`` interface.
+            subscriber (XDocumentEventBroadcaster, optional): An UNO object that implements the ``XDocumentEventBroadcaster`` interface.
                 If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
         if subscriber:
-            subscriber.addChartDataChangeEventListener(self)
+            subscriber.addDocumentEventListener(self)
 
-    def chartDataChanged(self, event: ChartDataChangeEvent) -> None:
+    def documentEventOccured(self, event: DocumentEvent) -> None:
         """
-        Event is invoked when chart data changes in value or structure.
-
-        This interface must be implemented by components that wish to get notified of changes in chart data.
-        They can be registered at an ``XChartData`` component.
+        Event is invoked when a document event occurred
         """
-        self._trigger_event("chartDataChanged", event)
+        self._trigger_event("documentEventOccured", event)
 
     def disposing(self, event: EventObject) -> None:
         """

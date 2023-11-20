@@ -46,8 +46,6 @@ class SpreadsheetViewComp(
         )
         SelectionChangeEvents.__init__(self, trigger_args=generic_args, cb=self._on_selection_change_add_remove)
 
-    # region Manage Events
-
     # region Lazy Listeners
     def _on_activation_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
         # will only ever fire once
@@ -81,9 +79,17 @@ class SpreadsheetViewComp(
 
     # endregion Lazy Listeners
 
+    # region Overrides
+    def _get_supported_service_names(self) -> tuple[str, ...]:
+        """Returns a tuple of supported service names."""
+        return ("com.sun.star.sheet.SpreadsheetView",)
+
+    # endregion Overrides
+
+    # region Properties
     @property
     def component(self) -> SpreadsheetView:
         """Tree Data Model Component"""
         return cast("SpreadsheetView", self._get_component())
 
-    # endregion Manage Events
+    # endregion Properties

@@ -24,9 +24,7 @@ class RangeSelectionListener(AdapterBase, XRangeSelectionListener):
         `API XRangeSelectionListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1sheet_1_1XActivationEventListener.html>`_
     """
 
-    def __init__(
-        self, trigger_args: GenericArgs | None = None, subscriber: XRangeSelection | None = None, **kwargs
-    ) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XRangeSelection | None = None) -> None:
         """
         Constructor
 
