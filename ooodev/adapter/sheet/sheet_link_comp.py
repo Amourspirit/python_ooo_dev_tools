@@ -1,15 +1,17 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
+from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.util.refresh_events import RefreshEvents
+from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SheetLink  # service
 
 
-class SheetLinkComp(ComponentBase, RefreshEvents):
+class SheetLinkComp(ComponentBase, RefreshEvents, PropertyChangeImplement, VetoableChangeImplement):
     """
     Class for managing Sheet Link Component.
     """
@@ -26,6 +28,8 @@ class SheetLinkComp(ComponentBase, RefreshEvents):
         ComponentBase.__init__(self, component)
         generic_args = self._get_generic_args()
         RefreshEvents.__init__(self, trigger_args=generic_args, cb=self._on_sheet_link_events_add_remove)
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Lazy Listeners
     def _on_sheet_link_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -44,7 +48,7 @@ class SheetLinkComp(ComponentBase, RefreshEvents):
     # region Properties
     @property
     def component(self) -> SheetLink:
-        """Tree Data Model Component"""
+        """Sheet Link Component"""
         return cast("SheetLink", self._get_component())
 
     # endregion Properties

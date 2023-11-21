@@ -37,7 +37,7 @@ class VetoableChangeEvents:
         """
         Adds a listener for an event.
 
-        Event Is invoked when bound properties are changed.
+        Event is invoked when bound properties are changed.
 
         The callback ``EventArgs.event_data`` will contain a ``com.sun.star.beans.PropertyChangeEvent`` struct.
         """

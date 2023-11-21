@@ -30,10 +30,10 @@ class ComponentBase(ABC):
         """
         if not self._get_is_supported(component):
             raise TypeError(f"Component does not support the required service.")
-        self._component = component
+        self.__component = component
 
     def _get_component(self) -> XComponent:
-        return self._component
+        return self.__component
 
     def _get_generic_args(self) -> GenericArgs:
         if self.__generic_args is None:

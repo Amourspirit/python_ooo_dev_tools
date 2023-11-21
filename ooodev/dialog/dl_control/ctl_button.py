@@ -6,9 +6,8 @@ from pathlib import Path
 import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.type_var import PathOrStr
 from ooodev.utils.file_io import FileIO
-from ooodev.adapter.awt.uno_control_button_model_comp import UnoControlButtonModelComp
+from ooodev.utils.type_var import PathOrStr
 
 from .ctl_base import DialogControlBase
 
@@ -36,7 +35,6 @@ class CtlButton(DialogControlBase, ActionEvents):
         self._generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=self._generic_args, cb=self._on_action_events_listener_add_remove)
-        self._model_component = None
 
     # endregion init
 
@@ -102,12 +100,5 @@ class CtlButton(DialogControlBase, ActionEvents):
         if not FileIO.is_valid_path_or_str(value):
             raise ValueError(f"Invalid path or str: {value}")
         self.model.ImageURL = FileIO.fnm_to_url(value)
-
-    @property
-    def model_component(self) -> UnoControlButtonModelComp:
-        """Gets the model component for the control"""
-        if self._model_component is None:
-            self._model_component = UnoControlButtonModelComp(component=self.model, generic_args=self._generic_args)
-        return self._model_component
 
     # endregion Properties

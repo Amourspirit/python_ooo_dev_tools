@@ -1,15 +1,17 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
+from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeEventEvents
+from ooodev.adapter.component_base import ComponentBase
+from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SheetCellRanges  # service
 
 
-class SheetCellRangesComp(ComponentBase, ChartDataChangeEventEvents):
+class SheetCellRangesComp(ComponentBase, ChartDataChangeEventEvents, PropertyChangeImplement, VetoableChangeImplement):
     """
     Class for managing Sheet Cell Ranges Component.
     """
@@ -28,6 +30,8 @@ class SheetCellRangesComp(ComponentBase, ChartDataChangeEventEvents):
         ChartDataChangeEventEvents.__init__(
             self, trigger_args=generic_args, cb=self._on_chart_data_change_event_add_remove
         )
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Lazy Listeners
     def _on_chart_data_change_event_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -46,7 +50,7 @@ class SheetCellRangesComp(ComponentBase, ChartDataChangeEventEvents):
     # region Properties
     @property
     def component(self) -> SheetCellRanges:
-        """Tree Data Model Component"""
+        """Sheet Cell Ranges Component"""
         return cast("SheetCellRanges", self._get_component())
 
     # endregion Properties

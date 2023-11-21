@@ -54,3 +54,11 @@ class AdapterBase(unohelper.Base):  # type: ignore
             cb (EventCallback): Callback event
         """
         self._events.remove(event_name, cb)
+
+    def clear(self) -> None:
+        """
+        Removes all listeners for all events
+
+        .. versionadded:: 0.13.7
+        """
+        self._events.clear()

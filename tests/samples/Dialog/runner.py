@@ -1,6 +1,6 @@
 from __future__ import annotations
 import datetime
-from typing import Any, TYPE_CHECKING, cast
+from typing import Any, TYPE_CHECKING, cast, Tuple
 from pathlib import Path
 import uno  # pylint: disable=unused-import
 
@@ -18,15 +18,16 @@ from ooodev.dialog.dl_control.ctl_date_field import CtlDateField
 
 
 if TYPE_CHECKING:
+    from com.sun.star.awt import ItemEvent
+    from com.sun.star.awt import AdjustmentEvent
+    from com.sun.star.awt import WindowEvent
+    from com.sun.star.beans import PropertyChangeEvent
     from ooodev.dialog.dl_control.ctl_button import CtlButton
     from ooodev.dialog.dl_control.ctl_check_box import CtlCheckBox
     from ooodev.dialog.dl_control.ctl_combo_box import CtlComboBox
     from ooodev.dialog.dl_control.ctl_scroll_bar import CtlScrollBar
     from ooodev.dialog.dl_control.ctl_dialog import CtlDialog
     from ooodev.dialog.dl_control.ctl_base import DialogControlBase
-    from com.sun.star.awt import ItemEvent
-    from com.sun.star.awt import AdjustmentEvent
-    from com.sun.star.awt import WindowEvent
 
 
 class Runner:
@@ -492,15 +493,17 @@ class Runner:
         self._dialog.add_event_window_moved(self._fn_on_window_moved)
         self._dialog.add_event_window_closed(self._fn_on_window_closed)
 
-        self._btn_enabled_listener = self._ctl_button_ok.model_component.add_property_listener("Enabled")
-        self._btn_enabled_listener.add_event_property_change(self._fn_on_button_property_changed)
+        self._ctl_button_ok.add_event_properties_change(names=["Enabled"], cb=self._fn_on_button_properties_changed)
+
+        self._ctl_button_ok.add_event_property_change("Enabled", self._fn_on_button_property_changed)
         # The vetoable event is not firing. I suspect that the Button Enable property is not a vetoable property.
-        self._btn_enable_veto_listener = self._ctl_button_ok.model_component.add_vetoable_listener("Enabled")
-        self._btn_enable_veto_listener.add_event_vetoable_change(self._fn_on_button_veto_property_changed)
+        self._ctl_button_ok.add_event_vetoable_change("Enabled", self._fn_on_button_veto_property_changed)
         self._ctl_button_ok.enabled = False
-        # self._btn_enabled_listener.remove_event_property_change(self._fn_on_button_property_changed)
-        # self._ctl_button_ok.model_component.remove_property_listener("Enabled", self._btn_enabled_listener)
+        # self._ctl_button_ok.remove_event_property_change("Enabled")
+        # self._ctl_button_ok.remove_event_properties_listener()
         self._ctl_button_ok.enabled = True
+
+        # self._ctl_button_ok.add_event_properties_change
 
     def show(self) -> str:
         # Dialogs.create_dialog_peer(self._dialog)
@@ -532,6 +535,7 @@ class Runner:
         self._fn_on_window_closed = self.on_window_closed
         self._fn_on_button_property_changed = self.on_button_property_changed
         self._fn_on_button_veto_property_changed = self.on_button_veto_property_changed
+        self._fn_on_button_properties_changed = self.on_button_properties_changed
 
     def on_check_box_state(self, src: Any, event: EventArgs, control_src: CtlCheckBox, *args, **kwargs) -> None:
         itm_event = cast("ItemEvent", event.event_data)
@@ -618,12 +622,46 @@ class Runner:
     def on_button_property_changed(
         self, src: Any, event: EventArgs, property_name: str, control_src: Any, component: Any, *args, **kwargs
     ) -> None:
-        print("Button Property Changed:", property_name)
+        itm_event = cast("PropertyChangeEvent", event.event_data)
+        print(
+            "Button Property Changed:",
+            property_name,
+            ",",
+            " New Value:",
+            itm_event.NewValue,
+            ",",
+            "Old Value:",
+            itm_event.OldValue,
+        )
+
+    def on_button_properties_changed(self, src: Any, event: EventArgs, control_src: Any, *args, **kwargs) -> None:
+        itm_event = cast("Tuple[PropertyChangeEvent]", event.event_data)
+        for itm in itm_event:
+            print(
+                "Button Properties Changed:",
+                itm.PropertyName,
+                ",",
+                " New Value:",
+                itm.NewValue,
+                ",",
+                "Old Value:",
+                itm.OldValue,
+            )
 
     def on_button_veto_property_changed(
         self, src: Any, event: EventArgs, property_name: str, control_src: Any, component: Any, *args, **kwargs
     ) -> None:
-        print("Button Veto Property Changed:", property_name)
+        itm_event = cast("PropertyChangeEvent", event.event_data)
+        print(
+            "Button Veto Property Changed:",
+            property_name,
+            ",",
+            "New Value:",
+            itm_event.NewValue,
+            ",",
+            "Old Value:",
+            itm_event.OldValue,
+        )
 
     # endregion Event Handlers
 

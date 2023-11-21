@@ -44,7 +44,7 @@ class VolatileResultComp(ComponentBase, ResultEvents):
     # region Properties
     @property
     def component(self) -> VolatileResult:
-        """Tree Data Model Component"""
+        """Volatile Result Component"""
         return cast("VolatileResult", self._get_component())
 
     # endregion Properties

@@ -17,6 +17,9 @@ from ooodev.adapter.awt.mouse_events import MouseEvents
 from ooodev.adapter.awt.mouse_motion_events import MouseMotionEvents
 from ooodev.adapter.awt.paint_events import PaintEvents
 from ooodev.adapter.awt.window_events import WindowEvents
+from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
+from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
+from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
@@ -27,6 +30,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControlModel
     from com.sun.star.awt import XControl
     from com.sun.star.awt import UnoControlDialogElement  # service
+    from com.sun.star.beans import XMultiPropertySet
 # endregion imports
 
 # pylint: disable=unused-argument
@@ -181,6 +185,9 @@ class CtlListenerBase(
     MouseMotionEvents,
     PaintEvents,
     WindowEvents,
+    PropertyChangeImplement,
+    PropertiesChangeImplement,
+    VetoableChangeImplement,
 ):
     """Dialog Control Listener Base Class"""
 
@@ -195,6 +202,10 @@ class CtlListenerBase(
         MouseMotionEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_motion_listener_add_remove)
         PaintEvents.__init__(self, trigger_args=generic_args, cb=self._on_paint_listener_add_remove)
         WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_event_listener_add_remove)
+        model = self.get_model()
+        PropertyChangeImplement.__init__(self, component=cast(XPropertySet, model), trigger_args=generic_args)
+        PropertiesChangeImplement.__init__(self, component=cast("XMultiPropertySet", model), trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=cast(XPropertySet, model), trigger_args=generic_args)
 
     # endregion Dunder Methods
 

@@ -6,9 +6,10 @@ from ooodev.adapter.awt.enhanced_mouse_click_events import EnhancedMouseClickEve
 from ooodev.adapter.awt.key_events import KeyEvents
 from ooodev.adapter.awt.mouse_click_events import MouseClickEvents
 from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
-from ooodev.adapter.beans.property_change_collection import PropertyChangeCollection
 from .activation_event_events import ActivationEventEvents
 from .range_selection_change_events import RangeSelectionChangeEvents
+from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
+from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
@@ -22,7 +23,8 @@ class SpreadsheetViewComp(
     MouseClickEvents,
     RangeSelectionChangeEvents,
     SelectionChangeEvents,
-    PropertyChangeCollection,
+    PropertyChangeImplement,
+    VetoableChangeImplement,
 ):
     """
     Class for managing Spreadsheet View Component.
@@ -47,7 +49,8 @@ class SpreadsheetViewComp(
             self, trigger_args=generic_args, cb=self._on_range_selection_change_add_remove
         )
         SelectionChangeEvents.__init__(self, trigger_args=generic_args, cb=self._on_selection_change_add_remove)
-        PropertyChangeCollection.__init__(self, component=self.component)
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Lazy Listeners
     def _on_activation_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -92,7 +95,7 @@ class SpreadsheetViewComp(
     # region Properties
     @property
     def component(self) -> SpreadsheetView:
-        """Tree Data Model Component"""
+        """Spreadsheet View Component"""
         return cast("SpreadsheetView", self._get_component())
 
     # endregion Properties

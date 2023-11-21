@@ -92,7 +92,7 @@ class PropertiesChangeEvents:
     # endregion Manage Events
 
     @property
-    def events_listener_properties_change(self) -> PropertiesChangeEvents:
+    def events_listener_properties_change(self) -> PropertiesChangeListener:
         """
         Returns listener
         """
