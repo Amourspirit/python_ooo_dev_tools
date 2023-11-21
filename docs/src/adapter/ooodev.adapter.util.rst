@@ -9,6 +9,8 @@ Submodules
 
    ooodev.adapter.util.modify_events
    ooodev.adapter.util.modify_listener
+   ooodev.adapter.util.refresh_events
+   ooodev.adapter.util.refresh_listener
 
 Module contents
 ---------------

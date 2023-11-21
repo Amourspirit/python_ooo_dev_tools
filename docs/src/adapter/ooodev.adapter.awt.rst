@@ -21,12 +21,16 @@ Submodules
    ooodev.adapter.awt.action_listener
    ooodev.adapter.awt.adjustment_events
    ooodev.adapter.awt.adjustment_listener
+   ooodev.adapter.awt.enhanced_mouse_click_events
+   ooodev.adapter.awt.enhanced_mouse_click_handler
    ooodev.adapter.awt.focus_events
    ooodev.adapter.awt.focus_listener
    ooodev.adapter.awt.item_events
    ooodev.adapter.awt.item_listener
    ooodev.adapter.awt.key_events
    ooodev.adapter.awt.key_listener
+   ooodev.adapter.awt.mouse_click_events
+   ooodev.adapter.awt.mouse_click_handler
    ooodev.adapter.awt.mouse_events
    ooodev.adapter.awt.mouse_listener
    ooodev.adapter.awt.mouse_motion_events

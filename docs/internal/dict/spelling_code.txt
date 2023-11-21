@@ -62,6 +62,7 @@ RangeObj
 RangeValues
 Refreshable
 removeEventListener
+resetted
 RGB
 Runtime
 Searchable
