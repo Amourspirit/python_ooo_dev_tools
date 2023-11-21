@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.13.7
+==============
+
+Added dozens of new classes i the ``adapter`` module.
+
 Version 0.13.6
 ==============
 

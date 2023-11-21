@@ -11,9 +11,15 @@ Subpackages
 
    ooodev.adapter.awt
    ooodev.adapter.beans
+   ooodev.adapter.chart
+   ooodev.adapter.chart2
    ooodev.adapter.container
+   ooodev.adapter.document
+   ooodev.adapter.form
    ooodev.adapter.frame
    ooodev.adapter.lang
+   ooodev.adapter.sheet
+   ooodev.adapter.table
    ooodev.adapter.tree
    ooodev.adapter.util
    ooodev.adapter.view

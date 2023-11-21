@@ -70,6 +70,10 @@ class _event_base(object):
                 result = True
         return result
 
+    def _clear(self) -> None:
+        if self._callbacks is not None:
+            self._callbacks.clear()
+
     def _set_event_args(self, event_name: str, event_args: AbstractEvent) -> None:
         if event_args is None:
             return
@@ -149,6 +153,14 @@ class Events(_event_base):
         self._t_args = trigger_args
         # register wih LoEvents so this instance get triggered when LoEvents() are triggered.
         LoEvents().add_observer(self)
+
+    def clear(self) -> None:
+        """
+        Clears all events.
+
+        .. versionadded:: 0.13.7
+        """
+        super()._clear()
 
     def trigger(self, event_name: str, event_args: AbstractEvent):
         if self._t_args is None:

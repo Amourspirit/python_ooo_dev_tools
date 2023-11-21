@@ -6,8 +6,8 @@ from pathlib import Path
 import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.type_var import PathOrStr
 from ooodev.utils.file_io import FileIO
+from ooodev.utils.type_var import PathOrStr
 
 from .ctl_base import DialogControlBase
 
@@ -32,9 +32,9 @@ class CtlButton(DialogControlBase, ActionEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        generic_args = self._get_generic_args()
+        self._generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
-        ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
+        ActionEvents.__init__(self, trigger_args=self._generic_args, cb=self._on_action_events_listener_add_remove)
 
     # endregion init
 

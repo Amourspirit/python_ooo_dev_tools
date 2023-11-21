@@ -51,6 +51,7 @@ nofirststartwizard
 nologo
 norestore
 NoSuchElementException
+Occured
 odoc
 odt
 overline
@@ -59,7 +60,9 @@ preformatted
 PropertyValue
 RangeObj
 RangeValues
+Refreshable
 removeEventListener
+resetted
 RGB
 Runtime
 Searchable
