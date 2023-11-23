@@ -5,11 +5,11 @@ import uno
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .document_event_listener import DocumentEventListener
 
 if TYPE_CHECKING:
     from com.sun.star.document import XDocumentEventBroadcaster
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class DocumentEventEvents:

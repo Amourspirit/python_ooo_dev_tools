@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .enhanced_mouse_click_handler import EnhancedMouseClickHandler
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XEnhancedMouseClickBroadcaster
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class EnhancedMouseClickEvents:

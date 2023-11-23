@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .focus_listener import FocusListener
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XExtendedToolkit
     from com.sun.star.awt import XWindow
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class FocusEvents:

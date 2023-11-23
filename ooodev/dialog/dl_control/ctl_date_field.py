@@ -91,59 +91,59 @@ class CtlDateField(DialogControlBase, SpinEvents, TextEvents):
     @property
     def text(self) -> str:
         """Gets/Sets the text"""
-        return self.model.Text
+        return self.get_model().Text
 
     @text.setter
     def text(self, value: str) -> None:
-        self.model.Text = value
+        self.get_model().Text = value
 
     @property
     def date(self) -> datetime.date:
         """Gets/Sets the date"""
-        return DateUtil.uno_date_to_date(self.model.Date)
+        return DateUtil.uno_date_to_date(self.get_model().Date)
 
     @date.setter
     def date(self, value: datetime.date) -> None:
-        self.model.Date = DateUtil.date_to_uno_date(value)
+        self.get_model().Date = DateUtil.date_to_uno_date(value)
 
     @property
     def date_min(self) -> datetime.date:
         """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.model.DateMin)
+        return DateUtil.uno_date_to_date(self.get_model().DateMin)
 
     @date_min.setter
     def date_min(self, value: datetime.date) -> None:
-        self.model.DateMin = DateUtil.date_to_uno_date(value)
+        self.get_model().DateMin = DateUtil.date_to_uno_date(value)
 
     @property
     def date_max(self) -> datetime.date:
         """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.model.DateMax)
+        return DateUtil.uno_date_to_date(self.get_model().DateMax)
 
     @date_max.setter
     def date_max(self, value: datetime.date) -> None:
-        self.model.DateMax = DateUtil.date_to_uno_date(value)
+        self.get_model().DateMax = DateUtil.date_to_uno_date(value)
 
     @property
     def date_format(self) -> DateFormatKind:
         """Gets/Sets the format"""
-        return DateFormatKind(self.model.DateFormat)
+        return DateFormatKind(self.get_model().DateFormat)
 
     @date_format.setter
     def date_format(self, value: DateFormatKind) -> None:
-        self.model.DateFormat = value.value
+        self.get_model().DateFormat = value.value
 
     @property
     def read_only(self) -> bool:
         """Gets/Sets the read-only property"""
         with contextlib.suppress(Exception):
-            return self.model.ReadOnly
+            return self.get_model().ReadOnly
         return False
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
         """Sets the read-only property"""
         with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
+            self.get_model().ReadOnly = value
 
     # endregion Properties

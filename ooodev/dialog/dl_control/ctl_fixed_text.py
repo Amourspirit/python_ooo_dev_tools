@@ -60,4 +60,22 @@ class CtlFixedText(DialogControlBase):
     def model(self) -> UnoControlFixedTextModel:
         return self.get_model()
 
+    @property
+    def multi_line(self) -> bool:
+        """Gets/Sets the multi line"""
+        return self.model.MultiLine
+
+    @multi_line.setter
+    def multi_line(self, value: bool) -> None:
+        self.model.MultiLine = value
+
+    @property
+    def label(self) -> str:
+        """Gets/Sets the label"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
     # endregion Properties

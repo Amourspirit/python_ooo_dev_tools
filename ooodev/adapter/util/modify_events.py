@@ -1,14 +1,16 @@
 from __future__ import annotations
-from typing import Any, cast
+from typing import TYPE_CHECKING
 import uno
 from com.sun.star.util import XModifyBroadcaster
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from ooodev.utils import lo as mLo
 from .modify_listener import ModifyListener
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class ModifyEvents:

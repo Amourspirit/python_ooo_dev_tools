@@ -11,12 +11,12 @@ from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnu
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.utils.type_var import PathOrStr
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlImageControl  # service
     from com.sun.star.awt import UnoControlImageControlModel  # service
+    from ooodev.utils.type_var import PathOrStr
 # endregion imports
 
 

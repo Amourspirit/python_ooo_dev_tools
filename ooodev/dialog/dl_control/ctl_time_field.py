@@ -116,12 +116,12 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
         self.model.TimeMin = DateUtil.time_to_uno_time(value)
 
     @property
-    def date_max(self) -> datetime.time:
+    def time_max(self) -> datetime.time:
         """Gets/Sets the min time"""
         return DateUtil.uno_time_to_time(self.model.TimeMax)
 
-    @date_max.setter
-    def date_max(self, value: datetime.time) -> None:
+    @time_max.setter
+    def time_max(self, value: datetime.time) -> None:
         self.model.TimeMax = DateUtil.time_to_uno_time(value)
 
     @property

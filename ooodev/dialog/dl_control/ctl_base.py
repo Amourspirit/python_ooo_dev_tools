@@ -264,6 +264,13 @@ class CtlListenerBase(
 
     # endregion Lazy Listeners
 
+    # region other methods
+    def get_property_set(self) -> XPropertySet:
+        """Gets the property set for this control"""
+        return mLo.Lo.qi(XPropertySet, self.get_model(), True)
+
+    # endregion other methods
+
 
 class DialogControlBase(CtlListenerBase):
     """Dialog Control Base Class. Only for Controls that have a model that can be added to a dialog"""

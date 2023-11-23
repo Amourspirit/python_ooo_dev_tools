@@ -2,10 +2,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
-
 from com.sun.star.form import XResetListener
+
+from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.adapter.adapter_base import AdapterBase, GenericArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
@@ -36,17 +38,44 @@ class ResetListener(AdapterBase, XResetListener):
         if subscriber:
             subscriber.addResetListener(self)
 
-    def approveReset(self, event: EventObject) -> None:
+    def approveReset(self, event: EventObject) -> bool:
         """
         Event is invoked is invoked before a component is reset.
 
-        No veto will be accepted then.
+        If event is canceled then the reset will be canceled.
+
+        Args:
+            event (EventObject): Event data for the event.
+
+        Returns:
+            bool: ``True`` if the rest should be performed, ``False`` otherwise.
+
+        Note:
+            When ``approveReset`` event is invoked it will contain a :py:class:`~ooodev.events.args.cancel_event_args.CancelEventArgs`
+            instance as the trigger event. When the event is triggered the ``CancelEventArgs.cancel`` can be set to ``True``
+            to cancel the reset. Also if canceled the ``CancelEventArgs.handled`` can be set to ``True`` to indicate that the reset
+            should be performed. The ``CancelEventArgs.event_data`` will contain the original ``com.sun.star.lang.EventObject``
+            that triggered the update.
         """
-        self._trigger_event("approveReset", event)
+        cancel_args = CancelEventArgs(self.__class__.__qualname__)
+        cancel_args.event_data = event
+        self._trigger_direct_event("approveReset", cancel_args)
+        if cancel_args.cancel:
+            if CancelEventArgs.handled:
+                # if the cancel event was handled then we return True to indicate that the update should be performed
+                return True
+            return False
+        return True
 
     def resetted(self, event: EventObject) -> None:
         """
         Event is invoked when a component has been reset.
+
+        Args:
+            event (EventObject): TEvent data for the event.
+
+        Returns:
+            None:
         """
         self._trigger_event("approveReset", event)
 
@@ -60,6 +89,12 @@ class ResetListener(AdapterBase, XResetListener):
 
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at ``XComponent``.
+
+        Args:
+            event (EventObject): Event data for the event.
+
+        Returns:
+            None:
         """
         # from com.sun.star.lang.XEventListener
         self._trigger_event("disposing", event)
