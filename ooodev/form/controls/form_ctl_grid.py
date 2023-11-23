@@ -86,16 +86,6 @@ class FormCtlGrid(
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
-
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
-
-    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -103,6 +93,11 @@ class FormCtlGrid(
     @enabled.setter
     def enabled(self, value: bool) -> None:
         self.model.Enabled = value
+
+    @property
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
 
     @property
     def step(self) -> int:
@@ -114,21 +109,17 @@ class FormCtlGrid(
         self.model.Step = value
 
     @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.model.TabIndex
+    def tab_stop(self) -> bool:
+        """Gets/Sets the tab stop property"""
+        return self.model.Tabstop
 
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
+    @tab_stop.setter
+    def tab_stop(self, value: bool) -> None:
+        self.model.Tabstop = value
 
     @property
-    def tag(self) -> str:
-        """Gets/Sets the tag"""
-        return self.model.Tag
-
-    @tag.setter
-    def tag(self, value: str) -> None:
-        self.model.Tag = value
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

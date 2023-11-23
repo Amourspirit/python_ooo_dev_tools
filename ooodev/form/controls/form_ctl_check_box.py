@@ -58,14 +58,13 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.VisualEffect)
 
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.VisualEffect = value.value
 
     @property
     def enabled(self) -> bool:
@@ -77,34 +76,13 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         self.model.Enabled = value
 
     @property
-    def step(self) -> int:
-        """Gets/Sets the step"""
-        return self.model.Step
-
-    @step.setter
-    def step(self, value: int) -> None:
-        self.model.Step = value
-
-    @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.model.TabIndex
-
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
-
-    @property
-    def tip_text(self) -> str:
+    def help_text(self) -> str:
         """Gets/Sets the tip text"""
         return self.model.HelpText
 
-    @tip_text.setter
-    def tip_text(self, value: str) -> None:
+    @help_text.setter
+    def help_text(self, value: str) -> None:
         self.model.HelpText = value
-
-    # useful alias
-    help_text = tip_text
 
     @property
     def help_url(self) -> str:
@@ -116,6 +94,11 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
+
+    @property
     def printable(self) -> bool:
         """Gets/Sets the printable property"""
         return self.model.Printable
@@ -125,15 +108,6 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         self.model.Printable = value
 
     @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.VisualEffect)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.VisualEffect = value.value
-
-    @property
     def state(self) -> TriStateKind:
         """Gets/Sets the state"""
         return TriStateKind(self.model.State)
@@ -141,6 +115,33 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
     @state.setter
     def state(self, value: TriStateKind) -> None:
         self.model.State = value.value
+
+    @property
+    def step(self) -> int:
+        """Gets/Sets the step"""
+        return self.model.Step
+
+    @step.setter
+    def step(self, value: int) -> None:
+        self.model.Step = value
+
+    @property
+    def tab_stop(self) -> bool:
+        """Gets/Sets the tab stop property"""
+        return self.model.Tabstop
+
+    @tab_stop.setter
+    def tab_stop(self, value: bool) -> None:
+        self.model.Tabstop = value
+
+    @property
+    def tip_text(self) -> str:
+        """Gets/Sets the tip text"""
+        return self.model.HelpText
+
+    @tip_text.setter
+    def tip_text(self, value: str) -> None:
+        self.model.HelpText = value
 
     @property
     def triple_state(self) -> bool:
@@ -154,5 +155,10 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
     @triple_state.setter
     def triple_state(self, value: bool) -> None:
         self.model.TriState = value
+
+    @property
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

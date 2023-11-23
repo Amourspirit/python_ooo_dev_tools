@@ -38,16 +38,6 @@ class FormCtlNavigationToolBar(FormCtlBase):
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
-
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
-
-    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -55,6 +45,11 @@ class FormCtlNavigationToolBar(FormCtlBase):
     @enabled.setter
     def enabled(self, value: bool) -> None:
         self.model.Enabled = value
+
+    @property
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
 
     @property
     def step(self) -> int:
@@ -66,12 +61,8 @@ class FormCtlNavigationToolBar(FormCtlBase):
         self.model.Step = value
 
     @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.model.TabIndex
-
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

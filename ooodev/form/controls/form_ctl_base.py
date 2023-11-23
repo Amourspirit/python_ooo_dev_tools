@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from com.sun.star.awt import XControl
 from com.sun.star.beans import XPropertySet
 
 from ooo.dyn.awt.pos_size import PosSize
@@ -22,8 +21,10 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 if TYPE_CHECKING:
+    from com.sun.star.awt import XControl
     from com.sun.star.awt import UnoControlModel  # service
     from com.sun.star.awt import UnoControl  # service
+    from ooodev.proto.style_obj import StyleT
 
 
 class FormCtlBase(
@@ -135,6 +136,17 @@ class FormCtlBase(
         """Gets the property set for this control"""
         return mLo.Lo.qi(XPropertySet, self.get_model(), True)
 
+    def apply_styles(self, *styles: StyleT) -> None:
+        """
+        Applies styles to control
+
+        Args:
+            *styles: Styles to apply
+        """
+        model = self.get_model()
+        for style in styles:
+            style.apply(model)
+
     # endregion other methods
 
     # region Overrides
@@ -205,5 +217,23 @@ class FormCtlBase(
     def name(self) -> str:
         """Gets the name for the control model"""
         return self.get_model().Name
+
+    @property
+    def tab_index(self) -> int:
+        """Gets/Sets the tab index"""
+        return self.get_model().TabIndex
+
+    @tab_index.setter
+    def tab_index(self, value: int) -> None:
+        self.get_model().TabIndex = value
+
+    @property
+    def tag(self) -> str:
+        """Gets/Sets the tag"""
+        return self.get_model().Tag
+
+    @tag.setter
+    def tag(self, value: str) -> None:
+        self.get_model().Tag = value
 
     # endregion Properties

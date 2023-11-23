@@ -50,16 +50,6 @@ class FormCtlFixedText(FormCtlBase, TextEvents):
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
-
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
-
-    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -69,34 +59,13 @@ class FormCtlFixedText(FormCtlBase, TextEvents):
         self.model.Enabled = value
 
     @property
-    def step(self) -> int:
-        """Gets/Sets the step"""
-        return self.model.Step
-
-    @step.setter
-    def step(self, value: int) -> None:
-        self.model.Step = value
-
-    @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.model.TabIndex
-
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
-
-    @property
-    def tip_text(self) -> str:
+    def help_text(self) -> str:
         """Gets/Sets the tip text"""
         return self.model.HelpText
 
-    @tip_text.setter
-    def tip_text(self, value: str) -> None:
+    @help_text.setter
+    def help_text(self, value: str) -> None:
         self.model.HelpText = value
-
-    # useful alias
-    help_text = tip_text
 
     @property
     def help_url(self) -> str:
@@ -108,13 +77,18 @@ class FormCtlFixedText(FormCtlBase, TextEvents):
         self.model.HelpURL = value
 
     @property
-    def printable(self) -> bool:
-        """Gets/Sets the printable property"""
-        return self.model.Printable
+    def label(self) -> str:
+        """Gets/Sets the label"""
+        return self.model.Label
 
-    @printable.setter
-    def printable(self, value: bool) -> None:
-        self.model.Printable = value
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
+    @property
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
 
     @property
     def multi_line(self) -> bool:
@@ -126,12 +100,35 @@ class FormCtlFixedText(FormCtlBase, TextEvents):
         self.model.MultiLine = value
 
     @property
-    def label(self) -> str:
-        """Gets/Sets the label"""
-        return self.model.Label
+    def printable(self) -> bool:
+        """Gets/Sets the printable property"""
+        return self.model.Printable
 
-    @label.setter
-    def label(self, value: str) -> None:
-        self.model.Label = value
+    @printable.setter
+    def printable(self, value: bool) -> None:
+        self.model.Printable = value
+
+    @property
+    def step(self) -> int:
+        """Gets/Sets the step"""
+        return self.model.Step
+
+    @step.setter
+    def step(self, value: int) -> None:
+        self.model.Step = value
+
+    @property
+    def tip_text(self) -> str:
+        """Gets/Sets the tip text"""
+        return self.model.HelpText
+
+    @tip_text.setter
+    def tip_text(self, value: str) -> None:
+        self.model.HelpText = value
+
+    @property
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

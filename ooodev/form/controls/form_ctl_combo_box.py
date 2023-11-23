@@ -70,16 +70,6 @@ class FormCtlComboBox(FormCtlBase, ActionEvents, ItemEvents, TextEvents, ResetEv
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
-
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
-
-    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -87,5 +77,24 @@ class FormCtlComboBox(FormCtlBase, ActionEvents, ItemEvents, TextEvents, ResetEv
     @enabled.setter
     def enabled(self, value: bool) -> None:
         self.model.Enabled = value
+
+    @property
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
+
+    @property
+    def tab_stop(self) -> bool:
+        """Gets/Sets the tab stop property"""
+        return self.model.Tabstop
+
+    @tab_stop.setter
+    def tab_stop(self, value: bool) -> None:
+        self.model.Tabstop = value
+
+    @property
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

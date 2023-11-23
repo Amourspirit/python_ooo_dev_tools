@@ -97,14 +97,14 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
+    def drop_down(self) -> bool:
+        """Gets/Sets the DropDown property"""
+        return self.model.Dropdown
 
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
+    @drop_down.setter
+    def drop_down(self, value: bool) -> None:
+        """Sets the DropDown property"""
+        self.model.Dropdown = value
 
     @property
     def enabled(self) -> bool:
@@ -116,34 +116,13 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
         self.model.Enabled = value
 
     @property
-    def step(self) -> int:
-        """Gets/Sets the step"""
-        return self.model.Step
-
-    @step.setter
-    def step(self, value: int) -> None:
-        self.model.Step = value
-
-    @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.model.TabIndex
-
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
-
-    @property
-    def tip_text(self) -> str:
+    def help_text(self) -> str:
         """Gets/Sets the tip text"""
         return self.model.HelpText
 
-    @tip_text.setter
-    def tip_text(self, value: str) -> None:
+    @help_text.setter
+    def help_text(self, value: str) -> None:
         self.model.HelpText = value
-
-    # useful alias
-    help_text = tip_text
 
     @property
     def help_url(self) -> str:
@@ -153,6 +132,52 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
     @help_url.setter
     def help_url(self, value: str) -> None:
         self.model.HelpURL = value
+
+    @property
+    def line_count(self) -> int:
+        """Gets/Sets the line count"""
+        return self.model.LineCount
+
+    @line_count.setter
+    def line_count(self, value: int) -> None:
+        """Sets the line count"""
+        self.model.LineCount = value
+
+    @property
+    def list_count(self) -> int:
+        """Gets the number of items in the list"""
+        with contextlib.suppress(Exception):
+            return self.view.getItemCount()
+        return 0
+
+    @property
+    def list_index(self) -> int:
+        """
+        Gets which item is selected
+
+        Returns:
+            Index of the first selected item or ``-1`` if no items are selected.
+        """
+        with contextlib.suppress(Exception):
+            selected_items = self.selected_items
+            if len(selected_items) > 0:
+                return selected_items[0]
+        return -1
+
+    @property
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
+
+    @property
+    def multi_selection(self) -> bool:
+        """Gets/Sets the MultiSelection property"""
+        return self.model.MultiSelection
+
+    @multi_selection.setter
+    def multi_selection(self, value: bool) -> None:
+        """Sets the MultiSelection property"""
+        self.model.MultiSelection = value
 
     @property
     def printable(self) -> bool:
@@ -173,52 +198,6 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
         self.model.ReadOnly = value
 
     @property
-    def drop_down(self) -> bool:
-        """Gets/Sets the DropDown property"""
-        return self.model.Dropdown
-
-    @drop_down.setter
-    def drop_down(self, value: bool) -> None:
-        """Sets the DropDown property"""
-        self.model.Dropdown = value
-
-    @property
-    def list_count(self) -> int:
-        """Gets the number of items in the list"""
-        with contextlib.suppress(Exception):
-            return self.view.getItemCount()
-        return 0
-
-    @property
-    def multi_selection(self) -> bool:
-        """Gets/Sets the MultiSelection property"""
-        return self.model.MultiSelection
-
-    @multi_selection.setter
-    def multi_selection(self, value: bool) -> None:
-        """Sets the MultiSelection property"""
-        self.model.MultiSelection = value
-
-    @property
-    def selected_items(self) -> Tuple[int, ...]:
-        """Gets the selected items"""
-        return cast(Tuple[int, ...], self.model.SelectedItems)
-
-    @property
-    def list_index(self) -> int:
-        """
-        Gets which item is selected
-
-        Returns:
-            Index of the first selected item or ``-1`` if no items are selected.
-        """
-        with contextlib.suppress(Exception):
-            selected_items = self.selected_items
-            if len(selected_items) > 0:
-                return selected_items[0]
-        return -1
-
-    @property
     def row_source(self) -> Tuple[str, ...]:
         """
         Gets/Sets the row source.
@@ -237,13 +216,40 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
         self.set_list_data(value)
 
     @property
-    def line_count(self) -> int:
-        """Gets/Sets the line count"""
-        return self.model.LineCount
+    def selected_items(self) -> Tuple[int, ...]:
+        """Gets the selected items"""
+        return cast(Tuple[int, ...], self.model.SelectedItems)
 
-    @line_count.setter
-    def line_count(self, value: int) -> None:
-        """Sets the line count"""
-        self.model.LineCount = value
+    @property
+    def step(self) -> int:
+        """Gets/Sets the step"""
+        return self.model.Step
+
+    @step.setter
+    def step(self, value: int) -> None:
+        self.model.Step = value
+
+    @property
+    def tab_stop(self) -> bool:
+        """Gets/Sets the tab stop property"""
+        return self.model.Tabstop
+
+    @tab_stop.setter
+    def tab_stop(self, value: bool) -> None:
+        self.model.Tabstop = value
+
+    @property
+    def tip_text(self) -> str:
+        """Gets/Sets the tip text"""
+        return self.model.HelpText
+
+    @tip_text.setter
+    def tip_text(self, value: str) -> None:
+        self.model.HelpText = value
+
+    @property
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

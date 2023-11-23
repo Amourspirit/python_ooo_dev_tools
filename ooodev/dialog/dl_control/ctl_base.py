@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.awt import UnoControlDialogElement  # service
     from com.sun.star.beans import XMultiPropertySet
+    from ooodev.proto.style_obj import StyleT
 # endregion imports
 
 # pylint: disable=unused-argument
@@ -285,6 +286,7 @@ class DialogControlBase(CtlListenerBase):
 
     # endregion Overrides
 
+    # region other methods
     def get_control_kind(self) -> DialogControlKind:
         """Gets the control kind"""
         return DialogControlKind.from_value(self.get_uno_srv_name())
@@ -295,6 +297,19 @@ class DialogControlBase(CtlListenerBase):
             kind = self.get_control_kind()
             return DialogControlNamedKind.from_str(kind.name)
         return DialogControlNamedKind.UNKNOWN
+
+    def apply_styles(self, *styles: StyleT) -> None:
+        """
+        Applies styles to control
+
+        Args:
+            *styles: Styles to apply
+        """
+        model = self.get_model()
+        for style in styles:
+            style.apply(model)
+
+    # endregion other methods
 
     # region Properties
     @property

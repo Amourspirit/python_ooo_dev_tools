@@ -65,16 +65,6 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
-
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
-
-    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.get_model().Enabled
@@ -84,40 +74,36 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
         self.get_model().Enabled = value
 
     @property
-    def time(self) -> datetime.time:
-        """Gets/Sets the time"""
-        return DateUtil.uno_time_to_time(self.model.Time)
+    def help_text(self) -> str:
+        """Gets/Sets the tip text"""
+        return self.model.HelpText
+
+    @help_text.setter
+    def help_text(self, value: str) -> None:
+        self.get_model().HelpText = value
 
     @property
-    def time_min(self) -> datetime.time:
-        """Gets/Sets the min time"""
-        return DateUtil.uno_time_to_time(self.model.TimeMin)
+    def help_url(self) -> str:
+        """Gets/Sets the help url"""
+        return self.get_model().HelpURL
 
-    @time_min.setter
-    def time_min(self, value: datetime.time) -> None:
-        self.model.TimeMin = DateUtil.time_to_uno_time(value)
-
-    @time.setter
-    def time(self, value: datetime.time) -> None:
-        self.model.Time = DateUtil.time_to_uno_time(value)
+    @help_url.setter
+    def help_url(self, value: str) -> None:
+        self.get_model().HelpURL = value
 
     @property
-    def time_max(self) -> datetime.time:
-        """Gets/Sets the min time"""
-        return DateUtil.uno_time_to_time(self.model.TimeMax)
-
-    @time_max.setter
-    def time_max(self, value: datetime.time) -> None:
-        self.model.TimeMax = DateUtil.time_to_uno_time(value)
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
 
     @property
-    def time_format(self) -> TimeFormatKind:
-        """Gets/Sets the format"""
-        return TimeFormatKind(self.model.TimeFormat)
+    def printable(self) -> bool:
+        """Gets/Sets the printable property"""
+        return self.get_model().Printable
 
-    @time_format.setter
-    def time_format(self, value: TimeFormatKind) -> None:
-        self.model.TimeFormat = value.value
+    @printable.setter
+    def printable(self, value: bool) -> None:
+        self.get_model().Printable = value
 
     @property
     def read_only(self) -> bool:
@@ -157,13 +143,13 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
         self.get_model().StrictFormat = value
 
     @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.get_model().TabIndex
+    def tab_stop(self) -> bool:
+        """Gets/Sets the tab stop property"""
+        return self.model.Tabstop
 
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.get_model().TabIndex = value
+    @tab_stop.setter
+    def tab_stop(self, value: bool) -> None:
+        self.model.Tabstop = value
 
     @property
     def text(self) -> str:
@@ -175,6 +161,38 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
         self.get_model().Text = value
 
     @property
+    def time(self) -> datetime.time:
+        """Gets/Sets the time"""
+        return DateUtil.uno_time_to_time(self.model.Time)
+
+    @property
+    def time_format(self) -> TimeFormatKind:
+        """Gets/Sets the format"""
+        return TimeFormatKind(self.model.TimeFormat)
+
+    @time_format.setter
+    def time_format(self, value: TimeFormatKind) -> None:
+        self.model.TimeFormat = value.value
+
+    @property
+    def time_max(self) -> datetime.time:
+        """Gets/Sets the min time"""
+        return DateUtil.uno_time_to_time(self.model.TimeMax)
+
+    @time_max.setter
+    def time_max(self, value: datetime.time) -> None:
+        self.model.TimeMax = DateUtil.time_to_uno_time(value)
+
+    @property
+    def time_min(self) -> datetime.time:
+        """Gets/Sets the min time"""
+        return DateUtil.uno_time_to_time(self.model.TimeMin)
+
+    @time_min.setter
+    def time_min(self, value: datetime.time) -> None:
+        self.model.TimeMin = DateUtil.time_to_uno_time(value)
+
+    @property
     def tip_text(self) -> str:
         """Gets/Sets the tip text"""
         return self.model.HelpText
@@ -183,25 +201,9 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     def tip_text(self, value: str) -> None:
         self.get_model().HelpText = value
 
-    # useful alias
-    help_text = tip_text
-
     @property
-    def help_url(self) -> str:
-        """Gets/Sets the help url"""
-        return self.get_model().HelpURL
-
-    @help_url.setter
-    def help_url(self, value: str) -> None:
-        self.get_model().HelpURL = value
-
-    @property
-    def printable(self) -> bool:
-        """Gets/Sets the printable property"""
-        return self.get_model().Printable
-
-    @printable.setter
-    def printable(self, value: bool) -> None:
-        self.get_model().Printable = value
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

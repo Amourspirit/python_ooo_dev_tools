@@ -43,6 +43,7 @@ from ooodev.utils import gui as mGui
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.proto.style_obj import StyleT
 from .controls.form_ctl_button import FormCtlButton
+from .controls.form_ctl_check_box import FormCtlCheckBox
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
@@ -1073,37 +1074,6 @@ class Forms:
     # endregion add_labelled_control
 
     # region    add_button
-    @overload
-    @classmethod
-    def add_button(
-        cls,
-        doc: XComponent,
-        name: str,
-        label: str | None,
-        x: int,
-        y: int,
-        width: int,
-        *,
-        styles: Iterable[StyleT] = ...,
-    ) -> XPropertySet:
-        ...
-
-    @overload
-    @classmethod
-    def add_button(
-        cls,
-        doc: XComponent,
-        name: str,
-        label: str | None,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
-        *,
-        styles: Iterable[StyleT] = ...,
-    ) -> XPropertySet:
-        ...
-
     @classmethod
     def add_button(
         cls,
@@ -1114,6 +1084,7 @@ class Forms:
         y: int,
         width: int,
         height: int = 6,
+        anchor_type: TextContentAnchorType | None = None,
         *,
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
@@ -1130,6 +1101,7 @@ class Forms:
             y (int): Button Y position
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
+            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
@@ -1148,6 +1120,7 @@ class Forms:
                 y=y,
                 width=width,
                 height=height,
+                anchor_type=anchor_type,
                 styles=styles,
             )
             # don't want button to be accessible by the "tab" key
@@ -1403,6 +1376,7 @@ class Forms:
         y: int,
         width: int,
         height: int = 6,
+        anchor_type: TextContentAnchorType | None = None,
         *,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlButton:
@@ -1419,13 +1393,13 @@ class Forms:
             y (int): Button Y position
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
-            styles (Iterable[StyleT], optional): One or more styles to apply.
+            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
             FormCtlButton: Button Control
 
-        .. versionchanged:: 0.9.2
-            Added ``styles`` argument.
+        .. versionadded:: 0.13.8
         """
         if styles is None:
             # keeps type checker happy
@@ -1439,11 +1413,67 @@ class Forms:
                 y=y,
                 width=width,
                 height=height,
+                anchor_type=anchor_type,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, btn_props, True)
             ctl = cls.get_control(doc, model)
             return FormCtlButton(ctl)
+        except Exception:
+            raise
+
+    @classmethod
+    def insert_control_check_box(
+        cls,
+        doc: XComponent,
+        name: str,
+        label: str | None,
+        x: int,
+        y: int,
+        width: int,
+        height: int = 6,
+        anchor_type: TextContentAnchorType | None = None,
+        *,
+        styles: Iterable[StyleT] | None = None,
+    ) -> FormCtlCheckBox:
+        """
+        Inserts a check box control.
+
+        Args:
+            doc (XComponent): Component
+            name (str): Button name
+            label (str | None): Button Label
+            x (int): Button X position
+            y (int): Button Y position
+            height (int): Button Height
+            width (int, optional): Button Height. Defaults to 6.
+            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+
+        Returns:
+            FormCtlButton: Button Control
+
+        .. versionadded:: 0.13.8
+        """
+        if styles is None:
+            # keeps type checker happy
+            styles = ()
+        try:
+            btn_props = cls.add_control(
+                doc=doc,
+                name=name,
+                label=label,
+                comp_kind=FormComponentKind.CHECK_BOX,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                anchor_type=anchor_type,
+                styles=styles,
+            )
+            model = mLo.Lo.qi(XControlModel, btn_props, True)
+            ctl = cls.get_control(doc, model)
+            return FormCtlCheckBox(ctl)
         except Exception:
             raise
 

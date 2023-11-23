@@ -48,14 +48,24 @@ class FormCtlSubmitButton(FormCtlBase, SubmissionVetoEvents):
     # endregion Overrides
 
     # region Properties
-    @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
 
     @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
+
+    @property
+    def step(self) -> int:
+        """Gets/Sets the step"""
+        return self.model.Step
+
+    @step.setter
+    def step(self, value: int) -> None:
+        self.model.Step = value
+
+    @property
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties

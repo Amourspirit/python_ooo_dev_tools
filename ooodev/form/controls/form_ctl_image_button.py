@@ -55,16 +55,6 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
 
     # region Properties
     @property
-    def view(self) -> ControlView:
-        """Gets the view of this control"""
-        return self.get_view()
-
-    @property
-    def model(self) -> ControlModel:
-        """Gets the model for this control"""
-        return self.get_model()
-
-    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -74,34 +64,13 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
         self.model.Enabled = value
 
     @property
-    def step(self) -> int:
-        """Gets/Sets the step"""
-        return self.model.Step
-
-    @step.setter
-    def step(self, value: int) -> None:
-        self.model.Step = value
-
-    @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.model.TabIndex
-
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
-
-    @property
-    def tip_text(self) -> str:
+    def help_text(self) -> str:
         """Gets/Sets the tip text"""
         return self.model.HelpText
 
-    @tip_text.setter
-    def tip_text(self, value: str) -> None:
+    @help_text.setter
+    def help_text(self, value: str) -> None:
         self.model.HelpText = value
-
-    # useful alias
-    help_text = tip_text
 
     @property
     def help_url(self) -> str:
@@ -111,15 +80,6 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
     @help_url.setter
     def help_url(self, value: str) -> None:
         self.model.HelpURL = value
-
-    @property
-    def printable(self) -> bool:
-        """Gets/Sets the printable property"""
-        return self.model.Printable
-
-    @printable.setter
-    def printable(self, value: bool) -> None:
-        self.model.Printable = value
 
     @property
     def image_scale_mode(self) -> ImageScaleModeEnum:
@@ -132,14 +92,9 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
         self.model.ScaleMode = value.value
 
     @property
-    def scale_image(self) -> bool:
-        """Gets/Sets whether the image should be scaled"""
-        return self.model.ScaleImage
-
-    @scale_image.setter
-    def scale_image(self, value: bool) -> None:
-        """Sets whether the image should be scaled"""
-        self.model.ScaleImage = value
+    def model(self) -> ControlModel:
+        """Gets the model for this control"""
+        return self.get_model()
 
     @property
     def picture(self) -> str:
@@ -170,5 +125,56 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
         if not FileIO.is_valid_path_or_str(value):
             raise ValueError(f"Invalid path or str: {value}")
         self.model.ImageURL = FileIO.fnm_to_url(value)
+
+    @property
+    def printable(self) -> bool:
+        """Gets/Sets the printable property"""
+        return self.model.Printable
+
+    @printable.setter
+    def printable(self, value: bool) -> None:
+        self.model.Printable = value
+
+    @property
+    def scale_image(self) -> bool:
+        """Gets/Sets whether the image should be scaled"""
+        return self.model.ScaleImage
+
+    @scale_image.setter
+    def scale_image(self, value: bool) -> None:
+        """Sets whether the image should be scaled"""
+        self.model.ScaleImage = value
+
+    @property
+    def step(self) -> int:
+        """Gets/Sets the step"""
+        return self.model.Step
+
+    @step.setter
+    def step(self, value: int) -> None:
+        self.model.Step = value
+
+    @property
+    def tab_stop(self) -> bool:
+        """Gets/Sets the tab stop property"""
+        return self.model.Tabstop
+
+    @tab_stop.setter
+    def tab_stop(self, value: bool) -> None:
+        self.model.Tabstop = value
+
+    @property
+    def tip_text(self) -> str:
+        """Gets/Sets the tip text"""
+        return self.model.HelpText
+
+    @tip_text.setter
+    def tip_text(self, value: str) -> None:
+        self.model.HelpText = value
+
+    @property
+    def view(self) -> ControlView:
+        """Gets the view of this control"""
+        return self.get_view()
 
     # endregion Properties
