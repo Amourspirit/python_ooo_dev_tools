@@ -18,6 +18,7 @@ Subpackages
    ooodev.adapter.form
    ooodev.adapter.frame
    ooodev.adapter.lang
+   ooodev.adapter.script
    ooodev.adapter.sheet
    ooodev.adapter.table
    ooodev.adapter.tree

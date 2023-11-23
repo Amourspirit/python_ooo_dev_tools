@@ -26,6 +26,8 @@ Submodules
    ooodev.adapter.awt.focus_events
    ooodev.adapter.awt.focus_listener
    ooodev.adapter.awt.item_events
+   ooodev.adapter.awt.item_list_events
+   ooodev.adapter.awt.item_list_listener
    ooodev.adapter.awt.item_listener
    ooodev.adapter.awt.key_events
    ooodev.adapter.awt.key_listener
