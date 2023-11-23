@@ -1,6 +1,6 @@
 .. _proto_style_obj:
 
-Class StyleObj
-==============
+Class StyleT
+============
 
-.. autoprotocol:: ooodev.proto.style_obj.StyleObj
+.. autoprotocol:: ooodev.proto.style_obj.StyleT

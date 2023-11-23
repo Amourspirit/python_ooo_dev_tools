@@ -360,7 +360,7 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
             page_num: int = 1,
             border_color: Color | None = None,
             background_color: Color | None = None,
-            styles: Iterable[StyleObj] = None,
+            styles: Iterable[StyleT] = None,
         ) -> XTextFrame:
 
             result = None
@@ -1130,7 +1130,7 @@ The cells are referred to using names, based on letters for columns and integers
             tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
             tbl_fg_color: Color | None = CommonColor.BLACK,
             first_row_header: bool = True,
-            styles: Iterable[StyleObj] = None,
+            styles: Iterable[StyleT] = None,
         ) -> XTextTable:
 
             cargs = CancelEventArgs(Write.add_table.__qualname__)

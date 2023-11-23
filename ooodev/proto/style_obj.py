@@ -13,7 +13,7 @@ else:
     Protocol = object
 
 
-class StyleObj(Protocol):
+class StyleT(Protocol):
     """
     Protocol Class for Styles
     """
@@ -98,3 +98,7 @@ class StyleObj(Protocol):
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         ...
+
+
+# StyleOby was renamed to StyleT in version 0.13.8
+StyleObj = StyleT

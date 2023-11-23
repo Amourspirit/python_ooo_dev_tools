@@ -811,13 +811,13 @@ Character style changes are applied to the text range defined by that distance:
 A XTextCursor_ is used to select the range, and the new style is set.
 Then the cursor is moved back to its old position, and the previous style reapplied.
 
-There is also an overload (shown below) of :py:meth:`.Write.style_left` that works in s similar manor but takes one or more :py:class:`~.proto.style_obj.StyleObj` styles.
+There is also an overload (shown below) of :py:meth:`.Write.style_left` that works in s similar manor but takes one or more :py:class:`~.proto.style_obj.StyleT` styles.
 
 .. tabs::
 
     .. code-tab:: python
 
-        def style_left(cls, cursor: XTextCursor, pos: int, styles: Iterable[StyleObj]) -> None:
+        def style_left(cls, cursor: XTextCursor, pos: int, styles: Iterable[StyleT]) -> None:
             ...
 
     .. only:: html

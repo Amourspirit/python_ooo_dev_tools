@@ -41,7 +41,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import props as mProps
 from ooodev.utils import gui as mGui
 from ooodev.utils.kind.form_component_kind import FormComponentKind
-from ooodev.proto.style_obj import StyleObj
+from ooodev.proto.style_obj import StyleT
 from .controls.form_ctl_button import FormCtlButton
 
 if TYPE_CHECKING:
@@ -810,7 +810,7 @@ class Forms:
         anchor_type: TextContentAnchorType | None = None,
         parent_form: XNameContainer | None = None,
         *,
-        styles: Iterable[StyleObj] | None = None,
+        styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
         Add a control
@@ -826,7 +826,7 @@ class Forms:
             height (int): control height
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             parent_form (XNameContainer | None): Parent form in which to add control.
-            styles (Iterable[StyleObj], optional): One or more styles to apply.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: Control Property Set
@@ -913,8 +913,8 @@ class Forms:
         comp_kind: FormComponentKind | str,
         y: int,
         *,
-        lbl_styles: Iterable[StyleObj] = ...,
-        ctl_styles: Iterable[StyleObj] = ...,
+        lbl_styles: Iterable[StyleT] = ...,
+        ctl_styles: Iterable[StyleT] = ...,
     ) -> XPropertySet:
         ...
 
@@ -936,8 +936,8 @@ class Forms:
         y: int,
         height: int,
         *,
-        lbl_styles: Iterable[StyleObj] = ...,
-        ctl_styles: Iterable[StyleObj] = ...,
+        lbl_styles: Iterable[StyleT] = ...,
+        ctl_styles: Iterable[StyleT] = ...,
     ) -> XPropertySet:
         ...
 
@@ -953,8 +953,8 @@ class Forms:
             x (int): Control X position
             y (int): Control Y Position
             height (int): control height
-            lbl_styles (Iterable[StyleObj], optional): One or more styles to apply on the label portion of control.
-            ctl_styles (Iterable[StyleObj], optional): One or more styles to apply on the Textbox portion of control.
+            lbl_styles (Iterable[StyleT], optional): One or more styles to apply on the label portion of control.
+            ctl_styles (Iterable[StyleT], optional): One or more styles to apply on the Textbox portion of control.
 
         Returns:
             XPropertySet: DataField Control Property Set
@@ -1032,8 +1032,8 @@ class Forms:
         x: int,
         y: int,
         height: int,
-        lbl_styles: Iterable[StyleObj] | None,
-        ctl_styles: Iterable[StyleObj] | None,
+        lbl_styles: Iterable[StyleT] | None,
+        ctl_styles: Iterable[StyleT] | None,
     ) -> XPropertySet:
         try:
             name = f"{label}_label"
@@ -1084,7 +1084,7 @@ class Forms:
         y: int,
         width: int,
         *,
-        styles: Iterable[StyleObj] = ...,
+        styles: Iterable[StyleT] = ...,
     ) -> XPropertySet:
         ...
 
@@ -1100,7 +1100,7 @@ class Forms:
         width: int,
         height: int,
         *,
-        styles: Iterable[StyleObj] = ...,
+        styles: Iterable[StyleT] = ...,
     ) -> XPropertySet:
         ...
 
@@ -1115,7 +1115,7 @@ class Forms:
         width: int,
         height: int = 6,
         *,
-        styles: Iterable[StyleObj] | None = None,
+        styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
         Adds a button control.
@@ -1130,7 +1130,7 @@ class Forms:
             y (int): Button Y position
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
-            styles (Iterable[StyleObj], optional): One or more styles to apply.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: Button Property Set
@@ -1173,7 +1173,7 @@ class Forms:
         width: int,
         height: int,
         *,
-        styles: Iterable[StyleObj] | None = None,
+        styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
         Adds a list
@@ -1186,7 +1186,7 @@ class Forms:
             y (int): List Y Position
             width (int): List Width
             height (int): List Height
-            styles (Iterable[StyleObj], optional): One or more styles to apply.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: List property set
@@ -1229,7 +1229,7 @@ class Forms:
         width: int,
         height: int,
         *,
-        styles: Iterable[StyleObj] | None = None,
+        styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
         Add a list with a SQL command as it data source
@@ -1242,7 +1242,7 @@ class Forms:
             y (int): List Y Position
             width (int): List Width
             height (int): List Height
-            styles (Iterable[StyleObj], optional): One or more styles to apply.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
             XPropertySet: List property set
@@ -1404,7 +1404,7 @@ class Forms:
         width: int,
         height: int = 6,
         *,
-        styles: Iterable[StyleObj] | None = None,
+        styles: Iterable[StyleT] | None = None,
     ) -> FormCtlButton:
         """
         Inserts a button control.
@@ -1419,7 +1419,7 @@ class Forms:
             y (int): Button Y position
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
-            styles (Iterable[StyleObj], optional): One or more styles to apply.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
             FormCtlButton: Button Control

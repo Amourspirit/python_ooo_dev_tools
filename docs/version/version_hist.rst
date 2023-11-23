@@ -5,7 +5,16 @@ Version History
 Version 0.13.7
 ==============
 
-Added dozens of new classes i the ``adapter`` module.
+Added Form Controls and Form Database Controls
+
+Added many new classes in the ``adapter`` module.
+
+Renamed ``StyleObj`` to ``StyleT``
+
+Version 0.13.7
+==============
+
+Added dozens of new classes in the ``adapter`` module.
 
 Version 0.13.6
 ==============
