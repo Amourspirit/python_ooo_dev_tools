@@ -3,6 +3,6 @@
 Class Forms
 ===========
 
-.. autoclass:: ooodev.form
+.. autoclass:: ooodev.form.Forms
     :members:
     :undoc-members:

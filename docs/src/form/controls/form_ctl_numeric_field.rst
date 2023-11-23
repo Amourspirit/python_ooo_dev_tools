@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: oooodev.form.controls.form_ctl_numeric_field.FormCtlNumericField
+.. autoclass:: ooodev.form.controls.form_ctl_numeric_field.FormCtlNumericField
     :members:
     :undoc-members:
     :show-inheritance:
