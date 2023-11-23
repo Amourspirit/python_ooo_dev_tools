@@ -11,7 +11,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -42,20 +42,20 @@ class Indent(StyleBase):
     def __init__(
         self,
         *,
-        before: float | UnitObj | None = None,
-        after: float | UnitObj | None = None,
-        first: float | UnitObj | None = None,
+        before: float | UnitT | None = None,
+        after: float | UnitT | None = None,
+        first: float | UnitT | None = None,
         auto: bool | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            before (float, UnitObj, optional): Determines the left margin of the paragraph (in ``mm`` units)
+            before (float, UnitT, optional): Determines the left margin of the paragraph (in ``mm`` units)
                 or :ref:`proto_unit_obj`.
-            after (float, UnitObj, optional): Determines the right margin of the paragraph (in ``mm`` units)
+            after (float, UnitT, optional): Determines the right margin of the paragraph (in ``mm`` units)
                 or :ref:`proto_unit_obj`.
-            first (float, UnitObj, optional): specifies the indent for the first line (in ``mm`` units)
+            first (float, UnitT, optional): specifies the indent for the first line (in ``mm`` units)
                 or :ref:`proto_unit_obj`.
             auto (bool, optional): Determines if the first line should be indented automatically.
 
@@ -170,12 +170,12 @@ class Indent(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_before(self: _TIndent, value: float | UnitObj | None) -> _TIndent:
+    def fmt_before(self: _TIndent, value: float | UnitT | None) -> _TIndent:
         """
         Gets a copy of instance with before margin set or removed
 
         Args:
-            value (float, UnitObj, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Indent: Indent instance
@@ -184,12 +184,12 @@ class Indent(StyleBase):
         cp.prop_before = value
         return cp
 
-    def fmt_after(self: _TIndent, value: float | UnitObj | None) -> _TIndent:
+    def fmt_after(self: _TIndent, value: float | UnitT | None) -> _TIndent:
         """
         Gets a copy of instance with after margin set or removed
 
         Args:
-            value (float, UnitObj, optional): Margin value (in mm units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Margin value (in mm units) or :ref:`proto_unit_obj`.
 
         Returns:
             Indent: Indent instance
@@ -198,12 +198,12 @@ class Indent(StyleBase):
         cp.prop_after = value
         return cp
 
-    def fmt_first(self: _TIndent, value: float | UnitObj | None) -> _TIndent:
+    def fmt_first(self: _TIndent, value: float | UnitT | None) -> _TIndent:
         """
         Gets a copy of instance with first indent margin set or removed
 
         Args:
-            value (float, UnitObj, optional): Margin value (in mm units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Margin value (in mm units) or :ref:`proto_unit_obj`.
 
         Returns:
             Indent: Indent instance
@@ -255,7 +255,7 @@ class Indent(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_before.setter
-    def prop_before(self, value: float | UnitObj | None):
+    def prop_before(self, value: float | UnitT | None):
         if value is None:
             self._remove("ParaLeftMargin")
             return
@@ -271,7 +271,7 @@ class Indent(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_after.setter
-    def prop_after(self, value: float | UnitObj | None):
+    def prop_after(self, value: float | UnitT | None):
         if value is None:
             self._remove("ParaRightMargin")
             return
@@ -287,7 +287,7 @@ class Indent(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_first.setter
-    def prop_first(self, value: float | UnitObj | None):
+    def prop_first(self, value: float | UnitT | None):
         if value is None:
             self._remove("ParaFirstLineIndent")
             return
@@ -315,7 +315,7 @@ class Indent(StyleBase):
             return self._default_inst
         except AttributeError:
             self._default_inst = self.__class__(
-                before=0.0, after=0.0, first=0.0, auto=False, _cattribs=self._get_internal_cattribs()
+                before=0.0, after=0.0, first=0.0, auto=False, _cattribs=self._get_internal_cattribs()  # type: ignore
             )
             self._default_inst._is_default_inst = True
         return self._default_inst

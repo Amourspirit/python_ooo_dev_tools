@@ -8,7 +8,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitPT
 from ooodev.units import UnitConvert
@@ -47,8 +47,8 @@ class Shadow(StyleBase):
         use_shadow: bool | None = None,
         location: ShadowLocationKind | None = None,
         color: Color | None = None,
-        distance: float | UnitObj | None = None,
-        blur: int | UnitObj | None = None,
+        distance: float | UnitT | None = None,
+        blur: int | UnitT | None = None,
         transparency: int | Intensity | None = None,
     ) -> None:
         """
@@ -58,8 +58,8 @@ class Shadow(StyleBase):
             use_shadow (bool, optional): Specifies if shadow is used.
             location (ShadowLocationKind , optional): Specifies the shadow location.
             color (Color , optional): Specifies shadow color.
-            distance (float, UnitObj , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
-            blur (int, UnitObj, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
+            distance (float, UnitT , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
+            blur (int, UnitT, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
             transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
         """
         # shadow distance is stored in 1/100th mm.
@@ -277,12 +277,12 @@ class Shadow(StyleBase):
         cp.prop_color = value
         return cp
 
-    def fmt_distance(self: _TShadow, value: float | UnitObj | None = None) -> _TShadow:
+    def fmt_distance(self: _TShadow, value: float | UnitT | None = None) -> _TShadow:
         """
         Get copy of instance with use shadow distance or removed.
 
         Args:
-            value (float, UnitObj, optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             Shadow: Shadow with style added or removed
@@ -291,12 +291,12 @@ class Shadow(StyleBase):
         cp.prop_distance = value
         return cp
 
-    def fmt_blur(self: _TShadow, value: int | UnitObj | None = None) -> _TShadow:
+    def fmt_blur(self: _TShadow, value: int | UnitT | None = None) -> _TShadow:
         """
         Get copy of instance with use shadow blur or removed.
 
         Args:
-            value (int, UnitObj, optional): Specifies shadow blur in ``pt`` units or :ref:`proto_unit_obj`.
+            value (int, UnitT, optional): Specifies shadow blur in ``pt`` units or :ref:`proto_unit_obj`.
 
         Returns:
             Shadow: Shadow with style added or removed
@@ -437,7 +437,7 @@ class Shadow(StyleBase):
         return UnitMM.from_mm100(self._get_shadow_distance())
 
     @prop_distance.setter
-    def prop_distance(self, value: float | UnitObj | None) -> None:
+    def prop_distance(self, value: float | UnitT | None) -> None:
         if value is None:
             self._remove(self._props.dist_x)
             self._remove(self._props.dist_y)
@@ -454,7 +454,7 @@ class Shadow(StyleBase):
         return None if pv is None else UnitPT(round(UnitConvert.convert_mm100_pt(pv)))
 
     @prop_blur.setter
-    def prop_blur(self, value: int | UnitObj | None) -> None:
+    def prop_blur(self, value: int | UnitT | None) -> None:
         if value is None:
             self._remove(self._props.blur)
             return

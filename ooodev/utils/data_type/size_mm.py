@@ -1,20 +1,20 @@
 from __future__ import annotations
 from .size import Size
 from ooodev.units import UnitConvert
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.proto.size_obj import SizeObj
 
 
 class SizeMM:
     """Size Width and Height in ``mm`` units."""
 
-    def __init__(self, width: float | UnitObj, height: float | UnitObj) -> None:
+    def __init__(self, width: float | UnitT, height: float | UnitT) -> None:
         """
         Constructor
 
         Args:
-            width (float, UnitObj): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
-            height (float, UnitObj): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
+            width (float, UnitT): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
+            height (float, UnitT): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             None:
@@ -77,7 +77,7 @@ class SizeMM:
         return self._width
 
     @width.setter
-    def width(self, value: float | UnitObj):
+    def width(self, value: float | UnitT):
         try:
             self._width = round(value.get_value_mm(), 2)  # type: ignore
         except AttributeError:
@@ -89,7 +89,7 @@ class SizeMM:
         return self._height
 
     @height.setter
-    def height(self, value: float | UnitObj):
+    def height(self, value: float | UnitT):
         try:
             self._height = round(value.get_value_mm(), 2)  # type: ignore
         except AttributeError:

@@ -14,7 +14,7 @@ from ooodev.format.inner.preset import preset_hatch as mPreset
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.units import UnitMM
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
@@ -39,7 +39,7 @@ class Hatch(StyleMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        space: float | UnitObj = 0,
+        space: float | UnitT = 0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
     ) -> None:
@@ -50,7 +50,7 @@ class Hatch(StyleMulti):
             chart_doc (XChartDocument): Chart document.
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
+            space (float, UnitT, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(Color, optional): Specifies the background Color. Set this ``-1`` (default) for no background color.
 
@@ -121,7 +121,7 @@ class Hatch(StyleMulti):
     def _get_inner_class(self) -> HatchStruct:
         return HatchStruct(
             style=self._style,
-            color=self._color,
+            color=self._color,  # type: ignore
             distance=self._space,
             angle=self._angle,
         )
@@ -148,7 +148,7 @@ class Hatch(StyleMulti):
         Returns:
             Hatch: The copied instance.
         """
-        cp = super().copy(**kwargs)
+        cp = super().copy(**kwargs)  # type: ignore
         cp._angle = self._angle
         cp._chart_doc = self._chart_doc
         cp._color = self._color
@@ -209,7 +209,7 @@ class Hatch(StyleMulti):
             cattribs["_hatch_str_name"] = str(preset)
         kargs = mPreset.get_preset(preset)
         kargs.update(**kwargs)
-        return cls(chart_doc=chart_doc, _cattribs=cattribs, **kargs)
+        return cls(chart_doc=chart_doc, _cattribs=cattribs, **kargs)  # type: ignore
 
     # endregion Static Methods
 
@@ -288,7 +288,7 @@ class Hatch(StyleMulti):
         return "" if pv is None else pv
 
     @prop_space.setter
-    def prop_space(self, value: float | UnitObj) -> None:
+    def prop_space(self, value: float | UnitT) -> None:
         """Sets the space."""
         try:
             self._space = value.get_value_mm100()  # type: ignore

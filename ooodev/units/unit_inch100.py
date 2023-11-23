@@ -12,7 +12,7 @@ class UnitInch100(BaseFloatValue):
     """
     Unit in ``1/100th in`` units.
 
-    Supports ``UnitObj`` protocol.
+    Supports ``UnitT`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`

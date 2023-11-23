@@ -1,7 +1,7 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.direct.write.page.page.margins import Margins as InnerMargins
 from ..page_style_base_multi import PageStyleBaseMulti
@@ -23,11 +23,11 @@ class Margins(PageStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | UnitObj | None = None,
-        right: float | UnitObj | None = None,
-        top: float | UnitObj | None = None,
-        bottom: float | UnitObj | None = None,
-        gutter: float | UnitObj | None = None,
+        left: float | UnitT | None = None,
+        right: float | UnitT | None = None,
+        top: float | UnitT | None = None,
+        bottom: float | UnitT | None = None,
+        gutter: float | UnitT | None = None,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
         style_family: str = "PageStyles",
     ) -> None:

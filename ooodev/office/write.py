@@ -70,7 +70,7 @@ from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
 from ..proto.style_obj import StyleT, FormatKind
-from ..units import UnitObj
+from ..units import UnitT
 from ..utils import file_io as mFileIO
 from ..utils import gen_util as mUtil
 from ..utils import images_lo as mImgLo
@@ -2533,9 +2533,9 @@ class Write(mSel.Selection):
         *,
         cursor: XTextCursor,
         text: str = "",
-        ypos: int | UnitObj = 300,
-        width: int | UnitObj = 5000,
-        height: int | UnitObj = 5000,
+        ypos: int | UnitT = 300,
+        width: int | UnitT = 5000,
+        height: int | UnitT = 5000,
         page_num: int = 1,
         border_color: Color | None = None,
         background_color: Color | None = None,
@@ -2547,9 +2547,9 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): Frame Text
-            ypos (int, UnitObj. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
-            width (int, UnitObj, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            height (int, UnitObj, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            ypos (int, UnitT. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
+            width (int, UnitT, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitT, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             page_num (int, optional): Page Number to add text frame. If ``0`` Then Frame is anchored to paragraph. Default ``1``.
             border_color (:py:data:`~.utils.color.Color`, optional):.color.Color`, optional): Border Color.
             background_color (:py:data:`~.utils.color.Color`, optional): Background Color.
@@ -2612,10 +2612,10 @@ class Write(mSel.Selection):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        arg_ypos = cast(Union[int, UnitObj], cargs.event_data["ypos"])
+        arg_ypos = cast(Union[int, UnitT], cargs.event_data["ypos"])
         text = cargs.event_data["text"]
-        arg_width = cast(Union[int, UnitObj], cargs.event_data["width"])
-        arg_height = cast(Union[int, UnitObj], cargs.event_data["height"])
+        arg_width = cast(Union[int, UnitT], cargs.event_data["width"])
+        arg_height = cast(Union[int, UnitT], cargs.event_data["height"])
         page_num = cargs.event_data["page_num"]
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
@@ -2928,7 +2928,7 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def add_image_link(
-        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, *, width: int | UnitObj, height: int | UnitObj
+        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, *, width: int | UnitT, height: int | UnitT
     ) -> XTextContent | None:
         """
         Add Image Link
@@ -2937,8 +2937,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
-            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
+            width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
+            height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
 
         Returns:
             XTextContent: Image Link on success; Otherwise, ``None``
@@ -2976,8 +2976,8 @@ class Write(mSel.Selection):
         cursor: XTextCursor,
         fnm: PathOrStr,
         *,
-        width: int | UnitObj,
-        height: int | UnitObj,
+        width: int | UnitT,
+        height: int | UnitT,
         styles: Sequence[StyleT],
     ) -> XTextContent | None:
         """
@@ -2987,8 +2987,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
-            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
+            width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
+            height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
             styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
@@ -3003,8 +3003,8 @@ class Write(mSel.Selection):
         cursor: XTextCursor,
         fnm: PathOrStr,
         *,
-        width: int | UnitObj = 0,
-        height: int | UnitObj = 0,
+        width: int | UnitT = 0,
+        height: int | UnitT = 0,
         styles: Sequence[StyleT] | None = None,
     ) -> XTextContent | None:
         """
@@ -3014,8 +3014,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            width (int, UnitT): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitT): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Raises:
@@ -3121,7 +3121,7 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def add_image_shape(
-        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT, height: int | UnitT
     ) -> XShape | None:
         """
         Add Image Shape
@@ -3129,8 +3129,8 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
-            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
+            width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
+            height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
 
         Returns:
             XShape: Image Shape on success; Otherwise, ``None``
@@ -3139,7 +3139,7 @@ class Write(mSel.Selection):
 
     @classmethod
     def add_image_shape(
-        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj = 0, height: int | UnitObj = 0
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT = 0, height: int | UnitT = 0
     ) -> XShape | None:
         """
         Add Image Shape
@@ -3147,8 +3147,8 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            width (int, UnitT): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitT): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Raises:
             CreateInstanceMsfError: If unable to create drawing.GraphicObjectShape

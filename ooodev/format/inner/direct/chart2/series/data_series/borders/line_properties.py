@@ -6,7 +6,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitConvert, UnitMM
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
@@ -32,7 +32,7 @@ class LineProperties(StyleBase):
         self,
         style: BorderLineKind = BorderLineKind.CONTINUOUS,
         color: Color = Color(0),
-        width: float | UnitObj = 0,
+        width: float | UnitT = 0,
         transparency: int | Intensity = 0,
     ) -> None:
         """
@@ -41,7 +41,7 @@ class LineProperties(StyleBase):
         Args:
             style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
-            width (float, UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
+            width (float, UnitT, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
             transparency (int, Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
 
         Returns:
@@ -130,7 +130,7 @@ class LineProperties(StyleBase):
         return UnitMM.from_mm100(pv)
 
     @prop_width.setter
-    def prop_width(self, value: float | UnitObj):
+    def prop_width(self, value: float | UnitT):
         """Gets/Sets the width."""
         try:
             val = value.get_value_mm100()  # type: ignore

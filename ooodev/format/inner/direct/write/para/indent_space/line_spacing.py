@@ -15,7 +15,7 @@ from ooodev.format.inner.direct.structs import line_spacing_struct as mLs
 from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind as ModeKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 
@@ -41,7 +41,7 @@ class LineSpacing(StyleMulti):
         self,
         *,
         mode: ModeKind | None = None,
-        value: int | float | UnitObj = 0,
+        value: int | float | UnitT = 0,
         active_ln_spacing: bool | None = None,
     ) -> None:
         """
@@ -49,7 +49,7 @@ class LineSpacing(StyleMulti):
 
         Args:
             mode (ModeKind, optional): Determines the mode that is used to apply units.
-            value (Real, UnitObj, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
+            value (Real, UnitT, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
                 ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             active_ln_spacing (bool, optional): Determines active page line-spacing.
         Returns:
@@ -76,7 +76,7 @@ class LineSpacing(StyleMulti):
             ls = mLs.LineSpacingStruct(
                 mode=mode,
                 value=value,
-                _cattribs=self._get_ls_cattribs(),
+                _cattribs=self._get_ls_cattribs(),  # type: ignore
             )
 
         if active_ln_spacing is not None:
@@ -237,7 +237,7 @@ class LineSpacing(StyleMulti):
         try:
             return self._default_inst
         except AttributeError:
-            self._default_inst = self.__class__(mode=ModeKind.SINGLE, _cattribs=self._get_internal_cattribs())
+            self._default_inst = self.__class__(mode=ModeKind.SINGLE, _cattribs=self._get_internal_cattribs())  # type: ignore
             self._default_inst._is_default_inst = True
         return self._default_inst
 

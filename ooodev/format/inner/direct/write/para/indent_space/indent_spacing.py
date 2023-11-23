@@ -9,7 +9,7 @@ from numbers import Real
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from .indent import Indent
@@ -31,12 +31,12 @@ class IndentSpacing(StyleMulti):
     def __init__(
         self,
         *,
-        id_before: float | UnitObj | None = None,
-        id_after: float | UnitObj | None = None,
-        id_first: float | UnitObj | None = None,
+        id_before: float | UnitT | None = None,
+        id_after: float | UnitT | None = None,
+        id_first: float | UnitT | None = None,
         id_auto: bool | None = None,
-        sp_above: float | UnitObj | None = None,
-        sp_below: float | UnitObj | None = None,
+        sp_above: float | UnitT | None = None,
+        sp_below: float | UnitT | None = None,
         sp_style_no_space: bool | None = None,
         ln_mode: ModeKind | None = None,
         ln_value: Real | None = None,
@@ -73,7 +73,7 @@ class IndentSpacing(StyleMulti):
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
-        ls = LineSpacing(mode=ln_mode, value=ln_value, active_ln_spacing=ln_active_spacing)
+        ls = LineSpacing(mode=ln_mode, value=ln_value, active_ln_spacing=ln_active_spacing)  # type: ignore
 
         spc = Spacing(above=sp_above, below=sp_below, style_no_space=sp_style_no_space)
 
@@ -207,7 +207,7 @@ class IndentSpacing(StyleMulti):
                 id_after=indent.prop_after,
                 id_first=indent.prop_first,
                 id_auto=indent.prop_auto,
-                _cattribs=self._get_internal_cattribs(),
+                _cattribs=self._get_internal_cattribs(),  # type: ignore
             )
             self._default_inst._is_default_inst = True
         return self._default_inst

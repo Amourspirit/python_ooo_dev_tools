@@ -7,7 +7,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitObj, UnitConvert, UnitMM
+from ooodev.units import UnitT, UnitConvert, UnitMM
 
 
 class Position(StyleBase):
@@ -19,15 +19,15 @@ class Position(StyleBase):
 
     def __init__(
         self,
-        pos_x: float | UnitObj,
-        pos_y: float | UnitObj,
+        pos_x: float | UnitT,
+        pos_y: float | UnitT,
     ) -> None:
         """
         Constructor
 
         Args:
-            pos_x (float, UnitObj): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
-            pos_y (float, UnitObj): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_x (float, UnitT): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_y (float, UnitT): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
         """
         super().__init__()
         # self._chart_doc = chart_doc
@@ -118,7 +118,7 @@ class Position(StyleBase):
         return UnitMM.from_mm100(self._pos_x)
 
     @prop_pos_x.setter
-    def prop_pos_x(self, value: float | UnitObj) -> None:
+    def prop_pos_x(self, value: float | UnitT) -> None:
         try:
             self._pos_x = value.get_value_mm100()  # type: ignore
         except AttributeError:
@@ -130,7 +130,7 @@ class Position(StyleBase):
         return UnitMM.from_mm100(self._pos_y)
 
     @prop_pos_y.setter
-    def prop_pos_y(self, value: float | UnitObj) -> None:
+    def prop_pos_y(self, value: float | UnitT) -> None:
         try:
             self._pos_y = value.get_value_mm100()  # type: ignore
         except AttributeError:

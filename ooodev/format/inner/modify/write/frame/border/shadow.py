@@ -4,7 +4,7 @@ from typing import cast
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
 from ooodev.utils.color import StandardColor, Color
@@ -27,7 +27,7 @@ class Shadow(FrameStyleBaseMulti):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float | UnitObj = 1.76,
+        width: float | UnitT = 1.76,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -38,7 +38,7 @@ class Shadow(FrameStyleBaseMulti):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (:py:data:`~.utils.color.Color`, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
+            width (float, UnitT, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
             style_family (str, optional): Style family. Default ``FrameStyles``.
 
@@ -47,7 +47,7 @@ class Shadow(FrameStyleBaseMulti):
         """
 
         direct = InnerShadow(
-            location=location, color=color, transparent=transparent, width=width, _cattribs=self._get_inner_cattribs()
+            location=location, color=color, transparent=transparent, width=width, _cattribs=self._get_inner_cattribs()  # type: ignore
         )
         super().__init__()
         self._style_name = str(style_name)

@@ -32,11 +32,11 @@ class Padding(HeaderPadding):
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
-            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            left (float, UnitT, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitT, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitT, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitT,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitT, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
                 If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (WriterStylePageKind, str, optional): Specifies the Page Style that instance applies to.
                 Default is Default Page Style.

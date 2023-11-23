@@ -4,7 +4,7 @@ from typing import cast
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
@@ -26,7 +26,7 @@ class Hatch(FrameStyleBaseMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        space: float | UnitObj = 0.0,
+        space: float | UnitT = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
@@ -39,7 +39,7 @@ class Hatch(FrameStyleBaseMulti):
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch.
                 Default ``HatchStyle.SINGLE``.
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
+            space (float, UnitT, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(:py:data:`~.utils.color.Color`, optional): Specifies the background Color.
@@ -53,7 +53,7 @@ class Hatch(FrameStyleBaseMulti):
         """
 
         direct = InnerHatch(
-            style=style, color=color, space=space, angle=angle, bg_color=bg_color, _cattribs=self._get_inner_cattribs()
+            style=style, color=color, space=space, angle=angle, bg_color=bg_color, _cattribs=self._get_inner_cattribs()  # type: ignore
         )
         super().__init__()
         self._style_name = str(style_name)
@@ -143,7 +143,7 @@ class Hatch(FrameStyleBaseMulti):
             space=value.prop_inner_hatch.prop_distance,
             angle=value.prop_inner_hatch.prop_angle,
             bg_color=value.prop_bg_color,
-            _cattribs=self._get_inner_cattribs(),
+            _cattribs=self._get_inner_cattribs(),  # type: ignore
         )
         self._del_attribs("_direct_inner")
         self._set_style("direct", inst, *inst.get_attrs())

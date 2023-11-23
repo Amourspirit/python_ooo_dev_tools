@@ -118,7 +118,7 @@ from ..exceptions import ex as mEx
 from ..formatters.formatter_table import FormatterTable
 from ..proto.style_obj import StyleT
 from ..units import UnitConvert
-from ..units import UnitObj
+from ..units import UnitT
 from ..utils import gui as mGui
 from ..utils import info as mInfo
 from ..utils import lo as mLo
@@ -7303,13 +7303,13 @@ class Calc:
     # endregion highlight_range()
 
     @classmethod
-    def set_col_width(cls, sheet: XSpreadsheet, width: int | UnitObj, idx: int) -> XCellRange | None:
+    def set_col_width(cls, sheet: XSpreadsheet, width: int | UnitT, idx: int) -> XCellRange | None:
         """
         Sets column width. width is in ``mm``, e.g. ``6``
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            width (int, UnitObj): Width in ``mm`` units or :ref:`proto_unit_obj`.
+            width (int, UnitT): Width in ``mm`` units or :ref:`proto_unit_obj`.
             idx (int): Index of column
 
         Raises:
@@ -7328,7 +7328,7 @@ class Calc:
             Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``width`` value (``mm100`` units).
 
         .. versionchanged:: 0.9.4
-            width can now also be ``UnitObj``
+            width can now also be ``UnitT``
         """
         try:
             col_width = width.get_value_mm100()  # type: ignore
@@ -7354,7 +7354,7 @@ class Calc:
     def set_row_height(
         cls,
         sheet: XSpreadsheet,
-        height: int | UnitObj,
+        height: int | UnitT,
         idx: int,
     ) -> XCellRange | None:
         """
@@ -7362,7 +7362,7 @@ class Calc:
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
-            height (int, UnitObj): Width in ``mm`` units or :ref:`proto_unit_obj`.
+            height (int, UnitT): Width in ``mm`` units or :ref:`proto_unit_obj`.
             idx (int): Index of Row
 
         Raises:
@@ -7381,7 +7381,7 @@ class Calc:
             Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``height`` value (``mm100`` units).
 
         .. versionchanged:: 0.9.4
-            width can now also be ``UnitObj``
+            width can now also be ``UnitT``
         """
         try:
             row_height = height.get_value_mm100()  # type: ignore

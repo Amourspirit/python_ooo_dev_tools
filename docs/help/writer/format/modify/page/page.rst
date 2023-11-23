@@ -119,7 +119,7 @@ Setting Paper to Custom Format
 It is possible to set the page to a custom format by using the :py:class:`~ooodev.format.writer.modify.page.page.PaperFormat` class.
 
 The constructor takes a :py:class:`~ooodev.utils.data_type.size_mm.SizeMM` object which can also take :ref:`proto_unit_obj` object for ``width`` and ``height``.
-The :py:class:`~ooodev.units.UnitInch` supports ``UnitObj`` and is used to set the page size in inches.
+The :py:class:`~ooodev.units.UnitInch` supports ``UnitT`` and is used to set the page size in inches.
 
 If the ``width`` is greater than the ``height`` then the page is set to landscape; Otherwise, the page is set to portrait.
 
@@ -222,7 +222,7 @@ Setting Page Margins using other units
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The margins can be set using a different unit. The parameters used to set the margin size also support :ref:`proto_unit_obj` objects.
-The :py:class:`~ooodev.units.UnitInch` supports ``UnitObj`` and is used to set the page margin in inches.
+The :py:class:`~ooodev.units.UnitInch` supports ``UnitT`` and is used to set the page margin in inches.
 The result are seen in :numref:`234917591-f9e4deb2-e4b0-4f42-832f-fb43222c7635`.
 
 .. tabs::

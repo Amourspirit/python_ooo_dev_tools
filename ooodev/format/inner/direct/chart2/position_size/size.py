@@ -7,7 +7,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitObj, UnitConvert, UnitMM
+from ooodev.units import UnitT, UnitConvert, UnitMM
 from ooodev.format.inner.direct.structs.size_struct import SizeStruct
 
 
@@ -20,15 +20,15 @@ class Size(StyleBase):
 
     def __init__(
         self,
-        width: float | UnitObj,
-        height: float | UnitObj,
+        width: float | UnitT,
+        height: float | UnitT,
     ) -> None:
         """
         Constructor
 
         Args:
-            width (float | UnitObj): Specifies the width of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
-            height (float | UnitObj): Specifies the height of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            width (float | UnitT): Specifies the width of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            height (float | UnitT): Specifies the height of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
         """
         super().__init__()
         # self._chart_doc = chart_doc
@@ -117,7 +117,7 @@ class Size(StyleBase):
         return UnitMM.from_mm100(self._width)
 
     @prop_width.setter
-    def prop_width(self, value: float | UnitObj) -> None:
+    def prop_width(self, value: float | UnitT) -> None:
         try:
             self._width = value.get_value_mm100()  # type: ignore
         except AttributeError:
@@ -129,7 +129,7 @@ class Size(StyleBase):
         return UnitMM.from_mm100(self._height)
 
     @prop_height.setter
-    def prop_height(self, value: float | UnitObj) -> None:
+    def prop_height(self, value: float | UnitT) -> None:
         try:
             self._height = value.get_value_mm100()  # type: ignore
         except AttributeError:

@@ -354,9 +354,9 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
             *,
             cursor: XTextCursor,
             text: str = "",
-            ypos: int | UnitObj = 300,
-            width: int | UnitObj = 5000,
-            height: int | UnitObj = 5000,
+            ypos: int | UnitT = 300,
+            width: int | UnitT = 5000,
+            height: int | UnitT = 5000,
             page_num: int = 1,
             border_color: Color | None = None,
             background_color: Color | None = None,
@@ -379,10 +379,10 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
             if cargs.cancel:
                 return False
 
-            arg_ypos = cast(Union[int, UnitObj], cargs.event_data["ypos"])
+            arg_ypos = cast(Union[int, UnitT], cargs.event_data["ypos"])
             text = cargs.event_data["text"]
-            arg_width = cast(Union[int, UnitObj], cargs.event_data["width"])
-            arg_height = cast(Union[int, UnitObj], cargs.event_data["height"])
+            arg_width = cast(Union[int, UnitT], cargs.event_data["width"])
+            arg_height = cast(Union[int, UnitT], cargs.event_data["height"])
             page_num = cargs.event_data["page_num"]
             border_color = cargs.event_data["border_color"]
             background_color = cargs.event_data["background_color"]

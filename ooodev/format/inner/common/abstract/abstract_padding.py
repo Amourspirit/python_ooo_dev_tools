@@ -9,7 +9,7 @@ from typing import Any, Tuple, cast, overload, Type, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitMM
@@ -38,21 +38,21 @@ class AbstractPadding(StyleBase):
     def __init__(
         self,
         *,
-        left: float | UnitObj | None = None,
-        right: float | UnitObj | None = None,
-        top: float | UnitObj | None = None,
-        bottom: float | UnitObj | None = None,
-        all: float | UnitObj | None = None,
+        left: float | UnitT | None = None,
+        right: float | UnitT | None = None,
+        top: float | UnitT | None = None,
+        bottom: float | UnitT | None = None,
+        all: float | UnitT | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
-            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            left (float, UnitT, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitT, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitT, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitT,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitT, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
                 If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
 
         Raises:
@@ -64,7 +64,7 @@ class AbstractPadding(StyleBase):
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}
 
-        def validate(val: float | UnitObj | None) -> None:
+        def validate(val: float | UnitT | None) -> None:
             if val is not None:
                 try:
                     value = val.get_value_mm()  # type: ignore
@@ -73,7 +73,7 @@ class AbstractPadding(StyleBase):
                 if value < 0:
                     raise ValueError("Values must be positive values")
 
-        def set_val(key, value: float | UnitObj) -> None:
+        def set_val(key, value: float | UnitT) -> None:
             nonlocal init_vals
             if value is not None:
                 try:
@@ -182,12 +182,12 @@ class AbstractPadding(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_padding_all(self: _TAbstractPadding, value: float | UnitObj | None) -> _TAbstractPadding:
+    def fmt_padding_all(self: _TAbstractPadding, value: float | UnitT | None) -> _TAbstractPadding:
         """
         Gets copy of instance with left, right, top, bottom sides set or removed
 
         Args:
-            value (float, UnitObj, optional): Padding value
+            value (float, UnitT, optional): Padding value
 
         Returns:
             Padding: Padding instance
@@ -199,7 +199,7 @@ class AbstractPadding(StyleBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self: _TAbstractPadding, value: float | UnitObj | None) -> _TAbstractPadding:
+    def fmt_top(self: _TAbstractPadding, value: float | UnitT | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with top side set or removed
 
@@ -213,12 +213,12 @@ class AbstractPadding(StyleBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self: _TAbstractPadding, value: float | UnitObj | None) -> _TAbstractPadding:
+    def fmt_bottom(self: _TAbstractPadding, value: float | UnitT | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with bottom side set or removed
 
         Args:
-            value (float, UnitObj, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Padding: Padding instance
@@ -227,12 +227,12 @@ class AbstractPadding(StyleBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self: _TAbstractPadding, value: float | UnitObj | None) -> _TAbstractPadding:
+    def fmt_left(self: _TAbstractPadding, value: float | UnitT | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with left side set or removed
 
         Args:
-            value (float, UnitObj, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Padding: Padding instance
@@ -241,12 +241,12 @@ class AbstractPadding(StyleBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self: _TAbstractPadding, value: float | UnitObj | None) -> _TAbstractPadding:
+    def fmt_right(self: _TAbstractPadding, value: float | UnitT | None) -> _TAbstractPadding:
         """
         Gets a copy of instance with right side set or removed
 
         Args:
-            value (float, UnitObj, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Padding (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Padding: Padding instance
@@ -274,7 +274,7 @@ class AbstractPadding(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_left.setter
-    def prop_left(self, value: float | UnitObj | None):
+    def prop_left(self, value: float | UnitT | None):
         if value is None:
             self._remove(self._props.left)
             return
@@ -290,7 +290,7 @@ class AbstractPadding(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_right.setter
-    def prop_right(self, value: float | UnitObj | None):
+    def prop_right(self, value: float | UnitT | None):
         if value is None:
             self._remove(self._props.right)
             return
@@ -306,7 +306,7 @@ class AbstractPadding(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_top.setter
-    def prop_top(self, value: float | UnitObj | None):
+    def prop_top(self, value: float | UnitT | None):
         if value is None:
             self._remove(self._props.top)
             return
@@ -322,7 +322,7 @@ class AbstractPadding(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
-    def prop_bottom(self, value: float | UnitObj | None):
+    def prop_bottom(self, value: float | UnitT | None):
         if value is None:
             self._remove(self._props.bottom)
             return
@@ -337,7 +337,7 @@ class AbstractPadding(StyleBase):
         try:
             return self._default_inst
         except AttributeError:
-            self._default_inst = self.__class__(all=0.35, _cattribs=self._get_internal_cattribs())
+            self._default_inst = self.__class__(all=0.35, _cattribs=self._get_internal_cattribs())  # type: ignore
             self._default_inst._is_default_inst = True
         return self._default_inst
 

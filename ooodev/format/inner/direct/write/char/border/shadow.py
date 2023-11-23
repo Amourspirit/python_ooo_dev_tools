@@ -7,7 +7,7 @@ from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.utils.color import Color, StandardColor
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 
@@ -40,7 +40,7 @@ class Shadow(ShadowStruct):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float | UnitObj = 1.76,
+        width: float | UnitT = 1.76,
     ) -> None:
         """
         Constructor
@@ -50,7 +50,7 @@ class Shadow(ShadowStruct):
                 Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (:py:data:`~.utils.color.Color`, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units)
+            width (float, UnitT, optional): contains the size of the shadow (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Defaults to ``1.76``.
 
         Raises:

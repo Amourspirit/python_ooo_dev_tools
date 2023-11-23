@@ -13,7 +13,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.utils.validation import check
@@ -62,12 +62,12 @@ class RelativeSize:
 class AbsoluteSize:
     """Absolute size"""
 
-    def __init__(self, value: float | UnitObj) -> None:
+    def __init__(self, value: float | UnitT) -> None:
         """
         Constructor
 
         Args:
-            value (float, UnitObj): Size value in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Size value in ``mm`` units or :ref:`proto_unit_obj`.
         """
         self.size = value
 
@@ -88,7 +88,7 @@ class AbsoluteSize:
         return UnitMM(self._size)
 
     @size.setter
-    def size(self, value: float | UnitObj):
+    def size(self, value: float | UnitT):
         try:
             self._size = round(value.get_value_mm(), 2)  # type: ignore
         except AttributeError:

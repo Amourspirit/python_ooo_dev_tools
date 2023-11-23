@@ -10,7 +10,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitConvert
 from ooodev.units import UnitPT
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.cell_text_align_props import CellTextAlignProps
@@ -91,7 +91,7 @@ class TextAlign(StyleBase):
     def __init__(
         self,
         hori_align: HoriAlignKind | None = None,
-        indent: float | UnitObj | None = None,
+        indent: float | UnitT | None = None,
         vert_align: VertAlignKind | None = None,
     ) -> None:
         """
@@ -99,7 +99,7 @@ class TextAlign(StyleBase):
 
         Args:
             hori_align (HoriAlignKind, optional): Specifies Horizontal Alignment.
-            indent: (float, UnitObj, optional): Specifies indent in ``pt`` (point) units or :ref:`proto_unit_obj`.
+            indent: (float, UnitT, optional): Specifies indent in ``pt`` (point) units or :ref:`proto_unit_obj`.
                 Only used when ``hori_align`` is set to ``HoriAlignKind.LEFT``
             vert_align (VertAdjustKind, optional): Specifies Vertical Alignment.
 
@@ -210,7 +210,7 @@ class TextAlign(StyleBase):
         return None if pv is None else UnitPT.from_mm100(pv)
 
     @prop_indent.setter
-    def prop_indent(self, value: float | UnitObj | None):
+    def prop_indent(self, value: float | UnitT | None):
         if value is None:
             self._remove(self._props.indent)
             return

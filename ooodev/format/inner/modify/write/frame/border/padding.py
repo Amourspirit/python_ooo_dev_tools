@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding
 from ..frame_style_base_multi import FrameStyleBaseMulti
@@ -22,11 +22,11 @@ class Padding(FrameStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | UnitObj | None = None,
-        right: float | UnitObj | None = None,
-        top: float | UnitObj | None = None,
-        bottom: float | UnitObj | None = None,
-        all: float | UnitObj | None = None,
+        left: float | UnitT | None = None,
+        right: float | UnitT | None = None,
+        top: float | UnitT | None = None,
+        bottom: float | UnitT | None = None,
+        all: float | UnitT | None = None,
         style_name: StyleFrameKind | str = StyleFrameKind.FRAME,
         style_family: str = "FrameStyles",
     ) -> None:
@@ -34,11 +34,11 @@ class Padding(FrameStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
-            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
+            left (float, UnitT, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitT, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitT, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitT,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitT, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`. If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleFrameKind, str, optional): Specifies the Frame Style that instance applies to. Default is Default Frame Style.
             style_family (str, optional): Style family. Default ``FrameStyles``.
 
@@ -47,7 +47,7 @@ class Padding(FrameStyleBaseMulti):
         """
 
         direct = InnerPadding(
-            left=left, right=right, top=top, bottom=bottom, all=all, _cattribs=self._get_inner_cattribs()
+            left=left, right=right, top=top, bottom=bottom, all=all, _cattribs=self._get_inner_cattribs()  # type: ignore
         )
         super().__init__()
         self._style_name = str(style_name)
@@ -111,7 +111,7 @@ class Padding(FrameStyleBaseMulti):
     def prop_inner(self, value: InnerPadding) -> None:
         if not isinstance(value, InnerPadding):
             raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
-        direct = value.__class__(_cattribs=self._get_inner_cattribs())
+        direct = value.__class__(_cattribs=self._get_inner_cattribs())  # type: ignore
         vals = [value._get(p_name) for p_name in value._props]
         for key, val in zip(direct._props, vals):
             direct._set(key, val)

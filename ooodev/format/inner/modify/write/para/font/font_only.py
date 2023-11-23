@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, cast
 import uno
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as InnerFontOnly
@@ -27,7 +27,7 @@ class FontOnly(ParaStyleBaseMulti):
         self,
         *,
         name: str | None = None,
-        size: float | UnitObj | None = None,
+        size: float | UnitT | None = None,
         font_style_name: str | None = None,
         lang: FontLang | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
@@ -39,7 +39,7 @@ class FontOnly(ParaStyleBaseMulti):
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one
                 name separated by comma.
-            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units
+            size (float, UnitT, optional): This value contains the size of the characters in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             font_style_name (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language

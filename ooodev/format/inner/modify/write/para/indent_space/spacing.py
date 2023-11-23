@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, cast
 import uno
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.para.indent_space.spacing import Spacing as InnerSpacing
 from ..para_style_base_multi import ParaStyleBaseMulti
@@ -25,8 +25,8 @@ class Spacing(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        above: float | UnitObj | None = None,
-        below: float | UnitObj | None = None,
+        above: float | UnitT | None = None,
+        below: float | UnitT | None = None,
         style_no_space: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -35,9 +35,9 @@ class Spacing(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            above (float, UnitObj, optional): Determines the top margin of the paragraph (in ``mm`` units)
+            above (float, UnitT, optional): Determines the top margin of the paragraph (in ``mm`` units)
                 or :ref:`proto_unit_obj`.
-            below (float, UnitObj, optional): Determines the bottom margin of the paragraph (in ``mm`` units)
+            below (float, UnitT, optional): Determines the bottom margin of the paragraph (in ``mm`` units)
                 or :ref:`proto_unit_obj`.
             style_no_space (bool, optional): Do not add space between paragraphs of the same style.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.

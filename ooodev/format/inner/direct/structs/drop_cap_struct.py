@@ -12,7 +12,7 @@ from .struct_base import StructBase
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.byte import Byte
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import EventArgs, CancelEventArgs, FormatNamedEvent
@@ -34,13 +34,13 @@ class DropCapStruct(StructBase):
 
     # region init
 
-    def __init__(self, *, count: int = 0, distance: int | UnitObj = 0, lines: int = 0) -> None:
+    def __init__(self, *, count: int = 0, distance: int | UnitT = 0, lines: int = 0) -> None:
         """
         Constructor
 
         Args:
             count (int, optional): Specifies the number of characters in the drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
-            distance (int, UnitObj, optional): Specifies the distance between the drop cap in the following text in ``1/100th mm`` or :ref:`proto_unit_obj`. Defaults to ``0``
+            distance (int, UnitT, optional): Specifies the distance between the drop cap in the following text in ``1/100th mm`` or :ref:`proto_unit_obj`. Defaults to ``0``
             lines (int, optional): Specifies the number of lines used for a drop cap. Must be from ``0`` to ``255``. Defaults to ``0``
 
         Returns:
@@ -252,12 +252,12 @@ class DropCapStruct(StructBase):
         cp.prop_count = value
         return cp
 
-    def fmt_distance(self: _TDropCapStruct, value: int | UnitObj) -> _TDropCapStruct:
+    def fmt_distance(self: _TDropCapStruct, value: int | UnitT) -> _TDropCapStruct:
         """
         Gets a copy of instance with distance set.
 
         Args:
-            value (int, UnitObj): Distance value in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            value (int, UnitT): Distance value in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Returns:
             DropCap: ``DropCap`` instance
@@ -318,7 +318,7 @@ class DropCapStruct(StructBase):
         return UnitMM100(self._get("Distance"))
 
     @prop_distance.setter
-    def prop_distance(self, value: int | UnitObj) -> None:
+    def prop_distance(self, value: int | UnitT) -> None:
         try:
             val = cast(int, value.get_value_mm100())  # type: ignore
         except AttributeError:

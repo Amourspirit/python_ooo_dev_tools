@@ -15,7 +15,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.units.unit_convert import UnitConvert
@@ -43,7 +43,7 @@ class HatchStruct(StructBase):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        distance: float | UnitObj = 0.0,
+        distance: float | UnitT = 0.0,
         angle: Angle | int = 0,
     ) -> None:
         """
@@ -52,7 +52,7 @@ class HatchStruct(StructBase):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
-            distance (int, UnitObj, optional): Specifies the distance between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
+            distance (int, UnitT, optional): Specifies the distance between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
 
         Returns:
@@ -251,7 +251,7 @@ class HatchStruct(StructBase):
         return UnitMM(round(UnitConvert.convert_mm100_mm(pv), 2))
 
     @prop_distance.setter
-    def prop_distance(self, value: float | UnitObj):
+    def prop_distance(self, value: float | UnitT):
         try:
             self._set("Distance", value.get_value_mm100())  # type: ignore
         except AttributeError:

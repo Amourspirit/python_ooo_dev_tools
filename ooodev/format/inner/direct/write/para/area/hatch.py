@@ -13,7 +13,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_hatch as mPreset
@@ -61,7 +61,7 @@ class Hatch(StyleMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = Color(0),
-        space: float | UnitObj = 0.0,
+        space: float | UnitT = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = Color(-1),
         name: str = "",
@@ -74,7 +74,7 @@ class Hatch(StyleMulti):
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch.
                 Default ``HatchStyle.SINGLE``.
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
+            space (float, UnitT, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(:py:data:`~.utils.color.Color`, optional): Specifies the background Color.
@@ -335,7 +335,7 @@ class Hatch(StyleMulti):
 
         return cls(
             style=hatch.Style,
-            color=hatch.Color,
+            color=hatch.Color,  # type: ignore
             space=UnitConvert.convert_mm100_mm(hatch.Distance),
             angle=hatch.Angle,
             bg_color=fc.prop_color,
@@ -399,12 +399,12 @@ class Hatch(StyleMulti):
         self._set_bg_color(value)
 
     @property
-    def prop_space(self) -> UnitObj:
+    def prop_space(self) -> UnitT:
         """Gets/Sets the distance between the lines in the hatch (in ``mm`` units)."""
         return self.prop_inner_hatch.prop_distance
 
     @prop_space.setter
-    def prop_space(self, value: float | UnitObj):
+    def prop_space(self, value: float | UnitT):
         self._on_hatch_property_change()
         self.prop_inner_hatch.prop_distance = value
 

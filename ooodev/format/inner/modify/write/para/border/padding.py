@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, cast
 import uno
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding
 from ..para_style_base_multi import ParaStyleBaseMulti
@@ -25,11 +25,11 @@ class Padding(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        left: float | UnitObj | None = None,
-        right: float | UnitObj | None = None,
-        top: float | UnitObj | None = None,
-        bottom: float | UnitObj | None = None,
-        all: float | UnitObj | None = None,
+        left: float | UnitT | None = None,
+        right: float | UnitT | None = None,
+        top: float | UnitT | None = None,
+        bottom: float | UnitT | None = None,
+        all: float | UnitT | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -37,11 +37,11 @@ class Padding(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
-            right (float, UnitObj, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            top (float, UnitObj, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            bottom (float, UnitObj,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
-            all (float, UnitObj, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            left (float, UnitT, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.
+            right (float, UnitT, optional): Right (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            top (float, UnitT, optional): Top (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            bottom (float, UnitT,  optional): Bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
+            all (float, UnitT, optional): Left, right, top, bottom (in ``mm`` units)  or :ref:`proto_unit_obj`.
                 If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, cast
 import uno
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.angle import Angle as Angle
@@ -35,7 +35,7 @@ class FontPosition(ParaStyleBaseMulti):
         rotation: int | Angle | None = None,
         scale: int | None = None,
         fit: bool | None = None,
-        spacing: CharSpacingKind | float | UnitObj | None = None,
+        spacing: CharSpacingKind | float | UnitT | None = None,
         pair: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -52,7 +52,7 @@ class FontPosition(ParaStyleBaseMulti):
                 implementation only certain values may be allowed.
             scale (int, optional): Specifies scale width as percent value. Min value is ``1``.
             fit (bool, optional): Specifies if rotation is fit to line.
-            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units
+            spacing (CharSpacingKind, float, UnitT, optional): Specifies character spacing in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
             style_name (StyleParaKind, str, optional): Specifies the Character Style that instance applies to.

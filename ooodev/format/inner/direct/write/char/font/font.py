@@ -20,7 +20,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitPT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -75,9 +75,9 @@ class Font(StyleBase):
         rotation: int | Angle | None = None,
         shadow_fmt: ShadowFormat | None = None,
         shadowed: bool | None = None,
-        size: float | UnitObj | None = None,
+        size: float | UnitT | None = None,
         slant: FontSlant | None = None,
-        spacing: CharSpacingKind | float | UnitObj | None = None,
+        spacing: CharSpacingKind | float | UnitT | None = None,
         strike: FontStrikeoutEnum | None = None,
         subscript: bool | None = None,
         superscript: bool | None = None,
@@ -104,10 +104,10 @@ class Font(StyleBase):
                 Depending on the implementation only certain values may be allowed.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
-            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units
+            size (float, UnitT, optional): This value contains the size of the characters in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
-            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units
+            spacing (CharSpacingKind, float, UnitT, optional): Specifies character spacing in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             strike (FontStrikeoutEnum, optional): Determines the type of the strike out of the character.
             subscript (bool, optional): Subscript option.
@@ -293,12 +293,12 @@ class Font(StyleBase):
         ft.prop_family = value
         return ft
 
-    def fmt_size(self: _TFont, value: float | UnitObj | None = None) -> _TFont:
+    def fmt_size(self: _TFont, value: float | UnitT | None = None) -> _TFont:
         """
         Get copy of instance with text size set or removed.
 
         Args:
-            value (float, UnitObj, optional): The size of the characters in ``pt`` (point) units :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): The size of the characters in ``pt`` (point) units :ref:`proto_unit_obj`.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -390,12 +390,12 @@ class Font(StyleBase):
         ft.prop_slant = value
         return ft
 
-    def fmt_spacing(self: _TFont, value: float | UnitObj | None = None) -> _TFont:
+    def fmt_spacing(self: _TFont, value: float | UnitT | None = None) -> _TFont:
         """
         Get copy of instance with spacing set or removed.
 
         Args:
-            value (float, UnitObj, optional): The character spacing in ``pt`` (point) units :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): The character spacing in ``pt`` (point) units :ref:`proto_unit_obj`.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -805,7 +805,7 @@ class Font(StyleBase):
         return None if pv is None else UnitPT(pv)
 
     @prop_size.setter
-    def prop_size(self, value: float | UnitObj | None) -> None:
+    def prop_size(self, value: float | UnitT | None) -> None:
         if value is None:
             self._remove("CharHeight")
             return
@@ -871,7 +871,7 @@ class Font(StyleBase):
         return None if pv is None else UnitPT.from_mm100(pv)
 
     @prop_spacing.setter
-    def prop_spacing(self, value: float | CharSpacingKind | UnitObj | None) -> None:
+    def prop_spacing(self, value: float | CharSpacingKind | UnitT | None) -> None:
         if value is None:
             self._remove("CharKerning")
             return

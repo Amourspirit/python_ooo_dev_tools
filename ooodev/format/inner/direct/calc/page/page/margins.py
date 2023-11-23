@@ -6,7 +6,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.page_margin_props import PageMarginProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitMM
@@ -25,10 +25,10 @@ class Margins(StyleBase):
     def __init__(
         self,
         *,
-        left: float | UnitObj | None = None,
-        right: float | UnitObj | None = None,
-        top: float | UnitObj | None = None,
-        bottom: float | UnitObj | None = None,
+        left: float | UnitT | None = None,
+        right: float | UnitT | None = None,
+        top: float | UnitT | None = None,
+        bottom: float | UnitT | None = None,
     ) -> None:
         """
         Constructor
@@ -50,7 +50,7 @@ class Margins(StyleBase):
         self.prop_bottom = bottom
 
     # region Internal Methods
-    def _check(self, value: float | UnitObj | None, name: str) -> None:
+    def _check(self, value: float | UnitT | None, name: str) -> None:
         if value is None:
             return
         try:
@@ -148,7 +148,7 @@ class Margins(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_top.setter
-    def prop_top(self, value: float | UnitObj | None) -> None:
+    def prop_top(self, value: float | UnitT | None) -> None:
         self._check(value, "top")
         if value is None:
             self._remove(self._props.top)
@@ -165,7 +165,7 @@ class Margins(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
-    def prop_bottom(self, value: float | UnitObj | None) -> None:
+    def prop_bottom(self, value: float | UnitT | None) -> None:
         self._check(value, "bottom")
         if value is None:
             self._remove(self._props.bottom)
@@ -182,7 +182,7 @@ class Margins(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_left.setter
-    def prop_left(self, value: float | UnitObj | None) -> None:
+    def prop_left(self, value: float | UnitT | None) -> None:
         self._check(value, "left")
         if value is None:
             self._remove(self._props.left)
@@ -199,7 +199,7 @@ class Margins(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_right.setter
-    def prop_right(self, value: float | UnitObj | None) -> None:
+    def prop_right(self, value: float | UnitT | None) -> None:
         self._check(value, "right")
         if value is None:
             self._remove(self._props.right)
@@ -225,7 +225,7 @@ class Margins(StyleBase):
         try:
             return self._DEFAULT_INST
         except AttributeError:
-            inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            inst = self.__class__(_cattribs=self._get_internal_cattribs())  # type: ignore
             for attrib in inst._props:
                 if attrib:
                     inst._set(attrib, 2000)

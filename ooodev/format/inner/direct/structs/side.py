@@ -19,7 +19,7 @@ from ooodev.meta.deleted_enum_meta import DeletedUnoConstEnumMeta
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitPT
 from ooodev.units import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -196,7 +196,7 @@ class Side(StructBase):
         *,
         line: BorderLineKind = BorderLineKind.SOLID,
         color: Color = StandardColor.BLACK,
-        width: LineSize | float | UnitObj = LineSize.THIN,
+        width: LineSize | float | UnitT = LineSize.THIN,
     ) -> None:
         """
         Constructs Side
@@ -204,7 +204,7 @@ class Side(StructBase):
         Args:
             line (BorderLineStyleEnum, optional): Line Style of the border. Default ``BorderLineKind.SOLID``.
             color (:py:data:`~.utils.color.Color`, optional): Color of the border. Default ``StandardColor.BLACK``
-            width (LineSize, float, UnitObj, optional): Contains the width in of a single line or the width of outer part of a double line (in ``pt`` units) or :ref:`proto_unit_obj`. If this value is zero, no line is drawn. Default ``LineSize.THIN``
+            width (LineSize, float, UnitT, optional): Contains the width in of a single line or the width of outer part of a double line (in ``pt`` units) or :ref:`proto_unit_obj`. If this value is zero, no line is drawn. Default ``LineSize.THIN``
 
         Raises:
             ValueError: if ``color``, ``width`` or ``width_inner`` is less than ``0``.
@@ -742,7 +742,7 @@ class Side(StructBase):
             return self._empty_inst
         except AttributeError:
             self._empty_inst = self.__class__(
-                line=BorderLineKind.NONE, color=0, width=0.0, _cattribs=self._get_internal_cattribs()
+                line=BorderLineKind.NONE, color=0, width=0.0, _cattribs=self._get_internal_cattribs()  # type: ignore
             )
             self._empty_inst._is_default_inst = True
         return self._empty_inst

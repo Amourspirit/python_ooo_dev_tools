@@ -11,7 +11,7 @@ from ooo.dyn.text.graphic_crop import GraphicCrop
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -37,21 +37,21 @@ class CropStruct(StructBase):
     def __init__(
         self,
         *,
-        left: float | UnitObj = 0.0,
-        right: float | UnitObj = 0.0,
-        top: float | UnitObj = 0.0,
-        bottom: float | UnitObj = 0.0,
-        all: float | UnitObj | None = None,
+        left: float | UnitT = 0.0,
+        right: float | UnitT = 0.0,
+        top: float | UnitT = 0.0,
+        bottom: float | UnitT = 0.0,
+        all: float | UnitT | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            right (float, UnitObj, optional): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            top (float, UnitObj, optional): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            bottom (float, UnitObj, optional): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
+            left (float, UnitT, optional): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            right (float, UnitT, optional): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            top (float, UnitT, optional): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            bottom (float, UnitT, optional): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            all (float, UnitT, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
         if all is not None:
@@ -224,12 +224,12 @@ class CropStruct(StructBase):
     # endregion static methods
 
     # region Style methods
-    def fmt_all(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_all(self: _TCropStruct, value: float | UnitT) -> _TCropStruct:
         """
         Gets copy of instance with left, right, top, bottom set.
 
         Args:
-            value (float, UnitObj): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct: Border Table
@@ -241,12 +241,12 @@ class CropStruct(StructBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_top(self: _TCropStruct, value: float | UnitT) -> _TCropStruct:
         """
         Gets a copy of instance with top set.
 
         Args:
-            value (float, UnitObj): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -255,12 +255,12 @@ class CropStruct(StructBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_bottom(self: _TCropStruct, value: float | UnitT) -> _TCropStruct:
         """
         Gets a copy of instance with bottom set.
 
         Args:
-            value (float, UnitObj): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -269,12 +269,12 @@ class CropStruct(StructBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_left(self: _TCropStruct, value: float | UnitT) -> _TCropStruct:
         """
         Gets a copy of instance with left set.
 
         Args:
-            value (float, UnitObj): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -283,12 +283,12 @@ class CropStruct(StructBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self: _TCropStruct, value: float | UnitObj) -> _TCropStruct:
+    def fmt_right(self: _TCropStruct, value: float | UnitT) -> _TCropStruct:
         """
         Gets a copy of instance with right set.
 
         Args:
-            value (float, UnitObj): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -317,7 +317,7 @@ class CropStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_left.setter
-    def prop_left(self, value: float | UnitObj) -> None:
+    def prop_left(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.left, value.get_value_mm100())  # type: ignore
         except AttributeError:
@@ -330,7 +330,7 @@ class CropStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_right.setter
-    def prop_right(self, value: float | UnitObj) -> None:
+    def prop_right(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.right, value.get_value_mm100())  # type: ignore
         except AttributeError:
@@ -343,7 +343,7 @@ class CropStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_top.setter
-    def prop_top(self, value: float | UnitObj) -> None:
+    def prop_top(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.top, value.get_value_mm100())  # type: ignore
         except AttributeError:
@@ -356,7 +356,7 @@ class CropStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
-    def prop_bottom(self, value: float | UnitObj) -> None:
+    def prop_bottom(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.bottom, value.get_value_mm100())  # type: ignore
         except AttributeError:

@@ -13,7 +13,7 @@ from ooo.dyn.table.shadow_format import ShadowFormat
 
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.angle import Angle
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitPT
 from ooodev.format.inner.direct.write.char.font.font import FontLine
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
@@ -54,9 +54,9 @@ class Font(CharFont):
         rotation: int | Angle | None = None,
         shadow_fmt: ShadowFormat | None = None,
         shadowed: bool | None = None,
-        size: int | UnitObj | None = None,
+        size: int | UnitT | None = None,
         slant: FontSlant | None = None,
-        spacing: CharSpacingKind | float | UnitObj | None = None,
+        spacing: CharSpacingKind | float | UnitT | None = None,
         strike: FontStrikeoutEnum | None = None,
         subscript: bool | None = None,
         superscript: bool | None = None,
@@ -83,10 +83,10 @@ class Font(CharFont):
                 Depending on the implementation only certain values may be allowed.
             shadow_fmt: (ShadowFormat, optional): Determines the type, color, and width of the shadow.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
-            size (int, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units
+            size (int, UnitT, optional): This value contains the size of the characters in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             slant (FontSlant, optional): The value of the posture of the document such as ``FontSlant.ITALIC``.
-            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units
+            spacing (CharSpacingKind, float, UnitT, optional): Specifies character spacing in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             strike (FontStrikeoutEnum, optional): Determines the type of the strike out of the character.
             subscript (bool, optional): Subscript option.
@@ -145,7 +145,7 @@ class Font(CharFont):
         return None if pv is None else UnitPT(pv)
 
     @prop_size.setter
-    def prop_size(self, value: int | UnitObj | None) -> None:
+    def prop_size(self, value: int | UnitT | None) -> None:
         if value is None:
             self._remove("CharHeight")
             return

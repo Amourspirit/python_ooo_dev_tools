@@ -4,7 +4,7 @@ import uno
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.format.inner.direct.chart2.position_size.position import Position as ChartShapePosition
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 
 
 class Position(ChartShapePosition):
@@ -20,15 +20,15 @@ class Position(ChartShapePosition):
 
     def __init__(
         self,
-        pos_x: float | UnitObj,
-        pos_y: float | UnitObj,
+        pos_x: float | UnitT,
+        pos_y: float | UnitT,
     ) -> None:
         """
         Constructor
 
         Args:
-            pos_x (float, UnitObj): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
-            pos_y (float, UnitObj): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_x (float, UnitT): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_y (float, UnitT): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             None:

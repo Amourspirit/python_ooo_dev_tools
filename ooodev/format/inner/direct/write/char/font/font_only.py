@@ -18,7 +18,7 @@ from ooodev.meta.class_property_readonly import ClassPropertyReadonly
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitPT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -148,7 +148,7 @@ class FontOnly(StyleMulti):
         self,
         *,
         name: str | None = None,
-        size: float | UnitObj | None = None,
+        size: float | UnitT | None = None,
         font_style: str | None = None,
         lang: FontLang | None = None,
     ) -> None:
@@ -158,7 +158,7 @@ class FontOnly(StyleMulti):
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one
                 name separated by comma.
-            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units
+            size (float, UnitT, optional): This value contains the size of the characters in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             font_style (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
@@ -304,12 +304,12 @@ class FontOnly(StyleMulti):
 
     # region Format Methods
 
-    def fmt_size(self: _TFontOnly, value: float | UnitObj | None = None) -> _TFontOnly:
+    def fmt_size(self: _TFontOnly, value: float | UnitT | None = None) -> _TFontOnly:
         """
         Get copy of instance with text size set.
 
         Args:
-            value (float, UnitObj, optional): The size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): The size of the characters in ``pt`` (point) units or :ref:`proto_unit_obj`.
 
         Returns:
             FontOnly: Font with style added
@@ -368,7 +368,7 @@ class FontOnly(StyleMulti):
         return UnitPT(self._get(self._props.size))
 
     @prop_size.setter
-    def prop_size(self, value: float | UnitObj | None) -> None:
+    def prop_size(self, value: float | UnitT | None) -> None:
         if value is None:
             self._remove(self._props.size)
             return

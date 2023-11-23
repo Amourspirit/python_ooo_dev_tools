@@ -12,7 +12,7 @@ from ooo.dyn.text.graphic_crop import GraphicCrop
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.size_obj import SizeObj
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils import props as mProps
 from ooodev.utils import images_lo as mImg
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
@@ -31,23 +31,23 @@ class CropOpt(CropStruct):
     def __init__(
         self,
         *,
-        left: float | UnitObj = 0,
-        right: float | UnitObj = 0,
-        top: float | UnitObj = 0,
-        bottom: float | UnitObj = 0,
-        all: float | UnitObj | None = None,
+        left: float | UnitT = 0,
+        right: float | UnitT = 0,
+        top: float | UnitT = 0,
+        bottom: float | UnitT = 0,
+        all: float | UnitT | None = None,
         keep_scale: bool = True,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            right (float, UnitObj, optional): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            top (float, UnitObj, optional): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            bottom (float, UnitObj, optional): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            left (float, UnitT, optional): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            right (float, UnitT, optional): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            top (float, UnitT, optional): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            bottom (float, UnitT, optional): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
             keep_scale (bool, options): If ``True`` then crop is
-            all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
+            all (float, UnitT, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
             keep_scale (bool, optional): If ``True`` crop is applied keeping image scale; Otherwise crop is applied keeping image size. Defaults to ``True``.
         """
         super().__init__(left=left, right=right, top=top, bottom=bottom, all=all)

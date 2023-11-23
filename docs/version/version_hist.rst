@@ -11,6 +11,8 @@ Added many new classes in the ``adapter`` module.
 
 Renamed ``StyleObj`` to ``StyleT``
 
+Renamed ``UnitObj`` to ``UnitT``
+
 Version 0.13.7
 ==============
 
