@@ -47,6 +47,7 @@ from .controls.form_ctl_check_box import FormCtlCheckBox
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
+    from ooodev.units import UnitT
 # endregion Imports
 
 
@@ -796,21 +797,52 @@ class Forms:
 
     # region create controls
 
+    @staticmethod
+    def create_name(elem_container: XNameAccess, name: str) -> str:
+        """
+        Creates a name.
+
+        Make a unique string by appending a number to the supplied name
+
+        Args:
+            elem_container (XNameAccess): container
+            name (str): current name
+
+        Returns:
+            str: a name not in container.
+        """
+        used_name = True
+        i = 1
+        nm = f"{name}{i}"
+        while used_name:
+            used_name = elem_container.hasByName(nm)
+            if used_name:
+                i += 1
+                nm = f"{name}{i}"
+        return nm
+
+    @staticmethod
+    def _get_unit100_value(value: int | UnitT) -> int:
+        try:
+            return value.get_value_mm100()  # type: ignore
+        except AttributeError:
+            return int(value) * 100  # type: ignore
+
     # region    add_control
     @classmethod
     def add_control(
         cls,
         doc: XComponent,
-        name: str,
+        *,
         label: str | None,
         comp_kind: FormComponentKind | str,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
+        name: str = "",
         anchor_type: TextContentAnchorType | None = None,
         parent_form: XNameContainer | None = None,
-        *,
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
@@ -821,10 +853,10 @@ class Forms:
             name (str): Control Name
             label (str | None): Label to assign to control
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
-            x (int): Control X position
-            y (int): Control Y Position
-            width (int): Control width#
-            height (int): control height
+            x (int, UnitT): Control X position
+            y (int, UnitT): Control Y Position
+            width (int, UnitT): Control width#
+            height (int, UnitT): control height
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             parent_form (XNameContainer | None): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
@@ -850,9 +882,14 @@ class Forms:
 
             shape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
 
+            width_value = cls._get_unit100_value(width)
+            height_value = cls._get_unit100_value(height)
+            x_value = cls._get_unit100_value(x)
+            y_value = cls._get_unit100_value(y)
+
             # position and size of the shape
-            shape.setSize(UnoSize(width * 100, height * 100))
-            shape.setPosition(Point(x * 100, y * 100))
+            shape.setSize(UnoSize(width_value, height_value))
+            shape.setPosition(Point(x_value, y_value))
 
             # adjust the anchor so that the control is tied to the page
             shape_props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -871,6 +908,11 @@ class Forms:
             # insert the model into the form (or default to "Form")
             if parent_form is not None:
                 parent_form.insertByName(name, model)
+                if not name:
+                    name = cls.create_name(parent_form, "Control")
+            else:
+                if not name:
+                    raise ValueError("name must be specified if parent_form is None")
 
             # link model to the shape
             shape.setControl(model)
@@ -901,7 +943,7 @@ class Forms:
     @overload
     @classmethod
     def add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, y: int
+        cls, doc: XComponent, *, label: str, comp_kind: FormComponentKind | str, y: int
     ) -> XPropertySet:
         ...
 
@@ -910,10 +952,10 @@ class Forms:
     def add_labelled_control(
         cls,
         doc: XComponent,
+        *,
         label: str,
         comp_kind: FormComponentKind | str,
-        y: int,
-        *,
+        y: int | UnitT,
         lbl_styles: Iterable[StyleT] = ...,
         ctl_styles: Iterable[StyleT] = ...,
     ) -> XPropertySet:
@@ -922,7 +964,14 @@ class Forms:
     @overload
     @classmethod
     def add_labelled_control(
-        cls, doc: XComponent, label: str, comp_kind: FormComponentKind | str, x: int, y: int, height: int
+        cls,
+        doc: XComponent,
+        *,
+        label: str,
+        comp_kind: FormComponentKind | str,
+        x: int | UnitT,
+        y: int | UnitT,
+        height: int | UnitT,
     ) -> XPropertySet:
         ...
 
@@ -931,12 +980,12 @@ class Forms:
     def add_labelled_control(
         cls,
         doc: XComponent,
+        *,
         label: str,
         comp_kind: FormComponentKind | str,
-        x: int,
-        y: int,
-        height: int,
-        *,
+        x: int | UnitT,
+        y: int | UnitT,
+        height: int | UnitT,
         lbl_styles: Iterable[StyleT] = ...,
         ctl_styles: Iterable[StyleT] = ...,
     ) -> XPropertySet:
@@ -1028,11 +1077,13 @@ class Forms:
     def _add_labelled_control(
         cls,
         doc: XComponent,
+        *,
         label: str,
         comp_kind: FormComponentKind | str,
-        x: int,
-        y: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        height: int | UnitT,
+        width: int = 40,
         lbl_styles: Iterable[StyleT] | None,
         ctl_styles: Iterable[StyleT] | None,
     ) -> XPropertySet:
@@ -1046,20 +1097,22 @@ class Forms:
                 comp_kind=FormComponentKind.FIXED_TEXT,
                 x=x,
                 y=y,
-                width=40,
+                width=width,
                 height=height,
                 styles=lbl_styles,
             )
 
             # create data field control
+            x_value = cls._get_unit100_value(x) + 26
+            y_value = cls._get_unit100_value(y) + 26
             ctl_props = cls.add_control(
                 doc=doc,
                 name=label,
                 label=None,
                 comp_kind=comp_kind,
-                x=x + 26,
-                y=y,
-                width=40,
+                x=x_value,
+                y=y_value,
+                width=width,
                 height=height,
                 styles=ctl_styles,
             )
@@ -1078,14 +1131,15 @@ class Forms:
     def add_button(
         cls,
         doc: XComponent,
+        *,
         name: str,
         label: str | None,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 6,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 6,
         anchor_type: TextContentAnchorType | None = None,
-        *,
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
@@ -1121,6 +1175,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             # don't want button to be accessible by the "tab" key
@@ -1141,10 +1196,10 @@ class Forms:
         doc: XComponent,
         name: str,
         entries: Iterable[str],
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         *,
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
@@ -1195,13 +1250,13 @@ class Forms:
     def add_database_list(
         cls,
         doc: XComponent,
+        *,
         name: str,
         sql_cmd: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
-        *,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
@@ -1370,20 +1425,21 @@ class Forms:
     def insert_control_button(
         cls,
         doc: XComponent,
-        name: str,
+        *,
         label: str | None,
-        x: int,
-        y: int,
-        width: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        parent_form: XNameContainer,
+        name: str = "",
         height: int = 6,
         anchor_type: TextContentAnchorType | None = None,
-        *,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlButton:
         """
         Inserts a button control.
 
-        By Default the button has no tab stop and does not focus on click.
+        By Default the button has tab stop and does focus on click.
 
         Args:
             doc (XComponent): Component
@@ -1401,6 +1457,8 @@ class Forms:
 
         .. versionadded:: 0.13.8
         """
+        if not name:
+            name = cls.create_name(parent_form, "Button")
         if styles is None:
             # keeps type checker happy
             styles = ()
@@ -1414,11 +1472,14 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, btn_props, True)
             ctl = cls.get_control(doc, model)
-            return FormCtlButton(ctl)
+            result = FormCtlButton(ctl)
+            result.tab_stop = True
+            return result
         except Exception:
             raise
 
@@ -1426,14 +1487,15 @@ class Forms:
     def insert_control_check_box(
         cls,
         doc: XComponent,
-        name: str,
-        label: str | None,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 6,
-        anchor_type: TextContentAnchorType | None = None,
         *,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        parent_form: XNameContainer,
+        name: str = "",
+        label: str = "",
+        height: int | UnitT = 6,
+        anchor_type: TextContentAnchorType | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlCheckBox:
         """
@@ -1458,6 +1520,9 @@ class Forms:
         if styles is None:
             # keeps type checker happy
             styles = ()
+
+        if not name:
+            name = cls.create_name(parent_form, "CheckBox")
         try:
             btn_props = cls.add_control(
                 doc=doc,
