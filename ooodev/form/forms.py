@@ -42,10 +42,12 @@ from ooodev.utils import props as mProps
 from ooodev.utils import gui as mGui
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.proto.style_obj import StyleT
+from ooodev.utils.kind.language_kind import LanguageKind as LanguageKind
 from .controls.form_ctl_button import FormCtlButton
 from .controls.form_ctl_check_box import FormCtlCheckBox
 
 if TYPE_CHECKING:
+    from com.sun.star.uno import XInterface
     from com.sun.star.lang import EventObject
     from ooodev.units import UnitT
 # endregion Imports
@@ -1369,17 +1371,23 @@ class Forms:
     # region  bind a macro to a form control
     @staticmethod
     def assign_script(
-        ctl_props: XPropertySet, interface_name: str, method_name: str, script_name: str, loc: str
+        ctl_props: XPropertySet,
+        interface_name: str | XInterface,
+        method_name: str,
+        script_name: str,
+        loc: str,
+        language: str | LanguageKind = LanguageKind.PYTHON,
     ) -> None:
         """
         Binds a macro to a form control
 
         Args:
             ctl_props (XPropertySet): Properties of control
-            interface_name (str): Interface Name
+            interface_name (str, XInterface): Interface Name or a UNO object that implements the ``XInterface``
             method_name (str): Method Name
             script_name (str): Script Name
             loc (str): can be user, share, document, and extensions
+            language (str | LanguageKind, optional): Language. Defaults to LanguageKind.PYTHON.
 
         Returns:
             None:
@@ -1405,13 +1413,17 @@ class Forms:
             if pos == -1:
                 mLo.Lo.print("Could not find control's position in form")
             else:
+                if isinstance(interface_name, str):
+                    listener_type = interface_name
+                else:
+                    listener_type = interface_name.__pyunointerface__
                 mgr = mLo.Lo.qi(XEventAttacherManager, parent_form, True)
                 ed = ScriptEventDescriptor(
-                    interface_name,
+                    listener_type,
                     method_name,
                     "",
                     "Script",
-                    f"vnd.sun.star.script:{script_name}?language=Java&location={loc}",
+                    f"vnd.sun.star.script:{script_name}?language={language}&location={loc}",
                 )
 
                 mgr.registerScriptEvent(pos, ed)
