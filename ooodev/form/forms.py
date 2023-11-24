@@ -1513,7 +1513,7 @@ class Forms:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlButton: Button Control
+            FormCtlCheckBox: CheckBox Control
 
         .. versionadded:: 0.13.8
         """
