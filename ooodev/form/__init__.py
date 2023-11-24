@@ -7,5 +7,6 @@ from ooodev.utils.kind.form_component_kind import FormComponentKind as FormCompo
 from ooodev.utils.kind.state_kind import StateKind as StateKind
 from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ooodev.utils.kind.language_kind import LanguageKind as LanguageKind
 
 __all__ = ["Forms"]
