@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_date_field.FormCtlDateField
+.. autoclass:: ooodev.form.controls.FormCtlDateField
     :members:
     :undoc-members:
     :show-inheritance:

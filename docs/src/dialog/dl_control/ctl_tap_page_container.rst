@@ -44,7 +44,7 @@ Example
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_tab_page_container.CtlTabPageContainer
+.. autoclass:: ooodev.dialog.dl_control.CtlTabPageContainer
     :members:
     :undoc-members:
     :show-inheritance:

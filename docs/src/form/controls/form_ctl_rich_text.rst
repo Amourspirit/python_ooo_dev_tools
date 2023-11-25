@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_rich_text.FormCtlRichText
+.. autoclass:: ooodev.form.controls.FormCtlRichText
     :members:
     :undoc-members:
     :show-inheritance:

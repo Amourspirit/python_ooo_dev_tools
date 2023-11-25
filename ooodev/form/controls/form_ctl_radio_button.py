@@ -99,6 +99,15 @@ class FormCtlRadioButton(FormCtlBase, ItemEvents, ResetEvents):
         return self.get_model()
 
     @property
+    def multi_line(self) -> bool:
+        """Gets/Sets the multi-line state"""
+        return self.model.MultiLine
+
+    @multi_line.setter
+    def multi_line(self, value: bool) -> None:
+        self.model.MultiLine = value
+
+    @property
     def printable(self) -> bool:
         """Gets/Sets the printable property"""
         return self.model.Printable

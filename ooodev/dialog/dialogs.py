@@ -42,39 +42,39 @@ from ..utils.date_time_util import DateUtil
 from ..utils.kind.align_kind import AlignKind as AlignKind
 from ..utils.kind.border_kind import BorderKind as BorderKind
 from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
+from ..utils.kind.dialog_control_kind import DialogControlKind
+from ..utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
 from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
 from ..utils.kind.state_kind import StateKind as StateKind
 from ..utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
-from ..utils.kind.dialog_control_kind import DialogControlKind
-from ..utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .dl_control.ctl_base import DialogControlBase
-from .dl_control.ctl_button import CtlButton
-from .dl_control.ctl_check_box import CtlCheckBox
-from .dl_control.ctl_combo_box import CtlComboBox
-from .dl_control.ctl_currency_field import CtlCurrencyField
-from .dl_control.ctl_date_field import CtlDateField
-from .dl_control.ctl_dialog import CtlDialog
-from .dl_control.ctl_file import CtlFile
-from .dl_control.ctl_fixed_line import CtlFixedLine
-from .dl_control.ctl_fixed_text import CtlFixedText
-from .dl_control.ctl_formatted_field import CtlFormattedField
-from .dl_control.ctl_grid import CtlGrid
-from .dl_control.ctl_group_box import CtlGroupBox
-from .dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
-from .dl_control.ctl_image import CtlImage
-from .dl_control.ctl_list_box import CtlListBox
-from .dl_control.ctl_numeric_field import CtlNumericField
-from .dl_control.ctl_pattern_field import CtlPatternField
-from .dl_control.ctl_progress_bar import CtlProgressBar
-from .dl_control.ctl_radio_button import CtlRadioButton
-from .dl_control.ctl_scroll_bar import CtlScrollBar
-from .dl_control.ctl_tab_page import CtlTabPage
-from .dl_control.ctl_tab_page_container import CtlTabPageContainer
-from .dl_control.ctl_text_edit import CtlTextEdit
-from .dl_control.ctl_time_field import CtlTimeField
-from .dl_control.ctl_tree import CtlTree
+from .dl_control import CtlButton
+from .dl_control import CtlCheckBox
+from .dl_control import CtlComboBox
+from .dl_control import CtlCurrencyField
+from .dl_control import CtlDateField
+from .dl_control import CtlDialog
+from .dl_control import CtlFile
+from .dl_control import CtlFixedLine
+from .dl_control import CtlFixedText
+from .dl_control import CtlFormattedField
+from .dl_control import CtlGrid
+from .dl_control import CtlGroupBox
+from .dl_control import CtlHyperlinkFixed
+from .dl_control import CtlImage
+from .dl_control import CtlListBox
+from .dl_control import CtlNumericField
+from .dl_control import CtlPatternField
+from .dl_control import CtlProgressBar
+from .dl_control import CtlRadioButton
+from .dl_control import CtlScrollBar
+from .dl_control import CtlTabPage
+from .dl_control import CtlTabPageContainer
+from .dl_control import CtlTextEdit
+from .dl_control import CtlTimeField
+from .dl_control import CtlTree
 
 
 if TYPE_CHECKING:
@@ -680,10 +680,10 @@ class Dialogs:
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
             height (int, optional): Height. Defaults to ``8``. If ``-1``, the dialog Size is not set.
-            tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``TriStateKind.CHECKED``.
-            state (int, optional): specifies the state of the control. Defaults to ``1``.
+            tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
+            state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
+            name (str, optional): Name of Checkbox. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
@@ -757,9 +757,9 @@ class Dialogs:
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
             height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
-            max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to 0.
-            drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to True.
-            read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to False.
+            max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to ``0``.
+            drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
+            read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -1392,9 +1392,6 @@ class Dialogs:
             else:
                 ctl_props.setPropertyValue("ScaleImage", False)
 
-            if image_url:
-                ctl_props.setPropertyValue("ImageURL", image_url)
-
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1408,7 +1405,11 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlImageControl", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
-            return CtlImage(result)
+            ctl_image = CtlImage(result)
+            if image_url:
+                ctl_image.picture = image_url
+            return ctl_image
+
         except Exception as e:
             raise mEx.DialogError(f"Could not create image control: {e}") from e
 

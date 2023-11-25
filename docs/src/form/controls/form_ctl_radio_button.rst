@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_radio_button.FormCtlRadioButton
+.. autoclass:: ooodev.form.controls.FormCtlRadioButton
     :members:
     :undoc-members:
     :show-inheritance:

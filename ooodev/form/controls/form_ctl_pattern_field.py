@@ -2,9 +2,10 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from com.sun.star.awt import XControl
 
-from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
+from ooodev.adapter.form.reset_events import ResetEvents
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
@@ -63,6 +64,24 @@ class FormCtlPatternField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def edit_mask(self) -> str:
+        """Gets/Sets the edit mask"""
+        return self.model.EditMask
+
+    @edit_mask.setter
+    def edit_mask(self, value: str) -> None:
+        self.model.EditMask = value
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -88,6 +107,15 @@ class FormCtlPatternField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     @help_url.setter
     def help_url(self, value: str) -> None:
         self.model.HelpURL = value
+
+    @property
+    def literal_mask(self) -> str:
+        """Gets/Sets the literal mask"""
+        return self.model.LiteralMask
+
+    @literal_mask.setter
+    def literal_mask(self, value: str) -> None:
+        self.model.LiteralMask = value
 
     @property
     def model(self) -> ControlModel:

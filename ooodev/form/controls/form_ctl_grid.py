@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from com.sun.star.awt import XControl
+from com.sun.star.container import XIndexContainer
+from com.sun.star.form import XGridColumnFactory
 
 from ooodev.adapter.container.container_events import ContainerEvents
 from ooodev.adapter.form.grid_control_events import GridControlEvents
@@ -10,6 +12,7 @@ from ooodev.adapter.script.script_events import ScriptEvents
 from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.utils import lo as mLo
 
 
 from .form_ctl_base import FormCtlBase
@@ -17,6 +20,7 @@ from .form_ctl_base import FormCtlBase
 if TYPE_CHECKING:
     from com.sun.star.form.component import GridControl as ControlModel  # service
     from com.sun.star.form.control import GridControl as ControlView  # service
+    from ooodev.units import UnitT
 
 
 class FormCtlGrid(
@@ -84,6 +88,49 @@ class FormCtlGrid(
         return FormComponentKind.COMMAND_BUTTON
 
     # endregion Overrides
+
+    # region Data
+    def get_column_types(self) -> tuple[str, ...]:
+        """Gets the available column types"""
+        return self.model.getColumnTypes()
+
+    def create_grid_column(self, data_field: str, col_kind: str, width: int | UnitT = 0) -> None:
+        """
+        Adds a column to the gird
+
+        Args:
+            data_field (str): the database field to which the column should be bound
+            col_kind (str):  the column type such as "NumericField"
+            width (int, UnitT): the column width (in mm) or a ``UnitT`` implementation.
+                If 0, no width is set. Defaults to ``0``.
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.form_ctl_grid.FormCtlGrid.get_column_types`
+        """
+        # column container and factory
+        grid_model = self.model
+        col_container = mLo.Lo.qi(XIndexContainer, grid_model, True)
+        col_factory = mLo.Lo.qi(XGridColumnFactory, grid_model, True)
+
+        # create the column
+        col_props = col_factory.createColumn(col_kind)
+        col_props.setPropertyValue("DataField", data_field)
+        col_props.setPropertyValue("Label", data_field)
+        col_props.setPropertyValue("Name", data_field)
+        try:
+            width_val = cast(int, width.get_value_mm100())  # type: ignore
+        except AttributeError:
+            width_val = cast(int, width) * 10  # type: ignore
+        if width_val > 0:
+            col_props.setPropertyValue("Width", width_val)
+
+        # add properties column to container
+        col_container.insertByIndex(col_container.getCount(), col_props)
+
+    # endregion Data
 
     # region Properties
     @property

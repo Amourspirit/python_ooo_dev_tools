@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_dialog.CtlDialog
+.. autoclass:: ooodev.dialog.dl_control.CtlDialog
     :members:
     :undoc-members:
     :show-inheritance:

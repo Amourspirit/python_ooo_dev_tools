@@ -7,6 +7,7 @@ from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.utils.date_time_util import DateUtil
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
@@ -65,6 +66,15 @@ class FormCtlDateField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
     def date(self) -> datetime.date:
         """Gets/Sets the date"""
         return DateUtil.uno_date_to_date(self.get_model().Date)
@@ -99,6 +109,15 @@ class FormCtlDateField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     @date_min.setter
     def date_min(self, value: datetime.date) -> None:
         self.get_model().DateMin = DateUtil.date_to_uno_date(value)
+
+    @property
+    def dropdown(self) -> bool:
+        """Gets/Sets the if the control has a dropdown."""
+        return self.get_model().Dropdown
+
+    @dropdown.setter
+    def dropdown(self, value: bool) -> None:
+        self.get_model().Dropdown = value
 
     @property
     def enabled(self) -> bool:

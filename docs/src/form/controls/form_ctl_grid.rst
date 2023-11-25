@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_grid.FormCtlGrid
+.. autoclass:: ooodev.form.controls.FormCtlGrid
     :members:
     :undoc-members:
     :show-inheritance:

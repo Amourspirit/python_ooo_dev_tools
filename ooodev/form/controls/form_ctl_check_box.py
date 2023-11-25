@@ -144,7 +144,7 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         self.model.HelpText = value
 
     @property
-    def triple_state(self) -> bool:
+    def tri_state(self) -> bool:
         """
         Gets/Sets the triple state.
 
@@ -152,8 +152,8 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         """
         return self.model.TriState
 
-    @triple_state.setter
-    def triple_state(self, value: bool) -> None:
+    @tri_state.setter
+    def tri_state(self, value: bool) -> None:
         self.model.TriState = value
 
     @property

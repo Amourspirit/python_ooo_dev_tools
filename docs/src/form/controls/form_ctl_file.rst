@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_file.FormCtlFile
+.. autoclass:: ooodev.form.controls.FormCtlFile
     :members:
     :undoc-members:
     :show-inheritance:

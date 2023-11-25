@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.database.form_ctl_db_check_box.FormCtlDbCheckBox
+.. autoclass:: ooodev.form.controls.database.FormCtlDbCheckBox
     :members:
     :undoc-members:
     :show-inheritance:

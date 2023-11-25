@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.database.form_ctl_db_currency_field.FormCtlDbCurrencyField
+.. autoclass:: ooodev.form.controls.database.FormCtlDbCurrencyField
     :members:
     :undoc-members:
     :show-inheritance:

@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_image_button.FormCtlImageButton
+.. autoclass:: ooodev.form.controls.FormCtlImageButton
     :members:
     :undoc-members:
     :show-inheritance:

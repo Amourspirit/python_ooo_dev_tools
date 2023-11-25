@@ -2,8 +2,11 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from com.sun.star.awt import XControl
 
+from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
+
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.adapter.form.reset_events import ResetEvents
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
@@ -57,6 +60,26 @@ class FormCtlTextField(FormCtlBase, TextEvents, ResetEvents):
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def echo_char(self) -> str:
+        """Gets/Sets the echo character as a string"""
+        return chr(self.model.EchoChar)
+
+    @echo_char.setter
+    def echo_char(self, value: str) -> None:
+        if len(value) > 0:
+            value = value[0]
+        self.model.EchoChar = ord(value)
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -84,9 +107,27 @@ class FormCtlTextField(FormCtlBase, TextEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def line_end_format(self) -> LineEndFormatEnum:
+        """Gets/Sets the end line format"""
+        return LineEndFormatEnum(self.model.LineEndFormat)
+
+    @line_end_format.setter
+    def line_end_format(self, value: LineEndFormatEnum) -> None:
+        self.model.LineEndFormat = value.value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
+
+    @property
+    def multi_line(self) -> bool:
+        """Gets/Sets the multi line"""
+        return self.model.MultiLine
+
+    @multi_line.setter
+    def multi_line(self, value: bool) -> None:
+        self.model.MultiLine = value
 
     @property
     def printable(self) -> bool:

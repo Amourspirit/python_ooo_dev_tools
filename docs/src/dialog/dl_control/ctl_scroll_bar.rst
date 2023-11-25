@@ -42,7 +42,7 @@ For an example see `Progress Bar and Scroll Bar Example <https://github.com/Amou
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_scroll_bar.CtlScrollBar
+.. autoclass:: ooodev.dialog.dl_control.CtlScrollBar
     :members:
     :undoc-members:
     :show-inheritance:

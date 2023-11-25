@@ -1,16 +1,19 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
-from com.sun.star.awt import XControl
+from typing import Any, cast, Iterable, TYPE_CHECKING
+import uno
 
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
+
 
 from .form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
+    from com.sun.star.awt import XControl
     from com.sun.star.form.component import ComboBox as ControlModel  # service
     from com.sun.star.form.control import ComboBox as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -50,6 +53,25 @@ class FormCtlComboBox(FormCtlBase, ActionEvents, ItemEvents, TextEvents, ResetEv
 
     # endregion Lazy Listeners
 
+    # region Methods
+
+    def set_list_data(self, data: Iterable[str]) -> None:
+        """
+        Sets the list data
+
+        Args:
+            data (Iterable[str]): List box entries
+        """
+        if not data:
+            return
+        ctl_props = self.get_property_set()
+        if ctl_props is None:
+            return
+        uno_strings = uno.Any("[]string", tuple(data))  # type: ignore
+        uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
+
+    # endregion Methods
+
     # region Overrides
 
     if TYPE_CHECKING:
@@ -70,6 +92,33 @@ class FormCtlComboBox(FormCtlBase, ActionEvents, ItemEvents, TextEvents, ResetEv
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def drop_down(self) -> bool:
+        """Gets/Sets the combobox has a drop down button."""
+        return self.model.Dropdown
+
+    @drop_down.setter
+    def drop_down(self, value: bool) -> None:
+        self.model.Dropdown = value
+
+    @property
+    def max_text_len(self) -> int:
+        """Gets/Sets the maximum character count."""
+        return self.model.MaxTextLen
+
+    @max_text_len.setter
+    def max_text_len(self, value: int) -> None:
+        self.model.MaxTextLen = value
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -82,6 +131,16 @@ class FormCtlComboBox(FormCtlBase, ActionEvents, ItemEvents, TextEvents, ResetEv
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        return self.model.ReadOnly
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        self.model.ReadOnly = value
 
     @property
     def tab_stop(self) -> bool:

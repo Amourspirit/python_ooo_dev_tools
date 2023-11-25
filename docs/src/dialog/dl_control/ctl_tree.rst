@@ -42,7 +42,7 @@ For an example see `Tab and Tree Dialog Example <https://github.com/Amourspirit/
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_tree.CtlTree
+.. autoclass:: ooodev.dialog.dl_control.CtlTree
     :members:
     :undoc-members:
     :show-inheritance:

@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_spin_button.FormCtlSpinButton
+.. autoclass:: ooodev.form.controls.FormCtlSpinButton
     :members:
     :undoc-members:
     :show-inheritance:

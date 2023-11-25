@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_scroll_bar.FormCtlScrollBar
+.. autoclass:: ooodev.form.controls.FormCtlScrollBar
     :members:
     :undoc-members:
     :show-inheritance:

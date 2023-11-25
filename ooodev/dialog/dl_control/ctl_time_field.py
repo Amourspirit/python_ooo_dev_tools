@@ -10,10 +10,11 @@ from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 # pylint: disable=useless-import-alias
-from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ooodev.utils.date_time_util import DateUtil
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
@@ -81,12 +82,30 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlTimeField:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
 
     @property
     def model(self) -> UnoControlTimeFieldModel:
         return self.get_model()
+
+    @property
+    def read_only(self) -> bool:
+        """Gets/Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            return self.model.ReadOnly
+        return False
+
+    @read_only.setter
+    def read_only(self, value: bool) -> None:
+        """Sets the read-only property"""
+        with contextlib.suppress(Exception):
+            self.model.ReadOnly = value
 
     @property
     def text(self) -> str:
@@ -107,13 +126,13 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
         self.model.Time = DateUtil.time_to_uno_time(value)
 
     @property
-    def time_min(self) -> datetime.time:
-        """Gets/Sets the min time"""
-        return DateUtil.uno_time_to_time(self.model.TimeMin)
+    def time_format(self) -> TimeFormatKind:
+        """Gets/Sets the format"""
+        return TimeFormatKind(self.model.TimeFormat)
 
-    @time_min.setter
-    def time_min(self, value: datetime.time) -> None:
-        self.model.TimeMin = DateUtil.time_to_uno_time(value)
+    @time_format.setter
+    def time_format(self, value: TimeFormatKind) -> None:
+        self.model.TimeFormat = value.value
 
     @property
     def time_max(self) -> datetime.time:
@@ -125,25 +144,16 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
         self.model.TimeMax = DateUtil.time_to_uno_time(value)
 
     @property
-    def time_format(self) -> TimeFormatKind:
-        """Gets/Sets the format"""
-        return TimeFormatKind(self.model.TimeFormat)
+    def time_min(self) -> datetime.time:
+        """Gets/Sets the min time"""
+        return DateUtil.uno_time_to_time(self.model.TimeMin)
 
-    @time_format.setter
-    def time_format(self, value: TimeFormatKind) -> None:
-        self.model.TimeFormat = value.value
+    @time_min.setter
+    def time_min(self, value: datetime.time) -> None:
+        self.model.TimeMin = DateUtil.time_to_uno_time(value)
 
     @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
-
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
+    def view(self) -> UnoControlTimeField:
+        return self.get_view_ctl()
 
     # endregion Properties

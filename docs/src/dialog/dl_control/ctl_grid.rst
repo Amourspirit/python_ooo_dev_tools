@@ -44,7 +44,7 @@ For an example see `Tab and List Box Dialog Example <https://github.com/Amourspi
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_grid.CtlGrid
+.. autoclass:: ooodev.dialog.dl_control.CtlGrid
     :members:
     :undoc-members:
     :show-inheritance:

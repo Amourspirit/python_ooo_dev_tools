@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_time_field.FormCtlTimeField
+.. autoclass:: ooodev.form.controls.FormCtlTimeField
     :members:
     :undoc-members:
     :show-inheritance:

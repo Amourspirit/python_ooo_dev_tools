@@ -2,6 +2,16 @@
 Version History
 ***************
 
+
+Version 0.14.0
+==============
+
+Added Form Controls and Form Database Controls. More then 30 new classes for working with forms.
+
+Add several new classes in the ``adapter`` module.
+
+Other minor bug fixes and updates.
+
 Version 0.13.7
 ==============
 

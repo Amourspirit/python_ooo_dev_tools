@@ -6,6 +6,7 @@ from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
@@ -62,6 +63,24 @@ class FormCtlCurrencyField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
 
     # region Properties
     @property
+    def accuracy(self) -> int:
+        """Gets/Sets the accuracy"""
+        return self.model.DecimalAccuracy
+
+    @accuracy.setter
+    def accuracy(self, value: int) -> None:
+        self.model.DecimalAccuracy = value
+
+    @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -87,6 +106,33 @@ class FormCtlCurrencyField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     @help_url.setter
     def help_url(self, value: str) -> None:
         self.model.HelpURL = value
+
+    @property
+    def increment(self) -> float:
+        """Gets/Sets the increment value"""
+        return self.model.ValueStep
+
+    @increment.setter
+    def increment(self, value: float) -> None:
+        self.model.ValueStep = value
+
+    @property
+    def max_value(self) -> float:
+        """Gets/Sets the maximum value"""
+        return self.model.ValueMax
+
+    @max_value.setter
+    def max_value(self, value: float) -> None:
+        self.model.ValueMax = value
+
+    @property
+    def min_value(self) -> float:
+        """Gets/Sets the minimum value"""
+        return self.model.ValueMin
+
+    @min_value.setter
+    def min_value(self, value: float) -> None:
+        self.model.ValueMin = value
 
     @property
     def model(self) -> ControlModel:
@@ -119,6 +165,15 @@ class FormCtlCurrencyField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
 
     @spin.setter
     def spin(self, value: bool) -> None:
+        self.model.Spin = value
+
+    @property
+    def spin_button(self) -> bool:
+        """Gets/Sets the spin button property"""
+        return self.model.Spin
+
+    @spin_button.setter
+    def spin_button(self, value: bool) -> None:
         self.model.Spin = value
 
     @property

@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_combo_box.FormCtlComboBox
+.. autoclass:: ooodev.form.controls.FormCtlComboBox
     :members:
     :undoc-members:
     :show-inheritance:

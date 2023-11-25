@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_combo_box.CtlComboBox
+.. autoclass:: ooodev.dialog.dl_control.CtlComboBox
     :members:
     :undoc-members:
     :show-inheritance:

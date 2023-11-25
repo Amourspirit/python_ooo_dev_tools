@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: oooodev.form.controls.form_ctl_submit_button.FormCtlSubmitButton
+.. autoclass:: oooodev.form.controls.FormCtlSubmitButton
     :members:
     :undoc-members:
     :show-inheritance:

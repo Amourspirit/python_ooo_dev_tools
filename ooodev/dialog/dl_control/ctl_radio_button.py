@@ -74,14 +74,6 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlRadioButton:
-        return self.get_view_ctl()
-
-    @property
-    def model(self) -> UnoControlRadioButtonModel:
-        return self.get_model()
-
-    @property
     def border(self) -> BorderKind:
         """Gets/Sets the border style"""
         return BorderKind(self.model.VisualEffect)
@@ -91,6 +83,19 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
         self.model.VisualEffect = value.value
 
     @property
+    def model(self) -> UnoControlRadioButtonModel:
+        return self.get_model()
+
+    @property
+    def multi_line(self) -> bool:
+        """Gets/Sets the multi-line state"""
+        return self.model.MultiLine
+
+    @multi_line.setter
+    def multi_line(self, value: bool) -> None:
+        self.model.MultiLine = value
+
+    @property
     def state(self) -> StateKind:
         """Gets/Sets the state"""
         return StateKind(self.model.State)
@@ -98,5 +103,9 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
     @state.setter
     def state(self, value: StateKind) -> None:
         self.model.State = value.value
+
+    @property
+    def view(self) -> UnoControlRadioButton:
+        return self.get_view_ctl()
 
     # endregion Properties

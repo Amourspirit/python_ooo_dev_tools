@@ -3,11 +3,12 @@ from typing import Any, cast, TYPE_CHECKING
 from pathlib import Path
 import uno
 
-from ooodev.utils.file_io import FileIO
+from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 from ooodev.adapter.form.approve_action_events import ApproveActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.file_io import FileIO
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
-from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
 from .form_ctl_base import FormCtlBase
 
@@ -55,6 +56,15 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -92,6 +102,25 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
         self.model.ScaleMode = value.value
 
     @property
+    def image_url(self) -> str:
+        """
+        Gets/Sets the URL for the image
+
+        Returns:
+            str: The URL for the image or empty string if no image is set
+
+        Note:
+            It recommended to use the ``picture`` property instead of ``image_url`` property.
+            The ``image_url`` property is does not provide any validation.
+        """
+        return self.model.ImageURL
+
+    @image_url.setter
+    def image_url(self, value: str) -> None:
+        """Sets the URL for the image"""
+        self.model.ImageURL = value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
@@ -108,23 +137,33 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
 
         Returns:
             str: The picture URL in the format of ``file:///path/to/image.png`` or empty string if no picture is set.
+
+        Note:
+            It recommended to use the ``picture`` property instead of ``image_url`` property.
+            The ``image_url`` property is does not provide any validation.
+
+        Warning:
+            If an error occurs when setting the value the ``picture`` then the ``model.ImageURL`` property will be set to an empty string.
         """
         return self.model.ImageURL
 
     @picture.setter
     def picture(self, value: PathOrStr) -> None:
-        pth_str = str(value)
-        if pth_str == "":
-            self.model.ImageURL = ""
-            return
-        if isinstance(value, str):
-            if value.startswith("file://"):
-                self.model.ImageURL = value
+        try:
+            pth_str = str(value)
+            if pth_str == "":
+                self.model.ImageURL = ""
                 return
-            value = Path(value)
-        if not FileIO.is_valid_path_or_str(value):
-            raise ValueError(f"Invalid path or str: {value}")
-        self.model.ImageURL = FileIO.fnm_to_url(value)
+            if isinstance(value, str):
+                if value.startswith("file://"):
+                    self.model.ImageURL = value
+                    return
+                value = Path(value)
+            if not FileIO.is_valid_path_or_str(value):
+                raise ValueError(f"Invalid path or str: {value}")
+            self.model.ImageURL = FileIO.fnm_to_url(value)
+        except:
+            self.model.ImageURL = ""
 
     @property
     def printable(self) -> bool:

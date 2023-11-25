@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.database.form_ctl_db_formatted_field.FormCtlDbFormattedField
+.. autoclass:: ooodev.form.controls.database.FormCtlDbFormattedField
     :members:
     :undoc-members:
     :show-inheritance:

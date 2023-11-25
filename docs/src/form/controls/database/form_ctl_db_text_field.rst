@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.database.form_ctl_db_text_field.FormCtlDbTextField
+.. autoclass:: ooodev.form.controls.database.FormCtlDbTextField
     :members:
     :undoc-members:
     :show-inheritance:

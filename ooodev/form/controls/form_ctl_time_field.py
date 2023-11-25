@@ -7,8 +7,9 @@ from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.utils.date_time_util import DateUtil
-from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 
 from .form_ctl_base import FormCtlBase
 
@@ -64,6 +65,15 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     # endregion Overrides
 
     # region Properties
+    @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
     @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
@@ -164,6 +174,10 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     def time(self) -> datetime.time:
         """Gets/Sets the time"""
         return DateUtil.uno_time_to_time(self.model.Time)
+
+    @time.setter
+    def time(self, value: datetime.time) -> None:
+        self.model.Time = DateUtil.time_to_uno_time(value)
 
     @property
     def time_format(self) -> TimeFormatKind:

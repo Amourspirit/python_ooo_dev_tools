@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import contextlib
 import uno
 from com.sun.star.beans import XPropertySet
 
@@ -110,6 +111,19 @@ class FormCtlBase(
     # endregion Lazy Listeners
 
     # region other methods
+    def get_id(self) -> int:
+        """
+        Gets class id for this control.
+
+        Returns:
+            int: Class Id if found, Otherwise ``-1``
+        """
+        props = self.get_property_set()
+        with contextlib.suppress(Exception):
+            return int(props.getPropertyValue("ClassId"))
+        mLo.Lo.print("No class ID found for form component")
+        return -1
+
     def get_model(self) -> UnoControlModel:
         """Gets the model for this control"""
         return cast("UnoControlModel", self.get_control().getModel())

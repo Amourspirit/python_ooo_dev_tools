@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_group_box.FormCtlGroupBox
+.. autoclass:: ooodev.form.controls.FormCtlGroupBox
     :members:
     :undoc-members:
     :show-inheritance:

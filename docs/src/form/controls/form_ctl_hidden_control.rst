@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_hidden_control.FormCtlHidden
+.. autoclass:: ooodev.form.controls.FormCtlHidden
     :members:
     :undoc-members:
     :show-inheritance:

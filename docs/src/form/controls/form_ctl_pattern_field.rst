@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_pattern_field.FormCtlPatternField
+.. autoclass:: ooodev.form.controls.FormCtlPatternField
     :members:
     :undoc-members:
     :show-inheritance:

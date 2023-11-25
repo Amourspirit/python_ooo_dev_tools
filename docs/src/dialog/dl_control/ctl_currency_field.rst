@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_currency_field.CtlCurrencyField
+.. autoclass:: ooodev.dialog.dl_control.CtlCurrencyField
     :members:
     :undoc-members:
     :show-inheritance:

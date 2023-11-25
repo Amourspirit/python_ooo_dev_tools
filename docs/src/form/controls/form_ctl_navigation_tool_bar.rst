@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_navigation_tool_bar.FormCtlNavigationToolBar
+.. autoclass:: ooodev.form.controls.FormCtlNavigationToolBar
     :members:
     :undoc-members:
     :show-inheritance:

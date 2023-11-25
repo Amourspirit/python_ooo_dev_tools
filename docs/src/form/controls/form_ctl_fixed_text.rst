@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.form_ctl_fixed_text.FormCtlFixedText
+.. autoclass:: ooodev.form.controls.FormCtlFixedText
     :members:
     :undoc-members:
     :show-inheritance:

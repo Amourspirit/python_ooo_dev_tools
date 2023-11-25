@@ -2,9 +2,10 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from com.sun.star.awt import XControl
 
-from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
+from ooodev.adapter.form.reset_events import ResetEvents
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
@@ -63,6 +64,15 @@ class FormCtlFormattedField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -90,6 +100,24 @@ class FormCtlFormattedField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def max_value(self) -> float:
+        """Gets/Sets the maximum value"""
+        return self.model.EffectiveMax
+
+    @max_value.setter
+    def max_value(self, value: float) -> None:
+        self.model.EffectiveMax = value
+
+    @property
+    def min_value(self) -> float:
+        """Gets/Sets the minimum value"""
+        return self.model.EffectiveMin
+
+    @min_value.setter
+    def min_value(self, value: float) -> None:
+        self.model.EffectiveMin = value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
@@ -112,6 +140,15 @@ class FormCtlFormattedField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     def read_only(self, value: bool) -> None:
         """Sets the read-only property"""
         self.model.ReadOnly = value
+
+    @property
+    def spin(self) -> bool:
+        """Gets/Sets if the control has a spin button"""
+        return self.model.Spin
+
+    @spin.setter
+    def spin(self, value: bool) -> None:
+        self.model.Spin = value
 
     @property
     def step(self) -> int:

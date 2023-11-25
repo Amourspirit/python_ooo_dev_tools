@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_numeric_field.CtlNumericField
+.. autoclass:: ooodev.dialog.dl_control.CtlNumericField
     :members:
     :undoc-members:
     :show-inheritance:

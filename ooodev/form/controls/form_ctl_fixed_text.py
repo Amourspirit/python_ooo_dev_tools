@@ -3,6 +3,7 @@ from typing import Any, cast, TYPE_CHECKING
 from com.sun.star.awt import XControl
 
 from ooodev.adapter.awt.text_events import TextEvents
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
@@ -49,6 +50,15 @@ class FormCtlFixedText(FormCtlBase, TextEvents):
     # endregion Overrides
 
     # region Properties
+    @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
     @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""

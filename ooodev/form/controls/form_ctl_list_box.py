@@ -3,11 +3,12 @@ from typing import Any, cast, Iterable, Tuple, TYPE_CHECKING
 import contextlib
 
 from ooodev.adapter.awt.action_events import ActionEvents
-from ooodev.adapter.form.change_events import ChangeEvents
-from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.adapter.awt.item_list_events import ItemListEvents
+from ooodev.adapter.form.change_events import ChangeEvents
+from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
@@ -96,6 +97,15 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
     # endregion Methods
 
     # region Properties
+    @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
     @property
     def drop_down(self) -> bool:
         """Gets/Sets the DropDown property"""

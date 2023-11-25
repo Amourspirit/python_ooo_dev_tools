@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_pattern_field.CtlPatternField
+.. autoclass:: ooodev.dialog.dl_control.CtlPatternField
     :members:
     :undoc-members:
     :show-inheritance:
