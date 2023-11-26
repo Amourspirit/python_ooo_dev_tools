@@ -8,6 +8,7 @@ import uno
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
+from com.sun.star.awt import XView
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XChild
 from com.sun.star.container import XIndexContainer
@@ -37,6 +38,7 @@ from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 
 
 from ooodev.proto.style_obj import StyleT
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
@@ -837,19 +839,21 @@ class Forms:
     # region create controls
 
     @staticmethod
-    def create_name(elem_container: XNameAccess, name: str) -> str:
+    def create_name(elem_container: XNameAccess | None, name: str) -> str:
         """
         Creates a name.
 
         Make a unique string by appending a number to the supplied name
 
         Args:
-            elem_container (XNameAccess): container
+            elem_container (XNameAccess, None): container. If None, then a random string is appended to name.
             name (str): current name
 
         Returns:
             str: a name not in container.
         """
+        if elem_container is None:
+            return f"{name}_{gUtil.Util.generate_random_string(10)}"
         used_name = True
         i = 1
         nm = f"{name}{i}"
@@ -866,6 +870,13 @@ class Forms:
             return value.get_value_mm100()  # type: ignore
         except AttributeError:
             return int(value) * 100  # type: ignore
+
+    @staticmethod
+    def _get_unit_value(value: int | UnitT) -> int:
+        try:
+            return value.get_value_mm()  # type: ignore
+        except AttributeError:
+            return cast(int, value)
 
     # region    add_control
     @classmethod
@@ -1016,7 +1027,6 @@ class Forms:
     ) -> XPropertySet:
         ...
 
-    @overload
     @classmethod
     def add_labelled_control(
         cls,
@@ -1024,16 +1034,15 @@ class Forms:
         *,
         label: str,
         comp_kind: FormComponentKind | str,
-        x: int | UnitT,
         y: int | UnitT,
-        height: int | UnitT,
-        lbl_styles: Iterable[StyleT] = ...,
-        ctl_styles: Iterable[StyleT] = ...,
+        x: int | UnitT = 2,
+        width: int | UnitT = 40,
+        height: int | UnitT = 6,
+        orientation: OrientationKind = OrientationKind.HORIZONTAL,
+        spacing: int | UnitT = 2,
+        lbl_styles: Iterable[StyleT] | None = None,
+        ctl_styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
-        ...
-
-    @classmethod
-    def add_labelled_control(cls, *args, **kwargs) -> XPropertySet:
         """
         Create a label and data field control, with the label preceding the control
 
@@ -1041,9 +1050,12 @@ class Forms:
             doc (XComponent): Component
             label (str): Label to assign to control
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
-            x (int): Control X position
             y (int): Control Y Position
-            height (int): control height
+            x (int, optional): Control X position. Defaults to ``2``.
+            height (int, optional): control height. Defaults to ``6``.
+            width (int, optional): Control width. Defaults to ``40``.
+            orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
+            spacing (int, optional): Spacing. Defaults to ``26``.
             lbl_styles (Iterable[StyleT], optional): One or more styles to apply on the label portion of control.
             ctl_styles (Iterable[StyleT], optional): One or more styles to apply on the Textbox portion of control.
 
@@ -1053,65 +1065,19 @@ class Forms:
         .. versionchanged:: 0.9.2
             Added ``lbl_styles`` and ``ctl_styles`` arguments.
         """
-        lbl_styles = kwargs.pop("lbl_styles", None)
-        ctl_styles = kwargs.pop("ctl_styles", None)
-        ordered_keys = (1, 2, 3, 4, 5, 6)
-        kargs_len = len(kwargs)
-        count = len(args) + kargs_len
-
-        def get_kwargs() -> dict:
-            ka = {}
-            if kargs_len == 0:
-                return ka
-            valid_keys = ("doc", "label", "comp_kind", "x", "y", "height")
-            check = all(key in valid_keys for key in kwargs)
-            if not check:
-                raise TypeError("addLabelledControl() got an unexpected keyword argument")
-            ka[1] = kwargs.get("doc", None)
-            ka[2] = kwargs.get("label", None)
-            ka[3] = kwargs.get("comp_kind", None)
-            keys = ("x", "y")
-            for key in keys:
-                if key in kwargs:
-                    ka[4] = kwargs[key]
-                    break
-            if count == 4:
-                return ka
-            ka[5] = kwargs.get("y", None)
-            ka[6] = kwargs.get("height", None)
-            return ka
-
-        if count not in (4, 6):
-            raise TypeError("addLabelledControl() got an invalid number of arguments")
-
-        kargs = get_kwargs()
-
-        for i, arg in enumerate(args):
-            kargs[ordered_keys[i]] = arg
-
-        if count == 4:
-            result = cls._add_labelled_control(
-                doc=kargs[1],
-                label=kargs[2],
-                comp_kind=kargs[3],
-                x=2,
-                y=kargs[4],
-                height=6,
-                lbl_styles=lbl_styles,
-                ctl_styles=ctl_styles,
-            )
-        else:
-            return cls._add_labelled_control(
-                doc=kargs[1],
-                label=kargs[2],
-                comp_kind=kargs[3],
-                x=kargs[4],
-                y=kargs[5],
-                height=kargs[6],
-                lbl_styles=lbl_styles,
-                ctl_styles=ctl_styles,
-            )
-
+        result = cls._add_labelled_control(
+            doc=doc,
+            label=label,
+            comp_kind=comp_kind,
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+            orientation=orientation,
+            spacing=spacing,
+            lbl_styles=lbl_styles,
+            ctl_styles=ctl_styles,
+        )
         return result
 
     @classmethod
@@ -1124,7 +1090,9 @@ class Forms:
         x: int | UnitT,
         y: int | UnitT,
         height: int | UnitT,
-        width: int = 40,
+        width: int | UnitT = 40,
+        spacing: int | UnitT = 2,
+        orientation: OrientationKind = OrientationKind.HORIZONTAL,
         lbl_styles: Iterable[StyleT] | None,
         ctl_styles: Iterable[StyleT] | None,
     ) -> XPropertySet:
@@ -1142,17 +1110,31 @@ class Forms:
                 height=height,
                 styles=lbl_styles,
             )
+            try:
+                space_value = round(cast("UnitT", spacing).get_value_mm())
+            except:
+                space_value = cast(int, spacing)
 
-            # create data field control
-            x_value = cls._get_unit100_value(x) + 26
-            y_value = cls._get_unit100_value(y) + 26
+            if orientation == OrientationKind.HORIZONTAL:
+                coordinate_y = y
+                coordinate_x = cls._get_unit_value(x)
+                offset = cls._get_unit_value(width)
+                coordinate_x += offset
+                coordinate_x += space_value
+            else:
+                coordinate_x = x
+                coordinate_y = cls._get_unit_value(y)
+                offset = cls._get_unit_value(height)
+                coordinate_y += offset
+                coordinate_y += space_value
+
             ctl_props = cls.add_control(
                 doc=doc,
                 name=label,
                 label=None,
                 comp_kind=comp_kind,
-                x=x_value,
-                y=y_value,
+                x=coordinate_x,
+                y=coordinate_y,
                 width=width,
                 height=height,
                 styles=ctl_styles,
@@ -1197,6 +1179,7 @@ class Forms:
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            arent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
@@ -1477,7 +1460,6 @@ class Forms:
     def insert_control_button(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -1485,6 +1467,7 @@ class Forms:
         height: int | UnitT = 6,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlButton:
         """
@@ -1494,13 +1477,13 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Button Width.
             height (int, UnitT, optional): Button Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -1538,7 +1521,6 @@ class Forms:
     def insert_control_check_box(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -1549,6 +1531,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlCheckBox:
@@ -1557,7 +1540,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -1568,6 +1550,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -1597,6 +1580,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -1616,7 +1600,6 @@ class Forms:
     def insert_control_combo_box(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -1629,6 +1612,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlComboBox:
@@ -1637,7 +1621,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -1651,6 +1634,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -1680,6 +1664,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, btn_props, True)
@@ -1703,7 +1688,6 @@ class Forms:
     def insert_control_currency_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -1717,6 +1701,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlCurrencyField:
@@ -1725,7 +1710,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -1738,6 +1722,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -1767,6 +1752,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -1790,7 +1776,6 @@ class Forms:
     def insert_control_date_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -1803,6 +1788,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlDateField:
@@ -1811,7 +1797,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -1824,6 +1809,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -1853,6 +1839,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -1874,7 +1861,6 @@ class Forms:
     def insert_control_file(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -1882,6 +1868,7 @@ class Forms:
         height: int | UnitT = 6,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlFile:
         """
@@ -1889,13 +1876,13 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -1919,6 +1906,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -1932,7 +1920,6 @@ class Forms:
     def insert_control_formatted_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -1944,6 +1931,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlFormattedField:
@@ -1952,7 +1940,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -1963,6 +1950,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -1992,6 +1980,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2012,7 +2001,6 @@ class Forms:
     def insert_control_group_box(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2021,6 +2009,7 @@ class Forms:
         label: str = "",
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlGroupBox:
         """
@@ -2028,7 +2017,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -2036,6 +2024,7 @@ class Forms:
             label (str, optional): Groupbox label.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2060,6 +2049,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2073,7 +2063,6 @@ class Forms:
     def insert_control_hidden(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2081,19 +2070,20 @@ class Forms:
         height: int | UnitT,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
     ) -> FormCtlHidden:
         """
         Inserts a Hidden control into the form.
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT): Height.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
 
         Returns:
             FormCtlHidden: Hidden Control
@@ -2114,6 +2104,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=(),
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2127,7 +2118,6 @@ class Forms:
     def insert_control_image_button(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2137,6 +2127,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlImageButton:
         """
@@ -2144,7 +2135,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -2155,6 +2145,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2179,6 +2170,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2195,7 +2187,6 @@ class Forms:
     def insert_control_label(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2204,6 +2195,7 @@ class Forms:
         height: int | UnitT = 6,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlFixedText:
         """
@@ -2211,7 +2203,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
@@ -2219,6 +2210,7 @@ class Forms:
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2242,6 +2234,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2254,7 +2247,6 @@ class Forms:
     def insert_control_list_box(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2268,6 +2260,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlListBox:
@@ -2276,7 +2269,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -2287,6 +2279,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2316,6 +2309,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, btn_props, True)
@@ -2339,7 +2333,6 @@ class Forms:
     def insert_control_navigation_toolbar(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2347,6 +2340,7 @@ class Forms:
         height: int | UnitT,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlNavigationToolBar:
         """
@@ -2354,13 +2348,13 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT): Height.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2385,6 +2379,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2398,7 +2393,6 @@ class Forms:
     def insert_control_numeric_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2412,6 +2406,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlNumericField:
@@ -2420,7 +2415,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -2433,6 +2427,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2462,6 +2457,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2484,7 +2480,6 @@ class Forms:
     def insert_control_pattern_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2495,6 +2490,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlPatternField:
@@ -2503,7 +2499,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -2513,6 +2508,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2542,6 +2538,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2561,7 +2558,6 @@ class Forms:
     def insert_control_radio_button(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2572,6 +2568,7 @@ class Forms:
         border: BorderKind = BorderKind.NONE,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlRadioButton:
@@ -2580,7 +2577,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -2592,6 +2588,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2621,6 +2618,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2640,7 +2638,6 @@ class Forms:
     def insert_control_rich_text(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2649,6 +2646,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlRichText:
         """
@@ -2656,7 +2654,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
@@ -2664,6 +2661,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2687,6 +2685,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2701,7 +2700,6 @@ class Forms:
     def insert_control_scroll_bar(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2713,6 +2711,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlScrollBar:
         """
@@ -2720,7 +2719,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
@@ -2732,6 +2730,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2755,6 +2754,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2772,7 +2772,6 @@ class Forms:
     def insert_control_spin_button(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2785,6 +2784,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlSpinButton:
         """
@@ -2792,7 +2792,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -2804,6 +2803,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2828,6 +2828,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2846,7 +2847,6 @@ class Forms:
     def insert_control_submit_button(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2854,6 +2854,7 @@ class Forms:
         height: int | UnitT = 6,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlSubmitButton:
         """
@@ -2861,13 +2862,13 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2891,6 +2892,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2904,7 +2906,6 @@ class Forms:
     def insert_control_text_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2915,6 +2916,7 @@ class Forms:
         border: BorderKind = BorderKind.NONE,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlTextField:
@@ -2923,7 +2925,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
@@ -2931,6 +2932,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -2959,6 +2961,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -2980,7 +2983,6 @@ class Forms:
     def insert_control_time_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -2994,6 +2996,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlTimeField:
@@ -3002,7 +3005,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3015,6 +3017,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3044,6 +3047,7 @@ class Forms:
                 width=width,
                 height=height,
                 anchor_type=anchor_type,
+                parent_form=parent_form,
                 styles=styles,
             )
             model = mLo.Lo.qi(XControlModel, props, True)
@@ -3071,7 +3075,6 @@ class Forms:
     def insert_db_control_check_box(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3082,6 +3085,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbCheckBox:
         """
@@ -3089,7 +3093,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3100,6 +3103,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3113,7 +3117,6 @@ class Forms:
             name = cls.create_name(parent_form, "DatabaseCheckBox")
         result = cls.insert_control_check_box(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3123,6 +3126,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3132,7 +3136,6 @@ class Forms:
     def insert_db_control_combo_box(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3145,6 +3148,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbComboBox:
         """
@@ -3152,7 +3156,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3166,6 +3169,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3178,7 +3182,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_COMBO_BOX
         result = cls.insert_control_combo_box(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3190,6 +3193,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3199,7 +3203,6 @@ class Forms:
     def insert_db_control_currency_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3213,6 +3216,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbCurrencyField:
         """
@@ -3220,7 +3224,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3233,6 +3236,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3245,7 +3249,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_CURRENCY_FIELD
         result = cls.insert_control_currency_field(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3258,6 +3261,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3267,7 +3271,6 @@ class Forms:
     def insert_db_control_date_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3280,6 +3283,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
         **kwargs: Any,
     ) -> FormCtlDbDateField:
@@ -3288,7 +3292,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3301,6 +3304,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3313,7 +3317,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_DATE_FIELD
         result = cls.insert_control_date_field(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3325,6 +3328,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
             **kwargs,
@@ -3335,7 +3339,6 @@ class Forms:
     def insert_db_control_formatted_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3347,6 +3350,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbFormattedField:
         """
@@ -3354,7 +3358,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3365,6 +3368,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3377,7 +3381,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_FORMATTED_FIELD
         result = cls.insert_control_formatted_field(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3388,6 +3391,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3397,7 +3401,6 @@ class Forms:
     def insert_db_control_list_box(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3411,6 +3414,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbListBox:
         """
@@ -3418,7 +3422,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3429,6 +3432,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3441,7 +3445,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_LIST_BOX
         result = cls.insert_control_list_box(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3454,6 +3457,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3463,7 +3467,6 @@ class Forms:
     def insert_db_control_numeric_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3477,6 +3480,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbNumericField:
         """
@@ -3484,7 +3488,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3497,6 +3500,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3509,7 +3513,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_NUMERIC_FIELD
         result = cls.insert_control_numeric_field(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3522,6 +3525,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3531,7 +3535,6 @@ class Forms:
     def insert_db_control_pattern_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3542,6 +3545,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbPatternField:
         """
@@ -3549,7 +3553,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3559,6 +3562,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3571,7 +3575,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_PATTERN_FIELD
         result = cls.insert_control_pattern_field(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3581,6 +3584,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3590,7 +3594,6 @@ class Forms:
     def insert_db_control_radio_button(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3601,6 +3604,7 @@ class Forms:
         border: BorderKind = BorderKind.NONE,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbRadioButton:
         """
@@ -3608,7 +3612,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3620,6 +3623,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3632,7 +3636,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_RADIO_BUTTON
         result = cls.insert_control_radio_button(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3642,6 +3645,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3651,7 +3655,6 @@ class Forms:
     def insert_db_control_text_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3662,6 +3665,7 @@ class Forms:
         border: BorderKind = BorderKind.NONE,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbTextField:
         """
@@ -3669,7 +3673,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
@@ -3677,6 +3680,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3689,7 +3693,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_TEXT_FIELD
         result = cls.insert_control_text_field(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3699,6 +3702,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )
@@ -3708,7 +3712,6 @@ class Forms:
     def insert_db_control_time_field(
         cls,
         doc: XComponent,
-        parent_form: XNameContainer,
         *,
         x: int | UnitT,
         y: int | UnitT,
@@ -3722,6 +3725,7 @@ class Forms:
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
+        parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlDbTimeField:
         """
@@ -3729,7 +3733,6 @@ class Forms:
 
         Args:
             doc (XComponent): Component
-            parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
@@ -3742,6 +3745,7 @@ class Forms:
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
@@ -3754,7 +3758,6 @@ class Forms:
         comp_kind = FormComponentKind.DATABASE_TIME_FIELD
         result = cls.insert_control_time_field(
             doc,
-            parent_form,
             x=x,
             y=y,
             width=width,
@@ -3767,6 +3770,7 @@ class Forms:
             border=border,
             anchor_type=anchor_type,
             name=name,
+            parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
         )

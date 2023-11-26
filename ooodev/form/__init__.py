@@ -6,7 +6,6 @@ from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
 from .forms import Forms as Forms
 from ooo.dyn.form.form_component_type import FormComponentType as FormComponentType
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind as FormComponentKind
 from ooodev.utils.kind.language_kind import LanguageKind as LanguageKind

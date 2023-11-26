@@ -5,10 +5,12 @@ from com.sun.star.awt import XControl
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.utils import info as mInfo
 
 from .form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
+    from com.sun.star.form import DataAwareControlModel
     from com.sun.star.form.component import FixedText as ControlModel  # service
     from com.sun.star.form.control import TextField as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -48,6 +50,19 @@ class FormCtlFixedText(FormCtlBase, TextEvents):
         return FormComponentKind.FIXED_TEXT
 
     # endregion Overrides
+
+    # region Methods
+    def bind_to_control(self, ctl: FormCtlBase) -> None:
+        """Binds this control to the given control"""
+        model = ctl.get_model()
+        if not mInfo.Info.support_service(model, "com.sun.star.form.DataAwareControlModel"):
+            return
+        data_model = cast("DataAwareControlModel", model)
+        data_model.DataField = self.name
+        data_model.LabelControl = self.get_property_set()
+        return
+
+    # endregion Methods
 
     # region Properties
     @property
