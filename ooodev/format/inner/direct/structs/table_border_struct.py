@@ -16,7 +16,7 @@ from ooodev.events.lo_events import Events
 from ooodev.events.props_named_event import PropsNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert, UnitLength
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -55,7 +55,7 @@ class TableBorderStruct(StructBase):
         border_side: Side | None = None,
         vertical: Side | None = None,
         horizontal: Side | None = None,
-        distance: float | UnitObj | None = None,
+        distance: float | UnitT | None = None,
     ) -> None:
         """
         Constructor
@@ -68,7 +68,7 @@ class TableBorderStruct(StructBase):
             border_side (Side, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             horizontal (Side, optional): Determines the line style of horizontal lines for the inner part of a cell range.
             vertical (Side, optional): Determines the line style of vertical lines for the inner part of a cell range.
-            distance (float, UnitObj, optional): Contains the distance between the lines and other contents (in mm units) or :ref:`proto_unit_obj`.
+            distance (float, UnitT, optional): Contains the distance between the lines and other contents (in mm units) or :ref:`proto_unit_obj`.
         """
         # sourcery skip: low-code-quality
         init_vals = {}
@@ -461,12 +461,12 @@ class TableBorderStruct(StructBase):
         cp.prop_vertical = value
         return cp
 
-    def fmt_distance(self: _TTableBorderStruct, value: float | UnitObj | None) -> _TTableBorderStruct:
+    def fmt_distance(self: _TTableBorderStruct, value: float | UnitT | None) -> _TTableBorderStruct:
         """
         Gets a copy of instance with distance set or removed
 
         Args:
-            value (float | UnitObj | None): Distance value in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float | UnitT | None): Distance value in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             BorderTable: Border Table
@@ -495,7 +495,7 @@ class TableBorderStruct(StructBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_distance.setter
-    def prop_distance(self, value: float | UnitObj | None) -> None:
+    def prop_distance(self, value: float | UnitT | None) -> None:
         p = self._props.dist
         if value is None:
             self._remove(p.first)

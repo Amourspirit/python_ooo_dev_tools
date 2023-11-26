@@ -1,14 +1,16 @@
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Dict, TYPE_CHECKING
 import uno
 from com.sun.star.beans import XPropertySet
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from ooodev.utils import lo as mLo
 from .property_change_collection import PropertyChangeCollection
 from .property_change_events import PropertyChangeEvents
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class PropertyChangeImplement:

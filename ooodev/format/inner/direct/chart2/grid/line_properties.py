@@ -9,7 +9,7 @@ from ooodev.format.inner.direct.chart2.series.data_series.borders.line_propertie
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 
 
 class LineProperties(SeriesLineProperties):
@@ -25,7 +25,7 @@ class LineProperties(SeriesLineProperties):
         self,
         style: BorderLineKind = BorderLineKind.CONTINUOUS,
         color: Color = Color(0),
-        width: float | UnitObj = 0,
+        width: float | UnitT = 0,
         transparency: int | Intensity = 0,
     ) -> None:
         """
@@ -34,7 +34,7 @@ class LineProperties(SeriesLineProperties):
         Args:
             style (BorderLineKind): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
-            width (float | UnitObj, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
+            width (float | UnitT, optional): Line Width (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0``.
             transparency (int | Intensity, optional): Line transparency from ``0`` to ``100``. Defaults to ``0``.
 
         Returns:

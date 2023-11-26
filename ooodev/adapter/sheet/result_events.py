@@ -5,11 +5,11 @@ import uno
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .result_listener import ResultListener
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XVolatileResult
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class ResultEvents:

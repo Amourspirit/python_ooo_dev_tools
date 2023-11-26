@@ -6,7 +6,7 @@ from ooo.dyn.awt.size import Size
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -31,17 +31,17 @@ class SizeStruct(StructBase):
 
     def __init__(
         self,
-        width: float | UnitObj = 0.0,
-        height: float | UnitObj = 0.0,
-        all: float | UnitObj | None = None,
+        width: float | UnitT = 0.0,
+        height: float | UnitT = 0.0,
+        all: float | UnitT | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            width (float, UnitObj, optional): Specifies width crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            height (float, UnitObj, optional): Specifies height crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            all (float, UnitObj, optional): Specifies ``width`` and ``height`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
+            width (float, UnitT, optional): Specifies width crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            height (float, UnitT, optional): Specifies height crop in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            all (float, UnitT, optional): Specifies ``width`` and ``height`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
         if all is not None:
@@ -204,12 +204,12 @@ class SizeStruct(StructBase):
     # endregion static methods
 
     # region Style methods
-    def fmt_all(self: _TSizeStruct, value: float | UnitObj) -> _TSizeStruct:
+    def fmt_all(self: _TSizeStruct, value: float | UnitT) -> _TSizeStruct:
         """
         Gets copy of instance with width and height set.
 
         Args:
-            value (float, UnitObj): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             SizeStruct: Border Table
@@ -219,12 +219,12 @@ class SizeStruct(StructBase):
         cp.prop_height = value
         return cp
 
-    def fmt_height(self: _TSizeStruct, value: float | UnitObj) -> _TSizeStruct:
+    def fmt_height(self: _TSizeStruct, value: float | UnitT) -> _TSizeStruct:
         """
         Gets a copy of instance with height set.
 
         Args:
-            value (float, UnitObj): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies height in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             SizeStruct:
@@ -233,12 +233,12 @@ class SizeStruct(StructBase):
         cp.prop_height = value
         return cp
 
-    def fmt_width(self: _TSizeStruct, value: float | UnitObj) -> _TSizeStruct:
+    def fmt_width(self: _TSizeStruct, value: float | UnitT) -> _TSizeStruct:
         """
         Gets a copy of instance with width set.
 
         Args:
-            value (float, UnitObj): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies width in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             SizeStruct:
@@ -267,7 +267,7 @@ class SizeStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_height.setter
-    def prop_height(self, value: float | UnitObj) -> None:
+    def prop_height(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.height, value.get_value_mm100())  # type: ignore
         except AttributeError:
@@ -280,7 +280,7 @@ class SizeStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_width.setter
-    def prop_width(self, value: float | UnitObj) -> None:
+    def prop_width(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.width, value.get_value_mm100())  # type: ignore
         except AttributeError:

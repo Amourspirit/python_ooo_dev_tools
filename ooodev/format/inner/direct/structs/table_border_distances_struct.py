@@ -6,7 +6,7 @@ from ooo.dyn.table.table_border_distances import TableBorderDistances
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -34,21 +34,21 @@ class TableBorderDistancesStruct(StructBase):
     def __init__(
         self,
         *,
-        left: float | UnitObj = 0.0,
-        right: float | UnitObj = 0.0,
-        top: float | UnitObj = 0.0,
-        bottom: float | UnitObj = 0.0,
-        all: float | UnitObj | None = None,
+        left: float | UnitT = 0.0,
+        right: float | UnitT = 0.0,
+        top: float | UnitT = 0.0,
+        bottom: float | UnitT = 0.0,
+        all: float | UnitT | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            left (float, UnitObj, optional): Specifies left distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            right (float, UnitObj, optional): Specifies right distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            top (float, UnitObj, optional): Specifies top distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            bottom (float, UnitObj, optional): Specifies bottom distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
-            all (float, UnitObj, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
+            left (float, UnitT, optional): Specifies left distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            right (float, UnitT, optional): Specifies right distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            top (float, UnitT, optional): Specifies top distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            bottom (float, UnitT, optional): Specifies bottom distance in ``mm`` units or :ref:`proto_unit_obj`. Default ``0.0``.
+            all (float, UnitT, optional): Specifies ``left``, ``right``, ``top``, and ``bottom`` in ``mm`` units or :ref:`proto_unit_obj`. If set all other parameters are ignored.
         """
         super().__init__()
         if all is not None:
@@ -240,12 +240,12 @@ class TableBorderDistancesStruct(StructBase):
     # endregion static methods
 
     # region Style methods
-    def fmt_all(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
+    def fmt_all(self: _TTableBorderDistancesStruct, value: float | UnitT) -> _TTableBorderDistancesStruct:
         """
         Gets copy of instance with left, right, top, bottom set.
 
         Args:
-            value (float, UnitObj): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct: Border Table
@@ -257,12 +257,12 @@ class TableBorderDistancesStruct(StructBase):
         cp.prop_right = value
         return cp
 
-    def fmt_top(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
+    def fmt_top(self: _TTableBorderDistancesStruct, value: float | UnitT) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with top set.
 
         Args:
-            value (float, UnitObj): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies top crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -271,12 +271,12 @@ class TableBorderDistancesStruct(StructBase):
         cp.prop_top = value
         return cp
 
-    def fmt_bottom(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
+    def fmt_bottom(self: _TTableBorderDistancesStruct, value: float | UnitT) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with bottom set.
 
         Args:
-            value (float, UnitObj): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies bottom crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -285,12 +285,12 @@ class TableBorderDistancesStruct(StructBase):
         cp.prop_bottom = value
         return cp
 
-    def fmt_left(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
+    def fmt_left(self: _TTableBorderDistancesStruct, value: float | UnitT) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with left set.
 
         Args:
-            value (float, UnitObj): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies left crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -299,12 +299,12 @@ class TableBorderDistancesStruct(StructBase):
         cp.prop_left = value
         return cp
 
-    def fmt_right(self: _TTableBorderDistancesStruct, value: float | UnitObj) -> _TTableBorderDistancesStruct:
+    def fmt_right(self: _TTableBorderDistancesStruct, value: float | UnitT) -> _TTableBorderDistancesStruct:
         """
         Gets a copy of instance with right set.
 
         Args:
-            value (float, UnitObj): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`.
+            value (float, UnitT): Specifies right crop in ``mm`` units or :ref:`proto_unit_obj`.
 
         Returns:
             CropStruct:
@@ -333,7 +333,7 @@ class TableBorderDistancesStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_left.setter
-    def prop_left(self, value: float | UnitObj) -> None:
+    def prop_left(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.left, value.get_value_mm100())  # type: ignore
         except AttributeError:
@@ -347,7 +347,7 @@ class TableBorderDistancesStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_right.setter
-    def prop_right(self, value: float | UnitObj) -> None:
+    def prop_right(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.right, value.get_value_mm100())  # type: ignore
         except AttributeError:
@@ -361,7 +361,7 @@ class TableBorderDistancesStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_top.setter
-    def prop_top(self, value: float | UnitObj) -> None:
+    def prop_top(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.top, value.get_value_mm100())  # type: ignore
         except AttributeError:
@@ -375,7 +375,7 @@ class TableBorderDistancesStruct(StructBase):
         return UnitMM.from_mm100(pv)
 
     @prop_bottom.setter
-    def prop_bottom(self, value: float | UnitObj) -> None:
+    def prop_bottom(self, value: float | UnitT) -> None:
         try:
             self._set(self._props.bottom, value.get_value_mm100())  # type: ignore
         except AttributeError:

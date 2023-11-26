@@ -11,7 +11,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -42,17 +42,17 @@ class Spacing(StyleBase):
     def __init__(
         self,
         *,
-        above: float | UnitObj | None = None,
-        below: float | UnitObj | None = None,
+        above: float | UnitT | None = None,
+        below: float | UnitT | None = None,
         style_no_space: bool | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
-            above (float, UnitObj, optional): Determines the top margin of the paragraph (in ``mm`` units)
+            above (float, UnitT, optional): Determines the top margin of the paragraph (in ``mm`` units)
                 or :ref:`proto_unit_obj`.
-            below (float, UnitObj, optional): Determines the bottom margin of the paragraph (in ``mm`` units)
+            below (float, UnitT, optional): Determines the bottom margin of the paragraph (in ``mm`` units)
                 or :ref:`proto_unit_obj`.
             style_no_space (bool, optional): Do not add space between paragraphs of the same style.
 
@@ -164,12 +164,12 @@ class Spacing(StyleBase):
     # endregion methods
 
     # region style methods
-    def fmt_above(self: _TSpacing, value: float | UnitObj | None) -> _TSpacing:
+    def fmt_above(self: _TSpacing, value: float | UnitT | None) -> _TSpacing:
         """
         Gets a copy of instance with above margin set or removed
 
         Args:
-            value (float, UnitObj, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Spacing: Indent instance
@@ -178,12 +178,12 @@ class Spacing(StyleBase):
         cp.prop_above = value
         return cp
 
-    def fmt_below(self: _TSpacing, value: float | UnitObj | None) -> _TSpacing:
+    def fmt_below(self: _TSpacing, value: float | UnitT | None) -> _TSpacing:
         """
         Gets a copy of instance with below margin set or removed
 
         Args:
-            value (float, UnitObj, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): Margin value (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Spacing: Indent instance
@@ -235,7 +235,7 @@ class Spacing(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_above.setter
-    def prop_above(self, value: float | UnitObj | None):
+    def prop_above(self, value: float | UnitT | None):
         if value is None:
             self._remove("ParaTopMargin")
             return
@@ -251,7 +251,7 @@ class Spacing(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_below.setter
-    def prop_below(self, value: float | UnitObj | None):
+    def prop_below(self, value: float | UnitT | None):
         if value is None:
             self._remove("ParaBottomMargin")
             return
@@ -279,7 +279,7 @@ class Spacing(StyleBase):
             return self._default_inst
         except AttributeError:
             self._default_inst = self.__class__(
-                above=0.0, below=0.0, style_no_space=False, _cattribs=self._get_internal_cattribs()
+                above=0.0, below=0.0, style_no_space=False, _cattribs=self._get_internal_cattribs()  # type: ignore
             )
             self._default_inst._is_default_inst = True
         return self._default_inst

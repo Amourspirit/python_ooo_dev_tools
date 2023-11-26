@@ -4,7 +4,7 @@ from typing import Any, cast
 import uno
 
 from ooo.dyn.style.tab_align import TabAlign as TabAlign
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.structs.tab_stop_struct import FillCharKind as FillCharKind
 from ooodev.format.inner.direct.write.para.tabs.tabs import Tabs as InnerTabs
@@ -27,7 +27,7 @@ class Tabs(ParaStyleBaseMulti):
     def __init__(
         self,
         *,
-        position: float | UnitObj = 0.0,
+        position: float | UnitT = 0.0,
         align: TabAlign = TabAlign.LEFT,
         decimal_char: str = ".",
         fill_char: FillCharKind | str = FillCharKind.NONE,
@@ -38,7 +38,7 @@ class Tabs(ParaStyleBaseMulti):
         Constructor
 
         Args:
-            position (float, UnitObj, optional): Specifies the position of the tabulator in relation to the left border
+            position (float, UnitT, optional): Specifies the position of the tabulator in relation to the left border
                 (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``0.0``
             align (TabAlign, optional): Specifies the alignment of the text range before the tabulator. Defaults to
                 ``TabAlign.LEFT``

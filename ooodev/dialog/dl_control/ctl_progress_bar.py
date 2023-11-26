@@ -4,6 +4,7 @@ from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
 from ooodev.utils.color import Color
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -54,8 +55,22 @@ class CtlProgressBar(DialogControlBase):
 
     # region Properties
     @property
-    def view(self) -> UnoControlProgressBar:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def fill_color(self) -> Color:
+        """Gets or sets the fill color of the progress bar"""
+        return Color(self.model.FillColor)
+
+    @fill_color.setter
+    def fill_color(self, value: Color) -> None:
+        self.model.FillColor = value  # type: ignore
 
     @property
     def model(self) -> UnoControlProgressBarModel:
@@ -71,12 +86,7 @@ class CtlProgressBar(DialogControlBase):
         self.view.setValue(value)
 
     @property
-    def fill_color(self) -> Color:
-        """Gets or sets the fill color of the progress bar"""
-        return Color(self.model.FillColor)
-
-    @fill_color.setter
-    def fill_color(self, value: Color) -> None:
-        self.model.FillColor = value  # type: ignore
+    def view(self) -> UnoControlProgressBar:
+        return self.get_view_ctl()
 
     # endregion Properties

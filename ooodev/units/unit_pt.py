@@ -3,7 +3,7 @@ from typing import TypeVar, Type
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from .unit_convert import UnitConvert, UnitLength
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 
 _TUnitPT = TypeVar(name="_TUnitPT", bound="UnitPT")
 
@@ -13,7 +13,7 @@ class UnitPT(BaseFloatValue):
     """
     Represents a ``PT`` (points) value.
 
-    Supports ``UnitObj`` protocol.
+    Supports ``UnitT`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`

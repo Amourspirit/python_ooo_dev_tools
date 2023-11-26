@@ -7,6 +7,7 @@ import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -78,21 +79,53 @@ class CtlCurrencyField(DialogControlBase, SpinEvents, TextEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlCurrencyField:
-        return self.get_view_ctl()
+    def accuracy(self) -> int:
+        """Gets/Sets the accuracy"""
+        return self.model.DecimalAccuracy
+
+    @accuracy.setter
+    def accuracy(self, value: int) -> None:
+        self.model.DecimalAccuracy = value
+
+    @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def increment(self) -> float:
+        """Gets/Sets the increment value"""
+        return self.model.ValueStep
+
+    @increment.setter
+    def increment(self, value: float) -> None:
+        self.model.ValueStep = value
+
+    @property
+    def max_value(self) -> float:
+        """Gets/Sets the maximum value"""
+        return self.model.ValueMax
+
+    @max_value.setter
+    def max_value(self, value: float) -> None:
+        self.model.ValueMax = value
+
+    @property
+    def min_value(self) -> float:
+        """Gets/Sets the minimum value"""
+        return self.model.ValueMin
+
+    @min_value.setter
+    def min_value(self, value: float) -> None:
+        self.model.ValueMin = value
 
     @property
     def model(self) -> UnoControlCurrencyFieldModel:
         return self.get_model()
-
-    @property
-    def value(self) -> float:
-        """Gets/Sets the value"""
-        return self.model.Value
-
-    @value.setter
-    def value(self, value: float) -> None:
-        self.model.Value = value
 
     @property
     def read_only(self) -> bool:
@@ -106,6 +139,28 @@ class CtlCurrencyField(DialogControlBase, SpinEvents, TextEvents):
         """Sets the read-only property"""
         with contextlib.suppress(Exception):
             self.model.ReadOnly = value
+
+    @property
+    def spin_button(self) -> bool:
+        """Gets/Sets the spin button property"""
+        return self.model.Spin
+
+    @spin_button.setter
+    def spin_button(self, value: bool) -> None:
+        self.model.Spin = value
+
+    @property
+    def value(self) -> float:
+        """Gets/Sets the value"""
+        return self.model.Value
+
+    @value.setter
+    def value(self, value: float) -> None:
+        self.model.Value = value
+
+    @property
+    def view(self) -> UnoControlCurrencyField:
+        return self.get_view_ctl()
 
     # endregion Properties
 

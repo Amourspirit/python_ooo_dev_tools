@@ -1,21 +1,18 @@
 from __future__ import annotations
-
 from typing import Any, TYPE_CHECKING
 
 import uno
-from com.sun.star.view import XSelectionChangeListener
 from com.sun.star.view import XSelectionSupplier
 from com.sun.star.frame import XModel
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from ooodev.utils import lo as mLo
 from .selection_change_listener import SelectionChangeListener
 
 if TYPE_CHECKING:
-    from com.sun.star.lang import XComponent
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class SelectionChangeEvents:

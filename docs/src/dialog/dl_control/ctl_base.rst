@@ -1,5 +1,5 @@
-ooodev.adapter.adapter\_base module
-===================================
+module ctl_base
+===============
 
 .. automodule:: ooodev.dialog.dl_control.ctl_base
     :members:

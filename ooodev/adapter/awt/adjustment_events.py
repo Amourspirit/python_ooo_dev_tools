@@ -1,11 +1,13 @@
 from __future__ import annotations
 import contextlib
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .adjustment_listener import AdjustmentListener
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class AdjustmentEvents:

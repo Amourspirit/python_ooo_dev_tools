@@ -15,7 +15,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitPT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -83,7 +83,7 @@ class FontPosition(StyleBase):
         rotation: int | Angle | None = None,
         scale: int | None = None,
         fit: bool | None = None,
-        spacing: CharSpacingKind | float | UnitObj | None = None,
+        spacing: CharSpacingKind | float | UnitT | None = None,
         pair: bool | None = None,
     ) -> None:
         """
@@ -98,7 +98,7 @@ class FontPosition(StyleBase):
                 implementation only certain values may be allowed.
             scale (int, optional): Specifies scale width as percent value. Min value is ``1``.
             fit (bool, optional): Specifies if rotation is fit to line.
-            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units
+            spacing (CharSpacingKind, float, UnitT, optional): Specifies character spacing in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
 
@@ -329,12 +329,12 @@ class FontPosition(StyleBase):
         ft.prop_fit = value
         return ft
 
-    def fmt_spacing(self: _TFontPosition, value: float | UnitObj | None = None) -> _TFontPosition:
+    def fmt_spacing(self: _TFontPosition, value: float | UnitT | None = None) -> _TFontPosition:
         """
         Get copy of instance with spacing set or removed.
 
         Args:
-            value (float, UnitObj, optional): The character spacing in ``pt`` (point) units :ref:`proto_unit_obj`.
+            value (float, UnitT, optional): The character spacing in ``pt`` (point) units :ref:`proto_unit_obj`.
                 If ``None`` style is removed. Default ``None``
 
         Returns:
@@ -612,7 +612,7 @@ class FontPosition(StyleBase):
         return None if pv is None else UnitPT.from_mm100(pv)
 
     @prop_spacing.setter
-    def prop_spacing(self, value: float | CharSpacingKind | UnitObj | None) -> None:
+    def prop_spacing(self, value: float | CharSpacingKind | UnitT | None) -> None:
         if value is None:
             self._remove("CharKerning")
             return
@@ -640,7 +640,7 @@ class FontPosition(StyleBase):
         try:
             return self._default_instance
         except AttributeError:
-            fp = self.__class__(_cattribs=self._get_internal_cattribs())
+            fp = self.__class__(_cattribs=self._get_internal_cattribs()) # type: ignore
             fp._set("CharEscapement", 0)
             fp._set("CharEscapementHeight", 100)
             fp._set("CharRotation", 0)

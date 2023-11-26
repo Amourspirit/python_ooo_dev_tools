@@ -3,7 +3,7 @@ import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ooodev.utils.color import Color, StandardColor
 from ooodev.format.inner.direct.calc.border.shadow import Shadow as DirectShadow
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 
 
 class Shadow(DirectShadow):
@@ -27,7 +27,7 @@ class Shadow(DirectShadow):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float | UnitObj = 1.76,
+        width: float | UnitT = 1.76,
     ) -> None:
         """
         Constructor
@@ -37,7 +37,7 @@ class Shadow(DirectShadow):
                 Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (:py:data:`~.utils.color.Color`, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units)
+            width (float, UnitT, optional): contains the size of the shadow (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Defaults to ``1.76``.
 
         Raises:

@@ -2,9 +2,9 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
-from ooodev.adapter.awt.item_events import ItemEvents
 
 # pylint: disable=useless-import-alias
+from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind

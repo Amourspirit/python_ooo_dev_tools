@@ -10,7 +10,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitMM100
 from ooodev.units import UnitConvert
@@ -42,7 +42,7 @@ class ShadowStruct(StructBase):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float | UnitObj = 1.76,
+        width: float | UnitT = 1.76,
     ) -> None:
         """
         Constructor
@@ -52,7 +52,7 @@ class ShadowStruct(StructBase):
                 Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (:py:data:`~.utils.color.Color`, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units)
+            width (float, UnitT, optional): contains the size of the shadow (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Defaults to ``1.76``.
 
         Raises:
@@ -238,7 +238,7 @@ class ShadowStruct(StructBase):
 
         return cls(
             location=shadow.Location,
-            color=shadow.Color,
+            color=shadow.Color,  # type: ignore
             transparent=shadow.IsTransparent,
             width=UnitMM100(shadow.ShadowWidth).get_value_mm(),
             **kwargs,
@@ -270,7 +270,7 @@ class ShadowStruct(StructBase):
         """
         return cls(
             location=shadow.Location,
-            color=shadow.Color,
+            color=shadow.Color,  # type: ignore
             transparent=shadow.IsTransparent,
             width=UnitMM100(shadow.ShadowWidth),
             **kwargs,
@@ -322,7 +322,7 @@ class ShadowStruct(StructBase):
         cp.prop_transparent = value
         return cp
 
-    def fmt_width(self: _TShadowStruct, value: float | UnitObj) -> _TShadowStruct:
+    def fmt_width(self: _TShadowStruct, value: float | UnitT) -> _TShadowStruct:
         """
         Gets a copy of instance with width set
 
@@ -381,7 +381,7 @@ class ShadowStruct(StructBase):
         return UnitMM.from_mm100(self._width)
 
     @prop_width.setter
-    def prop_width(self, value: float | UnitObj) -> None:
+    def prop_width(self, value: float | UnitT) -> None:
         try:
             self._width = value.get_value_mm100()  # type: ignore
         except AttributeError:
@@ -398,7 +398,7 @@ class ShadowStruct(StructBase):
                 transparent=False,
                 color=8421504,
                 width=1.76,
-                _cattribs=self._get_internal_cattribs(),
+                _cattribs=self._get_internal_cattribs(),  # type: ignore
             )
             self._empty_inst._is_default_inst = True
         return self._empty_inst

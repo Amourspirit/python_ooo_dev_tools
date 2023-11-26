@@ -5,7 +5,7 @@ from typing import Any, Tuple, overload, Type, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitConvert
@@ -38,11 +38,11 @@ class AbstractHF(StyleBase):
         on: bool | None = None,
         shared: bool | None = None,
         shared_first: bool | None = None,
-        margin_left: float | UnitObj | None = None,
-        margin_right: float | UnitObj | None = None,
-        spacing: float | UnitObj | None = None,
+        margin_left: float | UnitT | None = None,
+        margin_right: float | UnitT | None = None,
+        spacing: float | UnitT | None = None,
         spacing_dyn: bool | None = None,
-        height: float | UnitObj | None = None,
+        height: float | UnitT | None = None,
         height_auto: bool | None = None,
     ) -> None:
         """
@@ -238,7 +238,7 @@ class AbstractHF(StyleBase):
         cp.prop_shared_first = value
         return cp
 
-    def fmt_margin_left(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
+    def fmt_margin_left(self: _TAbstractHF, value: float | UnitT | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``margin_left`` set or removed.
 
@@ -252,7 +252,7 @@ class AbstractHF(StyleBase):
         cp.prop_margin_right = value
         return cp
 
-    def fmt_margin_right(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
+    def fmt_margin_right(self: _TAbstractHF, value: float | UnitT | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``margin_right`` set or removed.
 
@@ -266,7 +266,7 @@ class AbstractHF(StyleBase):
         cp.prop_margin_left = value
         return cp
 
-    def fmt_spacing(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
+    def fmt_spacing(self: _TAbstractHF, value: float | UnitT | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``spacing`` set or removed.
 
@@ -294,7 +294,7 @@ class AbstractHF(StyleBase):
         cp.prop_spacing_dynamic = value
         return cp
 
-    def fmt_height(self: _TAbstractHF, value: float | UnitObj | None) -> _TAbstractHF:
+    def fmt_height(self: _TAbstractHF, value: float | UnitT | None) -> _TAbstractHF:
         """
         Gets a copy of instance with ``height`` set or removed.
 
@@ -416,7 +416,7 @@ class AbstractHF(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_margin_left.setter
-    def prop_margin_left(self, value: float | UnitObj | None) -> None:
+    def prop_margin_left(self, value: float | UnitT | None) -> None:
         if value is None:
             self._remove(self._props.margin_left)
             return
@@ -434,7 +434,7 @@ class AbstractHF(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_margin_right.setter
-    def prop_margin_right(self, value: float | UnitObj | None) -> None:
+    def prop_margin_right(self, value: float | UnitT | None) -> None:
         if value is None:
             self._remove(self._props.margin_right)
             return
@@ -452,7 +452,7 @@ class AbstractHF(StyleBase):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_spacing.setter
-    def prop_spacing(self, value: float | UnitObj | None) -> None:
+    def prop_spacing(self, value: float | UnitT | None) -> None:
         if value is None:
             self._remove(self._props.spacing)
             return
@@ -491,7 +491,7 @@ class AbstractHF(StyleBase):
         return UnitMM.from_mm100(val)
 
     @prop_height.setter
-    def prop_height(self, value: float | UnitObj | None) -> None:
+    def prop_height(self, value: float | UnitT | None) -> None:
         # height includes spacing
         if value is None:
             self._remove(self._props.height)

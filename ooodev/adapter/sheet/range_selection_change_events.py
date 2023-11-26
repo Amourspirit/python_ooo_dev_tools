@@ -5,12 +5,12 @@ import uno
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .range_selection_change_listener import RangeSelectionChangeListener
 
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XRangeSelection
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class RangeSelectionChangeEvents:

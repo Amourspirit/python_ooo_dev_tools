@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_file.CtlFile
+.. autoclass:: ooodev.dialog.dl_control.CtlFile
     :members:
     :undoc-members:
     :show-inheritance:

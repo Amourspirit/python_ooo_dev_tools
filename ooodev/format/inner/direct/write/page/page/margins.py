@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, TypeVar
 
 from ooodev.format.inner.common.props.page_margin_props import PageMarginProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.direct.calc.page.page.margins import Margins as CalcMargins
@@ -20,11 +20,11 @@ class Margins(CalcMargins):
     def __init__(
         self,
         *,
-        left: float | UnitObj | None = None,
-        right: float | UnitObj | None = None,
-        top: float | UnitObj | None = None,
-        bottom: float | UnitObj | None = None,
-        gutter: float | UnitObj | None = None,
+        left: float | UnitT | None = None,
+        right: float | UnitT | None = None,
+        top: float | UnitT | None = None,
+        bottom: float | UnitT | None = None,
+        gutter: float | UnitT | None = None,
     ) -> None:
         """
         Constructor
@@ -50,7 +50,7 @@ class Margins(CalcMargins):
         return None if pv is None else UnitMM.from_mm100(pv)
 
     @prop_gutter.setter
-    def prop_gutter(self, value: float | UnitObj | None) -> None:
+    def prop_gutter(self, value: float | UnitT | None) -> None:
         self._check(value, "gutter")
         if value is None:
             self._remove(self._props.gutter)
@@ -76,7 +76,7 @@ class Margins(CalcMargins):
         try:
             return self._DEFAULT_INST
         except AttributeError:
-            inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            inst = self.__class__(_cattribs=self._get_internal_cattribs())  # type: ignore
             for attrib in inst._props:
                 if attrib:
                     inst._set(attrib, 2000)

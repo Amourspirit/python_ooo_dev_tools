@@ -4,7 +4,7 @@ from typing import cast, Tuple
 import uno
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ooodev.format.inner.direct.write.char.font import font_only
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
@@ -52,7 +52,7 @@ class FontOnly(CellStyleBaseMulti):
         self,
         *,
         name: str | None = None,
-        size: float | UnitObj | None = None,
+        size: float | UnitT | None = None,
         font_style: str | None = None,
         lang: FontLang | None = None,
         style_name: StyleCellKind | str = StyleCellKind.DEFAULT,

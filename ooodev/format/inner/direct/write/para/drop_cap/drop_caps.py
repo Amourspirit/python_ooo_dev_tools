@@ -12,7 +12,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
@@ -41,7 +41,7 @@ class DropCaps(StyleMulti):
         self,
         *,
         count: int = 0,
-        spaces: float | UnitObj = 0.0,
+        spaces: float | UnitT = 0.0,
         lines: int = 3,
         style: StyleCharKind | str | None = None,
         whole_word: bool | None = None,
@@ -51,7 +51,7 @@ class DropCaps(StyleMulti):
 
         Args:
             count (int): Specifies the number of characters in the drop cap. Must be from ``0`` to ``255``.
-            spaces (float, UnitObj): Specifies the distance between the drop cap in the following text
+            spaces (float, UnitT): Specifies the distance between the drop cap in the following text
                 (in ``mm`` units) or :ref:`proto_unit_obj`.
             lines (int): Specifies the number of lines used for a drop cap. Must be from ``0`` to ``255``.
             style (StyleCharKind, str, optional): Specifies the character style name for drop caps.
@@ -84,13 +84,13 @@ class DropCaps(StyleMulti):
             style = ""
             init_vars["DropCapWholeWord"] = False
             init_vars["DropCapCharStyleName"] = ""
-            dc = DropCapStruct(count=0, distance=0, lines=0, _cattribs=self._get_cattribs())
+            dc = DropCapStruct(count=0, distance=0, lines=0, _cattribs=self._get_cattribs())  # type: ignore
         elif count > 0:
             try:
                 dist = spaces.get_value_mm100()  # type: ignore
             except AttributeError:
                 dist = UnitConvert.convert_mm_mm100(spaces)  # type: ignore
-            dc = DropCapStruct(count=count, distance=dist, lines=lines, _cattribs=self._get_cattribs())
+            dc = DropCapStruct(count=count, distance=dist, lines=lines, _cattribs=self._get_cattribs())  # type: ignore
             if whole_word is not None:
                 init_vars["DropCapWholeWord"] = whole_word
                 if whole_word:
@@ -262,7 +262,7 @@ class DropCaps(StyleMulti):
         try:
             return self._default_inst
         except AttributeError:
-            inst = self.__class__(count=0, _cattribs=self._get_cattribs())
+            inst = self.__class__(count=0, _cattribs=self._get_cattribs())  # type: ignore
             inst._is_default_inst = True
             self._default_inst = inst
         return self._default_inst

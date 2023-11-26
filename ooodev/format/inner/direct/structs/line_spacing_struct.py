@@ -17,7 +17,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units.unit_convert import UnitConvert, UnitLength
 from ooodev.utils import props as mProps
 
@@ -85,13 +85,13 @@ class LineSpacingStruct(StructBase):
 
     # region init
 
-    def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: int | float | UnitObj = 0) -> None:
+    def __init__(self, mode: ModeKind = ModeKind.SINGLE, value: int | float | UnitT = 0) -> None:
         """
         Constructor
 
         Args:
             mode (LineMode, optional): This value specifies the way the spacing is specified.
-            value (Real, UnitObj, optional): This value specifies the spacing in regard to Mode.
+            value (Real, UnitT, optional): This value specifies the spacing in regard to Mode.
 
         Raises:
             ValueError: If ``value`` are less than zero.
@@ -113,7 +113,7 @@ class LineSpacingStruct(StructBase):
         if mode == ModeKind.PROPORTIONAL:
             # no conversion
             try:
-                # just in case passed in as a UnitObj
+                # just in case passed in as a UnitT
                 self._value = round(value.value)  # type: ignore
             except AttributeError:
                 self._value = int(value)  # type: ignore
@@ -181,7 +181,7 @@ class LineSpacingStruct(StructBase):
         ...
 
     def copy(self: _TLineSpacingStruct, **kwargs) -> _TLineSpacingStruct:
-        nu = self.__class__(mode=self._mode, height=self._value, **kwargs)
+        nu = self.__class__(mode=self._mode, height=self._value, **kwargs)  # type: ignore
         if dv := self._get_properties():
             nu._update(dv)
         return nu
@@ -307,7 +307,7 @@ class LineSpacingStruct(StructBase):
         try:
             return self._default_inst
         except AttributeError:
-            self._default_inst = self.__class__(ModeKind.SINGLE, 0, _cattribs=self._get_internal_cattribs())
+            self._default_inst = self.__class__(ModeKind.SINGLE, 0, _cattribs=self._get_internal_cattribs())  # type: ignore
             self._default_inst._is_default_inst = True
         return self._default_inst
 

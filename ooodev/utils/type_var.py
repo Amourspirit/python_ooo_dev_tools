@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextDocument
     from ooodev.events.args.event_args import EventArgs
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.listener_event_args import ListenerEventArgs
 else:
     XText = object
@@ -74,6 +75,11 @@ ListenerEventCallbackT = Callable[[Any, ListenerEventArgs], None]
 
 class EventArgsCallbackT(Protocol):
     def __call__(self, src: Any, event: EventArgs, *args: Any, **kwargs: Any) -> None:
+        ...
+
+
+class CancelEventArgsCallbackT(Protocol):
+    def __call__(self, src: Any, event: CancelEventArgs, *args: Any, **kwargs: Any) -> None:
         ...
 
 

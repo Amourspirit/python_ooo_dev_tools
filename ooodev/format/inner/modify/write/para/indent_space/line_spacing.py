@@ -5,7 +5,7 @@ import uno
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind as ModeKind
 from ooodev.format.inner.direct.write.para.indent_space.line_spacing import LineSpacing as InnerLineSpacing
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ..para_style_base_multi import ParaStyleBaseMulti
 
 # endregion Import
@@ -26,7 +26,7 @@ class LineSpacing(ParaStyleBaseMulti):
         self,
         *,
         mode: ModeKind | None = None,
-        value: int | float | UnitObj = 0,
+        value: int | float | UnitT = 0,
         active_ln_spacing: bool | None = None,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
@@ -36,7 +36,7 @@ class LineSpacing(ParaStyleBaseMulti):
 
         Args:
             mode (ModeKind, optional): Determines the mode that is used to apply units.
-            value (int, float, UnitObj, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
+            value (int, float, UnitT, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
                 ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             active_ln_spacing (bool, optional): Determines active page line-spacing.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.

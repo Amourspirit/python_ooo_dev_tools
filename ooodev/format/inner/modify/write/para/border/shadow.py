@@ -5,7 +5,7 @@ import uno
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
 from ooodev.utils.color import StandardColor, Color
@@ -31,7 +31,7 @@ class Shadow(ParaStyleBaseMulti):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float | UnitObj = 1.76,
+        width: float | UnitT = 1.76,
         style_name: StyleParaKind | str = StyleParaKind.STANDARD,
         style_family: str = "ParagraphStyles",
     ) -> None:
@@ -43,7 +43,7 @@ class Shadow(ParaStyleBaseMulti):
                 Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (:py:data:`~.utils.color.Color`, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, UnitObj, optional): contains the size of the shadow (in ``mm`` units)
+            width (float, UnitT, optional): contains the size of the shadow (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Defaults to ``1.76``.
             style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
                 Default is Default Paragraph Style.

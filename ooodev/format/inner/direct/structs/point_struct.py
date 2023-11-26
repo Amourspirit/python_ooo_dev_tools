@@ -7,7 +7,7 @@ from ooo.dyn.awt.point import Point
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -199,7 +199,7 @@ class PointStruct(StructBase):
         Gets copy of instance with width and height set.
 
         Args:
-            value (float, UnitObj): Specifies ``x`` and ``y`` values.
+            value (float, UnitT): Specifies ``x`` and ``y`` values.
 
         Returns:
             PointStruct: Border Table
@@ -214,7 +214,7 @@ class PointStruct(StructBase):
         Gets a copy of instance with height set.
 
         Args:
-            value (float, UnitObj): Specifies ``x`` value.
+            value (float, UnitT): Specifies ``x`` value.
 
         Returns:
             PointStruct:
@@ -228,7 +228,7 @@ class PointStruct(StructBase):
         Gets a copy of instance with width set.
 
         Args:
-            value (float, UnitObj): Specifies ``y`` value.
+            value (float, UnitT): Specifies ``y`` value.
 
         Returns:
             PointStruct:

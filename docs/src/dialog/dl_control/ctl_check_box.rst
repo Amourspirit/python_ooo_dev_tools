@@ -42,7 +42,7 @@ For an example see `Tab and Tree Dialog Example <https://github.com/Amourspirit/
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_check_box.CtlCheckBox
+.. autoclass:: ooodev.dialog.dl_control.CtlCheckBox
     :members:
     :undoc-members:
     :show-inheritance:

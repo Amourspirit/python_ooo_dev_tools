@@ -112,6 +112,24 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
         return self.get_model()
 
     @property
+    def drop_down(self) -> bool:
+        """Gets/Sets the combobox has a drop down button."""
+        return self.model.Dropdown
+
+    @drop_down.setter
+    def drop_down(self, value: bool) -> None:
+        self.model.Dropdown = value
+
+    @property
+    def max_text_len(self) -> int:
+        """Gets/Sets the maximum character count."""
+        return self.model.MaxTextLen
+
+    @max_text_len.setter
+    def max_text_len(self, value: int) -> None:
+        self.model.MaxTextLen = value
+
+    @property
     def text(self) -> str:
         """Gets/Sets the text"""
         with contextlib.suppress(Exception):

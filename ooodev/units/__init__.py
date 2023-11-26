@@ -1,6 +1,7 @@
 from .unit_convert import UnitConvert as UnitConvert
 from .unit_convert import UnitLength as UnitLength
-from .unit_obj import UnitObj as UnitObj
+from .unit_obj import UnitT as UnitT
+from .unit_obj import UnitT as UnitObj
 from .unit_inch import UnitInch as UnitInch
 from .unit_inch10 import UnitInch10 as UnitInch10
 from .unit_inch100 import UnitInch100 as UnitInch100
@@ -15,7 +16,7 @@ from .unit_cm import UnitCM as UnitCM
 __all__ = [
     "UnitConvert",
     "UnitLength",
-    "UnitObj",
+    "UnitT",
     "UnitInch",
     "UnitInch10",
     "UnitInch100",

@@ -4,7 +4,7 @@ from typing import cast
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
@@ -32,7 +32,7 @@ class Hatch(PageStyleBaseMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = StandardColor.BLACK,
-        space: float | UnitObj = 0.0,
+        space: float | UnitT = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = StandardColor.AUTO_COLOR,
         style_name: WriterStylePageKind | str = WriterStylePageKind.STANDARD,
@@ -45,7 +45,7 @@ class Hatch(PageStyleBaseMulti):
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch.
                 Default ``HatchStyle.SINGLE``.
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
+            space (float, UnitT, optional): Specifies the space between the lines in the hatch (in ``mm`` units)
                 or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(:py:data:`~.utils.color.Color`, optional): Specifies the background Color. Set this ``-1`` (default)

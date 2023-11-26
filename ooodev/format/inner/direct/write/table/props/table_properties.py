@@ -12,7 +12,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.size import Size
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -29,7 +29,7 @@ _TTableProperties = TypeVar(name="_TTableProperties", bound="TableProperties")
 _TSharedAuto = TypeVar(name="_TSharedAuto", bound="_SharedAuto")
 _TTblAuto = TypeVar(name="_TTblAuto", bound="_TblAuto")
 _TTblRelLeftByWidth = TypeVar(name="_TTblRelLeftByWidth", bound="_TblRelLeftByWidth")
-TblAbsUnit = Union[float, UnitObj]
+TblAbsUnit = Union[float, UnitT]
 TblRelUnit = Union[int, Intensity]
 
 # endregion Types
@@ -2103,7 +2103,7 @@ class TableProperties(StyleMulti):
             return True
 
         if align == TableAlignKind.AUTO:
-            return _TblAuto(above=above, below=below, _cattribs=self._get_tbl_cattribs())
+            return _TblAuto(above=above, below=below, _cattribs=self._get_tbl_cattribs())  # type: ignore
         if align == TableAlignKind.CENTER:
             if width is None:
                 ck = check_req(left)
@@ -2111,9 +2111,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is False."
                     )
-                return _TblCenterLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblCenterLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())  # type: ignore
             else:
-                return _TblCenterWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblCenterWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())  # type: ignore
         if align == TableAlignKind.FROM_LEFT:
             if width is None:
                 ck = check_req(left)
@@ -2121,9 +2121,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is False."
                     )
-                return _TblFromLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblFromLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())  # type: ignore
             else:
-                return _TblFromLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblFromLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())  # type: ignore
         if align == TableAlignKind.LEFT:
             if width is None:
                 ck = check_req(right)
@@ -2131,9 +2131,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"right or width are required when align is set to {align.name} and relative value is False."
                     )
-                return _TblLeft(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs())
+                return _TblLeft(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs())  # type: ignore
             else:
-                return _TblLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblLeftWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())  # type: ignore
         if align == TableAlignKind.RIGHT:
             if width is None:
                 ck = check_req(left)
@@ -2141,9 +2141,9 @@ class TableProperties(StyleMulti):
                     raise ValueError(
                         f"left or width are required when align is set to {align.name} and relative value is False."
                     )
-                return _TblRight(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())
+                return _TblRight(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs())  # type: ignore
             else:
-                return _TblRightWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblRightWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())  # type: ignore
         if align == TableAlignKind.MANUAL:
             if width is None:
                 ck = check_req(left, right)
@@ -2152,10 +2152,10 @@ class TableProperties(StyleMulti):
                         f"left and right or width are required when align is set to {align.name} and relative value is False."
                     )
                 return _TblManualLeftRight(
-                    above=above, below=below, left=left, right=right, _cattribs=self._get_tbl_cattribs()
+                    above=above, below=below, left=left, right=right, _cattribs=self._get_tbl_cattribs()  # type: ignore
                 )
             else:
-                return _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())
+                return _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs())  # type: ignore
         raise ValueError("Align Value is Unknown")
 
     def _get_size_rel_class(
@@ -2183,12 +2183,12 @@ class TableProperties(StyleMulti):
                     )
                 return cast(
                     _TTblRelLeftByWidth,
-                    _TblRelCenter(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs()),
+                    _TblRelCenter(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs()),  # type: ignore
                 )
             else:
                 return cast(
                     _TTblAuto,
-                    _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),
+                    _TblManualCenter(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),  # type: ignore
                 )
         if align == TableAlignKind.FROM_LEFT:
             ck = check_req(width, left)
@@ -2198,7 +2198,7 @@ class TableProperties(StyleMulti):
                 )
             return cast(
                 _TTblRelLeftByWidth,
-                _TblRelFromLeft(above=above, below=below, width=width, left=left, _cattribs=self._get_tbl_cattribs()),
+                _TblRelFromLeft(above=above, below=below, width=width, left=left, _cattribs=self._get_tbl_cattribs()),  # type: ignore
             )
         if align == TableAlignKind.LEFT:
             if width is None:
@@ -2209,12 +2209,12 @@ class TableProperties(StyleMulti):
                     )
                 return cast(
                     _TTblRelLeftByWidth,
-                    _TblRelLeftByRight(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs()),
+                    _TblRelLeftByRight(above=above, below=below, right=right, _cattribs=self._get_tbl_cattribs()),  # type: ignore
                 )
             else:
                 return cast(
                     _TTblRelLeftByWidth,
-                    _TblRelLeftByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),
+                    _TblRelLeftByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),  # type: ignore
                 )
         if align == TableAlignKind.RIGHT:
             if width is None:
@@ -2225,12 +2225,12 @@ class TableProperties(StyleMulti):
                     )
                 return cast(
                     _TTblRelLeftByWidth,
-                    _TblRelRightByLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs()),
+                    _TblRelRightByLeft(above=above, below=below, left=left, _cattribs=self._get_tbl_cattribs()),  # type: ignore
                 )
             else:
                 return cast(
                     _TTblRelLeftByWidth,
-                    _TblRelRightByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),
+                    _TblRelRightByWidth(above=above, below=below, width=width, _cattribs=self._get_tbl_cattribs()),  # type: ignore
                 )
         if align == TableAlignKind.AUTO:
             raise ValueError('align must not be set to "TableAlignKind.AUTO" when relative is set to False')

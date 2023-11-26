@@ -13,6 +13,7 @@ from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
 
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -115,12 +116,13 @@ class CtlTextEdit(DialogControlBase, TextEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlEdit:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
 
-    @property
-    def model(self) -> UnoControlEditModel:
-        return self.get_model()
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
 
     @property
     def echo_char(self) -> str:
@@ -145,6 +147,10 @@ class CtlTextEdit(DialogControlBase, TextEvents):
         self.model.LineEndFormat = value.value
 
     @property
+    def model(self) -> UnoControlEditModel:
+        return self.get_model()
+
+    @property
     def multi_line(self) -> bool:
         """Gets/Sets the multi line"""
         return self.model.MultiLine
@@ -152,15 +158,6 @@ class CtlTextEdit(DialogControlBase, TextEvents):
     @multi_line.setter
     def multi_line(self, value: bool) -> None:
         self.model.MultiLine = value
-
-    @property
-    def text(self) -> str:
-        """Gets/Sets the text"""
-        return self.view.getText()
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.view.setText(value)
 
     @property
     def read_only(self) -> bool:
@@ -174,6 +171,19 @@ class CtlTextEdit(DialogControlBase, TextEvents):
         """Sets the read-only property"""
         with contextlib.suppress(Exception):
             self.model.ReadOnly = value
+
+    @property
+    def text(self) -> str:
+        """Gets/Sets the text"""
+        return self.view.getText()
+
+    @text.setter
+    def text(self, value: str) -> None:
+        self.view.setText(value)
+
+    @property
+    def view(self) -> UnoControlEdit:
+        return self.get_view_ctl()
 
     # endregion Properties
 

@@ -2,7 +2,7 @@
 from __future__ import annotations
 import uno
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as CharFontOnly, FontLang
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 
 # endregion Import
 
@@ -26,7 +26,7 @@ class FontOnly(CharFontOnly):
         self,
         *,
         name: str | None = None,
-        size: float | UnitObj | None = None,
+        size: float | UnitT | None = None,
         font_style: str | None = None,
         lang: FontLang | None = None,
     ) -> None:
@@ -36,7 +36,7 @@ class FontOnly(CharFontOnly):
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one
                 name separated by comma.
-            size (float, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units
+            size (float, UnitT, optional): This value contains the size of the characters in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             font_style (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language

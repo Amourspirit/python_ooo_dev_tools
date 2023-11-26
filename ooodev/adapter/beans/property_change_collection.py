@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, TypedDict
+from typing import Dict, TypedDict
 import uno
 from com.sun.star.beans import XPropertySet
 

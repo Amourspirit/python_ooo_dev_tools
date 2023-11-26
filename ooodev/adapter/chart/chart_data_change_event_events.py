@@ -5,11 +5,11 @@ import uno
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 from .chart_data_change_event_listener import ChartDataChangeEventListener
 
 if TYPE_CHECKING:
     from com.sun.star.chart import XChartData
+    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
 
 
 class ChartDataChangeEventEvents:

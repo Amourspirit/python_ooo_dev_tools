@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 
 import uno
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ooodev.format.inner.direct.write.char.border.shadow import Shadow as InnerShadow
 from ooodev.utils.color import Color, StandardColor
@@ -31,7 +31,7 @@ class Shadow(CharStyleBaseMulti):
         location: ShadowLocation = ShadowLocation.BOTTOM_RIGHT,
         color: Color = StandardColor.GRAY,
         transparent: bool = False,
-        width: float | UnitObj = 1.76,
+        width: float | UnitT = 1.76,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
     ) -> None:
@@ -42,7 +42,7 @@ class Shadow(CharStyleBaseMulti):
             location (ShadowLocation, optional): contains the location of the shadow. Default to ``ShadowLocation.BOTTOM_RIGHT``.
             color (:py:data:`~.utils.color.Color`, optional):contains the color value of the shadow. Defaults to ``StandardColor.GRAY``.
             transparent (bool, optional): Shadow transparency. Defaults to False.
-            width (float, Unit100MM, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
+            width (float, UnitT, optional): contains the size of the shadow (in ``mm`` units) or :ref:`proto_unit_obj`. Defaults to ``1.76``.
             style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
             style_family (str, optional): Style family. Default ``CharacterStyles``.
 

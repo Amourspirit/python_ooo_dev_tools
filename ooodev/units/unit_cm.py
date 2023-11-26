@@ -12,7 +12,7 @@ class UnitCM(BaseFloatValue):
     """
     Unit in ``cm`` units.
 
-    Supports ``UnitObj`` protocol.
+    Supports ``UnitT`` protocol.
 
     See Also:
         :ref:`proto_unit_obj`

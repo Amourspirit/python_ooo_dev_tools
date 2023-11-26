@@ -316,7 +316,7 @@ and it responds by closing the document and Office:
 
             .. group-tab:: None
 
-|mod_list_adapter_py|_ Creates an instance of |modify_listener| and subscribes to ``modified`` event.
+|mod_list_adapter_py|_ Creates an instance of |modify_events| and subscribes to ``modified`` event.
 
 .. tabs::
 
@@ -479,7 +479,7 @@ This led to investigation of another form of listening, based on cell selection,
 Listening to cell selections on the sheet has the drawback of generating a lot of events, but this abundance of data turns out to be useful;
 It can be used to report more about cell modifications.
 
-The |sel_list|_ example is similar to |mod_list|_ except that it uses |selection_change_listener| rather than |modify_listener|:
+The |sel_list|_ example is similar to |mod_list|_ except that it uses |selection_change_evemts| rather than|modify_events|:
 
 .. tabs::
 
@@ -528,39 +528,19 @@ If the cell doesn't contain a float then ``self.curr_val`` is assigned ``None``.
 
             # Event handlers are defined as methods on the class.
             # However class methods are not callable by the event system.
-            # The solution is to create a function that calls the class method
-            # and pass that function to the event system.
-            # Also the function must be a member of the class so that it is not
-            # garbage collected.
-
-            def _on_window_closing(
-                source: Any, event_args: EventArgs, *args, **kwargs
-            ) -> None:
-                self.on_window_closing(source, event_args, *args, **kwargs)
-
-            def _on_selection_changed(
-                source: Any, event_args: EventArgs, *args, **kwargs
-            ) -> None:
-                self.on_selection_changed(source, event_args, *args, **kwargs)
-
-            def _on_disposing(
-                source: Any, event_args: EventArgs, *args, **kwarg
-            ) -> None:
-                self.on_disposing(source, event_args, *args, **kwargs)
-
-            self._fn_on_window_closing = _on_window_closing
-            self._on_selection_changed = _on_selection_changed
-            self._on_disposing = _on_disposing
+            # The solution is to assign the method to class fields and use them to add the event callbacks.
+            self._fn_on_window_closing = self.on_window_closing
+            self._on_selection_changed = self.on_selection_changed
+            self._on_disposing = self.on_disposing
 
             # close down when window closes
-            self._twl = TopWindowListener()
-            self._twl.on("windowClosing", _on_window_closing)
+            self._twe = TopWindowEvents(add_window_listener=True)
+            self._twe.add_event_window_closing(self._fn_on_window_closing)
 
-            # pass doc to constructor, this will allow listener to be
-            # automatically attached to document.
-            self._s_listener = SelectionChangeListener(doc=self._doc)
-            self._s_listener.on("selectionChanged", _on_selection_changed)
-            self._s_listener.on("disposing", _on_disposing)
+            # pass doc to constructor, this will allow listener events to be automatically attached to document.
+            self._sel_events = SelectionChangeEvents(doc=self._doc)
+            self._sel_events.add_event_selection_changed(self._on_selection_changed)
+            self._sel_events.add_event_selection_change_events_disposing(self._on_disposing)
 
     .. only:: html
 
@@ -568,7 +548,7 @@ If the cell doesn't contain a float then ``self.curr_val`` is assigned ``None``.
 
             .. group-tab:: None
 
-The current document is passed to |selection_change_listener| which handles setting up the XSelectionSupplier_.
+The current document is passed to |selection_change_evemts| which handles setting up the XSelectionSupplier_.
 
 ``on_selection_changed()`` listens for three kinds of changes in the sheet:
 
@@ -704,10 +684,11 @@ Clicking once inside a cell causes four calls, and an arrow key press may trigge
 .. |sel_list_py| replace:: select_listener.py
 .. _sel_list_py: https://github.com/Amourspirit/python-ooouno-ex/blob/main/ex/auto/calc/odev_select_listener/select_listener.py
 
-.. |top_window_listener| replace:: :py:class:`ooodev.adapter.awt.top_window_listener.TopWindowListener`
-.. |top_window_events| replace:: :py:class:`ooodev.adapter.awt.top_window_events.TopWindowEvents`
-.. |modify_listener| replace:: :ref:`ModifyListener <adapter_util_modify_listener>`
-.. |selection_change_listener| replace:: :ref:`SelectionChangeListener <adapter_view_selection_change_listener>`
+.. |top_window_listener| replace:: :py:class:`~ooodev.adapter.awt.top_window_listener.TopWindowListener`
+.. |top_window_events| replace:: :py:class:`~ooodev.adapter.awt.top_window_events.TopWindowEvents`
+.. |modify_listener| replace:: :py:class:`~ooodev.adapter.util.modify_listener.ModifyListener`
+.. |modify_events| replace:: :py:class:`~ooodev.adapter.util.modify_events.ModifyEvents`
+.. |selection_change_evemts| replace:: :py:class:`~ooodev.adapter.view.selection_change_events.SelectionChangeEvents`
 
 .. _EventObject: https://api.libreoffice.org/docs/idl/ref/structcom_1_1sun_1_1star_1_1lang_1_1EventObject.html
 .. _SpreadsheetDocument: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1sheet_1_1SpreadsheetDocument.html

@@ -9,7 +9,7 @@ from typing import Any, Type, overload, cast, Tuple, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
@@ -55,7 +55,7 @@ class Borders(StyleMulti):
         border_side: Side | None = None,
         vertical: Side | None = None,
         horizontal: Side | None = None,
-        distance: float | UnitObj | None = None,
+        distance: float | UnitT | None = None,
         diagonal_down: Side | None = None,
         diagonal_up: Side | None = None,
         shadow: Shadow | None = None,
@@ -72,7 +72,7 @@ class Borders(StyleMulti):
             border_side (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             horizontal (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style of horizontal lines for the inner part of a cell range.
             vertical (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style of vertical lines for the inner part of a cell range.
-            distance (float, UnitObj, optional): Contains the distance between the lines and other contents in ``mm`` units or :ref:`proto_unit_obj`.
+            distance (float, UnitT, optional): Contains the distance between the lines and other contents in ``mm`` units or :ref:`proto_unit_obj`.
             diagonal_down (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from top-left to bottom-right diagonal.
             diagonal_up (~ooodev.format.inner.direct.structs.side.Side, optional): Specifies the line style from bottom-left to top-right diagonal.
             shadow (~ooodev.format.inner.direct.calc.border.shadow.Shadow, optional): Cell Shadow.
@@ -116,7 +116,7 @@ class Borders(StyleMulti):
             horizontal=horizontal,
             vertical=vertical,
             distance=distance,
-            _cattribs=self._get_tb_cattribs(),
+            _cattribs=self._get_tb_cattribs(),  # type: ignore
         )
 
         super().__init__(**init_vals)
@@ -414,12 +414,12 @@ class Borders(StyleMulti):
         bt.prop_vertical = value
         return cp
 
-    def fmt_distance(self: _TBorders, value: float | UnitObj | None) -> _TBorders:
+    def fmt_distance(self: _TBorders, value: float | UnitT | None) -> _TBorders:
         """
         Gets copy of instance with distance set or removed
 
         Args:
-            value (float, UnitObj, optional): Distance value
+            value (float, UnitT, optional): Distance value
 
         Returns:
             Borders: Borders instance
@@ -588,7 +588,7 @@ class Borders(StyleMulti):
             return self._default_inst
         except AttributeError:
             self._default_inst = self.__class__(
-                border_side=Side(), padding=Padding(_cattribs=self._get_padding_cattribs()).default
+                border_side=Side(), padding=Padding(_cattribs=self._get_padding_cattribs()).default  # type: ignore
             )
             self._default_inst._is_default_inst = True
         return self._default_inst
@@ -607,9 +607,9 @@ class Borders(StyleMulti):
                 diagonal_down=side.empty,
                 diagonal_up=side.empty,
                 distance=0.0,
-                shadow=Shadow(_cattribs=self._get_shadow_cattribs()).empty,
-                padding=Padding(_cattribs=self._get_padding_cattribs()).default,
-                _cattribs=self._get_internal_cattribs(),
+                shadow=Shadow(_cattribs=self._get_shadow_cattribs()).empty,  # type: ignore
+                padding=Padding(_cattribs=self._get_padding_cattribs()).default,  # type: ignore
+                _cattribs=self._get_internal_cattribs(),  # type: ignore
             )
             self._empty_inst._is_default_inst = True
         return self._empty_inst

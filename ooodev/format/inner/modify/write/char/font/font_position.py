@@ -7,7 +7,7 @@ from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind a
 from ..char_style_base_multi import CharStyleBaseMulti
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.angle import Angle as Angle
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.inner.direct.write.char.font.font_position import FontPosition as InnerFontPosition
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind as CharSpacingKind
 from ooodev.format.inner.direct.write.char.font.font_position import FontScriptKind as FontScriptKind
@@ -35,7 +35,7 @@ class FontPosition(CharStyleBaseMulti):
         rotation: int | Angle | None = None,
         scale: int | None = None,
         fit: bool | None = None,
-        spacing: CharSpacingKind | float | UnitObj | None = None,
+        spacing: CharSpacingKind | float | UnitT | None = None,
         pair: bool | None = None,
         style_name: StyleCharKind | str = StyleCharKind.STANDARD,
         style_family: str = "CharacterStyles",
@@ -52,7 +52,7 @@ class FontPosition(CharStyleBaseMulti):
                 implementation only certain values may be allowed.
             scale (int, optional): Specifies scale width as percent value. Min value is ``1``.
             fit (bool, optional): Specifies if rotation is fit to line.
-            spacing (CharSpacingKind, float, UnitObj, optional): Specifies character spacing in ``pt`` (point) units
+            spacing (CharSpacingKind, float, UnitT, optional): Specifies character spacing in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             pair (bool, optional): Specifies pair kerning.
             style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.

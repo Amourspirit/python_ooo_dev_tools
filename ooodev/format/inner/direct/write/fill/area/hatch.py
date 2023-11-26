@@ -18,7 +18,7 @@ from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
 from ooodev.utils.data_type.angle import Angle as Angle
 from ooodev.units import UnitMM
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_hatch as mPreset
@@ -46,7 +46,7 @@ class Hatch(StyleMulti):
         *,
         style: HatchStyle = HatchStyle.SINGLE,
         color: Color = StandardColor.BLACK,
-        space: float | UnitObj = 0.0,
+        space: float | UnitT = 0.0,
         angle: Angle | int = 0,
         bg_color: Color = StandardColor.AUTO_COLOR,
     ) -> None:
@@ -56,7 +56,7 @@ class Hatch(StyleMulti):
         Args:
             style (HatchStyle, optional): Specifies the kind of lines used to draw this hatch. Default ``HatchStyle.SINGLE``.
             color (:py:data:`~.utils.color.Color`, optional): Specifies the color of the hatch lines. Default ``0``.
-            space (float, UnitObj, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
+            space (float, UnitT, optional): Specifies the space between the lines in the hatch (in ``mm`` units) or :ref:`proto_unit_obj`. Default ``0.0``
             angle (Angle, int, optional): Specifies angle of the hatch in degrees. Default to ``0``.
             bg_color(Color, optional): Specifies the background Color. Set this ``-1`` (default) for no background color.
 
@@ -68,7 +68,7 @@ class Hatch(StyleMulti):
         hatch = self._get_inner_class(style=style, color=color, distance=space, angle=angle)
 
         # create event just to listen to fill color init
-        bk_color = FillColor(color=bg_color, _cattribs=self._get_fill_color_cattribs())
+        bk_color = FillColor(color=bg_color, _cattribs=self._get_fill_color_cattribs())  # type: ignore
         bk_color._prop_parent = self
         # FillStyle is set by this class
         bk_color._remove(self._props.style)
@@ -146,7 +146,7 @@ class Hatch(StyleMulti):
             color=color,
             distance=distance,
             angle=angle,
-            _cattribs=self._get_hatch_cattribs(),
+            _cattribs=self._get_hatch_cattribs(),  # type: ignore
         )
         hatch._prop_parent = self
         return hatch
@@ -248,7 +248,7 @@ class Hatch(StyleMulti):
         angle = round(hatch.Angle / 10) if hatch.Angle > 0 else 0
         return cls(
             style=hatch.Style,
-            color=hatch.Color,
+            color=hatch.Color,  # type: ignore
             space=UnitConvert.convert_mm100_mm(hatch.Distance),
             angle=angle,
             bg_color=fc.prop_color,
@@ -331,7 +331,7 @@ class Hatch(StyleMulti):
 
     @prop_inner_color.setter
     def prop_inner_color(self, value: FillColor) -> None:
-        bk_color = FillColor(color=value.prop_color, _cattribs=self._get_fill_color_cattribs())
+        bk_color = FillColor(color=value.prop_color, _cattribs=self._get_fill_color_cattribs())  # type: ignore
         bk_color._prop_parent = self
 
         # FillStyle is set by this class

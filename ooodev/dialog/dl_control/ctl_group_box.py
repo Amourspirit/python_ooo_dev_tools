@@ -60,4 +60,13 @@ class CtlGroupBox(DialogControlBase):
     def model(self) -> UnoControlGroupBoxModel:
         return self.get_model()
 
+    @property
+    def label(self) -> str:
+        """Gets/Sets the label"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
     # endregion Properties

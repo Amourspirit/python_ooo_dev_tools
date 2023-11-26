@@ -69,8 +69,8 @@ from ..events.lo_named_event import LoNamedEvent
 from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
-from ..proto.style_obj import StyleObj, FormatKind
-from ..units import UnitObj
+from ..proto.style_obj import StyleT, FormatKind
+from ..units import UnitT
 from ..utils import file_io as mFileIO
 from ..utils import gen_util as mUtil
 from ..utils import images_lo as mImgLo
@@ -802,7 +802,7 @@ class Write(mSel.Selection):
         cursor.gotoEnd(False)
 
     @classmethod
-    def _append_text_style(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleObj]) -> None:
+    def _append_text_style(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
         s_len = len(text)
         if s_len == 0:
             return
@@ -865,7 +865,7 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def append(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleObj]) -> None:
+    def append(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
         ...
 
     @overload
@@ -886,7 +886,7 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             text (str): Text to append
-            styles (Sequence[StyleObj]):One or more styles to apply to text.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
             ctl_char (int): Control Char (like a paragraph break or a hard space)
             text_content (XTextContent): Text content, such as a text table, text frame or text field.
 
@@ -910,7 +910,7 @@ class Write(mSel.Selection):
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
 
         .. versionchanged:: 0.9.0
-            Added ``append(cursor: XTextCursor, text: str, styles: Sequence[StyleObj])`` overload.
+            Added ``append(cursor: XTextCursor, text: str, styles: Sequence[StyleT])`` overload.
 
             Added Events.
         """
@@ -973,18 +973,18 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def append_line(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleObj]) -> None:
+    def append_line(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
         ...
 
     @classmethod
-    def append_line(cls, cursor: XTextCursor, text: str = "", styles: Sequence[StyleObj] | None = None) -> None:
+    def append_line(cls, cursor: XTextCursor, text: str = "", styles: Sequence[StyleT] | None = None) -> None:
         """
         Appends a new Line
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): text to append before new line is inserted.
-            styles (Sequence[StyleObj]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
 
         :events:
             If using styles then the following events are triggered for each style.
@@ -995,7 +995,7 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
 
         .. versionchanged:: 0.9.0
-            Added overload ``append_line(cursor: XTextCursor, text: str, styles: Sequence[StyleObj])``.
+            Added overload ``append_line(cursor: XTextCursor, text: str, styles: Sequence[StyleT])``.
 
             Added events.
         """
@@ -1044,18 +1044,18 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def append_para(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleObj]) -> None:
+    def append_para(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
         ...
 
     @classmethod
-    def append_para(cls, cursor: XTextCursor, text: str = "", styles: Sequence[StyleObj] | None = None) -> None:
+    def append_para(cls, cursor: XTextCursor, text: str = "", styles: Sequence[StyleT] | None = None) -> None:
         """
         Appends text (if present) and then a paragraph break.
 
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): Text to append
-            styles (Sequence[StyleObj]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
 
         Returns:
             None:
@@ -1075,7 +1075,7 @@ class Write(mSel.Selection):
             - :doc:`ooodev.format.writer.direct.para </src/format/ooodev.format.writer.direct.para>`
 
         .. versionchanged:: 0.9.0
-            Added overload ``append_para(cursor: XTextCursor, text: str, styles: Sequence[StyleObj])``.
+            Added overload ``append_para(cursor: XTextCursor, text: str, styles: Sequence[StyleT])``.
 
             Added Events.
         """
@@ -1085,10 +1085,10 @@ class Write(mSel.Selection):
 
         restore = False
 
-        style_lst: List[StyleObj] = []
-        fill_lst: List[StyleObj] = []
-        restore_style_lst: List[StyleObj] = []
-        restore_fill_lst: List[StyleObj] = []
+        style_lst: List[StyleT] = []
+        fill_lst: List[StyleT] = []
+        restore_style_lst: List[StyleT] = []
+        restore_fill_lst: List[StyleT] = []
         style_srv = (
             "com.sun.star.style.CharacterProperties",
             "com.sun.star.style.ParagraphProperties",
@@ -1109,7 +1109,7 @@ class Write(mSel.Selection):
         if fill_lst:
             para_c = cls.get_paragraph_cursor(cursor)
 
-        def capture_old_val(sty: StyleObj) -> None:
+        def capture_old_val(sty: StyleT) -> None:
             nonlocal restore, para_c, restore_style_lst, restore_fill_lst
             if FormatKind.PARA in sty.prop_format_kind and FormatKind.STATIC not in sty.prop_format_kind:
                 restore = True
@@ -1376,7 +1376,7 @@ class Write(mSel.Selection):
 
     @classmethod
     def _style_style(
-        cls, pos: int, distance: int, styles: Sequence[StyleObj], cursor: XTextCursor | None = None
+        cls, pos: int, distance: int, styles: Sequence[StyleT], cursor: XTextCursor | None = None
     ) -> None:
         if cursor is None:
             cursor = cls.get_cursor()
@@ -1406,12 +1406,12 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def style(cls, pos: int, length: int, styles: Sequence[StyleObj]) -> None:
+    def style(cls, pos: int, length: int, styles: Sequence[StyleT]) -> None:
         ...
 
     @overload
     @classmethod
-    def style(cls, pos: int, length: int, styles: Sequence[StyleObj], cursor: XTextCursor) -> None:
+    def style(cls, pos: int, length: int, styles: Sequence[StyleT], cursor: XTextCursor) -> None:
         ...
 
     @overload
@@ -1432,7 +1432,7 @@ class Write(mSel.Selection):
         Args:
             pos (int): Position style start.
             length (int): The distance from ``pos`` to apply style.
-            styles (Sequence[StyleObj]):One or more styles to apply to text.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
             prop_name (str): Property Name such as ``CharHeight``
             prop_val (object): Property Value such as ``10``
             cursor (XTextCursor): Text Cursor
@@ -1524,7 +1524,7 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))
 
     @classmethod
-    def _style_left_style(cls, cursor: XTextCursor, pos: int, styles: Sequence[StyleObj]) -> None:
+    def _style_left_style(cls, cursor: XTextCursor, pos: int, styles: Sequence[StyleT]) -> None:
         # store properties about to be changed
 
         if pos == 0:
@@ -1578,7 +1578,7 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def style_left(cls, cursor: XTextCursor, pos: int, styles: Sequence[StyleObj]) -> None:
+    def style_left(cls, cursor: XTextCursor, pos: int, styles: Sequence[StyleT]) -> None:
         ...
 
     @overload
@@ -1594,10 +1594,10 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             pos (int): Positions to style left
-            styles (Sequence[StyleObj]):One or more styles to apply to text.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
             prop_name (str): Property Name such as ``CharHeight``
             prop_val (object): Property Value such as ``10``
-            styles (Sequence[StyleObj], optional): One or more styles to apply.
+            styles (Sequence[StyleT], optional): One or more styles to apply.
 
         Returns:
             None:
@@ -1626,7 +1626,7 @@ class Write(mSel.Selection):
             This is not the case for :py:meth:`~.Write.style` method.
 
         .. versionchanged:: 0.9.0
-            Added ``style_left(cursor: XTextCursor, pos: int, styles: Sequence[StyleObj])`` overload.
+            Added ``style_left(cursor: XTextCursor, pos: int, styles: Sequence[StyleT])`` overload.
 
             Added Events.
         """
@@ -1747,7 +1747,7 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_PROP_SET, eargs)
 
     @classmethod
-    def _style_prev_paragraph_style(cls, cursor: XTextCursor | XParagraphCursor, styles: Sequence[StyleObj]) -> None:
+    def _style_prev_paragraph_style(cls, cursor: XTextCursor | XParagraphCursor, styles: Sequence[StyleT]) -> None:
         if not styles:
             return
         c_styles_args = CancelEventArgs("Write._style_prev_paragraph_style")
@@ -1761,9 +1761,9 @@ class Write(mSel.Selection):
             "com.sun.star.drawing.FillProperties",
         )
 
-        style_lst: List[StyleObj] = []
-        fill_lst: List[StyleObj] = []
-        style_data = cast(Sequence[StyleObj], c_styles_args.event_data)
+        style_lst: List[StyleT] = []
+        fill_lst: List[StyleT] = []
+        style_data = cast(Sequence[StyleT], c_styles_args.event_data)
         for style in style_data:
             if not style.support_service(*style_srv):
                 mLo.Lo.print(
@@ -1813,7 +1813,7 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def style_prev_paragraph(cls, cursor: XTextCursor, styles: Sequence[StyleObj]) -> None:
+    def style_prev_paragraph(cls, cursor: XTextCursor, styles: Sequence[StyleT]) -> None:
         ...
 
     @overload
@@ -1833,7 +1833,7 @@ class Write(mSel.Selection):
 
         Args:
             cursor (XTextCursor): Text Cursor
-            styles (Sequence[StyleObj]): One or more styles to apply to text.
+            styles (Sequence[StyleT]): One or more styles to apply to text.
             prop_val (object): Property value
             prop_name (str): Property Name
 
@@ -1863,7 +1863,7 @@ class Write(mSel.Selection):
                 Write.style_prev_paragraph(cursor=cursor, prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
 
         .. versionchanged:: 0.9.0
-            Added overload ``style_prev_paragraph(cursor: XTextCursor, styles: Sequence[StyleObj])``
+            Added overload ``style_prev_paragraph(cursor: XTextCursor, styles: Sequence[StyleT])``
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -1902,7 +1902,7 @@ class Write(mSel.Selection):
 
         # count == 2
         arg2 = kargs[2]
-        # arg2 must be string or Sequence[StyleObj]
+        # arg2 must be string or Sequence[StyleT]
         # ParaStyleName can only be set a string value
         if isinstance(arg2, str):
             cls._style_prev_paragraph_prop(cursor=kargs[1], prop_val=arg2, prop_name="ParaStyleName")
@@ -1915,16 +1915,14 @@ class Write(mSel.Selection):
 
     # region ------------- style methods -------------------------------
     @staticmethod
-    def create_style_para(
-        text_doc: XTextDocument, style_name: str, styles: Sequence[StyleObj] | None = None
-    ) -> XStyle:
+    def create_style_para(text_doc: XTextDocument, style_name: str, styles: Sequence[StyleT] | None = None) -> XStyle:
         """
         Creates a paragraph style and adds it to document paragraph styles.
 
         Args:
             text_doc (XTextDocument): Text Document
             style_name (str): The name of the paragraph style.
-            styles (Sequence[StyleObj], optional): One or more styles to apply.
+            styles (Sequence[StyleT], optional): One or more styles to apply.
 
         Returns:
             XStyle: Newly created style
@@ -1946,16 +1944,14 @@ class Write(mSel.Selection):
         return mLo.Lo.qi(XStyle, para_style, True)
 
     @staticmethod
-    def create_style_char(
-        text_doc: XTextDocument, style_name: str, styles: Sequence[StyleObj] | None = None
-    ) -> XStyle:
+    def create_style_char(text_doc: XTextDocument, style_name: str, styles: Sequence[StyleT] | None = None) -> XStyle:
         """
         Creates a character style and adds it to document character styles.
 
         Args:
             text_doc (XTextDocument): Text Document
             style_name (str): The name of the character style.
-            styles (Sequence[StyleObj], optional): One or more styles to apply.
+            styles (Sequence[StyleT], optional): One or more styles to apply.
 
         Returns:
             XStyle: Newly created style
@@ -2199,7 +2195,7 @@ class Write(mSel.Selection):
 
     @staticmethod
     def _set_header_footer(
-        text_doc: XTextDocument, text: str, kind: str = "h", styles: Sequence[StyleObj] | None = None
+        text_doc: XTextDocument, text: str, kind: str = "h", styles: Sequence[StyleT] | None = None
     ) -> None:
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
@@ -2246,7 +2242,7 @@ class Write(mSel.Selection):
             raise Exception("Unable to set header text") from e
 
     @classmethod
-    def set_header(cls, text_doc: XTextDocument, text: str, styles: Sequence[StyleObj] | None = None) -> None:
+    def set_header(cls, text_doc: XTextDocument, text: str, styles: Sequence[StyleT] | None = None) -> None:
         """
         Modify the header via the page style for the document.
         Put the text on the right hand side in the header in
@@ -2255,7 +2251,7 @@ class Write(mSel.Selection):
         Args:
             text_doc (XTextDocument): Text Document
             text (str): Header Text
-            styles (Sequence[StyleObj]): Styles to apply to the text.
+            styles (Sequence[StyleT]): Styles to apply to the text.
 
         Raises:
             PropertiesError: If unable to access properties
@@ -2273,7 +2269,7 @@ class Write(mSel.Selection):
         cls._set_header_footer(text_doc=text_doc, text=text, kind="h", styles=styles)
 
     @classmethod
-    def set_footer(cls, text_doc: XTextDocument, text: str, styles: Sequence[StyleObj] | None = None) -> None:
+    def set_footer(cls, text_doc: XTextDocument, text: str, styles: Sequence[StyleT] | None = None) -> None:
         """
         Modify the footer via the page style for the document.
         Put the text on the right hand side in the header in
@@ -2282,7 +2278,7 @@ class Write(mSel.Selection):
         Args:
             text_doc (XTextDocument): Text Document
             text (str): Header Text
-            styles (Sequence[StyleObj]): Styles to apply to the text.
+            styles (Sequence[StyleT]): Styles to apply to the text.
 
         Raises:
             PropertiesError: If unable to access properties
@@ -2327,18 +2323,18 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Sequence[StyleObj]) -> XTextContent:
+    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Sequence[StyleT]) -> XTextContent:
         ...
 
     @classmethod
-    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Sequence[StyleObj] | None = None) -> XTextContent:
+    def add_formula(cls, cursor: XTextCursor, formula: str, styles: Sequence[StyleT] | None = None) -> XTextContent:
         """
         Adds a formula
 
         Args:
             cursor (XTextCursor): Cursor
             formula (str): formula
-            styles (Sequence[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextEmbeddedObject`` service are applied.
+            styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextEmbeddedObject`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
@@ -2537,13 +2533,13 @@ class Write(mSel.Selection):
         *,
         cursor: XTextCursor,
         text: str = "",
-        ypos: int | UnitObj = 300,
-        width: int | UnitObj = 5000,
-        height: int | UnitObj = 5000,
+        ypos: int | UnitT = 300,
+        width: int | UnitT = 5000,
+        height: int | UnitT = 5000,
         page_num: int = 1,
         border_color: Color | None = None,
         background_color: Color | None = None,
-        styles: Sequence[StyleObj] | None = None,
+        styles: Sequence[StyleT] | None = None,
     ) -> XTextFrame:
         """
         Adds a text frame.
@@ -2551,13 +2547,13 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             text (str, optional): Frame Text
-            ypos (int, UnitObj. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
-            width (int, UnitObj, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            height (int, UnitObj, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            ypos (int, UnitT. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
+            width (int, UnitT, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitT, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             page_num (int, optional): Page Number to add text frame. If ``0`` Then Frame is anchored to paragraph. Default ``1``.
             border_color (:py:data:`~.utils.color.Color`, optional):.color.Color`, optional): Border Color.
             background_color (:py:data:`~.utils.color.Color`, optional): Background Color.
-            styles (Sequence[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
+            styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If unable to create text.TextFrame
@@ -2616,10 +2612,10 @@ class Write(mSel.Selection):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        arg_ypos = cast(Union[int, UnitObj], cargs.event_data["ypos"])
+        arg_ypos = cast(Union[int, UnitT], cargs.event_data["ypos"])
         text = cargs.event_data["text"]
-        arg_width = cast(Union[int, UnitObj], cargs.event_data["width"])
-        arg_height = cast(Union[int, UnitObj], cargs.event_data["height"])
+        arg_width = cast(Union[int, UnitT], cargs.event_data["width"])
+        arg_height = cast(Union[int, UnitT], cargs.event_data["height"])
         page_num = cargs.event_data["page_num"]
         border_color = cargs.event_data["border_color"]
         background_color = cargs.event_data["background_color"]
@@ -2747,7 +2743,7 @@ class Write(mSel.Selection):
         tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
         tbl_fg_color: Color | None = CommonColor.BLACK,
         first_row_header: bool = True,
-        styles: Sequence[StyleObj] | None = None,
+        styles: Sequence[StyleT] | None = None,
     ) -> XTextTable:
         """
         Adds a table.
@@ -2766,7 +2762,7 @@ class Write(mSel.Selection):
             tbl_fg_color (:py:data:`~.utils.color.Color`, optional): Table background color.
                 Set to None to ignore background color. Defaults to ``CommonColor.BLACK``.
             first_row_header (bool, optional): If ``True`` First row is treated as header data. Default ``True``.
-            styles (Sequence[StyleObj], optional): One or more styles to apply to frame.
+            styles (Sequence[StyleT], optional): One or more styles to apply to frame.
                 Only styles that support ``com.sun.star.text.TextTable`` service are applied.
 
         Raises:
@@ -2928,11 +2924,11 @@ class Write(mSel.Selection):
         """
         ...
 
-    # style: Sequence[StyleObj] = None
+    # style: Sequence[StyleT] = None
     @overload
     @classmethod
     def add_image_link(
-        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, *, width: int | UnitObj, height: int | UnitObj
+        cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, *, width: int | UnitT, height: int | UnitT
     ) -> XTextContent | None:
         """
         Add Image Link
@@ -2941,8 +2937,8 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
-            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
+            width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
+            height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
 
         Returns:
             XTextContent: Image Link on success; Otherwise, ``None``
@@ -2956,7 +2952,7 @@ class Write(mSel.Selection):
         cursor: XTextCursor,
         fnm: PathOrStr,
         *,
-        styles: Sequence[StyleObj],
+        styles: Sequence[StyleT],
     ) -> XTextContent | None:
         """
         Add Image Link
@@ -2965,41 +2961,14 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            styles (Sequence[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
-
-        Returns:
-            XTextContent: Image Link on success; Otherwise, ``None``
-        """
-        ...
-
-    @overload
-    @classmethod
-    def add_image_link(
-        cls,
-        doc: XTextDocument,
-        cursor: XTextCursor,
-        fnm: PathOrStr,
-        *,
-        width: int | UnitObj,
-        height: int | UnitObj,
-        styles: Sequence[StyleObj],
-    ) -> XTextContent | None:
-        """
-        Add Image Link
-
-        Args:
-            doc (XTextDocument): Text Document
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
-            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
-            styles (Sequence[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
+            styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
             XTextContent: Image Link on success; Otherwise, ``None``
         """
         ...
 
+    @overload
     @classmethod
     def add_image_link(
         cls,
@@ -3007,9 +2976,9 @@ class Write(mSel.Selection):
         cursor: XTextCursor,
         fnm: PathOrStr,
         *,
-        width: int | UnitObj = 0,
-        height: int | UnitObj = 0,
-        styles: Sequence[StyleObj] | None = None,
+        width: int | UnitT,
+        height: int | UnitT,
+        styles: Sequence[StyleT],
     ) -> XTextContent | None:
         """
         Add Image Link
@@ -3018,9 +2987,36 @@ class Write(mSel.Selection):
             doc (XTextDocument): Text Document
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            styles (Sequence[StyleObj]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
+            width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
+            height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
+            styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
+
+        Returns:
+            XTextContent: Image Link on success; Otherwise, ``None``
+        """
+        ...
+
+    @classmethod
+    def add_image_link(
+        cls,
+        doc: XTextDocument,
+        cursor: XTextCursor,
+        fnm: PathOrStr,
+        *,
+        width: int | UnitT = 0,
+        height: int | UnitT = 0,
+        styles: Sequence[StyleT] | None = None,
+    ) -> XTextContent | None:
+        """
+        Add Image Link
+
+        Args:
+            doc (XTextDocument): Text Document
+            cursor (XTextCursor): Text Cursor
+            fnm (PathOrStr): Image path
+            width (int, UnitT): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitT): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Raises:
             CreateInstanceMsfError: If Unable to create text.TextGraphicObject
@@ -3125,7 +3121,7 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def add_image_shape(
-        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj, height: int | UnitObj
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT, height: int | UnitT
     ) -> XShape | None:
         """
         Add Image Shape
@@ -3133,8 +3129,8 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or ``UnitObj``.
-            height (int, UnitObj): Height in ``1/100th mm`` or ``UnitObj``.
+            width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
+            height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
 
         Returns:
             XShape: Image Shape on success; Otherwise, ``None``
@@ -3143,7 +3139,7 @@ class Write(mSel.Selection):
 
     @classmethod
     def add_image_shape(
-        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitObj = 0, height: int | UnitObj = 0
+        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT = 0, height: int | UnitT = 0
     ) -> XShape | None:
         """
         Add Image Shape
@@ -3151,8 +3147,8 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             fnm (PathOrStr): Image path
-            width (int, UnitObj): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
-            height (int, UnitObj): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            width (int, UnitT): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitT): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Raises:
             CreateInstanceMsfError: If unable to create drawing.GraphicObjectShape

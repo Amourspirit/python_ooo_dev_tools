@@ -54,7 +54,7 @@ from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.event_args import EventArgs
 from ..events.chart2_named_event import Chart2NamedEvent
 from ..exceptions import ex as mEx
-from ..proto.style_obj import StyleObj
+from ..proto.style_obj import StyleT
 from ..utils import color as mColor
 from ..utils import file_io as mFileIo
 from ..utils import gui as mGui
@@ -475,14 +475,14 @@ class Chart2:
 
     # region titles
     @classmethod
-    def set_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None) -> XTitle:
+    def set_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
         Sets the title of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             title (str): Title as string.
-            styles (Sequence[StyleObj], optional): Styles to apply to title.
+            styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Raises:
             ChartError: If error occurs.
@@ -511,7 +511,7 @@ class Chart2:
             raise mEx.ChartError("Error setting title for chart") from e
 
     @classmethod
-    def _create_title(cls, title: str, font_size: int, styles: Sequence[StyleObj] | None = None) -> XTitle:
+    def _create_title(cls, title: str, font_size: int, styles: Sequence[StyleT] | None = None) -> XTitle:
         try:
             x_title = mLo.Lo.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
             x_title_str = mLo.Lo.create_instance_mcf(
@@ -535,13 +535,13 @@ class Chart2:
             raise mEx.ChartError(f'Error creating title for: "{title}"') from e
 
     @classmethod
-    def create_title(cls, title: str, styles: Sequence[StyleObj] | None = None) -> XTitle:
+    def create_title(cls, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
         Creates a title object
 
         Args:
             title (str): Title text.
-            styles (Sequence[StyleObj], optional): Styles to apply to title.
+            styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Raises:
             ChartError: If error occurs.
@@ -605,16 +605,14 @@ class Chart2:
             raise mEx.ChartError("Error getting title from chart") from e
 
     @classmethod
-    def set_subtitle(
-        cls, chart_doc: XChartDocument, subtitle: str, styles: Sequence[StyleObj] | None = None
-    ) -> XTitle:
+    def set_subtitle(cls, chart_doc: XChartDocument, subtitle: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
         Gets subtitle
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             subtitle (str): Subtitle text.
-            styles (Sequence[StyleObj], optional): Styles to apply to subtitle.
+            styles (Sequence[StyleT], optional): Styles to apply to subtitle.
 
         Raises:
             ChartError: If error occurs
@@ -774,7 +772,7 @@ class Chart2:
         title: str,
         axis_val: AxisKind,
         idx: int,
-        styles: Sequence[StyleObj] | None = None,
+        styles: Sequence[StyleT] | None = None,
     ) -> XTitle:
         """
         Sets axis title.
@@ -784,7 +782,7 @@ class Chart2:
             title (str): Title text.
             axis_val (AxisKind): Axis kind.
             idx (int): Index
-            styles (Sequence[StyleObj], optional): Styles to apply to title.
+            styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Raises:
             ChartError: If error occurs.
@@ -816,16 +814,14 @@ class Chart2:
             raise mEx.ChartError(f'Error setting axis tile: "{title}" for chart') from e
 
     @classmethod
-    def set_x_axis_title(
-        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
-    ) -> XTitle:
+    def set_x_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
         Sets X axis Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             title (str): Title Text.
-            styles (Sequence[StyleObj], optional): Styles to apply to title.
+            styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -839,16 +835,14 @@ class Chart2:
         return cls.set_axis_title(chart_doc=chart_doc, title=title, axis_val=AxisKind.X, idx=0, styles=styles)
 
     @classmethod
-    def set_y_axis_title(
-        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
-    ) -> XTitle:
+    def set_y_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
         Sets Y axis Title
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             title (str): Title Text.
-            styles (Sequence[StyleObj], optional): Styles to apply to title.
+            styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -863,7 +857,7 @@ class Chart2:
 
     @classmethod
     def set_x_axis2_title(
-        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
+        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None
     ) -> XTitle:
         """
         Sets X axis2 Title
@@ -871,7 +865,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document.
             title (str): Title Text.
-            styles (Sequence[StyleObj], optional): Styles to apply to title.
+            styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -886,7 +880,7 @@ class Chart2:
 
     @classmethod
     def set_y_axis2_title(
-        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleObj] | None = None
+        cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None
     ) -> XTitle:
         """
         Sets Y axis2 Title
@@ -894,7 +888,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document.
             title (str): Title Text.
-            styles (Sequence[StyleObj], optional): Styles to apply to title.
+            styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Returns:
             XTitle: Title object
@@ -1382,7 +1376,7 @@ class Chart2:
     @overload
     @classmethod
     def set_grid_lines(
-        cls, chart_doc: XChartDocument, axis_val: AxisKind, *, styles: Sequence[StyleObj]
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, *, styles: Sequence[StyleT]
     ) -> XPropertySet:
         ...
 
@@ -1394,13 +1388,13 @@ class Chart2:
     @overload
     @classmethod
     def set_grid_lines(
-        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, styles: Sequence[StyleObj]
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, styles: Sequence[StyleT]
     ) -> XPropertySet:
         ...
 
     @classmethod
     def set_grid_lines(
-        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0, styles: Sequence[StyleObj] | None = None
+        cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int = 0, styles: Sequence[StyleT] | None = None
     ) -> XPropertySet:
         """
         Set the grid lines for a chart.
@@ -1409,7 +1403,7 @@ class Chart2:
             chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis kind.
             idx (int, optional): Index. Defaults to ``0``.
-            styles (Sequence[StyleObj], optional): Styles to apply.
+            styles (Sequence[StyleT], optional): Styles to apply.
 
         Raises:
             ChartError: If error occurs.
@@ -1494,16 +1488,14 @@ class Chart2:
 
     # region Styles
     @classmethod
-    def style_grid(
-        cls, chart_doc: XChartDocument, axis_val: AxisKind, styles: Sequence[StyleObj], idx: int = 0
-    ) -> None:
+    def style_grid(cls, chart_doc: XChartDocument, axis_val: AxisKind, styles: Sequence[StyleT], idx: int = 0) -> None:
         """
         Style Grid
 
         Args:
             chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis kind.
-            styles (Sequence[StyleObj]): Styles to apply.
+            styles (Sequence[StyleT]): Styles to apply.
             idx (int, optional): Index. Defaults to ``0``.
 
         Returns:
@@ -1526,13 +1518,13 @@ class Chart2:
                 style.apply(props)
 
     @staticmethod
-    def style_background(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_background(chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles background of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart background.
+            styles (Sequence[StyleT]): One or more styles to apply chart background.
 
         Returns:
             None:
@@ -1556,13 +1548,13 @@ class Chart2:
             style.apply(bg_ps)
 
     @staticmethod
-    def style_wall(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_wall(chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles Wall of chart
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart wall.
+            styles (Sequence[StyleT]): One or more styles to apply chart wall.
 
         Returns:
             None:
@@ -1580,13 +1572,13 @@ class Chart2:
                 style.apply(wall)
 
     @staticmethod
-    def style_floor(chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_floor(chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles Floor of 3D chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart floor.
+            styles (Sequence[StyleT]): One or more styles to apply chart floor.
 
         Returns:
             None:
@@ -1604,9 +1596,7 @@ class Chart2:
                 style.apply(floor)
 
     @classmethod
-    def style_data_point(
-        cls, chart_doc: XChartDocument, series_idx: int, idx: int, styles: Sequence[StyleObj]
-    ) -> None:
+    def style_data_point(cls, chart_doc: XChartDocument, series_idx: int, idx: int, styles: Sequence[StyleT]) -> None:
         """
         Styles a data point of chart
 
@@ -1615,7 +1605,7 @@ class Chart2:
             series_idx (int): Series Index.
             idx (int): Index to extract from the data points data.
                 If ``idx=-1`` then the last data point is styled.
-            styles (Sequence[StyleObj]): One or more styles to apply chart data point.
+            styles (Sequence[StyleT]): One or more styles to apply chart data point.
 
         Returns:
             None:
@@ -1639,13 +1629,13 @@ class Chart2:
             style.apply(pp)
 
     @classmethod
-    def style_data_series(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj], idx: int = -1) -> None:
+    def style_data_series(cls, chart_doc: XChartDocument, styles: Sequence[StyleT], idx: int = -1) -> None:
         """
         Styles one or more data series of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart data series.
+            styles (Sequence[StyleT]): One or more styles to apply chart data series.
             idx (int, optional): Zero based series index. If value is ``-1`` then styles all data series are styled,
                 Otherwise only data series specified by index is styled. Defaults to ``-1``.
 
@@ -1680,13 +1670,13 @@ class Chart2:
                 style.apply(itm)
 
     @classmethod
-    def style_legend(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_legend(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles legend of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart legend.
+            styles (Sequence[StyleT]): One or more styles to apply chart legend.
 
         Returns:
             None:
@@ -1722,7 +1712,7 @@ class Chart2:
                     style.apply(legend)
 
     @classmethod
-    def _style_title(cls, xtitle: XTitle, styles: Sequence[StyleObj]) -> None:
+    def _style_title(cls, xtitle: XTitle, styles: Sequence[StyleT]) -> None:
         # sourcery skip: last-if-guard, move-assign, use-named-expression
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
         applied_styles = 0
@@ -1741,13 +1731,13 @@ class Chart2:
                         style.apply(fo_first)
 
     @classmethod
-    def style_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles title of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart title.
+            styles (Sequence[StyleT]): One or more styles to apply chart title.
 
         Returns:
             None:
@@ -1774,13 +1764,13 @@ class Chart2:
             cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
-    def style_subtitle(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_subtitle(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles subtitle of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart subtitle.
+            styles (Sequence[StyleT]): One or more styles to apply chart subtitle.
 
         Returns:
             None:
@@ -1805,13 +1795,13 @@ class Chart2:
                 cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
-    def style_x_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_x_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart X axis.
+            styles (Sequence[StyleT]): One or more styles to apply chart X axis.
 
         Returns:
             None:
@@ -1833,13 +1823,13 @@ class Chart2:
             style.apply(axis)
 
     @classmethod
-    def style_x_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_x_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis2 of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart X axis2.
+            styles (Sequence[StyleT]): One or more styles to apply chart X axis2.
 
         Returns:
             None:
@@ -1861,13 +1851,13 @@ class Chart2:
             style.apply(axis)
 
     @classmethod
-    def style_y_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_y_axis(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles Y axis of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis.
+            styles (Sequence[StyleT]): One or more styles to apply chart Y axis.
 
         Returns:
             None:
@@ -1889,13 +1879,13 @@ class Chart2:
             style.apply(axis)
 
     @classmethod
-    def style_y_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_y_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles Y axis2 of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis2.
+            styles (Sequence[StyleT]): One or more styles to apply chart Y axis2.
 
         Returns:
             None:
@@ -1917,13 +1907,13 @@ class Chart2:
             style.apply(axis)
 
     @classmethod
-    def style_x_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_x_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis title of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart X axis title.
+            styles (Sequence[StyleT]): One or more styles to apply chart X axis title.
 
         Returns:
             None:
@@ -1944,13 +1934,13 @@ class Chart2:
                 cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
-    def style_y_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_y_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis title of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis title.
+            styles (Sequence[StyleT]): One or more styles to apply chart Y axis title.
 
         Returns:
             None:
@@ -1972,13 +1962,13 @@ class Chart2:
                 cls._style_title(xtitle=xtitle, styles=title_styles)
 
     @classmethod
-    def style_x_axis2_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_x_axis2_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis2 title of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart X axis2 title.
+            styles (Sequence[StyleT]): One or more styles to apply chart X axis2 title.
 
         Returns:
             None:
@@ -1994,13 +1984,13 @@ class Chart2:
         cls._style_title(xtitle=xtitle, styles=styles)
 
     @classmethod
-    def style_y_axis2_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleObj]) -> None:
+    def style_y_axis2_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis2 title of chart.
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            styles (Sequence[StyleObj]): One or more styles to apply chart Y axis2 title.
+            styles (Sequence[StyleT]): One or more styles to apply chart Y axis2 title.
 
         Returns:
             None:
@@ -2688,7 +2678,7 @@ class Chart2:
 
     @classmethod
     def draw_regression_curve(
-        cls, chart_doc: XChartDocument, curve_kind: CurveKind, styles: Sequence[StyleObj] | None = None
+        cls, chart_doc: XChartDocument, curve_kind: CurveKind, styles: Sequence[StyleT] | None = None
     ) -> XPropertySet:
         """
         Draws a regression curve.
@@ -2696,7 +2686,7 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document
             curve_kind (CurveKind): Curve kind.
-            styles (Sequence[StyleObj], optional): Styles to apply to the curve. Defaults to ``None``.
+            styles (Sequence[StyleT], optional): Styles to apply to the curve. Defaults to ``None``.
 
         Raises:
             ChartError: If error occurs.

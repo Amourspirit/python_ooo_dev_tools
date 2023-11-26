@@ -12,7 +12,7 @@ else:
     Protocol = object
 
 
-class UnitObj(Protocol):
+class UnitT(Protocol):
     """
     Protocol Class for units.
 
@@ -22,8 +22,8 @@ class UnitObj(Protocol):
 
     .. _proto_unit_obj:
 
-    UnitObj
-    =======
+    UnitT
+    =====
 
     """
 
@@ -71,3 +71,6 @@ class UnitObj(Protocol):
             float: Value in ``px`` units.
         """
         ...
+
+
+UnitObj = UnitT

@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_hyperlink_fixed.CtlHyperlinkFixed
+.. autoclass:: ooodev.dialog.dl_control.CtlHyperlinkFixed
     :members:
     :undoc-members:
     :show-inheritance:

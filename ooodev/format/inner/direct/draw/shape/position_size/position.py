@@ -1,11 +1,10 @@
 from __future__ import annotations
-from typing import Tuple
 import uno
 from com.sun.star.lang import XComponent
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 from ooodev.utils.data_type.size import Size
-from ooodev.units import UnitObj, UnitConvert
+from ooodev.units import UnitT, UnitConvert
 from ooodev.format.inner.direct.structs.point_struct import PointStruct
 
 
@@ -60,16 +59,16 @@ class Position(StyleMulti):
         self,
         draw_doc: XComponent,
         *,
-        pos_x: float | UnitObj,
-        pos_y: float | UnitObj,
+        pos_x: float | UnitT,
+        pos_y: float | UnitT,
         base_point: ShapeBasePointKind = ShapeBasePointKind.TOP_LEFT,
     ) -> None:
         """
         Constructor
 
         Args:
-            pos_x (float | UnitObj): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
-            pos_y (float | UnitObj): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_x (float | UnitT): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            pos_y (float | UnitT): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
             base_point (ShapeBasePointKind): Specifies the base point of the shape used to calculate the X and Y coordinates. Default is ``TOP_LEFT``.
         """
         super().__init__()

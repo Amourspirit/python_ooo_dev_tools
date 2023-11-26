@@ -9,7 +9,7 @@ from typing import Any, Type, overload, cast, Tuple, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -56,7 +56,7 @@ class Borders(StyleMulti):
         border_side: Side | None = None,
         vertical: Side | None = None,
         horizontal: Side | None = None,
-        distance: float | UnitObj | None = None,
+        distance: float | UnitT | None = None,
         shadow: Shadow | None = None,
         padding: Padding | None = None,
         merge_adjacent: bool | None = None,
@@ -72,7 +72,7 @@ class Borders(StyleMulti):
             border_side (Side, optional): Specifies the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
             horizontal (Side, optional): Specifies the line style of horizontal lines for the inner part of a cell range.
             vertical (Side, optional): Specifies the line style of vertical lines for the inner part of a cell range.
-            distance (float, UnitObj, optional): Contains the distance between the lines and other contents in ``mm`` units or :ref:`proto_unit_obj`.
+            distance (float, UnitT, optional): Contains the distance between the lines and other contents in ``mm`` units or :ref:`proto_unit_obj`.
             shadow (Shadow, optional): Cell Shadow.
             padding (BorderPadding, optional): Cell padding.
             merge_adjacent (bool, optional): Specifies if adjacent line style are to be merged.
@@ -99,7 +99,7 @@ class Borders(StyleMulti):
             horizontal=horizontal,
             vertical=vertical,
             distance=distance,
-            _cattribs=self._get_tb_cattribs(),
+            _cattribs=self._get_tb_cattribs(),  # type: ignore
         )
 
         if padding is not None:
@@ -110,7 +110,7 @@ class Borders(StyleMulti):
                 right=padding.prop_right or 0,
                 top=padding.prop_top or 0,
                 bottom=padding.prop_bottom or 0,
-                _cattribs=self._get_tbd_cattribs(),
+                _cattribs=self._get_tbd_cattribs(),  # type: ignore
             )
         else:
             tb_padding_struct = None
@@ -393,12 +393,12 @@ class Borders(StyleMulti):
         bt.prop_vertical = value
         return cp
 
-    def fmt_distance(self: _TBorders, value: float | UnitObj | None) -> _TBorders:
+    def fmt_distance(self: _TBorders, value: float | UnitT | None) -> _TBorders:
         """
         Gets copy of instance with distance set or removed
 
         Args:
-            value (float, UnitObj, optional): Distance value
+            value (float, UnitT, optional): Distance value
 
         Returns:
             Borders: Borders instance
@@ -446,7 +446,7 @@ class Borders(StyleMulti):
                 right=value.prop_right or 0,
                 top=value.prop_top or 0,
                 bottom=value.prop_bottom or 0,
-                _cattribs=self._get_tbd_cattribs(),
+                _cattribs=self._get_tbd_cattribs(),  # type: ignore
             )
             cp._set_style("padding", tb_padding_struct)
         return cp
@@ -533,7 +533,7 @@ class Borders(StyleMulti):
             return self._default_inst
         except AttributeError:
             self._default_inst = self.__class__(
-                border_side=Side(), padding=Padding(_cattribs=self._get_tbd_cattribs()).default
+                border_side=Side(), padding=Padding(_cattribs=self._get_tbd_cattribs()).default  # type: ignore
             )
             self._default_inst._is_default_inst = True
         return self._default_inst
@@ -549,11 +549,11 @@ class Borders(StyleMulti):
                 border_side=side.empty,
                 vertical=side.empty,
                 horizontal=side.empty,
-                diagonal_down=side.empty,
-                diagonal_up=side.empty,
+                diagonal_down=side.empty,  # type: ignore
+                diagonal_up=side.empty,  # type: ignore
                 distance=0.0,
-                shadow=Shadow(_cattribs=self._get_shadow_cattribs()).empty,
-                padding=Padding(_cattribs=self._get_tbd_cattribs()).default,
+                shadow=Shadow(_cattribs=self._get_shadow_cattribs()).empty,  # type: ignore
+                padding=Padding(_cattribs=self._get_tbd_cattribs()).default,  # type: ignore
             )
             self._empty_inst._is_default_inst = True
         return self._empty_inst

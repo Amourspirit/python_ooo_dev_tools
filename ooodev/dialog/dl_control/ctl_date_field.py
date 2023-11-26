@@ -8,6 +8,7 @@ import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -81,69 +82,87 @@ class CtlDateField(DialogControlBase, SpinEvents, TextEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlDateField:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def date(self) -> datetime.date:
+        """Gets/Sets the date"""
+        return DateUtil.uno_date_to_date(self.get_model().Date)
+
+    @date.setter
+    def date(self, value: datetime.date) -> None:
+        self.get_model().Date = DateUtil.date_to_uno_date(value)
+
+    @property
+    def date_format(self) -> DateFormatKind:
+        """Gets/Sets the format"""
+        return DateFormatKind(self.get_model().DateFormat)
+
+    @date_format.setter
+    def date_format(self, value: DateFormatKind) -> None:
+        self.get_model().DateFormat = value.value
+
+    @property
+    def date_max(self) -> datetime.date:
+        """Gets/Sets the min date"""
+        return DateUtil.uno_date_to_date(self.get_model().DateMax)
+
+    @date_max.setter
+    def date_max(self, value: datetime.date) -> None:
+        self.get_model().DateMax = DateUtil.date_to_uno_date(value)
+
+    @property
+    def date_min(self) -> datetime.date:
+        """Gets/Sets the min date"""
+        return DateUtil.uno_date_to_date(self.get_model().DateMin)
+
+    @date_min.setter
+    def date_min(self, value: datetime.date) -> None:
+        self.get_model().DateMin = DateUtil.date_to_uno_date(value)
+
+    @property
+    def dropdown(self) -> bool:
+        """Gets/Sets the if the control has a dropdown."""
+        return self.get_model().Dropdown
+
+    @dropdown.setter
+    def dropdown(self, value: bool) -> None:
+        self.get_model().Dropdown = value
 
     @property
     def model(self) -> UnoControlDateFieldModel:
         return self.get_model()
 
     @property
-    def text(self) -> str:
-        """Gets/Sets the text"""
-        return self.model.Text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.model.Text = value
-
-    @property
-    def date(self) -> datetime.date:
-        """Gets/Sets the date"""
-        return DateUtil.uno_date_to_date(self.model.Date)
-
-    @date.setter
-    def date(self, value: datetime.date) -> None:
-        self.model.Date = DateUtil.date_to_uno_date(value)
-
-    @property
-    def date_min(self) -> datetime.date:
-        """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.model.DateMin)
-
-    @date_min.setter
-    def date_min(self, value: datetime.date) -> None:
-        self.model.DateMin = DateUtil.date_to_uno_date(value)
-
-    @property
-    def date_max(self) -> datetime.date:
-        """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.model.DateMax)
-
-    @date_max.setter
-    def date_max(self, value: datetime.date) -> None:
-        self.model.DateMax = DateUtil.date_to_uno_date(value)
-
-    @property
-    def date_format(self) -> DateFormatKind:
-        """Gets/Sets the format"""
-        return DateFormatKind(self.model.DateFormat)
-
-    @date_format.setter
-    def date_format(self, value: DateFormatKind) -> None:
-        self.model.DateFormat = value.value
-
-    @property
     def read_only(self) -> bool:
         """Gets/Sets the read-only property"""
         with contextlib.suppress(Exception):
-            return self.model.ReadOnly
+            return self.get_model().ReadOnly
         return False
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
         """Sets the read-only property"""
         with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
+            self.get_model().ReadOnly = value
+
+    @property
+    def text(self) -> str:
+        """Gets/Sets the text"""
+        return self.get_model().Text
+
+    @text.setter
+    def text(self, value: str) -> None:
+        self.get_model().Text = value
+
+    @property
+    def view(self) -> UnoControlDateField:
+        return self.get_view_ctl()
 
     # endregion Properties

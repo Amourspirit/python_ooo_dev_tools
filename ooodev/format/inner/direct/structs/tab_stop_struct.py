@@ -12,7 +12,7 @@ from ooo.dyn.style.tab_stop import TabStop
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -54,7 +54,7 @@ class TabStopStruct(StructBase):
     def __init__(
         self,
         *,
-        position: float | UnitObj = 0.0,
+        position: float | UnitT = 0.0,
         align: TabAlign = TabAlign.LEFT,
         decimal_char: str = ".",
         fill_char: FillCharKind | str = FillCharKind.NONE,
@@ -63,7 +63,7 @@ class TabStopStruct(StructBase):
         Constructor
 
         Args:
-            position (float, UnitObj, optional): Specifies the position of the tabulator in relation to the left border (in ``mm`` units) or :ref:`proto_unit_obj`.
+            position (float, UnitT, optional): Specifies the position of the tabulator in relation to the left border (in ``mm`` units) or :ref:`proto_unit_obj`.
                 Defaults to ``0.0``
             align (TabAlign, optional): Specifies the alignment of the text range before the tabulator. Defaults to ``TabAlign.LEFT``
             decimal_char (str, optional): Specifies which delimiter is used for the decimal.
@@ -312,12 +312,12 @@ class TabStopStruct(StructBase):
     # endregion dunder methods
 
     # region format methods
-    def fmt_position(self: _TTabStopStruct, value: float | UnitObj) -> _TTabStopStruct:
+    def fmt_position(self: _TTabStopStruct, value: float | UnitT) -> _TTabStopStruct:
         """
         Gets a copy of instance with position set.
 
         Args:
-            value (float, UnitObj): Position value (in ``mm`` units) or :ref:`proto_unit_obj`.
+            value (float, UnitT): Position value (in ``mm`` units) or :ref:`proto_unit_obj`.
 
         Returns:
             Tab: Tab instance
@@ -386,7 +386,7 @@ class TabStopStruct(StructBase):
         return UnitMM.from_mm100(self._get("Position"))
 
     @prop_position.setter
-    def prop_position(self, value: float | UnitObj) -> None:
+    def prop_position(self, value: float | UnitT) -> None:
         try:
             self._set("Position", value.get_value_mm100())  # type: ignore
         except AttributeError:

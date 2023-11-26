@@ -4,7 +4,7 @@ from typing import cast
 import uno
 
 from ..cell_style_base_multi import CellStyleBaseMulti
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ooodev.format.inner.direct.calc.alignment.text_align import VertAlignKind as VertAlignKind
 from ooodev.format.inner.direct.calc.alignment.text_align import HoriAlignKind as HoriAlignKind
@@ -29,7 +29,7 @@ class TextAlign(CellStyleBaseMulti):
         self,
         *,
         hori_align: HoriAlignKind | None = None,
-        indent: float | UnitObj | None = None,
+        indent: float | UnitT | None = None,
         vert_align: VertAlignKind | None = None,
         style_name: StyleCellKind | str = StyleCellKind.DEFAULT,
         style_family: str = "CellStyles",
@@ -39,7 +39,7 @@ class TextAlign(CellStyleBaseMulti):
 
         Args:
             hori_align (HoriAlignKind, optional): Specifies Horizontal Alignment.
-            indent: (float, UnitObj, optional): Specifies indent in ``pt`` (point) units
+            indent: (float, UnitT, optional): Specifies indent in ``pt`` (point) units
                 or :ref:`proto_unit_obj`. Only used when ``hori_align`` is set to ``HoriAlignKind.LEFT``
             vert_align (VertAdjustKind, optional): Specifies Vertical Alignment.
             style_name (StyleCellKind, str, optional): Specifies the Cell Style that instance applies to.

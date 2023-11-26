@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_fixed_line.CtlFixedLine
+.. autoclass:: ooodev.dialog.dl_control.CtlFixedLine
     :members:
     :undoc-members:
     :show-inheritance:

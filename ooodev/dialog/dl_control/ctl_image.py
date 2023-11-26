@@ -9,14 +9,15 @@ import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
 from ooodev.utils.file_io import FileIO
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.utils.type_var import PathOrStr
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlImageControl  # service
     from com.sun.star.awt import UnoControlImageControlModel  # service
+    from ooodev.utils.type_var import PathOrStr
 # endregion imports
 
 
@@ -60,22 +61,13 @@ class CtlImage(DialogControlBase):
 
     # region Properties
     @property
-    def view(self) -> UnoControlImageControl:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
 
-    @property
-    def model(self) -> UnoControlImageControlModel:
-        return self.get_model()
-
-    @property
-    def image_url(self) -> str:
-        """Gets/Sets the URL for the image"""
-        return self.model.ImageURL
-
-    @image_url.setter
-    def image_url(self, value: str) -> None:
-        """Sets the URL for the image"""
-        self.model.ImageURL = value
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
 
     @property
     def image_scale_mode(self) -> ImageScaleModeEnum:
@@ -88,14 +80,27 @@ class CtlImage(DialogControlBase):
         self.model.ScaleMode = value.value
 
     @property
-    def scale_image(self) -> bool:
-        """Gets/Sets whether the image should be scaled"""
-        return self.model.ScaleImage
+    def image_url(self) -> str:
+        """
+        Gets/Sets the URL for the image
 
-    @scale_image.setter
-    def scale_image(self, value: bool) -> None:
-        """Sets whether the image should be scaled"""
-        self.model.ScaleImage = value
+        Returns:
+            str: The URL for the image or empty string if no image is set
+
+        Note:
+            It recommended to use the ``picture`` property instead of ``image_url`` property.
+            The ``image_url`` property is does not provide any validation.
+        """
+        return self.model.ImageURL
+
+    @image_url.setter
+    def image_url(self, value: str) -> None:
+        """Sets the URL for the image"""
+        self.model.ImageURL = value
+
+    @property
+    def model(self) -> UnoControlImageControlModel:
+        return self.get_model()
 
     @property
     def picture(self) -> str:
@@ -109,6 +114,13 @@ class CtlImage(DialogControlBase):
 
         Returns:
             str: The picture URL in the format of ``file:///path/to/image.png`` or empty string if no picture is set.
+
+        Note:
+            It recommended to use the ``picture`` property instead of ``image_url`` property.
+            The ``image_url`` property is does not provide any validation.
+
+        Warning:
+            If an error occurs when setting the value the ``picture`` then the ``model.ImageURL`` property will be set to an empty string.
         """
         with contextlib.suppress(Exception):
             return self.model.ImageURL
@@ -116,17 +128,34 @@ class CtlImage(DialogControlBase):
 
     @picture.setter
     def picture(self, value: PathOrStr) -> None:
-        pth_str = str(value)
-        if pth_str == "":
-            self.model.ImageURL = ""
-            return
-        if isinstance(value, str):
-            if value.startswith("file://"):
-                self.model.ImageURL = value
+        try:
+            pth_str = str(value)
+            if pth_str == "":
+                self.model.ImageURL = ""
                 return
-            value = Path(value)
-        if not FileIO.is_valid_path_or_str(value):
-            raise ValueError(f"Invalid path or str: {value}")
-        self.model.ImageURL = FileIO.fnm_to_url(value)
+            if isinstance(value, str):
+                if value.startswith("file://"):
+                    self.model.ImageURL = value
+                    return
+                value = Path(value)
+            if not FileIO.is_valid_path_or_str(value):
+                raise ValueError(f"Invalid path or str: {value}")
+            self.model.ImageURL = FileIO.fnm_to_url(value)
+        except:
+            self.model.ImageURL = ""
+
+    @property
+    def scale_image(self) -> bool:
+        """Gets/Sets whether the image should be scaled"""
+        return self.model.ScaleImage
+
+    @scale_image.setter
+    def scale_image(self, value: bool) -> None:
+        """Sets whether the image should be scaled"""
+        self.model.ScaleImage = value
+
+    @property
+    def view(self) -> UnoControlImageControl:
+        return self.get_view_ctl()
 
     # endregion Properties

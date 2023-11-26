@@ -15,7 +15,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitObj
+from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -98,14 +98,14 @@ class Horizontal:
     """Horizontal Frame Position. Not used when Anchor is set to ``As Character``."""
 
     # region Init
-    def __init__(self, position: HoriOrient, rel: RelHoriOrient, amount: float | UnitObj = 0.0) -> None:
+    def __init__(self, position: HoriOrient, rel: RelHoriOrient, amount: float | UnitT = 0.0) -> None:
         """
         Constructor
 
         Args:
             position (HoriOrient): Specifies Horizontal Position.
             rel (RelHoriOrient): Specifies Relative Orientation.
-            amount (float, UnitObj, optional): Specifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
+            amount (float, UnitT, optional): Specifies Amount in ``mm`` units or :ref:`proto_unit_obj`. Only effective when position is ``HoriOrient.FROM_LEFT``. Defaults to ``0.0``.
         """
 
         self._position = position
@@ -172,7 +172,7 @@ class Horizontal:
         return UnitMM(self._amount)
 
     @amount.setter
-    def amount(self, value: float | UnitObj):
+    def amount(self, value: float | UnitT):
         try:
             self._amount = value.get_value_mm()  # type: ignore
         except AttributeError:
@@ -185,14 +185,14 @@ class Vertical:
     """Vertical Frame Position."""
 
     # region Init
-    def __init__(self, position: VertOrient, rel: RelVertOrient, amount: float | UnitObj = 0.0) -> None:
+    def __init__(self, position: VertOrient, rel: RelVertOrient, amount: float | UnitT = 0.0) -> None:
         """
         Constructor
 
         Args:
             position (VertOrient): Specifies Vertical Position.
             rel (RelVertOrient): Specifies Relative Orientation.
-            amount (float, UnitObj, optional): Specifies Amount in ``mm`` units or :ref:`proto_unit_obj`.
+            amount (float, UnitT, optional): Specifies Amount in ``mm`` units or :ref:`proto_unit_obj`.
                 Only effective when position is ``VertOrient.FROM_TOP``. Defaults to ``0.0``.
         """
 
@@ -260,7 +260,7 @@ class Vertical:
         return UnitMM(self._amount)
 
     @amount.setter
-    def amount(self, value: float | UnitObj):
+    def amount(self, value: float | UnitT):
         try:
             self._amount = value.get_value_mm()  # type: ignore
         except AttributeError:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Tuple
 import uno
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang, FontOnly as CharFontOnly
-from ooodev.units.unit_obj import UnitObj
+from ooodev.units.unit_obj import UnitT
 from ooodev.units.unit_pt import UnitPT
 
 # endregion Import
@@ -28,7 +28,7 @@ class FontOnly(CharFontOnly):
         self,
         *,
         name: str | None = None,
-        size: int | UnitObj | None = None,
+        size: int | UnitT | None = None,
         font_style: str | None = None,
         lang: FontLang | None = None,
     ) -> None:
@@ -38,7 +38,7 @@ class FontOnly(CharFontOnly):
         Args:
             name (str, optional): This property specifies the name of the font style. It may contain more than one
                 name separated by comma.
-            size (int, UnitObj, optional): This value contains the size of the characters in ``pt`` (point) units
+            size (int, UnitT, optional): This value contains the size of the characters in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             font_style (str, optional): Font style name such as ``Bold``.
             lang (Lang, optional): Font Language
@@ -69,7 +69,7 @@ class FontOnly(CharFontOnly):
         return UnitPT(self._get(self._props.size))
 
     @prop_size.setter
-    def prop_size(self, value: float | UnitObj | None) -> None:
+    def prop_size(self, value: float | UnitT | None) -> None:
         if value is None:
             self._remove(self._props.size)
             return
