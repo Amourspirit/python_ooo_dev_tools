@@ -1481,7 +1481,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Button Width.
             height (int, UnitT, optional): Button Height. Defaults to ``6`` mm.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1548,7 +1548,7 @@ class Forms:
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1632,7 +1632,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1720,7 +1720,7 @@ class Forms:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1807,7 +1807,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
             date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1880,7 +1880,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1948,7 +1948,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2022,7 +2022,7 @@ class Forms:
             width (int | UnitT): Width
             height (int, UnitT): Height.
             label (str, optional): Groupbox label.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2081,7 +2081,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT): Height.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
 
@@ -2143,7 +2143,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2208,7 +2208,7 @@ class Forms:
             width (int, UnitT, optional): Width.
             label (str): Contents of label
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2272,12 +2272,14 @@ class Forms:
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
-            height (int, UnitT: Height.
+            height (int, UnitT): Height.
             entries (Iterable[str], optional): Combo box entries
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
+            line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
+            multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2352,7 +2354,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT): Height.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2425,7 +2427,7 @@ class Forms:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2506,7 +2508,7 @@ class Forms:
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2586,7 +2588,7 @@ class Forms:
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2659,7 +2661,7 @@ class Forms:
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2728,7 +2730,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2801,7 +2803,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2866,7 +2868,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2930,7 +2932,7 @@ class Forms:
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3015,7 +3017,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
             date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3101,7 +3103,7 @@ class Forms:
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3167,7 +3169,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3234,7 +3236,7 @@ class Forms:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3302,7 +3304,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
             date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3366,7 +3368,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3430,7 +3432,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3498,7 +3500,7 @@ class Forms:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3560,7 +3562,7 @@ class Forms:
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3621,7 +3623,7 @@ class Forms:
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3678,7 +3680,7 @@ class Forms:
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3743,7 +3745,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
             date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType | None): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
