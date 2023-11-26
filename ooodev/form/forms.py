@@ -1951,7 +1951,7 @@ class Forms:
         Inserts a currency field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -2027,7 +2027,7 @@ class Forms:
         Inserts a Groupbox control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -2086,7 +2086,7 @@ class Forms:
         Inserts a Hidden control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -2143,7 +2143,7 @@ class Forms:
         Inserts an Image Button control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -2353,7 +2353,7 @@ class Forms:
         Inserts a Navigation Toolbar control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -2419,7 +2419,7 @@ class Forms:
         Inserts a Numeric field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -2502,7 +2502,7 @@ class Forms:
         Inserts a Pattern field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -2791,7 +2791,7 @@ class Forms:
         Inserts a Spin Button control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3001,7 +3001,7 @@ class Forms:
         Inserts a Time field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3151,7 +3151,7 @@ class Forms:
         Inserts a  Database ComboBox control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3195,8 +3195,7 @@ class Forms:
         )
         return cast(FormCtlDbComboBox, result)
 
-    classmethod
-
+    @classmethod
     def insert_db_control_currency_field(
         cls,
         doc: XComponent,
@@ -3220,7 +3219,7 @@ class Forms:
         Inserts a database currency field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3264,8 +3263,7 @@ class Forms:
         )
         return cast(FormCtlDbCurrencyField, result)
 
-    classmethod
-
+    @classmethod
     def insert_db_control_date_field(
         cls,
         doc: XComponent,
@@ -3289,7 +3287,7 @@ class Forms:
         Inserts a Database Date field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3355,7 +3353,7 @@ class Forms:
         Inserts a Database currency field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3485,7 +3483,7 @@ class Forms:
         Inserts a Database Numeric field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3529,8 +3527,7 @@ class Forms:
         )
         return cast(FormCtlDbNumericField, result)
 
-    classmethod
-
+    @classmethod
     def insert_db_control_pattern_field(
         cls,
         doc: XComponent,
@@ -3551,7 +3548,7 @@ class Forms:
         Inserts a Database Pattern field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -3731,7 +3728,7 @@ class Forms:
         Inserts a Database Time field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
