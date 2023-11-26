@@ -1636,7 +1636,7 @@ class Forms:
         Inserts a ComboBox control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -1724,7 +1724,7 @@ class Forms:
         Inserts a currency field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
@@ -1810,7 +1810,7 @@ class Forms:
         Inserts a Date field control into the form.
 
         Args:
-        doc (XComponent): Component
+            doc (XComponent): Component
             parent_form (XNameContainer): Parent Form
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
