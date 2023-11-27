@@ -90,6 +90,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
     from ooodev.units import UnitT
     from ooodev.utils.type_var import PathOrStr
+    from .controls.form_ctl_base import FormCtlBase
 # endregion Imports
 
 
@@ -600,12 +601,12 @@ class Forms:
         return str(mProps.Props.get(ctl_model, "Label"))
 
     @classmethod
-    def get_type_str(cls, ctl_model: XControlModel) -> str | None:
+    def get_type_str(cls, ctl_model: XControlModel | FormCtlBase) -> str | None:
         """
         Gets type as string
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             str | None: Type as string if found; Otherwise, ``None``
@@ -661,16 +662,18 @@ class Forms:
             return None
 
     @staticmethod
-    def get_id(ctl_model: XControlModel) -> int:
+    def get_id(ctl_model: XControlModel | FormCtlBase) -> int:
         """
         Gets class id for a form component
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             int: Class Id if found, Otherwise ``-1``
         """
+        if isinstance(ctl_model, FormCtlBase):
+            return ctl_model.get_id()
         class_id = mProps.Props.get(ctl_model, "ClassId")
         if class_id is None:
             mLo.Lo.print("No class ID found for form component")
@@ -678,12 +681,12 @@ class Forms:
         return int(class_id)
 
     @classmethod
-    def is_button(cls, ctl_model: XControlModel) -> bool:
+    def is_button(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a command button or a image button
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is button; Otherwise, ``False``
@@ -698,12 +701,12 @@ class Forms:
         )
 
     @classmethod
-    def is_text_field(cls, ctl_model: XControlModel) -> bool:
+    def is_text_field(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a text field
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is text field; Otherwise, ``False``
@@ -722,12 +725,12 @@ class Forms:
         )
 
     @classmethod
-    def is_box(cls, ctl_model: XControlModel) -> bool:
+    def is_box(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a box
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is box; Otherwise, ``False``
@@ -739,12 +742,12 @@ class Forms:
         return box_id in (FormComponentType.RADIOBUTTON, FormComponentType.CHECKBOX)
 
     @classmethod
-    def is_list(cls, ctl_model: XControlModel) -> bool:
+    def is_list(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a list
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is list; Otherwise, ``False``
@@ -754,17 +757,6 @@ class Forms:
             return False
 
         return control_id in (FormComponentType.LISTBOX, FormComponentType.COMBOBOX)
-
-    # Other control types
-    # FormComponentType.GROUPBOX
-    # FormComponentType.FIXEDTEXT
-    # FormComponentType.GRIDCONTROL
-    # FormComponentType.FILECONTROL
-    # FormComponentType.HIDDENCONTROL
-    # FormComponentType.IMAGECONTROL
-    # FormComponentType.SCROLLBAR
-    # FormComponentType.SPINBUTTON
-    # FormComponentType.NAVIGATIONBAR
 
     # endregion get form models
 
