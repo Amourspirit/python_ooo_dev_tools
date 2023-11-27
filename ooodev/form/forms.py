@@ -89,6 +89,8 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XInterface
     from com.sun.star.lang import EventObject
     from ooodev.units import UnitT
+    from ooodev.utils.type_var import PathOrStr
+    from .controls.form_ctl_base import FormCtlBase
 # endregion Imports
 
 
@@ -599,12 +601,12 @@ class Forms:
         return str(mProps.Props.get(ctl_model, "Label"))
 
     @classmethod
-    def get_type_str(cls, ctl_model: XControlModel) -> str | None:
+    def get_type_str(cls, ctl_model: XControlModel | FormCtlBase) -> str | None:
         """
         Gets type as string
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             str | None: Type as string if found; Otherwise, ``None``
@@ -660,16 +662,18 @@ class Forms:
             return None
 
     @staticmethod
-    def get_id(ctl_model: XControlModel) -> int:
+    def get_id(ctl_model: XControlModel | FormCtlBase) -> int:
         """
         Gets class id for a form component
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             int: Class Id if found, Otherwise ``-1``
         """
+        if isinstance(ctl_model, FormCtlBase):
+            return ctl_model.get_id()
         class_id = mProps.Props.get(ctl_model, "ClassId")
         if class_id is None:
             mLo.Lo.print("No class ID found for form component")
@@ -677,12 +681,12 @@ class Forms:
         return int(class_id)
 
     @classmethod
-    def is_button(cls, ctl_model: XControlModel) -> bool:
+    def is_button(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a command button or a image button
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is button; Otherwise, ``False``
@@ -697,12 +701,12 @@ class Forms:
         )
 
     @classmethod
-    def is_text_field(cls, ctl_model: XControlModel) -> bool:
+    def is_text_field(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a text field
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is text field; Otherwise, ``False``
@@ -721,12 +725,12 @@ class Forms:
         )
 
     @classmethod
-    def is_box(cls, ctl_model: XControlModel) -> bool:
+    def is_box(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a box
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is box; Otherwise, ``False``
@@ -738,12 +742,12 @@ class Forms:
         return box_id in (FormComponentType.RADIOBUTTON, FormComponentType.CHECKBOX)
 
     @classmethod
-    def is_list(cls, ctl_model: XControlModel) -> bool:
+    def is_list(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
         Gets if component is a list
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model
 
         Returns:
             bool: ``True`` if is list; Otherwise, ``False``
@@ -753,17 +757,6 @@ class Forms:
             return False
 
         return control_id in (FormComponentType.LISTBOX, FormComponentType.COMBOBOX)
-
-    # Other control types
-    # FormComponentType.GROUPBOX
-    # FormComponentType.FIXEDTEXT
-    # FormComponentType.GRIDCONTROL
-    # FormComponentType.FILECONTROL
-    # FormComponentType.HIDDENCONTROL
-    # FormComponentType.IMAGECONTROL
-    # FormComponentType.SCROLLBAR
-    # FormComponentType.SPINBUTTON
-    # FormComponentType.NAVIGATIONBAR
 
     # endregion get form models
 
@@ -2123,7 +2116,7 @@ class Forms:
         y: int | UnitT,
         width: int | UnitT,
         height: int | UnitT,
-        image_url: str = "",
+        image_url: PathOrStr = "",
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
@@ -2139,9 +2132,10 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT): Height.
-            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
-            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
-            spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
+            image_url (PathOrStr, optional): Image URL. When setting the value it can be a string or a Path object.
+                If a string is passed it can be a URL or a path to a file.
+                Value such as ``file:///path/to/image.png`` and ``/path/to/image.png`` are valid.
+                Relative paths are supported.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -2717,7 +2711,7 @@ class Forms:
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlScrollBar:
         """
-        Inserts a Rich Text control.
+        Inserts a Scrollbar control.
 
         Args:
             doc (XComponent): Component
@@ -2736,7 +2730,7 @@ class Forms:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlScrollBar: Rich Text Control
+            FormCtlScrollBar: Scrollbar Control
 
         .. versionadded:: 0.14.0
         """
@@ -2931,6 +2925,8 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
+            text (str, optional): Text value.
+            echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3011,11 +3007,12 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
-            min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
-            max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
+            time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
+            min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
+            max_time (datetime.time, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
-            date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
+            time_format (TimeFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
+            pin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3427,10 +3424,12 @@ class Forms:
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
-            height (int, UnitT: Height.
+            height (int, UnitT): Height.
             entries (Iterable[str], optional): Combo box entries
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
+            line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
+            multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3674,11 +3673,13 @@ class Forms:
         Inserts a Database Text field control.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
+            text (str, optional): Text value.
+            echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3739,11 +3740,12 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
-            min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
-            max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
+            time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
+            min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
+            max_time (datetime.time, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
-            date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
+            time_format (TimeFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
+            pin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
