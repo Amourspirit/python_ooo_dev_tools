@@ -130,6 +130,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tree import TreeControlModel  # service
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
+    from ooodev.utils.type_var import PathOrStr
 # endregion Imports
 
 ControlT = TypeVar("ControlT", bound=DialogControlBase)
@@ -1343,7 +1344,7 @@ class Dialogs:
         height: int = 20,
         border: BorderKind = BorderKind.BORDER_3D,
         scale: int | ImageScaleModeEnum = ImageScaleModeEnum.NONE,
-        image_url: str = "",
+        image_url: PathOrStr = "",
         name: str = "",
         **props: Any,
     ) -> CtlImage:
@@ -1357,6 +1358,10 @@ class Dialogs:
             width (int): Width. If ``-1``, the dialog Size is not set.
             height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            image_url (PathOrStr, optional): Image URL. When setting the value it can be a string or a Path object.
+                If a string is passed it can be a URL or a path to a file.
+                Value such as ``file:///path/to/image.png`` and ``/path/to/image.png`` are valid.
+                Relative paths are supported.
             scale (int | ImageScaleModeEnum, optional): Image scale mode. Defaults to ``ImageScaleModeEnum.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -2215,11 +2220,11 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        text: str,
         x: int,
         y: int,
         width: int,
         height: int = 20,
+        text: str = "",
         echo_char: str = "",
         border: BorderKind = BorderKind.NONE,
         name: str = "",
@@ -2230,11 +2235,11 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control
-            text (str): Text value
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
             height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            text (str, optional): Text value.
             echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
@@ -2260,8 +2265,8 @@ class Dialogs:
             # set properties in the model
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
-
-            ctl_props.setPropertyValue("Text", text)
+            if text:
+                ctl_props.setPropertyValue("Text", text)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("Name", name)
 

@@ -89,6 +89,7 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XInterface
     from com.sun.star.lang import EventObject
     from ooodev.units import UnitT
+    from ooodev.utils.type_var import PathOrStr
 # endregion Imports
 
 
@@ -2123,7 +2124,7 @@ class Forms:
         y: int | UnitT,
         width: int | UnitT,
         height: int | UnitT,
-        image_url: str = "",
+        image_url: PathOrStr = "",
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
@@ -2139,9 +2140,10 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT): Height.
-            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
-            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
-            spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
+            image_url (PathOrStr, optional): Image URL. When setting the value it can be a string or a Path object.
+                If a string is passed it can be a URL or a path to a file.
+                Value such as ``file:///path/to/image.png`` and ``/path/to/image.png`` are valid.
+                Relative paths are supported.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -2717,7 +2719,7 @@ class Forms:
         styles: Iterable[StyleT] | None = None,
     ) -> FormCtlScrollBar:
         """
-        Inserts a Rich Text control.
+        Inserts a Scrollbar control.
 
         Args:
             doc (XComponent): Component
@@ -2736,7 +2738,7 @@ class Forms:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlScrollBar: Rich Text Control
+            FormCtlScrollBar: Scrollbar Control
 
         .. versionadded:: 0.14.0
         """
@@ -2931,6 +2933,8 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
+            text (str, optional): Text value.
+            echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3011,11 +3015,12 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
-            min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
-            max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
+            time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
+            min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
+            max_time (datetime.time, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
-            date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
+            time_format (TimeFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
+            pin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3427,10 +3432,12 @@ class Forms:
             x (int | UnitT): X Coordinate
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
-            height (int, UnitT: Height.
+            height (int, UnitT): Height.
             entries (Iterable[str], optional): Combo box entries
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
+            line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
+            multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3674,11 +3681,13 @@ class Forms:
         Inserts a Database Text field control.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
+            text (str, optional): Text value.
+            echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
@@ -3739,11 +3748,12 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
-            min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
-            max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
+            time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
+            min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
+            max_time (datetime.time, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
-            date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
+            time_format (TimeFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
+            pin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
