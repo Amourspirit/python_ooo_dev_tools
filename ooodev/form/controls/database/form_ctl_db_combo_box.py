@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from com.sun.star.awt import XControl
 
+from ooodev.adapter.form.data_aware_control_model_partial import DataAwareControlModelPartial
 from ooodev.adapter.form.update_events import UpdateEvents
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
@@ -12,13 +13,14 @@ if TYPE_CHECKING:
     from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 
-class FormCtlDbComboBox(FormCtlComboBox, UpdateEvents):
+class FormCtlDbComboBox(FormCtlComboBox, DataAwareControlModelPartial, UpdateEvents):
     """``com.sun.star.form.component.DatabaseComboBox`` control"""
 
     def __init__(self, ctl: XControl) -> None:
         FormCtlComboBox.__init__(self, ctl)
         generic_args = self._get_generic_args()
         UpdateEvents.__init__(self, trigger_args=generic_args, cb=self._on_update_events_add_remove)
+        DataAwareControlModelPartial.__init__(self, self.get_model())
 
     # region Lazy Listeners
     def _on_update_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:

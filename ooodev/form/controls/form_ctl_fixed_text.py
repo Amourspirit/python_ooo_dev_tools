@@ -49,6 +49,22 @@ class FormCtlFixedText(FormCtlBase, TextEvents):
         """Gets the kind of form component this control is"""
         return FormComponentKind.FIXED_TEXT
 
+    def _get_tab_index(self) -> int:
+        """
+        Gets the tab index.
+
+        Fixed Text controls do not have a tab index, so this always returns -1
+        """
+        return -1
+
+    def _set_tab_index(self, value: int) -> None:
+        """
+        Sets the tab index.
+
+        Fixed Text controls do not have a tab index, so this does nothing
+        """
+        pass
+
     # endregion Overrides
 
     # region Methods

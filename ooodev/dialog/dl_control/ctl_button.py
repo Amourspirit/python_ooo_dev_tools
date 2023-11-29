@@ -101,4 +101,13 @@ class CtlButton(DialogControlBase, ActionEvents):
             raise ValueError(f"Invalid path or str: {value}")
         self.model.ImageURL = FileIO.fnm_to_url(value)
 
+    @property
+    def label(self) -> str:
+        """Gets/Sets the label (text) for the control"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
     # endregion Properties

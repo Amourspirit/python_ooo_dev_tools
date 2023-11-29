@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, Iterable, Tuple, TYPE_CHECKING
 import contextlib
+import uno
 
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
@@ -93,6 +94,18 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
             return
         uno_strings = uno.Any("[]string", tuple(data))  # type: ignore
         uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
+
+    def get_item(self, index: int) -> str:
+        """
+        Gets the item at the specified index
+
+        Args:
+            index (int): Index of the item to get
+
+        Returns:
+            The item at the specified index
+        """
+        return self.view.getItem(index)
 
     # endregion Methods
 
