@@ -58,6 +58,7 @@ from .controls import FormCtlCurrencyField
 from .controls import FormCtlDateField
 from .controls import FormCtlFile
 from .controls import FormCtlFormattedField
+from .controls import FormCtlGrid
 from .controls import FormCtlGroupBox
 from .controls import FormCtlImageButton
 from .controls import FormCtlFixedText
@@ -1458,6 +1459,7 @@ class Forms:
         y: int | UnitT,
         width: int | UnitT,
         height: int | UnitT = 6,
+        label: str = "",
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
         parent_form: XNameContainer | None = None,
@@ -1474,6 +1476,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int, UnitT, optional): Button Width.
             height (int, UnitT, optional): Button Height. Defaults to ``6`` mm.
+            label (str, optional): Button label (text).
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
@@ -1506,6 +1509,8 @@ class Forms:
             ctl = cls.get_control(doc, model)
             result = FormCtlButton(ctl)
             result.tab_stop = True
+            if label:
+                result.label = label
             return result
         except Exception:
             raise
@@ -1519,8 +1524,9 @@ class Forms:
         y: int | UnitT,
         width: int | UnitT,
         height: int | UnitT = 6,
+        label: str = "",
         tri_state: bool = True,
-        state: TriStateKind = TriStateKind.CHECKED,
+        state: TriStateKind = TriStateKind.NOT_CHECKED,
         border: BorderKind = BorderKind.BORDER_3D,
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
@@ -1537,6 +1543,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
+            label (str, optional): Label (text) to assign to checkbox.
             anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
@@ -1585,6 +1592,8 @@ class Forms:
             checkbox.border = border
             checkbox.state = state
             checkbox.tri_state = tri_state
+            if label:
+                checkbox.label = label
             return checkbox
         except Exception:
             raise
@@ -2049,6 +2058,67 @@ class Forms:
             ctl = cls.get_control(doc, model)
             return FormCtlGroupBox(ctl)
 
+        except Exception:
+            raise
+
+    @classmethod
+    def insert_control_grid(
+        cls,
+        doc: XComponent,
+        *,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
+        label: str = "",
+        anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
+        name: str = "",
+        parent_form: XNameContainer | None = None,
+        styles: Iterable[StyleT] | None = None,
+    ) -> FormCtlGrid:
+        """
+        Inserts a Grid control.
+
+        Args:
+            doc (XComponent): Component
+            x (int | UnitT): X Coordinate
+            y (int | UnitT): Y Coordinate
+            width (int | UnitT): Width
+            height (int, UnitT): Height.
+            label (str, optional): Grid label.
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
+            styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+
+        Returns:
+            FormCtlGrid: Grid Control
+
+        .. versionadded:: 0.14.2
+        """
+        if styles is None:
+            # keeps type checker happy
+            styles = ()
+
+        if not name:
+            name = cls.create_name(parent_form, "GroupBox")
+        try:
+            props = cls.add_control(
+                doc=doc,
+                name=name,
+                label=label,
+                comp_kind=FormComponentKind.GRID_CONTROL,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                anchor_type=anchor_type,
+                parent_form=parent_form,
+                styles=styles,
+            )
+            model = mLo.Lo.qi(XControlModel, props, True)
+            ctl = cls.get_control(doc, model)
+            return FormCtlGrid(ctl)
         except Exception:
             raise
 
@@ -2559,6 +2629,7 @@ class Forms:
         y: int | UnitT,
         width: int | UnitT,
         height: int | UnitT = 6,
+        label: str = "",
         state: StateKind = StateKind.NOT_CHECKED,
         multiline: bool = False,
         border: BorderKind = BorderKind.NONE,
@@ -2577,6 +2648,7 @@ class Forms:
             y (int | UnitT): Y Coordinate
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
+            label (str, optional): Label (text) of control.
             anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
             tri_state (StateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
@@ -2626,6 +2698,8 @@ class Forms:
             radio_btn.border = border
             radio_btn.state = state
             radio_btn.multi_line = multiline
+            if label:
+                radio_btn.label = label
             return radio_btn
         except Exception:
             raise

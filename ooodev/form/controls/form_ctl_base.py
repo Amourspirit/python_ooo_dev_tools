@@ -3,6 +3,8 @@ from typing import Any, cast, TYPE_CHECKING
 import contextlib
 import uno
 from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XChild
+from com.sun.star.container import XNamed
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.form.form_component_type import FormComponentType
@@ -60,9 +62,9 @@ class FormCtlBase(
         MouseMotionEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_motion_listener_add_remove)
         PaintEvents.__init__(self, trigger_args=generic_args, cb=self._on_paint_listener_add_remove)
         WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_event_listener_add_remove)
-        PropertyChangeImplement.__init__(self, component=model)
-        PropertiesChangeImplement.__init__(self, component=model)
-        VetoableChangeImplement.__init__(self, component=model)
+        PropertyChangeImplement.__init__(self, component=model, trigger_args=generic_args)
+        PropertiesChangeImplement.__init__(self, component=model, trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=model, trigger_args=generic_args)
 
     # endregion init
 
@@ -162,12 +164,41 @@ class FormCtlBase(
         for style in styles:
             style.apply(model)
 
+    def get_form_name(self) -> str:
+        """
+        Gets form name for the current control
+
+        Args:
+            ctl_model (XControlModel): control model
+
+        Returns:
+            str: form name on success; Otherwise, empty string.
+        """
+        child = mLo.Lo.qi(XChild, self.get_model())
+        if not child:
+            return ""
+        parent = child.getParent()
+        if not parent:
+            return ""
+        named = mLo.Lo.qi(XNamed, parent)
+        if not named:
+            return ""
+        return named.getName()
+
     # endregion other methods
 
     # region Overrides
     def get_uno_srv_name(self) -> str:
         """Get Uno service name"""
         return self.get_form_component_kind().to_namespace()
+
+    def _get_tab_index(self) -> int:
+        """Gets the tab index"""
+        return self.get_model().TabIndex
+
+    def _set_tab_index(self, value: int) -> None:
+        """Sets the tab index"""
+        self.get_model().TabIndex = value
 
     # endregion Overrides
 
@@ -217,11 +248,11 @@ class FormCtlBase(
     @property
     def tab_index(self) -> int:
         """Gets/Sets the tab index"""
-        return self.get_model().TabIndex
+        return self._get_tab_index()
 
     @tab_index.setter
     def tab_index(self, value: int) -> None:
-        self.get_model().TabIndex = value
+        self._set_tab_index(value)
 
     @property
     def tag(self) -> str:

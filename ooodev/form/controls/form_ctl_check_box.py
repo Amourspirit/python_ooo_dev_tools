@@ -94,6 +94,15 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def label(self) -> str:
+        """Gets/Sets the label (text) for the control"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()

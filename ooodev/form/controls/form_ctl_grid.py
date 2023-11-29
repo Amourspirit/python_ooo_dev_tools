@@ -89,7 +89,7 @@ class FormCtlGrid(
 
     # endregion Overrides
 
-    # region Data
+    # region Grid
     def get_column_types(self) -> tuple[str, ...]:
         """Gets the available column types"""
         return self.model.getColumnTypes()
@@ -130,7 +130,15 @@ class FormCtlGrid(
         # add properties column to container
         col_container.insertByIndex(col_container.getCount(), col_props)
 
-    # endregion Data
+    def get_current_column_position(self) -> int:
+        """Gets the current column position"""
+        return self.view.getCurrentColumnPosition()
+
+    def set_current_column_position(self, position: int) -> None:
+        """Sets the current column position"""
+        self.view.setCurrentColumnPosition(position)
+
+    # endregion Grid
 
     # region Properties
     @property

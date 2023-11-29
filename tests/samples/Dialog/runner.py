@@ -370,6 +370,7 @@ class Runner:
         self._set_tab_index(self._rb1)
         self._rb1.state = StateKind.CHECKED
         self._rb1.add_event_item_state_changed(self._fn_on_item_changed)
+        self._rb1.add_event_property_change("State", self._fn_on_property_changed)
         rb_sz = self._rb1.view.getPosSize()
         for i in range(1, 4):
             radio_btn = Dialogs.insert_radio_button(
@@ -382,6 +383,7 @@ class Runner:
             )
             self._set_tab_index(radio_btn)
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
+            radio_btn.add_event_property_change("State", self._fn_on_property_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
         self._ctl_gb2 = Dialogs.insert_group_box(
@@ -409,6 +411,7 @@ class Runner:
         self._set_tab_index(self._rb2)
         self._rb2.state = StateKind.CHECKED
         self._rb2.add_event_item_state_changed(self._fn_on_item_changed)
+        self._rb2.add_event_property_change("State", self._fn_on_property_changed)
         rb_sz = self._rb2.view.getPosSize()
         for i in range(1, 4):
             radio_btn = Dialogs.insert_radio_button(
@@ -421,6 +424,7 @@ class Runner:
             )
             self._set_tab_index(radio_btn)
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
+            radio_btn.add_event_property_change("State", self._fn_on_property_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
         self._ctl_link = Dialogs.insert_hyperlink(
@@ -495,7 +499,7 @@ class Runner:
 
         self._ctl_button_ok.add_event_properties_change(names=["Enabled"], cb=self._fn_on_button_properties_changed)
 
-        self._ctl_button_ok.add_event_property_change("Enabled", self._fn_on_button_property_changed)
+        self._ctl_button_ok.add_event_property_change("Enabled", self._fn_on_property_changed)
         # The vetoable event is not firing. I suspect that the Button Enable property is not a vetoable property.
         self._ctl_button_ok.add_event_vetoable_change("Enabled", self._fn_on_button_veto_property_changed)
         self._ctl_button_ok.enabled = False
@@ -533,7 +537,7 @@ class Runner:
         self._fn_on_scroll_adjustment = self.on_scroll_adjustment
         self._fn_on_window_moved = self.on_window_moved
         self._fn_on_window_closed = self.on_window_closed
-        self._fn_on_button_property_changed = self.on_button_property_changed
+        self._fn_on_property_changed = self.on_property_changed
         self._fn_on_button_veto_property_changed = self.on_button_veto_property_changed
         self._fn_on_button_properties_changed = self.on_button_properties_changed
 
@@ -619,12 +623,12 @@ class Runner:
 
         print("Window Closed")
 
-    def on_button_property_changed(
+    def on_property_changed(
         self, src: Any, event: EventArgs, property_name: str, control_src: Any, component: Any, *args, **kwargs
     ) -> None:
         itm_event = cast("PropertyChangeEvent", event.event_data)
         print(
-            "Button Property Changed:",
+            "Property Changed:",
             property_name,
             ",",
             " New Value:",

@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.14.2
+==============
+
+Updates for ``Forms`` and ``Dialogs``.
+
 Version 0.14.1
 ==============
 
