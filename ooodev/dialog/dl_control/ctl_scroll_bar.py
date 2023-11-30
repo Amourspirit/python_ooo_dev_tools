@@ -5,8 +5,10 @@ import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
 
 from .ctl_base import DialogControlBase
 
@@ -69,12 +71,44 @@ class CtlScrollBar(DialogControlBase, AdjustmentEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlScrollBar:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def max_value(self) -> int:
+        """Gets the maximum value of the scroll bar"""
+        return self.model.ScrollValueMax
+
+    @max_value.setter
+    def max_value(self, value: int) -> None:
+        self.model.ScrollValueMax = value
+
+    @property
+    def min_value(self) -> int:
+        """Gets the minimum value of the scroll bar"""
+        return self.model.ScrollValueMin
+
+    @min_value.setter
+    def min_value(self, value: int) -> None:
+        self.model.ScrollValueMin = value
 
     @property
     def model(self) -> UnoControlScrollBarModel:
         return self.get_model()
+
+    @property
+    def orientation(self) -> OrientationKind:
+        """Gets or sets the orientation of the scroll bar"""
+        return OrientationKind(self.model.Orientation)
+
+    @orientation.setter
+    def orientation(self, value: OrientationKind) -> None:
+        self.model.Orientation = value.value
 
     @property
     def value(self) -> int:
@@ -84,5 +118,9 @@ class CtlScrollBar(DialogControlBase, AdjustmentEvents):
     @value.setter
     def value(self, value: int) -> None:
         self.view.setValue(value)
+
+    @property
+    def view(self) -> UnoControlScrollBar:
+        return self.get_view_ctl()
 
     # endregion Properties

@@ -94,9 +94,27 @@ class FormCtlRadioButton(FormCtlBase, ItemEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def label(self) -> str:
+        """Gets/Sets the label (text) for the control"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
+
+    @property
+    def multi_line(self) -> bool:
+        """Gets/Sets the multi-line state"""
+        return self.model.MultiLine
+
+    @multi_line.setter
+    def multi_line(self, value: bool) -> None:
+        self.model.MultiLine = value
 
     @property
     def printable(self) -> bool:

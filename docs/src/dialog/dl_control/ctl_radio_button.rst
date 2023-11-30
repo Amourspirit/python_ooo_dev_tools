@@ -42,7 +42,7 @@ For an example see `Tab and List Box Dialog Example <https://github.com/Amourspi
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_radio_button.CtlRadioButton
+.. autoclass:: ooodev.dialog.dl_control.CtlRadioButton
     :members:
     :undoc-members:
     :show-inheritance:

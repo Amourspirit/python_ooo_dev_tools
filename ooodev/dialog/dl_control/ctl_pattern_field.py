@@ -7,6 +7,7 @@ import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -78,21 +79,35 @@ class CtlPatternField(DialogControlBase, SpinEvents, TextEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlPatternField:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def edit_mask(self) -> str:
+        """Gets/Sets the edit mask"""
+        return self.model.EditMask
+
+    @edit_mask.setter
+    def edit_mask(self, value: str) -> None:
+        self.model.EditMask = value
+
+    @property
+    def literal_mask(self) -> str:
+        """Gets/Sets the literal mask"""
+        return self.model.LiteralMask
+
+    @literal_mask.setter
+    def literal_mask(self, value: str) -> None:
+        self.model.LiteralMask = value
 
     @property
     def model(self) -> UnoControlPatternFieldModel:
         return self.get_model()
-
-    @property
-    def text(self) -> str:
-        """Gets/Sets the text"""
-        return self.model.Text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.model.Text = value
 
     @property
     def read_only(self) -> bool:
@@ -106,6 +121,19 @@ class CtlPatternField(DialogControlBase, SpinEvents, TextEvents):
         """Sets the read-only property"""
         with contextlib.suppress(Exception):
             self.model.ReadOnly = value
+
+    @property
+    def text(self) -> str:
+        """Gets/Sets the text"""
+        return self.model.Text
+
+    @text.setter
+    def text(self, value: str) -> None:
+        self.model.Text = value
+
+    @property
+    def view(self) -> UnoControlPatternField:
+        return self.get_view_ctl()
 
     # endregion Properties
 

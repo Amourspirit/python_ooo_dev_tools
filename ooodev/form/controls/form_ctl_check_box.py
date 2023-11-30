@@ -94,6 +94,15 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def label(self) -> str:
+        """Gets/Sets the label (text) for the control"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
@@ -144,7 +153,7 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         self.model.HelpText = value
 
     @property
-    def triple_state(self) -> bool:
+    def tri_state(self) -> bool:
         """
         Gets/Sets the triple state.
 
@@ -152,8 +161,8 @@ class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):
         """
         return self.model.TriState
 
-    @triple_state.setter
-    def triple_state(self, value: bool) -> None:
+    @tri_state.setter
+    def tri_state(self, value: bool) -> None:
         self.model.TriState = value
 
     @property

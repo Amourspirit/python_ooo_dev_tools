@@ -16,7 +16,7 @@ A callback can be in the format of:
 .. code-block:: python
 
     def on_some_event(
-        src: Any, event: EventArgs, control_src: CtlButton, *args, **kwargs
+        src: Any, event: EventArgs, control_src: FormCtlDbRadioButton, *args, **kwargs
     ) -> None:
         pass
 
@@ -26,12 +26,12 @@ or
 
     def on_some_event(src: Any, event: EventArgs, *args, **kwargs) -> None:
         # can get control from kwargs
-        ctl = cast(CtlButton, kwargs['control_src'])
+        ctl = cast(FormCtlDbRadioButton, kwargs['control_src'])
 
 Class
 -----
 
-.. autoclass:: ooodev.form.controls.database.form_ctl_db_radio_button.FormCtlDbRadioButton
+.. autoclass:: ooodev.form.controls.database.FormCtlDbRadioButton
     :members:
     :undoc-members:
     :show-inheritance:

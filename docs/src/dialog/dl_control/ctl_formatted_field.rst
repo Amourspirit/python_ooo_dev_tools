@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_formatted_field.CtlFormattedField
+.. autoclass:: ooodev.dialog.dl_control.CtlFormattedField
     :members:
     :undoc-members:
     :show-inheritance:

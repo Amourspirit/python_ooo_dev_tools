@@ -1,9 +1,13 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import contextlib
 import uno
 from com.sun.star.beans import XPropertySet
+from com.sun.star.container import XChild
+from com.sun.star.container import XNamed
 
 from ooo.dyn.awt.pos_size import PosSize
+from ooo.dyn.form.form_component_type import FormComponentType
 
 # from ooodev.adapter.lang.event_events import EventEvents
 from ooodev.adapter.adapter_base import GenericArgs
@@ -58,9 +62,9 @@ class FormCtlBase(
         MouseMotionEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_motion_listener_add_remove)
         PaintEvents.__init__(self, trigger_args=generic_args, cb=self._on_paint_listener_add_remove)
         WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_event_listener_add_remove)
-        PropertyChangeImplement.__init__(self, component=model)
-        PropertiesChangeImplement.__init__(self, component=model)
-        VetoableChangeImplement.__init__(self, component=model)
+        PropertyChangeImplement.__init__(self, component=model, trigger_args=generic_args)
+        PropertiesChangeImplement.__init__(self, component=model, trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=model, trigger_args=generic_args)
 
     # endregion init
 
@@ -110,6 +114,19 @@ class FormCtlBase(
     # endregion Lazy Listeners
 
     # region other methods
+    def get_id(self) -> int:
+        """
+        Gets class id for this control.
+
+        Returns:
+            int: Class Id if found, Otherwise ``-1``
+        """
+        props = self.get_property_set()
+        with contextlib.suppress(Exception):
+            return int(props.getPropertyValue("ClassId"))
+        mLo.Lo.print("No class ID found for form component")
+        return -1
+
     def get_model(self) -> UnoControlModel:
         """Gets the model for this control"""
         return cast("UnoControlModel", self.get_control().getModel())
@@ -147,12 +164,41 @@ class FormCtlBase(
         for style in styles:
             style.apply(model)
 
+    def get_form_name(self) -> str:
+        """
+        Gets form name for the current control
+
+        Args:
+            ctl_model (XControlModel): control model
+
+        Returns:
+            str: form name on success; Otherwise, empty string.
+        """
+        child = mLo.Lo.qi(XChild, self.get_model())
+        if not child:
+            return ""
+        parent = child.getParent()
+        if not parent:
+            return ""
+        named = mLo.Lo.qi(XNamed, parent)
+        if not named:
+            return ""
+        return named.getName()
+
     # endregion other methods
 
     # region Overrides
     def get_uno_srv_name(self) -> str:
         """Get Uno service name"""
         return self.get_form_component_kind().to_namespace()
+
+    def _get_tab_index(self) -> int:
+        """Gets the tab index"""
+        return self.get_model().TabIndex
+
+    def _set_tab_index(self, value: int) -> None:
+        """Sets the tab index"""
+        self.get_model().TabIndex = value
 
     # endregion Overrides
 
@@ -166,16 +212,21 @@ class FormCtlBase(
     # region Properties
 
     @property
-    def width(self) -> int:
-        """Gets the width of the control"""
-        return self.get_view().getSize().Width
+    def component_type(self) -> int:
+        """
+        Gets the form component type.
 
-    @width.setter
-    def width(self, value: int) -> None:
-        view = self.get_view()
-        pos_size = view.getPosSize()
-        pos_size.Width = value
-        view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
+        The return value is a ``com.sun.star.form.FormComponentType`` constant.
+
+        Returns:
+            int: Form component type
+
+        .. versionadded:: 0.14.1
+        """
+        form_id = self.get_id()
+        if form_id == -1:
+            return FormComponentType.CONTROL
+        return form_id
 
     @property
     def height(self) -> int:
@@ -188,6 +239,41 @@ class FormCtlBase(
         pos_size = view.getPosSize()
         pos_size.Height = value
         view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
+
+    @property
+    def name(self) -> str:
+        """Gets the name for the control model"""
+        return self.get_model().Name
+
+    @property
+    def tab_index(self) -> int:
+        """Gets/Sets the tab index"""
+        return self._get_tab_index()
+
+    @tab_index.setter
+    def tab_index(self, value: int) -> None:
+        self._set_tab_index(value)
+
+    @property
+    def tag(self) -> str:
+        """Gets/Sets the tag"""
+        return self.get_model().Tag
+
+    @tag.setter
+    def tag(self, value: str) -> None:
+        self.get_model().Tag = value
+
+    @property
+    def width(self) -> int:
+        """Gets the width of the control"""
+        return self.get_view().getSize().Width
+
+    @width.setter
+    def width(self, value: int) -> None:
+        view = self.get_view()
+        pos_size = view.getPosSize()
+        pos_size.Width = value
+        view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
 
     @property
     def x(self) -> int:
@@ -212,28 +298,5 @@ class FormCtlBase(
         pos_size = view.getPosSize()
         pos_size.Y = value
         view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.Y)
-
-    @property
-    def name(self) -> str:
-        """Gets the name for the control model"""
-        return self.get_model().Name
-
-    @property
-    def tab_index(self) -> int:
-        """Gets/Sets the tab index"""
-        return self.get_model().TabIndex
-
-    @tab_index.setter
-    def tab_index(self, value: int) -> None:
-        self.get_model().TabIndex = value
-
-    @property
-    def tag(self) -> str:
-        """Gets/Sets the tag"""
-        return self.get_model().Tag
-
-    @tag.setter
-    def tag(self, value: str) -> None:
-        self.get_model().Tag = value
 
     # endregion Properties

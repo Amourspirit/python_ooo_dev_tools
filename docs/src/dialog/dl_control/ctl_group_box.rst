@@ -42,7 +42,7 @@ For an example see `Tab and List Box Dialog Example <https://github.com/Amourspi
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_group_box.CtlGroupBox
+.. autoclass:: ooodev.dialog.dl_control.CtlGroupBox
     :members:
     :undoc-members:
     :show-inheritance:

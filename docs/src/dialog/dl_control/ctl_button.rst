@@ -43,7 +43,7 @@ For an example see `Tab and List Box Dialog Example <https://github.com/Amourspi
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_button.CtlButton
+.. autoclass:: ooodev.dialog.dl_control.CtlButton
     :members:
     :undoc-members:
     :show-inheritance:

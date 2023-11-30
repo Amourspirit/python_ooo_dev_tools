@@ -1,9 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-from ooodev.adapter.form.reset_events import ResetEvents
+
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
+from ooodev.adapter.form.reset_events import ResetEvents
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
 
 from .form_ctl_base import FormCtlBase
 
@@ -58,6 +61,15 @@ class FormCtlScrollBar(FormCtlBase, AdjustmentEvents, ResetEvents):
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -85,9 +97,36 @@ class FormCtlScrollBar(FormCtlBase, AdjustmentEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def min_value(self) -> int:
+        """Gets the minimum value of the scroll bar"""
+        return self.model.ScrollValueMin
+
+    @min_value.setter
+    def min_value(self, value: int) -> None:
+        self.model.ScrollValueMin = value
+
+    @property
+    def max_value(self) -> int:
+        """Gets the maximum value of the scroll bar"""
+        return self.model.ScrollValueMax
+
+    @max_value.setter
+    def max_value(self, value: int) -> None:
+        self.model.ScrollValueMax = value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
+
+    @property
+    def orientation(self) -> OrientationKind:
+        """Gets or sets the orientation of the scroll bar"""
+        return OrientationKind(self.model.Orientation)
+
+    @orientation.setter
+    def orientation(self, value: OrientationKind) -> None:
+        self.model.Orientation = value.value
 
     @property
     def printable(self) -> bool:

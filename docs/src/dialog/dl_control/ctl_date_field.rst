@@ -31,7 +31,7 @@ or
 Class
 -----
 
-.. autoclass:: ooodev.dialog.dl_control.ctl_date_field.CtlDateField
+.. autoclass:: ooodev.dialog.dl_control.CtlDateField
     :members:
     :undoc-members:
     :show-inheritance:

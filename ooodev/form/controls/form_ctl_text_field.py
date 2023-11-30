@@ -1,14 +1,21 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from com.sun.star.awt import XControl
+import contextlib
+import os
+
+import uno
+from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
+from ooo.dyn.awt.selection import Selection
 
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.adapter.form.reset_events import ResetEvents
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
+    from com.sun.star.awt import XControl
     from com.sun.star.form.component import TextField as ControlModel  # service
     from com.sun.star.form.control import TextField as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -55,7 +62,64 @@ class FormCtlTextField(FormCtlBase, TextEvents, ResetEvents):
 
     # endregion Overrides
 
+    # region Text Methods
+    def write_line(self, line: str = "") -> bool:
+        """
+        Add a new line to a multi-line text control
+
+        Args:
+            line (str, optional): Specifies a line to insert at the end of the text box
+                a newline character will be inserted before the line, if relevant.
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        # if not self.model.MultiLine:
+        #     return False
+        with contextlib.suppress(Exception):
+            # will raise an exception if not multi-line
+            self.model.HardLineBreaks = True
+            sel = Selection()
+            text_len = len(self.text)
+            if text_len == 0:
+                sel.Min = 0
+                sel.Max = 0
+                self.text = line
+            else:
+                # Put cursor at the end of the actual text
+                sel.Min = text_len
+                sel.Max = text_len
+                self.view.insertText(sel, f"{os.linesep}{line}")
+            # Put the cursor at the end of the inserted text
+            sel.Max += len(os.linesep) + len(line)
+            sel.Min = sel.Max
+            self.view.setSelection(sel)
+            return True
+        return False
+
+    # endregion Text Methods
+
     # region Properties
+    @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def echo_char(self) -> str:
+        """Gets/Sets the echo character as a string"""
+        return chr(self.model.EchoChar)
+
+    @echo_char.setter
+    def echo_char(self, value: str) -> None:
+        if len(value) > 0:
+            value = value[0]
+        self.model.EchoChar = ord(value)
+
     @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
@@ -84,9 +148,27 @@ class FormCtlTextField(FormCtlBase, TextEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def line_end_format(self) -> LineEndFormatEnum:
+        """Gets/Sets the end line format"""
+        return LineEndFormatEnum(self.model.LineEndFormat)
+
+    @line_end_format.setter
+    def line_end_format(self, value: LineEndFormatEnum) -> None:
+        self.model.LineEndFormat = value.value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
+
+    @property
+    def multi_line(self) -> bool:
+        """Gets/Sets the multi line"""
+        return self.model.MultiLine
+
+    @multi_line.setter
+    def multi_line(self, value: bool) -> None:
+        self.model.MultiLine = value
 
     @property
     def printable(self) -> bool:

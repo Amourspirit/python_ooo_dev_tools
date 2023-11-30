@@ -131,7 +131,7 @@ class Props:
 
     # region ------------------- uno -----------------------------------
     @staticmethod
-    def any(*elements: object) -> uno.Any:  # type: ignore
+    def any(*elements: object) -> Any:  # type: ignore
         """
         Gets a uno.Any object for elements.
 
@@ -862,7 +862,7 @@ class Props:
                 continue
             prop_name = cargs.event_data["name"]
             try:
-                ps.setPropertyToDefault(prop_name)
+                ps.setPropertyToDefault(prop_name)  # type: ignore
             except Exception as e:
                 has_error = True
                 errs.append(Exception(f'Could not set property Default "{prop_name}"', e))

@@ -72,14 +72,6 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlCheckBox:
-        return self.get_view_ctl()
-
-    @property
-    def model(self) -> UnoControlCheckBoxModel:
-        return self.get_model()
-
-    @property
     def border(self) -> BorderKind:
         """Gets/Sets the border style"""
         return BorderKind(self.model.VisualEffect)
@@ -87,6 +79,19 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
     @border.setter
     def border(self, value: BorderKind) -> None:
         self.model.VisualEffect = value.value
+
+    @property
+    def label(self) -> str:
+        """Gets/Sets the label (text) for the control"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
+
+    @property
+    def model(self) -> UnoControlCheckBoxModel:
+        return self.get_model()
 
     @property
     def state(self) -> TriStateKind:
@@ -109,5 +114,9 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
     @triple_state.setter
     def triple_state(self, value: bool) -> None:
         self.model.TriState = value
+
+    @property
+    def view(self) -> UnoControlCheckBox:
+        return self.get_view_ctl()
 
     # endregion Properties

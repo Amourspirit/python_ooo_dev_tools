@@ -1,9 +1,15 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-from ooodev.adapter.form.reset_events import ResetEvents
+
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
+from ooodev.adapter.form.reset_events import ResetEvents
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
+
+# from com.sun.star.awt.MouseWheelBehavior
+from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum as MouseWheelBehaviorEnum
 
 from .form_ctl_base import FormCtlBase
 
@@ -58,6 +64,24 @@ class FormCtlSpinButton(FormCtlBase, AdjustmentEvents, ResetEvents):
 
     # region Properties
     @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def default_value(self) -> int:
+        """Gets/Sets the default value"""
+        return self.model.DefaultSpinValue
+
+    @default_value.setter
+    def default_value(self, value: int) -> None:
+        self.model.DefaultSpinValue = value
+
+    @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
         return self.model.Enabled
@@ -85,9 +109,54 @@ class FormCtlSpinButton(FormCtlBase, AdjustmentEvents, ResetEvents):
         self.model.HelpURL = value
 
     @property
+    def increment(self) -> int:
+        """Gets/Sets the increment"""
+        return self.model.SpinIncrement
+
+    @increment.setter
+    def increment(self, value: int) -> None:
+        self.model.SpinIncrement = value
+
+    @property
+    def max_value(self) -> int:
+        """Gets the maximum value of the scroll bar"""
+        return self.model.SpinValueMax
+
+    @max_value.setter
+    def max_value(self, value: int) -> None:
+        self.model.SpinValueMax = value
+
+    @property
+    def min_value(self) -> int:
+        """Gets the minimum value of the scroll bar"""
+        return self.model.SpinValueMin
+
+    @min_value.setter
+    def min_value(self, value: int) -> None:
+        self.model.SpinValueMin = value
+
+    @property
     def model(self) -> ControlModel:
         """Gets the model for this control"""
         return self.get_model()
+
+    @property
+    def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum:
+        """Gets/Sets the mouse wheel behavior"""
+        return MouseWheelBehaviorEnum(self.model.MouseWheelBehavior)
+
+    @mouse_wheel_behavior.setter
+    def mouse_wheel_behavior(self, value: MouseWheelBehaviorEnum) -> None:
+        self.model.MouseWheelBehavior = value.value
+
+    @property
+    def orientation(self) -> OrientationKind:
+        """Gets or sets the orientation of the scroll bar"""
+        return OrientationKind(self.model.Orientation)
+
+    @orientation.setter
+    def orientation(self, value: OrientationKind) -> None:
+        self.model.Orientation = value.value
 
     @property
     def printable(self) -> bool:
@@ -125,13 +194,13 @@ class FormCtlSpinButton(FormCtlBase, AdjustmentEvents, ResetEvents):
         """
         # not sure if this scroll bar supports this.
         with contextlib.suppress(AttributeError):
-            return self.view.getValue()
+            return self.model.SpinValue
         return -1
 
     @value.setter
     def value(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.view.setValue(value)
+            self.model.SpinValue = value
 
     @property
     def view(self) -> ControlView:

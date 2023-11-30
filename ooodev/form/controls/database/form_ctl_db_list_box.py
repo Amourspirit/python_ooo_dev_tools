@@ -1,9 +1,13 @@
 from __future__ import annotations
-from typing import Any, cast, Iterable, Tuple, TYPE_CHECKING
-import contextlib
+from typing import Any, Tuple, cast, TYPE_CHECKING
+import uno
 
+from ooo.dyn.form.list_source_type import ListSourceType
+
+from ooodev.adapter.form.data_aware_control_model_partial import DataAwareControlModelPartial
 from ooodev.adapter.form.update_events import UpdateEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils import props as mProps
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from ..form_ctl_list_box import FormCtlListBox
@@ -13,13 +17,14 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseListBox as ControlModel  # service
 
 
-class FormCtlDbListBox(FormCtlListBox, UpdateEvents):
+class FormCtlDbListBox(FormCtlListBox, DataAwareControlModelPartial, UpdateEvents):
     """``com.sun.star.form.component.ListBox`` control"""
 
     def __init__(self, ctl: XControl) -> None:
         FormCtlListBox.__init__(self, ctl)
         generic_args = self._get_generic_args()
         UpdateEvents.__init__(self, trigger_args=generic_args, cb=self._on_update_events_add_remove)
+        DataAwareControlModelPartial.__init__(self, self.get_model())
 
     # region Lazy Listeners
     def _on_update_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -50,5 +55,68 @@ class FormCtlDbListBox(FormCtlListBox, UpdateEvents):
         def model(self) -> ControlModel:
             """Gets the model for this control"""
             return self.get_model()
+
+    @property
+    def bound_column(self) -> int:
+        """Gets/Sets the bound column.
+
+        Specifies which column of the list result set should be used for data exchange.
+
+        When you make a selection from a list box, the "BoundColumn" property reflects which column value of a result set
+        should be used as the value of the component. If the control is bound to a database field, the column value is stored
+        in the database field identified by the property ``com.sun.star.form.DataAwareControlModel.DataField``.
+
+        Returns:
+            int: If ``-1`` then the index (starting at 0) of the selected list box entry is stored in the current database field.
+            If ``0`` or greater, the column value of the result set at the position (0-indexed) is stored in the current database field.
+            In particular, for value 0, the selected (displayed) list box string is stored.
+
+        Note:
+            The bound column property is only used if a list source is defined and the list source matches with the types
+            ``com.sun.star.form.ListSourceType.TABLE``, ``com.sun.star.form.ListSourceType.QUERY``, ``com.sun.star.form.ListSourceType.SQL``
+            or ``com.sun.star.form.ListSourceType.SQLPASSTHROUGH``.
+            Otherwise the property is ignored, as there is no result set from which to get the column values.
+        """
+        return self.model.BoundColumn
+
+    @bound_column.setter
+    def bound_column(self, value: int) -> None:
+        self.model.BoundColumn = value
+
+    @property
+    def list_source_type(self) -> ListSourceType:
+        """Gets/Sets the list source type
+
+        Returns:
+            ListSourceType: The list source type
+        """
+        return ListSourceType(self.model.ListSourceType)
+
+    @list_source_type.setter
+    def list_source_type(self, value: ListSourceType) -> None:
+        self.model.ListSourceType = value  # type: ignore
+
+    @property
+    def list_source(self) -> Tuple[str, ...]:
+        """Gets/Sets the list source
+
+        Returns:
+            Tuple[str, ...]: The list source
+        """
+        return self.model.ListSource
+
+    @list_source.setter
+    def list_source(self, value: Tuple[str, ...]) -> None:
+        props = self.get_property_set()
+        uno.invoke(props, "setPropertyValue", ("ListSource", mProps.Props.any(*value)))  # type: ignore
+
+    @property
+    def selected_value(self) -> Any:
+        """Gets The selected value, if there is at most one.
+
+        Returns:
+            Any: The selected value
+        """
+        return self.model.SelectedValue
 
     # endregion Properties

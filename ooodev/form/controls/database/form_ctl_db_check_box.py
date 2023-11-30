@@ -4,6 +4,7 @@ from com.sun.star.awt import XControl
 
 from ooodev.adapter.form.update_events import UpdateEvents
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.adapter.form.data_aware_control_model_partial import DataAwareControlModelPartial
 
 from ..form_ctl_check_box import FormCtlCheckBox
 
@@ -12,13 +13,14 @@ if TYPE_CHECKING:
     from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 
-class FormCtlDbCheckBox(FormCtlCheckBox, UpdateEvents):
+class FormCtlDbCheckBox(FormCtlCheckBox, DataAwareControlModelPartial, UpdateEvents):
     """``com.sun.star.form.component.DatabaseCheckBox`` control"""
 
     def __init__(self, ctl: XControl) -> None:
         FormCtlCheckBox.__init__(self, ctl)
         generic_args = self._get_generic_args()
         UpdateEvents.__init__(self, trigger_args=generic_args, cb=self._on_update_events_add_remove)
+        DataAwareControlModelPartial.__init__(self, self.get_model())
 
     # region Lazy Listeners
     def _on_update_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:

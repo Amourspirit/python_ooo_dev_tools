@@ -1,13 +1,15 @@
 from __future__ import annotations
 from typing import Any, cast, Iterable, Tuple, TYPE_CHECKING
 import contextlib
+import uno
 
 from ooodev.adapter.awt.action_events import ActionEvents
-from ooodev.adapter.form.change_events import ChangeEvents
-from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.adapter.awt.item_list_events import ItemListEvents
+from ooodev.adapter.form.change_events import ChangeEvents
+from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
 from .form_ctl_base import FormCtlBase
@@ -93,9 +95,30 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
         uno_strings = uno.Any("[]string", tuple(data))  # type: ignore
         uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
 
+    def get_item(self, index: int) -> str:
+        """
+        Gets the item at the specified index
+
+        Args:
+            index (int): Index of the item to get
+
+        Returns:
+            The item at the specified index
+        """
+        return self.view.getItem(index)
+
     # endregion Methods
 
     # region Properties
+    @property
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
     @property
     def drop_down(self) -> bool:
         """Gets/Sets the DropDown property"""

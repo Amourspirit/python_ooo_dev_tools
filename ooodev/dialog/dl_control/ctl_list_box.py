@@ -8,6 +8,7 @@ from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -97,12 +98,13 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlListBox:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
 
-    @property
-    def model(self) -> UnoControlListBoxModel:
-        return self.get_model()
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
 
     @property
     def drop_down(self) -> bool:
@@ -122,21 +124,6 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
         return 0
 
     @property
-    def multi_selection(self) -> bool:
-        """Gets/Sets the MultiSelection property"""
-        return self.model.MultiSelection
-
-    @multi_selection.setter
-    def multi_selection(self, value: bool) -> None:
-        """Sets the MultiSelection property"""
-        self.model.MultiSelection = value
-
-    @property
-    def selected_items(self) -> Tuple[int, ...]:
-        """Gets the selected items"""
-        return cast(Tuple[int, ...], self.model.SelectedItems)
-
-    @property
     def list_index(self) -> int:
         """
         Gets which item is selected
@@ -149,6 +136,20 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
             if len(selected_items) > 0:
                 return selected_items[0]
         return -1
+
+    @property
+    def model(self) -> UnoControlListBoxModel:
+        return self.get_model()
+
+    @property
+    def multi_selection(self) -> bool:
+        """Gets/Sets the MultiSelection property"""
+        return self.model.MultiSelection
+
+    @multi_selection.setter
+    def multi_selection(self, value: bool) -> None:
+        """Sets the MultiSelection property"""
+        self.model.MultiSelection = value
 
     @property
     def read_only(self) -> bool:
@@ -180,6 +181,15 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
     def row_source(self, value: Iterable[str]) -> None:
         """Sets the row source"""
         self.set_list_data(value)
+
+    @property
+    def selected_items(self) -> Tuple[int, ...]:
+        """Gets the selected items"""
+        return cast(Tuple[int, ...], self.model.SelectedItems)
+
+    @property
+    def view(self) -> UnoControlListBox:
+        return self.get_view_ctl()
 
     # item_count was renamed to list_count in 0.13.2
     item_count = list_count

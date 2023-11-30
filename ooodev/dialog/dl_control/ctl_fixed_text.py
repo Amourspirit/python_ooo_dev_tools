@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -53,8 +54,22 @@ class CtlFixedText(DialogControlBase):
 
     # region Properties
     @property
-    def view(self) -> UnoControlFixedText:
-        return self.get_view_ctl()
+    def border(self) -> BorderKind:
+        """Gets/Sets the border style"""
+        return BorderKind(self.model.Border)
+
+    @border.setter
+    def border(self, value: BorderKind) -> None:
+        self.model.Border = value.value
+
+    @property
+    def label(self) -> str:
+        """Gets/Sets the label"""
+        return self.model.Label
+
+    @label.setter
+    def label(self, value: str) -> None:
+        self.model.Label = value
 
     @property
     def model(self) -> UnoControlFixedTextModel:
@@ -70,12 +85,7 @@ class CtlFixedText(DialogControlBase):
         self.model.MultiLine = value
 
     @property
-    def label(self) -> str:
-        """Gets/Sets the label"""
-        return self.model.Label
-
-    @label.setter
-    def label(self, value: str) -> None:
-        self.model.Label = value
+    def view(self) -> UnoControlFixedText:
+        return self.get_view_ctl()
 
     # endregion Properties
