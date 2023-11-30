@@ -38,6 +38,10 @@ class Hatch(StyleMulti):
     """
     Class for Fill Properties Fill Hatch.
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_shape_hatch`
+
     .. versionadded:: 0.9.0
     """
 
@@ -62,6 +66,10 @@ class Hatch(StyleMulti):
 
         Returns:
             None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_shape_hatch`
         """
         # sourcery skip: assign-if-exp, boolean-if-exp-identity, merge-dict-assign, remove-unnecessary-cast
 

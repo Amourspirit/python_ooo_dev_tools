@@ -18,7 +18,6 @@ Setup
     .. code-tab:: python
 
         import uno
-
         from ooodev.format.writer.direct.shape.area import Gradient as ShapeGradient
         from ooodev.format.writer.direct.shape.area import PresetGradientKind
         from ooodev.utils.gui import GUI
@@ -64,10 +63,10 @@ Setup
 Fill Shape Gradient
 -------------------
 
-Add a fill color to the shape
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Add a gradient to the shape
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Adding a fill color to the shape is done by using the ``ShapeGradient`` class.
+Adding a gradient to the shape is done by using the ``ShapeGradient`` class.
 The ``ShapeGradient`` class has a method ``from_preset()`` takes a ``preset`` as a parameter.
 The :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` class is used to get the preset of the gradient.
 

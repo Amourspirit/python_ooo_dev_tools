@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
 from ooodev.format.inner.direct.write.fill.area.img import Img as FillImg
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XBitmap
     from ooo.dyn.drawing.rectangle_point import RectanglePoint
-    from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
     from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
     from ooodev.format.inner.common.format_types.offset_row import OffsetRow
     from ooodev.format.inner.common.format_types.size_percent import SizePercent
