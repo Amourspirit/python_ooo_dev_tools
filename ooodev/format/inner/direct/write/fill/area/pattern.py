@@ -6,9 +6,8 @@ Module for Fill Properties Fill Pattern.
 
 from __future__ import annotations
 import contextlib
-from typing import Any, Tuple, overload, Type, TypeVar
-
-from com.sun.star.awt import XBitmap
+from typing import Any, Tuple, overload, Type, TypeVar, TYPE_CHECKING
+import uno
 
 from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 
@@ -22,6 +21,9 @@ from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as Prese
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
 
+if TYPE_CHECKING:
+    from com.sun.star.awt import XBitmap
+
 
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
 
@@ -31,6 +33,10 @@ _TPattern = TypeVar(name="_TPattern", bound="Pattern")
 class Pattern(StyleBase):
     """
     Class for Fill Properties Fill Pattern.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_shape_pattern`
 
     .. versionadded:: 0.9.0
     """
@@ -60,6 +66,10 @@ class Pattern(StyleBase):
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
             All subsequent call of the same name will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_shape_pattern`
         """
 
         init_vals = {}

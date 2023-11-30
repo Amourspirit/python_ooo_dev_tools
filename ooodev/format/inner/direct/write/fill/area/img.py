@@ -31,7 +31,6 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ooodev.utils.decorator.deprecated import deprecated
 
 # endregion Imports
 
@@ -64,6 +63,10 @@ class ImgStyleKind(Enum):
 class Img(StyleBase):
     """
     Class for Fill Properties Fill Image.
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_shape_image`
 
     .. versionadded:: 0.9.0
     """
@@ -102,6 +105,10 @@ class Img(StyleBase):
         Note:
             If ``auto_name`` is ``False`` then a bitmap for a given ``name`` is only required the first call.
             All subsequent call of the same ``name`` will retrieve the bitmap form the LibreOffice Bitmap Table.
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_shape_image`
         """
 
         # when mode is ImgStyleKind.STRETCHED size, position, pos_offset, and tile_offset are not required
