@@ -27,15 +27,15 @@ The Zaz-Pip LibreOffice extension is a LibreOffice extension that allows pip ins
 Installation
 ------------
 
-The Plugin can be found on `GitHub <https://git.cuates.net/elmau/zaz-pip/releases>`__.
+The Plugin can be found on `elmau/zaz-pip <https://git.cuates.net/elmau/zaz-pip/src/branch/master/extension>`__.
 
-Download the ``oxt`` version as seen in :numref:`49663d95-dbc9-4dca-9fb6-ea1fa5806fce`
+Download the ``oxt`` version as seen in :numref:`ae94a4a8-a4e8-421d-bb42-ee96c93c97dc`
 
 .. cssclass:: screen_shot
 
-    .. _49663d95-dbc9-4dca-9fb6-ea1fa5806fce:
+    .. _ae94a4a8-a4e8-421d-bb42-ee96c93c97dc:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/49663d95-dbc9-4dca-9fb6-ea1fa5806fce
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/ae94a4a8-a4e8-421d-bb42-ee96c93c97dc
         :alt: Zaz-Pip Release Download
         :figclass: align-center
 
@@ -57,7 +57,7 @@ From LibreOffice open the extension manager,  ``Tools -> Extension Manager``.
 
         LibreOffice Extension Manager
 
-Click Add and install the downloaded ``ZAZPip_v0.10.0.oxt`` file.
+Click Add and install the downloaded ``ZAZPip_v1.0.0.oxt`` file.
 
 .. cssclass:: screen_shot
 
