@@ -1,6 +1,6 @@
 # region Imports
 from __future__ import annotations
-from typing import Any, Tuple, Type, TypeVar, cast, overload
+from typing import Any, Tuple, Type, TypeVar, cast, overload, TYPE_CHECKING
 from enum import Enum
 
 from ooodev.exceptions import ex as mEx
@@ -8,13 +8,16 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ooodev.units import UnitT
 from ooodev.units import UnitMM
 from ooodev.units import UnitPT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.shape_shadow_props import ShapeShadowProps
+
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 # endregion Imports
 
