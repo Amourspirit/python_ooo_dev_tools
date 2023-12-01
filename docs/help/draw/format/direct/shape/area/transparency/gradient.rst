@@ -8,7 +8,7 @@ Draw Direct Shape Area Transparency Gradient
     :backlinks: none
     :depth: 2
 
-The :py:class:`from ooodev.format.draw.direct.transparency.Gradient` class is used to modify the values seen in :numref:`aab455a0-c7e7-42f1-a7ea-9b4210732ec9` of a shape.
+The :py:class:`ooodev.format.draw.direct.transparency.Gradient` class is used to modify the values seen in :numref:`aab455a0-c7e7-42f1-a7ea-9b4210732ec9` of a shape.
 
 Setup
 -----
