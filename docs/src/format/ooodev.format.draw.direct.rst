@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.draw.direct.area
+   ooodev.format.draw.direct.shadow
    ooodev.format.draw.direct.transparency
 
 Module contents
