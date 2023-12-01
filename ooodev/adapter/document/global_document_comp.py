@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class GlobalDocumentComp(GenericTextDocumentComp):
     """
-    Class for managing Sheet Cell Cursor Component.
+    Class for managing GlobalDocumentComp Component.
     """
 
     # pylint: disable=unused-argument
@@ -20,7 +20,7 @@ class GlobalDocumentComp(GenericTextDocumentComp):
         Constructor
 
         Args:
-            component (GlobalDocument): UNO Sheet Cell Cursor Component
+            component (GlobalDocument): UNO GlobalDocumentComp Component
         """
 
         super().__init__(component)
@@ -34,7 +34,7 @@ class GlobalDocumentComp(GenericTextDocumentComp):
     # region Properties
     @property
     def component(self) -> GlobalDocument:
-        """Sheet Cell Cursor Component"""
+        """GlobalDocumentComp Component"""
         return cast("GlobalDocument", self._get_component())
 
     # endregion Properties

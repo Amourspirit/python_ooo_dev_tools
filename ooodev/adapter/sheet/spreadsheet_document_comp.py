@@ -3,6 +3,7 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.document.office_document_comp import OfficeDocumentComp
+from .spreadsheet_document_settings_comp import SpreadsheetDocumentSettingsComp
 
 
 if TYPE_CHECKING:
@@ -41,5 +42,23 @@ class SpreadsheetDocumentComp(OfficeDocumentComp, PropertyChangeImplement, Vetoa
         def component(self) -> SpreadsheetDocument:
             """Spreadsheet Document Component"""
             return cast("SpreadsheetDocument", self._get_component())
+
+    @property
+    def spreadsheet_document_settings(self) -> SpreadsheetDocumentSettingsComp:
+        """Spreadsheet Document Settings Component"""
+        try:
+            return self.__spreadsheet_document_settings
+        except AttributeError:
+            self.__spreadsheet_document_settings = SpreadsheetDocumentSettingsComp(self.component)
+            return self.__spreadsheet_document_settings
+
+    @property
+    def office_document(self) -> OfficeDocumentComp:
+        """Spreadsheet Document Settings Component"""
+        try:
+            return self.__office_document
+        except AttributeError:
+            self.__office_document = OfficeDocumentComp(self.component)
+            return self.__office_document
 
     # endregion Properties
