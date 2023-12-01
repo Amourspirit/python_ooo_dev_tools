@@ -243,7 +243,7 @@ class Calc:
         _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        if _fnm := cargs.event_data["fnm"]:
+        if _fnm := cast(PathOrStr, cargs.event_data["fnm"]):
             doc = mLo.Lo.open_doc(fnm=_fnm) if loader is None else mLo.Lo.open_doc(fnm=_fnm, loader=loader)
             _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         elif loader is None:
@@ -287,7 +287,7 @@ class Calc:
 
         if cargs.cancel:
             return False
-        fnm = cargs.event_data["fnm"]
+        fnm = cast(PathOrStr, cargs.event_data["fnm"])
 
         comp = mLo.Lo.qi(XComponent, doc, raise_err=True)
         result = mLo.Lo.save_doc(doc=comp, fnm=fnm)
@@ -3160,9 +3160,7 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array_range(
-        cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleT]
-    ) -> None:
+    def set_array_range(cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleT]) -> None:
         ...
 
     @overload
@@ -3325,9 +3323,7 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array_cell(
-        cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleT]
-    ) -> None:
+    def set_array_cell(cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleT]) -> None:
         ...
 
     @overload
@@ -7625,7 +7621,7 @@ class Calc:
     # region    find_function()
 
     @staticmethod
-    def _find_function_by_name(func_nm: str) -> Tuple[PropertyValue] | None:
+    def _find_function_by_name(func_nm: str) -> Tuple[PropertyValue, ...] | None:
         if not func_nm:
             raise ValueError("Invalid arg, please supply a function name to find.")
         try:
@@ -7694,7 +7690,7 @@ class Calc:
         ...
 
     @classmethod
-    def find_function(cls, *args, **kwargs) -> Tuple[PropertyValue] | None:
+    def find_function(cls, *args, **kwargs) -> Tuple[PropertyValue, ...] | None:
         """
         Finds a function
 
@@ -7703,7 +7699,7 @@ class Calc:
             idx (int): Index of function
 
         Returns:
-            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, None
+            Tuple[PropertyValue, ...] | None: Function properties as tuple on success; Otherwise, None
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
