@@ -18,7 +18,7 @@ class Hatch(FillHatch):
 
     .. seealso::
 
-        - :ref:`help_draw_format_direct_shape_hatch`
+        - :ref:`help_draw_format_direct_shape_area_hatch`
 
     .. versionadded:: 0.9.3
     """
@@ -47,6 +47,6 @@ class Hatch(FillHatch):
 
         See Also:
 
-            - :ref:`help_draw_format_direct_shape_hatch`
+            - :ref:`help_draw_format_direct_shape_area_hatch`
         """
         super().__init__(style=style, color=color, space=space, angle=angle, bg_color=bg_color)

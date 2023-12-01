@@ -1,6 +1,6 @@
-"""Draw Fill Transparency"""
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as FillTransparency
 
 if TYPE_CHECKING:
@@ -10,6 +10,12 @@ if TYPE_CHECKING:
 class Transparency(FillTransparency):
     """
     Fill Transparency
+
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_shape_transparency_transparency`
+
+    .. versionadded:: 0.9.0
     """
 
     def __init__(self, value: Intensity | int = 0) -> None:
@@ -21,5 +27,9 @@ class Transparency(FillTransparency):
 
         Returns:
             None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_shape_transparency_transparency`
         """
-        super().__init__(value=value)
+        super().__init__(value)

@@ -61,7 +61,7 @@ Setup
 Add a pattern to the shape
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Adding a fill color to the shape is done by using the ``ShapePattern`` class.
+Adding a fill pattern to the shape is done by using the ``ShapePattern`` class.
 The ``ShapePattern`` class has a method ``from_preset()`` takes a ``preset`` as a parameter.
 The :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` class is used to get the preset of the pattern.
 
@@ -84,7 +84,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` cla
 
             .. group-tab:: None
 
-The results of the setting the shape color can be seen in :numref:`68ccad1b-cc97-4311-a2f2-fdf067d37378`.
+The results of the setting the shape fill pattern can be seen in :numref:`68ccad1b-cc97-4311-a2f2-fdf067d37378`.
 
 .. cssclass:: screen_shot
 
@@ -99,7 +99,7 @@ The results of the setting the shape color can be seen in :numref:`68ccad1b-cc97
 Get Shape Pattern
 ^^^^^^^^^^^^^^^^^^
 
-We can get the color of the shape by using the ``ShapePattern.from_obj()`` method.
+We can get the fill pattern of the shape by using the ``ShapePattern.from_obj()`` method.
 
 .. tabs::
 
@@ -122,5 +122,5 @@ We can get the color of the shape by using the ``ShapePattern.from_obj()`` metho
 
     .. cssclass:: ul-list
 
-        - :ref:`help_draw_format_direct_shape_pattern`
+        - :ref:`help_draw_format_direct_shape_area_pattern`
         - :py:class:`ooodev.format.writer.direct.shape.area.Pattern`

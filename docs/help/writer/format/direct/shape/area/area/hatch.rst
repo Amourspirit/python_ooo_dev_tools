@@ -64,10 +64,10 @@ Setup
 Fill Shape Hatch
 ----------------
 
-Add a hatch fill to the shape
+Add a fill hatch to the shape
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Adding a hatch to the shape is done by using the ``ShapeHatch`` class.
+Adding a fill hatch to the shape is done by using the ``ShapeHatch`` class.
 The ``ShapeHatch`` class has a method ``from_preset()`` takes a ``preset`` as a parameter.
 The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` class is used to get the preset of the hatch.
 
@@ -89,23 +89,23 @@ The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` class i
 
             .. group-tab:: None
 
-The results of the setting the shape color can be seen in :numref:`59bd525e-7e1e-49ca-8251-64a4355486c0`.
+The results of the setting the shape fill hatch can be seen in :numref:`59bd525e-7e1e-49ca-8251-64a4355486c0`.
 
 .. cssclass:: screen_shot
 
     .. _59bd525e-7e1e-49ca-8251-64a4355486c0:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/59bd525e-7e1e-49ca-8251-64a4355486c0
-        :alt: Shape with Hatch color
+        :alt: Shape with fill Hatch
         :figclass: align-center
 
-        Shape with Hatch color
+        Shape with fill Hatch
 
 
 Get Shape Hatch
 ^^^^^^^^^^^^^^^
 
-We can get the color of the shape by using the ``ShapeHatch.from_obj()`` method.
+We can get the fill hatch of the shape by using the ``ShapeHatch.from_obj()`` method.
 
 .. tabs::
 
@@ -129,5 +129,5 @@ We can get the color of the shape by using the ``ShapeHatch.from_obj()`` method.
 
     .. cssclass:: ul-list
 
-        - :ref:`help_draw_format_direct_shape_hatch`
+        - :ref:`help_draw_format_direct_shape_area_hatch`
         - :py:class:`ooodev.format.writer.direct.shape.area.Hatch`

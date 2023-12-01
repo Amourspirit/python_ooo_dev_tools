@@ -8,7 +8,7 @@ Write Direct Shape Area Gradient
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.writer.direct.shape.area.Gradient` class is used to modify the values seen in :numref:`5ee6bb93-284f-4e54-a35b-5682d6e517b5` of a shape.
+The :py:class:`ooodev.format.writer.direct.shape.area.Gradient` class is used to modify the values seen in :numref:`4fdbcc5e-6621-4e89-bb20-3ad4974a3e4b` of a shape.
 
 Setup
 -----
@@ -66,7 +66,7 @@ Fill Shape Gradient
 Add a gradient to the shape
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Adding a gradient to the shape is done by using the ``ShapeGradient`` class.
+Adding a fill gradient to the shape is done by using the ``ShapeGradient`` class.
 The ``ShapeGradient`` class has a method ``from_preset()`` takes a ``preset`` as a parameter.
 The :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` class is used to get the preset of the gradient.
 
@@ -88,7 +88,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` c
 
             .. group-tab:: None
 
-The results of the setting the shape color can be seen in :numref:`8b1e7d3c-d146-4f24-b730-f574cdec999b`.
+The results of the setting the shape fill gradient can be seen in :numref:`8b1e7d3c-d146-4f24-b730-f574cdec999b`.
 
 .. cssclass:: screen_shot
 
@@ -104,7 +104,7 @@ The results of the setting the shape color can be seen in :numref:`8b1e7d3c-d146
 Get Shape Gradient
 ^^^^^^^^^^^^^^^^^^
 
-We can get the color of the shape by using the ``ShapeColor.from_obj()`` method.
+We can get the fill gradient of the shape by using the ``ShapeColor.from_obj()`` method.
 
 .. tabs::
 
@@ -129,5 +129,5 @@ We can get the color of the shape by using the ``ShapeColor.from_obj()`` method.
 
     .. cssclass:: ul-list
 
-        - :ref:`help_draw_format_direct_shape_gradient`
+        - :ref:`help_draw_format_direct_shape_area_gradient`
         - :py:class:`ooodev.format.writer.direct.shape.area.Gradient`

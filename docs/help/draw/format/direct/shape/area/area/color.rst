@@ -1,4 +1,4 @@
-.. _help_draw_format_direct_shape_color:
+.. _help_draw_format_direct_shape_area_color:
 
 Draw Direct Shape Area Color
 ============================

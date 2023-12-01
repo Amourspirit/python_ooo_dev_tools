@@ -1,4 +1,3 @@
-"""Draw Fill Gradient"""
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
@@ -16,7 +15,13 @@ if TYPE_CHECKING:
 
 class Gradient(FillGradient):
     """
-    Fill Gradient
+    Transparency Gradient
+
+    .. seealso::
+
+        - :ref:`help_draw_format_direct_transparency_gradient`
+
+    .. versionadded:: 0.9.0
     """
 
     def __init__(
@@ -43,6 +48,13 @@ class Gradient(FillGradient):
                 Defaults to ``0``.
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of
                 the gradient. Defaults to ``IntensityRange(0, 0)``.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_draw_format_direct_transparency_gradient`
         """
         super().__init__(
             style=style,

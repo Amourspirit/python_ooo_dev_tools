@@ -1,4 +1,4 @@
-.. _help_draw_format_direct_shape_hatch:
+.. _help_draw_format_direct_shape_area_hatch:
 
 Draw Direct Shape Area Hatch
 ============================
@@ -75,9 +75,9 @@ Setup
 Add a hatch to the shape
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Adding a fill color to the shape is done by using the ``ShapeGradient`` class.
+Adding a hatch for the shape is done by using the ``ShapeGradient`` class.
 The ``ShapeGradient`` class has a method ``from_preset()`` takes a ``preset`` as a parameter.
-The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` class is used to get the preset of the gradient.
+The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` class is used to get the preset of the hatch.
 
 .. tabs::
 
@@ -98,7 +98,7 @@ The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` class i
 
             .. group-tab:: None
 
-The results of the setting the shape color can be seen in :numref:`4965571a-4918-4b64-8f8a-87203f1d7b3a`.
+The results of the setting the shape hatch can be seen in :numref:`4965571a-4918-4b64-8f8a-87203f1d7b3a`.
 
 .. cssclass:: screen_shot
 
@@ -113,7 +113,7 @@ The results of the setting the shape color can be seen in :numref:`4965571a-4918
 Get Shape Hatch
 ^^^^^^^^^^^^^^^
 
-We can get the color of the shape by using the ``ShapeHatch.from_obj()`` method.
+We can get the hatch of the shape by using the ``ShapeHatch.from_obj()`` method.
 
 .. tabs::
 

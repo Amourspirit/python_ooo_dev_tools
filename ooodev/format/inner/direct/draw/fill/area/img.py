@@ -22,7 +22,7 @@ class Img(FillImg):
 
     .. seealso::
 
-        - :ref:`help_draw_format_direct_shape_image`
+        - :ref:`help_draw_format_direct_shape_area_image`
 
     .. versionadded:: 0.9.3
     """
@@ -64,7 +64,7 @@ class Img(FillImg):
 
         See Also:
 
-            - :ref:`help_draw_format_direct_shape_image`
+            - :ref:`help_draw_format_direct_shape_area_image`
         """
         super().__init__(
             bitmap=bitmap,

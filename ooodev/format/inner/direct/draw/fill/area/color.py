@@ -13,7 +13,7 @@ class Color(FillColor):
 
     .. seealso::
 
-        - :ref:`help_draw_format_direct_shape_color`
+        - :ref:`help_draw_format_direct_shape_area_color`
 
     .. versionadded:: 0.9.3
     """
@@ -30,6 +30,6 @@ class Color(FillColor):
 
         See Also:
 
-            - :ref:`help_draw_format_direct_shape_color`
+            - :ref:`help_draw_format_direct_shape_area_color`
         """
         super().__init__(color=color)

@@ -14,7 +14,7 @@ class Pattern(FillPattern):
 
     .. seealso::
 
-        - :ref:`_help_draw_format_direct_shape_pattern`
+        - :ref:`help_draw_format_direct_shape_area_pattern`
 
     .. versionadded:: 0.9.3
     """
@@ -47,6 +47,6 @@ class Pattern(FillPattern):
 
         See Also:
 
-            - :ref:`_help_draw_format_direct_shape_pattern`
+            - :ref:`help_draw_format_direct_shape_area_pattern`
         """
         super().__init__(bitmap=bitmap, name=name, tile=tile, stretch=stretch, auto_name=auto_name)
