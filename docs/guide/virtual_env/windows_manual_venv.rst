@@ -15,6 +15,9 @@ This guide will walk you through the steps of creating a virtual environment man
 
 While |win_pre_venv|_ are available, this guide is for those who want to create their own virtual environment.
 
+Another option is to use the |py_path_ext|_ extension to add virtual environment paths to LibreOffice,
+this would work with all LibreOffice versions after ``Version 7.0`` on all operating systems.
+
 For the purpose of this guide we will assume your project directory is ``D:\tmp\manual``
 
 .. note::
@@ -197,3 +200,6 @@ Related Links
 .. |win_pre_venv| replace:: Pre-configured virtual environments for Windows
 .. _win_pre_venv: https://github.com/Amourspirit/lo-support_file/tree/main/virtual_environments/windows
 .. _pip: https://pypi.org/project/pip/
+
+.. |py_path_ext| replace:: Include Python Path for LibreOffice
+.. _py_path_ext: https://extensions.libreoffice.org/en/extensions/show/41996

@@ -13,9 +13,16 @@ Overview
 
 Add python packages to |lo_flatpak|_ installed version.
 
-Using :ref:`guide_zaz_pip_installation` for Flatpak is not possible because the Flatpak is sandboxed.
-However, it is possible to install pip packages into the Flatpak LibreOffice by creating a virtual environment and 
+Using :ref:`guide_zaz_pip_installation` for Flatpak is not possible prior to ``Version 1.0.0`` because the Flatpak is sandboxed;
+However, in ``Version 1.0.0`` this was corrected and it now works.
+Using  Zaz-Pip LibreOffice extension is now the recommended way to install pip packages into LibreOffice Flatpak.
+This guide is for those that which to do this manually.
+
+It is also possible to install pip packages into the Flatpak LibreOffice by creating a virtual environment and 
 linking that virtual environment to the Flatpak LibreOffice.
+
+Another option is to use the |py_path_ext|_ extension to add virtual environment paths to LibreOffice,
+this would work with all LibreOffice versions after ``Version 7.0`` on all operating systems.
 
 When you see ``guide`` in path names below, replace with your user name.
 
@@ -371,3 +378,6 @@ Related Links
 
 .. |lo_flatpak| replace:: LibreOffice Flatpak
 .. _lo_flatpak: https://flathub.org/apps/org.libreoffice.LibreOffice
+
+.. |py_path_ext| replace:: Include Python Path for LibreOffice
+.. _py_path_ext: https://extensions.libreoffice.org/en/extensions/show/41996
