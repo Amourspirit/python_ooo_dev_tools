@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ooodev.format.inner.style_base import StyleBase
+from ooodev.format.writer.direct.shape.shadow import Shadow as ShapeShadow
 
 if TYPE_CHECKING:
     from ooodev.units import UnitT
@@ -9,9 +9,13 @@ if TYPE_CHECKING:
     from ooodev.format.inner.direct.write.shape.area.shadow import ShadowLocationKind
 
 
-class Shadow(StyleBase):
+class Shadow(ShapeShadow):
     """
     Frame Vertical Alignment
+
+    .. seealso::
+
+        - :ref:`help_draw_format_direct_shape_shadow`
 
     .. versionadded:: 0.9.0
     """
@@ -36,6 +40,14 @@ class Shadow(StyleBase):
             distance (float, UnitT , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
             blur (int, UnitT, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
             transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
+
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_draw_format_direct_shape_shadow`
         """
         super().__init__(
             use_shadow=use_shadow,

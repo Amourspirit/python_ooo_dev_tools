@@ -8,4 +8,5 @@ Writer Format Direct Shape Area
     :maxdepth: 1
 
     area/index
+    shadow
     transparency/index

@@ -40,6 +40,10 @@ class Shadow(StyleBase):
     """
     Frame Vertical Alignment
 
+    .. seealso::
+
+        - :ref:`help_writer_format_direct_shape_shadow`
+
     .. versionadded:: 0.9.0
     """
 
@@ -64,6 +68,13 @@ class Shadow(StyleBase):
             distance (float, UnitT , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
             blur (int, UnitT, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
             transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
+
+        Returns:
+            None:
+
+        See Also:
+
+            - :ref:`help_writer_format_direct_shape_shadow`
         """
         # shadow distance is stored in 1/100th mm.
         # shadow distance is stored in ShadowXDistance and ShadowYDistance depending on location value.
