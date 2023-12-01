@@ -15,12 +15,16 @@ Subpackages
    ooodev.adapter.chart2
    ooodev.adapter.container
    ooodev.adapter.document
+   ooodev.adapter.drawing
    ooodev.adapter.form
    ooodev.adapter.frame
    ooodev.adapter.lang
+   ooodev.adapter.presentation
    ooodev.adapter.script
    ooodev.adapter.sheet
+   ooodev.adapter.style
    ooodev.adapter.table
+   ooodev.adapter.text
    ooodev.adapter.tree
    ooodev.adapter.util
    ooodev.adapter.view
