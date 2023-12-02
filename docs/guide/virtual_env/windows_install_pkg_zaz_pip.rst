@@ -15,6 +15,9 @@ Although pip_ can be installed into Windows LibreOffice manually, see :ref:`guid
 It is possible to pip install in LibreOffice using an extension.
 See :ref:`guide_zaz_pip_installation`.
 
+Another option is to use the |py_path_ext|_ extension to add virtual environment paths to LibreOffice,
+this would work with all LibreOffice versions after ``Version 7.0`` on all operating systems.
+
 The steps below are the same for portable LibreOffice. See also :ref:`guide_lo_portable_pip_windows_install`.
 
 .. note::
@@ -156,3 +159,6 @@ Related Links
 
 .. _ooo-dev-tools: https://pypi.org/project/ooo-dev-tools/
 .. _pip: https://pip.pypa.io/en/stable/
+
+.. |py_path_ext| replace:: Include Python Path for LibreOffice
+.. _py_path_ext: https://extensions.libreoffice.org/en/extensions/show/41996

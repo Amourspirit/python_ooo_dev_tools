@@ -15,6 +15,9 @@ Overview
 
 Install pip_ into |lo_port| on Windows allows you to install python packages and use them in LibreOffice.
 
+Another option is to use the |py_path_ext|_ extension to add virtual environment paths to LibreOffice,
+this would work with all LibreOffice versions after ``Version 7.0`` on all operating systems.
+
 The process is essentially to install pip and then use it to install other python packages.
 
 Install pip
@@ -170,3 +173,6 @@ Related Links
 .. _types-scriptforge: https://pypi.org/project/types-scriptforge/
 .. _scriptforge: https://gitlab.com/LibreOfficiant/scriptforge
 .. _types-unopy: https://pypi.org/project/types-unopy/
+
+.. |py_path_ext| replace:: Include Python Path for LibreOffice
+.. _py_path_ext: https://extensions.libreoffice.org/en/extensions/show/41996

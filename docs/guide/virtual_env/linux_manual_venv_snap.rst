@@ -14,6 +14,10 @@ Overview
 Unlike Windows, The Snap version LibreOffice on Linux does not use embedded Python. Instead, it use the system Python3.
 This means Snap LibreOffice on Linux has access to full python.
 
+Using :ref:`guide_zaz_pip_installation` would be the recommended way to install pip and python packages in LibreOffice.
+
+Another option is to use the |py_path_ext|_ extension to add virtual environment paths to LibreOffice,
+this would work with all LibreOffice versions after ``Version 7.0`` on all operating systems.
 
 Note that this guide for of an ``snap`` installed version of LibreOffice. It does not cover the Flatpak version or the APT version.
 See: :ref:`guide_linux_manual_venv`, :ref:`guide_linux_poetry_venv`.
@@ -285,3 +289,6 @@ Related Links
 
 .. _oooenv: https://pypi.org/project/oooenv/
 .. _ooo-dev-tools: https://pypi.org/project/ooo-dev-tools/
+
+.. |py_path_ext| replace:: Include Python Path for LibreOffice
+.. _py_path_ext: https://extensions.libreoffice.org/en/extensions/show/41996

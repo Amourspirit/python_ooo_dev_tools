@@ -23,7 +23,7 @@ class Gradient(FillGradient):
 
     .. seealso::
 
-        - :ref:`help_draw_format_direct_shape_gradient`
+        - :ref:`help_draw_format_direct_shape_area_gradient`
 
     .. versionadded:: 0.9.3
     """
@@ -62,7 +62,7 @@ class Gradient(FillGradient):
             None:
 
         See Also:
-            - :ref:`help_draw_format_direct_shape_gradient`
+            - :ref:`help_draw_format_direct_shape_area_gradient`
         """
         super().__init__(
             style=style,

@@ -137,5 +137,5 @@ We can get the color of the shape by using the ``ShapeColor.from_obj()`` method.
 
     .. cssclass:: ul-list
 
-        - :ref:`help_draw_format_direct_shape_color`
+        - :ref:`help_draw_format_direct_shape_area_color`
         - :py:class:`ooodev.format.writer.direct.shape.area.Color`

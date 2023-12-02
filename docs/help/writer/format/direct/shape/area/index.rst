@@ -6,6 +6,7 @@ Writer Format Direct Shape Area
 .. toctree::
     :titlesonly:
     :maxdepth: 1
-    :glob:
 
-    *
+    area/index
+    shadow
+    transparency/index

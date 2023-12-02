@@ -1,14 +1,17 @@
 """Draw Fill Gradient"""
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import uno
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as FillGradient
 from typing import Any
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-from ooodev.utils.data_type.angle import Angle
-from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
+
+if TYPE_CHECKING:
+    from ooodev.utils.data_type.angle import Angle
+    from ooodev.utils.data_type.intensity import Intensity
 
 
 class Gradient(FillGradient):

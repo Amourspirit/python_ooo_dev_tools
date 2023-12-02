@@ -1,7 +1,10 @@
 """Draw Fill Transparency"""
 from __future__ import annotations
-import uno
+from typing import TYPE_CHECKING
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as FillTransparency
+
+if TYPE_CHECKING:
+    from ooodev.utils.data_type.intensity import Intensity
 
 
 class Transparency(FillTransparency):
@@ -9,7 +12,7 @@ class Transparency(FillTransparency):
     Fill Transparency
     """
 
-    def __init__(self, value: int = 0) -> None:
+    def __init__(self, value: Intensity | int = 0) -> None:
         """
         Constructor
 

@@ -178,7 +178,7 @@ class Color(StyleBase):
         try:
             return self._empty_inst
         except AttributeError:
-            self._empty_inst = self.__class__(_cattribs=self._get_internal_cattribs())
+            self._empty_inst = self.__class__(_cattribs=self._get_internal_cattribs()) # type: ignore
             self._empty_inst._is_default_inst = True
         return self._empty_inst
 

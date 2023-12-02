@@ -26,10 +26,14 @@ class ComponentBase(ABC):
             component (XComponent): UNO Object
 
         Raises:
-            TypeError: If the component does not support the required service.
+            NotSupportedServiceError: If the component does not support the required service.
         """
         if not self._get_is_supported(component):
-            raise TypeError(f"Component does not support the required service.")
+            services = self._get_supported_service_names()
+            if services:
+                raise mEx.NotSupportedServiceError(*services)
+            else:
+                raise mEx.NotSupportedServiceError("No service name specified." )
         self.__component = component
 
     def _get_component(self) -> XComponent:
