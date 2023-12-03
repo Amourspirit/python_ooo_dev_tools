@@ -2,30 +2,45 @@ from __future__ import annotations
 from typing import Any, Sequence, TYPE_CHECKING
 import uno
 
+from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
+
 if TYPE_CHECKING:
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from .calc_sheet import CalcSheet
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.type_var import Table, TupleArray, FloatTable
+    from ooodev.utils.data_type.size import Size
+    from . import calc_cell_cursor as mCalcCellCursor
 else:
     CellRangeAddress = object
 
 from ooodev.proto.style_obj import StyleT
-from ooodev.utils.type_var import Table
 from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
+from . import calc_cell as mCalcCell
 
 
 class CalcCellRange(SheetCellRangeComp):
-    def __init__(self, owner: CalcSheet, range: Any) -> None:
+    """Represents a calc cell range."""
+
+    def __init__(self, owner: CalcSheet, rng: Any) -> None:
+        """
+        Constructor
+
+        Args:
+            owner (CalcSheet): Sheet that owns this cell range.
+            rng (Any): Range object.
+        """
         self.__owner = owner
-        self.__range_obj = mCalc.Calc.get_range_obj(range)
+        self.__range_obj = mCalc.Calc.get_range_obj(rng)
         cell_range = mCalc.Calc.get_cell_range(sheet=self.calc_sheet.component, range_obj=self.__range_obj)
         super().__init__(cell_range)  # type: ignore
 
-    def clear_cells(self) -> bool:
+    def clear_cells(self, cell_flags: CellFlagsEnum | None = None) -> bool:
         """
         Clears the specified contents of the cell range
 
-        If cell_flags is not specified then
+        If ``cell_flags`` is not specified then
         cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared
 
         Raises:
@@ -37,6 +52,9 @@ class CalcCellRange(SheetCellRangeComp):
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARING` :eventref:`src-docs-cell-event-clearing`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARED` :eventref:`src-docs-cell-event-cleared`
 
+        Args:
+            cell_flags (CellFlagsEnum, optional): Cell flags to clear. Default ``None``.
+
         Returns:
             bool: True if cells are cleared; Otherwise, False
 
@@ -45,7 +63,11 @@ class CalcCellRange(SheetCellRangeComp):
 
             Events arg ``event_data`` is a dictionary containing ``cell_flags``.
         """
-        return mCalc.Calc.clear_cells(sheet=self.calc_sheet.component, range_val=self.__range_obj)
+        if cell_flags is None:
+            return mCalc.Calc.clear_cells(sheet=self.calc_sheet.component, range_val=self.__range_obj)
+        return mCalc.Calc.clear_cells(
+            sheet=self.calc_sheet.component, range_val=self.__range_obj, cell_flags=cell_flags
+        )
 
     def delete_cells(self, is_shift_left: bool) -> bool:
         """
@@ -81,6 +103,15 @@ class CalcCellRange(SheetCellRangeComp):
             CellRangeAddress: Cell range address
         """
         return self.__range_obj.get_cell_range_address()
+
+    def get_range_size(self) -> Size:
+        """
+        Gets the size of the range.
+
+        Returns:
+            ~ooodev.utils.data_type.size.Size: Size, Width is number of Columns and Height is number of Rows
+        """
+        return mCalc.Calc.get_range_size(range_obj=self.__range_obj)
 
     def is_single_cell_range(self) -> bool:
         """
@@ -225,10 +256,68 @@ class CalcCellRange(SheetCellRangeComp):
         """
         self.calc_sheet.unmerge_cells(range_obj=self.__range_obj)
 
+    def set_val(self, value: Any) -> None:
+        """
+        Set the value of the very first cell in the range.
+
+        Useful for merged cells.
+
+        Args:
+            value (Any): Value to set.
+        """
+        cell_obj = self.range_obj.start
+        cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj)
+        cell.set_val(value=value)
+
+    def get_array(self) -> TupleArray:
+        """
+        Gets a 2-Dimensional array of values from a range of cells.
+
+        Returns:
+            TupleArray: 2-Dimensional array of values.
+        """
+        return self.calc_sheet.get_array(range_obj=self.__range_obj)
+
+    def get_float_array(self) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
+        return self.calc_sheet.get_float_array(range_obj=self.__range_obj)
+
+    def get_val(self) -> Any:
+        """
+        Get the value of the very first cell in the range.
+
+        Useful for merged cells.
+
+        Returns:
+            Any: Value of cell.
+        """
+        cell_obj = self.range_obj.start
+        cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj)
+        return cell.get_val()
+
+    def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Creates a cell cursor to travel in the given range context.
+
+        Returns:
+            CalcCellCursor: Cell cursor
+        """
+        return self.calc_sheet.create_cursor_by_range(range_obj=self.__range_obj)
+
     # region Properties
     @property
     def calc_sheet(self) -> CalcSheet:
         """Sheet that owns this cell."""
         return self.__owner
+
+    @property
+    def range_obj(self) -> RangeObj:
+        """Range object."""
+        return self.__range_obj
 
     # endregion Properties

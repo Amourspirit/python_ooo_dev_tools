@@ -4,13 +4,17 @@ import uno
 
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.util import XProtectable
+from com.sun.star.sheet import XSheetCellRange
+
+from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 
 if TYPE_CHECKING:
-    from com.sun.star.table import CellAddress
     from com.sun.star.sheet import XSheetCellCursor
-    from com.sun.star.table import XCellRange
+    from com.sun.star.sheet import XScenario
+    from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
+    from com.sun.star.table import XCellRange
 
     from ooo.dyn.beans.property_value import PropertyValue
     from ooo.dyn.table.cell_range_address import CellRangeAddress
@@ -18,22 +22,368 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchDescriptor
     from ooodev.proto.style_obj import StyleT
     from ooodev.units import UnitT
+    from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
     from .calc_doc import CalcDoc
 
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.utils.type_var import Row, Column, Table
 from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
 from . import calc_cell_range as mCalcCellRange
+from . import calc_cell as mCalcCell
+from . import calc_cell_cursor as mCalcCellCursor
 
 
 class CalcSheet(SpreadsheetComp):
     def __init__(self, owner: CalcDoc, sheet: XSpreadsheet) -> None:
         super().__init__(sheet)  # type: ignore
         self.__owner = owner
+
+    # region get_array()
+    @overload
+    def get_array(self, *, cell_range: XCellRange) -> TupleArray:
+        ...
+
+    @overload
+    def get_array(self, *, range_name: str) -> TupleArray:
+        ...
+
+    @overload
+    def get_array(self, *, range_obj: mRngObj.RangeObj) -> TupleArray:
+        ...
+
+    @overload
+    def get_array(self, *, cell_obj: mCellObj.CellObj) -> TupleArray:
+        ...
+
+    def get_array(self, **kwargs) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range to get data from.
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range of data to get such as "A1:E16"
+            range_obj (RangeObj): Range object
+            cell_obj (CellObj): Cell Object
+
+        Raises:
+            MissingInterfaceError: if interface is missing
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
+        sheet_names = {"range_name", "range_obj", "cell_obj"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        return mCalc.Calc.get_array(**kwargs)
+
+    # endregion get_array()
+
+    # region get_float_array()
+    @overload
+    def get_float_array(self, *, cell_range: XCellRange) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        Args:
+            cell_range (XCellRange): Cell range to get data from.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
+        ...
+
+    @overload
+    def get_float_array(self, *, range_name: str) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        Args:
+            range_name (str): Range to get array of floats from such as 'A1:E18'.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
+        ...
+
+    @overload
+    def get_float_array(self, *, range_obj: mRngObj.RangeObj) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        Args:
+            range_obj (RangeObj): Range object.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
+        ...
+
+    @overload
+    def get_float_array(self, *, cell_obj: mCellObj.CellObj) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
+        ...
+
+    def get_float_array(self, **kwargs) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        Args:
+            cell_range (XCellRange): Cell range to get data from.
+            range_name (str): Range to get array of floats from such as 'A1:E18'.
+            range_obj (RangeObj): Range object.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
+        sheet_names = {"range_name", "range_obj", "cell_obj"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        return mCalc.Calc.get_float_array(**kwargs)
+
+    # endregion get_float_array()
+
+    # region get_cell()
+    @overload
+    def get_cell(self, *, cell: XCell) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            cell (XCell): Cell
+
+        Returns:
+            CalcCell: cell
+        """
+        ...
+
+    @overload
+    def get_cell(self, *, addr: CellAddress) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            addr (CellAddress): Cell Address
+
+        Returns:
+            CalcCell: cell
+        """
+        ...
+
+    @overload
+    def get_cell(self, *, cell_name: str) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            cell_name (str): Cell Name such as 'A1'
+
+        Returns:
+            CalcCell: cell
+        """
+        ...
+
+    @overload
+    def get_cell(self, *, cell_obj: mCellObj.CellObj) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            cell_obj: (CellObj): Cell object
+
+        Returns:
+            CalcCell: cell
+        """
+        ...
+
+    @overload
+    def get_cell(self, *, col: int, row: int) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            col (int): Cell column
+            row (int): cell row
+
+        Returns:
+            CalcCell: cell
+        """
+        ...
+
+    @overload
+    def get_cell(self, *, cell_range: XCellRange) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            cell_range (XCellRange): Cell Range
+
+        Returns:
+            CalcCell: cell
+        """
+        ...
+
+    @overload
+    def get_cell(self, *, cell_range: XCellRange, col: int, row: int) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            col (int): Cell column
+            row (int): cell row
+
+        Returns:
+            CalcCell: cell
+        """
+        ...
+
+    def get_cell(self, **kwargs) -> mCalcCell.CalcCell:
+        """
+        Gets a cell
+
+        Args:
+            addr (CellAddress): Cell Address
+            cell_name (str): Cell Name such as 'A1'
+            cell_obj: (CellObj): Cell object
+            cell_range (XCellRange): Cell Range
+            col (int): Cell column
+            row (int): cell row
+            cell (XCell): Cell
+
+        Returns:
+            CalcCell: cell
+        """
+        sheet_names = {"addr", "cell_name", "cell_obj", "col"}
+        if kwargs.keys() & sheet_names:
+            if not "cell_range" in kwargs:
+                kwargs["sheet"] = self.component
+        x_cell = mCalc.Calc.get_cell(**kwargs)
+        cell_obj = mCalc.Calc.get_cell_obj(cell=x_cell)
+        return mCalcCell.CalcCell(owner=self, cell=cell_obj)
+
+    # endregion get_cell()
+
+    # region get_range()
+    @overload
+    def get_range(self, *, range_name: str) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            range_name (str): Cell range as string.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range(self, *, cr_addr: CellRangeAddress) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range(self, *, range_obj: mRngObj.RangeObj) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            range_obj (RangeObj): Range Object. If passed in the same RangeObj is returned.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range(self, *, cell_obj: mCellObj.CellObj) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range(self, *, cell_range: XCellRange) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range(self, *, col_start: int, row_start: int, col_end: int, row_end: int) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    def get_range(self, **kwargs) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            range_name (str): Cell range as string.
+            cell_range (XCellRange): Cell Range.
+            cr_addr (CellRangeAddress): Cell Range Address.
+            cell_obj (CellObj): Cell Object.
+            range_obj (RangeObj): Range Object. If passed in the same RangeObj is returned.
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        sheet_names = {"cell_range", "col_start"}
+        if kwargs.keys() & sheet_names:
+            if not "sheet" in kwargs:
+                kwargs["sheet"] = self.component
+        range_obj = mCalc.Calc.get_range_obj(**kwargs)
+        return mCalcCellRange.CalcCellRange(self, range_obj)
+
+    # endregion get_range()
 
     def get_col_range(self, idx: int) -> mCalcCellRange.CalcCellRange:
         """
@@ -191,12 +541,32 @@ class CalcSheet(SpreadsheetComp):
         """
         return mCalc.Calc.get_row_used_last_index(self.component)
 
+    def get_selected_cell(self) -> mCalcCell.CalcCell:
+        """
+        Gets selected cell.
+
+        Raises:
+            CellError: if active selection is not a single cell
+
+        Returns:
+            CalcCell: Selected cell
+        """
+        addr = mCalc.Calc.get_selected_cell_addr(self.calc_doc.component)
+        return self.get_cell(addr=addr)
+
+    def get_selected(self) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets selected cell range.
+
+        Returns:
+            CalcCellRange: Selected cell range
+        """
+        range_obj = self.get_selected_range()
+        return mCalcCellRange.CalcCellRange(self, range_obj)
+
     def get_selected_addr(self) -> CellRangeAddress:
         """
         Gets select cell range addresses
-
-        Args:
-            model (XModel): model used to access sheet
 
         Raises:
             Exception: if unable to get document model
@@ -216,10 +586,6 @@ class CalcSheet(SpreadsheetComp):
     def get_selected_range(self) -> mRngObj.RangeObj:
         """
         Gets select cell range
-
-        Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            model (XModel): model used to access sheet
 
         Raises:
             Exception: if unable to get document model
@@ -1179,21 +1545,24 @@ class CalcSheet(SpreadsheetComp):
 
     # region    goto_cell()
     @overload
-    def goto_cell(self, cell_name: str) -> None:
+    def goto_cell(self, cell_name: str) -> mCalcCell.CalcCell:
         ...
 
     @overload
-    def goto_cell(self, cell_obj: mCellObj.CellObj) -> None:
+    def goto_cell(self, cell_obj: mCellObj.CellObj) -> mCalcCell.CalcCell:
         ...
 
-    def goto_cell(self, *args, **kwargs) -> None:
+    def goto_cell(self, *args, **kwargs) -> mCalcCell.CalcCell:
         """
         Go to a cell
 
         Args:
-            cell_name (str): Cell Name such as 'B4'
-            doc (XSpreadsheetDocument): Spreadsheet Document
+            cell_name (str): Cell Name such as 'B4'.
+            doc (XSpreadsheetDocument): Spreadsheet Document.
             frame (XFrame): Spreadsheet frame.
+
+        Returns:
+            CalcCell: Cell Object.
 
         Attention:
             :py:meth:`~.utils.lo.Lo.dispatch_cmd` method is called along with any of its events.
@@ -1201,10 +1570,12 @@ class CalcSheet(SpreadsheetComp):
             Dispatch command is ``GoToCell``.
         """
 
-        def go(obj):
+        def go(obj) -> mCellObj.CellObj:
             frame = self.calc_doc.get_controller().getFrame()
+            s = str(obj)
             props = mProps.Props.make_props(ToPoint=str(obj))
             mLo.Lo.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
+            return mCellObj.CellObj.from_cell(cell_val=s)
 
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -1212,26 +1583,28 @@ class CalcSheet(SpreadsheetComp):
         if count == 0:
             raise TypeError("goto_cell() missing 1 required positional argument: 'cell_name' or 'cell_obj'")
         if "cell_name" in kwargs:
-            go(kwargs["cell_name"])
-            return
+            cell_obj = go(kwargs["cell_name"])
+            return self.get_cell(cell_obj=cell_obj)
         if "cell_obj" in kwargs:
-            go(kwargs["cell_obj"])
-            return
+            cell_obj = go(kwargs["cell_obj"])
+            return self.get_cell(cell_obj=cell_obj)
         if kwargs:
             raise TypeError("goto_cell() got an unexpected keyword argument")
         if count != 1:
             raise TypeError("goto_cell() got an invalid number of arguments")
         arg = args[0]
-        go(arg)
+        cell_obj = go(arg)
+        return self.get_cell(cell_obj=cell_obj)
 
     # endregion    goto_cell()
 
-    def delete_column(self, idx: int) -> bool:
+    def delete_column(self, idx: int, count: int = 1) -> bool:
         """
-        Delete a column from a spreadsheet
+        Delete a column from a spreadsheet.
 
         Args:
-            idx (int): Zero base of index of column to delete
+            idx (int): Zero base of index of column to delete.
+            count (int): Number of columns to delete.
 
         :events:
             .. cssclass:: lo_event
@@ -1240,16 +1613,17 @@ class CalcSheet(SpreadsheetComp):
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_DELETED` :eventref:`src-docs-sheet-event-col-deleted`
 
         Returns:
-            bool: True if column is deleted; Otherwise, False
+            bool: ``True`` if column is deleted; Otherwise, ``False``.
         """
-        return mCalc.Calc.delete_column(sheet=self.component, idx=idx)
+        return mCalc.Calc.delete_column(sheet=self.component, idx=idx, count=count)
 
-    def delete_row(self, idx: int) -> bool:
+    def delete_row(self, idx: int, count: int = 1) -> bool:
         """
-        Deletes a row from spreadsheet
+        Deletes a row from spreadsheet.
 
         Args:
-            idx (int): Zero based index of row to delete
+            idx (int): Zero based index of row to delete.
+            count (int): Number of rows to delete.
 
         :events:
             .. cssclass:: lo_event
@@ -1258,9 +1632,9 @@ class CalcSheet(SpreadsheetComp):
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_DELETED` :eventref:`src-docs-sheet-event-row-deleted`
 
         Returns:
-            bool: True if row is deleted; Otherwise, False
+            bool: ``True`` if row is deleted; Otherwise, ``False``.
         """
-        return mCalc.Calc.delete_row(sheet=self.component, idx=idx)
+        return mCalc.Calc.delete_row(sheet=self.component, idx=idx, count=count)
 
     def deselect_cells(self) -> None:
         """
@@ -1310,6 +1684,422 @@ class CalcSheet(SpreadsheetComp):
             Row: Row of data
         """
         return mCalc.Calc.extract_row(vals=vals, row_idx=row_idx)
+
+    def insert_row(self, idx: int, count: int = 1) -> bool:
+        """
+        Inserts a row into spreadsheet.
+
+        Args:
+            idx (int): Zero based index of row to insert.
+            count (int): Number of rows to insert.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_INSERTING` :eventref:`src-docs-sheet-event-row-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_INSERTED` :eventref:`src-docs-sheet-event-row-inserted`
+
+        Returns:
+            bool: ``True`` if row is inserted; Otherwise, ``False``.
+        """
+        return mCalc.Calc.insert_row(sheet=self.component, idx=idx, count=count)
+
+    def insert_column(self, idx: int, count: int = 1) -> bool:
+        """
+        Inserts a column into spreadsheet.
+
+        Args:
+            idx (int): Zero based index of column to insert.
+            count (int): Number of columns to insert.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTING` :eventref:`src-docs-sheet-event-col-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTED` :eventref:`src-docs-sheet-event-col-inserted`
+
+        Returns:
+            bool: ``True`` if column is inserted; Otherwise, ``False``.
+        """
+        return mCalc.Calc.insert_column(sheet=self.component, idx=idx, count=count)
+
+    def insert_scenario(self, range_name: str | mRngObj.RangeObj, vals: Table, name: str, comment: str) -> XScenario:
+        """
+        Insert a scenario into sheet
+
+        Args:
+            range_name (str | RangeObj): Range name
+            vals (Table): 2d array of values
+            name (str): Scenario name
+            comment (str): Scenario description
+
+        Returns:
+            XScenario: the newly created scenario
+
+        Note:
+            A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
+            You assign a name to every scenario on your sheet. Define several scenarios on the same sheet,
+            each with some different values in the cells. Then you can easily switch the sets of cell values
+            by their name and immediately observe the results. Scenarios are a tool to test out "what-if" questions.
+
+        See Also:
+            `Using Scenarios <https://help.libreoffice.org/latest/en-US/text/scalc/guide/scenario.html>`_
+        """
+        return mCalc.Calc.insert_scenario(
+            sheet=self.component, range_name=range_name, vals=vals, name=name, comment=comment
+        )
+
+    # region clear_cells()
+    @overload
+    def clear_cells(self, cell_range: XCellRange) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        Cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        Args:
+            cell_range (XCellRange): Cell range.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def clear_cells(self, cell_range: XCellRange, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+
+        Args:
+            cell_range (XCellRange): Cell range.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def clear_cells(self, range_name: str) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        Cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        Args:
+            range_name (str): Range name such as ``A1:G3``.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def clear_cells(self, range_name: str, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        Args:
+            range_name (str): Range name such as ``A1:G3``.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def clear_cells(self, range_val: mRngObj.RangeObj, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        Args:
+            range_val (RangeObj): Range object.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def clear_cells(self, cr_addr: CellRangeAddress) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        Cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``/
+        """
+        ...
+
+    @overload
+    def clear_cells(self, cr_addr: CellRangeAddress, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
+        ...
+
+    def clear_cells(self, *args, **kwargs) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        If cell_flags is not specified then
+        cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        Args:
+            cell_range (XCellRange): Cell range.
+            range_name (str): Range name such as ``A1:G3``.
+            range_val (RangeObj): Range object.
+            cr_addr (CellRangeAddress): Cell Range Address.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Raises:
+            MissingInterfaceError: If XSheetOperation interface cannot be obtained.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARING` :eventref:`src-docs-cell-event-clearing`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARED` :eventref:`src-docs-cell-event-cleared`
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+
+        Note:
+            Events arg for this method have a ``cell`` type of ``XCellRange``.
+
+            Events arg ``event_data`` is a dictionary containing ``cell_flags``.
+        """
+        return mCalc.Calc.clear_cells(self.component, *args, **kwargs)
+
+    # endregion clear_cells()
+
+    # region delete_cells()
+    @overload
+    def delete_cells(self, cell_range: XCellRange, is_shift_left: bool) -> bool:
+        """
+        Deletes Cells in a spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range to insert.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def delete_cells(self, cr_addr: CellRangeAddress, is_shift_left: bool) -> bool:
+        """
+        Deletes Cells in a spreadsheet.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell range Address.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def delete_cells(self, range_name: str, is_shift_left: bool) -> bool:
+        """
+        Deletes Cells in a spreadsheet.
+
+        Args:
+            range_name (str): Range Name such as 'A1:D5'.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def delete_cells(self, range_obj: mRngObj.RangeObj, is_shift_left: bool) -> bool:
+        """
+        Deletes Cells in a spreadsheet.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def delete_cells(self, col_start: int, row_start: int, col_end: int, row_end: int, is_shift_left: bool) -> bool:
+        """
+        Deletes Cells in a spreadsheet.
+
+        Args:
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
+        ...
+
+    def delete_cells(self, *args, **kwargs) -> bool:
+        """
+        Deletes Cells in a spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range to insert.
+            cr_addr (CellRangeAddress): Cell range Address.
+            range_name (str): Range Name such as 'A1:D5'.
+            range_obj (RangeObj): Range Object.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_DELETING` :eventref:`src-docs-cell-event-deleting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_DELETED` :eventref:`src-docs-cell-event-deleted`
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+
+        Note:
+            Events args for this method have a ``cell`` type of ``XCellRange``
+
+            Event args ``event_data`` is a dictionary containing ``is_shift_right``.
+        """
+        return mCalc.Calc.delete_cells(self.component, *args, **kwargs)
+
+    # endregion delete_cells()
+
+    # region insert_cells()
+    @overload
+    def insert_cells(self, cell_range: XCellRange, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range to insert.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def insert_cells(self, cr_addr: CellRangeAddress, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell range Address.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def insert_cells(self, range_name: str, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        Args:
+            range_name (str): Range Name such as 'A1:D5'.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def insert_cells(self, range_obj: mRngObj.RangeObj, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def insert_cells(self, col_start: int, row_start: int, col_end: int, row_end: int, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        Args:
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
+        ...
+
+    def insert_cells(self, *args, **kwargs) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range to insert.
+            cr_addr (CellRangeAddress): Cell range Address.
+            range_name (str): Range Name such as 'A1:D5'.
+            range_obj (RangeObj): Range Object.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_INSERTING` :eventref:`src-docs-cell-event-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_INSERTED` :eventref:`src-docs-cell-event-inserted`
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+
+        Note:
+            Events args for this method have a ``cell`` type of ``XCellRange``
+
+            Event args ``event_data`` is a dictionary containing ``is_shift_right``.
+        """
+        return mCalc.Calc.insert_cells(self.component, *args, **kwargs)
+
+    # endregion insert_cells()
 
     def find_all(self, srch: XSearchable, sd: XSearchDescriptor) -> List[mCalcCellRange.CalcCellRange] | None:
         """
@@ -1407,9 +2197,9 @@ class CalcSheet(SpreadsheetComp):
         found = mCalc.Calc.find_used_cursor(cursor=cursor)
         return mCalcCellRange.CalcCellRange(self, found)
 
-    # region find_used_range()
+    # region find_used()
     @overload
-    def find_used_range(
+    def find_used(
         self,
     ) -> mCalcCellRange.CalcCellRange:
         """
@@ -1421,7 +2211,7 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def find_used_range(self, range_name: str) -> mCalcCellRange.CalcCellRange:
+    def find_used(self, range_name: str) -> mCalcCellRange.CalcCellRange:
         """
         Find used range
 
@@ -1434,7 +2224,7 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def find_used_range(self, range_obj: mRngObj.RangeObj) -> mCalcCellRange.CalcCellRange:
+    def find_used(self, range_obj: mRngObj.RangeObj) -> mCalcCellRange.CalcCellRange:
         """
         Find used range
 
@@ -1447,7 +2237,7 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def find_used_range(self, cr_addr: CellRangeAddress) -> mCalcCellRange.CalcCellRange:
+    def find_used(self, cr_addr: CellRangeAddress) -> mCalcCellRange.CalcCellRange:
         """
         Find used range
 
@@ -1459,7 +2249,7 @@ class CalcSheet(SpreadsheetComp):
         """
         ...
 
-    def find_used_range(self, *args, **kwargs) -> mCalcCellRange.CalcCellRange:
+    def find_used(self, *args, **kwargs) -> mCalcCellRange.CalcCellRange:
         """
         Find used range
 
@@ -1477,7 +2267,7 @@ class CalcSheet(SpreadsheetComp):
         found = mCalc.Calc.find_used_range(self.component, *args, **kwargs)
         return mCalcCellRange.CalcCellRange(self, found)
 
-    # endregion find_used_range()
+    # endregion find_used()
 
     # region find_used_range_obj()
     @overload
@@ -1816,24 +2606,18 @@ class CalcSheet(SpreadsheetComp):
 
     def protect_sheet(self, password: str) -> bool:
         """
-                Protects a Spreadsheet
+        Protects a Spreadsheet
 
-                Args:
-                    password (str): Password to protect sheet with.
+        Args:
+            password (str): Password to protect sheet with.
 
-                Returns:def check_any_key(dictionary, keys):
-            return bool(keys & dictionary.keys())
+        Returns:
+            bool: ``True`` on success; Otherwise, ``False``
 
-        # usage
-        dictionary = {'name': 'John', 'age': 30, 'city': 'New York'}
-        keys = {'name', 'country'}
-        print(check_any_key(dictionary, keys))  # prints: True
-                    bool: ``True`` on success; Otherwise, ``False``
-
-                See Also:
-                    - :py:meth:`~.calc.Calc.unprotect_sheet`
-                    - :py:meth:`~.calc.Calc.is_sheet_protected`
-                    - :ref:`help_calc_format_direct_cell_cell_protection`
+        See Also:
+            - :py:meth:`~.calc.Calc.unprotect_sheet`
+            - :py:meth:`~.calc.Calc.is_sheet_protected`
+            - :ref:`help_calc_format_direct_cell_cell_protection`
         """
         return mCalc.Calc.protect_sheet(self.component, password)
 
@@ -1860,6 +2644,155 @@ class CalcSheet(SpreadsheetComp):
         """
         return mCalc.Calc.unprotect_sheet(self.component, password)
 
+    def set_active(self) -> None:
+        """
+        Sets the current sheet as active in the document.
+
+        Returns:
+            None:
+        """
+        self.calc_doc.set_active_sheet(self.component)
+
+    def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Creates a cell cursor including the whole spreadsheet.
+
+        Returns:
+            _type_: _description_
+        """
+        cursor = self.component.createCursor()
+        return mCalcCellCursor.CalcCellCursor(self, cursor)
+
+    # region create_cursor_by_range()
+    @overload
+    def create_cursor_by_range(self, *, range_name: str) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Gets a cell cursor.
+
+        Args:
+            range_name (str): Range Name such as ``A1:D5``.
+
+        Raises:
+            Exception: if unable to access cell range.
+
+        Returns:
+            CalcCellCursor: Cell Cursor.
+        """
+        ...
+
+    @overload
+    def create_cursor_by_range(self, *, range_obj: mRngObj.RangeObj) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Gets a cell cursor.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+
+        Raises:
+            Exception: if unable to access cell range.
+
+        Returns:
+            CalcCellCursor: Cell Cursor.
+        """
+        ...
+
+    @overload
+    def create_cursor_by_range(self, *, cell_obj: mCellObj.CellObj) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Gets a cell cursor.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Raises:
+            Exception: if unable to access cell range.
+
+        Returns:
+            CalcCellCursor: Cell Cursor.
+        """
+        ...
+
+    @overload
+    def create_cursor_by_range(self, *, cr_addr: CellRangeAddress) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Gets a cell cursor.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell range Address.
+
+        Raises:
+            Exception: if unable to access cell range.
+
+        Returns:
+            CalcCellCursor: Cell Cursor.
+        """
+        ...
+
+    @overload
+    def create_cursor_by_range(self, *, cell_range: XCellRange) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Gets a cell cursor.
+
+        Args:
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+
+        Raises:
+            Exception: if unable to access cell range.
+
+        Returns:
+            CalcCellCursor: Cell Cursor.
+        """
+        ...
+
+    @overload
+    def create_cursor_by_range(
+        self, *, col_start: int, row_start: int, col_end: int, row_end: int
+    ) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Gets a cell cursor.
+
+        Args:
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+
+        Raises:
+            Exception: if unable to access cell range.
+
+        Returns:
+            CalcCellCursor: Cell Cursor.
+        """
+        ...
+
+    def create_cursor_by_range(self, **kwargs) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Creates a cell cursor to travel in the given range context.
+
+        Args:
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cell_obj (CellObj): Cell Object.
+            cr_addr (CellRangeAddress): Cell range Address.
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+
+        Returns:
+            CalcCellCursor: Cell cursor
+        """
+        sheet_names = {"range_name", "range_obj", "cell_obj", "cr_addr", "col_start"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        cell_range = mCalc.Calc.get_cell_range(**kwargs)
+        sheet_cell_range = mLo.Lo.qi(XSheetCellRange, cell_range, True)
+        cursor = self.component.createCursorByRange(sheet_cell_range)
+        return mCalcCellCursor.CalcCellCursor(self, cursor)
+
+    # endregion create_cursor_by_range()
+
     # region Properties
     @property
     def calc_doc(self) -> CalcDoc:
@@ -1868,5 +2801,25 @@ class CalcSheet(SpreadsheetComp):
             CalcDoc: Calc doc
         """
         return self.__owner
+
+    @property
+    def sheet_name(self) -> str:
+        """
+        Gets the sheet Name.
+
+        Returns:
+            str: Sheet name
+        """
+        return self.component.getName()
+
+    @property
+    def sheet_index(self) -> int:
+        """
+        Gets the sheet index.
+
+        Returns:
+            int: Sheet index
+        """
+        return self.component.getRangeAddress().Sheet
 
     # endregion Properties

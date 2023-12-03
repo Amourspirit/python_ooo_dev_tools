@@ -134,27 +134,6 @@ class CalcDoc(SpreadsheetDocumentComp):
         """
         return mCalc.Calc.get_selected_addr(doc=self.component)
 
-    def get_selected_cell(self) -> mCellObj.CellObj:
-        """
-        Gets the cell address of current selected cell of the active sheet.
-
-        Raises:
-            CellError: if active selection is not a single cell
-
-        Returns:
-            CellAddress: Cell Address
-
-        Note:
-            CellAddress returns Zero-base values.
-            For instance: Cell ``B4`` has Column value of ``1`` and Row value of ``3``
-
-        See Also:
-            - :py:meth:`~.Calc.get_selected_cell_addr`
-            - :py:meth:`~.Calc.get_selected_addr`
-            - :py:meth:`~.Calc.set_selected_addr`
-        """
-        return mCalc.Calc.get_selected_cell(doc=self.component)
-
     def get_selected_cell_addr(self) -> CellAddress:
         """
         Gets the cell address of current selected cell of the active sheet.
@@ -474,8 +453,8 @@ class CalcDoc(SpreadsheetDocumentComp):
         Returns:
             mCalcSheetView: CalcSheetView
         """
-        result = mCalc.Calc.get_view(self.component)
-        return mCalcSheetView.CalcSheetView(self, result)
+        view = mCalc.Calc.get_view(self.component)
+        return mCalcSheetView.CalcSheetView(self, view)
 
     def set_active_sheet(self, sheet: XSpreadsheet) -> None:
         """

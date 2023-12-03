@@ -6,38 +6,35 @@ from ooodev.adapter.component_base import ComponentBase
 
 
 if TYPE_CHECKING:
-    from com.sun.star.table import Cell  # service
+    from com.sun.star.table import CellCursor  # service
 
 
-class CellComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement):
+class CellComp(ComponentBase):
     """
-    Class for managing table Cell Component.
+    Class for managing table Cell Cursor Component.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: Cell) -> None:
+    def __init__(self, component: CellCursor) -> None:
         """
         Constructor
 
         Args:
-            component (Cell): UNO table Cell Component.
+            component (CellCursor): UNO table CellCursor Component.
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.table.Cell",)
+        return ("com.sun.star.table.CellCursor",)
 
     # endregion Overrides
     # region Properties
     @property
-    def component(self) -> Cell:
-        """Cell Component"""
-        return cast("Cell", self._get_component())
+    def component(self) -> CellCursor:
+        """CellCursor Component"""
+        return cast("CellCursor", self._get_component())
 
     # endregion Properties

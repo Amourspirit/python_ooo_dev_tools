@@ -3,8 +3,10 @@ from typing import Any, Sequence, TYPE_CHECKING
 import uno
 
 if TYPE_CHECKING:
+    from com.sun.star.awt import Point
     from com.sun.star.sheet import XSheetAnnotation
     from .calc_sheet import CalcSheet
+    from . import calc_cell_cursor as mCalcCellCursor
 else:
     XSheetAnnotation = object
 
@@ -24,6 +26,15 @@ class CalcCell(SheetCellComp):
         sheet_cell = mCalc.Calc.get_cell(sheet=self.calc_sheet.component, cell_obj=self.__cell_obj)
         super().__init__(sheet_cell)  # type: ignore
 
+    def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Creates a cell cursor to travel in the given range context.
+
+        Returns:
+            CalcCellCursor: Cell cursor
+        """
+        return self.calc_sheet.create_cursor_by_range(cell_obj=self.__cell_obj)
+
     # region Cell Properties
 
     def is_first_row(self) -> bool:
@@ -35,6 +46,18 @@ class CalcCell(SheetCellComp):
         return self.__cell_obj.col == "A"
 
     # endregion Cell Properties
+
+    def get_cell_position(self) -> Point:
+        """
+        Gets a cell name as a Point.
+
+        - ``Point.X`` is column zero-based index.
+        - ``Point.Y`` is row zero-based index.
+
+        Returns:
+            Point: cell name as Point with X as col and Y as row
+        """
+        return mCalc.Calc.get_cell_position(cell_name=self.__cell_obj)
 
     # region Other Cells
 
@@ -110,6 +133,24 @@ class CalcCell(SheetCellComp):
             sheet=self.calc_sheet.component, cell_name=str(self.__cell_obj), msg=msg, is_visible=is_visible
         )
 
+    def get_annotation(self) -> XSheetAnnotation:
+        """
+        Gets the annotation of a cell.
+
+        Returns:
+            XSheetAnnotation: Cell annotation
+        """
+        return mCalc.Calc.get_annotation(sheet=self.calc_sheet.component, cell_name=self.__cell_obj)
+
+    def get_annotation_str(self) -> str:
+        """
+        Gets text of an annotation for a cell.
+
+        Returns:
+            str: Cell annotation text
+        """
+        return mCalc.Calc.get_annotation_str(sheet=self.calc_sheet.component, cell_name=self.__cell_obj)
+
     def get_string(self) -> str:
         """
         Gets the value of a cell as a string.
@@ -136,6 +177,15 @@ class CalcCell(SheetCellComp):
             str: String of cell type
         """
         return str(self.get_type_enum())
+
+    def get_num(self) -> float:
+        """
+        Get cell value a float
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        return mCalc.Calc.get_num(cell=self.component)
 
     def get_val(self) -> Any | None:
         """
@@ -238,7 +288,7 @@ class CalcCell(SheetCellComp):
         """
         mCalc.Calc.set_style_cell(sheet=self.calc_sheet.component, cell_obj=self.__cell_obj, styles=styles)
 
-    def set_val(self, value: object, styles: Sequence[StyleT] | None = None) -> None:
+    def set_val(self, value: Any, styles: Sequence[StyleT] | None = None) -> None:
         """
         Sets the value of a cell
 
@@ -276,5 +326,20 @@ class CalcCell(SheetCellComp):
     def calc_sheet(self) -> CalcSheet:
         """Sheet that owns this cell."""
         return self.__owner
+
+    @property
+    def cell_obj(self) -> mCellObj.CellObj:
+        """Cell object."""
+        return self.__cell_obj
+
+    @property
+    def position(self) -> Point:
+        """
+        Contains the position of the top left cell of this range in the sheet (in 1/100 mm).
+
+        This property contains the absolute position in the whole sheet,
+        not the position in the visible area.
+        """
+        return self.component.Position
 
     # endregion Properties
