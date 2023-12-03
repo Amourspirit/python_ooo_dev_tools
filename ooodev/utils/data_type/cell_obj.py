@@ -26,7 +26,7 @@ class CellObj:
     col: str
     """Column such as ``A``"""
     row: int
-    """Row such as ``125``"""
+    """One based row such as ``125``"""
     sheet_idx: int = -1
     """Sheet index that this cell value belongs to"""
     range_obj: mRngObj.RangeObj | None = field(repr=False, hash=False, default=None)

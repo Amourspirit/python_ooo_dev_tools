@@ -849,7 +849,7 @@ class Calc:
             sheet (XSpreadsheet | None, optional): Spread sheet. Defaults to active sheet.
 
         Returns:
-            int: _description_
+            int: Sheet Index
         """
         if sheet is None:
             sheet = cls.get_active_sheet()
@@ -1037,7 +1037,7 @@ class Calc:
             - :py:meth:`~.calc.Calc.is_sheet_protected`
             - :ref:`help_calc_format_direct_cell_cell_protection`
 
-        .. versionadded:: 0.10.000
+        .. versionadded:: 0.10.0
         """
         pro = mLo.Lo.qi(XProtectable, sheet, True)
         if not pro.isProtected():
@@ -1197,7 +1197,7 @@ class Calc:
             doc (XSpreadsheetDocument): Spreadsheet Document
 
         Returns:
-            XSpreadsheetView | None: XSpreadsheetView on success; Otherwise, None
+            XSpreadsheetView: XSpreadsheetView
         """
         return mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc), True)
 
@@ -1251,7 +1251,7 @@ class Calc:
             doc (XSpreadsheetDocument, optional): Spreadsheet Document
 
         Returns:
-            XSpreadsheet | None: Active Sheet if found; Otherwise, None
+            XSpreadsheet: Active Sheet.
         """
         if doc is None:
             doc = cls.get_current_doc()
@@ -1633,7 +1633,7 @@ class Calc:
 
     # endregion get_selected_cell()
 
-    # region select_cells()
+    # region set_selected_addr()
 
     @overload
     @classmethod
@@ -1660,7 +1660,7 @@ class Calc:
             range_val (str | RangeObj): Range name
 
         Returns:
-            CellRangeAddress: Cell range address of the current selection if successful, otherwise ``None``
+            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``
 
         See Also:
             - :py:meth:`~.Calc.get_selected_addr`
@@ -1710,7 +1710,7 @@ class Calc:
         supp.select(sel_obj)
         return cls.get_selected_addr(doc)
 
-    # endregion select_cells()
+    # endregion set_selected_addr()
 
     # region set_selected()
     @overload
@@ -1903,13 +1903,14 @@ class Calc:
     # region --------------- insert/remove rows, columns, cells --------
 
     @staticmethod
-    def insert_row(sheet: XSpreadsheet, idx: int) -> bool:
+    def insert_row(sheet: XSpreadsheet, idx: int, count: int = 1) -> bool:
         """
         Inserts a row in spreadsheet
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
             idx (int): Zero base index of row to insert.
+            count (int, optional): Number of rows to insert. Defaults to ``1``.
 
         :events:
             .. cssclass:: lo_event
@@ -1918,7 +1919,10 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-row-inserted`
 
         Returns:
-            bool: True if row has been inserted; Otherwise, False
+            bool: ``True`` if row has been inserted; Otherwise, ``False``.
+
+        .. versionchanged:: 0.15.0
+            Added ``count`` parameter
         """
         cargs = SheetCancelArgs(Calc.insert_row.__qualname__)
         cargs.sheet = sheet
@@ -1929,18 +1933,19 @@ class Calc:
         idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, True)
         rows = cr_range.getRows()
-        rows.insertByIndex(idx, 1)  # add 1 row at idx position
+        rows.insertByIndex(idx, count)  # add 1 row at idx position
         _Events().trigger(CalcNamedEvent.SHEET_ROW_INSERTED, SheetArgs.from_args(cargs))
         return True
 
     @staticmethod
-    def delete_row(sheet: XSpreadsheet, idx: int) -> bool:
+    def delete_row(sheet: XSpreadsheet, idx: int, count: int = 1) -> bool:
         """
-        Deletes a row from spreadsheet
+        Deletes a row from spreadsheet.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            idx (int): Zero based index of row to delete
+            sheet (XSpreadsheet): Spreadsheet.
+            idx (int): Zero based index of row to delete.
+            count (int, optional): Number of rows to delete. Defaults to ``1``.
 
         :events:
             .. cssclass:: lo_event
@@ -1949,7 +1954,10 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_ROW_DELETED` :eventref:`src-docs-sheet-event-row-deleted`
 
         Returns:
-            bool: True if row is deleted; Otherwise, False
+            bool: ``True`` if row is deleted; Otherwise, ``False``.
+
+        .. versionchanged:: 0.15.0
+            Added ``count`` parameter
         """
         cargs = SheetCancelArgs(Calc.delete_row.__qualname__)
         cargs.sheet = sheet
@@ -1961,24 +1969,31 @@ class Calc:
         idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, True)
         rows = cr_range.getRows()
-        rows.removeByIndex(idx, 1)  # remove 1 row at idx position
+        rows.removeByIndex(idx, count)  # remove row(s) at idx position
         _Events().trigger(CalcNamedEvent.SHEET_ROW_DELETED, SheetArgs.from_args(cargs))
         return True
 
     @staticmethod
-    def insert_column(sheet: XSpreadsheet, idx: int) -> bool:
+    def insert_column(sheet: XSpreadsheet, idx: int, count: int = 1) -> bool:
         """
         Inserts a column in a spreadsheet.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
+            sheet (XSpreadsheet): Spreadsheet.
             idx (int): Zero base index of column to insert.
+            count (int, optional): Number of columns to insert. Defaults to ``1``.
 
         :events:
             .. cssclass:: lo_event
 
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTING` :eventref:`src-docs-sheet-event-col-inserting`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_INSERTED` :eventref:`src-docs-sheet-event-col-inserted`
+
+        Returns:
+            bool: ``True`` if column has been inserted; Otherwise, ``False``.
+
+        .. versionchanged:: 0.15.0
+            Added ``count`` parameter
         """
         cargs = SheetCancelArgs(Calc.insert_column.__qualname__)
         cargs.sheet = sheet
@@ -1989,18 +2004,19 @@ class Calc:
         idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, True)
         cols = cr_range.getColumns()
-        cols.insertByIndex(idx, 1)  # add 1 column at idx position
+        cols.insertByIndex(idx, count)  # add column(s) at idx position
         _Events().trigger(CalcNamedEvent.SHEET_COL_INSERTED, SheetArgs.from_args(cargs))
         return True
 
     @staticmethod
-    def delete_column(sheet: XSpreadsheet, idx: int) -> bool:
+    def delete_column(sheet: XSpreadsheet, idx: int, count: int = 1) -> bool:
         """
-        Delete a column from a spreadsheet
+        Delete a column from a spreadsheet.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            idx (int): Zero base of index of column to delete
+            sheet (XSpreadsheet): Spreadsheet.
+            idx (int): Zero base of index of column to delete.
+            count (int, optional): Number of columns to delete. Defaults to ``1``.
 
         :events:
             .. cssclass:: lo_event
@@ -2009,7 +2025,10 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_COL_DELETED` :eventref:`src-docs-sheet-event-col-deleted`
 
         Returns:
-            bool: True if column is deleted; Otherwise, False
+            bool: ``True`` if column is deleted; Otherwise, ``False``.
+
+        .. versionchanged:: 0.15.0
+            Added ``count`` parameter
         """
         cargs = SheetCancelArgs(Calc.delete_column.__qualname__)
         cargs.sheet = sheet
@@ -2020,7 +2039,7 @@ class Calc:
         idx = cargs.index
         cr_range = mLo.Lo.qi(XColumnRowRange, cargs.sheet, True)
         cols = cr_range.getColumns()
-        cols.removeByIndex(idx, 1)  # remove 1 row at idx position
+        cols.removeByIndex(idx, count)  # remove column(s) at idx position
         _Events().trigger(CalcNamedEvent.SHEET_COL_DELETED, SheetArgs.from_args(cargs))
         return True
 
@@ -2073,18 +2092,18 @@ class Calc:
     @classmethod
     def insert_cells(cls, *args, **kwargs) -> bool:
         """
-        Inserts Cells into a spreadsheet
+        Inserts Cells into a spreadsheet.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range to insert
-            cr_addr (CellRangeAddress): Cell range Address
-            range_name (str): Range Name such as 'A1:D5'
-            range_obj (RangeObj): Range Object
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range to insert.
+            cr_addr (CellRangeAddress): Cell range Address.
+            range_name (str): Range Name such as 'A1:D5'.
+            range_obj (RangeObj): Range Object.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
             is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
 
         :events:
@@ -2094,7 +2113,7 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_INSERTED` :eventref:`src-docs-cell-event-inserted`
 
         Returns:
-            bool: True if cells are inserted; Otherwise, False
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
 
         Note:
             Events args for this method have a ``cell`` type of ``XCellRange``
@@ -2180,19 +2199,19 @@ class Calc:
     @classmethod
     def delete_cells(cls, *args, **kwargs) -> bool:
         """
-        Deletes cell in a spreadsheet
+        Deletes cells in a spreadsheet
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range to delete
-            cr_addr (CellRangeAddress): Cell range Address
-            range_name (str): Range Name such as 'A1:D5'
-            range_obj (RangeObj): Range Object
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
-            is_shift_left (bool): If True then cell are shifted left; Otherwise, cells are shifted up.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range to delete.
+            cr_addr (CellRangeAddress): Cell range Address.
+            range_name (str): Range Name such as 'A1:D5'.
+            range_obj (RangeObj): Range Object.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
 
         :events:
             .. cssclass:: lo_event
@@ -2201,7 +2220,7 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_DELETED` :eventref:`src-docs-cell-event-deleted`
 
         Returns:
-            bool: True if cells are deleted; Otherwise, False
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
 
         Note:
             Events args for this method have a ``cell`` type of ``XCellRange``
@@ -2256,12 +2275,17 @@ class Calc:
 
     @overload
     @classmethod
+    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlagsEnum) -> bool:
+        ...
+
+    @overload
+    @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, range_val: mRngObj.RangeObj) -> bool:
         ...
 
     @overload
     @classmethod
-    def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlagsEnum) -> bool:
+    def clear_cells(cls, sheet: XSpreadsheet, range_val: mRngObj.RangeObj, cell_flags: CellFlagsEnum) -> bool:
         ...
 
     @overload
@@ -2277,18 +2301,18 @@ class Calc:
     @classmethod
     def clear_cells(cls, *args, **kwargs) -> bool:
         """
-        Clears the specified contents of the cell range
+        Clears the specified contents of the cell range.
 
-        If cell_flags is not specified then
-        cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared
+        If ``cell_flags`` is not specified then
+        cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-            range_name (str): Range name such as ``A1:G3``
-            range_val (RangeObj): Range object
-            cr_addr (CellRangeAddress): Cell Range Address
-            cell_flags (CellFlagsEnum): Flags that determine what to clear
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+            range_name (str): Range name such as ``A1:G3``.
+            range_val (RangeObj): Range object.
+            cr_addr (CellRangeAddress): Cell Range Address.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
 
         Raises:
             MissingInterfaceError: If XSheetOperation interface cannot be obtained.
@@ -2300,7 +2324,7 @@ class Calc:
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.CELLS_CLEARED` :eventref:`src-docs-cell-event-cleared`
 
         Returns:
-            bool: True if cells are cleared; Otherwise, False
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
 
         Note:
             Events arg for this method have a ``cell`` type of ``XCellRange``.
@@ -2455,12 +2479,13 @@ class Calc:
         Sets the value of a cell
 
         Args:
-            value (object): Value for cell
-            cell (XCell): Cell to assign value
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cell to set value of such as 'B4'
-            col (int): Cell column as zero-based integer
-            row (int): Cell row as zero-based integer
+            value (object): Value for cell.
+            cell (XCell): Cell to assign value.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to set value of such as 'B4'.
+            cell_obj (CellObj): Cell Object.
+            col (int): Cell column as zero-based integer.
+            row (int): Cell row as zero-based integer.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell.
 
         Returns:
@@ -3011,17 +3036,17 @@ class Calc:
 
         Args:
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
-            cell_range (XCellRange): Range in spreadsheet to insert data
-            sheet (XSpreadsheet): Spreadsheet
-            name (str): Range name such as 'A1:D4' or cell name such as 'B4'
-            range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
-            doc (XSpreadsheetDocument): Spreadsheet Document
+            cell_range (XCellRange): Range in spreadsheet to insert data.
+            sheet (XSpreadsheet): Spreadsheet.
+            name (str): Range name such as 'A1:D4' or cell name such as 'B4'.
+            range_obj (RangeObj): Range Object.
+            cell_obj (CellObj): Cell Object.
+            doc (XSpreadsheetDocument): Spreadsheet Document.
             addr (CellAddress): Address to insert data.
-            col_start (int): Zero-base Start Column
-            row_start (int): Zero-base Start Row
-            col_end (int): Zero-base End Column
-            row_end (int): Zero-base End Row
+            col_start (int): Zero-base Start Column.
+            row_start (int): Zero-base Start Row.
+            col_end (int): Zero-base End Column.
+            row_end (int): Zero-base End Row.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
 
         Returns:
@@ -3181,9 +3206,9 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range to insert data such as 'A1:E12'
-            range_obj (RangeObj): Range Object
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range to insert data such as 'A1:E12'.
+            range_obj (RangeObj): Range Object.
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
 
@@ -3328,14 +3353,14 @@ class Calc:
 
     @overload
     @classmethod
-    def set_array_cell(
-        cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table, *, styles: Sequence[StyleT]
-    ) -> None:
+    def set_array_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table) -> None:
         ...
 
     @overload
     @classmethod
-    def set_array_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table) -> None:
+    def set_array_cell(
+        cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table, *, styles: Sequence[StyleT]
+    ) -> None:
         ...
 
     @classmethod
@@ -3344,9 +3369,9 @@ class Calc:
         Inserts array of data into spreadsheet
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range to insert data such as 'A1:E12'
-            cell_obj (CellObj): Range Object
+            sheet (XSpreadsheet): Spreadsheet,
+            range_name (str): Range to insert data such as 'A1:E12',
+            cell_obj (CellObj): Range Object,
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
 
@@ -3552,18 +3577,17 @@ class Calc:
     @classmethod
     def get_float_array(cls, *args, **kwargs) -> FloatTable:
         """
-        Gets a 2-Dimensional List of floats
+        Gets a 2-Dimensional List of floats.
 
         Args:
             cell_range (XCellRange): Cell range to get data from.
             sheet (XSpreadsheet): Spreadsheet to get the float values from.
-            range_name (str): Range to get array of floats from such as 'A1:E18'
-            range_obj (RangeObj): Range object
-            cell_obj (CellObj): Cell Object
-
+            range_name (str): Range to get array of floats from such as 'A1:E18'.
+            range_obj (RangeObj): Range object.
+            cell_obj (CellObj): Cell Object.
 
         Returns:
-            FloatTable: 2-Dimensional List of floats
+            FloatTable: 2-Dimensional List of floats.
         """
         return cls._convert_to_floats_2d(cls.get_array(*args, **kwargs))
 
@@ -3678,14 +3702,15 @@ class Calc:
     @classmethod
     def set_col(cls, *args, **kwargs) -> None:
         """
-        Inserts a column of data into spreadsheet
+        Inserts a column of data into spreadsheet.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            values (Column): Column Data
-            cell_name (str): Name of Cell to begin the insert such as 'A1'
-            col_start (int): Zero-base column index
-            row_start (int): Zero-base row index
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Column): Column Data.
+            cell_name (str): Name of Cell to begin the insert such as 'A1'.
+            cell_obj (CellObj): Cell Object.
+            col_start (int): Zero-base column index.
+            row_start (int): Zero-base row index.
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -3761,11 +3786,12 @@ class Calc:
             MissingInterfaceError: if unable to obtain interface
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            values (Row): Row Data
-            cell_name (str): Name of Cell to begin the insert such as 'A1'
-            col_start (int): Zero-base column index
-            row_start (int): Zero-base row index
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Row): Row Data.
+            cell_obj (CellObj): Cell Object.
+            cell_name (str): Name of Cell to begin the insert such as 'A1'.
+            col_start (int): Zero-base column index.
+            row_start (int): Zero-base row index.
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -4156,11 +4182,11 @@ class Calc:
         Writes a date with standard date format into a spreadsheet
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str | CellObj): Cell name
-            day (int): Date day part
-            month (int): Date month part
-            year (int): Date year part
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str | CellObj): Cell name.
+            day (int): Date day part.
+            month (int): Date month part.
+            year (int): Date year part.
         """
         xcell = cls.get_cell(sheet, cell_name)
         xcell.setFormula(f"{month}/{day}/{year}")
@@ -4577,16 +4603,16 @@ class Calc:
         Gets a cell range
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as ``A1:D5``
-            range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
-            cr_addr (CellRangeAddress): Cell range Address
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cell_obj (CellObj): Cell Object.
+            cr_addr (CellRangeAddress): Cell range Address.
             cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
 
         Raises:
             Exception: if unable to access cell range.
@@ -5086,8 +5112,8 @@ class Calc:
         """
         Gets a cell name as a Point.
 
-        - Point.X is column zero-based index.
-        - Point.Y is row zero-based index.
+        - ``Point.X`` is column zero-based index.
+        - ``Point.Y`` is row zero-based index.
 
         Args:
             cell_name (str | CellObj): Cell name
@@ -5996,16 +6022,16 @@ class Calc:
         Gets a range Object representing a range.
 
         Args:
-            range_name (str): Cell range as string
-            cell_range (XCellRange): Cell Range
-            sheet (XSpreadsheet): Spreadsheet
-            cr_addr (CellRangeAddress): Cell Range Address
-            cell_obj (CellObj): Cell Object
+            range_name (str): Cell range as string.
+            cell_range (XCellRange): Cell Range.
+            sheet (XSpreadsheet): Spreadsheet.
+            cr_addr (CellRangeAddress): Cell Range Address.
+            cell_obj (CellObj): Cell Object.
             range_obj (RangeObj): Range Object. If passed in the same RangeObj is returned.
-            col_start (int): Zero-based start column index
-            row_start (int): Zero-based start row index
-            col_end (int): Zero-based end column index
-            row_end (int): Zero-based end row index
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
 
         Returns:
             RangeObj: Range object.
@@ -6217,11 +6243,11 @@ class Calc:
 
         Args:
             cell_name (str): Cell name.
-            addr (CellAddress): Cell Address
-            cell (XCell): Cell
+            addr (CellAddress): Cell Address.
+            cell (XCell): Cell.
             cell_obj (CellObj): Cell Object. If passed in the same CellObj is returned.
-            col (int): Zero-based column index
-            row (int): Zero-based row index
+            col (int): Zero-based column index.
+            row (int): Zero-based row index.
 
         Returns:
             CellObj: Cell Object
@@ -6356,16 +6382,16 @@ class Calc:
         Merges a range of cells
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet Document
+            sheet (XSpreadsheet): Spreadsheet Document.
             center (bool): Determines if the merge will be a merge and center. Default ``False``.
-            range_name (str): Range Name such as ``A1:D5``
-            range_obj (RangeObj): Range Object
-            cr_addr (CellRangeAddress): Cell range Address
-            cell_range (XCellRange): Cell Range
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cr_addr (CellRangeAddress): Cell range Address.
+            cell_range (XCellRange): Cell Range.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
 
         Returns:
             None:
@@ -6428,15 +6454,15 @@ class Calc:
         Removes merging from a range of cells
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as ``A1:D5``
-            range_obj (RangeObj): Range Object
-            cr_addr (CellRangeAddress): Cell range Address
-            cell_range (XCellRange): Cell Range
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cr_addr (CellRangeAddress): Cell range Address.
+            cell_range (XCellRange): Cell Range.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
 
         Returns:
             None:
@@ -6486,15 +6512,15 @@ class Calc:
         Gets is a range of cells is merged.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as ``A1:D5``
-            range_obj (RangeObj): Range Object
-            cr_addr (CellRangeAddress): Cell range Address
-            cell_range (XCellRange): Cell Range
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cr_addr (CellRangeAddress): Cell range Address.
+            cell_range (XCellRange): Cell Range.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
 
         Returns:
             bool: ``True`` if range is merged; Otherwise, ``False``
@@ -7306,13 +7332,13 @@ class Calc:
         Args:
             sheet (XSpreadsheet): Spreadsheet
             width (int, UnitT): Width in ``mm`` units or :ref:`proto_unit_obj`.
-            idx (int): Index of column
+            idx (int): Index of column.
 
         Raises:
             CancelEventError: If SHEET_COL_WIDTH_SETTING event is canceled.
 
         Returns:
-            XCellRange: Column cell range that width is applied on or ``None`` if column width <= 0
+            XCellRange | None: Column cell range that width is applied on or ``None`` if column width <= 0
 
         :events:
             .. cssclass:: lo_event
@@ -7365,7 +7391,7 @@ class Calc:
             CancelEventError: If SHEET_ROW_HEIGHT_SETTING event is canceled.
 
         Returns:
-            XCellRange: Row cell range that height is applied on or None if height <= 0
+            XCellRange | None: Row cell range that height is applied on or None if height <= 0
 
         :events:
             .. cssclass:: lo_event

@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.adapter.table.cell_comp
+   ooodev.adapter.table.cell_cursor_comp
    ooodev.adapter.table.cell_properties_comp
    ooodev.adapter.table.cell_range_comp
    ooodev.adapter.table.cell_range_list_source_comp

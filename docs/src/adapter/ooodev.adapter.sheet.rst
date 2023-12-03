@@ -22,6 +22,7 @@ Submodules
    ooodev.adapter.sheet.sheet_link_comp
    ooodev.adapter.sheet.spreadsheet_comp
    ooodev.adapter.sheet.spreadsheet_document_comp
+   ooodev.adapter.sheet.spreadsheet_document_settings_comp
    ooodev.adapter.sheet.spreadsheet_view_comp
    ooodev.adapter.sheet.volatile_result_comp
 

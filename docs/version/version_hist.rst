@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.15.0
+==============
+
+Added ``ooodev.calc`` Which contains classes for working with Calc documents.
+Now Calc documents are much easier to work with.
+
 Version 0.14.2
 ==============
 

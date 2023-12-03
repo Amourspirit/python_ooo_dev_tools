@@ -6,6 +6,7 @@ ooodev
    :caption: Contents:
 
    adapter/index
+   calc/index
    cfg/index
    conn/index
    dialog/index
