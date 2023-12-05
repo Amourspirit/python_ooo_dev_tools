@@ -31,15 +31,96 @@ from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
+from ooodev.utils.inst.lo.partial.qi_partial import QiPartial
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
 
 
-class CalcSheet(SpreadsheetComp):
+class CalcSheet(SpreadsheetComp, QiPartial):
     def __init__(self, owner: CalcDoc, sheet: XSpreadsheet) -> None:
-        super().__init__(sheet)  # type: ignore
         self.__owner = owner
+        SpreadsheetComp.__init__(self, sheet)  # type: ignore
+        QiPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
+
+    # region get_address()
+    @overload
+    def get_address(self, *, cell_range: XCellRange) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
+        ...
+
+    @overload
+    def get_address(self, *, range_name: str) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        Args:
+            range_name (str): Range name such as 'A1:D7'.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
+        ...
+
+    @overload
+    def get_address(self, *, range_obj: mRngObj.RangeObj) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
+        ...
+
+    @overload
+    def get_address(self, *, start_col: int, start_row: int, end_col: int, end_row: int) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        Args:
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
+        ...
+
+    def get_address(self, **kwargs) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            range_name (str): Range name such as 'A1:D7'.
+            range_obj (RangeObj): Range Object.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
+        sheet_names = {"range_name", "range_obj", "start_col"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        return mCalc.Calc.get_address(**kwargs)
+
+    # endregion get_address()
 
     # region get_array()
     @overload
@@ -403,12 +484,12 @@ class CalcSheet(SpreadsheetComp):
 
     # region get_row()
     @overload
-    def get_row(self, calc_cell_range: mCalcCellRange.CalcCellRange) -> Row:
+    def get_row(self, *, calc_cell_range: mCalcCellRange.CalcCellRange) -> Row:
         """
         Gets a row of data from spreadsheet
 
         Args:
-            calc_cell_range (CalcCellRange): Calc cell range to get column data from.
+            calc_cell_range (CalcCellRange): Calc cell range to get row data from.
 
         Returns:
             Row: 1-Dimensional List of values on success; Otherwise, None
@@ -416,12 +497,12 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def get_row(self, cell_range: XCellRange) -> Row:
+    def get_row(self, *, cell_range: XCellRange) -> Row:
         """
         Gets a row of data from spreadsheet
 
         Args:
-            cell_range (XCellRange): Cell range to get column data from.
+            cell_range (XCellRange): Cell range to get row data from.
 
         Returns:
             Row: 1-Dimensional List of values on success; Otherwise, None
@@ -429,7 +510,7 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def get_row(self, row_idx: int) -> Row:
+    def get_row(self, *, row_idx: int) -> Row:
         """
         Gets a row of data from spreadsheet
 
@@ -442,7 +523,7 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def get_row(self, range_name: str) -> Row:
+    def get_row(self, *, range_name: str) -> Row:
         """
         Gets a row of data from spreadsheet
 
@@ -455,7 +536,7 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def get_row(self, cell_obj: mCellObj.CellObj) -> Row:
+    def get_row(self, *, cell_obj: mCellObj.CellObj) -> Row:
         """
         Gets a row of data from spreadsheet
 
@@ -468,7 +549,7 @@ class CalcSheet(SpreadsheetComp):
         ...
 
     @overload
-    def get_row(self, range_obj: mRngObj.RangeObj) -> Row:
+    def get_row(self, *, range_obj: mRngObj.RangeObj) -> Row:
         """
         Gets a row of data from spreadsheet
 
@@ -480,13 +561,13 @@ class CalcSheet(SpreadsheetComp):
         """
         ...
 
-    def get_row(self, *args, **kwargs) -> Row:
+    def get_row(self, **kwargs) -> Row:
         """
         Gets a row of data from spreadsheet
 
         Args:
-            calc_cell_range (CalcCellRange): Calc cell range to get column data from.
-            cell_range (XCellRange): Cell range to get column data from.
+            calc_cell_range (CalcCellRange): Calc cell range to get row data from.
+            cell_range (XCellRange): Cell range to get row data from.
             row_idx (int): Zero base row index such as `0` for row `1`
             range_name (str): Range such as 'A1:A12'
             cell_obj (CellObj): Cell Object
@@ -495,14 +576,14 @@ class CalcSheet(SpreadsheetComp):
         Returns:
             Row: 1-Dimensional List of values on success; Otherwise, None
         """
-        if kwargs:
-            if "calc_cell_range" in kwargs:
-                arg0 = cast(mCalcCellRange.CalcCellRange, kwargs["calc_cell_range"]).component
-                return mCalc.Calc.get_row(arg0)
-            elif "cell_range" in kwargs:
-                arg0 = cast("XCellRange", kwargs["cell_range"])
-                return mCalc.Calc.get_row(arg0)
-        return mCalc.Calc.get_row(self.component, *args, **kwargs)
+        if "calc_cell_range" in kwargs:
+            arg0 = cast(mCalcCellRange.CalcCellRange, kwargs["calc_cell_range"]).component
+            return mCalc.Calc.get_row(arg0)
+        elif "cell_range" in kwargs:
+            arg0 = cast("XCellRange", kwargs["cell_range"])
+            return mCalc.Calc.get_row(arg0)
+        kwargs["sheet"] = self.component
+        return mCalc.Calc.get_row(**kwargs)
 
     # endregion get_row()
 
@@ -629,6 +710,303 @@ class CalcSheet(SpreadsheetComp):
             str: Name of sheet
         """
         return mCalc.Calc.get_sheet_name(self.component, safe_quote=safe_quote)
+
+    # region get_num()
+    @overload
+    def get_num(self, *, cell: XCell) -> float:
+        """
+        Get cell value a float.
+
+        Args:
+            cell (XCell): Cell to get value of.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        ...
+
+    @overload
+    def get_num(self, *, cell_name: str) -> float:
+        """
+        Get cell value a float.
+
+        Args:
+            cell_name (str): Cell name such as 'B4'.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        ...
+
+    @overload
+    def get_num(self, *, cell_obj: mCellObj.CellObj) -> float:
+        """
+        Get cell value a float.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        ...
+
+    @overload
+    def get_num(self, *, addr: CellAddress) -> float:
+        """
+        Get cell value a float.
+
+        Args:
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        ...
+
+    @overload
+    def get_num(self, *, col: int, row: int) -> float:
+        """
+        Get cell value a float.
+
+        Args:
+            col (int): Cell zero-base column number.
+            row (int): Cell zero-base row number.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        ...
+
+    def get_num(self, **kwargs) -> float:
+        """
+        Get cell value a float.
+
+        Args:
+            cell (XCell): Cell to get value of.
+            cell_name (str): Cell name such as 'B4'.
+            cell_obj (CellObj): Cell Object.
+            addr (CellAddress): Cell Address.
+            col (int): Cell zero-base column number.
+            row (int): Cell zero-base row number.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+        """
+        sheet_names = {"cell_name", "cell_obj", "addr", "col"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        return mCalc.Calc.get_num(**kwargs)
+
+    # endregion get_num()
+
+    # region get_col()
+    @overload
+    def get_col(self, *, calc_cell_range: mCalcCellRange.CalcCellRange) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            calc_cell_range (CalcCellRange): Calc cell range to get column data from.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        ...
+
+    @overload
+    def get_col(self, *, cell_range: XCellRange) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range to get column data from.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        ...
+
+    @overload
+    def get_col(self, *, col_name: str) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            col_name (str): column name such as ``A``.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        ...
+
+    @overload
+    def get_col(self, *, col_idx: int) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            col_idx (int): Zero base column index such as `0` for column ``A``.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        ...
+
+    @overload
+    def get_col(self, *, range_name: str) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            range_name (str): Range such as ``A1:A12``.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        ...
+
+    @overload
+    def get_col(self, *, cell_obj: mCellObj.CellObj) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        ...
+
+    @overload
+    def get_col(self, *, range_obj: mRngObj.RangeObj) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        ...
+
+    def get_col(self, **kwargs) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            calc_cell_range (CalcCellRange): Calc cell range to get column data from.
+            cell_range (XCellRange): Cell range to get column data from.
+            col_name (str): column name such as ``A``.
+            col_idx (int): Zero base column index such as `0` for column ``A``.
+            range_name (str): Range such as ``A1:A12``.
+            range_obj (RangeObj): Range Object.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        if "calc_cell_range" in kwargs:
+            arg0 = cast(mCalcCellRange.CalcCellRange, kwargs["calc_cell_range"]).component
+            return mCalc.Calc.get_col(arg0)
+        elif "cell_range" in kwargs:
+            arg0 = cast("XCellRange", kwargs["cell_range"])
+            return mCalc.Calc.get_col(arg0)
+        kwargs["sheet"] = self.component
+        return mCalc.Calc.get_col(**kwargs)
+
+    # endregion get_col()
+
+    # region get_val()
+    @overload
+    def get_val(self, *, cell: XCell) -> Any:
+        """
+        Gets cell value.
+
+        Args:
+            cell (XCell): cell to get value of.
+
+        Returns:
+            Any | None: Cell value cell has a value; Otherwise, ``None``.
+        """
+        ...
+
+    @overload
+    def get_val(self, *, addr: CellAddress) -> Any:
+        """
+        Gets cell value.
+
+        Args:
+            addr (CellAddress): Address of cell.
+
+        Returns:
+            Any | None: Cell value cell has a value; Otherwise, ``None``.
+        """
+        ...
+
+    @overload
+    def get_val(self, *, cell_name: str) -> Any:
+        """
+        Gets cell value.
+
+        Args:
+            cell_name (str): Name of cell such as 'B4'.
+
+        Returns:
+            Any | None: Cell value cell has a value; Otherwise, ``None``.
+        """
+        ...
+
+    @overload
+    def get_val(self, *, cell_obj: mCellObj.CellObj) -> Any:
+        """
+        Gets cell value.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            Any | None: Cell value cell has a value; Otherwise, ``None``.
+        """
+        ...
+
+    @overload
+    def get_val(self, *, col: int, row: int) -> Any:
+        """
+        Gets cell value.
+
+        Args:
+            col (int): Cell zero-based column.
+            row (int): Cell zero-base row.
+
+        Returns:
+            Any: Cell value cell has a value; Otherwise, ``None``.
+        """
+        ...
+
+    def get_val(self, **kwargs) -> Any | None:
+        """
+        Gets cell value.
+
+        Args:
+            cell (XCell): cell to get value of.
+            addr (CellAddress): Address of cell.
+            cell_name (str): Name of cell such as 'B4'.
+            cell_obj (CellObj): Cell Object.
+            col (int): Cell zero-based column.
+            row (int): Cell zero-base row.
+
+        Returns:
+            Any | None: Cell value cell has a value; Otherwise, ``None``.
+        """
+        sheet_names = {"addr", "cell_name", "cell_obj", "col"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        return mCalc.Calc.get_val(**kwargs)
+
+    # endregion get_val()
 
     def select_cells_addr(self, range_val: str | mRngObj.RangeObj) -> CellRangeAddress | None:
         """
@@ -1188,6 +1566,87 @@ class CalcSheet(SpreadsheetComp):
         return mCalcCellRange.CalcCellRange(self, result)
 
     # endregion set_cell_range_array()
+
+    # region change_style()
+    @overload
+    def change_style(self, style_name: str, cell_range: XCellRange) -> bool:
+        """
+        Changes style of a range of cells.
+
+        Args:
+            style_name (str): Name of style to apply.
+            cell_range (XCellRange): Cell range to apply style to.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def change_style(self, style_name: str, range_name: str) -> bool:
+        """
+        Changes style of a range of cells.
+
+        Args:
+            style_name (str): Name of style to apply.
+            range_name (str): Range to apply style to such as ``A1:E23``.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def change_style(self, style_name: str, range_obj: mRngObj.RangeObj) -> bool:
+        """
+        Changes style of a range of cells.
+
+        Args:
+            style_name (str): Name of style to apply.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def change_style(self, style_name: str, start_col: int, start_row: int, end_col: int, end_row: int) -> bool:
+        """
+        Changes style of a range of cells.
+
+        Args:
+            style_name (str): Name of style to apply.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
+        ...
+
+    def change_style(self, *args, **kwargs) -> bool:
+        """
+        Changes style of a range of cells.
+
+        Args:
+            style_name (str): Name of style to apply.
+            cell_range (XCellRange): Cell range to apply style to.
+            range_name (str): Range to apply style to such as ``A1:E23``.
+            range_obj (RangeObj): Range Object.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
+        return mCalc.Calc.change_style(self.component, *args, **kwargs)
+
+    # endregion change_style()
 
     # region set_row()
     @overload
@@ -2335,6 +2794,73 @@ class CalcSheet(SpreadsheetComp):
 
     # endregion find_used_range_obj()
 
+    # region find_used_range()
+    @overload
+    def find_used_range(self) -> mCalcCellRange.CalcCellRange:
+        """
+        Find used range
+
+        Returns:
+            CalcCellRange: Cell Range.
+        """
+        ...
+
+    @overload
+    def find_used_range(self, range_name: str) -> mCalcCellRange.CalcCellRange:
+        """
+        Find used range
+
+        Args:
+            range_name (str): Range Name such as 'A1:D5'
+
+        Returns:
+            CalcCellRange: Cell Range.
+        """
+        ...
+
+    @overload
+    def find_used_range(self, range_obj: mRngObj.RangeObj) -> mCalcCellRange.CalcCellRange:
+        """
+        Find used range
+
+        Args:
+            range_obj (RangeObj): Range Object
+
+        Returns:
+            CalcCellRange: Cell Range.
+        """
+        ...
+
+    @overload
+    def find_used_range(self, cr_addr: CellRangeAddress) -> mCalcCellRange.CalcCellRange:
+        """
+        Find used range
+
+        Args:
+            cr_addr (CellRangeAddress): Cell range Address
+
+        Returns:
+            CalcCellRange: Cell Range.
+        """
+        ...
+
+    def find_used_range(self, *args, **kwargs) -> mCalcCellRange.CalcCellRange:
+        """
+        Find used range
+
+        Args:
+            range_name (str): Range Name such as 'A1:D5'
+            range_obj (RangeObj): Range Object
+            cr_addr (CellRangeAddress): Cell range Address
+
+        Returns:
+            CalcCellRange: Cell Range.
+        """
+        rng = self.find_used_range_obj(*args, **kwargs)
+        return mCalcCellRange.CalcCellRange(self, rng)
+
+    # endregion find_used_range()
+
     # region is_merged_cells()
     @overload
     def is_merged_cells(self, *, cell_range: XCellRange) -> bool:
@@ -2792,6 +3318,131 @@ class CalcSheet(SpreadsheetComp):
         return mCalcCellCursor.CalcCellCursor(self, cursor)
 
     # endregion create_cursor_by_range()
+    @overload
+    def set_style_range(self, *, range_name: str, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        Args:
+            range_name (str): Range Name such as ``A1:D5``.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def set_style_range(self, *, range_obj: mRngObj.RangeObj, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def set_style_range(self, *, cell_obj: mCellObj.CellObj, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def set_style_range(self, *, cr_addr: CellRangeAddress, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell range Address.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def set_style_range(self, *, cell_range: XCellRange, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        Args:
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def set_style_range(
+        self,
+        *,
+        col_start: int,
+        row_start: int,
+        col_end: int,
+        row_end: int,
+        styles: Sequence[StyleT],
+    ) -> None:
+        """
+        Set style/formatting on cell range.
+
+        Args:
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
+        ...
+
+    def set_style_range(self, **kwargs) -> None:
+        """
+        Set style/formatting on cell range.
+
+        Args:
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cell_obj (CellObj): Cell Object.
+            cr_addr (CellRangeAddress): Cell range Address.
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+
+        See Also:
+            - :ref:`help_calc_format_style_cell`
+            - :ref:`help_calc_format_direct_cell`
+        """
+        if "cell_range" not in kwargs:
+            kwargs["sheet"] = self.component
+        mCalc.Calc.set_style_range(**kwargs)
+
+    # region set_style_range()
+
+    # endregion set_style_range()
 
     # region Properties
     @property

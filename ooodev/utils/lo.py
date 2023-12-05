@@ -1303,16 +1303,16 @@ class Lo(metaclass=StaticProperty):
     # region close_doc()
     @overload
     @classmethod
-    def close_doc(cls, doc: object) -> None:
+    def close_doc(cls, doc: Any) -> None:
         ...
 
     @overload
     @classmethod
-    def close_doc(cls, doc: object, deliver_ownership: bool) -> None:
+    def close_doc(cls, doc: Any, deliver_ownership: bool) -> None:
         ...
 
     @classmethod
-    def close_doc(cls, doc: object, deliver_ownership=False) -> None:
+    def close_doc(cls, doc: Any, deliver_ownership=False) -> None:
         """
         Closes document.
 
@@ -2006,6 +2006,16 @@ class Lo(metaclass=StaticProperty):
         """
         # pylint: disable=protected-access
         return cls._lo_inst._opt
+
+    @classproperty
+    def current_lo(cls) -> lo_inst.LoInst:
+        """
+        Get the current Lo instance
+
+        Returns:
+            LoInst: Lo Instance
+        """
+        return cls._lo_inst
 
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument

@@ -719,7 +719,7 @@ class LoInst:
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        fnm = cargs.event_data["fnm"]
+        fnm = cast("PathOrStr", cargs.event_data["fnm"])
 
         if fnm is None:
             raise Exception("Filename is null")
@@ -981,9 +981,9 @@ class LoInst:
             "format": format,
         }
 
-        fnm = cargs.event_data["fnm"]
-        password = cargs.event_data["password"]
-        format = cargs.event_data["format"]
+        fnm = cast("PathOrStr", cargs.event_data["fnm"])
+        password = cast(str, cargs.event_data["password"])
+        format = cast(str, cargs.event_data["format"])
 
         self._events.trigger(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
@@ -1170,7 +1170,7 @@ class LoInst:
         self._events.trigger(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
             return False
-        pth = mFileIO.FileIO.get_absolute_path(cargs.event_data["fnm"])
+        pth = mFileIO.FileIO.get_absolute_path(cast("PathOrStr", cargs.event_data["fnm"]))
         fmt = str(cargs.event_data["format"])
         self.print(f"Saving the document in '{pth}'")
         self.print(f"Using format {fmt}")
@@ -1219,14 +1219,14 @@ class LoInst:
 
     # region close_doc()
     @overload
-    def close_doc(self, doc: object) -> None:
+    def close_doc(self, doc: Any) -> None:
         ...
 
     @overload
-    def close_doc(self, doc: object, deliver_ownership: bool) -> None:
+    def close_doc(self, doc: Any, deliver_ownership: bool) -> None:
         ...
 
-    def close_doc(self, doc: object, deliver_ownership=False) -> None:
+    def close_doc(self, doc: Any, deliver_ownership=False) -> None:
         # sourcery skip: raise-specific-error
         if self._disposed:
             self._doc = None

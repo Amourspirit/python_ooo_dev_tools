@@ -73,7 +73,15 @@ Class Lo
         Get the current Bride connection
 
         :rtype: LoBridgeCommon
-    
+
+    .. py:property:: Lo.current_lo
+
+        Static read-only property
+
+        Get the current Lo instance
+
+        :rtype: LoInst
+
     .. py:property:: Lo.loader_current
 
         Static read-only property

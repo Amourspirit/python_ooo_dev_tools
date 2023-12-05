@@ -2638,45 +2638,45 @@ class Calc:
 
     @overload
     @classmethod
-    def get_val(cls, cell: XCell) -> object | None:
+    def get_val(cls, cell: XCell) -> Any:
         ...
 
     @overload
     @classmethod
-    def get_val(cls, sheet: XSpreadsheet, addr: CellAddress) -> object | None:
+    def get_val(cls, sheet: XSpreadsheet, addr: CellAddress) -> Any:
         ...
 
     @overload
     @classmethod
-    def get_val(cls, sheet: XSpreadsheet, cell_name: str) -> object | None:
+    def get_val(cls, sheet: XSpreadsheet, cell_name: str) -> Any:
         ...
 
     @overload
     @classmethod
-    def get_val(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> object | None:
+    def get_val(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> Any:
         ...
 
     @overload
     @classmethod
-    def get_val(cls, sheet: XSpreadsheet, col: int, row: int) -> object | None:
+    def get_val(cls, sheet: XSpreadsheet, col: int, row: int) -> Any:
         ...
 
     @classmethod
-    def get_val(cls, *args, **kwargs) -> Any | None:
+    def get_val(cls, *args, **kwargs) -> Any:
         """
-        Gets cell value
+        Gets cell value.
 
         Args:
-            cell (XCell): cell to get value of
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Address of cell
-            cell_name (str): Name of cell such as 'B4'
-            cell_obj (CellObj): Cell Object
-            col (int): Cell zero-based column
-            row (int): Cell zero-base row
+            cell (XCell): cell to get value of.
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Address of cell.
+            cell_name (str): Name of cell such as 'B4'.
+            cell_obj (CellObj): Cell Object.
+            col (int): Cell zero-based column.
+            row (int): Cell zero-base row.
 
         Returns:
-            Any | None: Cell value cell has a value; Otherwise, None
+            Any: Cell value cell has a value; Otherwise, ``None``.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -2764,15 +2764,15 @@ class Calc:
     @classmethod
     def get_num(cls, *args, **kwargs) -> float:
         """
-        Get cell value a float
+        Get cell value a float.
 
         Args:
-            cell (XCell): Cell to get value of
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Cell name such as 'B4'
-            cell_obj (CellObj): Cell Object
-            addr (CellAddress): Cell Address
-            col (int): Cell zero-base column number
+            cell (XCell): Cell to get value of.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell name such as 'B4'.
+            cell_obj (CellObj): Cell Object.
+            addr (CellAddress): Cell Address.
+            col (int): Cell zero-base column number.
             row (int): Cell zero-base row number.
 
         Returns:
@@ -4007,16 +4007,16 @@ class Calc:
     @classmethod
     def get_col(cls, *args, **kwargs) -> List[Any]:
         """
-        Gets a column of data from spreadsheet
+        Gets a column of data from spreadsheet.
 
         Args:
             cell_range (XCellRange): Cell range to get column data from.
-            sheet (XSpreadsheet): Spreadsheet
-            col_name (str): column name such as `A`
-            col_idx (int): Zero base column index such as `0` for column `A`
-            range_name (str): Range such as 'A1:A12'
-            range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
+            sheet (XSpreadsheet): Spreadsheet.
+            col_name (str): column name such as ``A``.
+            col_idx (int): Zero base column index such as `0` for column ``A``.
+            range_name (str): Range such as ``A1:A12``.
+            range_obj (RangeObj): Range Object.
+            cell_obj (CellObj): Cell Object.
 
         Returns:
             List[Any]: 1-Dimensional List.
@@ -5388,23 +5388,23 @@ class Calc:
     @classmethod
     def get_address(cls, *args, **kwargs) -> CellRangeAddress:
         """
-        Gets Range Address
+        Gets Range Address.
 
         Args:
-            cell_range (XCellRange): Cell Range
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range name such as 'A1:D7'
-            range_obj (RangeObj): Range Object
-            start_col (int): Zero-base start column index
-            start_row (int): Zero-base start row index
-            end_col (int): Zero-base end column index
-            end_row (int): Zero-base end row index
+            cell_range (XCellRange): Cell Range.
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range name such as 'A1:D7'.
+            range_obj (RangeObj): Range Object.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
 
         Raises:
-            MissingInterfaceError: if unable to obtain interface
+            MissingInterfaceError: if unable to obtain interface.
 
         Returns:
-            CellRangeAddress: Cell Range Address
+            CellRangeAddress: Cell Range Address.
         """
         ordered_keys = (1, 2, 3, 4, 5)
         kargs_len = len(kwargs)
@@ -6655,21 +6655,21 @@ class Calc:
     @classmethod
     def change_style(cls, *args, **kwargs) -> bool:
         """
-        Changes style of a range of cells
+        Changes style of a range of cells.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            style_name (str): Name of style to apply
-            cell_range (XCellRange): Cell range to apply style to
-            range_name (str): Range to apply style to such as ``A1:E23``
-            range_obj (RangeObj): Range Object
-            start_col (int): Zero-base start column index
-            start_row (int): Zero-base start row index
-            end_col (int): Zero-base end column index
-            end_row (int): Zero-base end row index
+            sheet (XSpreadsheet): Spreadsheet.
+            style_name (str): Name of style to apply.
+            cell_range (XCellRange): Cell range to apply style to.
+            range_name (str): Range to apply style to such as ``A1:E23``.
+            range_obj (RangeObj): Range Object.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
 
         Returns:
-            bool: True if style has been changed; Otherwise, False
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
         """
         ordered_keys = (1, 2, 3, 4, 5, 6)
         kargs_len = len(kwargs)
@@ -8205,19 +8205,19 @@ class Calc:
     @classmethod
     def set_style_range(cls, *args, **kwargs) -> None:
         """
-        Set style/formatting on cell range
+        Set style/formatting on cell range.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as ``A1:D5``
-            range_obj (RangeObj): Range Object
-            cell_obj (CellObj): Cell Object
-            cr_addr (CellRangeAddress): Cell range Address
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cell_obj (CellObj): Cell Object.
+            cr_addr (CellRangeAddress): Cell range Address.
             cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
-            col_start (int): Start Column
-            row_start (int): Start Row
-            col_end (int): End Column
-            row_end (int): End Row
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
 
         Returns:

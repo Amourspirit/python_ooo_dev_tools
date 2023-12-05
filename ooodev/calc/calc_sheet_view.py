@@ -11,12 +11,15 @@ from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
 from ooodev.adapter.sheet.spreadsheet_view_comp import SpreadsheetViewComp
+from ooodev.utils.inst.lo.partial.qi_partial import QiPartial
+from ooodev.utils import lo as mLo
 
 
-class CalcSheetView(SpreadsheetViewComp):
+class CalcSheetView(SpreadsheetViewComp, QiPartial):
     def __init__(self, owner: CalcDoc, view: XSpreadsheetView) -> None:
-        super().__init__(view)  # type: ignore
         self.__owner = owner
+        SpreadsheetViewComp.__init__(self, view)  # type: ignore
+        QiPartial.__init__(self, component=view, lo_inst=mLo.Lo.current_lo)
 
     @overload
     def select(self, selection: mCalcCellRange.CalcCellRange) -> bool:

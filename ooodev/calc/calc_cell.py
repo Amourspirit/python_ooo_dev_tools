@@ -16,15 +16,19 @@ from ooodev.units import UnitT
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.type_var import Row, Table
 from ooodev.office import calc as mCalc
+from ooodev.utils.inst.lo.partial.qi_partial import QiPartial
+from ooodev.utils import lo as mLo
 from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
 
 
-class CalcCell(SheetCellComp):
+class CalcCell(SheetCellComp, QiPartial):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj) -> None:
         self.__owner = owner
         self.__cell_obj = mCellObj.CellObj.from_cell(cell)
-        sheet_cell = mCalc.Calc.get_cell(sheet=self.calc_sheet.component, cell_obj=self.__cell_obj)
-        super().__init__(sheet_cell)  # type: ignore
+        # don't use owner.get_cell() here because it will be recursive.
+        sheet_cell = mCalc.Calc.get_cell(sheet=owner.component, cell_obj=self.__cell_obj)
+        SheetCellComp.__init__(self, sheet_cell)  # type: ignore
+        QiPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
@@ -159,6 +163,15 @@ class CalcCell(SheetCellComp):
             str: Cell value as string.
         """
         return mCalc.Calc.get_string(cell=self.component)
+
+    def get_cell_str(self) -> str:
+        """
+        Gets the cell as a string in format of ``A1``
+
+        Returns:
+            str: Cell as str
+        """
+        return str(self.__cell_obj)
 
     def get_type_enum(self) -> mCalc.Calc.CellTypeEnum:
         """

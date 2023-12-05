@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Sequence, TYPE_CHECKING
+from typing import Any, List, Sequence, TYPE_CHECKING
 import uno
 
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from .calc_sheet import CalcSheet
     from ooodev.utils.data_type.range_obj import RangeObj
-    from ooodev.utils.type_var import Table, TupleArray, FloatTable
+    from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row
     from ooodev.utils.data_type.size import Size
     from . import calc_cell_cursor as mCalcCellCursor
 else:
@@ -17,10 +17,12 @@ else:
 from ooodev.proto.style_obj import StyleT
 from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
+from ooodev.utils.inst.lo.partial.qi_partial import QiPartial
+from ooodev.utils import lo as mLo
 from . import calc_cell as mCalcCell
 
 
-class CalcCellRange(SheetCellRangeComp):
+class CalcCellRange(SheetCellRangeComp, QiPartial):
     """Represents a calc cell range."""
 
     def __init__(self, owner: CalcSheet, rng: Any) -> None:
@@ -34,7 +36,22 @@ class CalcCellRange(SheetCellRangeComp):
         self.__owner = owner
         self.__range_obj = mCalc.Calc.get_range_obj(rng)
         cell_range = mCalc.Calc.get_cell_range(sheet=self.calc_sheet.component, range_obj=self.__range_obj)
-        super().__init__(cell_range)  # type: ignore
+        SheetCellRangeComp.__init__(self, cell_range)  # type: ignore
+        QiPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)
+        # self.__doc = doc
+
+    def change_style(self, style_name: str) -> bool:
+        """
+        Changes style of a range of cells.
+
+        Args:
+            style_name (str): Name of style to apply.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
+        return self.calc_sheet.change_style(style_name=style_name, range_obj=self.__range_obj)
 
     def clear_cells(self, cell_flags: CellFlagsEnum | None = None) -> bool:
         """
@@ -95,6 +112,30 @@ class CalcCellRange(SheetCellRangeComp):
             sheet=self.calc_sheet.component, range_obj=self.__range_obj, is_shift_left=is_shift_left
         )
 
+    def get_col(self) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
+        return self.calc_sheet.get_col(range_obj=self.__range_obj)
+
+    def get_row(self) -> Row:
+        """
+        Gets a row of data from spreadsheet
+
+        Args:
+            range_obj (RangeObj): Range Object
+
+        Returns:
+            Row: 1-Dimensional List of values on success; Otherwise, None
+        """
+        return self.calc_sheet.get_row(range_obj=self.__range_obj)
+
     def get_cell_range_address(self) -> CellRangeAddress:
         """
         Gets the cell range address for the current range.
@@ -112,6 +153,18 @@ class CalcCellRange(SheetCellRangeComp):
             ~ooodev.utils.data_type.size.Size: Size, Width is number of Columns and Height is number of Rows
         """
         return mCalc.Calc.get_range_size(range_obj=self.__range_obj)
+
+    def get_range_str(self) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``
+
+        If ``sheet`` is included the format ``Sheet1.A1:B2`` is returned; Otherwise,
+        ``A1:B2`` format is returned.
+
+        Returns:
+            str: range as string
+        """
+        return str(self.__range_obj)
 
     def is_single_cell_range(self) -> bool:
         """
@@ -268,6 +321,15 @@ class CalcCellRange(SheetCellRangeComp):
         cell_obj = self.range_obj.start
         cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj)
         cell.set_val(value=value)
+
+    def get_address(self) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
+        return self.calc_sheet.get_address(range_obj=self.__range_obj)
 
     def get_array(self) -> TupleArray:
         """
