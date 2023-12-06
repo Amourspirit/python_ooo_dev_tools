@@ -65,7 +65,6 @@ from ..events.args.key_val_args import KeyValArgs
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.event_singleton import _Events
 from ..events.gbl_named_event import GblNamedEvent
-from ..events.lo_named_event import LoNamedEvent
 from ..events.write_named_event import WriteNamedEvent
 from ..exceptions import ex as mEx
 from ..meta.static_meta import classproperty
@@ -89,7 +88,6 @@ if TYPE_CHECKING:
     # from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
-    from com.sun.star.drawing import FillProperties
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XFrame
@@ -253,7 +251,7 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        fnm = cargs.event_data["fnm"]
+        fnm = cast("PathOrStr", cargs.event_data["fnm"])
         if fnm:
             doc = mLo.Lo.open_doc(fnm=fnm) if loader is None else mLo.Lo.open_doc(fnm=fnm, loader=loader)
         elif loader is None:
@@ -362,7 +360,7 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing ``loader``.
+            Event args ``event_data`` is a dictionary containing ``loader``.
 
         Attention:
             :py:meth:`Lo.create_doc <.utils.lo.Lo.create_doc>` method is called along with any of its events.
@@ -372,13 +370,12 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        doc = mLo.Lo.qi(
-            XTextDocument,
-            mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=cargs.event_data["loader"]),
-            True,
-        )
+        if loader:
+            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
+        else:
+            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
         _Events().trigger(WriteNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
-        return doc
+        return mLo.Lo.qi(XTextDocument, doc, True)
 
     # endregion create_doc()
 
@@ -428,21 +425,20 @@ class Write(mSel.Selection):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        template_path = cargs.event_data["template_path"]
+        template_path = cast("PathOrStr", cargs.event_data["template_path"])
         _Events().trigger(WriteNamedEvent.DOC_TMPL_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        doc = mLo.Lo.qi(
-            XTextDocument,
-            mLo.Lo.create_doc_from_template(template_path=template_path, loader=cargs.event_data["loader"]),
-            True,
-        )
+        if loader:
+            doc = mLo.Lo.create_doc_from_template(template_path=template_path, loader=loader)
+        else:
+            doc = mLo.Lo.create_doc_from_template(template_path=template_path)
 
         eargs = EventArgs.from_args(cargs)
         _Events().trigger(WriteNamedEvent.DOC_CREATED, eargs)
         _Events().trigger(WriteNamedEvent.DOC_TMPL_CREATED, eargs)
-        return doc
+        return mLo.Lo.qi(XTextDocument, doc, True)
 
     # endregion create_doc_from_template()
 
@@ -533,7 +529,7 @@ class Write(mSel.Selection):
 
         if cargs.cancel:
             return False
-        fnm = cargs.event_data["fnm"]
+        fnm = cast("PathOrStr", cargs.event_data["fnm"])
 
         doc = mLo.Lo.qi(XComponent, text_doc, True)
         result = mLo.Lo.save_doc(doc=doc, fnm=fnm)
@@ -595,8 +591,8 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        fnm = cargs.event_data["fnm"]
-        template_path = cargs.event_data["template_path"]
+        fnm = cast("PathOrStr", cargs.event_data["fnm"])
+        template_path = cast("PathOrStr", cargs.event_data["template_path"])
         if fnm is None:
             raise ValueError("Filename is null")
         pth = mFileIO.FileIO.get_absolute_path(fnm)
@@ -2369,7 +2365,7 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.FORMULA_ADDING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
-        formula = cargs.event_data["formula"]
+        formula = cast(str, cargs.event_data["formula"])
         embed_content = mLo.Lo.create_instance_msf(
             XTextContent, "com.sun.star.text.TextEmbeddedObject", raise_err=True
         )
@@ -2435,8 +2431,8 @@ class Write(mSel.Selection):
         if cargs.cancel:
             return False
 
-        label = cargs.event_data["label"]
-        url_str = cargs.event_data["url_str"]
+        label = cast(str, cargs.event_data["label"])
+        url_str = cast(str, cargs.event_data["url_str"])
 
         try:
             link = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextField.URL")
@@ -2482,7 +2478,7 @@ class Write(mSel.Selection):
         if cargs.cancel:
             return False
 
-        name = cargs.event_data["name"]
+        name = cast(str, cargs.event_data["name"])
 
         bmk_content = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.Bookmark")
         if bmk_content is None:
@@ -2613,12 +2609,12 @@ class Write(mSel.Selection):
             raise mEx.CancelEventError(cargs)
 
         arg_ypos = cast(Union[int, UnitT], cargs.event_data["ypos"])
-        text = cargs.event_data["text"]
+        text = cast(str, cargs.event_data["text"])
         arg_width = cast(Union[int, UnitT], cargs.event_data["width"])
         arg_height = cast(Union[int, UnitT], cargs.event_data["height"])
-        page_num = cargs.event_data["page_num"]
-        border_color = cargs.event_data["border_color"]
-        background_color = cargs.event_data["background_color"]
+        page_num = cast(int, cargs.event_data["page_num"])
+        border_color = cast(Union[Color, None], cargs.event_data["border_color"])
+        background_color = cast(Union[Color, None], cargs.event_data["background_color"])
 
         try:
             ypos = arg_ypos.get_value_mm100()  # type: ignore
@@ -2813,11 +2809,11 @@ class Write(mSel.Selection):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        header_bg_color = cargs.event_data["header_bg_color"]
-        header_fg_color = cargs.event_data["header_fg_color"]
-        tbl_bg_color = cargs.event_data["tbl_bg_color"]
-        tbl_fg_color = cargs.event_data["tbl_fg_color"]
-        first_row_header = cargs.event_data["first_row_header"]
+        header_bg_color = cast(Union[Color, None], cargs.event_data["header_bg_color"])
+        header_fg_color = cast(Union[Color, None], cargs.event_data["header_fg_color"])
+        tbl_bg_color = cast(Union[Color, None], cargs.event_data["tbl_bg_color"])
+        tbl_fg_color = cast(Union[Color, None], cargs.event_data["tbl_fg_color"])
+        first_row_header = cast(bool, cargs.event_data["first_row_header"])
 
         def make_cell_name(row: int, col: int) -> str:
             return TableHelper.make_cell_name(row=row + 1, col=col + 1)
@@ -3058,9 +3054,9 @@ class Write(mSel.Selection):
         if cargs.cancel:
             return
 
-        fnm = cargs.event_data["fnm"]
-        width = cargs.event_data["width"]
-        height = cargs.event_data["height"]
+        fnm = cast("PathOrStr", cargs.event_data["fnm"])
+        width = cast(Union[int, UnitT], cargs.event_data["width"])
+        height = cast(Union[int, UnitT], cargs.event_data["height"])
 
         tgo = mLo.Lo.create_instance_msf(XTextContent, "com.sun.star.text.TextGraphicObject", raise_err=True)
         props = mLo.Lo.qi(XPropertySet, tgo, True)
@@ -3183,9 +3179,9 @@ class Write(mSel.Selection):
         if cargs.cancel:
             return
 
-        fnm = cargs.event_data["fnm"]
-        width = cargs.event_data["width"]
-        height = cargs.event_data["height"]
+        fnm = cast("PathOrStr", cargs.event_data["fnm"])
+        width = cast(Union[int, UnitT], cargs.event_data["width"])
+        height = cast(Union[int, UnitT], cargs.event_data["height"])
 
         pth = mFileIO.FileIO.get_absolute_path(fnm)
 
@@ -3600,8 +3596,8 @@ class Write(mSel.Selection):
         _Events().trigger(WriteNamedEvent.CONFIGURED_SERVICES_SETTING, cargs)
         if cargs.cancel:
             return False
-        service = cargs.event_data["service"]
-        impl_name = cargs.event_data["impl_name"]
+        service = cast(str, cargs.event_data["service"])
+        impl_name = cast(str, cargs.event_data["impl_name"])
         if loc is None:
             loc = Locale("en", "US", "")
         impl_names = (impl_name,)
