@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 from .generic_text_document_comp import GenericTextDocumentComp
 
 
@@ -19,15 +19,15 @@ class WebDocumentComp(GenericTextDocumentComp):
         Constructor
 
         Args:
-            component (WebDocument): UNO Sheet Cell Cursor Component
+            component (WebDocument): UNO Component that support ``com.sun.star.text.WebDocument`` service.
         """
 
         super().__init__(component)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.sheet.WebDocument",)
+        return ("com.sun.star.text.WebDocument",)
 
     # endregion Overrides
     # region Properties
@@ -35,7 +35,7 @@ class WebDocumentComp(GenericTextDocumentComp):
 
         @property
         def component(self) -> WebDocument:
-            """Sheet Cell Cursor Component"""
-            return cast("WebDocument", self._get_component())
+            """WebDocument Component"""
+            return cast("WebDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

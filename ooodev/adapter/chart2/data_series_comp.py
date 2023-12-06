@@ -25,13 +25,13 @@ class DataSeriesComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImp
             component (DataSeries): UNO Chart2 DataSeries Component.
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.chart2.DataSeries",)
 
@@ -40,6 +40,6 @@ class DataSeriesComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImp
     @property
     def component(self) -> DataSeries:
         """DataSeries Component"""
-        return cast("DataSeries", self._get_component())
+        return cast("DataSeries", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

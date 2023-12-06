@@ -24,7 +24,7 @@ class MeasurePropertiesComp(ComponentBase):
         ComponentBase.__init__(self, component)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.MeasureProperties",)
 
@@ -33,6 +33,6 @@ class MeasurePropertiesComp(ComponentBase):
     @property
     def component(self) -> MeasureProperties:
         """MeasureProperties Component"""
-        return cast("MeasureProperties", self._get_component())
+        return cast("MeasureProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -30,7 +30,6 @@ from ooodev.events.event_singleton import _Events
 from ooodev.office import calc as mCalc
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
-from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -41,7 +40,15 @@ from . import calc_sheet_view as mCalcSheetView
 
 
 class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
+    """Defines a Calc Document"""
+
     def __init__(self, doc: XSpreadsheetDocument) -> None:
+        """
+        Constructor
+
+        Args:
+            doc (XSpreadsheetDocument): UNO object the supports ``com.sun.star.sheet.SpreadsheetDocument`` service.
+        """
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)

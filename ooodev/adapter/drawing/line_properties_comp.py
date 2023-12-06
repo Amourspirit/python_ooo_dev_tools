@@ -24,7 +24,7 @@ class LinePropertiesComp(ComponentBase):
         ComponentBase.__init__(self, component)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.LineProperties",)
 
@@ -33,6 +33,6 @@ class LinePropertiesComp(ComponentBase):
     @property
     def component(self) -> LineProperties:
         """LineProperties Component"""
-        return cast("LineProperties", self._get_component())
+        return cast("LineProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

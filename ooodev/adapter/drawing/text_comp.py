@@ -30,7 +30,7 @@ class TextComp(ComponentBase):
         ComponentBase.__init__(self, component)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.Text",)
 
@@ -39,7 +39,7 @@ class TextComp(ComponentBase):
     @property
     def component(self) -> Text:
         """Text Component"""
-        return cast("Text", self._get_component())
+        return cast("Text", self._ComponentBase__get_component())  # type: ignore
 
     @property
     def character_properties(self) -> CharacterPropertiesComp:

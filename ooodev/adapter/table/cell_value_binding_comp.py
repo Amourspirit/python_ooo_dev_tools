@@ -26,7 +26,7 @@ class CellValueBindingComp(ComponentBase, ModifyEvents, PropertyChangeImplement,
             component (CellValueBinding): UNO table CellValueBinding Component.
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_add_remove)
@@ -46,7 +46,7 @@ class CellValueBindingComp(ComponentBase, ModifyEvents, PropertyChangeImplement,
     # endregion Lazy Listeners
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.table.CellValueBinding",)
 
@@ -55,6 +55,6 @@ class CellValueBindingComp(ComponentBase, ModifyEvents, PropertyChangeImplement,
     @property
     def component(self) -> CellValueBinding:
         """CellValueBinding Component"""
-        return cast("CellValueBinding", self._get_component())
+        return cast("CellValueBinding", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

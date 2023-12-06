@@ -26,7 +26,7 @@ class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, Print
             component (OfficeDocument): UNO OfficeDocument Component
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
@@ -50,7 +50,7 @@ class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, Print
     # endregion Lazy Listeners
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.document.OfficeDocument",)
 
@@ -59,6 +59,6 @@ class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, Print
     @property
     def component(self) -> OfficeDocument:
         """Sheet Cell Component"""
-        return cast("OfficeDocument", self._get_component())
+        return cast("OfficeDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

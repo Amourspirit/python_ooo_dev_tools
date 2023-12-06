@@ -2906,17 +2906,17 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> XTextContent | None:
+    def add_image_link(cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr) -> XTextContent:
         """
-        Add Image Link
+        Add Image Link.
 
         Args:
-            doc (XTextDocument): Text Document
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            doc (XTextDocument): Text Document.
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
 
         Returns:
-            XTextContent: Image Link on success; Otherwise, ``None``
+            XTextContent: Image Link on success; Otherwise, ``None``.
         """
         ...
 
@@ -2925,19 +2925,19 @@ class Write(mSel.Selection):
     @classmethod
     def add_image_link(
         cls, doc: XTextDocument, cursor: XTextCursor, fnm: PathOrStr, *, width: int | UnitT, height: int | UnitT
-    ) -> XTextContent | None:
+    ) -> XTextContent:
         """
-        Add Image Link
+        Add Image Link.
 
         Args:
-            doc (XTextDocument): Text Document
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            doc (XTextDocument): Text Document.
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
             width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
             height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
 
         Returns:
-            XTextContent: Image Link on success; Otherwise, ``None``
+            XTextContent: Image Link on success; Otherwise, ``None``.
         """
 
     @overload
@@ -2949,18 +2949,18 @@ class Write(mSel.Selection):
         fnm: PathOrStr,
         *,
         styles: Sequence[StyleT],
-    ) -> XTextContent | None:
+    ) -> XTextContent:
         """
-        Add Image Link
+        Add Image Link.
 
         Args:
-            doc (XTextDocument): Text Document
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            doc (XTextDocument): Text Document.
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
             styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
-            XTextContent: Image Link on success; Otherwise, ``None``
+            XTextContent: Image Link on success; Otherwise, ``None``.
         """
         ...
 
@@ -2975,20 +2975,20 @@ class Write(mSel.Selection):
         width: int | UnitT,
         height: int | UnitT,
         styles: Sequence[StyleT],
-    ) -> XTextContent | None:
+    ) -> XTextContent:
         """
-        Add Image Link
+        Add Image Link.
 
         Args:
-            doc (XTextDocument): Text Document
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            doc (XTextDocument): Text Document.
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
             width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
             height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
             styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Returns:
-            XTextContent: Image Link on success; Otherwise, ``None``
+            XTextContent: Image Link on success; Otherwise, ``None``.
         """
         ...
 
@@ -3002,25 +3002,26 @@ class Write(mSel.Selection):
         width: int | UnitT = 0,
         height: int | UnitT = 0,
         styles: Sequence[StyleT] | None = None,
-    ) -> XTextContent | None:
+    ) -> XTextContent:
         """
-        Add Image Link
+        Add Image Link.
 
         Args:
-            doc (XTextDocument): Text Document
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            doc (XTextDocument): Text Document.
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
             width (int, UnitT): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
             height (int, UnitT): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
             styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextGraphicObject`` service are applied.
 
         Raises:
-            CreateInstanceMsfError: If Unable to create text.TextGraphicObject
-            MissingInterfaceError: If unable to obtain XPropertySet interface
-            Exception: If unable to add image
+            CreateInstanceMsfError: If Unable to create text.TextGraphicObject.
+            MissingInterfaceError: If unable to obtain XPropertySet interface.
+            Exception: If unable to add image.
+            CancelEventError: If ``IMAGE_LINK_ADDING`` event is canceled.
 
         Returns:
-            XTextContent: Image Link on success; Otherwise, ``None``
+            XTextContent: Image Link on success; Otherwise, ``None``.
 
         :events:
             .. cssclass:: lo_event
@@ -3036,7 +3037,10 @@ class Write(mSel.Selection):
         Note:
             Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
 
-        .. versionchanged:: 0.9.0
+        .. versionchanged:: 0.16.0
+            Raises CancelEventError if event is canceled.
+
+        .. versionchanged:: 0..0
             Return image shape instead of boolean.
         """
         # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
@@ -3052,7 +3056,7 @@ class Write(mSel.Selection):
         }
         _Events().trigger(WriteNamedEvent.IMAGE_LINK_ADDING, cargs)
         if cargs.cancel:
-            return
+            raise mEx.CancelEventError(cargs)
 
         fnm = cast("PathOrStr", cargs.event_data["fnm"])
         width = cast(Union[int, UnitT], cargs.event_data["width"])
@@ -3101,59 +3105,58 @@ class Write(mSel.Selection):
     # region    add_image_shape()
     @overload
     @classmethod
-    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr) -> XShape | None:
+    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr) -> XShape:
         """
-        Add Image Shape
+        Add Image Shape.
 
         Args:
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
 
         Returns:
-            XShape: Image Shape on success; Otherwise, ``None``
+            XShape: Image Shape on success; Otherwise, ``None``.
         """
         ...
 
     @overload
     @classmethod
-    def add_image_shape(
-        cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT, height: int | UnitT
-    ) -> XShape | None:
+    def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT, height: int | UnitT) -> XShape:
         """
-        Add Image Shape
+        Add Image Shape.
 
         Args:
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
             width (int, UnitT): Width in ``1/100th mm`` or ``UnitT``.
             height (int, UnitT): Height in ``1/100th mm`` or ``UnitT``.
 
         Returns:
-            XShape: Image Shape on success; Otherwise, ``None``
+            XShape: Image Shape on success; Otherwise, ``None``.
         """
         ...
 
     @classmethod
     def add_image_shape(
         cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT = 0, height: int | UnitT = 0
-    ) -> XShape | None:
+    ) -> XShape:
         """
-        Add Image Shape
+        Add Image Shape.
 
         Args:
-            cursor (XTextCursor): Text Cursor
-            fnm (PathOrStr): Image path
+            cursor (XTextCursor): Text Cursor.
+            fnm (PathOrStr): Image path.
             width (int, UnitT): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
             height (int, UnitT): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
 
         Raises:
-            CreateInstanceMsfError: If unable to create drawing.GraphicObjectShape
-            ValueError: If unable to get image
+            CreateInstanceMsfError: If unable to create drawing.GraphicObjectShape.
+            ValueError: If unable to get image.
             MissingInterfaceError: If require interface cannot be obtained.
-            Exception: If unable to add image shape
+            Exception: If unable to add image shape.
+            CancelEventError: if ``IMAGE_SHAPE_ADDING`` event is canceled.
 
         Returns:
-            XShape: Image Shape on success; Otherwise, ``None``
+            XShape: Image Shape on success; Otherwise, ``None``.
 
         :events:
             .. cssclass:: lo_event
@@ -3163,6 +3166,9 @@ class Write(mSel.Selection):
 
         Note:
             Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
+
+        .. versionchanged:: 0.16.0
+            Raises CancelEventError if event is canceled.
 
         .. versionchanged:: 0.9.0
             Return image shape instead of boolean.
@@ -3177,7 +3183,7 @@ class Write(mSel.Selection):
         }
         _Events().trigger(WriteNamedEvent.IMAGE_SHAPE_ADDING, cargs)
         if cargs.cancel:
-            return
+            raise mEx.CancelEventError(cargs)
 
         fnm = cast("PathOrStr", cargs.event_data["fnm"])
         width = cast(Union[int, UnitT], cargs.event_data["width"])

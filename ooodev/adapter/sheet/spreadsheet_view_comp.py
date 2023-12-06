@@ -40,7 +40,7 @@ class SpreadsheetViewComp(
             component (SpreadsheetView): UNO Spreadsheet View Component
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ActivationEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_activation_events_add_remove)
         EnhancedMouseClickEvents.__init__(self, trigger_args=generic_args, cb=self._on_enhanced_mouse_click_add_remove)
         KeyEvents.__init__(self, trigger_args=generic_args, cb=self._on_key_add_remove_add_remove)
@@ -86,7 +86,7 @@ class SpreadsheetViewComp(
     # endregion Lazy Listeners
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.SpreadsheetView",)
 
@@ -96,6 +96,6 @@ class SpreadsheetViewComp(
     @property
     def component(self) -> SpreadsheetView:
         """Spreadsheet View Component"""
-        return cast("SpreadsheetView", self._get_component())
+        return cast("SpreadsheetView", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

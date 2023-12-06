@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, TYPE_CHECKING, Any, overload
+from typing import Tuple, TYPE_CHECKING, Any
 from ..format.inner.kind.format_kind import FormatKind as FormatKind
 
 if TYPE_CHECKING:

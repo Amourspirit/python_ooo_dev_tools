@@ -38,7 +38,7 @@ class GenericTextDocumentComp(
         """
 
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
@@ -71,7 +71,7 @@ class GenericTextDocumentComp(
     # endregion Lazy Listeners
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.GenericTextDocument",)
 
@@ -80,6 +80,6 @@ class GenericTextDocumentComp(
     @property
     def component(self) -> GenericTextDocument:
         """Sheet Cell Cursor Component"""
-        return cast("GenericTextDocument", self._get_component())
+        return cast("GenericTextDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties
