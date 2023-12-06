@@ -5287,22 +5287,22 @@ class Calc:
     @classmethod
     def get_cell_address(cls, *args, **kwargs) -> CellAddress:
         """
-        Gets Cell Address
+        Gets Cell Address.
 
         Args:
-            cell (XCell): Cell
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Cell name such as 'A1'
-            cell_obj (CellObj): Cell object
-            addr (CellAddress): Cell Address
-            col (int): Zero-base column index
-            row (int): Zero-base row index
+            cell (XCell): Cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell name such as ``A1``.
+            cell_obj (CellObj): Cell object.
+            addr (CellAddress): Cell Address.
+            col (int): Zero-base column index.
+            row (int): Zero-base row index.
 
         Raises:
-            MissingInterfaceError: if unable to obtain interface
+            MissingInterfaceError: if unable to obtain interface.
 
         Returns:
-            CellAddress: Cell Address
+            CellAddress: Cell Address.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -7596,7 +7596,7 @@ class Calc:
         return 0.0
 
     @staticmethod
-    def call_fun(func_name: str, *args: Any) -> object:
+    def call_fun(func_name: str, *args: Any) -> Any:
         """
         Execute a Calc function by its (English) name and based on the given arguments
 
@@ -7607,7 +7607,7 @@ class Calc:
                 or a sequence of sequences ( tuples or list ) combining those types.
 
         Returns:
-            object: The (string or numeric) value or the array of arrays returned by the call to the function
+            Any: The (string or numeric) value or the array of arrays returned by the call to the function
                 When the arguments contain arrays, the function is executed as an array function
                 Wrong arguments generate an error
         """
@@ -7623,6 +7623,12 @@ class Calc:
 
     @staticmethod
     def get_function_names() -> List[str] | None:
+        """
+        Get a list of all function names
+
+        Returns:
+            List[str] | None: List of function names if found; Otherwise, ``None``
+        """
         func_desc = mLo.Lo.create_instance_mcf(XFunctionDescriptions, "com.sun.star.sheet.FunctionDescriptions")
         if func_desc is None:
             mLo.Lo.print("No function descriptions were found")
@@ -7691,13 +7697,13 @@ class Calc:
     @classmethod
     def find_function(cls, func_nm: str) -> Tuple[PropertyValue] | None:
         """
-        Finds a function
+        Finds a function.
 
         Args:
-            func_nm (str): function name
+            func_nm (str): function name.
 
         Returns:
-            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, None
+            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, ``None``.
         """
         ...
 
@@ -7705,27 +7711,27 @@ class Calc:
     @classmethod
     def find_function(cls, idx: int) -> Tuple[PropertyValue] | None:
         """
-        Finds a function
+        Finds a function.
 
         Args:
-            idx (int): Index of function
+            idx (int): Index of function.
 
         Returns:
-            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, None
+            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, ``None``.
         """
         ...
 
     @classmethod
     def find_function(cls, *args, **kwargs) -> Tuple[PropertyValue, ...] | None:
         """
-        Finds a function
+        Finds a function.
 
         Args:
-            func_nm (str): function name
-            idx (int): Index of function
+            func_nm (str): function name.
+            idx (int): Index of function.
 
         Returns:
-            Tuple[PropertyValue, ...] | None: Function properties as tuple on success; Otherwise, None
+            Tuple[PropertyValue, ...] | None: Function properties as tuple on success; Otherwise, ``None``.
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -7978,10 +7984,10 @@ class Calc:
 
         Args:
             num (Number): Constraint number such as float or int.
-            op (str | SolverConstraintOperator): Operation such as '<='
-            addr (CellAddress): Cell Address
-            cell_name (str): Cell name such as 'A1'
-            cell_obj (CellObj): Cell Object
+            op (str | SolverConstraintOperator): Operation such as ``<=``.
+            addr (CellAddress): Cell Address.
+            cell_name (str): Cell name such as ``A1``.
+            cell_obj (CellObj): Cell Object.
 
         Returns:
             SolverConstraint: Solver constraint that can be use in a solver model.

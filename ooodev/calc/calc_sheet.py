@@ -10,11 +10,16 @@ from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 
 if TYPE_CHECKING:
-    from com.sun.star.sheet import XSheetCellCursor
+    from com.sun.star.sheet import SolverConstraint  # struct
+    from com.sun.star.sheet import XDataPilotTables
+    from com.sun.star.sheet import XGoalSeek
     from com.sun.star.sheet import XScenario
+    from com.sun.star.sheet import XSheetCellCursor
+    from com.sun.star.table import CellAddress
     from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
     from com.sun.star.table import XCellRange
+    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
 
     from ooo.dyn.beans.property_value import PropertyValue
     from ooo.dyn.table.cell_range_address import CellRangeAddress
@@ -31,17 +36,21 @@ from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
-from ooodev.utils.inst.lo.partial.qi_partial import QiPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.prop_partial import PropPartial
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
+from . import calc_table_col as mCalcTableCol
+from . import calc_table_row as mCalcTableRow
 
 
-class CalcSheet(SpreadsheetComp, QiPartial):
+class CalcSheet(SpreadsheetComp, QiPartial, PropPartial):
     def __init__(self, owner: CalcDoc, sheet: XSpreadsheet) -> None:
         self.__owner = owner
         SpreadsheetComp.__init__(self, sheet)  # type: ignore
         QiPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
+        PropPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
 
     # region get_address()
     @overload
@@ -122,21 +131,146 @@ class CalcSheet(SpreadsheetComp, QiPartial):
 
     # endregion get_address()
 
+    # region get_cell_address()
+    @overload
+    def get_cell_address(self, *, cell: XCell) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
+        ...
+
+    @overload
+    def get_cell_address(self, *, cell_name: str) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        Args:
+            cell_name (str): Cell name such as ``A1``.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
+        ...
+
+    @overload
+    def get_cell_address(self, *, cell_obj: mCellObj.CellObj) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        Args:
+            cell_obj (CellObj): Cell object.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
+        ...
+
+    @overload
+    def get_cell_address(self, *, addr: CellAddress) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        Args:
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
+        ...
+
+    @overload
+    def get_cell_address(self, *, col: int, row: int) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        Args:
+            col (int): Zero-base column index.
+            row (int): Zero-base row index.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
+        ...
+
+    def get_cell_address(self, **kwargs) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        Args:
+            cell (XCell): Cell.
+            cell_name (str): Cell name such as ``A1``.
+            cell_obj (CellObj): Cell object.
+            addr (CellAddress): Cell Address.
+            col (int): Zero-base column index.
+            row (int): Zero-base row index.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
+        sheet_names = {"cell_name", "cell_obj", "addr", "col"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        return mCalc.Calc.get_cell_address(**kwargs)
+
+    # endregion get_cell_address()
+
     # region get_array()
     @overload
     def get_array(self, *, cell_range: XCellRange) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        Args:
+            cell_range (XCellRange): Cell range to get data from.
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     @overload
     def get_array(self, *, range_name: str) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        Args:
+            range_name (str): Range of data to get such as ``A1:E16``.
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     @overload
     def get_array(self, *, range_obj: mRngObj.RangeObj) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        Args:
+            range_obj (RangeObj): Range object.
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     @overload
     def get_array(self, *, cell_obj: mCellObj.CellObj) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     def get_array(self, **kwargs) -> TupleArray:
@@ -144,14 +278,10 @@ class CalcSheet(SpreadsheetComp, QiPartial):
         Gets Array of data from a spreadsheet.
 
         Args:
-            cell_range (XCellRange): Cell range to get data from.
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range of data to get such as "A1:E16"
-            range_obj (RangeObj): Range object
-            cell_obj (CellObj): Cell Object
-
-        Raises:
-            MissingInterfaceError: if interface is missing
+            cell_range (XCellRange): Cell range to get data from..
+            range_name (str): Range of data to get such as ``A1:E16``.
+            range_obj (RangeObj): Range object.
+            cell_obj (CellObj): Cell Object.
 
         Returns:
             TupleArray: Resulting data array.
@@ -357,6 +487,15 @@ class CalcSheet(SpreadsheetComp, QiPartial):
 
     # endregion get_cell()
 
+    def get_pilot_tables(self) -> XDataPilotTables:
+        """
+        Gets pivot tables (formerly known as DataPilot) for a sheet.
+
+        Returns:
+            XDataPilotTables: Pivot tables
+        """
+        return mCalc.Calc.get_pilot_tables(self.component)
+
     # region get_range()
     @overload
     def get_range(self, *, range_name: str) -> mCalcCellRange.CalcCellRange:
@@ -466,7 +605,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
 
     # endregion get_range()
 
-    def get_col_range(self, idx: int) -> mCalcCellRange.CalcCellRange:
+    def get_col_range(self, idx: int) -> mCalcTableCol.CalcTableCol:
         """
         Get Column by index
 
@@ -477,10 +616,10 @@ class CalcSheet(SpreadsheetComp, QiPartial):
             MissingInterfaceError: if unable to find interface
 
         Returns:
-            CalcCellRange: Cell range
+            CalcTableCol: Cell range
         """
         result = mCalc.Calc.get_col_range(self.component, idx)
-        return mCalcCellRange.CalcCellRange(self, result)
+        return mCalcTableCol.CalcTableCol(self, result)  # type: ignore
 
     # region get_row()
     @overload
@@ -587,7 +726,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
 
     # endregion get_row()
 
-    def get_row_range(self, idx: int) -> mCalcCellRange.CalcCellRange:
+    def get_row_range(self, idx: int) -> mCalcTableRow.CalcTableRow:
         """
         Get Row by index
 
@@ -602,7 +741,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
             CalcCellRange: Cell range
         """
         result = mCalc.Calc.get_row_range(self.component, idx)
-        return mCalcCellRange.CalcCellRange(self, result)
+        return mCalcTableRow.CalcTableRow(self, result)  # type: ignore
 
     def get_row_used_first_index(self) -> int:
         """
@@ -1537,7 +1676,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
 
     # endregion set_col()
 
-    def set_col_width(self, width: int | UnitT, idx: int) -> mCalcCellRange.CalcCellRange | None:
+    def set_col_width(self, width: int | UnitT, idx: int) -> mCalcTableCol.CalcTableCol | None:
         """
         Sets column width. width is in ``mm``, e.g. ``6``
 
@@ -1549,7 +1688,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
             CancelEventError: If SHEET_COL_WIDTH_SETTING event is canceled.
 
         Returns:
-            CalcCellRange | None: Column cell range that width is applied on or ``None`` if column width <= 0
+            CalcTableCol | None: Column cell range that width is applied on or ``None`` if column width <= 0
 
         :events:
             .. cssclass:: lo_event
@@ -1563,7 +1702,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
         result = mCalc.Calc.set_col_width(sheet=self.component, width=width, idx=idx)
         if result is None:
             return None
-        return mCalcCellRange.CalcCellRange(self, result)
+        return mCalcTableCol.CalcTableCol(self, result)  # type: ignore
 
     # endregion set_cell_range_array()
 
@@ -1711,7 +1850,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
 
     # endregion set_row()
 
-    def set_row_height(self, height: int | UnitT, idx: int) -> mCalcCellRange.CalcCellRange | None:
+    def set_row_height(self, height: int | UnitT, idx: int) -> mCalcTableRow.CalcTableRow | None:
         """
         Sets column width. height is in ``mm``, e.g. 6
 
@@ -1723,7 +1862,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
             CancelEventError: If SHEET_ROW_HEIGHT_SETTING event is canceled.
 
         Returns:
-            CalcCellRange | None: Row cell range that height is applied on or None if height <= 0
+            CalcTableRow | None: Row cell range that height is applied on or None if height <= 0
 
         :events:
             .. cssclass:: lo_event
@@ -1737,7 +1876,7 @@ class CalcSheet(SpreadsheetComp, QiPartial):
         result = mCalc.Calc.set_row_height(sheet=self.component, height=height, idx=idx)
         if result is None:
             return None
-        return mCalcCellRange.CalcCellRange(self, result)
+        return mCalcTableRow.CalcTableRow(self, result)  # type: ignore
 
     # region set_value()
     @overload
@@ -2056,6 +2195,31 @@ class CalcSheet(SpreadsheetComp, QiPartial):
         return self.get_cell(cell_obj=cell_obj)
 
     # endregion    goto_cell()
+    def goal_seek(
+        self,
+        gs: XGoalSeek,
+        cell_name: str | mCellObj.CellObj,
+        formula_cell_name: str | mCellObj.CellObj,
+        result: int | float,
+    ) -> float:
+        """
+        Calculates a value which gives a specified result in a formula.
+
+        Args:
+            gs (XGoalSeek): Goal seeking value for cell
+            cell_name (str | CellObj): cell name
+            formula_cell_name (str | CellObj): formula cell name
+            result (int, float): float or int, result of the goal seek
+
+        Raises:
+            GoalDivergenceError: If goal divergence is greater than 0.1
+
+        Returns:
+            float: result of the goal seek
+        """
+        return mCalc.Calc.goal_seek(
+            gs=gs, sheet=self.component, cell_name=cell_name, formula_cell_name=formula_cell_name, result=result
+        )
 
     def delete_column(self, idx: int, count: int = 1) -> bool:
         """
@@ -3440,9 +3604,109 @@ class CalcSheet(SpreadsheetComp, QiPartial):
             kwargs["sheet"] = self.component
         mCalc.Calc.set_style_range(**kwargs)
 
-    # region set_style_range()
+    # region make_constraint()
+    @overload
+    def make_constraint(self, *, num: int | float, op: str, addr: CellAddress) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
 
-    # endregion set_style_range()
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operation such as ``<=``.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        ...
+
+    @overload
+    def make_constraint(
+        self, *, num: int | float, op: SolverConstraintOperator, addr: CellAddress
+    ) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (SolverConstraintOperator): Operation such as ``SolverConstraintOperator.EQUAL``.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+
+        ...
+
+    @overload
+    def make_constraint(self, *, num: int | float, op: str, sheet: XSpreadsheet, cell_name: str) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operation such as ``<=``.
+            cell_name (str): Cell name such as ``A1``.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        ...
+
+    @overload
+    def make_constraint(
+        self, *, num: int | float, op: str, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj
+    ) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operation such as ``<=``.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        ...
+
+    @overload
+    def make_constraint(
+        self, *, num: int | float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
+    ) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (SolverConstraintOperator): Operation such as ``SolverConstraintOperator.EQUAL``.
+            cell_name (str): Cell name such as ``A1``.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        ...
+
+    def make_constraint(self, **kwargs) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str | SolverConstraintOperator): Operation such as ``<=``.
+            addr (CellAddress): Cell Address.
+            cell_name (str): Cell name such as ``A1``.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        sheet_names = {"cell_name", "cell_obj"}
+        if kwargs.keys() & sheet_names:
+            kwargs["sheet"] = self.component
+        return mCalc.Calc.make_constraint(**kwargs)
+
+    # endregion make_constraint()
 
     # region Properties
     @property

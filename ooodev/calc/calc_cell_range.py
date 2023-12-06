@@ -2,7 +2,11 @@ from __future__ import annotations
 from typing import Any, List, Sequence, TYPE_CHECKING
 import uno
 
+
+from com.sun.star.sheet import XCellSeries
+from com.sun.star.table import XCellRange
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
+
 
 if TYPE_CHECKING:
     from ooo.dyn.table.cell_range_address import CellRangeAddress
@@ -17,12 +21,13 @@ else:
 from ooodev.proto.style_obj import StyleT
 from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
-from ooodev.utils.inst.lo.partial.qi_partial import QiPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils import lo as mLo
 from . import calc_cell as mCalcCell
 
 
-class CalcCellRange(SheetCellRangeComp, QiPartial):
+class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial):
     """Represents a calc cell range."""
 
     def __init__(self, owner: CalcSheet, rng: Any) -> None:
@@ -34,10 +39,15 @@ class CalcCellRange(SheetCellRangeComp, QiPartial):
             rng (Any): Range object.
         """
         self.__owner = owner
-        self.__range_obj = mCalc.Calc.get_range_obj(rng)
-        cell_range = mCalc.Calc.get_cell_range(sheet=self.calc_sheet.component, range_obj=self.__range_obj)
+        if mLo.Lo.is_uno_interfaces(rng, XCellRange):
+            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=rng)
+            cell_range = rng
+        else:
+            self.__range_obj = mCalc.Calc.get_range_obj(rng)
+            cell_range = mCalc.Calc.get_cell_range(sheet=self.calc_sheet.component, range_obj=self.__range_obj)
         SheetCellRangeComp.__init__(self, cell_range)  # type: ignore
-        QiPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        PropPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)  # type: ignore
         # self.__doc = doc
 
     def change_style(self, style_name: str) -> bool:
@@ -111,6 +121,24 @@ class CalcCellRange(SheetCellRangeComp, QiPartial):
         return mCalc.Calc.delete_cells(
             sheet=self.calc_sheet.component, range_obj=self.__range_obj, is_shift_left=is_shift_left
         )
+
+    def get_cell_series(self) -> XCellSeries:
+        """
+        Gets the cell series for the current range.
+
+        Returns:
+            XCellSeries: Cell series
+        """
+        return self.qi(XCellSeries, True)
+
+    def get_cell_range(self) -> XCellRange:
+        """
+        Gets the ``XCellRange`` for the current range.
+
+        Returns:
+            XCellRange: Cell series
+        """
+        return self.qi(XCellRange, True)
 
     def get_col(self) -> List[Any]:
         """

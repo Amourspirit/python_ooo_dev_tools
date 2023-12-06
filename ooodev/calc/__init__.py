@@ -1,3 +1,6 @@
+import uno
+from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
+from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
 from .calc_cell import CalcCell as CalcCell
 from .calc_cell_cursor import CalcCellCursor as CalcCellCursor
 from .calc_cell_range import CalcCellRange as CalcCellRange

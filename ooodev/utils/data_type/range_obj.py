@@ -204,6 +204,70 @@ class RangeObj:
             sheet_idx=self.sheet_idx,
         )
 
+    # region get_col()
+
+    @overload
+    def get_col(self, col: int) -> RangeObj:
+        """
+        Gets a Range object that represents only the column range.
+
+        Args:
+            col (int): Zero-based column index.
+
+        Returns:
+            RangeObj: Range Object.
+        """
+        ...
+
+    @overload
+    def get_col(self, col: str) -> RangeObj:
+        """
+        Gets a Range object that represents only the column range.
+
+        Args:
+            col (str): Column Letter such as ``A``.
+
+        Returns:
+            RangeObj: Range Object.
+        """
+        ...
+
+    def get_col(self, col: int | str) -> RangeObj:
+        """
+        Gets a Range object that represents only the column range.
+
+        Args:
+            col (int | str): Zero-based column index or column letter such as ``A``.
+
+        Raises:
+            IndexError: If column index is out of range.
+
+        Returns:
+            RangeObj: Range Object
+
+
+        .. versionadded:: 0.15.1
+        """
+
+        if isinstance(col, str):
+            col_name = col.upper()
+            idx = mTb.TableHelper.col_name_to_int(col_name, True)
+        else:
+            idx = int(col)
+            col_name = mTb.TableHelper.make_column_name(idx, True)
+        if idx < self.start_col_index or idx > self.end_col_index:
+            raise IndexError(f"Column index {idx} is out of range")
+
+        return RangeObj(
+            col_start=col_name,
+            col_end=col_name,
+            row_start=self.row_start,
+            row_end=self.row_end,
+            sheet_idx=self.sheet_idx,
+        )
+
+    # endregion get_col()
+
     def get_start_row(self) -> RangeObj:
         """
         Gets a Range object that represents only the start row range.
@@ -231,6 +295,33 @@ class RangeObj:
             col_end=self.col_end,
             row_start=self.row_end,
             row_end=self.row_end,
+            sheet_idx=self.sheet_idx,
+        )
+
+    def get_row(self, row: int) -> RangeObj:
+        """
+        Gets a Range object that represents a row in range.
+
+        Args:
+            row (int): Zero-based row index.
+
+        Raises:
+            IndexError: If row index is out of range.
+
+        Returns:
+            RangeObj: Range Object
+
+
+        .. versionadded:: 0.15.1
+        """
+        if row < self.start_row_index or row > self.end_row_index:
+            raise IndexError(f"Row index {row} is out of range")
+
+        return RangeObj(
+            col_start=self.col_start,
+            col_end=self.col_end,
+            row_start=row,
+            row_end=row,
             sheet_idx=self.sheet_idx,
         )
 

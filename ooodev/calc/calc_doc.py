@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.frame import XModel
@@ -9,12 +9,15 @@ from com.sun.star.sheet import XSpreadsheets
 
 
 if TYPE_CHECKING:
-    from com.sun.star.table import CellAddress
+    from com.sun.star.beans import PropertyValue
     from com.sun.star.frame import XController
+    from com.sun.star.sheet import XViewPane
     from com.sun.star.style import XStyle
-
-    # from com.sun.star.table import CellRangeAddress
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import XCellRange
+    from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
+
     from ooodev.utils.kind.zoom_kind import ZoomKind
 else:
     CellRangeAddress = object
@@ -25,21 +28,23 @@ from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
 from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.event_singleton import _Events
 from ooodev.office import calc as mCalc
+from ooodev.utils import gui as mGUI
+from ooodev.utils import lo as mLo
 from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.utils import gui as mGUI
-from ooodev.utils.inst.lo.partial.qi_partial import QiPartial
-from ooodev.utils import lo as mLo
 from . import calc_sheet as mCalcSheet
 from . import calc_sheet_view as mCalcSheetView
 
 
-class CalcDoc(SpreadsheetDocumentComp, QiPartial):
+class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
     def __init__(self, doc: XSpreadsheetDocument) -> None:
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
 
     def create_cell_style(self, style_name: str) -> XStyle:
         """
@@ -55,6 +60,90 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial):
             XStyle: Newly created style
         """
         return mCalc.Calc.create_cell_style(doc=self.component, style_name=style_name)
+
+    def call_fun(self, func_name: str, *args: Any) -> Any:
+        """
+        Execute a Calc function by its (English) name and based on the given arguments
+
+        Args:
+            func_name (str): the English name of the function to execute
+            args: (Any): the arguments of the called function.
+                Each argument must be either a string, a numeric value
+                or a sequence of sequences ( tuples or list ) combining those types.
+
+        Returns:
+            Any: The (string or numeric) value or the array of arrays returned by the call to the function
+                When the arguments contain arrays, the function is executed as an array function
+                Wrong arguments generate an error
+        """
+        return mCalc.Calc.call_fun(func_name, *args)
+
+    def compute_function(self, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
+        """
+        Computes a Calc Function
+
+        Args:
+            fn (GeneralFunction | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
+            cell_range (XCellRange): Cell range to apply function on.
+
+        Returns:
+            float: result of function if successful. If there is an error then 0.0 is returned.
+
+        See Also:
+            :ref:`ch23_gen_func`
+        """
+        return mCalc.Calc.compute_function(fn=fn, cell_range=cell_range)
+
+    def get_function_names(self) -> List[str] | None:
+        """
+        Get a list of all function names.
+
+        Returns:
+            List[str] | None: List of function names if found; Otherwise, ``None``.
+        """
+        return mCalc.Calc.get_function_names()
+
+    # region find_function()
+    @overload
+    def find_function(self, func_nm: str) -> Tuple[PropertyValue] | None:
+        """
+        Finds a function.
+
+        Args:
+            func_nm (str): function name.
+
+        Returns:
+            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, ``None``.
+        """
+        ...
+
+    @overload
+    def find_function(self, idx: int) -> Tuple[PropertyValue] | None:
+        """
+        Finds a function.
+
+        Args:
+            idx (int): Index of function.
+
+        Returns:
+            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, ``None``.
+        """
+        ...
+
+    def find_function(self, *args, **kwargs) -> Tuple[PropertyValue, ...] | None:
+        """
+        Finds a function.
+
+        Args:
+            func_nm (str): function name.
+            idx (int): Index of function.
+
+        Returns:
+            Tuple[PropertyValue, ...] | None: Function properties as tuple on success; Otherwise, ``None``.
+        """
+        return mCalc.Calc.find_function(*args, **kwargs)
+
+    # endregion find_function()
 
     # region close_doc()
     @overload
@@ -551,6 +640,64 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial):
             view_data (str): Data to restore.
         """
         mCalc.Calc.set_view_data(self.component, view_data)
+
+    def get_view_data(self) -> str:
+        """
+        Gets a set of data that can be used to restore the current view status at
+        later time by using :py:meth:`~Calc.set_view_data`
+
+        Returns:
+            str: View Data
+        """
+        return mCalc.Calc.get_view_data(self.component)
+
+    def get_view_panes(self) -> List[XViewPane] | None:
+        """
+        represents a pane in a view of a spreadsheet document.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Raises:
+            MissingInterfaceError: if unable access the view pane container
+
+        Returns:
+            List[XViewPane] | None: List of XViewPane on success; Otherwise, None
+
+        Note:
+            The com.sun.star.sheet.XViewPane interface's getFirstVisibleColumn(), getFirstVisibleRow(),
+            setFirstVisibleColumn() and setFirstVisibleRow() methods query and set the start of
+            the exposed area. The getVisibleRange() method returns a com.sun.star.table.
+            CellRangeAddress struct describing which cells are shown in the pane.
+            Columns or rows that are only partly visible at the right or lower edge of the view
+            are not included.
+
+        See Also:
+            :ref:`ch23_view_states_top_pane`
+        """
+        return mCalc.Calc.get_view_panes(doc=self.component)
+
+    def get_view_states(self) -> List[mViewState.ViewState] | None:
+        """
+        Extract the view states for all the sheets from the view data.
+        The states are returned as an array of ViewState objects.
+
+        The view data string has the format
+        ``100/60/0;0;tw:879;0/4998/0/1/0/218/2/0/0/4988/4998``
+
+        The view state info starts after the third ``;``, the fourth entry.
+        The view state for each sheet is separated by ``;``
+
+        Based on a post by user Hanya to:
+        `openoffice forum <https://forum.openoffice.org/en/forum/viewtopic.php?f=45&t=29195&p=133202&hilit=getViewData#p133202>`_
+
+        Returns:
+            None:
+
+        See Also:
+            :ref:`ch23_view_states_top_pane`
+        """
+        return mCalc.Calc.get_view_states(doc=self.component)
 
     def set_view_states(self, states: Sequence[mViewState.ViewState]) -> None:
         """

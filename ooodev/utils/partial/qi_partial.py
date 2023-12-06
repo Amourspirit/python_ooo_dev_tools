@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Type, Literal, overload, Tuple, TYPE_CHECKING
+from typing import Any, Type, Literal, overload, TYPE_CHECKING
 from ooodev.utils.inst.lo.lo_inst import LoInst
 
 if TYPE_CHECKING:
