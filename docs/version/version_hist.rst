@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.15.1
+==============
+
+Entended ``ooodev.calc`` classes with new methods
+
 Version 0.15.0
 ==============
 

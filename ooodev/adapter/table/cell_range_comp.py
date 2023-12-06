@@ -31,7 +31,7 @@ class CellRangeComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.table .CellRange",)
+        return ("com.sun.star.table.CellRange",)
 
     # endregion Overrides
     # region Properties

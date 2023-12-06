@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Tuple, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
-from ooodev.utils.kind.zoom_kind import ZoomKind as ZoomKind
 
 from com.sun.star.frame import XModel
 from com.sun.star.sheet import XSpreadsheet
@@ -10,11 +9,16 @@ from com.sun.star.sheet import XSpreadsheets
 
 
 if TYPE_CHECKING:
-    from com.sun.star.table import CellAddress
+    from com.sun.star.beans import PropertyValue
     from com.sun.star.frame import XController
-
-    # from com.sun.star.table import CellRangeAddress
+    from com.sun.star.sheet import XViewPane
+    from com.sun.star.style import XStyle
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import XCellRange
+    from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
+
+    from ooodev.utils.kind.zoom_kind import ZoomKind
 else:
     CellRangeAddress = object
 
@@ -24,20 +28,173 @@ from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
 from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.event_singleton import _Events
 from ooodev.office import calc as mCalc
+from ooodev.utils import gui as mGUI
+from ooodev.utils import lo as mLo
 from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
-from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
 from . import calc_sheet as mCalcSheet
 from . import calc_sheet_view as mCalcSheetView
 
 
-class CalcDoc(SpreadsheetDocumentComp):
+class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
     def __init__(self, doc: XSpreadsheetDocument) -> None:
-        super().__init__(doc)  # type: ignore
-        # self.__doc = doc
+        SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
+        QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+
+    def create_cell_style(self, style_name: str) -> XStyle:
+        """
+        Creates a style
+
+        Args:
+            style_name (str): Style name
+
+        Raises:
+            Exception: if unable to create style.
+
+        Returns:
+            XStyle: Newly created style
+        """
+        return mCalc.Calc.create_cell_style(doc=self.component, style_name=style_name)
+
+    def call_fun(self, func_name: str, *args: Any) -> Any:
+        """
+        Execute a Calc function by its (English) name and based on the given arguments
+
+        Args:
+            func_name (str): the English name of the function to execute
+            args: (Any): the arguments of the called function.
+                Each argument must be either a string, a numeric value
+                or a sequence of sequences ( tuples or list ) combining those types.
+
+        Returns:
+            Any: The (string or numeric) value or the array of arrays returned by the call to the function
+                When the arguments contain arrays, the function is executed as an array function
+                Wrong arguments generate an error
+        """
+        return mCalc.Calc.call_fun(func_name, *args)
+
+    def compute_function(self, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
+        """
+        Computes a Calc Function
+
+        Args:
+            fn (GeneralFunction | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
+            cell_range (XCellRange): Cell range to apply function on.
+
+        Returns:
+            float: result of function if successful. If there is an error then 0.0 is returned.
+
+        See Also:
+            :ref:`ch23_gen_func`
+        """
+        return mCalc.Calc.compute_function(fn=fn, cell_range=cell_range)
+
+    def get_function_names(self) -> List[str] | None:
+        """
+        Get a list of all function names.
+
+        Returns:
+            List[str] | None: List of function names if found; Otherwise, ``None``.
+        """
+        return mCalc.Calc.get_function_names()
+
+    # region find_function()
+    @overload
+    def find_function(self, func_nm: str) -> Tuple[PropertyValue] | None:
+        """
+        Finds a function.
+
+        Args:
+            func_nm (str): function name.
+
+        Returns:
+            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, ``None``.
+        """
+        ...
+
+    @overload
+    def find_function(self, idx: int) -> Tuple[PropertyValue] | None:
+        """
+        Finds a function.
+
+        Args:
+            idx (int): Index of function.
+
+        Returns:
+            Tuple[PropertyValue] | None: Function properties as tuple on success; Otherwise, ``None``.
+        """
+        ...
+
+    def find_function(self, *args, **kwargs) -> Tuple[PropertyValue, ...] | None:
+        """
+        Finds a function.
+
+        Args:
+            func_nm (str): function name.
+            idx (int): Index of function.
+
+        Returns:
+            Tuple[PropertyValue, ...] | None: Function properties as tuple on success; Otherwise, ``None``.
+        """
+        return mCalc.Calc.find_function(*args, **kwargs)
+
+    # endregion find_function()
+
+    # region close_doc()
+    @overload
+    def close_doc(self) -> None:
+        """
+        Closes document.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def close_doc(self, deliver_ownership: bool) -> None:
+        """
+        Closes document.
+
+        Args:
+            deliver_ownership (bool): If ``True`` delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException. Default is ``False``.
+
+        Returns:
+            None:
+        """
+        ...
+
+    def close_doc(self, deliver_ownership=False) -> None:
+        """
+        Closes document.
+
+        Args:
+            deliver_ownership (bool): If ``True`` delegates the ownership of this closing object to
+                anyone which throw the CloseVetoException. Default is ``False``.
+
+        Returns:
+            None:
+
+        Note:
+            If ``deliver_ownership`` is ``True`` then new owner has to close the closing object again if his still running
+            processes will be finished.
+
+            ``False`` let the ownership at the original one which called the close() method.
+            They must react for possible CloseVetoExceptions such as when document needs saving
+            and try it again at a later time. This can be useful for a generic UI handling.
+
+        Attention:
+            :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
+        """
+        mLo.Lo.close_doc(doc=self.component, deliver_ownership=deliver_ownership)
+
+    # endregion close_doc()
 
     def save_doc(self, fnm: PathOrStr) -> bool:
         """
@@ -65,55 +222,6 @@ class CalcDoc(SpreadsheetDocumentComp):
             :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
         """
         return mCalc.Calc.save_doc(doc=self.component, fnm=fnm)
-
-    # region    get_sheet()
-    @overload
-    def get_sheet(self) -> mCalcSheet.CalcSheet:
-        """
-        Gets a sheet of spreadsheet document
-
-        Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
-
-        Returns:
-            CalcSheet: Spreadsheet at index.
-        """
-        ...
-
-    @overload
-    def get_sheet(self, idx: int) -> mCalcSheet.CalcSheet:
-        """
-        Gets a sheet of spreadsheet document
-
-        Args:
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
-
-        Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
-
-        Returns:
-            CalcSheet: Spreadsheet at index.
-        """
-        ...
-
-    @overload
-    def get_sheet(self, sheet_name: str) -> mCalcSheet.CalcSheet:
-        """
-        Gets a sheet of spreadsheet document
-
-        Args:
-            sheet_name (str, optional): Name of spreadsheet
-
-        Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
-
-        Returns:
-            CalcSheet: Spreadsheet at index.
-        """
-        ...
 
     def get_selected_addr(self) -> CellRangeAddress:
         """
@@ -178,6 +286,55 @@ class CalcDoc(SpreadsheetDocumentComp):
         """
         return mCalc.Calc.get_selected_range(doc=self.component)
 
+    # region    get_sheet()
+    @overload
+    def get_sheet(self) -> mCalcSheet.CalcSheet:
+        """
+        Gets a sheet of spreadsheet document
+
+        Raises:
+            Exception: If spreadsheet is not found
+            CancelEventError: If SHEET_GETTING event is canceled
+
+        Returns:
+            CalcSheet: Spreadsheet at index.
+        """
+        ...
+
+    @overload
+    def get_sheet(self, idx: int) -> mCalcSheet.CalcSheet:
+        """
+        Gets a sheet of spreadsheet document
+
+        Args:
+            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+
+        Raises:
+            Exception: If spreadsheet is not found
+            CancelEventError: If SHEET_GETTING event is canceled
+
+        Returns:
+            CalcSheet: Spreadsheet at index.
+        """
+        ...
+
+    @overload
+    def get_sheet(self, sheet_name: str) -> mCalcSheet.CalcSheet:
+        """
+        Gets a sheet of spreadsheet document
+
+        Args:
+            sheet_name (str, optional): Name of spreadsheet
+
+        Raises:
+            Exception: If spreadsheet is not found
+            CancelEventError: If SHEET_GETTING event is canceled
+
+        Returns:
+            CalcSheet: Spreadsheet at index.
+        """
+        ...
+
     def get_sheet(self, *args, **kwargs) -> mCalcSheet.CalcSheet:
         """
         Gets a sheet of spreadsheet document
@@ -202,7 +359,7 @@ class CalcDoc(SpreadsheetDocumentComp):
         Note:
             For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
         """
-        sheet = mCalc.Calc.get_sheet(doc=self.component, *args, **kwargs)
+        sheet = mCalc.Calc.get_sheet(self.component, *args, **kwargs)
         return mCalcSheet.CalcSheet(owner=self, sheet=sheet)
 
     # endregion get_sheet()
@@ -484,6 +641,64 @@ class CalcDoc(SpreadsheetDocumentComp):
         """
         mCalc.Calc.set_view_data(self.component, view_data)
 
+    def get_view_data(self) -> str:
+        """
+        Gets a set of data that can be used to restore the current view status at
+        later time by using :py:meth:`~Calc.set_view_data`
+
+        Returns:
+            str: View Data
+        """
+        return mCalc.Calc.get_view_data(self.component)
+
+    def get_view_panes(self) -> List[XViewPane] | None:
+        """
+        represents a pane in a view of a spreadsheet document.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document
+
+        Raises:
+            MissingInterfaceError: if unable access the view pane container
+
+        Returns:
+            List[XViewPane] | None: List of XViewPane on success; Otherwise, None
+
+        Note:
+            The com.sun.star.sheet.XViewPane interface's getFirstVisibleColumn(), getFirstVisibleRow(),
+            setFirstVisibleColumn() and setFirstVisibleRow() methods query and set the start of
+            the exposed area. The getVisibleRange() method returns a com.sun.star.table.
+            CellRangeAddress struct describing which cells are shown in the pane.
+            Columns or rows that are only partly visible at the right or lower edge of the view
+            are not included.
+
+        See Also:
+            :ref:`ch23_view_states_top_pane`
+        """
+        return mCalc.Calc.get_view_panes(doc=self.component)
+
+    def get_view_states(self) -> List[mViewState.ViewState] | None:
+        """
+        Extract the view states for all the sheets from the view data.
+        The states are returned as an array of ViewState objects.
+
+        The view data string has the format
+        ``100/60/0;0;tw:879;0/4998/0/1/0/218/2/0/0/4988/4998``
+
+        The view state info starts after the third ``;``, the fourth entry.
+        The view state for each sheet is separated by ``;``
+
+        Based on a post by user Hanya to:
+        `openoffice forum <https://forum.openoffice.org/en/forum/viewtopic.php?f=45&t=29195&p=133202&hilit=getViewData#p133202>`_
+
+        Returns:
+            None:
+
+        See Also:
+            :ref:`ch23_view_states_top_pane`
+        """
+        return mCalc.Calc.get_view_states(doc=self.component)
+
     def set_view_states(self, states: Sequence[mViewState.ViewState]) -> None:
         """
         Updates the sheet state part of the view data, which starts as the fourth entry in the view data string.
@@ -514,6 +729,41 @@ class CalcDoc(SpreadsheetDocumentComp):
             :ref:`ch23_splitting_panes`
         """
         mCalc.Calc.split_window(doc=self.component, cell_name=cell_name)
+
+    @overload
+    def set_visible(self) -> None:
+        """
+        Set window visible.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def set_visible(self, visible: bool) -> None:
+        """
+        Set window visibility.
+
+        Args:
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
+
+        Returns:
+            None:
+        """
+        ...
+
+    def set_visible(self, visible: bool = True) -> None:
+        """
+        Set window visibility.
+
+        Args:
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
+
+        Returns:
+            None:
+        """
+        mGUI.GUI.set_visible(doc=self.component, visible=visible)
 
     def unfreeze(self) -> None:
         """

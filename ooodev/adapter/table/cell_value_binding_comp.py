@@ -48,7 +48,7 @@ class CellValueBindingComp(ComponentBase, ModifyEvents, PropertyChangeImplement,
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.table .CellValueBinding",)
+        return ("com.sun.star.table.CellValueBinding",)
 
     # endregion Overrides
     # region Properties

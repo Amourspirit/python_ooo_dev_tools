@@ -45,7 +45,7 @@ class CellRangeListSourceComp(ComponentBase, ListEntryEvents, EventEvents):
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.table .CellRangeListSource",)
+        return ("com.sun.star.table.CellRangeListSource",)
 
     # endregion Overrides
     # region Properties

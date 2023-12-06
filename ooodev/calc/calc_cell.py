@@ -5,6 +5,7 @@ import uno
 if TYPE_CHECKING:
     from com.sun.star.awt import Point
     from com.sun.star.sheet import XSheetAnnotation
+    from com.sun.star.sheet import XGoalSeek
     from .calc_sheet import CalcSheet
     from . import calc_cell_cursor as mCalcCellCursor
 else:
@@ -16,15 +17,21 @@ from ooodev.units import UnitT
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.type_var import Row, Table
 from ooodev.office import calc as mCalc
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils import lo as mLo
 from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
 
 
-class CalcCell(SheetCellComp):
+class CalcCell(SheetCellComp, QiPartial, PropPartial):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj) -> None:
         self.__owner = owner
         self.__cell_obj = mCellObj.CellObj.from_cell(cell)
-        sheet_cell = mCalc.Calc.get_cell(sheet=self.calc_sheet.component, cell_obj=self.__cell_obj)
-        super().__init__(sheet_cell)  # type: ignore
+        # don't use owner.get_cell() here because it will be recursive.
+        sheet_cell = mCalc.Calc.get_cell(sheet=owner.component, cell_obj=self.__cell_obj)
+        SheetCellComp.__init__(self, sheet_cell)  # type: ignore
+        QiPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
+        PropPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
@@ -46,6 +53,34 @@ class CalcCell(SheetCellComp):
         return self.__cell_obj.col == "A"
 
     # endregion Cell Properties
+
+    def goal_seek(
+        self,
+        gs: XGoalSeek,
+        formula_cell_name: str | mCellObj.CellObj,
+        result: int | float,
+    ) -> float:
+        """
+        Calculates a value which gives a specified result in a formula.
+
+        Args:
+            gs (XGoalSeek): Goal seeking value for cell
+            formula_cell_name (str | CellObj): formula cell name
+            result (int, float): float or int, result of the goal seek
+
+        Raises:
+            GoalDivergenceError: If goal divergence is greater than 0.1
+
+        Returns:
+            float: result of the goal seek
+        """
+        return mCalc.Calc.goal_seek(
+            gs=gs,
+            sheet=self.calc_sheet.component,
+            cell_name=self.cell_obj,
+            formula_cell_name=formula_cell_name,
+            result=result,
+        )
 
     def get_cell_position(self) -> Point:
         """
@@ -159,6 +194,15 @@ class CalcCell(SheetCellComp):
             str: Cell value as string.
         """
         return mCalc.Calc.get_string(cell=self.component)
+
+    def get_cell_str(self) -> str:
+        """
+        Gets the cell as a string in format of ``A1``
+
+        Returns:
+            str: Cell as str
+        """
+        return str(self.__cell_obj)
 
     def get_type_enum(self) -> mCalc.Calc.CellTypeEnum:
         """

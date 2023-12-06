@@ -51,7 +51,7 @@ class ListPositionCellBindingComp(
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.table .ListPositionCellBinding",)
+        return ("com.sun.star.table.ListPositionCellBinding",)
 
     # endregion Overrides
     # region Properties

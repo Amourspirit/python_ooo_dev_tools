@@ -31,7 +31,7 @@ class TableRowComp(ComponentBase, PropertyChangeImplement, VetoableChangeImpleme
     # region Overrides
     def _get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.table .TableRow",)
+        return ("com.sun.star.table.TableRow",)
 
     # endregion Overrides
     # region Properties

@@ -718,12 +718,12 @@ class Props:
         return (False, None)
 
     @classmethod
-    def set(cls, obj: object, **kwargs) -> None:
+    def set(cls, obj: Any, **kwargs) -> None:
         """
         Set one or more properties.
 
         Args:
-            obj (object): object to set properties for. Must support ``XPropertySet``
+            obj (Any): object to set properties for. Must support ``XPropertySet``
             **kwargs: Variable length Key value pairs used to set properties.
 
         Raises:
@@ -909,19 +909,40 @@ class Props:
     # region get()
     @overload
     @classmethod
-    def get(cls, obj: object, name: str) -> Any:
+    def get(cls, obj: Any, name: str) -> Any:
+        """
+        Gets a property value from an object.
+
+        Args:
+            obj (object): Object to get property from.
+            name (str): Property Name.
+
+        Returns:
+            Any: Property value.
+        """
         ...
 
     @overload
     @classmethod
-    def get(cls, obj: object, name: str, default: Any) -> Any:
+    def get(cls, obj: Any, name: str, default: Any) -> Any:
+        """
+        Gets a property value from an object.
+
+        Args:
+            obj (object): Object to get property from.
+            name (str): Property Name.
+            default (Any, optional): Return value if property value is ``None``.
+
+        Returns:
+            Any: Property value or default.
+        """
         ...
 
     @classmethod
-    def get(cls, obj: object, name: str, default: Any = gUtil.NULL_OBJ) -> Any:
+    def get(cls, obj: Any, name: str, default: Any = gUtil.NULL_OBJ) -> Any:
         """
         Gets a property value from an object.
-        ``obj`` must support ``XPropertySet`` interface
+        ``obj`` must support ``XPropertySet`` interface.
 
         Args:
             obj (object): Object to get property from.
@@ -933,7 +954,7 @@ class Props:
             PropertyError: If any other error occurs and default was not set.
 
         Returns:
-            Any: Property value or default
+            Any: Property value or default.
 
         Note:
             If a ``default`` is not set then an error is raised if property is not found.
