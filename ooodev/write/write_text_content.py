@@ -4,13 +4,14 @@ import uno
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextContent
-    from ooodev.proto.component_proto import ComponentT
 
-    T = TypeVar("T", bound="ComponentT")
 
 from ooodev.adapter.text.text_content_comp import TextContentComp
-from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.partial.qi_partial import QiPartial
+
+T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextContent(Generic[T], TextContentComp, QiPartial):

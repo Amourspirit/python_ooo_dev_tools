@@ -2,8 +2,9 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 
+from com.sun.star.text import XTextViewCursor
+
 if TYPE_CHECKING:
-    from com.sun.star.text import XTextViewCursor
     from com.sun.star.awt import Point
 
 from ooodev.exceptions import ex as mEx

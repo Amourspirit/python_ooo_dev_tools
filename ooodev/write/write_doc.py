@@ -8,18 +8,14 @@ from ooo.dyn.text.page_number_type import PageNumberType
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
+    from com.sun.star.text import XText
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextRange
-    from com.sun.star.text import XText
     from ooo.dyn.view.paper_format import PaperFormat
     from ooodev.proto.style_obj import StyleT
 
-from ooodev.office import write as mWrite
-from ooodev.utils import selection as mSelection
-from ooodev.utils import lo as mLo
-from ooodev.utils.data_type.size import Size
-from ooodev.adapter.text.text_document_comp import TextDocumentComp
 from ooodev.adapter.container.name_access_comp import NameAccessComp
+from ooodev.adapter.text.text_document_comp import TextDocumentComp
 from ooodev.adapter.text.textfield.page_count_comp import PageCountComp
 from ooodev.adapter.text.textfield.page_number_comp import PageNumberComp
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -27,16 +23,21 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.events.event_singleton import _Events
 from ooodev.events.event_singleton import _Events
 from ooodev.events.write_named_event import WriteNamedEvent
+from ooodev.office import write as mWrite
+from ooodev.utils import gui as mGUI
+from ooodev.utils import lo as mLo
+from ooodev.utils import selection as mSelection
+from ooodev.utils.data_type.size import Size
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from . import write_text_cursor as mWriteTextCursor
 from . import write_character_style as mWriteCharacterStyle
+from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_style as mWriteParagraphStyle
 from . import write_text_content as mWriteTextContent
-from . import write_text_view_cursor as mWriteTextViewCursor
-from . import write_draw_page as mWriteDrawPage
+from . import write_text_cursor as mWriteTextCursor
 from . import write_text_range as mWriteTextRange
+from . import write_text_view_cursor as mWriteTextViewCursor
 
 
 class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
@@ -47,7 +48,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         Constructor
 
         Args:
-            doc (XTextDocument): A UNO object that supports ``com.sun.star.sheet.TextDocument`` service.
+            doc (XTextDocument): A UNO object that supports ``com.sun.star.text.TextDocument`` service.
         """
         TextDocumentComp.__init__(self, doc)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
@@ -348,7 +349,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         """
         return mWrite.Write.get_page_text_width(self.component)
 
-    def get_selected_text_range(self) -> mWriteTextRange.WriteTextRange | None:
+    def get_selected(self) -> mWriteTextRange.WriteTextRange | None:
         """
         Gets the text range for current selection
 
@@ -369,7 +370,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
             return None
         return mWriteTextRange.WriteTextRange(self, result)
 
-    def get_selected_text_str(self) -> str:
+    def get_selected_str(self) -> str:
         """
         Gets the first selection text for Document
 
@@ -604,3 +605,15 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         """
         result = mWrite.Write.set_page_numbers(self.component)
         return PageNumberComp(result)
+
+    def set_visible(self, visible: bool = True) -> None:
+        """
+        Set window visibility.
+
+        Args:
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
+
+        Returns:
+            None:
+        """
+        mGUI.GUI.set_visible(doc=self.component, visible=visible)

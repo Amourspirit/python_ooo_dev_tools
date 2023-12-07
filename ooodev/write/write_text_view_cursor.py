@@ -1,17 +1,16 @@
 from __future__ import annotations
-from typing import Sequence, overload, TYPE_CHECKING, TypeVar, Generic
-from com.sun.star.text import TextViewCursor
+from typing import TYPE_CHECKING, TypeVar
 import uno
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextViewCursor
-    from ooodev.proto.component_proto import ComponentT
-
-    T = TypeVar("T", bound="ComponentT")
 
 from ooodev.adapter.text.text_view_cursor_comp import TextViewCursorComp
 from ooodev.office import write as mWrite
+from ooodev.proto.component_proto import ComponentT
 from . import write_text_cursor as mWriteTextCursor
+
+T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextViewCursor(mWriteTextCursor.WriteTextCursor, TextViewCursorComp):
@@ -26,7 +25,7 @@ class WriteTextViewCursor(mWriteTextCursor.WriteTextCursor, TextViewCursorComp):
             col_obj (Any): Range object.
         """
         self.__owner = owner
-        mWriteTextCursor.WriteTextCursor.__init__(owner, component)  # type: ignore
+        mWriteTextCursor.WriteTextCursor.__init__(self, owner, component)  # type: ignore
         TextViewCursorComp.__init__(self, component=component)
 
     def get_coord_str(self) -> str:

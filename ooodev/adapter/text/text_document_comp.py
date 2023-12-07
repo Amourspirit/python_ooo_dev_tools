@@ -27,7 +27,7 @@ class TextDocumentComp(GenericTextDocumentComp):
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.sheet.TextDocument",)
+        return ("com.sun.star.text.TextDocument",)
 
     # endregion Overrides
     # region Properties

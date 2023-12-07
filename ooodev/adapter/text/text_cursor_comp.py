@@ -24,7 +24,7 @@ class TextCursorComp(TextRangeComp):
             component (TextCursor): UNO TextCursor Component that supports ``com.sun.star.text.TextCursor`` service.
         """
 
-        TextCursorComp.__init__(self, component)
+        TextRangeComp.__init__(self, component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
@@ -47,23 +47,23 @@ class TextCursorComp(TextRangeComp):
         """Returns True if the cursor is collapsed."""
         return self.component.isCollapsed()
 
-    def go_left(self, count: int, expand: bool) -> None:
+    def go_left(self, count: int, expand: bool = False) -> None:
         """Moves the cursor left by the given number of units."""
         self.component.goLeft(count, expand)
 
-    def go_right(self, count: int, expand: bool) -> None:
+    def go_right(self, count: int, expand: bool = False) -> None:
         """Moves the cursor right by the given number of units."""
         self.component.goRight(count, expand)
 
-    def goto_end(self, expand: bool) -> None:
+    def goto_end(self, expand: bool = False) -> None:
         """Moves the cursor to the end of the document."""
         self.component.gotoEnd(expand)
 
-    def goto_range(self, range: XTextRange, expand: bool) -> None:
+    def goto_range(self, range: XTextRange, expand: bool = False) -> None:
         """Moves the cursor to the given range."""
         self.component.gotoRange(range, expand)
 
-    def goto_start(self, expand: bool) -> None:
+    def goto_start(self, expand: bool = False) -> None:
         """Moves the cursor to the start of the document."""
         self.component.gotoStart(expand)
 

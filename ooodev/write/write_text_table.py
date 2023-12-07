@@ -4,16 +4,15 @@ import uno
 
 
 if TYPE_CHECKING:
-    from .write_text_cursor import WriteTextCursor
     from com.sun.star.text import XTextContent
-    from ooodev.proto.component_proto import ComponentT
 
-    T = TypeVar("T", bound="ComponentT")
-
-from ooodev.adapter.text.text_table_comp import TextTableComp
 from ooodev.adapter.text.cell_range_comp import CellRangeComp
-from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.adapter.text.text_table_comp import TextTableComp
+from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.partial.qi_partial import QiPartial
+
+T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextTable(Generic[T], TextTableComp, QiPartial):

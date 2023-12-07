@@ -2,31 +2,31 @@ from __future__ import annotations
 from typing import Any, cast, Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
-
 if TYPE_CHECKING:
-    from com.sun.star.text import XTextRange
-    from com.sun.star.text import XTextDocument
-    from ooo.dyn.text.control_character import ControlCharacterEnum
     from com.sun.star.text import XTextContent
+    from com.sun.star.text import XTextDocument
+    from com.sun.star.text import XTextCursor
+    from ooo.dyn.text.control_character import ControlCharacterEnum
     from ooodev.proto.style_obj import StyleT
-    from ooodev.utils.type_var import PathOrStr, Table
     from ooodev.units import UnitT
-    from ooodev.proto.component_proto import ComponentT
+    from ooodev.utils.type_var import PathOrStr, Table
 
-    T = TypeVar("T", bound="ComponentT")
-
-from ooodev.utils.color import Color, CommonColor
-from ooodev.office import write as mWrite
-from ooodev.utils import selection as mSelection
-from ooodev.adapter.text.text_cursor_comp import TextCursorComp
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils import lo as mLo
 from ooodev.adapter.drawing.graphic_object_shape_comp import GraphicObjectShapeComp
+from ooodev.adapter.text.text_cursor_comp import TextCursorComp
+from ooodev.office import write as mWrite
+from ooodev.proto.component_proto import ComponentT
+from ooodev.utils import lo as mLo
+from ooodev.utils import selection as mSelection
+from ooodev.utils.color import Color, CommonColor
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 
 from . import write_text_content as mWriteTextContent
-from . import write_text_table as mWriteTextTable
 from . import write_text_frame as mWriteTextFrame
+from . import write_text_table as mWriteTextTable
+from . import write_text_range as mWriteTextRange
+
+T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextCursor(Generic[T], TextCursorComp, PropPartial, QiPartial):
@@ -36,13 +36,13 @@ class WriteTextCursor(Generic[T], TextCursorComp, PropPartial, QiPartial):
     This class implements ``__len__()`` method, which returns the number of characters in the range.
     """
 
-    def __init__(self, owner: T, component: XTextRange) -> None:
+    def __init__(self, owner: T, component: XTextCursor) -> None:
         """
         Constructor
 
         Args:
             owner (WriteDoc): Doc that owns this component.
-            col_obj (Any): Range object.
+            component (XTextCursor): A UNO object that supports ``com.sun.star.text.TextCursor`` service.
         """
         self.__owner = owner
         TextCursorComp.__init__(self, component)  # type: ignore
