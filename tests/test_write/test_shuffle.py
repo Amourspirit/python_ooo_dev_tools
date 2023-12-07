@@ -17,7 +17,7 @@ from com.sun.star.text import XTextDocument
 
 
 def test_shuffle_words(loader, copy_fix_writer, tmp_path_fn):
-    visible = True
+    visible = False
     delay = 0  # 4_000
     loop_delay = 100
     test_doc = copy_fix_writer("storyStart.doc")

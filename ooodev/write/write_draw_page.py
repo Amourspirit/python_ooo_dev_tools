@@ -4,30 +4,30 @@ import uno
 
 
 if TYPE_CHECKING:
-    from com.sun.star.style import XStyle
+    from com.sun.star.drawing import XShapes
     from ooodev.proto.component_proto import ComponentT
 
     T = TypeVar("T", bound="ComponentT")
 
-from ooodev.adapter.style.character_style_comp import CharacterStyleComp
+from ooodev.adapter.drawing.generic_draw_page_comp import GenericDrawPageComp
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils import lo as mLo
 
 
-class WriteCharacterStyle(Generic[T], CharacterStyleComp, QiPartial, PropPartial):
-    """Represents writer Character Style."""
+class WriteDrawPage(Generic[T], GenericDrawPageComp, QiPartial, PropPartial):
+    """Represents writer Draw Page."""
 
-    def __init__(self, owner: T, component: XStyle) -> None:
+    def __init__(self, owner: T, component: XShapes) -> None:
         """
         Constructor
 
         Args:
             owner (T): Owner of this component.
-            component (XStyle): UNO object that supports ``com.sun.star.style.CharacterStyle`` service.
+            component (XShapes): UNO object that supports ``com.sun.star.drawing.GenericDrawPage`` service.
         """
         self.__owner = owner
-        CharacterStyleComp.__init__(self, component)  # type: ignore
+        GenericDrawPageComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         # self.__doc = doc

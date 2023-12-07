@@ -3,13 +3,13 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
-
+from .shapes_partial import ShapesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import GenericDrawPage  # service
 
 
-class GenericDrawPageComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement):
+class GenericDrawPageComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement, ShapesPartial):
     """
     Class for managing GenericDrawPage Component.
     """
@@ -27,6 +27,7 @@ class GenericDrawPageComp(ComponentBase, PropertyChangeImplement, VetoableChange
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        ShapesPartial.__init__(self, component=self.component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

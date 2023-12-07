@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import Sequence, overload, TYPE_CHECKING, TypeVar, Generic
+from typing import Any, cast, Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
+    from com.sun.star.text import XTextDocument
     from ooo.dyn.text.control_character import ControlCharacterEnum
     from com.sun.star.text import XTextContent
     from ooodev.proto.style_obj import StyleT
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 from ooodev.utils.color import Color, CommonColor
 from ooodev.office import write as mWrite
+from ooodev.utils import selection as mSelection
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -28,7 +30,11 @@ from . import write_text_frame as mWriteTextFrame
 
 
 class WriteTextCursor(Generic[T], TextCursorComp, PropPartial, QiPartial):
-    """Represents a writer text cursor."""
+    """
+    Represents a writer text cursor.
+
+    This class implements ``__len__()`` method, which returns the number of characters in the range.
+    """
 
     def __init__(self, owner: T, component: XTextRange) -> None:
         """
@@ -43,6 +49,9 @@ class WriteTextCursor(Generic[T], TextCursorComp, PropPartial, QiPartial):
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         # self.__doc = doc
+
+    def __len__(self) -> int:
+        return mSelection.Selection.range_len(cast("XTextDocument", self.owner), self.component)
 
     def add_bookmark(self, name: str) -> bool:
         """
@@ -735,6 +744,295 @@ class WriteTextCursor(Generic[T], TextCursorComp, PropPartial, QiPartial):
         text = self.component.getString()
         self.component.gotoEnd(False)  # to deselect everything
         return text
+
+    def get_position(self) -> int:
+        """
+        Gets position of the cursor
+
+        Args:
+            cursor (XTextCursor): Text Cursor
+
+        Returns:
+            int: Current Cursor Position
+
+        Note:
+            This method is not the most reliable.
+            It attempts to read all the text in a document and move the cursor to the end
+            and then get the position.
+
+            It would be better to use cursors from relative positions in bigger documents.
+        """
+        return mSelection.Selection.get_position(self.component)
+
+    def insert_para(self, para: str, para_style: str) -> None:
+        """
+        Inserts a paragraph with a style applied
+
+        Args:
+            para (str): Paragraph text
+            para_style (str): Style such as 'Heading 1'
+        """
+        mWrite.Write.insert_para(self.component, para, para_style)
+
+    def page_break(self) -> None:
+        """
+        Inserts a page break
+        """
+        mWrite.Write.page_break(self.component)
+
+    # region style()
+    @overload
+    def style(self, *, pos: int, length: int, styles: Sequence[StyleT]) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def style(self, *, pos: int, length: int, prop_name: str, prop_val: object) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+
+        Returns:
+            None:
+        """
+        ...
+
+    def style(self, **kwargs) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+
+        Returns:
+            None:
+
+        See Also:
+            :py:meth:`~.write_doc.WriteDoc.style_left`
+
+        Note:
+            Unlike :py:meth:`~.Write.style_left` this method does not restore any style properties after style is applied.
+        """
+        kwargs["cursor"] = self.component
+        mWrite.Write.style(**kwargs)
+
+    # endregion style()
+
+    # region style_left()
+    @overload
+    def style_left(self, pos: int, styles: Sequence[StyleT]) -> None:
+        """
+        Styles left. From current cursor position to left by pos amount.
+
+        Args:
+            pos (int): Positions to style left
+            styles (Sequence[StyleT]): One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def style_left(self, pos: int, prop_name: str, prop_val: object) -> None:
+        """
+        Styles left. From current cursor position to left by pos amount.
+
+        Args:
+            pos (int): Positions to style left
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+
+        Returns:
+            None:
+        """
+        ...
+
+    def style_left(self, *args, **kwargs) -> None:
+        """
+        Styles left. From current cursor position to left by pos amount.
+
+        Args:
+            pos (int): Positions to style left
+            styles (Sequence[StyleT]): One or more styles to apply to text.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+
+        Returns:
+            None:
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+            Otherwise, the following events are triggered once.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-key-event`
+
+        See Also:
+            :py:meth:`~.write_doc.WriteDoc.style`
+
+        Note:
+            This method restores the style properties to their original state after the style is applied.
+            This is done so applied style properties are reset before next text is appended.
+            This is not the case for :py:meth:`~.Write.style` method.
+        """
+        mWrite.Write.style_left(self.component, *args, **kwargs)
+
+    # endregion style_left()
+    def style_left_bold(self, pos: int) -> None:
+        """
+        Styles bold from current cursor position left by pos amount.
+
+        Args:
+            pos (int): Number of positions to go left
+        """
+        mWrite.Write.style_left_bold(self.component, pos)
+
+    def style_left_code(self, pos: int) -> None:
+        """
+        Styles using a Mono font from current cursor position left by pos amount.
+        Font Char Height is set to ``10``
+
+        Args:
+            pos (int): Number of positions to go left
+
+        Returns:
+            None:
+
+        Note:
+            The font applied is determined by :py:meth:`.Info.get_font_mono_name`
+        """
+        mWrite.Write.style_left_code(self.component, pos)
+
+    def style_left_color(self, pos: int, color: Color) -> None:
+        """
+        Styles color from current cursor position left by pos amount.
+
+        Args:
+            pos (int): Number of positions to go left
+            color (~ooodev.utils.color.Color): RGB color as int to apply
+
+        Returns:
+            None:
+
+        See Also:
+            :py:class:`~.utils.color.CommonColor`
+        """
+        mWrite.Write.style_left_color(self.component, pos, color)
+
+    def style_left_italic(self, pos: int) -> None:
+        """
+        Styles italic from current cursor position left by pos amount.
+
+        Args:
+            pos (int): Number of positions to go left
+        """
+        mWrite.Write.style_left_italic(self.component, pos)
+
+    # region style_prev_paragraph()
+    @overload
+    def style_prev_paragraph(self, styles: Sequence[StyleT]) -> None:
+        """
+        Style previous paragraph.
+
+        Args:
+            styles (Sequence[StyleT]): One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def style_prev_paragraph(self, prop_val: Any) -> None:
+        """
+        Style previous paragraph.
+
+        Args:
+            prop_val (Any): Property value. Applied to ``ParaStyleName`` property.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def style_prev_paragraph(self, prop_val: Any, prop_name: str) -> None:
+        """
+        Style previous paragraph.
+
+        Args:
+            prop_val (Any): Property value.
+            prop_name (str): Property Name. This is the property name to apply the style to.
+
+        Returns:
+            None:
+        """
+        ...
+
+    def style_prev_paragraph(self, *args, **kwargs) -> None:
+        """
+        Style previous paragraph.
+
+        Args:
+            styles (Sequence[StyleT]): One or more styles to apply to text.
+            prop_val (Any): Property value.
+            prop_name (str): Property Name.
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+            Otherwise the following events are triggered once.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-key-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-key-event`
+
+        Returns:
+            None:
+
+        .. collapse:: Example
+
+            .. code-block:: python
+
+                doc.style_prev_paragraph(prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
+        """
+        mWrite.Write.style_prev_paragraph(self.component, *args, **kwargs)
+
+    # endregion style_prev_paragraph()
 
     # region Properties
     @property

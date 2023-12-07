@@ -7,13 +7,17 @@ from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 
 if TYPE_CHECKING:
+    from com.sun.star.graphic import XGraphic
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextRange
     from com.sun.star.text import XText
+    from ooo.dyn.view.paper_format import PaperFormat
     from ooodev.proto.style_obj import StyleT
 
 from ooodev.office import write as mWrite
+from ooodev.utils import selection as mSelection
 from ooodev.utils import lo as mLo
+from ooodev.utils.data_type.size import Size
 from ooodev.adapter.text.text_document_comp import TextDocumentComp
 from ooodev.adapter.container.name_access_comp import NameAccessComp
 from ooodev.adapter.text.textfield.page_count_comp import PageCountComp
@@ -31,6 +35,8 @@ from . import write_character_style as mWriteCharacterStyle
 from . import write_paragraph_style as mWriteParagraphStyle
 from . import write_text_content as mWriteTextContent
 from . import write_text_view_cursor as mWriteTextViewCursor
+from . import write_draw_page as mWriteDrawPage
+from . import write_text_range as mWriteTextRange
 
 
 class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
@@ -137,6 +143,25 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         _Events().trigger(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
         return result
 
+    def compare_cursor_ends(self, c1: XTextRange, c2: XTextRange) -> mSelection.Selection.CompareEnum:
+        """
+        Compares two cursors ranges end positions
+
+        Args:
+            c1 (XTextRange): first cursor range
+            c2 (XTextRange): second cursor range
+
+        Raises:
+            Exception: if comparison fails
+
+        Returns:
+            CompareEnum: Compare result.
+            :py:attr:`.CompareEnum.BEFORE` if ``c1`` end position is before ``c2`` end position.
+            :py:attr:`.CompareEnum.EQUAL` if ``c1`` end position is equal to ``c2`` end position.
+            :py:attr:`.CompareEnum.AFTER` if ``c1`` end position is after ``c2`` end position.
+        """
+        return mSelection.Selection.compare_cursor_ends(c1, c2)
+
     def create_style_char(
         self, style_name: str, styles: Sequence[StyleT] | None = None
     ) -> mWriteCharacterStyle.WriteCharacterStyle:
@@ -204,7 +229,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         See Also:
             `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
         """
-        cursor = mWrite.Write.get_view_cursor(self.component)
+        cursor = mSelection.Selection.get_view_cursor(self.component)
         return mWriteTextViewCursor.WriteTextViewCursor(self, cursor)
 
     def get_doc_settings(self) -> XPropertySet:
@@ -238,6 +263,20 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         if result is None:
             return None
         return NameAccessComp(result)
+
+    def get_left_cursor(self, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor:
+        """
+        Creates a new TextCursor with position left that can travel right.
+
+        Args:
+            rng (XTextRange): Text Range.
+
+        Returns:
+            WriteTextCursor: a new instance of a TextCursor which is located at the specified
+            TextRange to travel in the given text context.
+        """
+        result = mSelection.Selection.get_left_cursor(rng, self.component)
+        return mWriteTextCursor.WriteTextCursor(self, result)
 
     def get_num_of_pages(self) -> int:
         """
@@ -273,3 +312,295 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
             PageNumberComp: Page Number Field
         """
         return PageNumberComp(mWrite.Write.get_page_number(numbering_type=numbering_type, sub_type=sub_type))
+
+    def get_page_size(self) -> Size:
+        """
+        Get page size in ``1/100 mm`` units.
+
+        Raises:
+            PropertiesError: If unable to access properties
+            Exception: If unable to get page size
+
+        Returns:
+            ~ooodev.utils.data_type.size.Size: Page Size in ``1/100 mm`` units.
+        """
+        return mWrite.Write.get_page_size(self.component)
+
+    def get_page_text_size(self) -> Size:
+        """
+        Get page text size in ``1/100 mm`` units.
+
+        Raises:
+            PropertiesError: If unable to access properties
+            Exception: If unable to get page size
+
+        Returns:
+            ~ooodev.utils.data_type.size.Size: Page text Size in ``1/100 mm`` units.
+        """
+        return mWrite.Write.get_page_text_size(self.component)
+
+    def get_page_text_width(self) -> int:
+        """
+        Get the width of the page's text area in ``1/100 mm`` units.
+
+        Returns:
+            int: Page Width in ``1/100 mm`` units on success; Otherwise 0
+        """
+        return mWrite.Write.get_page_text_width(self.component)
+
+    def get_selected_text_range(self) -> mWriteTextRange.WriteTextRange | None:
+        """
+        Gets the text range for current selection
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            MissingInterfaceError: If unable to obtain required interface.
+
+        Returns:
+            WriteTextRange | None: If no selection is made then None is returned; Otherwise, Text Range.
+
+        Note:
+            Writer must be visible for this method or ``None`` is returned.
+        """
+        result = mSelection.Selection.get_selected_text_range(self.component)
+        if result is None:
+            return None
+        return mWriteTextRange.WriteTextRange(self, result)
+
+    def get_selected_text_str(self) -> str:
+        """
+        Gets the first selection text for Document
+
+        Returns:
+            str: Selected text or empty string.
+
+        Note:
+            Writer must be visible for this method or empty string is returned.
+        """
+        return mSelection.Selection.get_selected_text_str(self.component)
+
+    def get_draw_page(self) -> mWriteDrawPage.WriteDrawPage:
+        """
+        Gets draw page.
+
+        Returns:
+            WriteDrawPage: Draw Page
+        """
+        draw_page = mWrite.Write.get_draw_page(self.component)
+        return mWriteDrawPage.WriteDrawPage(self, draw_page)
+
+    def get_right_cursor(self, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor:
+        """
+        Creates a new TextCursor with position right that can travel left.
+
+        Args:
+            rng (XTextRange): Text Range.
+
+        Returns:
+            WriteTextCursor: a new instance of a TextCursor which is located at the specified
+            TextRange to travel in the given text context.
+        """
+        result = mSelection.Selection.get_right_cursor(rng, self.component)
+        return mWriteTextCursor.WriteTextCursor(self, result)
+
+    def get_text_frames(self) -> NameAccessComp | None:
+        """
+        Gets document Text Frames.
+
+        Args:
+            doc (XComponent): Document
+
+        Raises:
+            MissingInterfaceError: if doc does not implement ``XTextFramesSupplier`` interface
+
+        Returns:
+            NameAccessComp | None: Text Frames on success, Otherwise, None
+        """
+        result = mWrite.Write.get_text_frames(self.component)
+        if result is None:
+            return None
+        return NameAccessComp(result)
+
+    def get_text_graphics(self) -> List[XGraphic]:
+        """
+        Gets text graphics.
+
+        Raises:
+            Exception: If unable to get text graphics
+
+        Returns:
+            List[XGraphic]: Text Graphics
+
+        Note:
+            If there is error getting a graphic link then it is ignored
+            and not added to the return value.
+        """
+        return mWrite.Write.get_text_graphics(self.component)
+
+    def is_anything_selected(self) -> bool:
+        """
+        Determine if anything is selected.
+
+        If Write document is not visible this method returns false.
+
+        Returns:
+            bool: True if anything in the document is selected: Otherwise, False
+
+        Note:
+            Writer must be visible for this method or ``False`` is always returned.
+        """
+        return mSelection.Selection.is_anything_selected(self.component)
+
+    def select_next_word(self) -> bool:
+        """
+        Select the word right from the current cursor position.
+
+        Returns:
+            bool: True if go to next word succeeds; Otherwise, False.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.WORD_SELECTING` :eventref:`write_word_selecting`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.WORD_SELECTED` :eventref:`write_word_selected`
+
+        Note:
+            The method returning ``True`` does not necessarily mean that the cursor is located at
+            the next word, or any word at all! This may happen for example if it travels over empty paragraphs.
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``text_doc``.
+        """
+        return mSelection.Selection.select_next_word(self.component)
+
+    def save_doc(self, fnm: PathOrStr) -> bool:
+        """
+        Saves text document
+
+        Args:
+            fnm (PathOrStr): Path to save as
+
+        Returns:
+            bool: True if doc is saved; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_SAVING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``text_doc`` and ``fnm``.
+
+        Attention:
+            :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
+        """
+        return mWrite.Write.save_doc(self.component, fnm)
+
+    def set_a4_page_format(
+        self,
+    ) -> bool:
+        """
+        Set Page Format to A4
+
+        Returns:
+            bool: ``True`` if page format is set; Otherwise, ``False``
+
+        See Also:
+            :py:meth:`~.write_doc.WriteDoc.set_page_format`
+
+        Attention:
+            :py:meth:`~.write.Write.set_page_format` method is called along with any of its events.
+        """
+        return mWrite.Write.set_a4_page_format(self.component)
+
+    def set_footer(self, text: str, styles: Sequence[StyleT] | None = None) -> None:
+        """
+        Modify the footer via the page style for the document.
+        Put the text on the right hand side in the header in
+        a general font of 10pt.
+
+        Args:
+            text (str): Header Text
+            styles (Sequence[StyleT]): Styles to apply to the text.
+
+        Raises:
+            PropertiesError: If unable to access properties
+            Exception: If unable to set header text
+
+        See Also:
+            :py:meth:`~.write.Write.set_header`
+
+        Note:
+            The font applied is determined by :py:meth:`.Info.get_font_general_name`
+        """
+        mWrite.Write.set_footer(self.component, text, styles)
+
+    def set_header(self, text: str, styles: Sequence[StyleT] | None = None) -> None:
+        """
+        Modify the header via the page style for the document.
+        Put the text on the right hand side in the header in
+        a general font of 10pt.
+
+        Args:
+            text (str): Header Text
+            styles (Sequence[StyleT]): Styles to apply to the text.
+
+        Raises:
+            PropertiesError: If unable to access properties
+            Exception: If unable to set header text
+
+        See Also:
+            :py:meth:`~.write.Write.set_footer`
+
+        Note:
+            The font applied is determined by :py:meth:`.Info.get_font_general_name`
+        """
+        mWrite.Write.set_header(self.component, text, styles)
+
+    def set_page_format(self, paper_format: PaperFormat) -> bool:
+        """
+        Set Page Format
+
+        Args:
+            paper_format (~com.sun.star.view.PaperFormat): Paper Format.
+
+        Raises:
+            MissingInterfaceError: If ``text_doc`` does not implement ``XPrintable`` interface
+
+        Returns:
+            bool: ``True`` if page format is set; Otherwise, ``False``
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.PAGE_FORMAT_SETTING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.PAGE_FORMAT_SET` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``fnm``.
+
+        See Also:
+            - :py:meth:`~.write_doc.WriteDoc.set_a4_page_format`
+        """
+        return mWrite.Write.set_page_format(self.component, paper_format)
+
+    def set_page_numbers(self) -> PageNumberComp:
+        """
+        Modify the footer via the page style for the document.
+        Put page number & count in the center of the footer in Times New Roman, 12pt
+
+        Raises:
+            PropertiesError: If unable to get properties
+            Exception: If Unable to set page numbers
+
+        Returns:
+            PageNumberComp: Page Number Field
+
+        .. versionchanged:: 0.16.0
+            Returns ``XTextField``.
+        """
+        result = mWrite.Write.set_page_numbers(self.component)
+        return PageNumberComp(result)

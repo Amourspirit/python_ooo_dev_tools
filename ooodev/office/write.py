@@ -4,7 +4,7 @@
 # region Imports
 from __future__ import annotations
 import contextlib
-from typing import TYPE_CHECKING, Iterable, List, Sequence, cast, overload, Union
+from typing import Any, TYPE_CHECKING, Iterable, List, Sequence, cast, overload, Union
 import re
 import uno
 from com.sun.star.awt import FontWeight
@@ -1594,10 +1594,9 @@ class Write(mSel.Selection):
         Args:
             cursor (XTextCursor): Text Cursor
             pos (int): Positions to style left
-            styles (Sequence[StyleT]):One or more styles to apply to text.
+            styles (Sequence[StyleT]): One or more styles to apply to text.
             prop_name (str): Property Name such as ``CharHeight``
             prop_val (object): Property Value such as ``10``
-            styles (Sequence[StyleT], optional): One or more styles to apply.
 
         Returns:
             None:
@@ -1818,24 +1817,24 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: object) -> None:
+    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: Any) -> None:
         ...
 
     @overload
     @classmethod
-    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: object, prop_name: str) -> None:
+    def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: Any, prop_name: str) -> None:
         ...
 
     @classmethod
     def style_prev_paragraph(cls, *args, **kwargs) -> None:
         """
-        Style previous paragraph
+        Style previous paragraph.
 
         Args:
-            cursor (XTextCursor): Text Cursor
+            cursor (XTextCursor): Text Cursor.
             styles (Sequence[StyleT]): One or more styles to apply to text.
-            prop_val (object): Property value
-            prop_name (str): Property Name
+            prop_val (Any): Property value.
+            prop_name (str): Property Name. Defaults to ``ParaStyleName``.
 
         :events:
             If using styles then the following events are triggered for each style.
@@ -2107,10 +2106,10 @@ class Write(mSel.Selection):
             bool: ``True`` if page format is set; Otherwise, ``False``
 
         See Also:
-            :py:meth:`set_page_format`
+            :py:meth:`~.write.Write.set_page_format`
 
         Attention:
-            :py:meth:`~.Write.set_page_format` method is called along with any of its events.
+            :py:meth:`~.write.Write.set_page_format` method is called along with any of its events.
         """
         return cls.set_page_format(text_doc=text_doc, paper_format=PaperFormat.A4)
 
@@ -2118,7 +2117,7 @@ class Write(mSel.Selection):
 
     # region ------------- headers and footers -------------------------
     @classmethod
-    def set_page_numbers(cls, text_doc: XTextDocument) -> None:
+    def set_page_numbers(cls, text_doc: XTextDocument) -> XTextField:
         """
         Modify the footer via the page style for the document.
         Put page number & count in the center of the footer in Times New Roman, 12pt
@@ -2129,6 +2128,12 @@ class Write(mSel.Selection):
         Raises:
             PropertiesError: If unable to get properties
             Exception: If Unable to set page numbers
+
+        Returns:
+            XTextField: Page Number Field
+
+        .. versionchanged:: 0.16.0
+            Returns ``XTextField``.
         """
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
@@ -2163,6 +2168,7 @@ class Write(mSel.Selection):
                     XTextContent, f"Missing interface for page count. {XTextContent.__pyunointerface__}"
                 )
             cls._append_text_content(cursor=footer_cursor, text_content=pg_count_content)
+            return pg_number
         except Exception as e:
             raise Exception("Unable to set page numbers") from e
 
@@ -3401,12 +3407,12 @@ class Write(mSel.Selection):
         return name_access
 
     @staticmethod
-    def is_anchored_graphic(graphic: object) -> bool:
+    def is_anchored_graphic(graphic: Any) -> bool:
         """
         Gets if a graphic object is an anchored graphic
 
         Args:
-            graphic (object): object that implements XServiceInfo
+            graphic (Any): object that implements XServiceInfo
 
         Returns:
             bool: True if is anchored graphic; Otherwise, False

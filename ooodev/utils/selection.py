@@ -557,13 +557,20 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_position(cls, cursor: XTextCursor) -> int:
         """
-        Gets position of the cursor
+        Gets position of the cursor.
 
         Args:
-            cursor (XTextCursor): Text Cursor
+            cursor (XTextCursor): Text Cursor.
 
         Returns:
-            int: Current Cursor Position
+            int: Current Cursor Position.
+
+        Note:
+            This method is not the most reliable.
+            It attempts to read all the text in a document and move the cursor to the end
+            and then get the position.
+
+            It would be better to use cursors from relative positions in bigger documents.
         """
         # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
         #     i_max = 0

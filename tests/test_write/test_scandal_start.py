@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, cast
 import pytest
 from pathlib import Path
+
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -17,15 +18,16 @@ from com.sun.star.text import XTextRange
 
 
 if TYPE_CHECKING:
-    from com.sun.star.text import Paragraph # service
-    from com.sun.star.text import TextPortion # servcie
+    from com.sun.star.text import Paragraph  # service
+    from com.sun.star.text import TextPortion  # servcie
 
 # Other resources:  https://flylib.com/books/en/4.290.1.130/1/
 #                       OOME_4_0.pdf pg: 393
 #                       Everything Cursors
 #                   https://ask.libreoffice.org/t/cursor-gotonextsentence-failing/23129/3
-#                       Demonstrates a pythonic way of enumering paragraphs and sentences.
-#                       I found count_Sentences to not work, got somethink like 1500 sentences on scandalStart.odt, Way too high
+#                       Demonstrates a pythonic way of enumerating paragraphs and sentences.
+#                       I found count_Sentences to not work, got something like 1500 sentences on scandalStart.odt, Way too high
+
 
 def test_writer_scandal_start(loader, copy_fix_writer):
     visible = True
@@ -37,24 +39,25 @@ def test_writer_scandal_start(loader, copy_fix_writer):
     try:
         if visible:
             GUI.set_visible(visible, doc)
-       
+
         para_count, word_count, parts_count = enumerate_text_sections(doc)
         assert para_count == 7
         assert word_count == 153
         assert parts_count == 11
-        
+
         Lo.delay(delay)
     finally:
         Lo.close_doc(doc, False)
+
 
 def get_last_para(doc: XTextDocument) -> str:
     # tvc = Write.get_view_cursor(doc)
     para_cursor = Write.get_paragraph_cursor(doc)
     para_cursor.gotoStart(False)
-    
-    curr_para = ''
+
+    curr_para = ""
     while True:
-        para_cursor.gotoEndOfParagraph(True) # select all of paragraph
+        para_cursor.gotoEndOfParagraph(True)  # select all of paragraph
         curr_para = para_cursor.getString()
         if para_cursor.gotoNextParagraph(False) is False:
             break
@@ -73,16 +76,16 @@ def enumerate_text_sections(doc: XTextDocument):
             p_enum = cast("Paragraph", para)
             p_range = Lo.qi(XTextRange, p_enum)
             r_str = p_range.getString()
-            
+
             if r_str == "":
                 continue
             p_count += 1
             s = f"{p_count}:"
-            
+
             # cursor = Write.get_cursor(rng=p_range, txt=xtext)
             # w_count += count_cursor_words(cursor=cursor)
             w_count += Write.get_word_count_ooo(text=r_str, word_type=WordTypeEnum.WORD_COUNT)
-            
+
             t_e = p_enum.createEnumeration()
             while t_e.hasMoreElements():
                 # elemet here are portions. For instance of a word is highlighted then it will be a seperate portion
