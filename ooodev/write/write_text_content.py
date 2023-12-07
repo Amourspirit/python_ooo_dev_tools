@@ -1,29 +1,27 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
-
 if TYPE_CHECKING:
-    from .write_text_cursor import WriteTextCursor
+    from com.sun.star.text import XTextContent
+    from ooodev.proto.component_proto import ComponentT
+
+    T = TypeVar("T", bound="ComponentT")
 
 from ooodev.adapter.text.text_content_comp import TextContentComp
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils import lo as mLo
 
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextContent
-
-
-class WriteTextContent(TextContentComp, QiPartial):
+class WriteTextContent(Generic[T], TextContentComp, QiPartial):
     """Represents writer text content."""
 
-    def __init__(self, owner: WriteTextCursor, component: XTextContent) -> None:
+    def __init__(self, owner: T, component: XTextContent) -> None:
         """
         Constructor
 
         Args:
-            owner (WriteTextCursor): Sheet that owns this cell range.
+            owner (T): Cursor or Doc that owns this component.
             component (XTextContent): UNO object that supports ``com.sun.star.text.TextContent`` service.
         """
         self.__owner = owner
@@ -33,8 +31,8 @@ class WriteTextContent(TextContentComp, QiPartial):
 
     # region Properties
     @property
-    def write_text_cursor(self) -> WriteTextCursor:
-        """Doc that owns this Cursor."""
+    def owner(self) -> T:
+        """Component Owner"""
         return self.__owner
 
     # endregion Properties

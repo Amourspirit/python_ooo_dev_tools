@@ -64,7 +64,7 @@ class TextRangeComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
     # region Properties
     @property
     def component(self) -> TextRange:
-        """Sheet Cell Cursor Component"""
+        """TextRange Component"""
         return cast("TextRange", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

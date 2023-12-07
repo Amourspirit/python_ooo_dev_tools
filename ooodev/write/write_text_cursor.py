@@ -1,13 +1,18 @@
 from __future__ import annotations
-from typing import Sequence, overload, TYPE_CHECKING
+from typing import Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
 
 if TYPE_CHECKING:
-    from .write_doc import WriteDoc
+    from com.sun.star.text import XTextRange
+    from ooo.dyn.text.control_character import ControlCharacterEnum
+    from com.sun.star.text import XTextContent
     from ooodev.proto.style_obj import StyleT
     from ooodev.utils.type_var import PathOrStr, Table
     from ooodev.units import UnitT
+    from ooodev.proto.component_proto import ComponentT
+
+    T = TypeVar("T", bound="ComponentT")
 
 from ooodev.utils.color import Color, CommonColor
 from ooodev.office import write as mWrite
@@ -19,20 +24,18 @@ from ooodev.adapter.drawing.graphic_object_shape_comp import GraphicObjectShapeC
 
 from . import write_text_content as mWriteTextContent
 from . import write_text_table as mWriteTextTable
-
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextRange
+from . import write_text_frame as mWriteTextFrame
 
 
-class WriteTextCursor(TextCursorComp, PropPartial, QiPartial):
+class WriteTextCursor(Generic[T], TextCursorComp, PropPartial, QiPartial):
     """Represents a writer text cursor."""
 
-    def __init__(self, owner: WriteDoc, component: XTextRange) -> None:
+    def __init__(self, owner: T, component: XTextRange) -> None:
         """
         Constructor
 
         Args:
-            owner (WriteDoc): Sheet that owns this cell range.
+            owner (WriteDoc): Doc that owns this component.
             col_obj (Any): Range object.
         """
         self.__owner = owner
@@ -269,7 +272,7 @@ class WriteTextCursor(TextCursorComp, PropPartial, QiPartial):
         if styles is None:
             styles = ()
         result = mWrite.Write.add_image_link(
-            doc=self.write_doc.component,
+            doc=self.owner.component,
             cursor=self.component,
             fnm=fnm,
             width=width,
@@ -427,10 +430,316 @@ class WriteTextCursor(TextCursorComp, PropPartial, QiPartial):
         )
         return mWriteTextTable.WriteTextTable(self, result)
 
+    def add_text_frame(
+        self,
+        *,
+        text: str = "",
+        ypos: int | UnitT = 300,
+        width: int | UnitT = 5000,
+        height: int | UnitT = 5000,
+        page_num: int = 1,
+        border_color: Color | None = None,
+        background_color: Color | None = None,
+        styles: Sequence[StyleT] | None = None,
+    ) -> mWriteTextFrame.WriteTextFrame:
+        """
+        Adds a text frame.
+
+        Args:
+            text (str, optional): Frame Text
+            ypos (int, UnitT. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
+            width (int, UnitT, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            height (int, UnitT, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
+            page_num (int, optional): Page Number to add text frame. If ``0`` Then Frame is anchored to paragraph. Default ``1``.
+            border_color (:py:data:`~.utils.color.Color`, optional):.color.Color`, optional): Border Color.
+            background_color (:py:data:`~.utils.color.Color`, optional): Background Color.
+            styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
+
+        Raises:
+            CreateInstanceMsfError: If unable to create text.TextFrame
+            CancelEventError: If ``WriteNamedEvent.TEXT_FRAME_ADDING`` event is cancelled
+            Exception: If unable to add text frame
+
+        Returns:
+            WriteTextFrame: Text frame that is added to document.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.TEXT_FRAME_ADDING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.TEXT_FRAME_ADDED` :eventref:`src-docs-event`
+
+        Hint:
+            Styles that can be applied are found in :doc:`ooodev.format.writer.direct.frame </src/format/ooodev.format.writer.direct.frame>` subpackages.
+
+        Note:
+            Event args ``event_data`` is a dictionary containing all method args.
+
+        See Also:
+            - :py:class:`~.utils.color.CommonColor`
+            - :py:class:`~.utils.color.StandardColor`
+        """
+        result = mWrite.Write.add_text_frame(
+            cursor=self.component,
+            text=text,
+            ypos=ypos,
+            width=width,
+            height=height,
+            page_num=page_num,
+            border_color=border_color,
+            background_color=background_color,
+            styles=styles,
+        )
+        return mWriteTextFrame.WriteTextFrame(self, result)
+
+    # region append()
+    @overload
+    def append(self, text: str, styles: Sequence[StyleT]) -> None:
+        """
+        Append content to cursor
+
+        Args:
+            text (str): Text to append.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def append(self, ctl_char: ControlCharacterEnum) -> None:
+        """
+        Append content to cursor
+
+        Args:
+            ctl_char (int): Control Char (like a paragraph break or a hard space).
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def append(self, text_content: XTextContent) -> None:
+        """
+        Append content to cursor
+
+        Args:
+            text_content (XTextContent): Text content, such as a text table, text frame or text field.
+
+        Returns:
+            None:
+        """
+        ...
+
+    def append(self, *args, **kwargs) -> None:
+        """
+        Append content to cursor
+
+        Args:
+            text (str): Text to append.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+            ctl_char (int): Control Char (like a paragraph break or a hard space).
+            text_content (XTextContent): Text content, such as a text table, text frame or text field.
+
+        Returns:
+            None:
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+            - :doc:`ooodev.format.writer.direct.char </src/format/ooodev.format.writer.direct.char>`
+
+        See Also:
+            `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
+        """
+        mWrite.Write.append(self.component, *args, **kwargs)
+
+    # endregion append()
+
+    def append_date_time(self) -> None:
+        """
+        Append two DateTime fields, one for the date, one for the time
+
+        Raises:
+            MissingInterfaceError: If required interface cannot be obtained.
+        """
+        mWrite.Write.append_date_time(self.component)
+
+    # region append_line()
+    @overload
+    def append_line(
+        self,
+    ) -> None:
+        ...
+
+    @overload
+    def append_line(self, text: str) -> None:
+        """
+        Appends a new Line.
+
+        Args:
+            text (str, optional): text to append before new line is inserted.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def append_line(self, text: str, styles: Sequence[StyleT]) -> None:
+        """
+        Appends a new Line.
+
+        Args:
+            text (str, optional): text to append before new line is inserted.
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
+
+        Returns:
+            None:
+        """
+        ...
+
+    def append_line(self, text: str = "", styles: Sequence[StyleT] | None = None) -> None:
+        """
+        Appends a new Line.
+
+        Args:
+            text (str, optional): text to append before new line is inserted.
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
+
+        Returns:
+            None:
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+        """
+        if styles:
+            mWrite.Write.append_line(self.component, text, styles)
+        else:
+            mWrite.Write.append_line(self.component, text)
+
+    # endregion append_line()
+
+    # region append_para()
+    @overload
+    def append_para(self) -> None:
+        """
+        Appends text (if present) and then a paragraph break.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def append_para(self, text: str) -> None:
+        """
+        Appends text (if present) and then a paragraph break.
+
+            text (str, optional): Text to append
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    def append_para(self, text: str, styles: Sequence[StyleT]) -> None:
+        """
+        Appends text (if present) and then a paragraph break.
+
+        Args:
+            text (str, optional): Text to append
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
+
+        Returns:
+            None:
+        """
+        ...
+
+    def append_para(self, text: str = "", styles: Sequence[StyleT] | None = None) -> None:
+        """
+        Appends text (if present) and then a paragraph break.
+
+        Args:
+            text (str, optional): Text to append
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
+
+        Returns:
+            None:
+
+        :events:
+            If using styles then the following events are triggered for each style.
+
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
+
+        Hint:
+            Styles that can be applied are found in the following packages.
+
+            - :doc:`ooodev.format.writer.direct.char </src/format/ooodev.format.writer.direct.char>`
+            - :doc:`ooodev.format.writer.direct.para </src/format/ooodev.format.writer.direct.para>`
+        """
+        if styles:
+            mWrite.Write.append_para(self.component, text, styles)
+        else:
+            mWrite.Write.append_para(self.component, text)
+
+    # endregion append_para()
+
+    def column_break(self) -> None:
+        """
+        Inserts a column break
+
+        """
+        mWrite.Write.column_break(self.component)
+
+    def end_line(self) -> None:
+        """
+        Inserts a line break
+        """
+        mWrite.Write.end_line(self.component)
+
+    def end_paragraph(self) -> None:
+        """
+        Inserts a paragraph break
+        """
+        mWrite.Write.end_paragraph(self.component)
+
+    def get_all_text(self) -> str:
+        """
+        Gets the text part of the document
+
+        Returns:
+            str: text
+        """
+        self.component.gotoStart(False)
+        self.component.gotoEnd(True)
+        text = self.component.getString()
+        self.component.gotoEnd(False)  # to deselect everything
+        return text
+
     # region Properties
     @property
-    def write_doc(self) -> WriteDoc:
-        """Doc that owns this Cursor."""
+    def owner(self) -> T:
+        """Owner of this component."""
         return self.__owner
 
     # endregion Properties

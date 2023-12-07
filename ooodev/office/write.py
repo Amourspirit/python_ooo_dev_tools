@@ -48,6 +48,7 @@ from com.sun.star.uno import Exception as UnoException
 from com.sun.star.util import XCloseable
 from com.sun.star.view import XPrintable
 
+from ooo.dyn.style.numbering_type import NumberingTypeEnum as NumberingTypeEnum
 from ooo.dyn.awt.font_slant import FontSlant
 from ooo.dyn.awt.size import Size as UnoSize  # struct
 from ooo.dyn.beans.property_value import PropertyValue
@@ -474,7 +475,7 @@ class Write(mSel.Selection):
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_CLOSED` :eventref:`src-docs-event`
 
         Note:
-             Event args ``event_data`` is a dictionary containing ``text_doc``.
+            Event args ``event_data`` is a dictionary containing ``text_doc``.
 
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
@@ -975,12 +976,15 @@ class Write(mSel.Selection):
     @classmethod
     def append_line(cls, cursor: XTextCursor, text: str = "", styles: Sequence[StyleT] | None = None) -> None:
         """
-        Appends a new Line
+        Appends a new Line.
 
         Args:
-            cursor (XTextCursor): Text Cursor
+            cursor (XTextCursor): Text Cursor.
             text (str, optional): text to append before new line is inserted.
             styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
+
+        Returns:
+            None:
 
         :events:
             If using styles then the following events are triggered for each style.
@@ -1091,7 +1095,7 @@ class Write(mSel.Selection):
             "com.sun.star.drawing.FillProperties",
         )
 
-        if styles is not None:
+        if styles:
             for style in styles:
                 if not style.support_service(*style_srv):
                     mLo.Lo.print(f"append_para(), Supported services are {style_srv}. Not Supported style: {style}")
@@ -2163,9 +2167,15 @@ class Write(mSel.Selection):
             raise Exception("Unable to set page numbers") from e
 
     @staticmethod
-    def get_page_number() -> XTextField:
+    def get_page_number(
+        numbering_type: NumberingTypeEnum = NumberingTypeEnum.ARABIC, sub_type: PageNumberType = PageNumberType.CURRENT
+    ) -> XTextField:
         """
         Gets Arabic style number showing current page value
+
+        Args:
+            numbering_type (NumberingTypeEnum, optional): Numbering Type. Defaults to ``NumberingTypeEnum.ARABIC``.
+            sub_type (PageNumberType, optional): Page Number Type. Defaults to ``PageNumberType.CURRENT``.
 
         Returns:
             XTextField: Page Number as Text Field
@@ -2174,19 +2184,22 @@ class Write(mSel.Selection):
             :py:meth:`~.Write.get_current_page`
         """
         num_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageNumber", raise_err=True)
-        mProps.Props.set(num_field, NumberingType=NumberingType.ARABIC, SubType=PageNumberType.CURRENT)
+        mProps.Props.set(num_field, NumberingType=numbering_type.value, SubType=sub_type)
         return num_field
 
     @staticmethod
-    def get_page_count() -> XTextField:
+    def get_page_count(numbering_type: NumberingTypeEnum = NumberingTypeEnum.ARABIC) -> XTextField:
         """
-        return Arabic style number showing current page count
+        Return Arabic style number showing current page count
+
+        Args:
+            numbering_type (NumberingTypeEnum, optional): Numbering Type. Defaults to ``NumberingTypeEnum.ARABIC``.
 
         Returns:
             XTextField: Page Count as Text Field
         """
         pc_field = mLo.Lo.create_instance_msf(XTextField, "com.sun.star.text.TextField.PageCount", raise_err=True)
-        mProps.Props.set(pc_field, NumberingType=NumberingType.ARABIC)
+        mProps.Props.set(pc_field, NumberingType=numbering_type.value)
         return pc_field
 
     @staticmethod

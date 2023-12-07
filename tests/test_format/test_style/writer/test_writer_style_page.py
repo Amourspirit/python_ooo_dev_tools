@@ -24,6 +24,7 @@ def test_write(loader, para_text) -> None:
         GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
         # the style technically could be applied to the cursor and still work.
+        # returns TextView Service.
         pg_cursor = Write.get_page_cursor(doc)
         style = Page(name=WriterStylePageKind.FIRST_PAGE)
         style.apply(pg_cursor)

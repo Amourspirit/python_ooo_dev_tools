@@ -17,7 +17,7 @@ from com.sun.star.text import XTextDocument
 
 
 def test_shuffle_words(loader, copy_fix_writer, tmp_path_fn):
-    visible = False
+    visible = True
     delay = 0  # 4_000
     loop_delay = 100
     test_doc = copy_fix_writer("storyStart.doc")
@@ -25,7 +25,7 @@ def test_shuffle_words(loader, copy_fix_writer, tmp_path_fn):
     Write.open_doc(fnm=test_doc, loader=loader)
     # could have captured doc as: doc = Write.open_doc(fnm=test_doc, loader=loader)
     # just confirming that Lo.XSCRIPTCONTEXT is working.
-    # Document is not visibe at this point os it is not available via Lo.XSCRIPTCONTEXT.getDocument()
+    # Document is not visible at this point os it is not available via Lo.XSCRIPTCONTEXT.getDocument()
     # or Lo.this_component
     doc = Lo.lo_component
     assert doc is not None
