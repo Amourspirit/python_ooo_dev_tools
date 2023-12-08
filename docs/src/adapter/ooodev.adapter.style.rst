@@ -10,7 +10,9 @@ Submodules
    ooodev.adapter.style.character_properties_asian_comp
    ooodev.adapter.style.character_properties_comp
    ooodev.adapter.style.character_properties_complex_comp
+   ooodev.adapter.style.character_style_comp
    ooodev.adapter.style.paragraph_properties_comp
+   ooodev.adapter.style.paragraph_style_comp
 
 Module contents
 ---------------
