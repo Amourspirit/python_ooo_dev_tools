@@ -36,8 +36,16 @@ class TextViewCursorPartial(mTextCursorPartial.TextCursorPartial):
         """Returns True if the cursor is visible."""
         return self.__component.isVisible()
 
-    def set_visible(self, visible: bool) -> None:
-        """Sets the visibility of the cursor."""
+    def set_visible(self, visible: bool = True) -> None:
+        """
+        Sets the visibility of the cursor.
+
+        Args:
+            visible (bool, optional): ``True`` to set the view cursor visible, False to hide it. Defaults to ``True``.
+
+        Returns:
+            None:
+        """
         self.__component.setVisible(visible)
 
     def get_position(self) -> Point:

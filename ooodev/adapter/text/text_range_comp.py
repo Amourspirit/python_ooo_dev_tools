@@ -1,8 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
+from .text_range_partial import TextRangePartial
 
 
 if TYPE_CHECKING:
@@ -10,7 +9,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
 
 
-class TextRangeComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement):
+class TextRangeComp(ComponentBase, TextRangePartial):
     """
     Class for managing TextRange Component.
     """
@@ -26,9 +25,8 @@ class TextRangeComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
         """
 
         ComponentBase.__init__(self, component)
+        TextRangePartial.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
@@ -36,30 +34,6 @@ class TextRangeComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
         return ("com.sun.star.text.TextRange",)
 
     # endregion Overrides
-
-    # region Methods
-    def get_start(self) -> TextRangeComp:
-        """Returns a text range which contains only the start of this text range."""
-        return TextRangeComp(self.component.getStart())
-
-    def get_end(self) -> TextRangeComp:
-        """Returns a text range which contains only the end of this text range."""
-        return TextRangeComp(self.component.getEnd())
-
-    def get_string(self) -> str:
-        """Returns the string of this text range."""
-        return self.component.getString()
-
-    def set_string(self, string: str) -> None:
-        """
-        Sets the string of this text range.
-
-        The whole string of characters of this piece of text is replaced.
-        All styles are removed when applying this method.
-        """
-        self.component.setString(string)
-
-    # endregion Methods
 
     # region Properties
     @property

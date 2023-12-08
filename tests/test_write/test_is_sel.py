@@ -4,7 +4,8 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-def test_numstyle(loader):
+
+def test_num_style(loader):
     """
     This test requires Write to be visible.
     If not visible then Write.is_anything_selected() will return false every time.
@@ -22,7 +23,7 @@ def test_numstyle(loader):
 
         assert Write.is_anything_selected(doc) == False
         # must be a view cursor and not a text cursor.
-        # text curors do no make selection at a document level.
+        # text cursor do no make selection at a document level.
         cursor = Write.get_view_cursor(doc)
 
         Write.append_para(cursor, "The following points are important:")

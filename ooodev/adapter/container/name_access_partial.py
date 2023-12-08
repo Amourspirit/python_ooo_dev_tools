@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any
 import uno
 
-if TYPE_CHECKING:
-    from com.sun.star.container import XNameAccess
+from com.sun.star.container import XNameAccess
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo

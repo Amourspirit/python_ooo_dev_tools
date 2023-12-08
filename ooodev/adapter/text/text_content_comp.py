@@ -5,6 +5,7 @@ import uno
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 
 from ooodev.adapter.component_base import ComponentBase
+from .text_content_partial import TextContentPartial
 
 
 if TYPE_CHECKING:
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextContent
 
 
-class TextContentComp(ComponentBase):
+class TextContentComp(ComponentBase, TextContentPartial):
     """
     Class for managing TextContent Component.
     """
@@ -28,6 +29,7 @@ class TextContentComp(ComponentBase):
         """
 
         ComponentBase.__init__(self, component)
+        TextContentPartial.__init__(self, component)  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
@@ -35,10 +37,6 @@ class TextContentComp(ComponentBase):
         return ("com.sun.star.text.TextContent",)
 
     # endregion Overrides
-
-    # region Methods
-
-    # endregion Methods
 
     # region Properties
     @property

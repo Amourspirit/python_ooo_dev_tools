@@ -31,16 +31,38 @@ from ooodev.utils.data_type.size import Size
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
+from ooodev.adapter.document.document_event_events import DocumentEventEvents
+from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
+from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.util.modify_events import ModifyEvents
+from ooodev.adapter.util.refresh_events import RefreshEvents
+from ooodev.adapter.view.print_job_events import PrintJobEvents
+from ooodev.events.args.listener_event_args import ListenerEventArgs
 from . import write_character_style as mWriteCharacterStyle
 from . import write_draw_page as mWriteDrawPage
+from . import write_paragraph_cursor as mWriteParagraphCursorCursor
 from . import write_paragraph_style as mWriteParagraphStyle
+from . import write_paragraphs as mWriteParagraphs
+from . import write_sentence_cursor as mWriteSentenceCursor
+from . import write_text as mWriteText
 from . import write_text_content as mWriteTextContent
 from . import write_text_cursor as mWriteTextCursor
 from . import write_text_range as mWriteTextRange
 from . import write_text_view_cursor as mWriteTextViewCursor
+from . import write_word_cursor as mWriteWordCursor
 
 
-class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
+class WriteDoc(
+    TextDocumentComp,
+    DocumentEventEvents,
+    ModifyEvents,
+    PrintJobEvents,
+    RefreshEvents,
+    PropertyChangeImplement,
+    VetoableChangeImplement,
+    QiPartial,
+    PropPartial,
+):
     """A class to represent a Write document."""
 
     def __init__(self, doc: XTextDocument) -> None:
@@ -51,8 +73,39 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
             doc (XTextDocument): A UNO object that supports ``com.sun.star.text.TextDocument`` service.
         """
         TextDocumentComp.__init__(self, doc)  # type: ignore
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
+        DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
+        ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
+        PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
+        RefreshEvents.__init__(self, trigger_args=generic_args, cb=self._on_refresh_add_remove)
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+
+    # region Lazy Listeners
+
+    def _on_modify_events_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        # will only ever fire once
+        self.component.addModifyListener(self.events_listener_modify)
+        event.remove_callback = True
+
+    def _on_document_event_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        # will only ever fire once
+        self.component.addDocumentEventListener(self.events_listener_document_event)
+        event.remove_callback = True
+
+    def _on_print_job_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        # will only ever fire once
+        self.component.addPrintJobListener(self.events_listener_print_job)
+        event.remove_callback = True
+
+    def _on_refresh_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        # will only ever fire once
+        self.component.addRefreshListener(self.events_listener_refresh)
+        event.remove_callback = True
+
+    # endregion Lazy Listeners
 
     # region get_cursor()
     @overload
@@ -200,7 +253,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         result = mWrite.Write.create_style_para(self.component, style_name, styles)
         return mWriteParagraphStyle.WriteParagraphStyle(self, result)
 
-    def find_bookmark(self, bm_name: str) -> mWriteTextContent.WriteTextContent | None:
+    def find_bookmark(self, bm_name: str) -> mWriteTextContent.WriteTextContent[WriteDoc] | None:
         """
         Finds a bookmark
 
@@ -215,7 +268,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
             return None
         return mWriteTextContent.WriteTextContent(self, result)
 
-    def get_view_cursor(self) -> mWriteTextViewCursor.WriteTextViewCursor:
+    def get_view_cursor(self) -> mWriteTextViewCursor.WriteTextViewCursor[WriteDoc]:
         """
         Gets document view cursor.
 
@@ -265,7 +318,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
             return None
         return NameAccessComp(result)
 
-    def get_left_cursor(self, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor:
+    def get_left_cursor(self, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """
         Creates a new TextCursor with position left that can travel right.
 
@@ -349,7 +402,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         """
         return mWrite.Write.get_page_text_width(self.component)
 
-    def get_selected(self) -> mWriteTextRange.WriteTextRange | None:
+    def get_selected(self) -> mWriteTextRange.WriteTextRange[WriteDoc] | None:
         """
         Gets the text range for current selection
 
@@ -382,7 +435,7 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         """
         return mSelection.Selection.get_selected_text_str(self.component)
 
-    def get_draw_page(self) -> mWriteDrawPage.WriteDrawPage:
+    def get_draw_page(self) -> mWriteDrawPage.WriteDrawPage[WriteDoc]:
         """
         Gets draw page.
 
@@ -392,7 +445,20 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         draw_page = mWrite.Write.get_draw_page(self.component)
         return mWriteDrawPage.WriteDrawPage(self, draw_page)
 
-    def get_right_cursor(self, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor:
+    def get_paragraph_cursor(self) -> mWriteParagraphCursorCursor.WriteParagraphCursor:
+        """
+        Gets document paragraph cursor
+
+        Raises:
+            ParagraphCursorError: If Unable to get cursor
+
+        Returns:
+            WriteParagraphCursorCursor: Paragraph cursor
+        """
+        result = mSelection.Selection.get_paragraph_cursor(self.component)
+        return mWriteParagraphCursorCursor.WriteParagraphCursor(self, result)
+
+    def get_right_cursor(self, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """
         Creates a new TextCursor with position right that can travel left.
 
@@ -405,6 +471,24 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
         """
         result = mSelection.Selection.get_right_cursor(rng, self.component)
         return mWriteTextCursor.WriteTextCursor(self, result)
+
+    def get_text(self) -> mWriteText.WriteText[WriteDoc]:
+        """
+        Gets text that is enumerable.
+
+        Returns:
+            WriteText: Text.
+        """
+        return mWriteText.WriteText(self, self.component.getText())
+
+    def get_text_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[WriteDoc]:
+        """
+        Gets text that is enumerable.
+
+        Returns:
+            WriteText: Text.
+        """
+        return mWriteParagraphs.WriteParagraphs(self, self.component.getText())
 
     def get_text_frames(self) -> NameAccessComp | None:
         """
@@ -424,6 +508,19 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
             return None
         return NameAccessComp(result)
 
+    def get_sentence_cursor(self) -> mWriteSentenceCursor.WriteSentenceCursor:
+        """
+        Gets document sentence cursor.
+
+        Raises:
+            SentenceCursorError: If Unable to get cursor.
+
+        Returns:
+            WriteSentenceCursor: Sentence Cursor.
+        """
+        result = mSelection.Selection.get_sentence_cursor(self.component)
+        return mWriteSentenceCursor.WriteSentenceCursor(self, result)
+
     def get_text_graphics(self) -> List[XGraphic]:
         """
         Gets text graphics.
@@ -439,6 +536,20 @@ class WriteDoc(TextDocumentComp, QiPartial, PropPartial):
             and not added to the return value.
         """
         return mWrite.Write.get_text_graphics(self.component)
+
+    def get_word_cursor(self) -> mWriteWordCursor.WriteWordCursor:
+        """
+        Gets document word cursor.
+
+
+        Raises:
+            WordCursorError: If Unable to get cursor.
+
+        Returns:
+            WriteWordCursor: Word Cursor.
+        """
+        result = mSelection.Selection.get_word_cursor(self.component)
+        return mWriteWordCursor.WriteWordCursor(self, result)
 
     def is_anything_selected(self) -> bool:
         """

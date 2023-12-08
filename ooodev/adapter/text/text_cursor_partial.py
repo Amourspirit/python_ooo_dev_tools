@@ -2,8 +2,9 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 
+from com.sun.star.text import XTextCursor
+
 if TYPE_CHECKING:
-    from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextRange
 
 from ooodev.exceptions import ex as mEx
@@ -40,27 +41,70 @@ class TextCursorPartial(mTextRangeComp.TextRangePartial):
         self.__component.collapseToStart()
 
     def is_collapsed(self) -> bool:
-        """Returns True if the cursor is collapsed."""
+        """Returns ``True`` if the cursor is collapsed."""
         return self.__component.isCollapsed()
 
-    def go_left(self, count: int, expand: bool) -> None:
-        """Moves the cursor left by the given number of units."""
+    def go_left(self, count: int, expand: bool = False) -> None:
+        """
+        Moves the cursor left by the given number of units.
+
+        Args:
+            count (int): Number of units to move.
+            expand (bool, optional): ``True`` to expand the selection. Defaults to ``False``.
+
+        Returns:
+            None:
+        """
         self.__component.goLeft(count, expand)
 
-    def go_right(self, count: int, expand: bool) -> None:
-        """Moves the cursor right by the given number of units."""
+    def go_right(self, count: int, expand: bool = False) -> None:
+        """
+        Moves the cursor right by the given number of units.
+
+        Args:
+            count (int): Number of units to move.
+            expand (bool, optional): ``True`` to expand the selection. Defaults to ``False``.
+
+        Returns:
+            None:
+        """
         self.__component.goRight(count, expand)
 
-    def goto_end(self, expand: bool) -> None:
-        """Moves the cursor to the end of the document."""
+    def goto_end(self, expand: bool = False) -> None:
+        """
+        Moves the cursor to the end of the document.
+
+        Args:
+            expand (bool, optional): ``True`` to expand the selection. Defaults to ``False``.
+
+        Returns:
+            None:
+        """
         self.__component.gotoEnd(expand)
 
-    def goto_range(self, range: XTextRange, expand: bool) -> None:
-        """Moves the cursor to the given range."""
+    def goto_range(self, range: XTextRange, expand: bool = False) -> None:
+        """
+        Moves the cursor to the given range.
+
+        Args:
+            range (XTextRange): Range to move to.
+            expand (bool, optional): ``True`` to expand the selection. Defaults to ``False``.
+
+        Returns:
+            None:
+        """
         self.__component.gotoRange(range, expand)
 
-    def goto_start(self, expand: bool) -> None:
-        """Moves the cursor to the start of the document."""
+    def goto_start(self, expand: bool = False) -> None:
+        """
+        Moves the cursor to the start of the document.
+
+        Args:
+            expand (bool, optional): ``True`` to expand the selection. Defaults to ``False``.
+
+        Returns:
+            None:
+        """
         self.__component.gotoStart(expand)
 
     # endregion XTextCursor

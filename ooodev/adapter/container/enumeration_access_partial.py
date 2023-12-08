@@ -1,9 +1,10 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
+from com.sun.star.container import XEnumerationAccess
+
 if TYPE_CHECKING:
-    from com.sun.star.container import XEnumerationAccess
     from com.sun.star.container import XEnumeration
 
 from ooodev.utils import lo as mLo
@@ -33,6 +34,19 @@ class EnumerationAccessPartial(ElementAccessPartial):
         self.__component = component
         self.__enumeration = None
 
+    def _is_next_element_valid(self, element: Any) -> bool:
+        """
+        Gets if the next element is valid.
+        This method is called when iterating over the elements of this class.
+
+        Args:
+            element (Any): Element
+
+        Returns:
+            bool: True in this class but can be overridden in child classes.
+        """
+        return True
+
     def __iter__(self):
         return self
 
@@ -42,7 +56,10 @@ class EnumerationAccessPartial(ElementAccessPartial):
                 raise StopIteration
             self.__enumeration = self.create_enumeration()
         if self.__enumeration.hasMoreElements():
-            return self.__enumeration.nextElement()
+            next_element = self.__enumeration.nextElement()
+            if self._is_next_element_valid(next_element):
+                return next_element
+            return self.__next__()
         self.__enumeration = None
         raise StopIteration
 

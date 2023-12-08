@@ -1267,14 +1267,14 @@ class Write(mSel.Selection):
         return text
 
     @staticmethod
-    def get_enumeration(obj: object) -> XEnumeration:
+    def get_enumeration(obj: Any) -> XEnumeration:
         """
         Gets Enumeration access from obj
 
         Used to enumerate objects in a container which contains objects.
 
         Args:
-            obj (object): object that implements XEnumerationAccess or XTextDocument.
+            obj (Any): object that implements XEnumerationAccess or XTextDocument.
 
         Raises:
             MissingInterfaceError: if obj does not implement XEnumerationAccess interface

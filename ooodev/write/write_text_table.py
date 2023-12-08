@@ -23,7 +23,7 @@ class WriteTextTable(Generic[T], TextTableComp, QiPartial):
         Constructor
 
         Args:
-            owner (WriteTextCursor): Owner of this component.
+            owner (T): Owner of this component.
             component (XTextContent): UNO object that supports ``com.sun.star.text.TextContent`` service.
         """
         self.__owner = owner

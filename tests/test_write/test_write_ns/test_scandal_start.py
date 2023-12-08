@@ -9,8 +9,8 @@ if __name__ == "__main__":
 import uno
 from ooodev.utils.lo import Lo
 from ooodev.utils.info import Info
-from ooodev.office.write import Write
-from ooodev.utils.gui import GUI
+from ooodev.write import Write
+from ooodev.write import WriteDoc
 from ooodev.utils.selection import WordTypeEnum
 
 from com.sun.star.text import XTextDocument
@@ -35,65 +35,59 @@ def test_writer_scandal_start(loader, copy_fix_writer):
 
     # text file opens with each new line being considered a paragraph break.
     test_doc = copy_fix_writer("scandalStart.odt")
-    doc = Write.open_doc(test_doc, loader)
+    doc = WriteDoc(Write.open_doc(test_doc, loader))
     try:
         if visible:
-            GUI.set_visible(visible, doc)
+            doc.set_visible()
 
         para_count, word_count, parts_count = enumerate_text_sections(doc)
         assert para_count == 7
         assert word_count == 153
         assert parts_count == 11
+        # get_last_para(doc)
 
         Lo.delay(delay)
     finally:
-        Lo.close_doc(doc, False)
+        doc.close_doc()
 
 
-def get_last_para(doc: XTextDocument) -> str:
+def get_last_para(doc: WriteDoc) -> str:
     # tvc = Write.get_view_cursor(doc)
-    para_cursor = Write.get_paragraph_cursor(doc)
-    para_cursor.gotoStart(False)
+    para_cursor = doc.get_paragraph_cursor()
+    para_cursor.goto_start()
 
     curr_para = ""
     while True:
-        para_cursor.gotoEndOfParagraph(True)  # select all of paragraph
-        curr_para = para_cursor.getString()
-        if para_cursor.gotoNextParagraph(False) is False:
+        para_cursor.goto_end_of_paragraph(True)
+        curr_para = para_cursor.get_string()
+        if para_cursor.goto_next_paragraph(False) is False:
             break
     return curr_para
 
 
-def enumerate_text_sections(doc: XTextDocument):
-    e = Write.get_enumeration(doc)
+def enumerate_text_sections(doc: WriteDoc):
+    doc_text = doc.get_text()
     p_count = 0
     w_count = 0
     parts_count = 0
-    # xtext = doc.getText()
+    paragraphs = doc_text.get_paragraphs()
+    # paragraphs = doc.get_text_paragraphs()
     s = ""
-    while e.hasMoreElements():
-        para = e.nextElement()
-        if Info.support_service(para, "com.sun.star.text.Paragraph"):
-            p_enum = cast("Paragraph", para)
-            p_range = Lo.qi(XTextRange, p_enum, True)
-            r_str = p_range.getString()
+    for para in paragraphs:
+        r_str = para.get_string()
 
-            if r_str == "":
-                continue
-            p_count += 1
-            s = f"{p_count}:"
+        if r_str == "":
+            continue
+        p_count += 1
+        s = f"{p_count}:"
 
-            # cursor = Write.get_cursor(rng=p_range, txt=xtext)
-            # w_count += count_cursor_words(cursor=cursor)
-            w_count += Write.get_word_count_ooo(text=r_str, word_type=WordTypeEnum.WORD_COUNT)
+        # cursor = Write.get_cursor(rng=p_range, txt=xtext)
+        # w_count += count_cursor_words(cursor=cursor)
+        w_count += Write.get_word_count_ooo(text=r_str, word_type=WordTypeEnum.WORD_COUNT)
 
-            t_e = p_enum.createEnumeration()
-            while t_e.hasMoreElements():
-                # element here are portions. For instance of a word is highlighted then it will be a separate portion
-                parts_count += 1
-                para_section = cast("TextPortion", t_e.nextElement())
-                ps = para_section.getString()
-                # s = s & oParSection.TextPortionType & ":"
-                s = f"{s}{para_section.TextPortionType}:"
+        portions = para.get_text_portions()
+        for portion in portions:
+            parts_count += 1
+            s = f"{s}{portion.text_portion_type}:"
         print(s)
     return p_count, w_count, parts_count
