@@ -1578,7 +1578,7 @@ class LoInst:
         self.print(f"Could not find a '{nm}' property set in the container")
         return None
 
-    def is_uno_interfaces(self, component: object, *args: str | UnoInterface) -> bool:
+    def is_uno_interfaces(self, component: Any, *args: str | UnoInterface) -> bool:
         if not args:
             return False
         result = True

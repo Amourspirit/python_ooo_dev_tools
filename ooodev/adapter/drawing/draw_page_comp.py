@@ -25,7 +25,7 @@ class DrawPageComp(GenericDrawPageComp):
         super().__init__(component)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.DrawPage",)
 
@@ -36,6 +36,6 @@ class DrawPageComp(GenericDrawPageComp):
         @property
         def component(self) -> DrawPage:
             """DrawPage Component"""
-            return cast("DrawPage", self._get_component())
+            return cast("DrawPage", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

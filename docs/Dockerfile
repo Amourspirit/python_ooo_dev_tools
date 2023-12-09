@@ -1,0 +1,13 @@
+FROM sphinxdoc/sphinx:6.2.1
+
+WORKDIR /docs
+RUN apt-get update \
+ && apt-get install --no-install-recommends --yes \
+    enchant-2 \
+ && apt-get autoremove \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+ADD requirements.txt /docs
+RUN pip3 install -r requirements.txt
+RUN pip3 install ooo-dev-tools

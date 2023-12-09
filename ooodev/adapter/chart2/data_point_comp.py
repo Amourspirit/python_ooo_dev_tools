@@ -25,13 +25,13 @@ class DataPointComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImpl
             component (DataPoint): UNO Chart2 DataPoint Component.
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.chart2.DataPoint",)
 
@@ -40,6 +40,6 @@ class DataPointComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImpl
     @property
     def component(self) -> DataPoint:
         """DataPoint Component"""
-        return cast("DataPoint", self._get_component())
+        return cast("DataPoint", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

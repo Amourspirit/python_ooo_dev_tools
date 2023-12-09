@@ -30,7 +30,7 @@ class SlidesInfo:
                 Lo.close_office()
                 return
 
-            GUI.set_visible(is_visible=True, odoc=doc)
+            GUI.set_visible(visible=True, doc=doc)
             Lo.delay(1_000)  # need delay or zoom nay not occur
 
             GUI.zoom(view=GUI.ZoomEnum.ENTIRE_PAGE)

@@ -26,7 +26,7 @@ class SheetLinkComp(ComponentBase, RefreshEvents, PropertyChangeImplement, Vetoa
             component (SheetLink): UNO Sheet Link Component
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         RefreshEvents.__init__(self, trigger_args=generic_args, cb=self._on_sheet_link_events_add_remove)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -40,7 +40,7 @@ class SheetLinkComp(ComponentBase, RefreshEvents, PropertyChangeImplement, Vetoa
     # endregion Lazy Listeners
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.SheetLink",)
 
@@ -49,6 +49,6 @@ class SheetLinkComp(ComponentBase, RefreshEvents, PropertyChangeImplement, Vetoa
     @property
     def component(self) -> SheetLink:
         """Sheet Link Component"""
-        return cast("SheetLink", self._get_component())
+        return cast("SheetLink", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

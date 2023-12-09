@@ -25,13 +25,13 @@ class AxisComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImplement
             component (Axis): UNO Chart2 Axis Component.
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.chart2.Axis",)
 
@@ -40,6 +40,6 @@ class AxisComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImplement
     @property
     def component(self) -> Axis:
         """Axis Component"""
-        return cast("Axis", self._get_component())
+        return cast("Axis", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

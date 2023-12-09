@@ -26,7 +26,7 @@ class TreeDataModelComp(ComponentBase, TreeDataModelEvents):
             component (XTreeDataModel): Tree Data Model Component
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         TreeDataModelEvents.__init__(self, trigger_args=generic_args, cb=self._on_tree_model_listener_add_remove)
 
     # region Lazy Listeners
@@ -38,7 +38,7 @@ class TreeDataModelComp(ComponentBase, TreeDataModelEvents):
     # endregion Lazy Listeners
 
     # region Overrides
-    def _get_is_supported(self, component: XComponent) -> bool:
+    def _ComponentBase__get_is_supported(self, component: XComponent) -> bool:
         if not component:
             return False
         return mLo.Lo.is_uno_interfaces(component, XTreeDataModel)
@@ -49,6 +49,6 @@ class TreeDataModelComp(ComponentBase, TreeDataModelEvents):
     @property
     def component(self) -> XTreeDataModel:
         """Tree Data Model Component"""
-        return cast("XTreeDataModel", self._get_component())
+        return cast("XTreeDataModel", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

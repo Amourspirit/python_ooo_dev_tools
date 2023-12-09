@@ -25,9 +25,9 @@ class TextDocumentComp(GenericTextDocumentComp):
         super().__init__(component)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.sheet.TextDocument",)
+        return ("com.sun.star.text.TextDocument",)
 
     # endregion Overrides
     # region Properties
@@ -36,6 +36,6 @@ class TextDocumentComp(GenericTextDocumentComp):
         @property
         def component(self) -> TextDocument:
             """Sheet Cell Cursor Component"""
-            return cast("TextDocument", self._get_component())
+            return cast("TextDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

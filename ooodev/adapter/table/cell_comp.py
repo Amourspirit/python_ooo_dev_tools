@@ -7,6 +7,7 @@ from ooodev.adapter.component_base import ComponentBase
 
 if TYPE_CHECKING:
     from com.sun.star.table import Cell  # service
+    from com.sun.star.table import XCell
 
 
 class CellComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement):
@@ -16,20 +17,20 @@ class CellComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement):
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: Cell) -> None:
+    def __init__(self, component: XCell) -> None:
         """
         Constructor
 
         Args:
-            component (Cell): UNO table Cell Component.
+            component (XCell): UNO Component that implements ``com.sun.star.table.Cell`` service.
         """
         ComponentBase.__init__(self, component)
-        generic_args = self._get_generic_args()
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.table.Cell",)
 
@@ -38,6 +39,6 @@ class CellComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement):
     @property
     def component(self) -> Cell:
         """Cell Component"""
-        return cast("Cell", self._get_component())
+        return cast("Cell", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

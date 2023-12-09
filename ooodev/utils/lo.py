@@ -1724,12 +1724,12 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.find_container_props(con=con, nm=nm)
 
     @classmethod
-    def is_uno_interfaces(cls, component: object, *args: str | UnoInterface) -> bool:
+    def is_uno_interfaces(cls, component: Any, *args: str | UnoInterface) -> bool:
         """
         Gets if an object contains interface(s)
 
         Args:
-            component (object): object to check for supplied interfaces
+            component (Any): object to check for supplied interfaces
             args (str | UnoInterface): one or more strings such as 'com.sun.star.uno.XInterface'
                 or Any uno interface that Starts with X such has XEnumTypeDescription
 

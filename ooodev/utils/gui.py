@@ -672,12 +672,12 @@ class GUI:
 
     @overload
     @classmethod
-    def set_visible(cls, visible: bool, doc: object) -> None:
+    def set_visible(cls, visible: bool, doc: Any) -> None:
         ...
 
     @overload
     @classmethod
-    def set_visible(cls, *, doc: object) -> None:
+    def set_visible(cls, *, doc: Any) -> None:
         ...
 
     @classmethod
@@ -687,7 +687,7 @@ class GUI:
 
         Args:
             visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
-            doc (object, optional): office document. If omitted the current document is used form ``Lo.lo_component``.
+            doc (Any, optional): office document. If omitted the current document is used form ``Lo.lo_component``.
 
         Returns:
             None:

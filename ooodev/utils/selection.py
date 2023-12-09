@@ -247,7 +247,10 @@ class Selection(metaclass=StaticProperty):
         i = 0
         if o_sel.isCollapsed():
             return i
-        o_text = mLo.Lo.qi(XText, text_doc, True)
+        # o_text = mLo.Lo.qi(XText, text_doc, True)
+        o_text = text_doc.getText()
+        if not o_text:
+            return 0
         l_cursor = cls.get_left_cursor(o_sel=o_sel, o_text=o_text)
         r_cursor = cls.get_right_cursor(o_sel=o_sel, o_text=o_text)
         if cls.compare_cursor_ends(c1=l_cursor, c2=r_cursor) < cls.CompareEnum.EQUAL:
@@ -439,16 +442,16 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_word_cursor(cls, cursor_obj: DocOrCursor) -> XWordCursor:
         """
-        Gets document word cursor
+        Gets document word cursor.
 
         Args:
-            cursor_obj (DocOrCursor): Text Document or Text Cursor
+            cursor_obj (DocOrCursor): Text Document or Text Cursor.
 
         Raises:
-            WordCursorError: If Unable to get cursor
+            WordCursorError: If Unable to get cursor.
 
         Returns:
-            XWordCursor: Word Cursor
+            XWordCursor: Word Cursor.
         """
         try:
             if mLo.Lo.is_uno_interfaces(cursor_obj, XTextDocument):
@@ -460,27 +463,27 @@ class Selection(metaclass=StaticProperty):
             raise mEx.WordCursorError(str(e)) from e
 
     @classmethod
-    def get_sentence_cursor(cls, cursor_obj: DocOrCursor) -> XSentenceCursor | None:
+    def get_sentence_cursor(cls, cursor_obj: DocOrCursor) -> XSentenceCursor:
         """
-        Gets document sentence cursor
+        Gets document sentence cursor.
 
         Args:
-            cursor_obj (DocOrCursor): Text Document or Text Cursor
+            cursor_obj (DocOrCursor): Text Document or Text Cursor.
 
         Raises:
-            SentenceCursorError: If Unable to get cursor
+            SentenceCursorError: If Unable to get cursor.
 
         Returns:
-            XSentenceCursor: Sentence Cursor if found else ``None``
+            XSentenceCursor: Sentence Cursor.
+
+        .. versionchanged:: 0.16.0
+            Now raises ``SentenceCursorError`` instead of returning ``None``.
         """
         try:
             if mLo.Lo.is_uno_interfaces(cursor_obj, XTextDocument):
                 cursor = cls.get_cursor(cursor_obj)
             else:
                 cursor = cursor_obj
-            if cursor is None:
-                print("Text cursor is null")
-                return None
             return mLo.Lo.qi(XSentenceCursor, cursor, True)
         except Exception as e:
             raise mEx.SentenceCursorError(str(e)) from e
@@ -557,13 +560,20 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_position(cls, cursor: XTextCursor) -> int:
         """
-        Gets position of the cursor
+        Gets position of the cursor.
 
         Args:
-            cursor (XTextCursor): Text Cursor
+            cursor (XTextCursor): Text Cursor.
 
         Returns:
-            int: Current Cursor Position
+            int: Current Cursor Position.
+
+        Note:
+            This method is not the most reliable.
+            It attempts to read all the text in a document and move the cursor to the end
+            and then get the position.
+
+            It would be better to use cursors from relative positions in bigger documents.
         """
         # def get_near_max(l:XTextCursor, r: XTextCursor, jump=10) -> int:
         #     i_max = 0

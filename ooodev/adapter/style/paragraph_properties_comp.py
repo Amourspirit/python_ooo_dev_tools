@@ -6,6 +6,7 @@ from ooodev.adapter.component_base import ComponentBase
 if TYPE_CHECKING:
     from com.sun.star.style import ParagraphProperties  # service
 
+
 class ParagraphPropertiesComp(ComponentBase):
     """
     Class for managing table ParagraphProperties Component.
@@ -23,7 +24,7 @@ class ParagraphPropertiesComp(ComponentBase):
         ComponentBase.__init__(self, component)
 
     # region Overrides
-    def _get_supported_service_names(self) -> tuple[str, ...]:
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.TextProperties", "com.sun.star.style.ParagraphProperties")
 
@@ -32,6 +33,6 @@ class ParagraphPropertiesComp(ComponentBase):
     @property
     def component(self) -> ParagraphProperties:
         """ParagraphProperties Component"""
-        return cast("ParagraphProperties", self._get_component())
+        return cast("ParagraphProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

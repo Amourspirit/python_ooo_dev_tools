@@ -18,10 +18,11 @@ if TYPE_CHECKING:
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
 
-    from ooodev.utils.kind.zoom_kind import ZoomKind
 else:
     CellRangeAddress = object
 
+from . import calc_sheet as mCalcSheet
+from . import calc_sheet_view as mCalcSheetView
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
@@ -30,18 +31,24 @@ from ooodev.events.event_singleton import _Events
 from ooodev.office import calc as mCalc
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
-from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from . import calc_sheet as mCalcSheet
-from . import calc_sheet_view as mCalcSheetView
 
 
 class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
+    """Defines a Calc Document"""
+
     def __init__(self, doc: XSpreadsheetDocument) -> None:
+        """
+        Constructor
+
+        Args:
+            doc (XSpreadsheetDocument): UNO object the supports ``com.sun.star.sheet.SpreadsheetDocument`` service.
+        """
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
@@ -781,21 +788,20 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
         """
         mCalc.Calc.unfreeze(doc=self.component)
 
-    def zoom_value(self, value: int) -> None:
+    def zoom_value(self, value: int = 100) -> None:
         """
         Sets the zoom level of the Spreadsheet Document
 
         Args:
-            value (int): Value to set zoom. e.g. 160 set zoom to 160%
+            value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default is ``100``.
         """
         mCalc.Calc.zoom_value(doc=self.component, value=value)
 
-    def zoom(self, type: ZoomKind) -> None:
+    def zoom(self, type: ZoomKind = ZoomKind.ZOOM_100_PERCENT) -> None:
         """
         Zooms spreadsheet document to a specific view.
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            type (GUI.ZoomEnum): Type of Zoom to set.
+            type (ZoomKind, optional): Type of Zoom to set. Default is ``ZoomKind.ZOOM_100_PERCENT``.
         """
         mCalc.Calc.zoom(doc=self.component, type=type)

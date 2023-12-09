@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.16.0
+==============
+
+Added ``ooodev.write`` module. This module contains classes for working with Writer documents.
+Many new classes which make working with Writer documents much easier.
+
 Version 0.15.1
 ==============
 
