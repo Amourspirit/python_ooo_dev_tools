@@ -18,10 +18,11 @@ if TYPE_CHECKING:
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
 
-    from ooodev.utils.kind.zoom_kind import ZoomKind
 else:
     CellRangeAddress = object
 
+from . import calc_sheet as mCalcSheet
+from . import calc_sheet_view as mCalcSheetView
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
@@ -32,11 +33,10 @@ from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from . import calc_sheet as mCalcSheet
-from . import calc_sheet_view as mCalcSheetView
 
 
 class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):

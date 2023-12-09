@@ -1,15 +1,14 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.drawing import XShapes
 
+from ooodev.adapter.container.index_access_partial import IndexAccessPartial
+
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
-
-from ooodev.utils import lo as mLo
-from ooodev.exceptions import ex as mEx
-from ooodev.adapter.container.index_access_partial import IndexAccessPartial
+    from ooodev.utils.type_var import UnoInterface
 
 
 class ShapesPartial(IndexAccessPartial):
@@ -19,16 +18,15 @@ class ShapesPartial(IndexAccessPartial):
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XShapes) -> None:
+    def __init__(self, component: XShapes, interface: UnoInterface | None = XShapes) -> None:
         """
         Constructor
 
         Args:
             component (XShapes): UNO Component that implements ``com.sun.star.drawing.XShapes`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XShapes``.
         """
-        if not mLo.Lo.is_uno_interfaces(component, XShapes):
-            raise mEx.MissingInterfaceError("XShapes")
-        IndexAccessPartial.__init__(self, component)
+        IndexAccessPartial.__init__(self, component, interface)
         self.__component = component
 
     # region Methods

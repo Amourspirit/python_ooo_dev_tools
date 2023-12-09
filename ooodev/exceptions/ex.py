@@ -503,3 +503,9 @@ class DialogError(Exception):
     """Generic Dialog Error"""
 
     pass
+
+
+class StyleError(Exception):
+    """Generic Dialog Error"""
+
+    pass

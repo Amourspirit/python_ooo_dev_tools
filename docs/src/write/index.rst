@@ -8,3 +8,4 @@ write
     :glob:
 
     *
+    style/index

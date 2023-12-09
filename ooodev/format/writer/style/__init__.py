@@ -8,5 +8,6 @@ from .para.para import Para as Para
 from .para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from .lst import StyleListKind as StyleListKind
 from .bullet_list.bullet_list import BulletList as BulletList
+from .family_names_kind import FamilyNamesKind as FamilyNamesKind
 
-__all__ = ["BulletList", "Char", "Frame", "Page", "Para"]
+__all__ = ["BulletList", "Char", "Frame", "Page", "Para", "FamilyNamesKind"]

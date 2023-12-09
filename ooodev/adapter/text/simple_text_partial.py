@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
 # com.sun.star.text.ControlCharacter
@@ -12,26 +12,40 @@ from ooodev.utils import lo as mLo
 if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
     from com.sun.star.text import XTextRange
+    from ooodev.utils.type_var import UnoInterface
 
 
 class SimpleTextPartial:
     """
-    Class for managing SimpleText.
+    Partial class for XSimpleText.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XSimpleText) -> None:
+    def __init__(self, component: XSimpleText, interface: UnoInterface | None = XSimpleText) -> None:
         """
         Constructor
 
         Args:
             component (XSimpleText): UNO Component that implements ``com.sun.star.text.XSimpleText`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XSimpleText``.
         """
 
-        if not mLo.Lo.is_uno_interfaces(component, XSimpleText):
-            raise mEx.MissingInterfaceError("XSimpleText")
+        self.__interface = interface
+        self.__validate(component)
         self.__component = component
+
+    def __validate(self, component: Any) -> None:
+        """
+        Validates the component.
+
+        Args:
+            component (Any): The component to be validated.
+        """
+        if self.__interface is None:
+            return
+        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
+            raise mEx.MissingInterfaceError(self.__interface)
 
     # region XSimpleText
     def create_text_cursor(self) -> XTextCursor:

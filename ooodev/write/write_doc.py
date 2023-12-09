@@ -3,7 +3,7 @@ from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
-from com.sun.star.frame import XModel
+from com.sun.star.style import XStyle
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 
@@ -34,17 +34,21 @@ from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.office import write as mWrite
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
-from ooodev.utils import props as mProps
+from ooodev.utils import info as mInfo
+from ooodev.exceptions import ex as mEx
 from ooodev.utils import selection as mSelection
 from ooodev.utils.data_type.size import Size
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from . import write_character_style as mWriteCharacterStyle
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
+from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
 from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
-from . import write_paragraph_style as mWriteParagraphStyle
 from . import write_paragraphs as mWriteParagraphs
 from . import write_sentence_cursor as mWriteSentenceCursor
 from . import write_text as mWriteText
@@ -53,6 +57,13 @@ from . import write_text_cursor as mWriteTextCursor
 from . import write_text_range as mWriteTextRange
 from . import write_text_view_cursor as mWriteTextViewCursor
 from . import write_word_cursor as mWriteWordCursor
+from .style import write_paragraph_style as mWriteParagraphStyle
+from .style import write_page_style as mWritePageStyle
+from .style import write_character_style as mWriteCharacterStyle
+from .style import write_cell_style as mWriteCellStyle
+from .style import write_style as mWriteStyle
+from .style import write_numbering_style as mWriteNumberingStyle
+from .style import write_style_families as mWriteStyleFamilies
 
 
 class WriteDoc(
@@ -474,6 +485,178 @@ class WriteDoc(
         """
         result = mSelection.Selection.get_right_cursor(rng, self.component)
         return mWriteTextCursor.WriteTextCursor(self, result)
+
+    def get_style_names(self, family_style_name: str) -> List[str]:
+        """
+        Gets a list of style names
+
+        Args:
+            family_style_name (str): name of family style
+
+        Raises:
+            Exception: If unable to access Style names
+
+        Returns:
+            List[str]: List of style names
+        """
+        return mInfo.Info.get_style_names(self.component, family_style_name)
+
+    def get_style_families(self) -> mWriteStyleFamilies.WriteStyleFamilies:
+        """
+        Gets a cell style by name.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WriteCellStyle: Style
+        """
+        # there are no styles for cell by default in a writer document.
+        try:
+            result = mInfo.Info.get_style_families(self.component)
+            return mWriteStyleFamilies.WriteStyleFamilies(self, result)
+        except Exception as e:
+            raise mEx.StyleError("Unable to get style families") from e
+
+    def get_style_cell(self, name: str = "Standard") -> mWriteCellStyle.WriteCellStyle[WriteDoc]:
+        """
+        Gets a cell style by name.
+
+        Args:
+            name (str, optional): Name of style to get. Defaults to ``Standard``.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WriteCellStyle: Style
+        """
+        # there are no styles for cell by default in a writer document.
+        try:
+            result = mInfo.Info.get_style_props(self.component, "CellStyles", str(name))
+            return mWriteCellStyle.WriteCellStyle(self, mLo.Lo.qi(XStyle, result, True))
+        except Exception as e:
+            raise mEx.StyleError(f"Unable to get style: {name}") from e
+
+    def get_style_character(
+        self, name: str | StyleCharKind = "Standard"
+    ) -> mWriteCharacterStyle.WriteCharacterStyle[WriteDoc]:
+        """
+        Gets a character style by name.
+
+        Args:
+            name (str, StyleCharKind, optional): Name of style to get. Defaults to ``Standard``.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WriteCharacterStyle: Style
+        """
+        try:
+            result = mInfo.Info.get_style_props(self.component, "CharacterStyles", str(name))
+            return mWriteCharacterStyle.WriteCharacterStyle(self, mLo.Lo.qi(XStyle, result, True))
+        except Exception as e:
+            raise mEx.StyleError(f"Unable to get style: {name}") from e
+
+    def get_style_frame(self, name: str | StyleFrameKind = "Frame") -> mWriteStyle.WriteStyle[WriteDoc]:
+        """
+        Gets a frame style by name.
+
+        Args:
+            name (str, StyleFrameKind, optional): Name of style to get. Defaults to ``Frame``.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WriteStyle: Style
+        """
+        try:
+            result = mInfo.Info.get_style_props(self.component, "FrameStyles", str(name))
+            return mWriteStyle.WriteStyle(self, mLo.Lo.qi(XStyle, result, True))
+        except Exception as e:
+            raise mEx.StyleError(f"Unable to get style: {name}") from e
+
+    def get_style_numbering(
+        self, name: str | StyleListKind = StyleListKind.NUM_123
+    ) -> mWriteNumberingStyle.WriteNumberingStyle[WriteDoc]:
+        """
+        Gets a character style by name.
+
+        Args:
+            name (str, StyleListKind, optional): Name of style to get. Defaults to ``StyleListKind.NUM_123``.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WriteStyle: Style
+        """
+        try:
+            result = mInfo.Info.get_style_props(self.component, "NumberingStyles", str(name))
+            return mWriteNumberingStyle.WriteNumberingStyle(self, mLo.Lo.qi(XStyle, result, True))
+        except Exception as e:
+            raise mEx.StyleError(f"Unable to get style: {name}") from e
+
+    def get_style_paragraph(
+        self, name: str | StyleParaKind = "Standard"
+    ) -> mWriteParagraphStyle.WriteParagraphStyle[WriteDoc]:
+        """
+        Gets a paragraph style by name.
+
+        Args:
+            name (str, StyleParaKind, optional): Name of style to get. Defaults to ``Standard``.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WriteParagraphStyle: Style
+        """
+        try:
+            result = mInfo.Info.get_style_props(self.component, "ParagraphStyles", str(name))
+            return mWriteParagraphStyle.WriteParagraphStyle(self, mLo.Lo.qi(XStyle, result, True))
+        except Exception as e:
+            raise mEx.StyleError(f"Unable to get style: {name}") from e
+
+    def get_style_page(self, name: str | WriterStylePageKind = "Standard") -> mWritePageStyle.WritePageStyle[WriteDoc]:
+        """
+        Gets a page style by name.
+
+        Args:
+            name (str, WriterStylePageKind, optional): Name of style to get. Defaults to ``Standard``.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WritePageStyle: Style
+        """
+        try:
+            result = mInfo.Info.get_style_props(self.component, "PageStyles", str(name))
+            return mWritePageStyle.WritePageStyle(self, mLo.Lo.qi(XStyle, result, True))
+        except Exception as e:
+            raise mEx.StyleError(f"Unable to get style: {name}") from e
+
+    def get_style_table(self, name: str = "Default Style") -> mWriteStyle.WriteStyle[WriteDoc]:
+        """
+        Gets a table style by name.
+
+        Args:
+            name (str, optional): Name of style to get. Defaults to ``Default Style``.
+
+        Raises:
+            StyleError: If unable to get style
+
+        Returns:
+            WriteStyle: Style
+        """
+        try:
+            result = mInfo.Info.get_style_props(self.component, "TableStyles", str(name))
+            return mWriteStyle.WriteStyle(self, mLo.Lo.qi(XStyle, result, True))
+        except Exception as e:
+            raise mEx.StyleError(f"Unable to get style: {name}") from e
 
     def get_text(self) -> mWriteText.WriteText[WriteDoc]:
         """

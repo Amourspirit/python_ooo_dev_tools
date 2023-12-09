@@ -22,7 +22,7 @@ class WriteTextContent(Generic[T], TextContentComp, QiPartial):
         Constructor
 
         Args:
-            owner (T): Cursor or Doc that owns this component.
+            owner (T): Owner of this component.
             component (XTextContent): UNO object that supports ``com.sun.star.text.TextContent`` service.
         """
         self.__owner = owner

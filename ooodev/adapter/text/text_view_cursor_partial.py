@@ -1,35 +1,49 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.text import XTextViewCursor
-
-if TYPE_CHECKING:
-    from com.sun.star.awt import Point
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from . import text_cursor_partial as mTextCursorPartial
 
+if TYPE_CHECKING:
+    from com.sun.star.awt import Point
+    from ooodev.utils.type_var import UnoInterface
+
 
 class TextViewCursorPartial(mTextCursorPartial.TextCursorPartial):
     """
-    Class for TextViewCursor.
+    Partial class for XTextViewCursor.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XTextViewCursor) -> None:
+    def __init__(self, component: XTextViewCursor, interface: UnoInterface | None = XTextViewCursor) -> None:
         """
         Constructor
 
         Args:
             component (XTextViewCursor): UNO Component that implements ``com.sun.star.text.XTextViewCursor`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTextViewCursor``.
         """
 
-        if not mLo.Lo.is_uno_interfaces(component, XTextViewCursor):
-            raise mEx.MissingInterfaceError("XTextViewCursor")
+        self.__interface = interface
+        self.__validate(component)
         self.__component = component
+
+    def __validate(self, component: Any) -> None:
+        """
+        Validates the component.
+
+        Args:
+            component (Any): The component to be validated.
+        """
+        if self.__interface is None:
+            return
+        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
+            raise mEx.MissingInterfaceError(self.__interface)
 
     # region XTextViewCursor
     def is_visible(self) -> bool:

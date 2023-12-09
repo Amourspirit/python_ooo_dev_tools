@@ -7,30 +7,28 @@ from com.sun.star.container import XEnumerationAccess
 if TYPE_CHECKING:
     from com.sun.star.container import XEnumeration
 
-from ooodev.utils import lo as mLo
-from ooodev.exceptions import ex as mEx
+from ooodev.utils.type_var import UnoInterface
 from .element_access_partial import ElementAccessPartial
 
 
 class EnumerationAccessPartial(ElementAccessPartial):
     """
-    Class for managing EnumerationAccess.
+    Partial Class for XEnumerationAccess.
 
     This class can be used to iterate over the elements of a container.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XEnumerationAccess) -> None:
+    def __init__(self, component: XEnumerationAccess, interface: UnoInterface | None = XEnumerationAccess) -> None:
         """
         Constructor
 
         Args:
             component (XEnumerationAccess): UNO Component that implements ``com.sun.star.container.XEnumerationAccess`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XEnumerationAccess``.
         """
-        if not mLo.Lo.is_uno_interfaces(component, XEnumerationAccess):
-            raise mEx.MissingInterfaceError("XEnumerationAccess")
-        ElementAccessPartial.__init__(self, component)
+        ElementAccessPartial.__init__(self, component, interface)
         self.__component = component
         self.__enumeration = None
 

@@ -6,26 +6,41 @@ from com.sun.star.container import XEnumeration
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
+from ooodev.utils.type_var import UnoInterface
 
 
-class enumeration_partial:
+class EnumerationPartial:
     """
-    Class for managing Enumeration.
+    Partial class for XEnumeration.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XEnumeration) -> None:
+    def __init__(self, component: XEnumeration, interface: UnoInterface | None = XEnumeration) -> None:
         """
         Constructor
 
         Args:
             component (XEnumeration): UNO Component that implements ``com.sun.star.container.XEnumeration`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XEnumeration``.
         """
 
-        if not mLo.Lo.is_uno_interfaces(component, XEnumeration):
-            raise mEx.MissingInterfaceError("XEnumeration")
+        self.__interface = interface
+        self.__validate(component)
         self.__component = component
+
+    def __validate(self, component: Any) -> None:
+        """
+        Validates the component.
+
+        Args:
+            component (Any): The component to be validated.
+            interface (UnoInterface): The interface to be validated.
+        """
+        if self.__interface is None:
+            return
+        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
+            raise mEx.MissingInterfaceError(self.__interface)
 
     # region XEnumeration
     def has_more_elements(self) -> bool:

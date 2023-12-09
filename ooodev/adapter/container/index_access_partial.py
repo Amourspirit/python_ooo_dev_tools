@@ -4,28 +4,26 @@ import uno
 
 from com.sun.star.container import XIndexAccess
 
-from ooodev.utils import lo as mLo
-from ooodev.exceptions import ex as mEx
+from ooodev.utils.type_var import UnoInterface
 from .element_access_partial import ElementAccessPartial
 
 
 class IndexAccessPartial(ElementAccessPartial):
     """
-    Class for managing IndexAccess.
+    Partial Class for XIndexAccess.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XIndexAccess) -> None:
+    def __init__(self, component: XIndexAccess, interface: UnoInterface | None = XIndexAccess) -> None:
         """
         Constructor
 
         Args:
             component (XIndexAccess): UNO Component that implements ``com.sun.star.container.XIndexAccess`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XIndexAccess``.
         """
-        if not mLo.Lo.is_uno_interfaces(component, XIndexAccess):
-            raise mEx.MissingInterfaceError("XIndexAccess")
-        ElementAccessPartial.__init__(self, component)
+        ElementAccessPartial.__init__(self, component, interface)
         self.__component = component
 
     # region Methods

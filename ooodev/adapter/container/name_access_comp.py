@@ -5,7 +5,7 @@ from ooodev.adapter.component_base import ComponentBase
 from .name_access_partial import NameAccessPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.container import XNameAccess  # service
+    from com.sun.star.container import XNameAccess
 
 
 class NameAccessComp(ComponentBase, NameAccessPartial):

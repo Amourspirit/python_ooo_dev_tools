@@ -1,21 +1,15 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
-from ooodev.adapter.component_base import ComponentBase
-from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.container.named_partial import NamedPartial
+from .style_comp import StyleComp
 
+from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
 
 if TYPE_CHECKING:
     from com.sun.star.style import CharacterStyle  # service
     from com.sun.star.style import XStyle
 
 
-class CharacterStyleComp(
-    ComponentBase, PropertyChangeImplement, VetoableChangeImplement, PropertiesChangeImplement, NamedPartial
-):
+class CharacterStyleComp(StyleComp, PropertiesChangeImplement):
     """
     Class for managing CharacterStyle Component.
     """
@@ -27,14 +21,11 @@ class CharacterStyleComp(
         Constructor
 
         Args:
-            component (CharacterStyle): UNO Component that support ``com.sun.star.style.CharacterStyle`` service.
+            component (XStyle): UNO Component that support ``com.sun.star.style.CharacterStyle`` service.
         """
-        ComponentBase.__init__(self, component)
+        StyleComp.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        NamedPartial.__init__(self, component=self.component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
@@ -43,9 +34,11 @@ class CharacterStyleComp(
 
     # endregion Overrides
     # region Properties
-    @property
-    def component(self) -> CharacterStyle:
-        """CharacterStyle Component"""
-        return cast("CharacterStyle", self._ComponentBase__get_component())  # type: ignore
+    if TYPE_CHECKING:
+
+        @property
+        def component(self) -> CharacterStyle:
+            """CharacterStyle Component"""
+            return cast("CharacterStyle", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

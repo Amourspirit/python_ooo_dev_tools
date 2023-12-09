@@ -1,35 +1,49 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.text import XTextRange
-
-if TYPE_CHECKING:
-    from com.sun.star.text import XText
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from . import text_range_comp as mTextRangeComp
 
+if TYPE_CHECKING:
+    from com.sun.star.text import XText
+    from ooodev.utils.type_var import UnoInterface
+
 
 class TextRangePartial:
     """
-    Class for managing TextRange.
+    Partial class for XTextRange.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XTextRange) -> None:
+    def __init__(self, component: XTextRange, interface: UnoInterface | None = XTextRange) -> None:
         """
         Constructor
 
         Args:
             component (XTextRange): UNO Component that implements ``com.sun.star.text.XTextRange`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTextRange``.
         """
 
-        if not mLo.Lo.is_uno_interfaces(component, XTextRange):
-            raise mEx.MissingInterfaceError("XTextRange")
+        self.__interface = interface
+        self.__validate(component)
         self.__component = component
+
+    def __validate(self, component: Any) -> None:
+        """
+        Validates the component.
+
+        Args:
+            component (Any): The component to be validated.
+        """
+        if self.__interface is None:
+            return
+        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
+            raise mEx.MissingInterfaceError(self.__interface)
 
     # region Methods
     def get_text(self) -> XText:

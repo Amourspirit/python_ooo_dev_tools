@@ -1540,7 +1540,7 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_style_family_names(cls, doc: Any) -> List[str]:
         """
-        Gets a list of style family names
+        Gets a sorted list of style family names
 
         Args:
             doc (Any): office document

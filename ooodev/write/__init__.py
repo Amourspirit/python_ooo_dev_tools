@@ -7,14 +7,18 @@ from ooo.dyn.text.page_number_type import PageNumberType as PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType as TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as PaperFormat
 
+from ooodev.format.writer.style import FamilyNamesKind as FamilyNamesKind
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
+from ooodev.format.writer.style.lst.style_list_kind import StyleListKind as StyleListKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.office.write import Write as Write
 from ooodev.utils.kind.zoom_kind import ZoomKind as ZoomKind
-from .write_character_style import WriteCharacterStyle as WriteCharacterStyle
 from .write_doc import WriteDoc as WriteDoc
 from .write_draw_page import WriteDrawPage as WriteDrawPage
 from .write_paragraph import WriteParagraph as WriteParagraph
 from .write_paragraph_cursor import WriteParagraphCursor as WriteParagraphCursor
-from .write_paragraph_style import WriteParagraphStyle as WriteParagraphStyle
 from .write_paragraphs import WriteParagraphs as WriteParagraphs
 from .write_sentence_cursor import WriteSentenceCursor as WriteSentenceCursor
 from .write_text import WriteText as WriteText
@@ -30,13 +34,11 @@ from .write_text_view_cursor import WriteTextViewCursor as WriteTextViewCursor
 from .write_word_cursor import WriteWordCursor as WriteWordCursor
 
 __all__ = [
-    "WriteCharacterStyle",
     "WriteDoc",
     "WriteDrawPage",
     "WriteParagraph",
     "WriteParagraphCursor",
     "WriteParagraphs",
-    "WriteParagraphStyle",
     "WriteSentenceCursor",
     "WriteText",
     "WriteTextContent",

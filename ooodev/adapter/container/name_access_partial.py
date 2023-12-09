@@ -4,28 +4,26 @@ import uno
 
 from com.sun.star.container import XNameAccess
 
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.utils.type_var import UnoInterface
 from .element_access_partial import ElementAccessPartial
 
 
 class NameAccessPartial(ElementAccessPartial):
     """
-    Class for managing IndexAccess.
+    Partial Class for XNameAccess.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: XNameAccess) -> None:
+    def __init__(self, component: XNameAccess, interface: UnoInterface | None = XNameAccess) -> None:
         """
         Constructor
 
         Args:
             component (XNameAccess): UNO Component that implements ``com.sun.star.container.XNameAccess`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XNameAccess``.
         """
-        if not mLo.Lo.is_uno_interfaces(component, XNameAccess):
-            raise mEx.MissingInterfaceError("XNameAccess")
-        ElementAccessPartial.__init__(self, component)
+        ElementAccessPartial.__init__(self, component, interface)
         self.__component = component
 
     # region Methods
