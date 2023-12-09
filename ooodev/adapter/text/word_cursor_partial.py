@@ -35,7 +35,7 @@ class WordCursorPartial:
         """Returns True if the cursor is at the end of a word."""
         return self.__component.isEndOfWord()
 
-    def goto_next_word(self, expand: bool = False) -> None:
+    def goto_next_word(self, expand: bool = False) -> bool:
         """
         Moves the cursor to the next word.
 
@@ -43,11 +43,15 @@ class WordCursorPartial:
             expand (bool, optional): If ``True``, the selection is expanded to the end of the word. Defaults to ``False``.
 
         Returns:
-            None:
-        """
-        self.__component.gotoNextWord(expand)
+            bool: ``True`` if the cursor is moved, ``False`` otherwise.
 
-    def goto_previous_word(self, expand: bool = False) -> None:
+        Note:
+            The function returning ``True`` does not necessarily mean that the cursor is located at the next word,
+            or any word at all! This may happen for example if it travels over empty paragraphs.
+        """
+        return self.__component.gotoNextWord(expand)
+
+    def goto_previous_word(self, expand: bool = False) -> bool:
         """
         Moves the cursor to the previous word.
 
@@ -55,11 +59,15 @@ class WordCursorPartial:
             expand (bool, optional): If ``True``, the selection is expanded to the start of the word. Defaults to ``False``.
 
         Returns:
-            None:
-        """
-        self.__component.gotoPreviousWord(expand)
+            bool: ``True`` if the cursor is moved, ``False`` otherwise.
 
-    def goto_end_of_word(self, expand: bool = False) -> None:
+        Note:
+            The function returning ``True`` does not necessarily mean that the cursor is located at the previous word,
+            or any word at all! This may happen for example if it travels over empty paragraphs.
+        """
+        return self.__component.gotoPreviousWord(expand)
+
+    def goto_end_of_word(self, expand: bool = False) -> bool:
         """
         Moves the cursor to the end of the current word.
 
@@ -67,11 +75,11 @@ class WordCursorPartial:
             expand (bool, optional): If ``True``, the selection is expanded to the end of the word. Defaults to ``False``.
 
         Returns:
-            None:
+            bool: ``True`` if the cursor is moved, ``False`` otherwise.
         """
-        self.__component.gotoEndOfWord(expand)
+        return self.__component.gotoEndOfWord(expand)
 
-    def goto_start_of_word(self, expand: bool = False) -> None:
+    def goto_start_of_word(self, expand: bool = False) -> bool:
         """
         Moves the cursor to the start of the current word.
 
@@ -79,8 +87,8 @@ class WordCursorPartial:
             expand (bool, optional): If ``True``, the selection is expanded to the start of the word. Defaults to ``False``.
 
         Returns:
-            None:
+            bool: ``True`` if the cursor is moved, ``False`` otherwise.
         """
-        self.__component.gotoStartOfWord(expand)
+        return self.__component.gotoStartOfWord(expand)
 
     # endregion XWordCursor

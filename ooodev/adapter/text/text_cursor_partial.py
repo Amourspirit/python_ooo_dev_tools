@@ -44,7 +44,7 @@ class TextCursorPartial(mTextRangeComp.TextRangePartial):
         """Returns ``True`` if the cursor is collapsed."""
         return self.__component.isCollapsed()
 
-    def go_left(self, count: int, expand: bool = False) -> None:
+    def go_left(self, count: int, expand: bool = False) -> bool:
         """
         Moves the cursor left by the given number of units.
 
@@ -53,11 +53,15 @@ class TextCursorPartial(mTextRangeComp.TextRangePartial):
             expand (bool, optional): ``True`` to expand the selection. Defaults to ``False``.
 
         Returns:
-            None:
-        """
-        self.__component.goLeft(count, expand)
+            bool: ``True`` if the cursor was moved left, ``False`` otherwise.
 
-    def go_right(self, count: int, expand: bool = False) -> None:
+        Note:
+            Even if the command was not completed successfully it may be completed partially.
+            E.g. if it was required to move 5 characters but it is only possible to move 3 FALSE will be returned and the cursor moves only those 3 characters.
+        """
+        return self.__component.goLeft(count, expand)
+
+    def go_right(self, count: int, expand: bool = False) -> bool:
         """
         Moves the cursor right by the given number of units.
 
@@ -66,9 +70,13 @@ class TextCursorPartial(mTextRangeComp.TextRangePartial):
             expand (bool, optional): ``True`` to expand the selection. Defaults to ``False``.
 
         Returns:
-            None:
+            bool: ``True`` if the cursor was moved right, ``False`` otherwise.
+
+        Note:
+            Even if the command was not completed successfully it may be completed partially.
+            E.g. if it was required to move 5 characters but it is only possible to move 3 FALSE will be returned and the cursor moves only those 3 characters.
         """
-        self.__component.goRight(count, expand)
+        return self.__component.goRight(count, expand)
 
     def goto_end(self, expand: bool = False) -> None:
         """
@@ -84,7 +92,7 @@ class TextCursorPartial(mTextRangeComp.TextRangePartial):
 
     def goto_range(self, range: XTextRange, expand: bool = False) -> None:
         """
-        Moves the cursor to the given range.
+        Moves or expands the cursor to a specified TextRange.
 
         Args:
             range (XTextRange): Range to move to.

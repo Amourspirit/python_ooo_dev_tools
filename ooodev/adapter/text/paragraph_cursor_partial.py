@@ -46,25 +46,31 @@ class ParagraphCursorPartial:
 
         return self.__component.isEndOfParagraph()
 
-    def goto_start_of_paragraph(self, expand: bool = False) -> None:
+    def goto_start_of_paragraph(self, expand: bool = False) -> bool:
         """
         Moves the cursor to the start of the current paragraph.
 
         Args:
             expand (bool, optional): If ``True`` the range of the cursor will be expanded to the start of the paragraph. Default is ``False``.
+
+        Returns:
+            bool: ``True`` if the cursor is now at the start of a paragraph, ``False`` otherwise. If ``False`` is returned the cursor will remain at its original position.
         """
 
-        self.__component.gotoStartOfParagraph(expand)
+        return self.__component.gotoStartOfParagraph(expand)
 
-    def goto_end_of_paragraph(self, expand: bool = False) -> None:
+    def goto_end_of_paragraph(self, expand: bool = False) -> bool:
         """
         Moves the cursor to the end of the current paragraph.
 
         Args:
             expand (bool, optional): If ``True`` the range of the cursor will be expanded to the end of the paragraph. Default is ``False``.
+
+        Returns:
+            bool: ``True`` if the cursor is now at the end of a paragraph, ``False`` otherwise. If ``False`` is returned the cursor will remain at its original position.
         """
 
-        self.__component.gotoEndOfParagraph(expand)
+        return self.__component.gotoEndOfParagraph(expand)
 
     def goto_next_paragraph(self, expand: bool = False) -> bool:
         """

@@ -30,37 +30,65 @@ class PageCursorPartial:
         """Returns the current page number."""
         return self.__component.getPage()
 
-    def jump_to_first_page(self) -> None:
-        """Jumps to the first page."""
-        self.__component.jumpToFirstPage()
+    def jump_to_first_page(self) -> bool:
+        """
+        Jumps to the first page.
+
+        Returns:
+            bool: ``True`` if the jump was successful, ``False`` otherwise.
+        """
+        return self.__component.jumpToFirstPage()
 
     def jump_to_last_page(self) -> None:
         """Jumps to the last page."""
         self.__component.jumpToLastPage()
 
-    def jump_to_next_page(self) -> None:
-        """Jumps to the next page."""
-        self.__component.jumpToNextPage()
+    def jump_to_next_page(self) -> bool:
+        """
+        Jumps to the next page.
 
-    def jump_to_previous_page(self) -> None:
-        """Jumps to the previous page."""
-        self.__component.jumpToPreviousPage()
+        Returns:
+            bool: ``True`` if the jump was successful, ``False`` otherwise.
+        """
+        return self.__component.jumpToNextPage()
 
-    def jump_to_start_of_page(self) -> None:
-        """Jumps to the start of the current page."""
-        self.__component.jumpToStartOfPage()
+    def jump_to_previous_page(self) -> bool:
+        """
+        Jumps to the previous page.
 
-    def jump_to_end_of_page(self) -> None:
-        """Jumps to the end of the current page."""
-        self.__component.jumpToEndOfPage()
+        Returns:
+            bool: ``True`` if the jump was successful, ``False`` otherwise.
+        """
+        return self.__component.jumpToPreviousPage()
 
-    def jump_to_page_(self, number: int) -> None:
+    def jump_to_start_of_page(self) -> bool:
+        """
+        Jumps to the start of the current page.
+
+        Returns:
+            bool: ``True`` if the jump was successful, ``False`` otherwise.
+        """
+        return self.__component.jumpToStartOfPage()
+
+    def jump_to_end_of_page(self) -> bool:
+        """
+        Jumps to the end of the current page.
+
+        Returns:
+            bool: ``True`` if the jump was successful, ``False`` otherwise.
+        """
+        return self.__component.jumpToEndOfPage()
+
+    def jump_to_page_(self, number: int) -> bool:
         """
         Jumps to the page with the given number.
 
         Args:
             number (int): Page number to jump to.
+
+        Returns:
+            bool: ``True`` if the jump was successful, ``False`` otherwise.
         """
-        self.__component.jumpToPage(number)
+        return self.__component.jumpToPage(number)
 
     # endregion XPageCursor
