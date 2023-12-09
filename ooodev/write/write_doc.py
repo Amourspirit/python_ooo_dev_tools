@@ -729,7 +729,7 @@ class WriteDoc(
         """
         mGUI.GUI.set_visible(doc=self.component, visible=visible)
 
-    def zoom(self, type: ZoomKind = ZoomKind.ZOOM_100_PERCENT) -> None:
+    def zoom(self, type: ZoomKind = ZoomKind.ENTIRE_PAGE) -> None:
         """
         Zooms spreadsheet document to a specific view.
 
