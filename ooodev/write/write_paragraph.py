@@ -56,9 +56,11 @@ class WriteParagraph(
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         # self.__doc = doc
 
-    def get_text_portions(self) -> mWriteTextPortions.WriteTextPortions[WriteParagraph[T]]:
+    def get_text_portions(self) -> mWriteTextPortions.WriteTextPortions[T]:
         """Returns the text portions of this paragraph."""
-        return mWriteTextPortions.WriteTextPortions(owner=self, component=cast("XEnumerationAccess", self.component))
+        return mWriteTextPortions.WriteTextPortions(
+            owner=self.owner, component=cast("XEnumerationAccess", self.component)
+        )
 
     # region Properties
     @property

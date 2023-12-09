@@ -3,6 +3,7 @@ from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
+from com.sun.star.frame import XModel
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 
@@ -14,30 +15,32 @@ if TYPE_CHECKING:
     from ooo.dyn.view.paper_format import PaperFormat
     from ooodev.proto.style_obj import StyleT
 
+from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
+from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.container.name_access_comp import NameAccessComp
+from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.text.text_document_comp import TextDocumentComp
 from ooodev.adapter.text.textfield.page_count_comp import PageCountComp
 from ooodev.adapter.text.textfield.page_number_comp import PageNumberComp
+from ooodev.adapter.util.modify_events import ModifyEvents
+from ooodev.adapter.util.refresh_events import RefreshEvents
+from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
+from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.events.event_singleton import _Events
 from ooodev.events.event_singleton import _Events
 from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.office import write as mWrite
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
 from ooodev.utils import selection as mSelection
 from ooodev.utils.data_type.size import Size
+from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.adapter.document.document_event_events import DocumentEventEvents
-from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.adapter.util.modify_events import ModifyEvents
-from ooodev.adapter.util.refresh_events import RefreshEvents
-from ooodev.adapter.view.print_job_events import PrintJobEvents
-from ooodev.events.args.listener_event_args import ListenerEventArgs
 from . import write_character_style as mWriteCharacterStyle
 from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -237,7 +240,7 @@ class WriteDoc(
 
     def create_style_para(
         self, style_name: str, styles: Sequence[StyleT] | None = None
-    ) -> mWriteParagraphStyle.WriteParagraphStyle:
+    ) -> mWriteParagraphStyle.WriteParagraphStyle[WriteDoc]:
         """
         Creates a paragraph style and adds it to document paragraph styles.
 
@@ -453,7 +456,7 @@ class WriteDoc(
             ParagraphCursorError: If Unable to get cursor
 
         Returns:
-            WriteParagraphCursorCursor: Paragraph cursor
+            WriteParagraphCursor: Paragraph cursor
         """
         result = mSelection.Selection.get_paragraph_cursor(self.component)
         return mWriteParagraphCursorCursor.WriteParagraphCursor(self, result)
@@ -519,7 +522,7 @@ class WriteDoc(
             WriteSentenceCursor: Sentence Cursor.
         """
         result = mSelection.Selection.get_sentence_cursor(self.component)
-        return mWriteSentenceCursor.WriteSentenceCursor(self, result)
+        return mWriteSentenceCursor.WriteSentenceCursor(owner=self, component=result)
 
     def get_text_graphics(self) -> List[XGraphic]:
         """
@@ -621,7 +624,7 @@ class WriteDoc(
             bool: ``True`` if page format is set; Otherwise, ``False``
 
         See Also:
-            :py:meth:`~.write_doc.WriteDoc.set_page_format`
+            :py:meth:`~.WriteDoc.set_page_format`
 
         Attention:
             :py:meth:`~.write.Write.set_page_format` method is called along with any of its events.
@@ -643,7 +646,7 @@ class WriteDoc(
             Exception: If unable to set header text
 
         See Also:
-            :py:meth:`~.write.Write.set_header`
+            :py:meth:`~.WriteDoc.set_header`
 
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_general_name`
@@ -665,7 +668,7 @@ class WriteDoc(
             Exception: If unable to set header text
 
         See Also:
-            :py:meth:`~.write.Write.set_footer`
+            :py:meth:`~.WriteDoc.set_footer`
 
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_general_name`
@@ -710,9 +713,6 @@ class WriteDoc(
 
         Returns:
             PageNumberComp: Page Number Field
-
-        .. versionchanged:: 0.16.0
-            Returns ``XTextField``.
         """
         result = mWrite.Write.set_page_numbers(self.component)
         return PageNumberComp(result)
@@ -728,3 +728,41 @@ class WriteDoc(
             None:
         """
         mGUI.GUI.set_visible(doc=self.component, visible=visible)
+
+    def zoom(self, type: ZoomKind = ZoomKind.ZOOM_100_PERCENT) -> None:
+        """
+        Zooms spreadsheet document to a specific view.
+
+        Args:
+            type (ZoomKind, optional): Type of Zoom to set. Defaults to ``ZoomKind.ZOOM_100_PERCENT``.
+        """
+
+        def zoom_val(value: int) -> None:
+            mGUI.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
+
+        if type in (
+            ZoomKind.ENTIRE_PAGE,
+            ZoomKind.OPTIMAL,
+            ZoomKind.PAGE_WIDTH,
+            ZoomKind.PAGE_WIDTH_EXACT,
+        ):
+            mGUI.GUI.zoom(view=type)
+        elif type == ZoomKind.ZOOM_200_PERCENT:
+            zoom_val(200)
+        elif type == ZoomKind.ZOOM_150_PERCENT:
+            zoom_val(150)
+        elif type == ZoomKind.ZOOM_100_PERCENT:
+            zoom_val(100)
+        elif type == ZoomKind.ZOOM_75_PERCENT:
+            zoom_val(75)
+        elif type == ZoomKind.ZOOM_50_PERCENT:
+            zoom_val(50)
+
+    def zoom_value(self, value: int = 100) -> None:
+        """
+        Sets the zoom level of the Document
+
+        Args:
+            value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default ``100``.
+        """
+        mGUI.GUI.zoom_value(value=value)

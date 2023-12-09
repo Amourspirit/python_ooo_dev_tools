@@ -788,21 +788,20 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
         """
         mCalc.Calc.unfreeze(doc=self.component)
 
-    def zoom_value(self, value: int) -> None:
+    def zoom_value(self, value: int = 100) -> None:
         """
         Sets the zoom level of the Spreadsheet Document
 
         Args:
-            value (int): Value to set zoom. e.g. 160 set zoom to 160%
+            value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default is ``100``.
         """
         mCalc.Calc.zoom_value(doc=self.component, value=value)
 
-    def zoom(self, type: ZoomKind) -> None:
+    def zoom(self, type: ZoomKind = ZoomKind.ZOOM_100_PERCENT) -> None:
         """
         Zooms spreadsheet document to a specific view.
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            type (GUI.ZoomEnum): Type of Zoom to set.
+            type (ZoomKind, optional): Type of Zoom to set. Default is ``ZoomKind.ZOOM_100_PERCENT``.
         """
         mCalc.Calc.zoom(doc=self.component, type=type)

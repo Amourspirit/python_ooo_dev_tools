@@ -2,8 +2,9 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 
+from com.sun.star.drawing import XShapes
+
 if TYPE_CHECKING:
-    from com.sun.star.drawing import XShapes
     from com.sun.star.drawing import XShape
 
 from ooodev.utils import lo as mLo

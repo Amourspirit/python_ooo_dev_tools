@@ -9,12 +9,12 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils import info as mInfo
-from . import write_paragraph as mWriteParagraph
+from . import write_text_table as mWriteTextTable
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteParagraphs(Generic[T], TextComp, QiPartial):
+class WriteTextTables(Generic[T], TextComp, QiPartial):
     """
     Represents writer paragraphs.
 
@@ -47,9 +47,9 @@ class WriteParagraphs(Generic[T], TextComp, QiPartial):
         """
         return mInfo.Info.support_service(element, "com.sun.star.text.Paragraph")
 
-    def __next__(self) -> mWriteParagraph.WriteParagraph[T]:
+    def __next__(self) -> mWriteTextTable.WriteTextTable[T]:
         result = super().__next__()
-        return mWriteParagraph.WriteParagraph(self.owner, result)
+        return mWriteTextTable.WriteTextTable(self.owner, result)
 
     # endregion Overrides
 

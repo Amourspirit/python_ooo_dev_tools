@@ -42,6 +42,6 @@ class ParagraphComp(ComponentBase, ElementAccessPartial):
     @property
     def component(self) -> Paragraph:
         """Paragraph Component"""
-        return cast("Text", self._ComponentBase__get_component())  # type: ignore
+        return cast("Paragraph", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

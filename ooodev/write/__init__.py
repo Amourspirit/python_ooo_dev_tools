@@ -6,7 +6,9 @@ from ooo.dyn.text.control_character import ControlCharacterEnum as ControlCharac
 from ooo.dyn.text.page_number_type import PageNumberType as PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType as TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as PaperFormat
+
 from ooodev.office.write import Write as Write
+from ooodev.utils.kind.zoom_kind import ZoomKind as ZoomKind
 from .write_character_style import WriteCharacterStyle as WriteCharacterStyle
 from .write_doc import WriteDoc as WriteDoc
 from .write_draw_page import WriteDrawPage as WriteDrawPage
@@ -23,6 +25,7 @@ from .write_text_portion import WriteTextPortion as WriteTextPortion
 from .write_text_portions import WriteTextPortions as WriteTextPortions
 from .write_text_range import WriteTextRange as WriteTextRange
 from .write_text_table import WriteTextTable as WriteTextTable
+from .write_text_tables import WriteTextTables as WriteTextTables
 from .write_text_view_cursor import WriteTextViewCursor as WriteTextViewCursor
 from .write_word_cursor import WriteWordCursor as WriteWordCursor
 
@@ -43,6 +46,7 @@ __all__ = [
     "WriteTextPortions",
     "WriteTextRange",
     "WriteTextTable",
+    "WriteTextTables",
     "WriteTextViewCursor",
     "WriteWordCursor",
 ]

@@ -11,6 +11,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from . import write_paragraphs as mWriteParagraphs
+from . import write_text_tables as mWriteTextTables
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -38,6 +39,10 @@ class WriteText(Generic[T], TextComp, QiPartial):
     def get_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[T]:
         """Returns the paragraphs of this text."""
         return mWriteParagraphs.WriteParagraphs(owner=self.owner, component=self.component)
+
+    def get_text_tables(self) -> mWriteTextTables.WriteTextTables[T]:
+        """Returns the text tables of this text."""
+        return mWriteTextTables.WriteTextTables(owner=self.owner, component=self.component)
 
     # region Properties
     @property
