@@ -21,6 +21,7 @@ Submodules
    ooodev.adapter.text.paragraph_comp
    ooodev.adapter.text.paragraph_cursor_partial
    ooodev.adapter.text.sentence_cursor_partial
+   ooodev.adapter.text.simple_text_partial
    ooodev.adapter.text.text_comp
    ooodev.adapter.text.text_content_comp
    ooodev.adapter.text.text_content_partial
