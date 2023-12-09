@@ -31,22 +31,23 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.events.event_singleton import _Events
 from ooodev.events.event_singleton import _Events
 from ooodev.events.write_named_event import WriteNamedEvent
+from ooodev.exceptions import ex as mEx
+from ooodev.format.writer.style import FamilyNamesKind
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
+from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.office import write as mWrite
 from ooodev.utils import gui as mGUI
-from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
-from ooodev.exceptions import ex as mEx
+from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.data_type.size import Size
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
-from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
-from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
 from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
 from . import write_paragraphs as mWriteParagraphs
@@ -486,20 +487,25 @@ class WriteDoc(
         result = mSelection.Selection.get_right_cursor(rng, self.component)
         return mWriteTextCursor.WriteTextCursor(self, result)
 
-    def get_style_names(self, family_style_name: str) -> List[str]:
+    def get_style_names(
+        self, family_style_name: str | FamilyNamesKind = FamilyNamesKind.PARAGRAPH_STYLES
+    ) -> List[str]:
         """
         Gets a list of style names
 
         Args:
-            family_style_name (str): name of family style
+            family_style_name (str, FamilyNamesKind, optional): name of family style. Default is ``FamilyNamesKind.PARAGRAPH_STYLES``.
 
         Raises:
-            Exception: If unable to access Style names
+            StyleError: If unable to access Style names
 
         Returns:
             List[str]: List of style names
         """
-        return mInfo.Info.get_style_names(self.component, family_style_name)
+        try:
+            return mInfo.Info.get_style_names(self.component, str(family_style_name))
+        except Exception as e:
+            raise mEx.StyleError("Unable to get style names") from e
 
     def get_style_families(self) -> mWriteStyleFamilies.WriteStyleFamilies:
         """
@@ -509,7 +515,7 @@ class WriteDoc(
             StyleError: If unable to get style
 
         Returns:
-            WriteCellStyle: Style
+            WriteStyleFamilies: Style
         """
         # there are no styles for cell by default in a writer document.
         try:
@@ -591,7 +597,7 @@ class WriteDoc(
             StyleError: If unable to get style
 
         Returns:
-            WriteStyle: Style
+            WriteNumberingStyle: Style
         """
         try:
             result = mInfo.Info.get_style_props(self.component, "NumberingStyles", str(name))
