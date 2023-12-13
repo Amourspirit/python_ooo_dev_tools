@@ -351,7 +351,7 @@ Two other useful XTextCursor_ methods are:
 
     .. code-tab:: python
 
-        cursro.goLeft(char_count, is_selected)
+        cursor.goLeft(char_count, is_selected)
         cursor.goRight(char_count, is_selected)
 
     .. only:: html
@@ -370,7 +370,7 @@ Another method worth knowing is:
 
     .. code-tab:: python
 
-        cursro.gotoRange(text_range, is_selected)
+        cursor.gotoRange(text_range, is_selected)
 
     .. only:: html
 
@@ -396,6 +396,8 @@ These iteration techniques are described next.
 
 5.3 Cursor Iteration
 ====================
+
+Since ``0.16.0``, |odev|_ provides a new way of work with documents. This is done via the ``ooodev.write`` module and sub-modules.
 
 In the |walk_text|_ example it uses paragraph and word cursors
 (:abbreviation:`eg:` the XParagraphCursor_ and XWordCursor_ interfaces in :numref:`ch05fig_cursor_types`).

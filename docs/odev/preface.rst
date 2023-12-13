@@ -26,6 +26,10 @@ The website the Java code was originally found on is no longer available.
 |jlp|_ still has a copy of the website for now. An archive of the Java code is available at `<https://github.com/Amourspirit/libreoffice_lop_java>`__.
 The origin book by Andrew Davison can be found in the `LibreOffice Programming <https://flywire.github.io/lo-p/>`__ that was converted by `flywire <https://github.com/flywire>`__.
 
+Generally speaking |odev| uses the `Pep 8 <https://peps.python.org/pep-0008/>`__ style guide for python code; However,
+the LibreOffice API method names is in camelCase and the python method and function names should be in snake_case.
+When you see camelCase method names in the python code for |odev| it is because it is LibreOffice API code.
+This convention makes it easier to identify the source of the code.
 
 Changes required are reformatting for this media since the scripts have missed a lot of detail including code,
 generalizing the content so it is more widely applicable to supported languages and complementing Python examples with examples of other language.
