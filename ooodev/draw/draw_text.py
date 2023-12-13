@@ -10,8 +10,7 @@ from ooodev.adapter.drawing.text_comp import TextComp
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.write import write_paragraphs as mWriteParagraphs
-from ooodev.write import write_text_tables as mWriteTextTables
+from ooodev.office import draw as mDraw
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -36,13 +35,23 @@ class DrawText(Generic[T], TextComp, QiPartial):
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         # self.__doc = doc
 
-    def get_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[T]:
-        """Returns the paragraphs of this text."""
-        return mWriteParagraphs.WriteParagraphs(owner=self.owner, component=self.component)
+    def add_bullet(self, level: int, text: str) -> None:
+        """
+        Add bullet text to the end of the bullets text area, specifying
+        the nesting of the bullet using a numbering level value
+        (numbering starts at 0).
 
-    def get_text_tables(self) -> mWriteTextTables.WriteTextTables[T]:
-        """Returns the text tables of this text."""
-        return mWriteTextTables.WriteTextTables(owner=self.owner, component=self.component)
+        Args:
+            level (int): Bullet Level
+            text (str): Bullet Text
+
+        Raises:
+            DrawError: If error adding bullet.
+
+        Returns:
+            None:
+        """
+        mDraw.Draw.add_bullet(self.component, level, text)
 
     # region Properties
     @property

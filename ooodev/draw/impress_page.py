@@ -145,10 +145,10 @@ class ImpressPage(
         Sets The master page.
 
         Args:
-            page (XDrawPage): Page to set as master
+            page (XDrawPage): Page to set as master.
 
         Raises:
-            DrawError: If unable to remove master page/
+            DrawError: If unable to remove master page.
 
         Returns:
             None:
