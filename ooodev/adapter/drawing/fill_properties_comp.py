@@ -5,21 +5,22 @@ from ooodev.adapter.component_base import ComponentBase
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service
+    from com.sun.star.lang import XComponent
 
 
 class FillPropertiesComp(ComponentBase):
     """
-    Class for managing table FillProperties Component.
+    Class for managing FillProperties Component.
     """
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: FillProperties) -> None:
+    def __init__(self, component: XComponent) -> None:
         """
         Constructor
 
         Args:
-            component (FillProperties): UNO FillProperties Component.
+            component (XComponent): UNO component that implements ``com.sun.star.drawing.FillProperties`` service.
         """
         ComponentBase.__init__(self, component)
 

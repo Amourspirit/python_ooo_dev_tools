@@ -9,6 +9,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 if TYPE_CHECKING:
     from com.sun.star.document import OfficeDocument  # service
+    from com.sun.star.lang import XComponent
 
 
 class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, PrintJobEvents):
@@ -18,12 +19,12 @@ class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, Print
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: OfficeDocument) -> None:
+    def __init__(self, component: XComponent) -> None:
         """
         Constructor
 
         Args:
-            component (OfficeDocument): UNO OfficeDocument Component
+            component (XComponent): UNO Component that supports ``com.sun.star.document.OfficeDocument`` service.
         """
         ComponentBase.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore

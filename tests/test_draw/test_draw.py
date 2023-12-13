@@ -8,6 +8,39 @@ from ooodev.office.draw import Draw
 from ooodev.utils.lo import Lo
 
 
+def test_master_page_draw(loader) -> None:
+    doc = Draw.create_draw_doc(loader)
+    slide = Draw.get_slide(doc=doc, idx=0)
+    assert slide is not None
+
+    page = Draw.insert_master_page(doc=doc, idx=0)
+    assert page is not None
+
+    Lo.close(doc)  # type: ignore
+
+
+def test_master_page_impress(loader) -> None:
+    doc = Draw.create_impress_doc(loader)
+    slide = Draw.get_slide(doc=doc, idx=0)
+    assert slide is not None
+
+    page = Draw.insert_master_page(doc=doc, idx=0)
+    assert page is not None
+
+    Lo.close(doc)  # type: ignore
+
+
+def test_get_handout_master_page(loader) -> None:
+    doc = Draw.create_impress_doc(loader)
+    slide = Draw.get_slide(doc=doc, idx=0)
+    assert slide is not None
+
+    page = Draw.get_handout_master_page(doc=doc)
+    assert page is not None
+
+    Lo.close(doc)  # type: ignore
+
+
 def test_rectangle(loader) -> None:
     x = 10
     y = 20
@@ -37,7 +70,7 @@ def test_rectangle(loader) -> None:
     assert size2.Width == size1.Width
     assert size2.Height == size1.Height
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_rectangle_no_loader(loader) -> None:
@@ -92,7 +125,7 @@ def test_circle(loader) -> None:
     assert pos2.X == pos1.X
     assert pos2.Y == pos1.Y
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_ellipse(loader) -> None:
@@ -115,7 +148,7 @@ def test_ellipse(loader) -> None:
     assert pos2.X == pos1.X
     assert pos2.Y == pos1.Y
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_text(loader) -> None:
@@ -138,7 +171,7 @@ def test_text(loader) -> None:
     assert pos2.X == pos1.X
     assert pos2.Y == pos1.Y
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_line(loader) -> None:
@@ -157,7 +190,7 @@ def test_line(loader) -> None:
     assert pos2.X == pos1.X
     assert pos2.Y == pos1.Y
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_polar_line(loader) -> None:
@@ -176,7 +209,7 @@ def test_polar_line(loader) -> None:
     assert pos2.X == pos1.X
     assert pos2.Y == pos1.Y
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_lines_and_move_to_bottom(loader) -> None:
@@ -203,7 +236,7 @@ def test_lines_and_move_to_bottom(loader) -> None:
     assert pos2.X == line_pos.X
     assert pos2.Y == line_pos.Y
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def test_lines_and_move_to_top(loader) -> None:
@@ -230,7 +263,7 @@ def test_lines_and_move_to_top(loader) -> None:
     assert pos2.X == line_pos.X
     assert pos2.Y == line_pos.Y
 
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore
 
 
 def _test_shape_drawing_object(loader) -> None:
@@ -260,4 +293,4 @@ def _test_shape_drawing_object(loader) -> None:
     assert num_shapes2 == 1
 
     Lo.delay(3000)
-    Lo.close(closeable=doc, deliver_ownership=False)
+    Lo.close(doc)  # type: ignore

@@ -47,10 +47,6 @@ class TextViewCursorComp(mTextViewCursorPartial.TextViewCursorPartial, TextRange
 
     # endregion Overrides
 
-    # region Methods
-
-    # endregion Methods
-
     # region Properties
     if TYPE_CHECKING:
 

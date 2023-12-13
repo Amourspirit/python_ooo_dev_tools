@@ -83,6 +83,7 @@ TextFrame
 TextGraphicObject
 TextTable
 twips
+ungroup
 uno
 unvisited
 utils

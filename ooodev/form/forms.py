@@ -874,6 +874,73 @@ class Forms:
 
     # region    add_control
     @classmethod
+    def get_shape(
+        cls,
+        *,
+        label: str | None,
+        comp_kind: FormComponentKind | str,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
+        name: str = "",
+    ) -> XControlShape:
+        """
+        Add a control
+
+        Args:
+            name (str): Control Name
+            label (str | None): Label to assign to control
+            comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
+            x (int, UnitT): Control X position
+            y (int, UnitT): Control Y Position
+            width (int, UnitT): Control width#
+            height (int, UnitT): control height
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            parent_form (XNameContainer, optional): Parent form in which to add control.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
+
+        Returns:
+            XControlShape: Control Shape
+
+        See Also:
+            For ``comp_kind`` `API component Module Namespace <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1form_1_1component.html>`_
+        """
+        try:
+            shape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
+
+            width_value = cls._get_unit100_value(width)
+            height_value = cls._get_unit100_value(height)
+            x_value = cls._get_unit100_value(x)
+            y_value = cls._get_unit100_value(y)
+
+            # position and size of the shape
+            shape.setSize(UnoSize(width_value, height_value))
+            shape.setPosition(Point(x_value, y_value))
+
+            # create the control's model, this is a service
+            # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1form_1_1FormControlModel.html
+            model = mLo.Lo.create_instance_mcf(
+                XControlModel, f"com.sun.star.form.component.{comp_kind}", raise_err=True
+            )
+
+            if not name:
+                name = cls.create_name(None, "Control")
+
+            # link model to the shape
+            shape.setControl(model)
+
+            # set Name and Label properties for the model
+            model_props = mLo.Lo.qi(XPropertySet, model, True)
+            model_props.setPropertyValue("Name", name)
+            if label:
+                with contextlib.suppress(Exception):
+                    model_props.setPropertyValue("Label", label)
+            return shape
+        except Exception:
+            raise
+
+    @classmethod
     def add_control(
         cls,
         doc: XComponent,
@@ -915,25 +982,17 @@ class Forms:
             Added ``styles`` argument.
         """
         try:
-            # create a shape to represent the control's view
-            #     xDocAsFactory = mLo.Lo.qi(XMultiServiceFactory, doc, True)
-            #     shape =
-            #     XMultiServiceFactory xDocAsFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
-            #   XMultiServiceFactory.class, s_aDocument);
+            shape = cls.get_shape(
+                label=label,
+                comp_kind=comp_kind,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                name=name,
+            )
 
-            #     XControlShape xShape = (XControlShape)UnoRuntime.queryInterface(XControlShape.class,
-            #   xDocAsFactory.createInstance("com.sun.star.drawing.ControlShape"));
-
-            shape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
-
-            width_value = cls._get_unit100_value(width)
-            height_value = cls._get_unit100_value(height)
-            x_value = cls._get_unit100_value(x)
-            y_value = cls._get_unit100_value(y)
-
-            # position and size of the shape
-            shape.setSize(UnoSize(width_value, height_value))
-            shape.setPosition(Point(x_value, y_value))
+            # shape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
 
             # adjust the anchor so that the control is tied to the page
             shape_props = mLo.Lo.qi(XPropertySet, shape, True)
@@ -946,21 +1005,22 @@ class Forms:
 
             # create the control's model, this is a service
             # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1form_1_1FormControlModel.html
-            model = mLo.Lo.create_instance_mcf(
-                XControlModel, f"com.sun.star.form.component.{comp_kind}", raise_err=True
-            )
+            # model = mLo.Lo.create_instance_mcf(
+            #     XControlModel, f"com.sun.star.form.component.{comp_kind}", raise_err=True
+            # )
+            model = shape.getControl()
 
             # insert the model into the form (or default to "Form")
             if parent_form is not None:
-                parent_form.insertByName(name, model)
                 if not name:
                     name = cls.create_name(parent_form, "Control")
+                parent_form.insertByName(name, model)
             else:
                 if not name:
                     raise ValueError("name must be specified if parent_form is None")
 
             # link model to the shape
-            shape.setControl(model)
+            # shape.setControl(model)
 
             # add the shape to the shapes on the doc's draw page
             draw_page = cls.get_draw_page(doc)
@@ -975,9 +1035,6 @@ class Forms:
             # set Name and Label properties for the model
             model_props = mLo.Lo.qi(XPropertySet, model, True)
             model_props.setPropertyValue("Name", name)
-            if label:
-                with contextlib.suppress(Exception):
-                    model_props.setPropertyValue("Label", label)
 
             return model_props
         except Exception:

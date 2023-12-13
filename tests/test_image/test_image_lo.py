@@ -69,6 +69,14 @@ def test_load_graphic(loader, fix_image_path) -> None:
         Lo.close_doc(doc, False)
 
 
+def test_get_mime_types(loader) -> None:
+    from ooodev.utils.images_lo import ImagesLo
+
+    mime_types = ImagesLo.get_mime_types()
+    assert mime_types is not None
+    assert len(mime_types) > 0
+
+
 def test_get_size_pixels(loader, fix_image_path) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.write import Write

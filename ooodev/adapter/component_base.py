@@ -57,7 +57,7 @@ class ComponentBase(ABC):
         Returns:
             bool: True if the component supports the service, otherwise False.
         """
-        if not component:
+        if component is None:
             return False
         srv_name = self.__get_supported_service_names()
         if not srv_name:

@@ -19,7 +19,7 @@ def _to_positive_angle(angle: int) -> int:
 @dataclass(unsafe_hash=True)
 class Angle(BaseIntValue):
     """
-    Represents a angle value from ``0`` to ``359``.
+    Represents an angle value from ``0`` to ``359``.
 
     All input integers are converted into a positive angle.
 

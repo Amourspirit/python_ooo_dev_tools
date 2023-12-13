@@ -38,7 +38,7 @@ class DrawingShapeKind(KindBase):
     # could not find MediaShape in api.
     # https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1drawing.html
     # however it can be found in examples.
-    # https://ask.libreoffice.org/t/how-to-add-video-to-impress-with-python/33050/2?u=vib
+    # https://ask.libreoffice.org/t/how-to-add-video-to-impress-with-python/33050/2
 
     def to_namespace(self) -> str:
         """Gets full name-space value of instance"""
