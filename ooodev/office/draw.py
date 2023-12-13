@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from pathlib import Path
 import time
-from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING
+from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING, Union
 import math
 
 import uno
@@ -49,13 +49,30 @@ from com.sun.star.text import XText
 from com.sun.star.text import XTextRange
 from com.sun.star.view import XSelectionSupplier
 
+from ooo.dyn.awt.gradient import Gradient as Gradient
+from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.point import Point as Point
+from ooo.dyn.awt.size import Size as UnoSize
+from ooo.dyn.drawing.connector_type import ConnectorType as ConnectorType
+from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
+from ooo.dyn.drawing.glue_point2 import GluePoint2 as GluePoint2
+from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3 as HomogenMatrix3
+from ooo.dyn.drawing.line_dash import LineDash as LineDash
+from ooo.dyn.drawing.line_style import LineStyle as LineStyle
+from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords as PolyPolygonBezierCoords
+from ooo.dyn.drawing.polygon_flags import PolygonFlags as PolygonFlags
+from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
+from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeed
+from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
+from ooo.dyn.container.no_such_element_exception import NoSuchElementException
+from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
+
 
 from ..cfg.config import Config  # singleton class.
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.draw_named_event import DrawNamedEvent
 from ..events.event_singleton import _Events
 from ..exceptions import ex as mEx
-from ..proto.size_obj import SizeObj
 from ..utils import color as mColor
 from ..utils import file_io as mFileIO
 from ..utils import gui as mGui
@@ -83,27 +100,14 @@ from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
 from ..utils.kind.presentation_layout_kind import PresentationLayoutKind as PresentationLayoutKind
 from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
 from ..utils.type_var import PathOrStr
+from ..units import UnitMM100, UnitPT, UnitMM
+from ..utils import gen_util as gUtil
 
-from ooo.dyn.awt.gradient import Gradient as Gradient
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
-from ooo.dyn.awt.point import Point as Point
-from ooo.dyn.awt.size import Size as UnoSize
-from ooo.dyn.drawing.connector_type import ConnectorType as ConnectorType
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
-from ooo.dyn.drawing.glue_point2 import GluePoint2 as GluePoint2
-from ooo.dyn.drawing.homogen_matrix3 import HomogenMatrix3 as HomogenMatrix3
-from ooo.dyn.drawing.line_dash import LineDash as LineDash
-from ooo.dyn.drawing.line_style import LineStyle as LineStyle
-from ooo.dyn.drawing.poly_polygon_bezier_coords import PolyPolygonBezierCoords as PolyPolygonBezierCoords
-from ooo.dyn.drawing.polygon_flags import PolygonFlags as PolygonFlags
-from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
-from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeed
-from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
-from ooo.dyn.container.no_such_element_exception import NoSuchElementException
-from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 if TYPE_CHECKING:
     from ..proto.dispatch_shape import DispatchShape
+    from ..proto.size_obj import SizeObj
+    from ooodev.units import UnitT
 
 # endregion Imports
 
@@ -114,7 +118,57 @@ class Draw:
     # region Constants
     POLY_RADIUS: int = 20
     """Default Poly Radius"""
+
     # endregion Constants
+    @staticmethod
+    def _create_name(name: str, gen_len: int = 10) -> str:
+        """
+        Creates a name.
+
+        Make a unique string by appending a number to the supplied name
+
+        Args:
+            name (str): Name to prepend.
+            gen_len (int): Length of random string to append. Default ``10``
+
+        Returns:
+            str: a name not in container.
+        """
+        return f"{name}_{gUtil.Util.generate_random_string(gen_len)}"
+
+    @staticmethod
+    def _get_unit_mm_int(value: UnitT | float) -> int:
+        with contextlib.suppress(AttributeError):
+            result = value.get_value_mm()  # type: ignore
+            return round(result)
+        return round(value)  # type: ignore
+
+    @staticmethod
+    def _get_unit_pt(value: UnitT | float) -> float:
+        with contextlib.suppress(AttributeError):
+            return value.get_value_pt()  # type: ignore
+        return value  # type: ignore
+
+    @staticmethod
+    def _get_unit_mm_float(value: UnitT | float) -> float:
+        with contextlib.suppress(AttributeError):
+            result = value.get_value_mm()  # type: ignore
+            return round(result)
+        return round(value)  # type: ignore
+
+    @staticmethod
+    def _get_mm100_obj_from_mm(value: UnitT | float) -> UnitMM100:
+        with contextlib.suppress(AttributeError):
+            result = value.get_value_mm100()  # type: ignore
+            return UnitMM100(result)
+        return UnitMM100.from_mm(value)  # type: ignore
+
+    @staticmethod
+    def _get_pt_obj_from_pt(value: UnitT | float) -> UnitPT:
+        with contextlib.suppress(AttributeError):
+            result = value.get_value_pt()  # type: ignore
+            return UnitPT(result)
+        return UnitPT.from_pt(value)  # type: ignore
 
     # region open, create, save draw/impress doc
     @staticmethod
@@ -238,13 +292,16 @@ class Draw:
         Args:
             page (XDrawPage): Page to save
             fnm (PathOrStr): Path to save page as
-            mime_type (str): Mime Type of page to save as
+            mime_type (str): Mime Type of page to save as such as ``image/jpeg`` or ``image/png``.
 
         Raises:
             DrawError: If error occurs.
 
         Returns:
             None:
+
+        See Also:
+            :py:meth:`ooodev.utils.images_lo.ImagesLo.change_to_mime`.
         """
         try:
             save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
@@ -274,14 +331,14 @@ class Draw:
     @staticmethod
     def get_slides(doc: XComponent) -> XDrawPages:
         """
-        Gets the draw pages of a document
+        Gets the draw pages of a document.
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
             DrawPageMissingError: If there are no draw pages.
-            DrawPageError: If any other error occurs
+            DrawPageError: If any other error occurs.
 
         Returns:
             XDrawPages: Draw Pages.
@@ -300,13 +357,13 @@ class Draw:
     @classmethod
     def get_slides_count(cls, doc: XComponent) -> int:
         """
-        Gets the slides count
+        Gets the slides count.
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Returns:
-            int: _description_
+            int: Number of slides.
         """
         slides = cls.get_slides(doc)
         return 0 if slides is None else slides.getCount()
@@ -756,7 +813,7 @@ class Draw:
             DrawError If unable to create duplicate.
 
         Returns:
-            XDrawPage: Duplicated slide if created; Otherwise, ``None``
+            XDrawPage: Duplicated slide.
         """
         dup = mLo.Lo.qi(XDrawPageDuplicator, doc, True)
         from_slide = cls._get_slide_doc(doc, idx)
@@ -877,12 +934,12 @@ class Draw:
     @classmethod
     def goto_page(cls, *args, **kwargs) -> None:
         """
-        Go to page
+        Go to page.
 
         Args:
-            doc (XComponent): Document
-            ctl (XController): Controller
-            page (XDrawPage): Page
+            doc (XComponent): Document.
+            ctl (XController): Controller.
+            page (XDrawPage): Page.
 
         Raises:
             DrawError: If error occurs.
@@ -1003,17 +1060,17 @@ class Draw:
     @classmethod
     def get_slide_number(cls, *args, **kwargs) -> int:
         """
-        Gets slide number
+        Gets slide number.
 
         Args:
-            xdraw_view (XDrawView): Draw View
-            slide (XDrawPage): Slide
+            xdraw_view (XDrawView): Draw View.
+            slide (XDrawPage): Slide.
 
         Raises:
             DrawError: If error occurs.
 
         Returns:
-            int: Slide Number
+            int: Slide Number.
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -1159,11 +1216,11 @@ class Draw:
     @staticmethod
     def insert_master_page(doc: XComponent, idx: int) -> XDrawPage:
         """
-        Inserts a master page
+        Inserts a master page.
 
         Args:
-            doc (XComponent): Document
-            idx (int): Index used to insert page
+            doc (XComponent): Document.
+            idx (int): Index used to insert page.
 
         Raises:
             DrawPageError: If unable to insert master page.
@@ -1227,10 +1284,10 @@ class Draw:
     @staticmethod
     def get_handout_master_page(doc: XComponent) -> XDrawPage:
         """
-        Gets handout master page
+        Gets handout master page for an impress document.
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Impress Document.
 
         Raises:
             DrawError: If unable to get hand-out master page.
@@ -1336,22 +1393,22 @@ class Draw:
         """
         try:
             props = mLo.Lo.qi(XPropertySet, slide, True)
-            if props is None:
-                raise mEx.PropertySetMissingError("No slide properties found")
             width = int(props.getPropertyValue("Width"))  # type: ignore
             height = int(props.getPropertyValue("Height"))  # type: ignore
-            return Size(round(width / 100), round(height / 100))
+            width_mm = UnitMM.from_mm100(width).value
+            height_mm = UnitMM.from_mm100(height).value
+            return Size(round(width_mm), round(height_mm))
         except Exception as e:
             raise mEx.SizeError("Could not get shape size") from e
 
     @staticmethod
     def set_name(slide: XDrawPage, name: str) -> None:
         """
-        Sets the name of a slide
+        Sets the name of a slide.
 
         Args:
-            slide (XDrawPage): Slide
-            name (str): Name
+            slide (XDrawPage): Slide.
+            name (str): Name.
 
         Raises:
             DrawError: If error occurs setting name.
@@ -1379,12 +1436,12 @@ class Draw:
     @classmethod
     def title_slide(cls, slide: XDrawPage, title: str, sub_title: str = "") -> None:
         """
-        Set a slides title and sub title
+        Set a slides title and sub title.
 
         Args:
-            slide (XDrawPage): Slide
-            title (str): Title
-            sub_title (str): Sub Title
+            slide (XDrawPage): Slide.
+            title (str): Title.
+            sub_title (str): Sub Title.
 
         Raises:
             DrawError: If error setting Slide.
@@ -1635,7 +1692,7 @@ class Draw:
     @classmethod
     def get_shape_text(cls, *args, **kwargs) -> str:
         """
-        Gets the text from inside a shape
+        Gets the text from inside a shape.
 
         Args:
             shape (XShape): Shape
@@ -1719,15 +1776,15 @@ class Draw:
         Finds a shape by its name.
 
         Args:
-            slide (XDrawPage): Slide
-            shape_name (str): Shape Name
+            slide (XDrawPage): Slide.
+            shape_name (str): Shape Name.
 
         Raise:
             ShapeMissingError: If shape is not found.
             ShapeError: If any other error occurs.
 
         Returns:
-            XShape: Shape
+            XShape: Shape.
         """
         try:
             shapes = cls.get_shapes(slide)
@@ -1802,11 +1859,11 @@ class Draw:
     @staticmethod
     def set_zorder(shape: XShape, order: int) -> None:
         """
-        Sets the z-order of a shape
+        Sets the z-order of a shape.
 
         Args:
-            shape (XShape): Shape
-            order (int): Z-Order
+            shape (XShape): Shape.
+            order (int): Z-Order.
 
         Raises:
             DrawError: If unable to set z-order.
@@ -1952,17 +2009,24 @@ class Draw:
     # endregion shape methods
 
     # region draw/add shape to a page
-    @staticmethod
-    def make_shape(shape_type: DrawingShapeKind | str, x: int, y: int, width: int, height: int) -> XShape:
+    @classmethod
+    def make_shape(
+        cls,
+        shape_type: DrawingShapeKind | str,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
+    ) -> XShape:
         """
         Creates a shape
 
         Args:
             shape_type (DrawingShapeKind | str): Shape type.
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -1973,24 +2037,27 @@ class Draw:
         See Also:
             :py:meth:`~.draw.Draw.add_shape`
         """
-        # parameters are in mm units
         try:
+            x = cls._get_mm100_obj_from_mm(x).value
+            y = cls._get_mm100_obj_from_mm(y).value
+            width = cls._get_mm100_obj_from_mm(width).value
+            height = cls._get_mm100_obj_from_mm(height).value
             shape = mLo.Lo.create_instance_msf(XShape, f"com.sun.star.drawing.{shape_type}", raise_err=True)
-            shape.setPosition(Point(x * 100, y * 100))
-            shape.setSize(UnoSize(width * 100, height * 100))
+            shape.setPosition(Point(x, y))
+            shape.setSize(UnoSize(width, height))
             return shape
         except Exception as e:
             raise mEx.ShapeError(f'Unable to create shape "{shape_type}"') from e
 
     @classmethod
-    def warns_position(cls, slide: XDrawPage, x: int, y: int) -> None:
+    def warns_position(cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT) -> None:
         """
         Warns via console if a ``x`` or ``y`` is not on the page.
 
         Args:
             slide (XDrawPage): Slide
-            x (int): X Position
-            y (int): Y Position
+            x (int, UnitT): X Position in mm units or UnitT
+            y (int, UnitT): Y Position int mm units or UnitT
 
         Returns:
             None:
@@ -2007,6 +2074,9 @@ class Draw:
         slide_width = slide_size.width
         slide_height = slide_size.height
 
+        x = cls._get_unit_mm_int(x)
+        y = cls._get_unit_mm_int(y)
+
         if x < 0:
             mLo.Lo.print("x < 0")
         elif x > slide_width - 1:
@@ -2019,7 +2089,13 @@ class Draw:
 
     @classmethod
     def add_shape(
-        cls, slide: XDrawPage, shape_type: DrawingShapeKind | str, x: int, y: int, width: int, height: int
+        cls,
+        slide: XDrawPage,
+        shape_type: DrawingShapeKind | str,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
     ) -> XShape:
         """
         Adds a shape to a slide.
@@ -2027,10 +2103,10 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             shape_type (DrawingShapeKind | str): Shape type.
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -2055,16 +2131,18 @@ class Draw:
             raise mEx.ShapeError("Error adding shape") from e
 
     @classmethod
-    def draw_rectangle(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape:
+    def draw_rectangle(
+        cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
+    ) -> XShape:
         """
-        Gets a rectangle
+        Gets a rectangle.
 
         Args:
-            slide (XDrawPage): Slide
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            slide (XDrawPage): Slide.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -2077,15 +2155,15 @@ class Draw:
         )
 
     @classmethod
-    def draw_circle(cls, slide: XDrawPage, x: int, y: int, radius: int) -> XShape:
+    def draw_circle(cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, radius: int | UnitT) -> XShape:
         """
         Gets a circle
 
         Args:
             slide (XDrawPage): Slide
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            radius (int): Shape radius in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            radius (int, UnitT): Shape radius in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -2093,6 +2171,10 @@ class Draw:
         Returns:
             XShape: Circle Shape.
         """
+        # get the mm value of the units
+        x = cls._get_unit_mm_int(x)
+        y = cls._get_unit_mm_int(y)
+        radius = cls._get_unit_mm_int(radius)
         return cls.add_shape(
             slide=slide,
             shape_type=DrawingShapeKind.ELLIPSE_SHAPE,
@@ -2103,16 +2185,18 @@ class Draw:
         )
 
     @classmethod
-    def draw_ellipse(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape:
+    def draw_ellipse(
+        cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
+    ) -> XShape:
         """
         Gets an ellipse
 
         Args:
             slide (XDrawPage): Slide
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -2127,27 +2211,29 @@ class Draw:
     # region draw_polygon()
     @overload
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int) -> XShape:
+    def draw_polygon(cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, sides: PolySides | int) -> XShape:
         ...
 
     @overload
     @classmethod
-    def draw_polygon(cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int, radius: int) -> XShape:
+    def draw_polygon(
+        cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, sides: PolySides | int, radius: int
+    ) -> XShape:
         ...
 
     @classmethod
     def draw_polygon(
-        cls, slide: XDrawPage, x: int, y: int, sides: PolySides | int, radius: int = POLY_RADIUS
+        cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, sides: PolySides | int, radius: int = POLY_RADIUS
     ) -> XShape:
         """
-        Gets a polygon
+        Gets a polygon.
 
         Args:
-            slide (XDrawPage): Slide
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
+            slide (XDrawPage): Slide.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
             sides (PolySides | int): Polygon Sides value from ``3`` to ``30``.
-            radius (int, optional): Shape radius in mm units. Defaults to the value of :py:attr:`.Draw.POLY_RADIUS`
+            radius (int, optional): Shape radius in mm units. Defaults to the value of :py:attr:`.Draw.POLY_RADIUS`.
 
         Raises:
             ShapeError: If error occurs.
@@ -2180,15 +2266,17 @@ class Draw:
 
     # endregion draw_polygon()
 
-    @staticmethod
-    def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides | int) -> Tuple[Point, ...]:
+    @classmethod
+    def gen_polygon_points(
+        cls, x: int | UnitT, y: int | UnitT, radius: int | UnitT, sides: PolySides | int
+    ) -> Tuple[Point, ...]:
         """
         Generates a list of polygon points
 
         Args:
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            radius (int): Shape radius in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            radius (int, UnitT): Shape radius in mm units or UnitT.
             sides (PolySides, int): Number of Polygon sides from 3 to 30.
 
         Raises:
@@ -2198,13 +2286,16 @@ class Draw:
             Tuple[Point, ...]: Tuple of points.
         """
         try:
+            x = cls._get_mm100_obj_from_mm(x).value
+            y = cls._get_mm100_obj_from_mm(y).value
+            radius = cls._get_mm100_obj_from_mm(radius).value
             sides = PolySides(int(sides))
             pts: List[Point] = []
             angle_step = math.pi / sides.value
             for i in range(sides.value):
                 pt = Point(
-                    int(round(((x * 100) + ((radius * 100)) * math.cos(i * 2 * angle_step)))),
-                    int(round(((y * 100) + ((radius * 100)) * math.sin(i * 2 * angle_step)))),
+                    round((x + radius * math.cos(i * 2 * angle_step))),
+                    round((y + radius * math.sin(i * 2 * angle_step))),
                 )
                 pts.append(pt)
             return tuple(pts)
@@ -2250,16 +2341,16 @@ class Draw:
             raise mEx.ShapeError("Unable to create bezier shape.") from e
 
     @classmethod
-    def draw_line(cls, slide: XDrawPage, x1: int, y1: int, x2: int, y2: int) -> XShape:
+    def draw_line(cls, slide: XDrawPage, x1: int | UnitT, y1: int | UnitT, x2: int | UnitT, y2: int | UnitT) -> XShape:
         """
         Draws a line
 
         Args:
             slide (XDrawPage): Slide
-            x1 (int): Line start X position
-            y1 (int): Line start Y position
-            x2 (int): Line end X position
-            y2 (int): Line end Y position
+            x1 (int, UnitT): Line start X position in mm units or UnitT.
+            y1 (int, UnitT): Line start Y position mm units or UnitT.
+            x2 (int, UnitT): Line end X position mm units or UnitT.
+            y2 (int, UnitT): Line end Y position mm units or UnitT.
 
         Raises:
             ValueError: If x values and y values are a point and not a line.
@@ -2268,6 +2359,10 @@ class Draw:
         Returns:
             XShape: Line Shape.
         """
+        x1 = cls._get_unit_mm_int(x1)
+        y1 = cls._get_unit_mm_int(y1)
+        x2 = cls._get_unit_mm_int(x2)
+        y2 = cls._get_unit_mm_int(y2)
         # make sure size is non-zero
         if (x1 == x2) and (y1 == y2):
             raise ValueError("Cannot create a line from a point")
@@ -2284,25 +2379,30 @@ class Draw:
         )
 
     @classmethod
-    def draw_polar_line(cls, slide: XDrawPage, x: int, y: int, degrees: int, distance: int) -> XShape:
+    def draw_polar_line(
+        cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, degrees: int, distance: int | UnitT
+    ) -> XShape:
         """
         Draw a line from ``x``, ``y`` in the direction of degrees, for the specified distance
         degrees is measured clockwise from x-axis
 
         Args:
-            slide (XDrawPage): Slide
-            x (int): Shape X position
-            y (int): Shape Y position
+            slide (XDrawPage): Slide.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
             degrees (int): Direction of degrees
-            distance (int): Distance of line.
+            distance (int, UnitT): Distance of line in mm units or UnitT..
 
         Raises:
-            ShapeError: If unable to create Polar Line Shape
+            ShapeError: If unable to create Polar Line Shape.
 
         Returns:
-            XShape: Polar Line Shape
+            XShape: Polar Line Shape.
         """
         try:
+            distance = cls._get_unit_mm_int(distance)
+            x = cls._get_unit_mm_int(x)
+            y = cls._get_unit_mm_int(y)
             x_dist = round(math.cos(math.radians(degrees)) * distance)
             y_dist = round(math.sin(math.radians(degrees)) * distance) * -1  # convert to negative
             return cls.draw_line(slide=slide, x1=x, y1=y, x2=x + x_dist, y2=y + y_dist)
@@ -2312,14 +2412,14 @@ class Draw:
             raise mEx.ShapeError("Unable to create polar line shape.") from e
 
     @classmethod
-    def draw_lines(cls, slide: XDrawPage, xs: Sequence[int], ys: Sequence[int]) -> XShape:
+    def draw_lines(cls, slide: XDrawPage, xs: Sequence[Union[int, UnitT]], ys: Sequence[Union[int, UnitT]]) -> XShape:
         """
         Draw lines
 
         Args:
             slide (XDrawPage): Slide
-            xs (Sequence[int]): Sequence of X positions in mm units.
-            ys (Sequence[int]): Sequence of Y positions in mm units.
+            xs (Sequence[Union[int, UnitT]): Sequence of X positions in mm units or UnitT.
+            ys (Sequence[Union[int, UnitT]): Sequence of Y positions in mm units or UnitT.
 
         Raises:
             IndexError: If ``xs`` and ``xy`` do not have the same number of elements.
@@ -2327,7 +2427,12 @@ class Draw:
 
         Returns:
             XShape: Lines Shape.
+
+        Note:
+            The number of points must be the same for both ``xs`` and ``ys``.
         """
+        xs = [cls._get_unit_mm_int(x) for x in xs]
+        ys = [cls._get_unit_mm_int(y) for y in ys]
         num_points = len(xs)
         if num_points != len(ys):
             raise IndexError("xs and ys must be the same length")
@@ -2367,19 +2472,26 @@ class Draw:
 
     @classmethod
     def draw_text(
-        cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int, font_size: int = 0
+        cls,
+        slide: XDrawPage,
+        msg: str,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
+        font_size: float | UnitT = 0,
     ) -> XShape:
         """
-        Draws Text
+        Draws Text.
 
         Args:
-            slide (XDrawPage): Slide
-            msg (str): Text to draw
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
-            font_size (int, optional): Font size of text.
+            slide (XDrawPage): Slide.
+            msg (str): Text to draw.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
+            font_size (float, UnitT, optional): Font size of text in Points or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -2401,14 +2513,14 @@ class Draw:
     # endregion draw_text()
 
     @classmethod
-    def add_text(cls, shape: XShape, msg: str, font_size: int = 0, **props) -> None:
+    def add_text(cls, shape: XShape, msg: str, font_size: float | UnitT = 0, **props) -> None:
         """
         Add text to a shape
 
         Args:
             shape (XShape): Shape
             msg (str): Text to add
-            font_size (int, optional): Font size.
+            font_size (float, optional): Font size in Points or UnitT.
             props (Any, optional): Any extra properties that will be applied to cursor (font) such as ``CharUnderline=1``
 
         Raises:
@@ -2418,6 +2530,7 @@ class Draw:
             None:
         """
         try:
+            font_size = cls._get_pt_obj_from_pt(font_size).value
             txt = mLo.Lo.qi(XText, shape, True)
             cursor = txt.createTextCursor()
             cursor.gotoEnd(False)
@@ -2492,13 +2605,13 @@ class Draw:
     @staticmethod
     def get_glue_points(shape: XShape) -> Tuple[GluePoint2, ...]:
         """
-        Gets Glue Points
+        Gets Glue Points.
 
         Args:
-            shape (XShape): Shape
+            shape (XShape): Shape.
 
         Raises:
-            DrawError: If error occurs
+            DrawError: If error occurs.
 
         Returns:
             Tuple[GluePoint2, ...]: Glue Points.
@@ -2532,16 +2645,18 @@ class Draw:
             raise mEx.DrawError("Error getting glue points.") from e
 
     @classmethod
-    def get_chart_shape(cls, slide: XDrawPage, x: int, y: int, width: int, height: int) -> XShape:
+    def get_chart_shape(
+        cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
+    ) -> XShape:
         """
-        Gets a chart shape
+        Gets a chart shape.
 
         Args:
-            slide (XDrawPage): Slide
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            slide (XDrawPage): Slide.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If Error occurs.
@@ -2561,17 +2676,19 @@ class Draw:
             raise mEx.ShapeError("Unable to get chart shape") from e
 
     @classmethod
-    def draw_formula(cls, slide: XDrawPage, formula: str, x: int, y: int, width: int, height: int) -> XShape:
+    def draw_formula(
+        cls, slide: XDrawPage, formula: str, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
+    ) -> XShape:
         """
         Draws a formula
 
         Args:
             slide (XDrawPage): Slide
             formula (str): Formula as string to draw/
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, , UnitT): Shape Y position in mm units or UnitT
+            width (int, , UnitT): Shape width in mm units or UnitT
+            height (int, , UnitT): Shape height in mm units or UnitT
 
         Raises:
             ShapeError: If error occurs.
@@ -2580,6 +2697,10 @@ class Draw:
             XShape: Formula Shape.
         """
         try:
+            x = cls._get_unit_mm_int(x)
+            y = cls._get_unit_mm_int(y)
+            width = cls._get_unit_mm_int(width)
+            height = cls._get_unit_mm_int(height)
             shape = cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
             )
@@ -2591,7 +2712,7 @@ class Draw:
 
             # for some reason setting model Formula here cause the shape size to be blown out.
             # resetting size and position corrects the issue.
-            cls.set_size(shape, Size(width, height))
+            cls.set_size(shape, width, height)
             cls.set_position(shape, Point(x, y))
             return shape
         except mEx.ShapeError:
@@ -2600,24 +2721,30 @@ class Draw:
             raise mEx.ShapeError("Unable to get Draw formula") from e
 
     @classmethod
-    def draw_media(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape:
+    def draw_media(
+        cls, slide: XDrawPage, fnm: PathOrStr, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
+    ) -> XShape:
         """
-        Draws media
+        Draws media.
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide.
             fnm (PathOrStr): Path to Media file.
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
-            ShapeError: If error occurs
+            ShapeError: If error occurs.
 
         Returns:
-            XShape: Media shape
+            XShape: Media shape.
         """
+        # could not find MediaShape in api.
+        # https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1drawing.html
+        # however it can be found in examples.
+        # https://ask.libreoffice.org/t/how-to-add-video-to-impress-with-python/33050/2
         try:
             shape = cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.MEDIA_SHAPE, x=x, y=y, width=width, height=height
@@ -2686,19 +2813,26 @@ class Draw:
         except Exception as e:
             raise mEx.ShapeError("Unable to combine shapes") from e
 
-    @staticmethod
+    @classmethod
     def create_control_shape(
-        label: str, x: int, y: int, width: int, height: int, shape_kind: FormControlKind | str, **props
+        cls,
+        label: str,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
+        shape_kind: FormControlKind | str,
+        **props,
     ) -> XControlShape:
         """
         Creates a control shape
 
         Args:
             label (str): Label to apply.
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
             shape_kind (FormControlKind | str): The kind of control to create
             props (Any, optional): Any extra key value options to set on the Model of the control being created
                 such as ``FontHeight=18.0, Name="BLA"``
@@ -2708,11 +2842,18 @@ class Draw:
 
         Returns:
             XControlShape: Control Shape.
+
+        .. versionchanged:: 0.17.0
+            No longer sets ``FontHeight`` or ``FontName`` properties.
         """
         try:
+            x = cls._get_mm100_obj_from_mm(x).value
+            y = cls._get_mm100_obj_from_mm(y).value
+            width = cls._get_mm100_obj_from_mm(width).value
+            height = cls._get_mm100_obj_from_mm(height).value
             c_shape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
-            c_shape.setSize(UnoSize(width * 100, height * 100))
-            c_shape.setPosition(Point(x * 100, y * 100))
+            c_shape.setSize(UnoSize(width, height))
+            c_shape.setPosition(Point(x, y))
 
             c_model = mLo.Lo.create_instance_msf(
                 XControlModel, f"com.sun.star.form.control.{shape_kind}", raise_err=True
@@ -2720,11 +2861,12 @@ class Draw:
 
             prop_set = mLo.Lo.qi(XPropertySet, c_model, True)
             prop_set.setPropertyValue("DefaultControl", f"com.sun.star.form.control.{shape_kind}")
-            prop_set.setPropertyValue("Name", "XXX")
-            prop_set.setPropertyValue("Label", label)
+            prop_set.setPropertyValue("Name", cls._create_name("Control"))
+            if label:
+                prop_set.setPropertyValue("Label", label)
 
-            prop_set.setPropertyValue("FontHeight", 18.0)
-            prop_set.setPropertyValue("FontName", mInfo.Info.get_font_general_name())
+            # prop_set.setPropertyValue("FontHeight", 18.0)
+            # prop_set.setPropertyValue("FontName", mInfo.Info.get_font_general_name())
 
             for k, v in props.items():
                 prop_set.setPropertyValue(k, v)
@@ -2752,10 +2894,10 @@ class Draw:
         cls,
         slide: XDrawPage,
         shape_dispatch: ShapeDispatchKind | str,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         fn: DispatchShape,
     ) -> XShape:
         """
@@ -2764,10 +2906,10 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             shape_dispatch (ShapeDispatchKind | str): Dispatch Command
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT
+            width (int, UnitT): Shape width in mm units or UnitT
+            height (int, UnitT): Shape height in mm units or UnitT
             fn (DispatchShape): Function that is responsible for running the dispatch command and returning the shape.
 
         Raises:
@@ -2830,11 +2972,11 @@ class Draw:
     @classmethod
     def set_master_footer(cls, master: XDrawPage, text: str) -> None:
         """
-        Sets master footer text
+        Sets master footer text.
 
         Args:
-            master (XDrawPage): Master Draw Page
-            text (str): Footer text
+            master (XDrawPage): Master Draw Page.
+            text (str): Footer text.
 
         Raises:
             ShapeMissingError: If unable to find footer shape.
@@ -2885,7 +3027,13 @@ class Draw:
 
     @classmethod
     def add_pres_shape(
-        cls, slide: XDrawPage, shape_type: PresentationKind, x: int, y: int, width: int, height: int
+        cls,
+        slide: XDrawPage,
+        shape_type: PresentationKind,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
     ) -> XShape:
         """
         Creates a shape from the "com.sun.star.presentation" package:
@@ -2893,10 +3041,10 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             shape_type (PresentationKind): Kind of presentation package to create.
-            x (int): Shape X position in mm units.
-            y (int): Shape Y position in mm units.
-            width (int): Shape width in mm units.
-            height (int): Shape height in mm units.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -2935,14 +3083,16 @@ class Draw:
         try:
             pt = shape.getPosition()
             # convert to mm
-            return Point(round(pt.X / 100), round(pt.Y / 100))
+            x = UnitMM.from_mm100(pt.X).value
+            y = UnitMM.from_mm100(pt.Y).value
+            return Point(round(x), round(y))
         except Exception as e:
             raise mEx.PointError("Error getting position") from e
 
     @staticmethod
     def get_size(shape: XShape) -> Size:
         """
-        Gets Size in mm units
+        Gets Size in mm units.
 
         Args:
             shape (XShape): Shape
@@ -2956,7 +3106,9 @@ class Draw:
         try:
             sz = shape.getSize()
             # convert to mm
-            return Size(round(sz.Width / 100), round(sz.Height / 100))
+            width = UnitMM.from_mm100(sz.Width).value
+            height = UnitMM.from_mm100(sz.Height).value
+            return Size(round(width), round(height))
         except Exception as e:
             raise mEx.SizeError("Error getting Size") from e
 
@@ -3015,34 +3167,52 @@ class Draw:
     # region set_position()
 
     @overload
-    @staticmethod
-    def set_position(shape: XShape, pt: Point) -> None:
-        ...
-
-    @overload
-    @staticmethod
-    def set_position(shape: XShape, x: int, y: int) -> None:
-        ...
-
-    @staticmethod
-    def set_position(*args, **kwargs) -> None:
+    @classmethod
+    def set_position(cls, shape: XShape, pt: Point) -> None:
         """
-        Sets Position of shape
+        Sets Position of shape.
 
         Args:
             shape (XShape): Shape
-            pt (point): Point that contains x and y positions.
-            x (int): X position
-            y (int): Y Position
+            pt (point): Point that contains x and y positions in mm units.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    @classmethod
+    def set_position(cls, shape: XShape, x: int | UnitT, y: int | UnitT) -> None:
+        """
+        Sets Position of shape.
+
+        Args:
+            shape (XShape): Shape
+            x (int, UnitT): X position in mm units or UnitT.
+            y (int, UnitT): Y Position in mm units or UnitT.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @classmethod
+    def set_position(cls, *args, **kwargs) -> None:
+        """
+        Sets Position of shape.
+
+        Args:
+            shape (XShape): Shape
+            pt (point): Point that contains x and y positions in mm units.
+            x (int, UnitT): X position in mm units or UnitT.
+            y (int, UnitT): Y Position in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
 
         Returns:
             None:
-
-        Note:
-            Positions are NOT in mm units when passed into this method.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -3078,10 +3248,14 @@ class Draw:
             if count == 2:
                 # def set_position(shape: XShape, pt: Point)
                 pt_in = cast(Point, kargs[2])
-                pt = Point(pt_in.X * 100, pt_in.Y * 100)
+                x = cls._get_mm100_obj_from_mm(pt_in.X).value
+                y = cls._get_mm100_obj_from_mm(pt_in.Y).value
+                pt = Point(x, y)
             else:
                 # def set_position(shape: XShape, x:int, y: int)
-                pt = Point(kargs[2] * 100, kargs[3] * 100)
+                x = cls._get_mm100_obj_from_mm(kargs[2]).value
+                y = cls._get_mm100_obj_from_mm(kargs[3]).value
+                pt = Point(x, y)
             cast(XShape, kargs[1]).setPosition(pt)
         except Exception as e:
             raise mEx.ShapeError("Error setting position") from e
@@ -3091,34 +3265,31 @@ class Draw:
     # region set_size()
 
     @overload
-    @staticmethod
-    def set_size(shape: XShape, sz: SizeObj) -> None:
+    @classmethod
+    def set_size(cls, shape: XShape, sz: SizeObj) -> None:
         ...
 
     @overload
-    @staticmethod
-    def set_size(shape: XShape, width: int, height: int) -> None:
+    @classmethod
+    def set_size(cls, shape: XShape, width: int | UnitT, height: int | UnitT) -> None:
         ...
 
-    @staticmethod
-    def set_size(*args, **kwargs) -> None:
+    @classmethod
+    def set_size(cls, *args, **kwargs) -> None:
         """
-        Sets set_size of shape
+        Sets set_size of shape.
 
         Args:
-            shape (XShape): Shape
-            sz (~ooodev.utils.data_type.size.Size): Size that contains width and height positions.
-            width (int): Width position
-            height (int): Height Position
+            shape (XShape): Shape.
+            sz (~ooodev.utils.data_type.size.Size): Size that contains width and height positions in mm units.
+            width (int, UnitT): Width position in mm units or UnitT.
+            height (int, UnitT): Height position in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
 
         Returns:
             None:
-
-        Note:
-            Positions are NOT in mm units when passed into this method.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -3153,10 +3324,14 @@ class Draw:
             if count == 2:
                 # def set_size(shape: XShape, sz: Size)
                 sz_in = cast(SizeObj, kargs[2])
-                sz = Size(sz_in.Width * 100, sz_in.Height * 100)
+                width = cls._get_mm100_obj_from_mm(sz_in.Width).value
+                height = cls._get_mm100_obj_from_mm(sz_in.Height).value
+                sz = Size(width, height)
             else:
                 # def set_size(shape: XShape, width:int, height: int)
-                sz = Size(kargs[2] * 100, kargs[3] * 100)
+                width = cls._get_mm100_obj_from_mm(kargs[2]).value
+                height = cls._get_mm100_obj_from_mm(kargs[3]).value
+                sz = Size(width, height)
             cast(XShape, kargs[1]).setSize(sz.get_uno_size())
         except Exception as e:
             raise mEx.ShapeError("Error setting size") from e
@@ -3166,12 +3341,12 @@ class Draw:
     @staticmethod
     def set_style(shape: XShape, graphic_styles: XNameContainer, style_name: GraphicStyleKind | str) -> None:
         """
-        Set the graphic style for a shape
+        Set the graphic style for a shape.
 
         Args:
-            shape (XShape): Shape
-            graphic_styles (XNameContainer): Graphic styles
-            style_name (GraphicStyleKind | str): Graphic Style Name
+            shape (XShape): Shape.
+            graphic_styles (XNameContainer): Graphic styles.
+            style_name (GraphicStyleKind | str): Graphic Style Name.
 
         Raises:
             DrawError: If error occurs.
@@ -3302,14 +3477,14 @@ class Draw:
             raise mEx.ColorError("Error getting fill color") from e
 
     @staticmethod
-    def set_transparency(shape: XShape, level: Intensity) -> None:
+    def set_transparency(shape: XShape, level: Intensity | int) -> None:
         """
         Sets the transparency level for the shape.
         Higher level means more transparent.
 
         Args:
             shape (XShape): Shape
-            level (Intensity): Transparency value
+            level (Intensity, int): Transparency value. Represents a intensity value from ``0`` to ``100``.
 
         Raises:
             ShapeError: If error occurs.
@@ -3318,6 +3493,7 @@ class Draw:
             None:
         """
         try:
+            level = Intensity(int(level))
             mProps.Props.set(shape, FillTransparence=level.value)
         except Exception as e:
             raise mEx.ShapeError("Error setting transparency") from e
@@ -3325,11 +3501,11 @@ class Draw:
     @staticmethod
     def set_gradient_properties(shape: XShape, grad: Gradient) -> None:
         """
-        Sets shapes gradient properties
+        Sets shapes gradient properties.
 
         Args:
-            shape (XShape): Shape
-            grad (~com.sun.star.awt.Gradient): Gradient properties to set
+            shape (XShape): Shape.
+            grad (~com.sun.star.awt.Gradient): Gradient properties to set.
 
         Returns:
             None:
@@ -3395,21 +3571,21 @@ class Draw:
     @overload
     @classmethod
     def set_gradient_color(
-        cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
+        cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle | int
     ) -> Gradient:
         ...
 
     @classmethod
     def set_gradient_color(cls, *args, **kwargs) -> Gradient:
         """
-        Set the gradient color of the shape
+        Set the gradient color of the shape.
 
         Args:
-            shape (XShape): Shape
+            shape (XShape): Shape.
             name (DrawingGradientKind | str): Gradient color name.
-            start_color (~ooodev.utils.color.Color): Start Color
-            end_color (~ooodev.utils.color.Color): End Color
-            angle (Angle): Angle
+            start_color (~ooodev.utils.color.Color): Start Color.
+            end_color (~ooodev.utils.color.Color): End Color.
+            angle (Angle, int): Gradient angle.
 
         Raises:
             NameError: If ``name`` is not recognized.
@@ -3467,7 +3643,7 @@ class Draw:
         if count == 2:
             return cls._set_gradient_color_name(kargs[1], kargs[2])
 
-        angle = Angle(0) if count == 3 else cast(Angle, kargs[4])
+        angle = Angle(0) if count == 3 else Angle(int(kargs[4]))
         return cls._set_gradient_color_colors(shape=kargs[1], start_color=kargs[2], end_color=kargs[3], angle=angle)
 
     # endregion set_gradient_color()
@@ -3478,8 +3654,8 @@ class Draw:
         Set hatching color of a shape.
 
         Args:
-            shape (XShape): Shape
-            name (DrawingHatchingKind | str): Hatching Name
+            shape (XShape): Shape.
+            name (DrawingHatchingKind, str): Hatching Name.
 
         Raises:
             NameError: If ``name`` is not recognized.
@@ -3513,7 +3689,7 @@ class Draw:
 
         Args:
             shape (XShape): Shape
-            name (DrawingBitmapKind | str): Bitmap Name
+            name (DrawingBitmapKind, str): Bitmap Name
 
         Raises:
             NameError: If ``name`` is not recognized.
@@ -3565,11 +3741,11 @@ class Draw:
     @classmethod
     def set_line_style(cls, shape: XShape, style: LineStyle) -> None:
         """
-        Set the line style for a shape
+        Set the line style for a shape.
 
         Args:
-            shape (XShape): Shape
-            style (LineStyle): Line Style
+            shape (XShape): Shape.
+            style (LineStyle): Line Style.
 
         Raises:
             ShapeError: If error occurs.
@@ -3585,10 +3761,10 @@ class Draw:
     @classmethod
     def set_visible(cls, shape: XShape, is_visible: bool) -> None:
         """
-        Set the line style for a shape
+        Set the line style for a shape.
 
         Args:
-            shape (XShape): Shape
+            shape (XShape): Shape.
             is_visible (bool): Set is shape is visible or not.
 
         Raises:
@@ -3607,13 +3783,13 @@ class Draw:
     # for rotations around the center
 
     @classmethod
-    def set_angle(cls, shape: XShape, angle: Angle) -> None:
+    def set_angle(cls, shape: XShape, angle: Angle | int) -> None:
         """
         Set the line style for a shape
 
         Args:
             shape (XShape): Shape
-            angle (Angle): Angle to set.
+            angle (Angle | int): Angle to set.
 
         Raises:
             ShapeError: If error occurs.
@@ -3622,6 +3798,7 @@ class Draw:
             None:
         """
         try:
+            angle = Angle(int(angle))
             cls.set_shape_props(shape=shape, RotateAngle=angle.value * 100)
         except Exception as e:
             raise mEx.ShapeError(f"Error setting shape angle: {angle}") from e
@@ -3647,13 +3824,13 @@ class Draw:
             raise mEx.ShapeError("Error getting shape rotation") from e
 
     @staticmethod
-    def set_rotation(shape: XShape, angle: Angle) -> None:
+    def set_rotation(shape: XShape, angle: Angle | int) -> None:
         """
-        Set the rotation of a shape
+        Set the rotation of a shape.
 
         Args:
-            shape (XShape): Shape
-            angle (Angle): _description_
+            shape (XShape): Shape.
+            angle (Angle | int): Angle or int. An angle value from ``0`` to ``359``.
 
         Raises:
             ShapeError: If error occurs.
@@ -3662,6 +3839,7 @@ class Draw:
             None:
         """
         try:
+            angle = Angle(int(angle))
             mProps.Props.set(shape, RotateAngle=angle.value * 100)
         except Exception as e:
             raise mEx.ShapeError("Error setting shape rotation") from e
@@ -3772,36 +3950,74 @@ class Draw:
     @overload
     @classmethod
     def draw_image(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape:
+        """
+        Draws an image.
+
+        Args:
+            slide (XDrawPage): Slide.
+            fnm (PathOrStr): Path to image.
+
+        Returns:
+            XShape: Shape.
+        """
         ...
 
     @overload
     @classmethod
-    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape:
+    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int | UnitT, y: int | UnitT) -> XShape:
+        """
+        Draws an image.
+
+        Args:
+            slide (XDrawPage): Slide.
+            fnm (PathOrStr): Path to image.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+
+        Returns:
+            XShape: Shape.
+        """
         ...
 
     @overload
     @classmethod
-    def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int) -> XShape:
+    def draw_image(
+        cls, slide: XDrawPage, fnm: PathOrStr, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
+    ) -> XShape:
+        """
+        Draws an image.
+
+        Args:
+            slide (XDrawPage): Slide.
+            fnm (PathOrStr): Path to image.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
+
+        Returns:
+            XShape: Shape.
+        """
         ...
 
     @classmethod
     def draw_image(cls, *args, **kwargs) -> XShape:
         """
-        Draws an image
+        Draws an image.
 
         Args:
-            slide (XDrawPage): Slide
-            fnm (PathOrStr): Path to image
-            x (int): Shape X position
-            y (int): Shape Y position
-            width (int): Shape width
-            height (int): Shape height
+            slide (XDrawPage): Slide.
+            fnm (PathOrStr): Path to image.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
 
         Returns:
-            XShape: Shape
+            XShape: Shape.
         """
         ordered_keys = (1, 2, 3, 4, 5, 6)
         kargs_len = len(kwargs)
@@ -3836,21 +4052,23 @@ class Draw:
 
         if count == 2:
             return cls._draw_image_path(slide=kargs[1], fnm=kargs[2])
+        x = cls._get_unit_mm_int(kargs[3])
+        y = cls._get_unit_mm_int(kargs[4])
         if count == 4:
-            return cls._draw_image_path_x_y(slide=kargs[1], fnm=kargs[2], x=kargs[3], y=kargs[4])
-        return cls._draw_image_path_x_y_w_h(
-            slide=kargs[1], fnm=kargs[2], x=kargs[3], y=kargs[4], width=kargs[5], height=kargs[6]
-        )
+            return cls._draw_image_path_x_y(slide=kargs[1], fnm=kargs[2], x=x, y=y)
+        width = cls._get_unit_mm_int(kargs[5])
+        height = cls._get_unit_mm_int(kargs[6])
+        return cls._draw_image_path_x_y_w_h(slide=kargs[1], fnm=kargs[2], x=x, y=y, width=width, height=height)
 
     # endregion draw_image()
 
     @staticmethod
     def set_image(shape: XShape, fnm: PathOrStr) -> None:
         """
-        Sets the image of a shape
+        Sets the image of a shape.
 
         Args:
-            shape (XShape): Shape
+            shape (XShape): Shape.
             fnm (PathOrStr): Path to image.
 
         Raises:
@@ -3871,10 +4089,10 @@ class Draw:
     @staticmethod
     def set_image_graphic(shape: XShape, graphic: XGraphic) -> None:
         """
-        Sets the image of a shape
+        Sets the image of a shape.
 
         Args:
-            shape (XShape): Shape
+            shape (XShape): Shape.
             graphic (XGraphic): Graphic.
 
         Raises:
@@ -3892,7 +4110,7 @@ class Draw:
 
     @classmethod
     def draw_image_offset(
-        cls, slide: XDrawPage, fnm: PathOrStr, xoffset: ImageOffset, yoffset: ImageOffset
+        cls, slide: XDrawPage, fnm: PathOrStr, xoffset: ImageOffset | float, yoffset: ImageOffset | float
     ) -> XShape | None:
         """
         Insert the specified picture onto the slide page in the doc
@@ -3902,12 +4120,14 @@ class Draw:
         Args:
             slide (XDrawPage): Slide
             fnm (PathOrStr): Path to image.
-            xoffset (ImageOffset): X Offset with value between ``0.0`` and ``1.0``
-            yoffset (ImageOffset): Y Offset with value between ``0.0`` and ``1.0``
+            xoffset (ImageOffset, float): X Offset with value between ``0.0`` and ``1.0``
+            yoffset (ImageOffset, float): Y Offset with value between ``0.0`` and ``1.0``
 
         Returns:
-            XShape | None: Shape on success, None otherwise.
+            XShape | None: Shape on success, ``None`` otherwise.
         """
+        xoffset = ImageOffset(float(xoffset))
+        yoffset = ImageOffset(float(yoffset))
         try:
             slide_size = cls.get_slide_size(slide)
             x = round(slide_size.width * xoffset.value)  # in mm units
@@ -3982,13 +4202,13 @@ class Draw:
     @staticmethod
     def get_show(doc: XComponent) -> XPresentation2:
         """
-        Gets Slide show Presentation
+        Gets Slide show Presentation.
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
-            DrawError: If error occurs
+            DrawError: If error occurs.
 
         Returns:
             XPresentation2: Slide Show Presentation.
@@ -4143,7 +4363,7 @@ class Draw:
     @classmethod
     def build_play_list(cls, doc: XComponent, custom_name: str, *slide_idxs: int) -> XNameContainer:
         """
-        build a named play list container of  slides from doc.
+        Build a named play list container of  slides from doc.
         The name of the play list is ``custom_name``.
 
         Args:
@@ -4155,7 +4375,7 @@ class Draw:
             DrawError: If error occurs.
 
         Returns:
-            XNameContainer | None: Name Container on success; Otherwise, ``None``
+            XNameContainer: Name Container.
         """
         # get a named container for holding the custom play list
         play_list = cls.get_play_list(doc)

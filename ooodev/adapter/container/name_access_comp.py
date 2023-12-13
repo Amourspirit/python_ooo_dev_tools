@@ -34,11 +34,10 @@ class NameAccessComp(ComponentBase, NameAccessPartial):
     # endregion Overrides
 
     # region Properties
-    if TYPE_CHECKING:
 
-        @property
-        def component(self) -> XNameAccess:
-            """XNameAccess Component"""
-            return cast("XNameAccess", self._ComponentBase__get_component())  # type: ignore
+    @property
+    def component(self) -> XNameAccess:
+        """XNameAccess Component"""
+        return cast("XNameAccess", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

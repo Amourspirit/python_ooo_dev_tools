@@ -4,6 +4,7 @@ from ooodev.adapter.drawing.generic_drawing_document_comp import GenericDrawingD
 
 if TYPE_CHECKING:
     from com.sun.star.presentation import PresentationDocument  # service
+    from com.sun.star.lang import XComponent
 
 
 class PresentationDocumentComp(GenericDrawingDocumentComp):
@@ -13,12 +14,12 @@ class PresentationDocumentComp(GenericDrawingDocumentComp):
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: PresentationDocument) -> None:
+    def __init__(self, component: XComponent) -> None:
         """
         Constructor
 
         Args:
-            component (PresentationDocument): UNO PresentationDocument Component
+            component (XComponent): UNO component that supports ``com.sun.star.presentation.PresentationDocument`` service.
         """
 
         super().__init__(component)

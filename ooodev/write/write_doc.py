@@ -3,11 +3,13 @@ from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
+from com.sun.star.frame import XModel
 from com.sun.star.style import XStyle
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 
 if TYPE_CHECKING:
+    from com.sun.star.frame import XController
     from com.sun.star.graphic import XGraphic
     from com.sun.star.text import XText
     from com.sun.star.text import XTextDocument
@@ -121,6 +123,16 @@ class WriteDoc(
         event.remove_callback = True
 
     # endregion Lazy Listeners
+
+    def get_controller(self) -> XController:
+        """
+        Gets controller from document.
+
+        Returns:
+            XController: Controller.
+        """
+        model = mLo.Lo.qi(XModel, self.component, True)
+        return model.getCurrentController()
 
     # region get_cursor()
     @overload
@@ -920,7 +932,7 @@ class WriteDoc(
 
     def zoom(self, type: ZoomKind = ZoomKind.ENTIRE_PAGE) -> None:
         """
-        Zooms spreadsheet document to a specific view.
+        Zooms document to a specific view.
 
         Args:
             type (ZoomKind, optional): Type of Zoom to set. Defaults to ``ZoomKind.ZOOM_100_PERCENT``.

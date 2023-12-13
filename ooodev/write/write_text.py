@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from com.sun.star.text import XText
 
 from ooodev.adapter.text.text_comp import TextComp
-from ooodev.adapter.text.simple_text_partial import SimpleTextPartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -17,7 +16,7 @@ from . import write_text_tables as mWriteTextTables
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteText(Generic[T], TextComp, SimpleTextPartial, QiPartial):
+class WriteText(Generic[T], TextComp, QiPartial):
     """
     Represents writer text content.
 
@@ -34,7 +33,6 @@ class WriteText(Generic[T], TextComp, SimpleTextPartial, QiPartial):
         """
         self.__owner = owner
         TextComp.__init__(self, component)  # type: ignore
-        SimpleTextPartial.__init__(self, component=component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         # self.__doc = doc
 

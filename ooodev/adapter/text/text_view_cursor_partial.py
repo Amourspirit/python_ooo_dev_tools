@@ -29,21 +29,8 @@ class TextViewCursorPartial(mTextCursorPartial.TextCursorPartial):
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTextViewCursor``.
         """
 
-        self.__interface = interface
-        self.__validate(component)
+        mTextCursorPartial.TextCursorPartial.__init__(self, component, interface=interface)
         self.__component = component
-
-    def __validate(self, component: Any) -> None:
-        """
-        Validates the component.
-
-        Args:
-            component (Any): The component to be validated.
-        """
-        if self.__interface is None:
-            return
-        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
-            raise mEx.MissingInterfaceError(self.__interface)
 
     # region XTextViewCursor
     def is_visible(self) -> bool:

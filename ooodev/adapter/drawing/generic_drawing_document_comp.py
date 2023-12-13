@@ -7,6 +7,7 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import GenericDrawingDocument  # service
+    from com.sun.star.lang import XComponent
 
 
 class GenericDrawingDocumentComp(OfficeDocumentComp, PropertyChangeImplement, VetoableChangeImplement):
@@ -16,12 +17,12 @@ class GenericDrawingDocumentComp(OfficeDocumentComp, PropertyChangeImplement, Ve
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: GenericDrawingDocument) -> None:
+    def __init__(self, component: XComponent) -> None:
         """
         Constructor
 
         Args:
-            component (GenericDrawingDocument): UNO GenericDrawingDocumentComp Component
+            component (XComponent): UNO Component that supports ``com.sun.star.drawing.GenericDrawingDocument`` service.
         """
 
         super().__init__(component)

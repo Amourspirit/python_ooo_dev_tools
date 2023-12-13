@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
-from ooodev.adapter.component_base import ComponentBase
+from typing import Any, cast, TYPE_CHECKING
 from .generic_draw_page_comp import GenericDrawPageComp
 
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import DrawPage  # service
+
+# Draw page does implement XDrawPage, but it show in the API of DrawPage Service.
 
 
 class DrawPageComp(GenericDrawPageComp):
@@ -15,14 +16,14 @@ class DrawPageComp(GenericDrawPageComp):
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: DrawPage) -> None:
+    def __init__(self, component: Any) -> None:
         """
         Constructor
 
         Args:
-            component (DrawPage): UNO DrawPage Component.
+            component (Any): UNO Component that implements ``com.sun.star.drawing.DrawPage`` service.
         """
-        super().__init__(component)
+        GenericDrawPageComp.__init__(self, component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

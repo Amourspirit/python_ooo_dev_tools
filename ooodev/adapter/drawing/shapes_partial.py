@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class ShapesPartial(IndexAccessPartial):
     """
-    Class for managing IndexAccess.
+    Partial class for XShape interface.
     """
 
     # pylint: disable=unused-argument
@@ -26,10 +26,10 @@ class ShapesPartial(IndexAccessPartial):
             component (XShapes): UNO Component that implements ``com.sun.star.drawing.XShapes`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XShapes``.
         """
-        IndexAccessPartial.__init__(self, component, interface)
         self.__component = component
+        IndexAccessPartial.__init__(self, component, interface)
 
-    # region Methods
+    # region XShape
     def add(self, shape: XShape) -> None:
         """
         Adds a shape to the collection.
@@ -48,4 +48,4 @@ class ShapesPartial(IndexAccessPartial):
         """
         self.__component.remove(shape)
 
-    # endregion Methods
+    # endregion XShape

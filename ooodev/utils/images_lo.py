@@ -281,11 +281,29 @@ class ImagesLo:
 
     @staticmethod
     def get_mime_types() -> Tuple[str, ...]:
+        """
+        Gets mime types from ``com.sun.star.drawing.GraphicExportFilter``
+
+        Returns:
+            Tuple[str, ...]: Tuple of mime types such as ``('image/png', 'image/jpeg', 'application/pdf', ...)``
+        """
         mi = mLo.Lo.create_instance_mcf(XMimeTypeInfo, "com.sun.star.drawing.GraphicExportFilter", raise_err=True)
         return mi.getSupportedMimeTypeNames()
 
     @classmethod
     def change_to_mime(cls, im_format: str) -> str:
+        """
+        Change to Mime type. If the input is valid then it is returned otherwise ``image/png`` is returned.
+
+        Args:
+            im_format (str): An expected mime type such as ``image/jpeg`` if not found then ``image/png`` is returned.
+
+        Returns:
+            str: Mime type. Defaults to ``image/png``
+
+        See Also:
+            :py:meth:`~.ImagesLo.get_mime_types`
+        """
         names = cls.get_mime_types()
         imf = im_format.lower().strip()
         for name in names:

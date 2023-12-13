@@ -8,7 +8,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.adapter.presentation.draw_page_comp
-   ooodev.adapter.presentation.drawing_document_comp
+   ooodev.adapter.presentation.presentation_document_comp
 
 Module contents
 ---------------

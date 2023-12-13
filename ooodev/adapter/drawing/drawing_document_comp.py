@@ -4,6 +4,7 @@ from .generic_drawing_document_comp import GenericDrawingDocumentComp
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import DrawingDocument  # service
+    from com.sun.star.lang import XComponent
 
 
 class DrawingDocumentComp(GenericDrawingDocumentComp):
@@ -13,16 +14,16 @@ class DrawingDocumentComp(GenericDrawingDocumentComp):
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: DrawingDocument) -> None:
+    def __init__(self, component: XComponent) -> None:
         """
         Constructor
 
         Args:
-            component (DrawingDocument): UNO DrawingDocument Component
+            component (XComponent): UNO Component that supports ``com.sun.star.drawing.DrawingDocument`` service.
         """
 
         super().__init__(component)
-        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
+        # generic_args = self._ComponentBase__get_generic_args()  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

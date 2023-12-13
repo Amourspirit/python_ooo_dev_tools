@@ -10,6 +10,7 @@ ooodev
    cfg/index
    conn/index
    dialog/index
+   draw/index
    events/index
    exceptions/index
    form/index

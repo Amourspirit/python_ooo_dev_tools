@@ -48,11 +48,9 @@ class CellRangeComp(ComponentBase, ChartDataChangeEventEvents):
     # endregion Overrides
 
     # region Properties
-    if TYPE_CHECKING:
-
-        @property
-        def component(self) -> CellRange:
-            """CellRange Component"""
-            return cast("CellRange", self._ComponentBase__get_component())  # type: ignore
+    @property
+    def component(self) -> CellRange:
+        """CellRange Component"""
+        return cast("CellRange", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

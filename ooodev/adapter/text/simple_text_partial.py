@@ -8,6 +8,7 @@ from ooo.dyn.text.control_character import ControlCharacterEnum
 from com.sun.star.text import XSimpleText
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
+from .text_range_partial import TextRangePartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
 
-class SimpleTextPartial:
+class SimpleTextPartial(TextRangePartial):
     """
     Partial class for XSimpleText.
     """
@@ -31,21 +32,8 @@ class SimpleTextPartial:
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XSimpleText``.
         """
 
-        self.__interface = interface
-        self.__validate(component)
+        TextRangePartial.__init__(self, component, interface=interface)
         self.__component = component
-
-    def __validate(self, component: Any) -> None:
-        """
-        Validates the component.
-
-        Args:
-            component (Any): The component to be validated.
-        """
-        if self.__interface is None:
-            return
-        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
-            raise mEx.MissingInterfaceError(self.__interface)
 
     # region XSimpleText
     def create_text_cursor(self) -> XTextCursor:
