@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.17.0
+==============
+
+Added ``ooodev.draw`` module. This module contains classes for working with Draw and Impress documents.
+Many new classes which make working with Draw and Impress documents much easier.
+
 Version 0.16.0
 ==============
 

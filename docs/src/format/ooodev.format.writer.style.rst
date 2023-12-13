@@ -14,6 +14,14 @@ Subpackages
    ooodev.format.writer.style.page
    ooodev.format.writer.style.para
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ooodev.format.writer.style.family_names_kind
+
 Module contents
 ---------------
 
