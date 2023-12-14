@@ -671,7 +671,7 @@ Using :py:meth:`.Props.set_property`, simplifies this to:
 
             .. group-tab:: None
 
-Since `0.15.0` it is possible to use :ref:`class_write_write_doc` to simplify the code even further:
+Since ``0.15.0`` it is possible to use :ref:`class_write_write_doc` to simplify the code even further:
 
 .. tabs::
 
