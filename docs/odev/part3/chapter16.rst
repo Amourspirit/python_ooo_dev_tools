@@ -38,28 +38,29 @@ The |make_slides|_ example creates a deck of five slides, illustrating different
             loader = Lo.load_office(Lo.ConnectPipe())
 
             try:
-                doc = Draw.create_impress_doc(loader)
-                curr_slide = Draw.get_slide(doc=doc, idx=0)
+                doc = ImpressDoc(Draw.create_impress_doc(loader))
+                curr_slide = doc.get_slide(idx=0)
 
-                GUI.set_visible(is_visible=True, odoc=doc)
+                doc.set_visible()
                 Lo.delay(1_000)  # delay to make sure zoom takes
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                doc.zoom(ZoomKind.ENTIRE_PAGE)
 
-                Draw.title_slide(
-                    slide=curr_slide, title="Python-Generated Slides", sub_title="Using LibreOffice"
+                curr_slide.title_slide(
+                    title="Python-Generated Slides",
+                    sub_title="Using LibreOffice",
                 )
 
                 # second slide
-                curr_slide = Draw.add_slide(doc)
+                curr_slide = doc.add_slide()
                 self._do_bullets(curr_slide=curr_slide)
 
                 # third slide: title and video
-                curr_slide = Draw.add_slide(doc)
-                Draw.title_only_slide(slide=curr_slide, header="Clock Video")
-                Draw.draw_media(slide=curr_slide, fnm=self._fnm_clock, x=20, y=70, width=50, height=50)
+                curr_slide = doc.add_slide()
+                curr_slide.title_only_slide("Clock Video")
+                curr_slide.draw_media(fnm=self._fnm_clock, x=20, y=70, width=50, height=50)
 
                 # fourth slide
-                curr_slide = Draw.add_slide(doc)
+                curr_slide = doc.add_slide()
                 self._button_shapes(curr_slide=curr_slide)
 
                 # fifth slide
@@ -68,7 +69,7 @@ The |make_slides|_ example creates a deck of five slides, illustrating different
                     # a bit slow due to gui interaction but a good demo
                     self._dispatch_shapes(doc)
 
-                Lo.print(f"Total no. of slides: {Draw.get_slides_count(doc)}")
+                Lo.print(f"Total no. of slides: {doc.get_slides_count()}")
 
                 Lo.delay(2000)
                 msg_result = MsgBox.msgbox(
@@ -78,7 +79,7 @@ The |make_slides|_ example creates a deck of five slides, illustrating different
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
