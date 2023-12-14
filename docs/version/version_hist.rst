@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.17.1
+==============
+
+Added support for ``LineCursor`` and ``ScreenCursor`` on ``ooodev.write.WriteTextViewCursor``.
+
 Version 0.17.0
 ==============
 
