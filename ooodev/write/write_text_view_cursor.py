@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.text_view_cursor_comp import TextViewCursorComp
+from ooodev.adapter.view.line_cursor_partial import LineCursorPartial
 from ooodev.office import write as mWrite
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -27,6 +28,7 @@ class WriteTextViewCursor(
     Generic[T],
     TextCursorPartial,
     TextViewCursorComp,
+    LineCursorPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
     PropPartial,
@@ -45,6 +47,7 @@ class WriteTextViewCursor(
         self.__owner = owner
         TextCursorPartial.__init__(self, owner=owner, component=component)
         TextViewCursorComp.__init__(self, component)  # type: ignore
+        LineCursorPartial.__init__(self, component, None)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
