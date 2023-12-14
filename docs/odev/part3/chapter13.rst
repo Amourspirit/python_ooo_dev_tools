@@ -270,33 +270,38 @@ It also check if the (x, y) coordinate is located on the page. If it isn't, :py:
 
     .. code-tab:: python
 
-        def _draw_shapes(self, curr_slide: XDrawPage) -> None:
-            line1 = Draw.draw_line(slide=curr_slide, x1=50, y1=50, x2=200, y2=200)
-            Props.set(line1, LineColor=CommonColor.BLACK)
-            Draw.set_dashed_line(shape=line1, is_dashed=True)
+        def _draw_shapes(self, curr_slide: DrawPage[DrawDoc]) -> None:
+            line1 = curr_slide.draw_line(x1=50, y1=50, x2=200, y2=200)
+            line1.component.LineColor = CommonColor.BLACK
+            line1.set_dashed_line(is_dashed=True)
 
             # red ellipse; uses (x, y) width, height
-            circle1 = Draw.draw_ellipse(slide=curr_slide, x=100, y=100, width=75, height=25)
-            Props.set(circle1, FillColor=CommonColor.RED)
+            circle1 = curr_slide.draw_ellipse(x=100, y=100, width=75, height=25)
+            circle1.component.FillColor = CommonColor.RED
 
             # rectangle with different fills; uses (x, y) width, height
-            rect1 = Draw.draw_rectangle(slide=curr_slide, x=70, y=100, width=75, height=25)
-            Props.set(rect1, FillColor=CommonColor.LIME)
+            rect1 = curr_slide.draw_rectangle(x=70, y=100, width=75, height=25)
+            rect1.component.FillColor = CommonColor.LIME
 
-            text1 = Draw.draw_text(
-                slide=curr_slide, msg="Hello LibreOffice", x=120, y=120, width=60, height=30, font_size=24
+            text1 = curr_slide.draw_text(
+                msg="Hello LibreOffice",
+                x=120,
+                y=120,
+                width=60,
+                height=30,
+                font_size=24,
             )
-            Props.set(text1, Name="text1")
-            # Props.show_props("TextShape's Text Properties", Draw.get_text_properties(text1))
+            text1.component.Name = "text1"
+            # Props.show_props("TextShape's Text Properties", Draw.get_text_properties(text1.component))
 
             # gray transparent circle; uses (x,y), radius
-            circle2 = Draw.draw_circle(slide=curr_slide, x=40, y=150, radius=20)
-            Props.set(circle2, FillColor=CommonColor.GRAY)
-            Draw.set_transparency(shape=circle2, level=Intensity(25))
+            circle2 = curr_slide.draw_circle(x=40, y=150, radius=20)
+            circle2.component.FillColor = CommonColor.GRAY
+            circle2.set_transparency(level=Intensity(25))
 
             # thick line; uses (x,y), angle clockwise from x-axis, length
-            line2 = Draw.draw_polar_line(slide=curr_slide, x=60, y=200, degrees=45, distance=100)
-            Props.set(line2, LineWidth=300)
+            line2 = curr_slide.draw_polar_line(x=60, y=200, degrees=45, distance=100)
+            line2.component.LineWidth = 300
 
     .. only:: html
 
@@ -410,15 +415,15 @@ Its relevant properties are ``LineColor`` for color and ``LineStyle`` and ``Line
 
         :Relevant Properties in the LineProperties_ Class.
 
-Line color can be set with a single call to :py:meth:`.Props.set`, but line dashing is a little more complicated, so is handled by :py:meth:`.Draw.set_dashed_line`:
+``line1.component`` is a LineShape_ so it can be used to set the line color, line dashing is set using :py:meth:`.shapes.LineShape.set_dashed_line`:
 
 .. tabs::
 
     .. code-tab:: python
 
         # in _draw_Shapes()
-        Props.set(line1, LineColor=CommonColor.BLACK)
-        Draw.set_dashed_line(shape=line1, is_dashed=True)
+        line1.component.LineColor = CommonColor.BLACK
+        line1.set_dashed_line(is_dashed=True)
 
     .. only:: html
 
@@ -430,7 +435,7 @@ Line color can be set with a single call to :py:meth:`.Props.set`, but line dash
 
     :ref:`module_color`
 
-:py:meth:`.Draw.set_dashed_line` has to assign a LineStyle_ object to ``LineStyle`` and a LineDash_ object to ``LineDash``.
+:py:meth:`.shapes.LineShape.set_dashed_line` invokes :py:meth:`.Draw.set_dashed_line` to assign a LineStyle_ object to ``LineStyle`` and a LineDash_ object to ``LineDash``.
 The line style is easily set since LineStyle_ is an enumeration with three possible values. A ``LineDash`` object requires more work:
 
 .. tabs::
@@ -491,8 +496,8 @@ A red ellipse is drawn using:
     .. code-tab:: python
 
         # in _draw_Shapes()
-        circle1 = Draw.draw_ellipse(slide=curr_slide, x=100, y=100, width=75, height=25)
-        Props.set(circle1, FillColor=CommonColor.RED)
+        circle1 = curr_slide.draw_ellipse(x=100, y=100, width=75, height=25)
+        circle1.component.FillColor = CommonColor.RED
 
     .. only:: html
 
@@ -500,7 +505,7 @@ A red ellipse is drawn using:
 
             .. group-tab:: None
 
-:py:meth:`.Draw.draw_ellipse` is similar to :py:meth:`.Draw.draw_line` except that an EllipseShape_ is created by :py:meth:`.Draw.add_shape`:
+``curr_slide.draw_ellipse()`` invokes :py:meth:`.Draw.draw_ellipse` and is similar to :py:meth:`.Draw.draw_line` except that an EllipseShape_ is created by :py:meth:`.Draw.add_shape`:
 
 .. tabs::
 
@@ -563,8 +568,8 @@ The rectangle example in |draw_gradient_ex|_ comes in seven different colors sho
 
         # in DrawPicture._draw_Shapes()
         # rectangle with different fills; uses (x, y) width, height
-        rect1 = Draw.draw_rectangle(slide=curr_slide, x=70, y=100, width=75, height=25)
-        Props.set(rect1, FillColor=CommonColor.LIME)
+        rect1 = curr_slide.draw_rectangle(x=70, y=100, width=75, height=25)
+        rect1.component.FillColor = CommonColor.LIME
 
     .. only:: html
 
@@ -577,20 +582,18 @@ The rectangle example in |draw_gradient_ex|_ comes in seven different colors sho
     .. code-tab:: python
 
         # in DrawGradient Class()
-        def _gradient_fill(self, curr_slide: XDrawPage) -> None:
-
-            # rectangle shape is also com.sun.star.drawing.FillProperties service
-            # casting is only at design time and is not really necessary;
-            # however it gives easy access with typing support for other properties
-            rect1 = cast(
-                "FillProperties",
-                Draw.draw_rectangle(
-                    slide=curr_slide, x=self._x, y=self._y, width=self._width, height=self._height
-                ),
+        def _gradient_fill(self, curr_slide: DrawPage[DrawDoc]) -> None:
+            # rect1.component is com.sun.star.drawing.RectangleShape service which
+            # also implements com.sun.star.drawing.FillProperties service.
+            rect1 = curr_slide.draw_rectangle(
+                x=self._x,
+                y=self._y,
+                width=self._width,
+                height=self._height,
             )
-            Props.set(rect1, FillColor=self._start_color)
+            rect1.component.FillColor = self._start_color
             # other properties can be set
-            # rect1.FillTransparence = 55
+            # rect1.component.FillTransparence = 55
 
     .. only:: html
 
@@ -634,26 +637,22 @@ set properties after the gradient is created.
 
         # in DrawGradient Class()
         # creates color gradient and color Custom props gradient
-        def _gradient_name(self, curr_slide: XDrawPage, set_props: bool) -> None:
+        def _gradient_name(self, curr_slide: DrawPage[DrawDoc], set_props: bool) -> None:
+            # rect1.component is com.sun.star.drawing.RectangleShape service which
+            # also implements com.sun.star.drawing.FillProperties service
 
-            # rectangle shape is also com.sun.star.drawing.FillProperties service
-            # casting is only at design time and is not really necessary;
-            # however it gives easy access with typing support for other properties
-            rect1 = cast(
-                "FillProperties",
-                Draw.draw_rectangle(
-                    slide=curr_slide, x=self._x, y=self._y, width=self._width, height=self._height
-                ),
+            rect1 = curr_slide.draw_rectangle(
+                x=self._x,
+                y=self._y,
+                width=self._width,
+                height=self._height,
             )
-            grad = Draw.set_gradient_color(shape=rect1, name=self._name_gradient)
+            grad = rect1.set_gradient_color(name=self._name_gradient)
             if set_props:
-                # grad = cast("Gradient", Props.get(rect1, "FillGradient"))
-                # print(grad)
                 grad.Angle = self._angle * 10  # in 1/10 degree units
                 grad.StartColor = self._start_color
                 grad.EndColor = self._end_color
-                Draw.set_gradient_properties(shape=rect1, grad=grad)
-            # rect1.FillTransparence = 40
+                rect1.set_gradient_properties(grad=grad)
 
     .. only:: html
 
@@ -701,24 +700,18 @@ The fourth example in :numref:`ch13fig_seven_fills` shows what happens when you 
 
         # in DrawGradient Class()
         # creates gradient CommonColor
-        def _gradient(self, curr_slide: XDrawPage) -> None:
-
-            # rectangle shape is also com.sun.star.drawing.FillProperties service
-            # casting is only at design time and is not really necessary;
-            # however it gives easy access with typing support for other properties
-            rect1 = cast(
-                "FillProperties",
-                Draw.draw_rectangle(
-                    slide=curr_slide, x=self._x, y=self._y, width=self._width, height=self._height
-                )
+        def _gradient(self, curr_slide: DrawPage[DrawDoc]) -> None:
+            rect1 = curr_slide.draw_rectangle(
+                x=self._x,
+                y=self._y,
+                width=self._width,
+                height=self._height,
             )
-            Draw.set_gradient_color(
-                shape=rect1,
+            rect1.set_gradient_color(
                 start_color=self._start_color,
                 end_color=self._end_color,
-                angle=Angle(self._angle)
+                angle=Angle(self._angle),
             )
-            # rect1.FillTransparence = 40
 
     .. only:: html
 
@@ -829,22 +822,14 @@ The fifth fill in :numref:`ch13fig_seven_fills` employs hatching. In ``DrawGradi
     .. code-tab:: python
 
         # in DrawGradient Class()
-        def _gradient_hatching(self, curr_slide: XDrawPage) -> None:
-            # rectangle shape is also com.sun.star.drawing.FillProperties service
-            # casting is only at design time and is not really necessary;
-            # however it gives easy access with typing support for other properties
-            rect1 = cast(
-                "FillProperties",
-                Draw.draw_rectangle(
-                    slide=curr_slide,
-                    x=self._x,
-                    y=self._y,
-                    width=self._width,
-                    height=self._height
-                ),
+        def _gradient_hatching(self, curr_slide: DrawPage[DrawDoc]) -> None:
+            rect1 = curr_slide.draw_rectangle(
+                x=self._x,
+                y=self._y,
+                width=self._width,
+                height=self._height,
             )
-            Draw.set_hatch_color(shape=rect1, name=self._hatch_gradient)
-            # rect1.FillTransparence = 40
+            rect1.set_hatch_color(name=self._hatch_gradient)
 
     .. only:: html
 
@@ -852,7 +837,7 @@ The fifth fill in :numref:`ch13fig_seven_fills` employs hatching. In ``DrawGradi
 
             .. group-tab:: None
 
-``_gradient_hatching()`` Calls :py:meth:`.Draw.set_hatch_color`.
+``_gradient_hatching()`` Calls ``rect1.set_hatch_color()`` which invokes :py:meth:`.Draw.set_hatch_color`.
 
 .. tabs::
 
@@ -914,22 +899,14 @@ The sixth rectangle fill in :numref:`ch13fig_seven_fills` utilizes a bitmap colo
     .. code-tab:: python
 
         # in DrawGradient Class()
-        def _gradient_bitmap(self, curr_slide: XDrawPage) -> None:
-            # rectangle shape is also com.sun.star.drawing.FillProperties service
-            # casting is only at design time and is not really necessary;
-            # however it gives easy access with typing support for other properties
-            rect1 = cast(
-                "FillProperties",
-                Draw.draw_rectangle(
-                    slide=curr_slide,
-                    x=self._x,
-                    y=self._y,
-                    width=self._width,
-                    height=self._height
-                ),
+        def _gradient_bitmap(self, curr_slide: DrawPage[DrawDoc]) -> None:
+            rect1 = curr_slide.draw_rectangle(
+                x=self._x,
+                y=self._y,
+                width=self._width,
+                height=self._height,
             )
-            Draw.set_bitmap_color(shape=rect1, name=self._bitmap_gradient)
-            # rect1.FillTransparence = 40
+            rect1.set_bitmap_color(name=self._bitmap_gradient)
 
     .. only:: html
 
@@ -937,7 +914,7 @@ The sixth rectangle fill in :numref:`ch13fig_seven_fills` utilizes a bitmap colo
 
             .. group-tab:: None
 
-``_gradient_bitmap()`` Calls :py:meth:`.Draw.set_bitmap_color`.
+``_gradient_bitmap()`` Calls ``rect1.set_bitmap_color()`` which invokes :py:meth:`.Draw.set_bitmap_color`.
 
 .. tabs::
 
@@ -1000,15 +977,14 @@ The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from ``crazy_blue
 
         # in DrawGradient Class()
         # in this case self._gradient_fnm is crazy_blue.jpg
-         def _gradient_bitmap_file(self, curr_slide: XDrawPage) -> None:
-            rect1 = Draw.draw_rectangle(
-                slide=curr_slide,
+        def _gradient_bitmap_file(self, curr_slide: DrawPage[DrawDoc]) -> None:
+            rect1 = curr_slide.draw_rectangle(
                 x=self._x,
                 y=self._y,
                 width=self._width,
-                height=self._height
+                height=self._height,
             )
-            Draw.set_bitmap_file_color(shape=rect1, fnm=self._gradient_fnm)
+            rect1.set_bitmap_file_color(fnm=self._gradient_fnm)
 
     .. only:: html
 
@@ -1016,7 +992,7 @@ The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from ``crazy_blue
 
             .. group-tab:: None
 
-``_gradient_bitmap_file()`` Calls :py:meth:`.Draw.set_bitmap_file_color`.
+``_gradient_bitmap_file()`` Calls `` rect1.set_bitmap_file_color()`` which invokes :py:meth:`.Draw.set_bitmap_file_color`.
 
 .. tabs::
 
@@ -1049,16 +1025,21 @@ The ``FillBitmapURL`` property requires a URL, so the filename is converted by :
 13.5 Text
 =========
 
-The "Hello LibreOffice" text shape in :numref:`ch13fig_draw_shapes_six` is created by calling :py:meth:`.Draw.draw_text`:
+The "Hello LibreOffice" text shape in :numref:`ch13fig_draw_shapes_six` is created by calling `` curr_slide.draw_text()`` which invokes :py:meth:`.Draw.draw_text`:
 
 .. tabs::
 
     .. code-tab:: python
 
-        text1 = Draw.draw_text(
-            slide=curr_slide, msg="Hello LibreOffice", x=120, y=120, width=60, height=30, font_size=24
+        text1 = curr_slide.draw_text(
+            msg="Hello LibreOffice",
+            x=120,
+            y=120,
+            width=60,
+            height=30,
+            font_size=24,
         )
-        Props.set(text1, Name="text1")
+        text1.component.Name = "text1"
 
     .. only:: html
 
@@ -1185,7 +1166,19 @@ The text-related properties for a shape can be accessed with :py:meth:`.Draw.get
     .. code-tab:: python
 
         # in _draw_shapes() in draw_picture.py
-        Props.show_props("TextShape's Text Properties", Draw.get_text_properties(text1))
+        text1 = curr_slide.draw_text(
+            msg="Hello LibreOffice",
+            x=120,
+            y=120,
+            width=60,
+            height=30,
+            font_size=24,
+        )
+        text1.component.Name = "text1"
+        Props.show_props(
+            "TextShape's Text Properties",
+            Draw.get_text_properties(text1.component)
+        )
 
     .. only:: html
 
@@ -1213,7 +1206,7 @@ Immediately after the call to :py:meth:`.Draw.draw_text`, the shape's name is se
     .. code-tab:: python
 
         # in _draw_shapes() in draw_picture.py
-        Props.set(text1, Name="text1")
+        text1.component.Name = "text1"
 
     .. only:: html
 
@@ -1229,14 +1222,16 @@ The ``show()`` function of |draw_picture_py|_ passes a name to :py:meth:`.Draw.f
     .. code-tab:: python
 
         # in show() in draw_picture.py
-        s = Draw.find_shape_by_name(curr_slide, "text1")
-        Draw.report_pos_size(s)
+        s = curr_slide.find_shape_by_name("text1")
+        Draw.report_pos_size(s.component)
 
     .. only:: html
 
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+``curr_slide.find_shape_by_name()`` invokes :py:meth:`.Draw.find_shape_by_name`:
 
 .. tabs::
 
@@ -1337,13 +1332,13 @@ The last two shapes created by |draw_picture_py|_ ``_draw_shapes()`` are a gray 
 
         # in _draw_shapes() in draw_picture.py
         # gray transparent circle; uses (x,y), radius
-        circle2 = Draw.draw_circle(slide=curr_slide, x=40, y=150, radius=20)
-        Props.set(circle2, FillColor=CommonColor.GRAY)
-        Draw.set_transparency(shape=circle2, level=Intensity(25))
+        circle2 = curr_slide.draw_circle(x=40, y=150, radius=20)
+        circle2.component.FillColor = CommonColor.GRAY
+        circle2.set_transparency(level=Intensity(25))
 
         # thick line; uses (x,y), angle clockwise from x-axis, length
-        line2 = Draw.draw_polar_line(slide=curr_slide, x=60, y=200, degrees=45, distance=100)
-        Props.set(line2, LineWidth=300)
+        line2 = curr_slide.draw_polar_line(x=60, y=200, degrees=45, distance=100)
+        line2.component.LineWidth = 300
 
     .. only:: html
 
@@ -1392,13 +1387,12 @@ The |draw_picture|_ OLE example displays a mathematical formula, as in :numref:`
     .. code-tab:: python
 
         # in show() in draw_picture.py
-        s = Draw.draw_formula(
-            slide=curr_slide,
+        s = curr_slide.draw_formula(
             formula="func e^{i %pi} + 1 = 0",
             x=70,
             y=20,
             width=75,
-            height=40
+            height=40,
         )
 
     .. only:: html
@@ -1407,10 +1401,10 @@ The |draw_picture|_ OLE example displays a mathematical formula, as in :numref:`
 
             .. group-tab:: None
 
-The second argument is a formula string, written using Office's Math notation.
+The formula argument is a formula string, written using Office's Math notation.
 For an overview, see the "Commands Reference" appendix of the "Math Guide", available from https://libreoffice.org/get-help/documentation.
 
-:py:meth:`.Draw.draw_formula` is coded as:
+``curr_slide.draw_formula()`` invokes :py:meth:`.Draw.draw_formula`, it is coded as:
 
 .. tabs::
 
@@ -1428,6 +1422,11 @@ For an overview, see the "Commands Reference" appendix of the "Math Guide", avai
             height: int | UnitT
         ) -> XShape:
 
+            x = cls._get_unit_mm_int(x)
+            y = cls._get_unit_mm_int(y)
+            width = cls._get_unit_mm_int(width)
+            height = cls._get_unit_mm_int(height)
+
             shape = cls.add_shape(
                 slide=slide, shape_type=DrawingShapeKind.OLE2_SHAPE, x=x, y=y, width=width, height=height
             )
@@ -1438,7 +1437,7 @@ For an overview, see the "Commands Reference" appendix of the "Math Guide", avai
             Props.set(model, Formula=formula)
 
             # for some reason setting model Formula here cause the shape size to be blown out.
-            # resetting size and positon corrects the issue.
+            # resetting size and position corrects the issue.
             cls.set_size(shape, Size(width, height))
             cls.set_position(shape, Point(x, y))
             return shape
@@ -1545,11 +1544,13 @@ The main() function of |animate_bike_py|_ calls :py:meth:`.Draw.draw_polygon` tw
     .. code-tab:: python
 
         # in animate() of anim_bicycle.py
-        square = Draw.draw_polygon(slide=slide, x=125, y=125, sides=PolySides(4), radius=25)
-        Props.set(square, FillColor=CommonColor.LIGHT_GREEN)
+        square = slide.draw_polygon(x=125, y=125, sides=PolySides(4), radius=25)
+        # square.component is com.sun.star.drawing.PolyPolygonShape service.
+        square.component.FillColor = CommonColor.LIGHT_GREEN
 
-        pentagon = Draw.draw_polygon(slide=slide, x=150, y=75, sides=PolySides(5))
-        Props.set(pentagon, FillColor=CommonColor.PURPLE)
+        pentagon = slide.draw_polygon(x=150, y=75, sides=PolySides(5))
+        # pentagon.component is com.sun.star.drawing.PolyPolygonShape service.
+        pentagon.component.FillColor = CommonColor.PURPLE
 
     .. only:: html
 
@@ -1708,7 +1709,7 @@ For example, the following code in |animate_bike_py|_ creates the crossed lines 
 
         xs = (10, 30, 10, 30)
         ys = (10, 100, 100, 10)
-        Draw.draw_lines(slide=slide, xs=xs, ys=ys)
+        slide.draw_lines(xs=xs, ys=ys)
 
     .. only:: html
 
@@ -1716,7 +1717,7 @@ For example, the following code in |animate_bike_py|_ creates the crossed lines 
 
             .. group-tab:: None
 
-:py:meth:`.Draw.draw_lines` is:
+`` slide.draw_lines()`` invokes :py:meth:`.Draw.draw_lines` which is coded as:
 
 .. tabs::
 
@@ -1779,9 +1780,10 @@ Zero degrees is the positive ``x-axis``, and the angle increase in ``1/100`` deg
     .. code-tab:: python
 
         # in animate() of anim_bicycle.py
-        pie = Draw.draw_ellipse(slide=slide, x=30, y=slide_size.Width - 100, width=40, height=20)
-        Props.set(
-            pie,
+        pie = slide.draw_ellipse(
+            x=30, y=slide_size.Width - 100, width=40, height=20
+        )
+        pie.set_property(
             FillColor=CommonColor.LIGHT_SKY_BLUE,
             CircleStartAngle=9_000,  #   90 degrees ccw
             CircleEndAngle=36_000,  #    360 degrees ccw
