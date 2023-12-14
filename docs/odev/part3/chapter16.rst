@@ -142,7 +142,8 @@ This first slide, which is at index position ``0`` in the deck, can be referred 
 
     .. code-tab:: python
 
-        curr_slide = Draw.get_slide(doc=doc, idx=0)
+        doc = ImpressDoc(Draw.create_impress_doc(loader))
+        curr_slide = doc.get_slide(idx=0)
 
     .. only:: html
 
@@ -286,7 +287,7 @@ This can be used to write the following code:
 
     .. code-tab:: python
 
-        x_shapes = Lo.qi(XShapes, curr_slide)
+        x_shapes = curr_slide.qi(XShapes, True)
 
         title_shape = Lo.qi(XShape, x_shapes.getByIndex(0))
         sub_title_shape = Lo.qi(XShape, x_shapes.getByIndex(1))
@@ -358,7 +359,8 @@ The second slide uses a title and bullet points layout, with an image added at t
     .. code-tab:: python
 
         # in main() in make_slides.py
-        curr_slide = Draw.add_Slide(doc)
+        # second slide
+        curr_slide = doc.add_slide()
         self._do_bullets(curr_slide=curr_slide)
 
     .. only:: html
@@ -389,35 +391,37 @@ The result shown in :numref:`ch16fig_slide_title_bullte_img`.
     .. code-tab:: python
 
         # in main() in make_slides.py
-        def _do_bullets(self, curr_slide: XDrawPage) -> None:
+        def _do_bullets(self, curr_slide: ImpressPage[ImpressDoc]) -> None:
             # second slide: bullets and image
-            body = Draw.bullets_slide(slide=curr_slide, title="What is an Algorithm?")
+            body = curr_slide.bullets_slide(title="What is an Algorithm?")
 
             # bullet levels are 0, 1, 2,...
-            Draw.add_bullet(
-                bulls_txt=body,
+            body.add_bullet(
                 level=0,
                 text="An algorithm is a finite set of unambiguous instructions for solving a problem.",
             )
 
-            Draw.add_bullet(
-                bulls_txt=body,
+            body.add_bullet(
                 level=1,
-                text=("An algorithm is correct if on all legitimate inputs,",
-                    " it outputs the right answer in a finite amount of time"),
+                text="An algorithm is correct if on all legitimate inputs, it outputs the right answer in a finite amount of time",
             )
 
-            Draw.add_bullet(bulls_txt=body, level=0, text="Can be expressed as")
-            Draw.add_bullet(bulls_txt=body, level=1, text="pseudocode")
-            Draw.add_bullet(bulls_txt=body, level=0, text="flow charts")
-            Draw.add_bullet(bulls_txt=body, level=1, text="text in a natural language (e.g. English)")
-            Draw.add_bullet(bulls_txt=body, level=1, text="computer code")
+            body.add_bullet(level=0, text="Can be expressed as")
+            body.add_bullet(level=1, text="pseudocode")
+            body.add_bullet(level=0, text="flow charts")
+            body.add_bullet(
+                level=1,
+                text="text in a natural language (e.g. English)",
+            )
+            body.add_bullet(level=1, text="computer code")
             # add the image in bottom right corner, and scaled if necessary
-            im = Draw.draw_image_offset(
-                slide=curr_slide, fnm=self._fnm_img, xoffset=ImageOffset(0.6), yoffset=ImageOffset(0.5)
+            im = curr_slide.draw_image_offset(
+                fnm=self._fnm_img,
+                xoffset=ImageOffset(0.6),
+                yoffset=ImageOffset(0.5),
             )
             # move below the slide text
-            Draw.move_to_bottom(slide=curr_slide, shape=im)
+            im.move_to_bottom()
 
     .. only:: html
 
@@ -541,8 +545,10 @@ The |animate_bike|_ example in :ref:`ch14` employed a version of :py:meth:`.Draw
 
         from ooodev.office.draw import Draw, ImageOffset
 
-        im = Draw.draw_image_offset(
-            slide=curr_slide, fnm="skinner.png", xoffset=ImageOffset(0.6), yoffset=ImageOffset(0.5)
+        im = curr_slide.draw_image_offset(
+            fnm=self._fnm_img,
+            xoffset=ImageOffset(0.6),
+            yoffset=ImageOffset(0.5),
         )
 
     .. only:: html
@@ -578,7 +584,7 @@ The code for :py:meth:`.Draw.draw_image_offset`:
 
             im_size = ImagesLo.calc_scale(fnm=fnm, max_width=max_width, max_height=max_height)
             if im_size is None:
-                Lo.print(f'Unalbe to calc image size for "{fnm}"')
+                Lo.print(f'Unable to calc image size for "{fnm}"')
                 return None
             return cls.draw_image(
                 slide=slide, fnm=fnm, x=x, y=y, width=im_size.Width, height=im_size.Height
@@ -654,9 +660,12 @@ The code for generating this slide is:
     .. code-tab:: python
 
         # in MakeSlide.main() of make_slides.py
-        curr_slide = Draw.add_slide(doc)
-        Draw.title_only_slide(slide=curr_slide, header="Clock Video")
-        Draw.draw_media(slide=curr_slide, fnm=self._fnm_clock, x=20, y=70, width=50, height=50)
+        # third slide: title and video
+        curr_slide = doc.add_slide()
+        curr_slide.title_only_slide("Clock Video")
+        curr_slide.draw_media(
+            fnm=self._fnm_clock, x=20, y=70, width=50, height=50
+        )
 
     .. only:: html
 
@@ -664,7 +673,7 @@ The code for generating this slide is:
 
             .. group-tab:: None
 
-:py:meth:`.Draw.title_only_slide` works in a similar way to :py:meth:`~.title_slide` and :py:meth:`~.bullets_slide`:
+:py:meth:`.Draw.title_only_slide` works in a similar way to :py:meth:`.Draw.title_slide` and :py:meth:`.Draw.bullets_slide`:
 
 .. tabs::
 
@@ -772,7 +781,7 @@ The relevant code in ``main()`` of |make_slides_py|_ is:
 
     .. code-tab:: python
 
-        curr_slide = Draw.add_slide(doc)
+        curr_slide = doc.add_slide()
         self._button_shapes(curr_slide=curr_slide)
 
     .. only:: html
@@ -789,37 +798,43 @@ The ``_button_shapes()`` method in |make_slides_py|_ creates the slide:
 
     .. code-tab:: python
 
-        def _button_shapes(self, curr_slide: XDrawPage) -> None:
-            Draw.title_only_slide(slide=curr_slide, header="Wildlife Video Via Button")
+        def _button_shapes(self, curr_slide: ImpressPage[ImpressDoc]) -> None:
+            # fourth slide: title and rectangle (button) for playing a video
+            # and a rounded button back to start
+            curr_slide.title_only_slide("Wildlife Video Via Button")
 
-            sz = Draw.get_slide_size(curr_slide)
+            # button in the center of the slide
+            sz = curr_slide.get_size_mm()
             width = 80
             height = 40
 
-            ellipse = Draw.draw_ellipse(
-                slide=curr_slide,
+            ellipse = curr_slide.draw_ellipse(
                 x=round((sz.Width - width) / 2),
                 y=round((sz.Height - height) / 2),
                 width=width,
                 height=height,
             )
 
-            Draw.add_text(shape=ellipse, msg="Start Video", font_size=30)
-            Props.set(
-                ellipse, OnClick=ClickAction.DOCUMENT, Bookmark=FileIO.fnm_to_url(self._fnm_wildlife)
+            ellipse.add_text(msg="Start Video", font_size=30)
+            ellipse.set_property(
+                OnClick=ClickAction.DOCUMENT, Bookmark=FileIO.fnm_to_url(self._fnm_wildlife)
             )
-            Props.set(
-                ellipse, Effect=AnimationEffect.FADE_FROM_BOTTOM, Speed=AnimationSpeed.SLOW
+            # set Animation
+            ellipse.set_property(
+                Effect=AnimationEffect.MOVE_FROM_LEFT, Speed=AnimationSpeed.FAST
             )
 
             # draw a rounded rectangle with text
-            button = Draw.draw_rectangle(
-                slide=curr_slide, x=sz.Width-width-4, y=sz.Height-height-5, width=width, height=height
+            button = curr_slide.draw_rectangle(
+                x=sz.Width - width - 4,
+                y=sz.Height - height - 5,
+                width=width,
+                height=height,
             )
-            Draw.add_text(shape=button, msg="Click to go\nto slide 1")
-            Draw.set_gradient_color(shape=button, name=DrawingGradientKind.SUNSHINE)
+            button.add_text(msg="Click to go\nto slide 1")
+            button.set_gradient_color(name=DrawingGradientKind.SUNSHINE)
             # clicking makes the presentation jump to first slide
-            Props.set(button, CornerRadius=300, OnClick=ClickAction.FIRSTPAGE)
+            button.set_property(CornerRadius=300, OnClick=ClickAction.FIRSTPAGE)
 
     .. only:: html
 
@@ -925,8 +940,8 @@ The following code fragment makes the ellipse on the fourth slide slide into vie
     .. code-tab:: python
 
         # in _button_shapes() in make_slides.py
-        Props.set(
-            ellipse, Effect=AnimationEffect.MOVE_FROM_LEFT, Speed=AnimationSpeed.FAST
+        ellipse.set_property(
+            Effect=AnimationEffect.MOVE_FROM_LEFT, Speed=AnimationSpeed.FAST
         )
 
     .. only:: html
@@ -1078,20 +1093,21 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
     .. code-tab:: python
 
         # in make_slides.py
-        def _dispatch_shapes(self, doc: XComponent) -> None:
-            curr_slide = Draw.add_slide(doc)
-            Draw.title_only_slide(slide=curr_slide, header="Dispatched Shapes")
+        def _dispatch_shapes(self, doc: ImpressDoc) -> None:
+            curr_slide = doc.add_slide()
+            curr_slide.title_only_slide("Dispatched Shapes")
 
-            GUI.set_visible(is_visible=True, odoc=doc)
+            doc.set_visible()
             Lo.delay(1_000)
 
-            Draw.goto_page(doc=doc, page=curr_slide)
-            Lo.print(f"Viewing Slide number: {Draw.get_slide_number(Draw.get_viewed_page(doc))}")
+            doc.goto_page(page=curr_slide.component)
+            Lo.print(
+                f"Viewing Slide number: {Draw.get_slide_number(Draw.get_viewed_page(doc.component))}"
+            )
 
             # first row
             y = 38
-            _ = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            _ = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.BASIC_SHAPES_DIAMOND,
                 x=20,
                 y=y,
@@ -1099,8 +1115,7 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=30,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            _ = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            _ = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.THREE_D_HALF_SPHERE,
                 x=80,
                 y=y,
@@ -1108,8 +1123,7 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=30,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            dshape = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            dispatch_shape = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.CALLOUT_SHAPES_CLOUD_CALLOUT,
                 x=140,
                 y=y,
@@ -1117,10 +1131,9 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=30,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            Draw.set_bitmap_color(shape=dshape, name=DrawingBitmapKind.LITTLE_CLOUDS)
+            dispatch_shape.set_bitmap_color(name=DrawingBitmapKind.LITTLE_CLOUDS)
 
-            dshape = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            dispatch_shape = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.FLOW_CHART_SHAPES_FLOWCHART_CARD,
                 x=200,
                 y=y,
@@ -1128,17 +1141,18 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=30,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            Draw.set_hatch_color(shape=dshape, name=DrawingHatchingKind.BLUE_NEG_45_DEGREES)
+            dispatch_shape.set_hatch_color(name=DrawingHatchingKind.BLUE_NEG_45_DEGREES)
             # convert blue to black manually
-            dhatch = cast(Hatch, Props.get(dshape, "FillHatch"))
-            dhatch.Color = CommonColor.BLACK
-            Props.set(dshape, LineColor=CommonColor.BLACK, FillHatch=dhatch)
-            # Props.show_obj_props("Hatch Shape", dshape)
+            dispatch_hatch = cast(Hatch, dispatch_shape.get_property("FillHatch"))
+            dispatch_hatch.Color = CommonColor.BLACK
+            dispatch_shape.set_property(
+                LineColor=CommonColor.BLACK, FillHatch=dispatch_hatch
+            )
+            # Props.show_obj_props("Hatch Shape", dispatch_shape)
 
             # second row
             y = 100
-            dshape = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            dispatch_shape = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.STAR_SHAPES_STAR_12,
                 x=20,
                 y=y,
@@ -1146,11 +1160,10 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=40,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            Draw.set_gradient_color(shape=dshape, name=DrawingGradientKind.SUNSHINE)
-            Props.set(dshape, LineStyle=LineStyle.NONE)
+            dispatch_shape.set_gradient_color(name=DrawingGradientKind.SUNSHINE)
+            dispatch_shape.set_property(LineStyle=LineStyle.NONE)
 
-            dshape = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            dispatch_shape = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.SYMBOL_SHAPES_HEART,
                 x=80,
                 y=y,
@@ -1158,10 +1171,9 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=40,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            Props.set(dshape, FillColor=CommonColor.RED)
+            dispatch_shape.set_property(FillColor=CommonColor.RED)
 
-            _ = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            _ = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.ARROW_SHAPES_LEFT_RIGHT_ARROW,
                 x=140,
                 y=y,
@@ -1169,8 +1181,7 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=30,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            dshape = Draw.add_dispatch_shape(
-                slide=curr_slide,
+            dispatch_shape = curr_slide.add_dispatch_shape(
                 shape_dispatch=ShapeDispatchKind.THREE_D_CYRAMID,
                 x=200,
                 y=y - 20,
@@ -1178,9 +1189,9 @@ For example, the smiley face in the Symbol shapes menu is called "Smiley Face" i
                 height=50,
                 fn=DrawDispatcher.create_dispatch_shape,
             )
-            Draw.set_bitmap_color(shape=dshape, name=DrawingBitmapKind.STONE)
+            dispatch_shape.set_bitmap_color(name=DrawingBitmapKind.STONE)
 
-            Draw.show_shapes_info(curr_slide)
+            Draw.show_shapes_info(curr_slide.component)
 
     .. only:: html
 
