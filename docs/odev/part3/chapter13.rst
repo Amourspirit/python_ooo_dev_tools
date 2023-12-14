@@ -31,33 +31,31 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
     .. code-tab:: python
 
         class DrawPicture:
-
             def show(self) -> None:
                 loader = Lo.load_office(Lo.ConnectPipe())
 
                 try:
-                    doc = Draw.create_draw_doc(loader)
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                    doc = DrawDoc(Draw.create_draw_doc(loader))
+                    doc.set_visible()
                     Lo.delay(1_000)  # need delay or zoom may not occur
-                    GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                    doc.zoom(ZoomKind.ENTIRE_PAGE)
 
-                    curr_slide = Draw.get_slide(doc=doc, idx=0)
+                    curr_slide = doc.get_slide(idx=0)
                     self._draw_shapes(curr_slide=curr_slide)
 
-                    s = Draw.draw_formula(
-                        slide=curr_slide,
+                    s = curr_slide.draw_formula(
                         formula="func e^{i %pi} + 1 = 0",
                         x=70,
                         y=20,
                         width=75,
-                        height=40
+                        height=40,
                     )
                     # Draw.report_pos_size(s)
 
                     self._anim_shapes(curr_slide=curr_slide)
 
-                    s = Draw.find_shape_by_name(curr_slide, "text1")
-                    Draw.report_pos_size(s)
+                    s = curr_slide.find_shape_by_name("text1")
+                    Draw.report_pos_size(s.component)
 
                     Lo.delay(2000)
                     msg_result = MsgBox.msgbox(
@@ -67,7 +65,7 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
                         buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                     )
                     if msg_result == MessageBoxResultsEnum.YES:
-                        Lo.close_doc(doc=doc, deliver_ownership=True)
+                        doc.close_doc()
                         Lo.close_office()
                     else:
                         print("Keeping document open")
@@ -94,7 +92,7 @@ The examples come from two files, |draw_picture|_ and |animate_bike|_. The ``sho
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc=doc, deliver_ownership=True)
+                doc.close_doc()
                 Lo.close_office()
             else:
                 print("Keeping document open")
@@ -182,10 +180,10 @@ Almost every Draw method call :py:meth:`.Draw.make_shape` which creates a shape 
         @staticmethod
         def make_shape(
             shape_type: DrawingShapeKind | str,
-            x: int,
-            y: int,
-            width: int,
-            height: int
+            x: int | UnitT,
+            y: int | UnitT,
+            width: int | UnitT,
+            height: int | UnitT,
         ) -> XShape:
 
             # parameters are in mm units
@@ -243,10 +241,10 @@ It also check if the (x, y) coordinate is located on the page. If it isn't, :py:
             cls,
             slide: XDrawPage,
             shape_type: DrawingShapeKind | str,
-            x: int,
-            y: int,
-            width: int,
-            height: int
+            x: int | UnitT,
+            y: int | UnitT,
+            width: int | UnitT,
+            height: int | UnitT,
         ) -> XShape:
 
             cls.warns_position(slide=slide, x=x, y=y)
@@ -324,7 +322,13 @@ In common with other shapes, a line is defined in terms of its enclosing rectang
 
         # in the Draw class
         @classmethod
-        def draw_line(cls, slide: XDrawPage, x1: int, y1: int, x2: int, y2: int) -> XShape:
+        def draw_line(cls,
+            slide: XDrawPage,
+            x1: int | UnitT,
+            y1: int | UnitT,
+            x2: int | UnitT,
+            y2: int | UnitT
+            ) -> XShape:
             # make sure size is non-zero
             if (x1 == x2) and (y1 == y2):
                 raise ValueError("Cannot create a line from a point")
@@ -1077,11 +1081,11 @@ The fifth, optional number specifies a font size (in this case, ``24pt``).
             cls,
             slide: XDrawPage,
             msg: str,
-            x: int,
-            y: int,
-            width: int,
-            height: int,
-            font_size: int = 0
+            x: int | UnitT,
+            y: int | UnitT,
+            width: int | UnitT,
+            height: int | UnitT,
+            font_size: float | UnitT = 0,
         ) -> XShape:
 
             shape = cls.add_shape(
@@ -1113,10 +1117,10 @@ The fifth, optional number specifies a font size (in this case, ``24pt``).
             cls,
             slide: XDrawPage,
             shape_type: DrawingShapeKind | str,
-            x: int,
-            y: int,
-            width: int,
-            height: int
+            x: int | UnitT,
+            y: int | UnitT,
+            width: int | UnitT,
+            height: int | UnitT,
         ) -> XShape:
 
             cls.warns_position(slide=slide, x=x, y=y)
@@ -1418,10 +1422,10 @@ For an overview, see the "Commands Reference" appendix of the "Math Guide", avai
             cls,
             slide: XDrawPage,
             formula: str,
-            x: int,
-            y: int,
-            width: int,
-            height: int
+            x: int | UnitT,
+            y: int | UnitT,
+            width: int | UnitT,
+            height: int | UnitT
         ) -> XShape:
 
             shape = cls.add_shape(
@@ -1578,9 +1582,9 @@ The polygons can be seen in :numref:`ch12fig_bike_and_shapes`.
         def draw_polygon(
             cls,
             slide: XDrawPage,
-            x: int,
-            y: int,
-            sides: PolySides,
+            x: int | UnitT,
+            y: int | UnitT,
+            sides: PolySides | int,
             radius: int = POLY_RADIUS
         ) -> XShape:
 
@@ -1653,14 +1657,24 @@ the distance from the center to each point (the shape's radius), and the require
 
         # in Draw class (simplified)
         @staticmethod
-        def gen_polygon_points(x: int, y: int, radius: int, sides: PolySides) -> Tuple[Point, ...]:
+        def gen_polygon_points(
+            cls,
+            x: int | UnitT,
+            y: int | UnitT,
+            radius: int | UnitT,
+            sides: PolySides | int
+        ) -> Tuple[Point, ...]:
 
+            x = cls._get_mm100_obj_from_mm(x).value
+            y = cls._get_mm100_obj_from_mm(y).value
+            radius = cls._get_mm100_obj_from_mm(radius).value
+            sides = PolySides(int(sides))
             pts: List[Point] = []
-            angle_step = math.pi / sides.Value
-            for i in range(sides.Value):
+            angle_step = math.pi / sides.value
+            for i in range(sides.value):
                 pt = Point(
-                    int(round(((x * 100) + ((radius * 100)) * math.cos(i * 2 * angle_step)))),
-                    int(round(((y * 100) + ((radius * 100)) * math.sin(i * 2 * angle_step)))),
+                    round((x + radius * math.cos(i * 2 * angle_step))),
+                    round((y + radius * math.sin(i * 2 * angle_step))),
                 )
                 pts.append(pt)
             return tuple(pts)
