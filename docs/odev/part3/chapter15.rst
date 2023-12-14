@@ -55,16 +55,18 @@ It's possible to change this to a curve, a single line, or a connection made up 
             loader = Lo.load_office(Lo.ConnectPipe())
 
             try:
-                doc = Draw.create_draw_doc(loader)
-                GUI.set_visible(is_visible=True, odoc=doc)
+                doc = DrawDoc(Draw.create_draw_doc(loader))
+                doc.set_visible()
                 Lo.delay(1_000)  # need delay or zoom may not occur
-                GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
+                doc.zoom(ZoomKind.ENTIRE_PAGE)
 
-                curr_slide = Draw.get_slide(doc=doc, idx=0)
+                curr_slide = doc.get_slide(idx=0)
 
                 print()
                 print("Connecting rectangles ...")
-                g_styles = Info.get_style_container(doc=doc, family_style_name="graphics")
+                g_styles = Info.get_style_container(
+                    doc=doc.component, family_style_name="graphics"
+                )
                 # Info.show_container_names("Graphic styles", g_styles)
 
                 self._connect_rectangles(slide=curr_slide, g_styles=g_styles)
@@ -80,7 +82,7 @@ It's possible to change this to a curve, a single line, or a connection made up 
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
@@ -103,28 +105,57 @@ The method also prints out some information about the glue points of the blue re
     .. code-tab:: python
 
         # _connect_rectangles() from grouper.py
-        def _connect_rectangles(self, slide: XDrawPage, g_styles: XNameContainer) -> None:
+        def _connect_rectangles(
+            self, slide: DrawPage[DrawDoc], g_styles: XNameContainer
+        ) -> None:
             # draw two two labelled rectangles, one green, one blue, and
             #  connect them. Changing the connector to an arrow
 
             # dark green rectangle with shadow and text
-            green_rect = Draw.draw_rectangle(slide=slide, x=70, y=180, width=50, height=25)
-            Props.set(green_rect, FillColor=CommonColor.DARK_SEA_GREEN, Shadow=True)
-            Draw.add_text(shape=green_rect, msg="Green Rect")
+            green_rect = slide.draw_rectangle(x=70, y=180, width=50, height=25)
+            green_rect.component.FillColor = CommonColor.DARK_GREEN
+            green_rect.component.Shadow = True
+            green_rect.add_text(msg="Green Rect")
 
             # (blue, the default color) rectangle with shadow and text
-            blue_rect = Draw.draw_rectangle(slide=slide, x=140, y=220, width=50, height=25)
-            Props.set(blue_rect, Shadow=True)
-            Draw.add_text(shape=blue_rect, msg="Blue Rect")
+            blue_rect = slide.draw_rectangle(x=140, y=220, width=50, height=25)
+            blue_rect.component.Shadow = True
+            blue_rect.add_text(msg="Blue Rect")
 
             # connect the two rectangles; from the first shape to the second
-            conn_shape = Draw.add_connector(
-                slide=slide,
-                shape1=green_rect,
-                shape2=blue_rect,
+            conn_shape = slide.add_connector(
+                shape1=green_rect.component,
+                shape2=blue_rect.component,
                 start_conn=GluePointsKind.BOTTOM,
                 end_conn=GluePointsKind.TOP,
             )
+
+            conn_shape.set_style(
+                graphic_styles=g_styles,
+                style_name=GraphicStyleKind.ARROW_LINE,
+            )
+            # arrow added at the 'from' end of the connector shape
+            # and it thickens line and turns it black
+
+            # use GraphicArrowStyleKind to lookup the values for LineStartName and LineEndName.
+            # these are the the same names as seen in Draw, Graphic Sytles: Arrow Line dialog box.
+            conn_shape.set_property(
+                LineWidth=50,
+                LineColor=CommonColor.DARK_ORANGE,
+                LineStartName=str(GraphicArrowStyleKind.ARROW_SHORT),
+                LineStartCenter=False,
+                LineEndName=GraphicArrowStyleKind.NONE,
+            )
+            # Props.show_obj_props("Connector Shape", conn_shape.component)
+
+            # report the glue points for the blue rectangle
+            try:
+                gps = blue_rect.get_glue_points()
+                print("Glue Points for blue rectangle")
+                for i, gp in enumerate(gps):
+                    print(f"  Glue point {i}: ({gp.Position.X}, {gp.Position.Y})")
+            except mEx.DrawError:
+                pass
 
     .. only:: html
 
@@ -132,9 +163,9 @@ The method also prints out some information about the glue points of the blue re
 
             .. group-tab:: None
 
-Note that :py:meth:`.Draw.add_text` is used to label the shapes.
+Note that ``.add_text()`` method of the shapes, which invokes :py:meth:`.Draw.add_text`, is used to label the shapes.
 
-:py:meth:`.Draw.add_connector` links the two rectangles based on glue point names supplied as arguments ``start_conn`` and ``end_conn``.
+``slide.add_connector()`` invokes :py:meth:`.Draw.add_connector` which links the two rectangles based on glue point names supplied as arguments ``start_conn`` and ``end_conn``.
 These names are defined in the :py:class:`~.kind.glue_points_kind.GluePointsKind` enum.
 
 :py:meth:`.Draw.add_connector` creates a ConnectorShape_ object and sets several of its properties.
@@ -211,7 +242,7 @@ The real position and dimensions of the connector are set via its properties.
     .. code-tab:: python
 
         # _connect_rectangles() from grouper.py
-        gps = Draw.get_glue_points(blue_rect)
+        gps = blue_rect.get_glue_points()
 
     .. only:: html
 
@@ -219,7 +250,7 @@ The real position and dimensions of the connector are set via its properties.
 
             .. group-tab:: None
 
-:py:meth:`.Draw.get_glue_points` converts the shape into an XGluePointsSupplier_, and calls its ``getGluePoints()`` method to retrieves a tuple of GluePoint2_ objects.
+``blue_rect.get_glue_points()`` invokes :py:meth:`.Draw.get_glue_points` and converts the shape into an XGluePointsSupplier_, and calls its ``getGluePoints()`` method to retrieves a tuple of GluePoint2_ objects.
 To simplify the access to the points data, this structure is returned as a tuple:
 
 .. tabs::
@@ -270,7 +301,9 @@ The ``graphics`` style family is obtained by :py:meth:`.Info.get_style_container
     .. code-tab:: python
 
         # in main() of grouper.py
-        g_styles = Info.get_style_container(doc=doc, family_style_name="graphics")
+        g_styles = Info.get_style_container(
+            doc=doc.component, family_style_name="graphics"
+        )
         self._connect_rectangles(slide=curr_slide, g_styles=g_styles)
 
     .. only:: html
@@ -298,7 +331,10 @@ Inside ``_connect_rectangles()``, the connector's graphic style is changed to us
     .. code-tab:: python
 
         # in _connect_rectangles() of grouper.py
-        Draw.set_style(shape=conn_shape, graphic_styles=g_styles, style_name=GraphicStyleKind.ARROW_LINE)
+        conn_shape.set_style(
+            graphic_styles=g_styles,
+            style_name=GraphicStyleKind.ARROW_LINE,
+        )
 
     .. only:: html
 
@@ -328,8 +364,7 @@ The result can be seen in :numref:`ch15fig_connector_with_orange_line_arrow`.
     .. code-tab:: python
 
         # in _connect_rectangles() of grouper.py
-        Props.set(
-            conn_shape,
+        conn_shape.set_property(
             LineWidth=50,
             LineColor=CommonColor.DARK_ORANGE,
             LineStartName=str(GraphicArrowStyleKind.ARROW_SHORT),
@@ -377,8 +412,7 @@ If the properties are set to:
     .. code-tab:: python
 
         # in _connect_rectangles() of grouper.py
-        Props.set(
-            conn_shape,
+        conn_shape.set_property(
             LineWidth=50,
             LineColor=CommonColor.PURPLE,
             LineStartName=str(GraphicArrowStyleKind.LINE_SHORT),
@@ -415,7 +449,9 @@ to :py:meth:`.Draw.set_style`. Styles can be looked up in the following manor:
 
     .. code-tab:: python
 
-        g_styles = Info.get_style_container(doc=doc, family_style_name="graphics")
+        g_styles = Info.get_style_container(
+            doc=doc.component, family_style_name="graphics"
+        )
         Info.show_container_names("Graphic styles", g_styles)
 
     .. only:: html
@@ -447,30 +483,37 @@ The three techniques are:
 
         # partial main() in grouper.py
         # ...
-        slide_size = Draw.get_slide_size(curr_slide)
+        slide_size = curr_slide.get_size_mm()
         width = 40
         height = 20
-        x = round(((slide_size.Width * 3) / 4) - (width / 2))
+        x = round(((slide_size.width * 3) / 4) - (width / 2))
         y1 = 20
-        y2 = round((slide_size.Height / 2) - (y1 + height))  # so separated
-        # y2 = 30  # so overlapping
+        if self.overlap:
+            y2 = 30
+        else:
+            y2 = round((slide_size.height / 2) - (y1 + height))  # so separated
 
-        s1 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y1, width=width, height=height)
-        s2 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y2, width=width, height=height)
+        s1 = curr_slide.draw_ellipse(x=x, y=y1, width=width, height=height)
+        s2 = curr_slide.draw_ellipse(x=x, y=y2, width=width, height=height)
 
-        Draw.show_shapes_info(curr_slide)
+        Draw.show_shapes_info(curr_slide.component)
 
         # group, bind, or combine the ellipses
         print()
         print("Grouping (or binding) ellipses ...")
-        # self._group_ellipses(slide=curr_slide, s1=s1, s2=s2)
-        # self._bind_ellipses(slide=curr_slide, s1=s1, s2=s2)
-        self._combine_ellipses(slide=curr_slide, s1=s1, s2=s2)
-        Draw.show_shapes_info(curr_slide)
+        if self._combine_kind == CombineEllipseKind.GROUP:
+            self._group_ellipses(slide=curr_slide, s1=s1.component, s2=s2.component)
+        elif self._combine_kind == CombineEllipseKind.BIND:
+            self._bind_ellipses(slide=curr_slide, s1=s1.component, s2=s2.component)
+        elif self._combine_kind == CombineEllipseKind.COMBINE:
+            self._combine_ellipses(
+                slide=curr_slide, s1=s1.component, s2=s2.component
+            )
+        Draw.show_shapes_info(curr_slide.component)
 
         # combine some rectangles
-        comp_shape = self._combine_rects(doc=doc, slide=curr_slide)
-        Draw.show_shapes_info(curr_slide)
+        comp_shape = self._combine_rects(slide=curr_slide)
+        Draw.show_shapes_info(curr_slide.component)
 
         print("Waiting a bit before splitting...")
         Lo.delay(3000)  # delay so user can see previous composition
@@ -510,9 +553,9 @@ The two ellipses were just created in the code snipper given above.
     .. code-tab:: python
 
         # Grouper.main() of grouper.py
-        s1 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y1, width=width, height=height)
-        s2 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y2, width=width, height=height)
-        self._group_ellipses(slide=curr_slide, s1=s1, s2=s2)
+        s1 = curr_slide.draw_ellipse(x=x, y=y1, width=width, height=height)
+        s2 = curr_slide.draw_ellipse(x=x, y=y2, width=width, height=height)
+        self._group_ellipses(slide=curr_slide, s1=s1.component, s2=s2.component)
 
     .. only:: html
 
@@ -527,11 +570,15 @@ The two ellipses were just created in the code snipper given above.
     .. code-tab:: python
 
         # in Grouper class of grouper.py
-        def _group_ellipses(self, slide: XDrawPage, s1: XShape, s2: XShape) -> None:
-            shape_group = Draw.add_shape(
-                slide=slide, shape_type=DrawingShapeKind.GROUP_SHAPE, x=0, y=0, width=0, height=0
+        def _group_ellipses(self, slide: DrawPage[DrawDoc], s1: XShape, s2: XShape) -> None:
+            shape_group = slide.add_shape(
+                shape_type=DrawingShapeKind.GROUP_SHAPE,
+                x=0,
+                y=0,
+                width=0,
+                height=0,
             )
-            shapes = Lo.qi(XShapes, shape_group, True)
+            shapes = shape_group.qi(XShapes, True)
             shapes.add(s1)
             shapes.add(s2)
 
@@ -593,9 +640,9 @@ Instead of ``_group_ellipses()``, it's possible to call ``_bind_ellipses()`` in 
     .. code-tab:: python
 
         # Grouper.main() of grouper.py
-        s1 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y1, width=width, height=height)
-        s2 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y2, width=width, height=height)
-        self._bind_ellipses(slide=curr_slide, s1=s1, s2=s2)
+        s1 = curr_slide.draw_ellipse(x=x, y=y1, width=width, height=height)
+        s2 = curr_slide.draw_ellipse(x=x, y=y2, width=width, height=height)
+        self._bind_ellipses(slide=curr_slide, s1=s1.component, s2=s2.component)
 
     .. only:: html
 
@@ -610,13 +657,13 @@ The function is defined as:
     .. code-tab:: python
 
         # _bind_ellipses() class of grouper.py
-        def _bind_ellipses(self, slide: XDrawPage, s1: XShape, s2: XShape) -> None:
+        def _bind_ellipses(self, slide: DrawPage[DrawDoc], s1: XShape, s2: XShape) -> None:
             shapes = Lo.create_instance_mcf(
                 XShapes, "com.sun.star.drawing.ShapeCollection", raise_err=True
             )
             shapes.add(s1)
             shapes.add(s2)
-            binder = Lo.qi(XShapeBinder, slide, True)
+            binder = slide.qi(XShapeBinder, True)
             binder.bind(shapes)
 
     .. only:: html
@@ -675,9 +722,11 @@ If the result needs to be a single shape, then grouping (not binding) can be app
     .. code-tab:: python
 
         # in Grouper.main() of grouper.py
-        s1 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y1, width=width, height=height)
-        s2 = Draw.draw_ellipse(slide=curr_slide, x=x, y=y2, width=width, height=height)
-        self._combine_ellipses(slide=curr_slide, s1=s1, s2=s2)
+        s1 = curr_slide.draw_ellipse(x=x, y=y1, width=width, height=height)
+        s2 = curr_slide.draw_ellipse(x=x, y=y2, width=width, height=height)
+        self._combine_ellipses(
+            slide=curr_slide, s1=s1.component, s2=s2.component
+        )
 
     .. only:: html
 
@@ -692,13 +741,17 @@ If the result needs to be a single shape, then grouping (not binding) can be app
     .. code-tab:: python
 
         # _combine_ellipses() of grouper.py
-        def _combine_ellipses(self, slide: XDrawPage, s1: XShape, s2: XShape) -> None:
+        def _combine_ellipses(
+            self, slide: DrawPage[DrawDoc], s1: XShape, s2: XShape
+        ) -> None:
             shapes = Lo.create_instance_mcf(
-                XShapes, "com.sun.star.drawing.ShapeCollection", raise_err=True
+                XShapes,
+                "com.sun.star.drawing.ShapeCollection",
+                raise_err=True,
             )
             shapes.add(s1)
             shapes.add(s2)
-            combiner = Lo.qi(XShapeCombiner, slide, True)
+            combiner = slide.qi(XShapeCombiner, True)
             combiner.combine(shapes)
 
     .. only:: html
@@ -753,17 +806,19 @@ Those effects had to implemented by using dispatches, as shown in ``_combine_rec
     .. code-tab:: python
 
         # in grouper.py
-        def _combine_rects(self, doc: XComponent, slide: XDrawPage) -> XShape:
+        def _combine_rects(self, slide: DrawPage[DrawDoc]) -> DrawShape[DrawDoc]:
             print()
             print("Combining rectangles ...")
-            r1 = Draw.draw_rectangle(slide=slide, x=50, y=20, width=40, height=20)
-            r2 = Draw.draw_rectangle(slide=slide, x=70, y=25, width=40, height=20)
+            r1 = slide.draw_rectangle(x=50, y=20, width=40, height=20)
+            r2 = slide.draw_rectangle(x=70, y=25, width=40, height=20)
             shapes = Lo.create_instance_mcf(
                 XShapes, "com.sun.star.drawing.ShapeCollection", raise_err=True
             )
-            shapes.add(r1)
-            shapes.add(r2)
-            comb = Draw.combine_shape(doc=doc, shapes=shapes, combine_op=ShapeCombKind.COMBINE)
+            shapes.add(r1.component)
+            shapes.add(r2.component)
+            comb = slide.owner.combine_shape(
+                shapes=shapes, combine_op=ShapeCombKind.COMBINE
+            )
             return comb
 
     .. only:: html
@@ -870,11 +925,11 @@ The ``main()`` function of |grouper_py|_ shows how the combination of the two re
 
         # in Grouper.main() of grouper.py
         # ...
-        comp_shape = self._combine_rects(doc=doc, slide=curr_slide)
+        comp_shape = self._combine_rects(slide=curr_slide)
         # ...
-        combiner = Lo.qi(XShapeCombiner, curr_slide, True)
-        combiner.split(comp_shape)
-        Draw.show_shapes_info(curr_slide)
+        combiner = curr_slide.qi(XShapeCombiner, True)
+        combiner.split(comp_shape.component)
+        Draw.show_shapes_info(curr_slide.component)
 
     .. only:: html
 
@@ -907,7 +962,7 @@ For example:
 
     .. code-tab:: python
 
-        grouper = Lo.qi(XShapeGrouper, curr_slide)
+        grouper = curr_slide.qi(XShapeGrouper, True)
         grouper.ungroup(comp_shape)
 
     .. only:: html
@@ -946,7 +1001,10 @@ The code for generating :numref:`ch15fig_cubic_bezier_curve` is in ``_draw_curve
     .. code-tab:: python
 
         # in bezier_builder.py
-        def _draw_curve(self, slide: XDrawPage) -> XShape:
+        def _draw_curve(
+            self, slide: DrawPage[DrawDoc]
+        ) -> OpenBezierShape[DrawDoc]:
+            # sample data, same as bpts3.txt
             path_pts: List[Point] = []
             path_flags: List[PolygonFlags] = []
 
@@ -962,7 +1020,9 @@ The code for generating :numref:`ch15fig_cubic_bezier_curve` is in ``_draw_curve
             path_pts.append(Point(4_000, 2_500))
             path_flags.append(PolygonFlags.NORMAL)
 
-            return Draw.draw_bezier(slide=slide, pts=path_pts, flags=path_flags, is_open=True)
+            return slide.draw_bezier_open(
+                pts=path_pts, flags=path_flags
+            )
 
     .. only:: html
 

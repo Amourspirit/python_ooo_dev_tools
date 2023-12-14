@@ -36,8 +36,7 @@ The second loop rotates a line counter-clockwise while changing its length. The 
     .. code-tab:: python
 
         # from draw_picture.py
-        def _anim_shapes(self, curr_slide: XDrawPage) -> None:
-            # reduce circle size and move to the right
+        def _anim_shapes(self, curr_slide: DrawPage[DrawDoc]) -> None:
             xc = 40
             yc = 150
             radius = 40
@@ -45,21 +44,20 @@ The second loop rotates a line counter-clockwise while changing its length. The 
             for _ in range(20):
                 # move right
                 if circle is not None:
-                    curr_slide.remove(circle)
-                circle = Draw.draw_circle(slide=curr_slide, x=xc, y=yc, radius=radius)
+                    curr_slide.remove(circle.component)
+                circle = curr_slide.draw_circle(x=xc, y=yc, radius=radius)
 
                 Lo.delay(200)
                 xc += 5
                 radius *= 0.95
 
-            # rotate line counter-clockwise, and change length
             x2 = 140
             y2 = 110
             line = None
             for _ in range(25):
                 if line is not None:
-                    curr_slide.remove(line)
-                line = Draw.draw_line(slide=curr_slide, x1=40, y1=100, x2=x2, y2=y2)
+                    curr_slide.remove(line.component)
+                line = curr_slide.draw_line(x1=40, y1=100, x2=x2, y2=y2)
                 x2 -= 4
                 y2 -= 4
 
@@ -100,19 +98,19 @@ The animation is performed by ``_animate_bike()``:
     .. code-tab:: python
 
         # from anim_bicycle.py
-        def _animate_bike(self, slide: XDrawPage) -> None:
-            shape = Draw.draw_image(slide=slide, fnm=self._fnm_bike, x=60, y=100, width=90, height=50)
+        def _animate_bike(self, slide: DrawPage[DrawDoc]) -> None:
+            shape = slide.draw_image(fnm=self._fnm_bike, x=60, y=100, width=90, height=50)
 
-            pt = Draw.get_position(shape)
-            angle = Draw.get_rotation(shape)
+            pt = shape.get_position_mm()
+            angle = shape.get_rotation()
             print(f"Start Angle: {int(angle)}")
             for i in range(19):
-                Draw.set_position(shape=shape, x=pt.X + (i * 5), y=pt.Y)  # move right
-                Draw.set_rotation(shape=shape, angle=angle + (i * 5))  # rotates ccw
+                shape.set_position(x=pt.X + (i * 5), y=pt.Y)  # move right
+                shape.set_rotation(angle=angle + (i * 5))  # rotates ccw
                 Lo.delay(200)
 
-            print(f"Final Angle: {int(Draw.get_rotation(shape))}")
-            Draw.print_matrix(Draw.get_transformation(shape))
+            print(f"Final Angle: {int(shape.get_rotation())}")
+            Draw.print_matrix(shape.get_transformation())
 
     .. only:: html
 
@@ -121,8 +119,9 @@ The animation is performed by ``_animate_bike()``:
             .. group-tab:: None
 
 The animation loop in ``_animate_bike()`` is similar to the ones in ``anim_shapes()``, using :py:meth:`.Lo.delay` to space out changes over time.
-However, instead of creating a new shape on each iteration, a single GraphicObjectShape_ is created by :py:meth:`.Draw.draw_image` before the loop starts.
-Inside the loop, that shape’s position and orientation are repeatedly updated by :py:meth:`.Draw.set_position` and :py:meth:`.Draw.set_rotation`.
+However, instead of creating a new shape on each iteration, a single GraphicObjectShape_ is created by ``slide.draw_image()`` which invokes :py:meth:`.Draw.draw_image` before the loop starts.
+Inside the loop, that shape’s position and orientation are repeatedly updated by ``shape.set_position()`` and ``shape.set_rotation()``
+which invokes :py:meth:`.Draw.set_position` and :py:meth:`.Draw.set_rotation` respectively.
 
 .. _ch14_draw_img:
 
@@ -151,10 +150,10 @@ There are several versions of :py:meth:`.Draw.draw_image` the main one is:
             cls,
             slide: XDrawPage,
             fnm: PathOrStr,
-            x: int,
-            y: int,
-            width: int,
-            height: int
+            x: int | UnitT,
+            y: int | UnitT,
+            width: int | UnitT,
+            height: int | UnitT
         ) -> XShape:
 
             # units in mm's
@@ -211,7 +210,13 @@ A second version of :py:meth:`.Draw.draw_image` doesn't require width and height
 
         # represents draw_image() overload in Draw Class (simplified)
         @classmethod
-        def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape:
+        def draw_image(
+            cls,
+            slide: XDrawPage,
+            fnm: PathOrStr,
+            x: int | UnitT,
+            y: int | UnitT,
+        ) -> XShape:
             im_size = ImagesLo.get_size_100mm(fnm)
             return cls.draw_image(
                 slide=slide,
@@ -261,7 +266,7 @@ once as an XGraphic_ object by :py:meth:`~.ImagesLo.get_size_100mm`, and also as
 14.2.2 Updating the Bike's Position and Orientation
 ---------------------------------------------------
 
-The ``_animate_bike()`` animation uses Draw methods for getting and setting the shap's position and orientation:
+The ``_animate_bike()`` animation uses Draw methods for getting and setting the shape's position and orientation:
 
 .. tabs::
 
@@ -348,7 +353,7 @@ These methods are called at the end of ``_animate_bike()``:
     .. code-tab:: python
 
         # from anim_bicycle.py _animate_bike()
-        Draw.print_matrix(Draw.get_transformation(shape))
+        Draw.print_matrix(shape.get_transformation())
 
     .. only:: html
 

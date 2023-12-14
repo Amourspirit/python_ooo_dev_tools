@@ -992,7 +992,7 @@ The final fill in :numref:`ch13fig_seven_fills` loads a bitmap from ``crazy_blue
 
             .. group-tab:: None
 
-``_gradient_bitmap_file()`` Calls `` rect1.set_bitmap_file_color()`` which invokes :py:meth:`.Draw.set_bitmap_file_color`.
+``_gradient_bitmap_file()`` Calls ``rect1.set_bitmap_file_color()`` which invokes :py:meth:`.Draw.set_bitmap_file_color`.
 
 .. tabs::
 
