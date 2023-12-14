@@ -4,6 +4,7 @@ from typing import Any, cast, TYPE_CHECKING
 # from .text_cursor_comp import TextCursorComp
 from . import text_view_cursor_partial as mTextViewCursorPartial
 from .page_cursor_partial import PageCursorPartial
+from ooodev.adapter.view.screen_cursor_partial import ScreenCursorPartial
 
 # from .word_cursor_partial import WordCursorPartial
 
@@ -21,7 +22,9 @@ if TYPE_CHECKING:
 # it seems that XTextViewCursor Documented in the API for TextCursor Service event thought the service support it.
 # To be sure, I will implement it here as TextViewCursorPartial.
 # TextRangeComp, TextCursorPartial, ParagraphCursorPartial, SentenceCursorPartial, WordCursorPartial
-class TextViewCursorComp(mTextViewCursorPartial.TextViewCursorPartial, TextRangeComp, PageCursorPartial):
+class TextViewCursorComp(
+    mTextViewCursorPartial.TextViewCursorPartial, TextRangeComp, PageCursorPartial, ScreenCursorPartial
+):
     """
     Class for managing TextCursor Component.
     """
@@ -38,7 +41,8 @@ class TextViewCursorComp(mTextViewCursorPartial.TextViewCursorPartial, TextRange
 
         mTextViewCursorPartial.TextViewCursorPartial.__init__(self, component)
         TextRangeComp.__init__(self, component)
-        PageCursorPartial.__init__(self, component)  # type: ignore
+        PageCursorPartial.__init__(self, component, None)  # type: ignore
+        ScreenCursorPartial.__init__(self, component, None)  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
