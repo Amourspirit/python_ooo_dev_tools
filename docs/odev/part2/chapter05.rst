@@ -400,7 +400,7 @@ These iteration techniques are described next.
 Since ``0.16.0``, |odev|_ provides a new way of work with documents. This is done via the ``ooodev.write`` module and sub-modules.
 Previously accessing text cursors meant getting access to various cursor interface such as XParagraphCursor_ and XWordCursor_ as seen in :numref:`ch05fig_cursor_types`
 
-In the |walk_text|_ example it uses paragraph, word and view cursors via  :ref:`class_write_write_text_cursor` and :ref:`class_write_write_word_cursor` classes.
+In the |walk_text|_ example it uses paragraph, word and view cursors via  :ref:`class_write_write_text_cursor` and :ref:`class_write_write_text_view_cursor` classes.
 
 .. tabs::
 
@@ -672,7 +672,7 @@ even though there's only one view cursor per document.
 
             word_count = 0
             while 1:
-                cursor.goto_end_of_word()
+                cursor.goto_end_of_word(True)
                 curr_word = cursor.get_string()
                 if len(curr_word) > 0:
                     word_count += 1
@@ -830,7 +830,7 @@ The call to ``cursor.goto_end()`` isn't really necessary because the new cursor 
 It's included to emphasize the assumption by ``cursor.append_para()`` (and other ``cursor.appendXXX()`` functions) that the cursor is
 positioned at the end of the document before new text is added.
 
- ``cursor.append_para()`` calls :py:meth:`.Write.append` methods:
+``cursor.append_para()`` calls :py:meth:`.Write.append` methods:
 
 .. tabs::
 
@@ -1069,44 +1069,44 @@ One difference is the use of ``XText.insertString()`` by calling ``doc_text.inse
 
     .. code-tab:: python
 
-    def apply_shuffle(doc: WriteDoc, delay: int, visible: bool) -> None:
-        doc_text = doc.get_text()
-        if visible:
-            cursor = doc.get_view_cursor()
-        else:
-            cursor = doc.get_cursor()
+        def apply_shuffle(doc: WriteDoc, delay: int, visible: bool) -> None:
+            doc_text = doc.get_text()
+            if visible:
+                cursor = doc.get_view_cursor()
+            else:
+                cursor = doc.get_cursor()
 
-        word_cursor = doc.get_cursor()
-        word_cursor.goto_start()  # go to start of text
+            word_cursor = doc.get_cursor()
+            word_cursor.goto_start()  # go to start of text
 
-        while True:
-            word_cursor.goto_next_word(True)
+            while True:
+                word_cursor.goto_next_word(True)
 
-            # move the text view cursor, and highlight the current word
-            cursor.goto_range(word_cursor.component.getStart())
-            cursor.goto_range(word_cursor.component.getEnd(), True)
-            curr_word = word_cursor.get_string()
+                # move the text view cursor, and highlight the current word
+                cursor.goto_range(word_cursor.component.getStart())
+                cursor.goto_range(word_cursor.component.getEnd(), True)
+                curr_word = word_cursor.get_string()
 
-            # get whitespace padding amounts
-            c_len = len(curr_word)
-            curr_word = curr_word.lstrip()
-            l_pad = c_len - len(curr_word)  # left whitespace padding amount
-            curr_word = curr_word.rstrip()
-            r_pad = c_len - len(curr_word) - l_pad  # right whitespace padding amount
-            if len(curr_word) > 0:
-                pad_l = " " * l_pad  # recreate left padding
-                pad_r = " " * r_pad  # recreate right padding
-                Lo.delay(delay)
-                mid_shuffle = do_mid_shuffle(curr_word)
-                doc_text.insert_string(
-                    word_cursor.component, f"{pad_l}{mid_shuffle}{pad_r}", True
-                )
+                # get whitespace padding amounts
+                c_len = len(curr_word)
+                curr_word = curr_word.lstrip()
+                l_pad = c_len - len(curr_word)  # left whitespace padding amount
+                curr_word = curr_word.rstrip()
+                r_pad = c_len - len(curr_word) - l_pad  # right whitespace padding amount
+                if len(curr_word) > 0:
+                    pad_l = " " * l_pad  # recreate left padding
+                    pad_r = " " * r_pad  # recreate right padding
+                    Lo.delay(delay)
+                    mid_shuffle = do_mid_shuffle(curr_word)
+                    doc_text.insert_string(
+                        word_cursor.component, f"{pad_l}{mid_shuffle}{pad_r}", True
+                    )
 
-            if word_cursor.goto_next_word() is False:
-                break
+                if word_cursor.goto_next_word() is False:
+                    break
 
-        word_cursor.goto_start()  # go to start of text
-        cursor.goto_start()
+            word_cursor.goto_start()  # go to start of text
+            cursor.goto_start()
 
     .. only:: html
 

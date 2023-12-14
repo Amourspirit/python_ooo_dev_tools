@@ -1,3 +1,5 @@
+.. _office_write:
+
 Class Write
 ===========
 

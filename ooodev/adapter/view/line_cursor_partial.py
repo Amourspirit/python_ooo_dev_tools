@@ -23,8 +23,8 @@ class LineCursorPartial:
         Constructor
 
         Args:
-            component (XLineCursor ): UNO Component that implements ``com.sun.star.view.XLineCursor `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XLineCursor ``.
+            component (XLineCursor ): UNO Component that implements ``com.sun.star.view.XLineCursor`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XLineCursor``.
         """
 
         self.__interface = interface

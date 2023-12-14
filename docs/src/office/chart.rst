@@ -1,3 +1,5 @@
+.. _office_chart:
+
 Class Chart
 ===========
 
