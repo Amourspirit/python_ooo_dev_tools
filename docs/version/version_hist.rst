@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.17.2
+==============
+
+Fix to allow ``com.sun.star.presentation.Shape`` as a ShapeComp.
+
 Version 0.17.1
 ==============
 

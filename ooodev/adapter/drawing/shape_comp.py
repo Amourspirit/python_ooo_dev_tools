@@ -39,7 +39,10 @@ class ShapeComp(
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.drawing.Shape",)
+        return (
+            "com.sun.star.drawing.Shape",
+            "com.sun.star.presentation.Shape",
+        )
 
     # endregion Overrides
     # region Properties
