@@ -349,6 +349,7 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
 
     .. code-tab:: python
 
+        # in Write Class
         @classmethod
         def add_text_frame(
             cls,
@@ -688,61 +689,61 @@ Ten formulae are added to the document, which is saved as ``mathQuestions.pdf``.
 
     .. code-tab:: python
 
-    def main() -> int:
-        delay = 2_000  # delay so users can see changes.
+        def main() -> int:
+            delay = 2_000  # delay so users can see changes.
 
-        loader = Lo.load_office(Lo.ConnectPipe())
+            loader = Lo.load_office(Lo.ConnectPipe())
 
-        doc = WriteDoc(Write.create_doc(loader=loader))
+            doc = WriteDoc(Write.create_doc(loader=loader))
 
-        try:
-            doc.set_visible()
+            try:
+                doc.set_visible()
 
-            cursor = doc.get_cursor()
-            cursor.append_para("Math Questions")
-            cursor.style_prev_paragraph("Heading 1")
+                cursor = doc.get_cursor()
+                cursor.append_para("Math Questions")
+                cursor.style_prev_paragraph("Heading 1")
 
-            cursor.append_para("Solve the following formulae for x:\n")
+                cursor.append_para("Solve the following formulae for x:\n")
 
-            # lock screen updating and add formulas
-            # locking screen is not strictly necessary but is faster when add lost of input.
-            with Lo.ControllerLock():
-                for _ in range(10):  # generate 10 random formulae
-                    iA = random.randint(0, 7) + 2
-                    iB = random.randint(0, 7) + 2
-                    iC = random.randint(0, 8) + 1
-                    iD = random.randint(0, 7) + 2
-                    iE = random.randint(0, 8) + 1
-                    iF1 = random.randint(0, 7) + 2
+                # lock screen updating and add formulas
+                # locking screen is not strictly necessary but is faster when add lost of input.
+                with Lo.ControllerLock():
+                    for _ in range(10):  # generate 10 random formulae
+                        iA = random.randint(0, 7) + 2
+                        iB = random.randint(0, 7) + 2
+                        iC = random.randint(0, 8) + 1
+                        iD = random.randint(0, 7) + 2
+                        iE = random.randint(0, 8) + 1
+                        iF1 = random.randint(0, 7) + 2
 
-                    choice = random.randint(0, 2)
+                        choice = random.randint(0, 2)
 
-                    # formulas should be wrapped in {} but for formatting reasons it is easier to work with [] and replace later.
-                    if choice == 0:
-                        formula = f"[[[sqrt[{iA}x]] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1} ]]"
-                    elif choice == 1:
-                        formula = (
-                            f"[[[{iA}x] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1}]]"
-                        )
-                    else:
-                        formula = f"[{iA}x + {iB} = {iC}]"
+                        # formulas should be wrapped in {} but for formatting reasons it is easier to work with [] and replace later.
+                        if choice == 0:
+                            formula = f"[[[sqrt[{iA}x]] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1} ]]"
+                        elif choice == 1:
+                            formula = (
+                                f"[[[{iA}x] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1}]]"
+                            )
+                        else:
+                            formula = f"[{iA}x + {iB} = {iC}]"
 
-                    # replace [] with {}
-                    cursor.add_formula(formula.replace("[", "{").replace("]", "}"))
-                    cursor.end_paragraph()
+                        # replace [] with {}
+                        cursor.add_formula(formula.replace("[", "{").replace("]", "}"))
+                        cursor.end_paragraph()
 
-            cursor.append_para(f"Timestamp: {DateUtil.time_stamp()}")
+                cursor.append_para(f"Timestamp: {DateUtil.time_stamp()}")
 
-            Lo.delay(delay)
-            doc.save_doc(pth / "mathQuestions.pdf")
-            doc.close_doc()
-            Lo.close_office()
+                Lo.delay(delay)
+                doc.save_doc(pth / "mathQuestions.pdf")
+                doc.close_doc()
+                Lo.close_office()
 
-        except Exception:
-            Lo.close_office()
-            raise
+            except Exception:
+                Lo.close_office()
+                raise
 
-        return 0
+            return 0
 
     .. only:: html
 
@@ -888,7 +889,6 @@ As discussed most of |story_creator|_ in :ref:`ch06`, but skipped over how page 
     .. code-tab:: python
 
         # in Write Class
-
         @classmethod
         def set_page_numbers(cls, text_doc: XTextDocument) -> None:
             props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
@@ -1128,7 +1128,6 @@ The cells are referred to using names, based on letters for columns and integers
     .. code-tab:: python
 
         # in Write Class
-
         @classmethod
         def add_table(
             cls,
@@ -1328,6 +1327,7 @@ which makes the cell's text and properties accessible to a text cursor.
 
     .. code-tab:: python
 
+        # in Write Class
         def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if first_row_header and header_fg_color is not None:
@@ -1350,6 +1350,7 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
 
     .. code-tab:: python
 
+        # in Write Class
         def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if first_row_header is False or tbl_fg_color is not None:
@@ -1383,7 +1384,6 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
     .. code-tab:: python
 
         # in Write Class
-
         @classmethod
         def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
             cargs = CancelEventArgs(Write.add_bookmark.__qualname__)
@@ -1474,7 +1474,6 @@ Just as with real-world bookmarks, you can add one at some important location in
     .. code-tab:: python
 
         # in Write Class
-
         @staticmethod
         def find_bookmark(text_doc: XTextDocument, bm_name: str) -> XTextContent | None:
             supplier = Lo.qi(XBookmarksSupplier, text_doc, True)

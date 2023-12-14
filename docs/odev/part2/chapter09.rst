@@ -163,32 +163,31 @@ The code for ``find_words()``:
 
     .. code-tab:: python
 
-        def find_words(doc: XTextDocument, words: Sequence[str]) -> None:
+        def find_words(doc: WriteDoc, words: Sequence[str]) -> None:
             # get the view cursor and link the page cursor to it
-            tvc = Write.get_view_cursor(doc)
-            tvc.gotoStart(False)
-            page_cursor = Write.get_page_cursor(tvc)
-            searchable = Lo.qi(XSearchable, doc)
-            srch_desc = searchable.createSearchDescriptor()
+            tvc = doc.get_view_cursor()
+            tvc.goto_start()
+            searchable = doc.qi(XSearchable, True)
+            search_desc = searchable.createSearchDescriptor()
 
             for word in words:
                 print(f"Searching for fist occurrence of '{word}'")
-                srch_desc.setSearchString(word)
+                search_desc.setSearchString(word)
 
-                srch_props = Lo.qi(XPropertySet, srch_desc, raise_err=True)
-                srch_props.setPropertyValue("SearchRegularExpression", True)
+                search_props = Lo.qi(XPropertySet, search_desc, raise_err=True)
+                search_props.setPropertyValue("SearchRegularExpression", True)
 
-                srch = searchable.findFirst(srch_desc)
+                search = searchable.findFirst(search_desc)
 
-                if srch is not None:
-                    match_tr = Lo.qi(XTextRange, srch)
+                if search is not None:
+                    match_tr = Lo.qi(XTextRange, search)
 
-                    tvc.gotoRange(match_tr, False)
+                    tvc.goto_range(match_tr)
                     print(f"  - found '{match_tr.getString()}'")
-                    print(f"    - on page {page_cursor.getPage()}")
+                    print(f"    - on page {tvc.get_page()}")
                     # tvc.gotoStart(True)
-                    tvc.goRight(len(match_tr.getString()), True)
-                    print(f"    - at char postion: {len(tvc.getString())}")
+                    tvc.go_right(len(match_tr.getString()), True)
+                    print(f"    - at char position: {len(tvc.get_string())}")
                     Lo.delay(500)
 
     .. only:: html
@@ -197,27 +196,13 @@ The code for ``find_words()``:
 
             .. group-tab:: None
 
-``find_words()`` get the text view cursor (``tvc``) from :py:meth:`.Write.get_view_cursor`.
+``find_words()`` get the text view cursor (``tvc``) from :py:meth:`.WriteDoc.get_view_cursor`.
 
 .. tabs::
 
     .. code-tab:: python
 
-        page_cursor = Write.get_page_cursor(tvc)
-
-    .. only:: html
-
-        .. cssclass:: tab-none
-
-            .. group-tab:: None
-
-Alternatively ``page_curser`` could be cast from view cursor:
-
-.. tabs::
-
-    .. code-tab:: python
-
-        page_cursor = Lo.qi(XPageCursor, tvc)
+        tvc = doc.get_view_cursor()
 
     .. only:: html
 
@@ -238,7 +223,7 @@ After the page position has been printed, the cursor is moved to the right by th
 
     .. code-tab:: python
 
-        tvc.goRight(len(match_tr.getString()), True)
+        tvc.go_right(len(match_tr.getString()), True)
 
     .. only:: html
 
@@ -293,8 +278,10 @@ Since ``replace_words()`` doesn't report page and character positions, its code 
 
     .. code-tab:: python
 
-        def replace_words(doc: XTextDocument, old_words: Sequence[str], new_words: Sequence[str]) -> int:
-            replaceable = Lo.qi(XReplaceable, doc, raise_err=True)
+        def replace_words(
+            doc: WriteDoc, old_words: Sequence[str], new_words: Sequence[str]
+        ) -> int:
+            replaceable = doc.qi(XReplaceable, True)
             replace_desc = Lo.qi(XReplaceDescriptor, replaceable.createSearchDescriptor())
 
             for old, new in zip(old_words, new_words):
@@ -382,40 +369,42 @@ The searching in |italics_styler|_ is performed by ``italicize_all()``, which be
 
     .. code-tab:: python
 
-        def italicize_all(doc: XTextDocument, phrase: str, color: Color) -> int:
+        def italicize_all(doc: WriteDoc, phrase: str, color: Color) -> int:
             # cursor = Write.get_view_cursor(doc) # can be used when visible
-            cursor = Write.get_cursor(doc)
-            cursor.gotoStart(False)
-            page_cursor = Write.get_page_cursor(doc)
+            cursor = doc.get_cursor()
+            cursor.goto_start()
+            page_cursor = doc.get_view_cursor()
             result = 0
             try:
-                xsearchable = Lo.qi(XSearchable, doc, True)
-                srch_desc = xsearchable.createSearchDescriptor()
+                searchable = doc.qi(XSearchable, True)
+                search_desc = searchable.createSearchDescriptor()
                 print(f"Searching for all occurrences of '{phrase}'")
-                pharse_len = len(phrase)
-                srch_desc.setSearchString(phrase)
-                Props.set_property(obj=srch_desc, name="SearchCaseSensitive", value=False)
-                Props.set_property(
-                    obj=srch_desc, name="SearchWords", value=True
-                )  # If TRUE, only complete words will be found.
+                phrase_len = len(phrase)
+                search_desc.setSearchString(phrase)
+                # If SearchWords==True, only complete words will be found.
+                Props.set(search_desc, SearchCaseSensitive=False, SearchWords=True)
 
-                matches = xsearchable.findAll(srch_desc)
+                matches = searchable.findAll(search_desc)
                 result = matches.getCount()
 
                 print(f"No. of matches: {result}")
 
+                font_effect = Font(i=True, color=color)
+
                 for i in range(result):
                     match_tr = Lo.qi(XTextRange, matches.getByIndex(i))
                     if match_tr is not None:
-                        cursor.gotoRange(match_tr, False)
+                        cursor.goto_range(match_tr, False)
                         print(f"  - found: '{match_tr.getString()}'")
-                        print(f"    - on page {page_cursor.getPage()}")
-                        cursor.gotoStart(True)
-                        print(f"    - starting at char position: {len(cursor.getString()) - pharse_len}")
+                        print(f"    - on page {page_cursor.get_page()}")
+                        cursor.goto_start(True)
+                        print(
+                            f"    - starting at char position: {len(cursor.get_string()) - phrase_len}"
+                        )
 
-                        Props.set_properties(obj=match_tr, names=("CharColor", "CharPosture"), vals=(color, FontSlant.ITALIC))
+                        font_effect.apply(match_tr)
 
-            except Exception as e:
+            except Exception:
                 raise
             return result
 
@@ -432,7 +421,7 @@ After the search descriptor string has been defined, the ``SearchCaseSensitive``
     .. code-tab:: python
 
         srch_desc.setSearchString(phrase)
-        Props.set_property(obj=srch_desc, name="SearchCaseSensitive", value=False)
+        Props.set(search_desc, SearchCaseSensitive=False, SearchWords=True)
 
     .. only:: html
 
@@ -468,11 +457,7 @@ These properties are changed to adjust the character color and style of the sele
 
     .. code-tab:: python
 
-        Props.set_properties(
-            obj=match_tr,
-            names=("CharColor", "CharPosture"),
-            vals=(color, FontSlant.ITALIC)
-            )
+        font_effect.apply(match_tr)
 
     .. only:: html
 
