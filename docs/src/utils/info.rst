@@ -1,3 +1,5 @@
+.. _class_utils_info_info:
+
 Class Info
 ==========
 

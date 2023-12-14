@@ -266,36 +266,38 @@ In the |build_doc|_ example, text frame creation is done by :py:meth:`.Write.add
         # code fragment from build doc
         from ooodev.format.writer.direct.frame.area import Color as FrameColor
         from ooodev.format.writer.direct.frame.borders import Side, Sides, BorderLineKind, LineSize
+        from ooodev.write import Write, WriteDoc
+        # ...
+        doc = WriteDoc(Write.create_doc(loader=loader))
+        cursor = doc.get_cursor()
         # ...
 
-        Write.append_para(cursor, "Here's some code:")
-        tvc = Write.get_view_cursor(doc)
+        cursor.append_para("Here's some code:")
+        tvc = doc.get_view_cursor()
+        tvc.goto_range(cursor.component.getEnd(), False)
 
-        tvc = Write.get_view_cursor(doc)
-        tvc.gotoRange(cursor.getEnd(), False)
+        y_pos = tvc.get_position().Y
 
-        ypos = tvc.getPosition().Y
-
-        np()
+        cursor.end_paragraph()
         code_font = Font(name=Info.get_font_mono_name(), size=10)
-        code_font.apply(cursor)
+        code_font.apply(cursor.component)
 
-        nl("public class Hello")
-        nl("{")
-        nl("  public static void main(String args[]")
-        nl('  {  System.out.println("Hello World");  }')
-        Write.append_para(cursor, "}  // end of Hello class")
+        cursor.append_line("public class Hello")
+        cursor.append_line("{")
+        cursor.append_line("  public static void main(String args[]")
+        cursor.append_line('  {  System.out.println("Hello World");  }')
+        cursor.append_para("}  // end of Hello class")
 
         # reset the cursor formatting
-        ParaStyle.default.apply(cursor)
+        ParaStyle.default.apply(cursor.component)
 
         # Format the background color of the previous paragraph.
         bg_color = ParaBgColor(CommonColor.LIGHT_GRAY)
-        Write.style_prev_paragraph(cursor=cursor, styles=[bg_color])
+        cursor.style_prev_paragraph(styles=[bg_color])
 
-        Write.append_para(cursor, "A text frame")
+        cursor.append_para("A text frame")
 
-        pg = Write.get_current_page(tvc)
+        pg = tvc.get_current_page()
 
         frame_color = FrameColor(CommonColor.DEFAULT_BLUE)
         # create a border
@@ -303,10 +305,9 @@ In the |build_doc|_ example, text frame creation is done by :py:meth:`.Write.add
             all=Side(line=BorderLineKind.SOLID, color=CommonColor.RED, width=LineSize.THIN)
         )
 
-        Write.add_text_frame(
-            cursor=cursor,
-            ypos=ypos,
+        _ = cursor.add_text_frame(
             text="This is a newly created text frame.\nWhich is over on the right of the page, next to the code.",
+            ypos=y_pos,
             page_num=pg,
             width=UnitMM(40),
             height=UnitMM(15),
@@ -322,7 +323,7 @@ In the |build_doc|_ example, text frame creation is done by :py:meth:`.Write.add
 An anchor specifies how the text content is positioned relative to the ordinary text around it.
 Anchoring can be relative to a character, paragraph, page, or another frame.
 
-:py:meth:`.Write.add_text_frame` uses page anchoring, which means that |build_doc|_ must obtain a view cursor, so that an on-screen page position can be calculated.
+:py:meth:`.WriteTextCursor.add_text_frame` uses page anchoring, which means that |build_doc|_ must obtain a view cursor, so that an on-screen page position can be calculated.
 As :numref:`ch07fig_build_doc_frame_ss` shows, the text frame is located on the right of the page, with its top edge level with the start of the code listing.
 
 .. cssclass:: screen_shot
@@ -335,12 +336,12 @@ As :numref:`ch07fig_build_doc_frame_ss` shows, the text frame is located on the 
         :Text Frame Position in the Document.
 
 :py:mod:`ooodev.format.writer.direct.frame.type` module contains size and position classes such as :py:class:`~.writer.direct.frame.type.Anchor` class, which is used to specify the frame's anchor type
-that can be passed to :py:meth:`.Write.add_text_frame`.
+that can be passed to :py:meth:`.WriteTextCursor.add_text_frame`.
 This creates a rich set of options for positioning the frame.
 
-In the code fragment above, :py:meth:`.Write.get_view_cursor` creates the view cursor,
-and ``XTextViewCursor.getPosition()`` returns its (x, y) coordinate on the page.
-The y-coordinate is stored in ``yPos`` until after the code listing has been inserted into the document, and then passed to :py:meth:`.Write.add_text_frame`.
+In the code fragment above, ``doc.get_view_cursor()`` creates the view cursor,
+and ``tvc.get_position()`` returns its (x, y) coordinate on the page.
+The y-coordinate is stored in ``yPos`` until after the code listing has been inserted into the document, and then passed to :py:meth:`.WriteTextCursor.add_text_frame`.
 
 :py:meth:`.Write.add_text_frame` is defined as:
 
@@ -348,6 +349,7 @@ The y-coordinate is stored in ``yPos`` until after the code listing has been ins
 
     .. code-tab:: python
 
+        # in Write Class
         @classmethod
         def add_text_frame(
             cls,
@@ -551,12 +553,14 @@ That's easier to do using the TextGraphicObject_ or GraphicObjectShape_ services
 
 In this section we look at how to insert mathematical formulae into a text document.
 
-The example code is in |math_ques|_, but most of the formula embedding is performed by :py:meth:`.Write.add_formula`:
+The example code is in |math_ques|_, but most of the formula embedding is performed by :py:meth:`.Write.add_formula`
+that is invoked when :py:meth:`.WriteTextCursor.add_formula` is called:
 
 .. tabs::
 
     .. code-tab:: python
 
+        # in Write Class
         @classmethod
         def add_formula(cls, cursor: XTextCursor, formula: str) -> bool:
             cargs = CancelEventArgs(Write.add_formula.__qualname__)
@@ -686,54 +690,58 @@ Ten formulae are added to the document, which is saved as ``mathQuestions.pdf``.
     .. code-tab:: python
 
         def main() -> int:
-
             delay = 2_000  # delay so users can see changes.
 
-            with Lo.Loader(Lo.ConnectSocket()) as loader:
+            loader = Lo.load_office(Lo.ConnectPipe())
 
-                doc = Write.create_doc(loader=loader)
+            doc = WriteDoc(Write.create_doc(loader=loader))
 
-                try:
-                    GUI.set_visible(is_visible=True, odoc=doc)
+            try:
+                doc.set_visible()
 
-                    cursor = Write.get_cursor(doc)
-                    Write.append_para(cursor, "Math Questions")
-                    Write.style_prev_paragraph(cursor, "Heading 1")
+                cursor = doc.get_cursor()
+                cursor.append_para("Math Questions")
+                cursor.style_prev_paragraph("Heading 1")
 
-                    Write.append_para(cursor, "Solve the following formulae for x:\n")
+                cursor.append_para("Solve the following formulae for x:\n")
 
-                    # lock screen updating and add formulas
-                    # locking screen is not strictly necessary but is faster when add lost of input.
-                    with Lo.ControllerLock():
-                        for _ in range(10):  # generate 10 random formulae
-                            iA = random.randint(0, 7) + 2
-                            iB = random.randint(0, 7) + 2
-                            iC = random.randint(0, 8) + 1
-                            iD = random.randint(0, 7) + 2
-                            iE = random.randint(0, 8) + 1
-                            iF1 = random.randint(0, 7) + 2
+                # lock screen updating and add formulas
+                # locking screen is not strictly necessary but is faster when add lost of input.
+                with Lo.ControllerLock():
+                    for _ in range(10):  # generate 10 random formulae
+                        iA = random.randint(0, 7) + 2
+                        iB = random.randint(0, 7) + 2
+                        iC = random.randint(0, 8) + 1
+                        iD = random.randint(0, 7) + 2
+                        iE = random.randint(0, 8) + 1
+                        iF1 = random.randint(0, 7) + 2
 
-                            choice = random.randint(0, 2)
+                        choice = random.randint(0, 2)
 
-                            # formulas should be wrapped in {} but for formatting reasons it is easier to work with [] and replace later.
-                            if choice == 0:
-                                formula = f"[[[sqrt[{iA}x]] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1} ]]"
-                            elif choice == 1:
-                                formula = f"[[[{iA}x] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1}]]"
-                            else:
-                                formula = f"[{iA}x + {iB} = {iC}]"
+                        # formulas should be wrapped in {} but for formatting reasons it is easier to work with [] and replace later.
+                        if choice == 0:
+                            formula = f"[[[sqrt[{iA}x]] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1} ]]"
+                        elif choice == 1:
+                            formula = (
+                                f"[[[{iA}x] over {iB}] + [{iC} over {iD}]=[{iE} over {iF1}]]"
+                            )
+                        else:
+                            formula = f"[{iA}x + {iB} = {iC}]"
 
-                            # replace [] with {}
-                            Write.add_formula(cursor, formula.replace("[", "{").replace("]", "}"))
-                            Write.end_paragraph(cursor)
+                        # replace [] with {}
+                        cursor.add_formula(formula.replace("[", "{").replace("]", "}"))
+                        cursor.end_paragraph()
 
-                    Write.append_para(cursor, f"Timestamp: {DateUtil.time_stamp()}")
+                cursor.append_para(f"Timestamp: {DateUtil.time_stamp()}")
 
-                    Lo.delay(delay)
-                    Lo.save_doc(doc, "mathQuestions.pdf")
+                Lo.delay(delay)
+                doc.save_doc(pth / "mathQuestions.pdf")
+                doc.close_doc()
+                Lo.close_office()
 
-                finally:
-                    Lo.close_doc(doc)
+            except Exception:
+                Lo.close_office()
+                raise
 
             return 0
 
@@ -796,10 +804,10 @@ The |build_doc|_ example ends with a few lines that appear to do the same thing 
     .. code-tab:: python
 
         # code fragment from build doc
-        Write.append_para(cursor, "\nTimestamp: " + DateUtil.time_stamp() + "\n")
-        Write.append(cursor, "Time (according to office): ")
-        Write.append_date_time(cursor=cursor)
-        Write.end_paragraph(cursor)
+        cursor.append_para("\nTimestamp: " + DateUtil.time_stamp() + "\n")
+        cursor.append("Time (according to office): ")
+        cursor.append_date_time()
+        cursor.end_paragraph()
 
     .. only:: html
 
@@ -807,7 +815,7 @@ The |build_doc|_ example ends with a few lines that appear to do the same thing 
 
             .. group-tab:: None
 
-:py:meth:`.DateUtil.time_stamp` inserts a timestamp (which includes the date and time), and then :py:meth:`.Write.append_date_time` inserts the date and time.
+:py:meth:`.DateUtil.time_stamp` inserts a timestamp (which includes the date and time), and then :py:meth:`.WriteTextViewCursor.append_date_time` invokes :py:meth:`.Write.append_date_time` which inserts the date and time.
 Although these may seem to be the same, :py:meth:`~.DateUtil.time_stamp` adds a string while :py:meth:`~.Write.append_date_time` creates a text field.
 The difference becomes apparent if you open the file some time after it was created.
 
@@ -833,6 +841,8 @@ The TextField_ service only contains two properties, with most being in the subc
 .. tabs::
 
     .. code-tab:: python
+
+        # in Write Class
 
         @classmethod
         def append_date_time(cls, cursor: XTextCursor) -> None:
@@ -878,6 +888,7 @@ As discussed most of |story_creator|_ in :ref:`ch06`, but skipped over how page 
 
     .. code-tab:: python
 
+        # in Write Class
         @classmethod
         def set_page_numbers(cls, text_doc: XTextDocument) -> None:
             props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
@@ -962,7 +973,7 @@ These properties will be applied to the text and text fields added afterwards:
     .. code-tab:: python
 
         Write.append(footer_cursor, Write.get_page_number())
-        Wirte.append(footer_cursor, " of ")
+        Write.append(footer_cursor, " of ")
         Write.append(footer_cursor, Write.get_page_count())
 
     .. only:: html
@@ -1041,11 +1052,7 @@ The ``main()`` function for |make_table|_ is:
 
         def main() -> int:
 
-            fnm = FileIO.get_absolute_path("../../../../resources/txt/bondMovies.txt")  # source csv file
-            if not fnm.exists():
-                print("resource image 'bondMovies.txt' not found.")
-                print("Unable to continue.")
-                return 1
+            fnm = Path(__file__).parent / "data" / "bondMovies.txt"  # source csv file
 
             tbl_data = read_table(fnm)
 
@@ -1120,6 +1127,7 @@ The cells are referred to using names, based on letters for columns and integers
 
     .. code-tab:: python
 
+        # in Write Class
         @classmethod
         def add_table(
             cls,
@@ -1319,6 +1327,7 @@ which makes the cell's text and properties accessible to a text cursor.
 
     .. code-tab:: python
 
+        # in Write Class
         def set_cell_header(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if first_row_header and header_fg_color is not None:
@@ -1341,6 +1350,7 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
 
     .. code-tab:: python
 
+        # in Write Class
         def set_cell_text(cell_name: str, data: str, table: XTextTable) -> None:
             cell_text = mLo.Lo.qi(XText, table.getCellByName(cell_name), True)
             if first_row_header is False or tbl_fg_color is not None:
@@ -1373,6 +1383,7 @@ The cell's ``CharColor`` property is changed so the inserted text in the header 
 
     .. code-tab:: python
 
+        # in Write Class
         @classmethod
         def add_bookmark(cls, cursor: XTextCursor, name: str) -> None:
             cargs = CancelEventArgs(Write.add_bookmark.__qualname__)
@@ -1427,8 +1438,9 @@ It calls :py:meth:`.Write.add_bookmark` to add a bookmark called ``ad-Bookmark``
     .. code-tab:: python
 
         # code fragment from build doc
-        append("This line ends with a bookmark.")
-        Write.add_bookmark(cursor=cursor, name="ad-bookmark")
+        cursor.append("This line ends with a bookmark.")
+        cursor.add_bookmark("ad-bookmark")
+        cursor.append_line()
 
     .. only:: html
 
@@ -1461,6 +1473,7 @@ Just as with real-world bookmarks, you can add one at some important location in
 
     .. code-tab:: python
 
+        # in Write Class
         @staticmethod
         def find_bookmark(text_doc: XTextDocument, bm_name: str) -> XTextContent | None:
             supplier = Lo.qi(XBookmarksSupplier, text_doc, True)
@@ -1491,11 +1504,11 @@ The following code fragment from |build_doc|_ illustrates the idea:
 
         # code fragment form build doc
         # move view cursor to bookmark position
-        bookmark = Write.find_bookmark(doc, "ad-bookmark")
-        bm_range = bookmark.getAnchor()
+        bookmark = doc.find_bookmark("ad-bookmark")
+        bm_range = bookmark.get_anchor()
 
-        view_cursor = Write.get_view_cursor(doc)
-        view_cursor.gotoRange(bm_range, False)
+        view_cursor = doc.get_view_cursor()
+        view_cursor.goto_range(bm_range, False)
 
     .. only:: html
 

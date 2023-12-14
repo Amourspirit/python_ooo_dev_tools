@@ -218,9 +218,9 @@ The |build_doc|_ example adds an image shape to the document by calling :py:meth
 
         # code fragment from build doc
         # add image as shape to page
-        append("Image as a shape: ")
-        Write.add_image_shape(cursor=cursor, fnm=im_fnm)
-        Write.end_paragraph(cursor)
+        cursor.append_line("Image as a shape: ")
+        cursor.add_image_shape(fnm=im_fnm)
+        cursor.end_paragraph()
 
     .. only:: html
 
@@ -228,7 +228,7 @@ The |build_doc|_ example adds an image shape to the document by calling :py:meth
 
             .. group-tab:: None
 
-:py:meth:`.Write.add_image_shape` comes in two versions: with and without width and height arguments.
+:py:meth:`.WriteTextViewCursor.add_image_shape` invokes :py:meth:`.Write.add_image_shape`, which comes in two versions: with and without width and height arguments.
 A shape with no explicitly set width and height properties is rendered as a miniscule image (about 1 mm wide).
 Call me old-fashioned, but I want to see the graphic, so :py:meth:`.Write.add_image_shape` calculates the picture's
 dimensions if none are supplied by the user.
@@ -368,6 +368,8 @@ The page and margin dimensions are accessible through the "Standard" page style,
 
     .. code-tab:: python
 
+        # in Write class
+
         @staticmethod
         def get_page_text_width(text_doc: XTextDocument) -> int:
             props = Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
@@ -393,14 +395,18 @@ The page and margin dimensions are accessible through the "Standard" page style,
 
 :py:meth:`~.Write.get_page_text_width` returns the writing width in ``1/100 mm`` units, which is scaled, then passed to :py:meth:`.Write.add_line_divider`:
 
+.. seealso::
+
+    :ref:`ns_units`
+
 .. tabs::
 
     .. code-tab:: python
 
         # code fragment in build doc
-        text_width = Write.get_page_text_width(doc)
+        text_width = doc.get_page_text_width()
         # scale width by 0.5
-        Write.add_line_divider(cursor=cursor, line_width=round(text_width * 0.5))
+        cursor.add_line_divider(line_width=round(text_width * 0.5))
 
     .. only:: html
 
@@ -623,15 +629,16 @@ Back in |extract_graphics|_, the XGraphic_ objects are saved as PNG files, and t
 
     .. code-tab:: python
 
-        pics = Write.get_text_graphics(doc)
+        text_doc = WriteDoc(Write.open_doc(fnm=self._fnm, loader=loader))
+        pics = text_doc.get_text_graphics()
         print(f"Num. of text graphics: {len(pics)}")
 
         # save text graphics to files
         for i, pic in enumerate(pics):
-            fnm = Path(f"graphic{i + 1}.png")
-            ImagesLo.save_graphic(pic, fnm, "png")  # ".gif", "gif")
-            sz = cast(Size, Props.get_property(pic, "SizePixel"))
-            print(f"Image size in pixels: {sz.Width} x {sz.Height}")
+            img_file = self._out_dir / f"graphics{i}.png"
+            ImagesLo.save_graphic(pic=pic, fnm=img_file)
+            sz = cast(Size, Props.get(pic, "SizePixel"))
+            print(f"Image size in pixels: {sz.Width} X {sz.Height}")
         print()
 
     .. only:: html
@@ -757,8 +764,8 @@ The relevant code fragment is:
 
         # code fragment from extract_graphics.py
         # report on shapes in the doc
-        draw_page = Write.get_shapes(text_doc)
-        shapes = Draw.get_shapes(draw_page)
+        draw_page = text_doc.get_draw_page()
+        shapes = Draw.get_shapes(draw_page.component)
         if shapes:
             print()
             print(f"No. of draw shapes: {len(shapes)}")

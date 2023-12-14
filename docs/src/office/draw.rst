@@ -1,3 +1,5 @@
+.. _office_draw:
+
 Class Draw
 ==========
 
