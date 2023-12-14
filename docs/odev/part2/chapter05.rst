@@ -398,10 +398,9 @@ These iteration techniques are described next.
 ====================
 
 Since ``0.16.0``, |odev|_ provides a new way of work with documents. This is done via the ``ooodev.write`` module and sub-modules.
+Previously accessing text cursors meant getting access to various cursor interface such as XParagraphCursor_ and XWordCursor_ as seen in :numref:`ch05fig_cursor_types`
 
-In the |walk_text|_ example it uses paragraph and word cursors
-(:abbreviation:`eg:` the XParagraphCursor_ and XWordCursor_ interfaces in :numref:`ch05fig_cursor_types`).
-It also employs the view cursor, an XTextViewCursor_ instance, to control the Writer application's visible cursor.
+In the |walk_text|_ example it uses paragraph, word and view cursors via  :ref:`class_write_write_text_cursor` and :ref:`class_write_write_word_cursor` classes.
 
 .. tabs::
 
@@ -409,28 +408,44 @@ It also employs the view cursor, an XTextViewCursor_ instance, to control the Wr
 
         def main() -> int:
             parser = argparse.ArgumentParser(description="main")
+
             args_add(parser=parser)
+
+            if len(sys.argv) == 1:
+                pth = Path(__file__).parent / "data" / "cicero_dummy.odt"
+                sys.argv.append("-f")
+                sys.argv.append(str(pth))
+
             args = parser.parse_args()
 
-            with BreakContext(Lo.Loader(Lo.ConnectSocket())) as loader:
+            loader = Lo.load_office(Lo.ConnectSocket())
 
-                fnm = cast(str, args.file_path)
+            fnm = cast(str, args.file_path)
 
-                try:
-                    doc = Write.open_doc(fnm=fnm, loader=loader)
-                except Exception:
-                    print(f"Could not open '{fnm}'")
-                    # office will close and with statement is exited
-                    raise BreakContext.Break
+            try:
+                doc = WriteDoc(Write.open_doc(fnm=fnm, loader=loader))
+                doc.set_visible()
 
-                try:
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                show_paragraphs(doc)
+                print(f"Word count: {count_words(doc)}")
+                show_lines(doc)
 
-                    show_paragraphs(doc)
-                    print(f"Word count: {count_words(doc)}")
-                    show_lines(doc)
-                finally:
-                    Lo.close_doc(doc)
+                Lo.delay(1_000)
+                msg_result = MsgBox.msgbox(
+                    "Do you wish to close document?",
+                    "All done",
+                    boxtype=MessageBoxType.QUERYBOX,
+                    buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
+                )
+                if msg_result == MessageBoxResultsEnum.YES:
+                    doc.close_doc()
+                    Lo.close_office()
+                else:
+                    print("Keeping document open")
+            except Exception as e:
+                print(e)
+                Lo.close_office()
+                raise
 
             return 0
 
@@ -444,8 +459,10 @@ It also employs the view cursor, an XTextViewCursor_ instance, to control the Wr
 If you recall, the previous |extract_ex|_ example started with an XComponent_ instance by calling
 :py:meth:`.Lo.open_doc`, and then converted it to XTextDocument_. :py:meth:`.Write.open_doc` returns the XTextDocument_ reference in one go.
 
+:ref:`class_write_write_text` is a wrapper around the XTextDocument_ instance, and provides a many convenience methods for accessing the document's text and cursors:
+
 ``show_paragraphs()`` moves the visible on-screen cursor through the document, highlighting a paragraph at a time.
-This requires two cursors – an instance of XTextViewCursor_ and a separate XParagraphCursor_.
+This requires two cursors – an instance of XTextViewCursor_ and a separate XParagraphCursor_ which are accessed by calling :py:meth:`.Write.get_view_cursor`.
 The paragraph cursor is capable of moving through the document paragraph-by-paragraph, but it's a model cursor, so invisible to the user
 looking at the document on-screen. ``show_paragraphs()`` extracts the start and end positions of each paragraph and uses them to move the view cursor, which is visible.
 
@@ -455,22 +472,22 @@ The code for ``show_paragraphs()``:
 
     .. code-tab:: python
 
-        def show_paragraphs(doc: XTextDocument) -> None:
-            tvc = Write.get_view_cursor(doc)
-            para_cursor = Write.get_paragraph_cursor(doc)
-            para_cursor.gotoStart(False)  # go to start test; no selection
+        def show_paragraphs(doc: WriteDoc) -> None:
+            tvc = doc.get_view_cursor()
+            cursor = doc.get_cursor()
+            cursor.goto_start(False)  # go to start test; no selection
 
             while 1:
-                para_cursor.gotoEndOfParagraph(True)  # select all of paragraph
-                curr_para = para_cursor.getString()
+                cursor.goto_end_of_paragraph(True)  # select all of paragraph
+                curr_para = cursor.get_string()
                 if len(curr_para) > 0:
-                    tvc.gotoRange(para_cursor.getStart(), False)
-                    tvc.gotoRange(para_cursor.getEnd(), True)
+                    tvc.goto_range(cursor.component.getStart())
+                    tvc.goto_range(cursor.component.getEnd(), True)
 
                     print(f"P<{curr_para}>")
                     Lo.delay(500)  # delay half a second
 
-                if para_cursor.gotoNextParagraph(False) is False:
+                if cursor.goto_next_paragraph() is False:
                     break
 
     .. only:: html
@@ -479,22 +496,22 @@ The code for ``show_paragraphs()``:
 
             .. group-tab:: None
 
-The code utilizes two Write utility functions (:py:meth:`.Write.get_view_cursor` and :py:meth:`.Write.get_paragraph_cursor`) to create the cursors.
+The code utilizes two Write utility functions (:py:meth:`.WriteDoc.get_view_cursor` and :py:meth:`.WriteDoc.get_cursor`) to create the cursors.
 The subsequent while loop is a common coding pattern for iterating over a text document:
 
 .. tabs::
 
     .. code-tab:: python
 
-        para_cursor.gotoStart(False)  # go to start test; no selection
+        cursor.goto_start(False)  # go to start test; no selection
 
         while 1:
-            para_cursor.gotoEndOfParagraph(True)  # select one paragraph
-            curr_para = para_cursor.getString()
+            cursor.goto_end_of_paragraph(True)  # select all of paragraph
+            curr_para = cursor.get_string()
             # do something with selected text range.
 
-            if para_cursor.gotoNextParagraph(False) is False:
-                break
+            if cursor.goto_next_paragraph() is False:
+                    break
 
     .. only:: html
 
@@ -502,14 +519,14 @@ The subsequent while loop is a common coding pattern for iterating over a text d
 
             .. group-tab:: None
 
-``gotoNextParagraph()`` tries to move the cursor to the beginning of the next paragraph.
+``goto_next_paragraph()`` tries to move the cursor to the beginning of the next paragraph.
 
 If the moves fails (i.e. when the cursor has reached the end of the document), the function returns False, and the loop terminates.
 
-The call to ``gotoEndOfParagraph()`` at the beginning of the loop moves the cursor to the end of the paragraph and selects its text.
+The call to ``goto_end_of_paragraph(True)`` at the beginning of the loop moves the cursor to the end of the paragraph and selects its text.
 Since the cursor was originally at the start of the paragraph, the selection will span that paragraph.
 
-XParagraphCursor_ and the sentence and word cursors inherit XTextCursor_, as shown in :numref:`ch05fig_model_cursor_inherit`.
+The ``cursor`` object above implements method for XParagraphCursor_ and the sentence and word cursors inherit XTextCursor_, as shown in :numref:`ch05fig_model_cursor_inherit`.
 
 ..
     Figure 5
@@ -531,10 +548,11 @@ In the ``show_paragraphs()`` method above, the two ends of the paragraph are obt
 
     .. code-tab:: python
 
-        para_cursor = Write.get_paragraph_cursor(doc)
+        tvc = doc.get_view_cursor()
+        cursor = doc.get_cursor()
         ...
-            tvc.gotoRange(para_cursor.getStart(), False)
-            tvc.gotoRange(para_cursor.getEnd(), True)
+            tvc.goto_range(cursor.component.getStart())
+            tvc.goto_range(cursor.component.getEnd(), True)
 
     .. only:: html
 
@@ -542,7 +560,7 @@ In the ``show_paragraphs()`` method above, the two ends of the paragraph are obt
 
             .. group-tab:: None
 
-``gotoRange()`` sets the text range/position of the view cursor: the first call moves the cursor to the paragraph's starting position
+``goto_range()`` sets the text range/position of the view cursor: the first call moves the cursor to the paragraph's starting position
 without selecting anything, and the second moves it to the end position, selecting all the text in between.
 Since this is a view cursor, the selection is visible on-screen, as illustrated in :numref:`ch05fig_ss_sel_para`.
 
@@ -648,17 +666,17 @@ even though there's only one view cursor per document.
 
     .. code-tab:: python
 
-        def count_words(doc: XTextDocument) -> int:
-            word_cursor = Write.get_word_cursor(doc)
-            word_cursor.gotoStart(False)  # go to start of text
+        def count_words(doc: WriteDoc) -> int:
+            cursor = doc.get_cursor()
+            cursor.goto_start()  # go to start of text
 
             word_count = 0
             while 1:
-                word_cursor.gotoEndOfWord(True)
-                curr_word = word_cursor.getString()
+                cursor.goto_end_of_word()
+                curr_word = cursor.get_string()
                 if len(curr_word) > 0:
                     word_count += 1
-                if word_cursor.gotoNextWord(False) is False:
+                if cursor.goto_next_word() is False:
                     break
             return word_count
 
@@ -668,8 +686,8 @@ even though there's only one view cursor per document.
 
             .. group-tab:: None
 
-This uses the same kind of while loop as ``show_paragraphs()`` except that the XWordCursor_ methods
-``gotoEndOfWord()`` and ``gotoNextWord()`` control the iteration.
+This uses the same kind of while loop as ``show_paragraphs()`` except that the methods
+``goto_end_of_word()`` and ``goto_next_word()`` control the iteration.
 Also, there's no need for an XTextViewCursor_ instance since the selected words aren't shown on the screen.
 
 .. _ch05_display_lines:
@@ -681,14 +699,15 @@ Also, there's no need for an XTextViewCursor_ instance since the selected words 
 Don't confuse this with sentence selection because a sentence may consist of several lines on the screen.
 A sentence is part of the text's organization (:abbreviation:`eg:` in terms of words, sentences, and paragraphs)
 while a line is part of the document view (:abbreviation:`eg:` line, page, screen).
-This means that XLineCursor_ is a view cursor, which is obtained by converting XTextViewCursor_ with :py:meth:`.Lo.qi`:
+This means that XLineCursor_ is a view cursor, which is obtained by converting XTextViewCursor_ with :py:meth:`.Lo.qi`.
+:ref:`class_write_write_text_view_cursor` hides the need for this conversion by including the method for ``XLineCursor``:
 
 .. tabs::
 
     .. code-tab:: python
 
-        line_cursor = Lo.qi(XLineCursor, tvc, True)
         tvc = Write.get_view_cursor(doc)
+        line_cursor = Lo.qi(XLineCursor, tvc, True)
 
     .. only:: html
 
@@ -697,8 +716,8 @@ This means that XLineCursor_ is a view cursor, which is obtained by converting X
             .. group-tab:: None
 
 The line cursor has limited functionality compared to the model cursors (paragraph, sentence, word).
-In particular, there's no "next' function for moving to the next line (unlike ``gotoNextParagraph()`` or ``gotoNextWord()``).
-The screen cursor also lacks this ability, but the page cursor offers ``jumpToNextPage()``.
+In particular, there's no "next' function for moving to the next line (unlike ``goto_next_paragraph()`` or ``goto_next_word()``).
+The screen cursor also lacks this ability, but the page cursor offers ``jump_to_next_page()``.
 
 One way of getting around the absence of a 'next' operation is shown in ``show_lines()``:
 
@@ -706,19 +725,18 @@ One way of getting around the absence of a 'next' operation is shown in ``show_l
 
     .. code-tab:: python
 
-        def show_lines(doc: XTextDocument) -> None:
-            tvc = Write.get_view_cursor(doc)
-            tvc.gotoStart(False)  # go to start of text
+        def show_lines(doc: WriteDoc) -> None:
+            tvc = doc.get_view_cursor()
+            tvc.goto_start()  # go to start of text
 
-            line_cursor = Lo.qi(XLineCursor, tvc, True)
             have_text = True
             while have_text is True:
-                line_cursor.gotoStartOfLine(False)
-                line_cursor.gotoEndOfLine(True)
-                print(f"L<{tvc.getString()}>")
+                tvc.goto_start_of_line()
+                tvc.goto_end_of_line(True)
+                print(f"L<{tvc.get_string()}>")  # no text selection in line cursor
                 Lo.delay(500)  # delay half a second
-                tvc.collapseToEnd()
-                have_text = tvc.goRight(1, True)
+                tvc.collapse_to_end()
+                have_text = tvc.go_right(1, True)
 
     .. only:: html
 
@@ -729,11 +747,11 @@ One way of getting around the absence of a 'next' operation is shown in ``show_l
 The view cursor is manipulated using the XTextViewCursor_ object and the XLineCursor_ line cursor.
 This is possible since the two references point to the same on-screen cursor. Either one can move it around the display.
 
-Inside the loop, ``XLineCursor's`` ``gotoStartOfLine()`` and ``gotoEndOfLine()`` highlight a single line.
-Then the XTextViewCursor_ instance deselects the line, by moving the cursor to the end of the selection with ``collapseToEnd()``.
-At the end of the loop, ``goRight()`` tries to move the cursor one character to the right.
-If ``goRight()`` succeeds then the cursor is shifted one position to the first character of the next line. When the loop repeats, this line will be selected.
-If ``goRight()`` fails, then there are no more characters to be read from the document, and the loop finishes.
+Inside the loop, :ref:`class_write_write_text_view_cursor` ``goto_start_of_line()`` and ``goto_end_of_line()`` highlight a single line.
+Then the XTextViewCursor_ instance is invoked and deselects the line, by moving the cursor to the end of the selection with ``collapse_to_end()``.
+At the end of the loop, ``go_right()`` tries to move the cursor one character to the right.
+If ``go_right()`` succeeds then the cursor is shifted one position to the first character of the next line. When the loop repeats, this line will be selected.
+If ``go_right()`` fails, then there are no more characters to be read from the document, and the loop finishes.
 
 .. _ch05_create_doc:
 
@@ -750,22 +768,24 @@ The main() function is:
     .. code-tab:: python
 
         def main() -> int:
-
             with Lo.Loader(Lo.ConnectSocket()) as loader:
+                doc = WriteDoc(Write.create_doc(loader))
 
-                doc = Write.create_doc(loader)
+                doc.set_visible()
+                Lo.delay(300)  # small delay before dispatching zoom command
+                doc.zoom(ZoomKind.PAGE_WIDTH)
 
-                GUI.set_visible(is_visible=True, odoc=doc)
-
-                cursor = Write.get_cursor(doc)
-                cursor.gotoEnd(False)  # make sure at end of doc before appending
-                Write.append_para(cursor=cursor, text="Hello LibreOffice.\n")
+                cursor = doc.get_cursor()
+                cursor.goto_end()  # make sure at end of doc before appending
+                cursor.append_para(text="Hello LibreOffice.\n")
                 Lo.delay(1_000)  # Slow things down so user can see
 
-                Write.append_para(cursor=cursor, text="How are you?")
+                cursor.append_para(text="How are you?")
                 Lo.delay(2_000)
-                Write.save_doc(text_doc=doc, fnm="hello.odt")
-                Lo.close_doc(doc)
+                tmp = Path.cwd() / "tmp"
+                tmp.mkdir(exist_ok=True, parents=True)
+                doc.save_doc(fnm=tmp / "hello.odt")
+                doc.close_doc()
 
             return 0
 
@@ -777,6 +797,8 @@ The main() function is:
 
 :py:meth:`.Write.create_doc` calls :py:meth:`.Lo.create_doc` with the text document service name (the ``Lo.DocTypeStr.WRITER`` enum value is ``swriter``).
 Office creates a TextDocument_ service with an XComponent_ interface, which is cast to the XTextDocument_ interface, and returned:
+
+The ``XTextDocument`` instance is passed to :py:class:`~ooodev.write.WriteDoc` which is a wrapper around the document, and provides many convenience methods for accessing the document's text and cursors:
 
 .. tabs::
 
@@ -798,17 +820,17 @@ Office creates a TextDocument_ service with an XComponent_ interface, which is c
 
             .. group-tab:: None
 
-Text documents are saved using :py:meth:`.Write.save_doc` that calls :py:meth:`.Lo.save_doc` which was described in :ref:`ch02_save_doc`.
+Text documents are saved using :py:meth:`.WriteDoc.save_doc` that calls :py:meth:`.Lo.save_doc` which was described in :ref:`ch02_save_doc`.
 ``save_doc()`` examines the filename's extension to determine its type.
 The known extensions include ``doc``, ``docx``, ``rtf``, ``odt``, ``pdf``, and ``txt``.
 
-Back in |hello_save|_, a cursor is needed before text can be added; one is created by calling :py:meth:`.Write.get_cursor`.
+Back in |hello_save|_, a cursor is needed before text can be added; one is created by calling ``doc.get_cursor()``.
 
-The call to ``XTextCursor.gotoEnd()`` isn't really necessary because the new cursor is pointing to an empty document so is already at its end.
-It's included to emphasize the assumption by :py:meth:`.Write.append_para` (and other ``Write.appendXXX()`` functions) that the cursor is
+The call to ``cursor.goto_end()`` isn't really necessary because the new cursor is pointing to an empty document so is already at its end.
+It's included to emphasize the assumption by ``cursor.append_para()`` (and other ``cursor.appendXXX()`` functions) that the cursor is
 positioned at the end of the document before new text is added.
 
-:py:meth:`.Write.append_para` calls :py:meth:`.Write.append` methods:
+ ``cursor.append_para()`` calls :py:meth:`.Write.append` methods:
 
 .. tabs::
 
@@ -826,7 +848,7 @@ positioned at the end of the document before new text is added.
 
             .. group-tab:: None
 
-The :py:meth:`~.Write.append` name is utilized several times in Write via it overloads:
+The :py:meth:`~.Write.append` name is utilized several times in ``Write`` via it overloads:
 
     - ``append(cursor: XTextCursor, text: str)``
     - ``append(cursor: XTextCursor, ctl_char: ControlCharacter)``
@@ -844,6 +866,8 @@ that is a sub-class of XTextContent_
 Thanks to ooouno_ library that among other things automatically creates enums for LibreOffice Constants.
 
 ``Write.ControlCharacter`` is an alias for convenience.
+
+The various cursor of the ``ooodev.write`` module also have ``appendXXX()`` methods but the methods to no require a ``XTextCursor`` argument.
 
 .. tabs::
 
@@ -1039,48 +1063,50 @@ The |shuffle_words|_ example searches a document and changes the words it encoun
 A word shuffle is applied to every word of four letters or more, but only involves the random exchange of the middle letters without changing the first and last characters.
 
 The ``apply_shuffle()`` function which iterates through the words in the input file is similar to ``count_words()`` in |walk_text|_.
-One difference is the use of ``XText.insertString()``:
+One difference is the use of ``XText.insertString()`` by calling ``doc_text.insert_string()``:
 
 .. tabs::
 
     .. code-tab:: python
 
-        def apply_shuffle(doc: XTextDocument, delay: int, visible: bool) -> None:
-            doc_text = doc.getText()
-            if visible:
-                cursor = Write.get_view_cursor(doc)
-            else:
-                cursor = Write.get_cursor(doc)
+    def apply_shuffle(doc: WriteDoc, delay: int, visible: bool) -> None:
+        doc_text = doc.get_text()
+        if visible:
+            cursor = doc.get_view_cursor()
+        else:
+            cursor = doc.get_cursor()
 
-            word_cursor = Write.get_word_cursor(doc)
-            word_cursor.gotoStart(False)  # go to start of text
+        word_cursor = doc.get_cursor()
+        word_cursor.goto_start()  # go to start of text
 
-            while True:
-                word_cursor.gotoNextWord(True)
+        while True:
+            word_cursor.goto_next_word(True)
 
-                # move the text view cursor, and highlight the current word
-                cursor.gotoRange(word_cursor.getStart(), False)
-                cursor.gotoRange(word_cursor.getEnd(), True)
-                curr_word = word_cursor.getString()
+            # move the text view cursor, and highlight the current word
+            cursor.goto_range(word_cursor.component.getStart())
+            cursor.goto_range(word_cursor.component.getEnd(), True)
+            curr_word = word_cursor.get_string()
 
-                # get whitespace padding amounts
-                c_len = len(curr_word)
-                curr_word = curr_word.lstrip()
-                l_pad = c_len - len(curr_word)  # left whitespace padding amount
-                curr_word = curr_word.rstrip()
-                r_pad = c_len - len(curr_word) - l_pad  # right whitespace padding ammount
-                if len(curr_word) > 0:
-                    pad_l = " " * l_pad  # recreate left padding
-                    pad_r = " " * r_pad  # recreate right padding
-                    Lo.delay(delay)
-                    mid_shuff = mid_shuffle(curr_word)
-                    doc_text.insertString(word_cursor, f"{pad_l}{mid_shuff}{pad_r}", True)
+            # get whitespace padding amounts
+            c_len = len(curr_word)
+            curr_word = curr_word.lstrip()
+            l_pad = c_len - len(curr_word)  # left whitespace padding amount
+            curr_word = curr_word.rstrip()
+            r_pad = c_len - len(curr_word) - l_pad  # right whitespace padding amount
+            if len(curr_word) > 0:
+                pad_l = " " * l_pad  # recreate left padding
+                pad_r = " " * r_pad  # recreate right padding
+                Lo.delay(delay)
+                mid_shuffle = do_mid_shuffle(curr_word)
+                doc_text.insert_string(
+                    word_cursor.component, f"{pad_l}{mid_shuffle}{pad_r}", True
+                )
 
-                if word_cursor.gotoNextWord(False) is False:
-                    break
+            if word_cursor.goto_next_word() is False:
+                break
 
-            word_cursor.gotoStart(False)  # go to start of text
-            cursor.gotoStart(False)
+        word_cursor.goto_start()  # go to start of text
+        cursor.goto_start()
 
     .. only:: html
 
@@ -1088,7 +1114,7 @@ One difference is the use of ``XText.insertString()``:
 
             .. group-tab:: None
 
-``insertString()`` is located in XSimpleText_:
+``insertString()`` is located in XSimpleText_ and is invoked when ``doc_text.insert_string()`` is called.
 
 .. tabs::
 
