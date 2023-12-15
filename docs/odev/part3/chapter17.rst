@@ -151,13 +151,15 @@ The ``main()`` function of |p_builder_py|_ starts by printing the names of all t
                     tmpl_name = "Inspiration.otp"  # "Piano.otp"
                     template_fnm = Path(Draw.get_slide_template_path(), tmpl_name)
                     _ = FileIO.is_exist_file(template_fnm, True)
-                    doc = Lo.create_doc_from_template(template_path=template_fnm, loader=loader)
+                    doc = ImpressDoc(
+                        Lo.create_doc_from_template(template_path=template_fnm, loader=loader)
+                    )
 
                     self._read_points(doc)
 
-                    print(f"Total no. of slides: {Draw.get_slides_count(doc)}")
+                    print(f"Total no. of slides: {doc.get_slides_count()}")
 
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                    doc.set_visible()
                     Lo.delay(2000)
 
                     msg_result = MsgBox.msgbox(
@@ -167,7 +169,7 @@ The ``main()`` function of |p_builder_py|_ starts by printing the names of all t
                         buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                     )
                     if msg_result == MessageBoxResultsEnum.YES:
-                        Lo.close_doc(doc=doc, deliver_ownership=True)
+                        doc.close_doc()
                         Lo.close_office()
                     else:
                         print("Keeping document open")
@@ -200,10 +202,10 @@ It also calls :py:meth:`.Draw.get_slide_template_path` to retrieve the default s
             for dir in template_dirs:
                 print(f"  {dir}")
 
-            temmplate_dir = Draw.get_slide_template_path()
+            template_dir = Draw.get_slide_template_path()
             print()
-            print(f'Templates files in "{temmplate_dir}"')
-            template_fnms = FileIO.get_file_paths(temmplate_dir)
+            print(f'Templates files in "{template_dir}"')
+            template_fnms = FileIO.get_file_paths(template_dir)
             for fnm in template_fnms:
                 print(f"  {fnm}")
 
@@ -259,7 +261,9 @@ It also calls :py:meth:`.Draw.get_slide_template_path` to retrieve the default s
         tmpl_name = "Inspiration.otp"  # "Piano.otp"
         template_fnm = Path(Draw.get_slide_template_path(), tmpl_name)
         _ = FileIO.is_exist_file(template_fnm, True)
-        doc = Lo.create_doc_from_template(template_path=template_fnm, loader=loader)
+        doc = ImpressDoc(
+            Lo.create_doc_from_template(template_path=template_fnm, loader=loader)
+        )
 
     .. only:: html
 
@@ -309,16 +313,19 @@ It ignores blank lines and lines starting with "//", and examines the first char
     .. code-tab:: python
 
         # in points_builder.py
-        def _read_points(self, doc: XComponent) -> None:
-            curr_slide = Draw.get_slide(doc=doc, idx=0)
-            Draw.title_slide(
-                slide=curr_slide, title="Python-Generated Slides", sub_title="Using LibreOffice"
+        def _read_points(self, doc: ImpressDoc) -> None:
+            curr_slide = doc.get_slide(idx=0)
+            curr_slide.title_slide(
+                title="Python-Generated Slides",
+                sub_title="Using LibreOffice",
             )
             try:
 
-                def process_bullet(line: str, xbody: XText) -> None:
+                def process_bullet(
+                    line: str, draw_text: DrawText[ImpressDoc] | None
+                ) -> None:
                     # count the number of '>'s to determine the bullet level
-                    if xbody is None:
+                    if draw_text is None:
                         print(f"No slide body for {line}")
                         return
 
@@ -329,9 +336,10 @@ It ignores blank lines and lines starting with "//", and examines the first char
                         pos += 1
                         ch = s_lst[pos]
                     sub_str = "".join(s_lst[pos:]).strip()
-                    Draw.add_bullet(bulls_txt=xbody, level=pos - 1, text=sub_str)
 
-                body: XText = None
+                    draw_text.add_bullet(level=pos - 1, text=sub_str)
+
+                body: DrawText[ImpressDoc] | None = None
                 with open(self._points_fnm, "r") as file:
                     # remove empty lines
                     data = (row for row in file if row.strip())
@@ -343,10 +351,10 @@ It ignores blank lines and lines starting with "//", and examines the first char
                     for row in data:
                         ch = row[:1]
                         if ch == ">":
-                            process_bullet(line=row, xbody=body)
+                            process_bullet(line=row, draw_text=body)
                         else:
-                            curr_slide = Draw.add_slide(doc)
-                            body = Draw.bullets_slide(slide=curr_slide, title=row.strip())
+                            curr_slide = doc.add_slide()
+                            body = curr_slide.bullets_slide(title=row.strip())
                 print(f"Read in point file: {self._points_fnm.name}")
             except Exception as e:
                 print(f"Error reading points file: {self._points_fnm}")
@@ -359,7 +367,7 @@ It ignores blank lines and lines starting with "//", and examines the first char
             .. group-tab:: None
 
 If the line starts with a ``>``, then ``process_bullet()`` is called to determine how many ``>``'s start the line.
-Depending on the number, :py:meth:`.Draw.add_bullet` is called with a different bullet indentation level value.
+Depending on the number, ``draw_text.add_bullet()`` is called with a different bullet indentation level value.
 If the line doesn't start with a ``>``, then it's assumed to be the title line of a new slide, and :py:meth:`.Draw.add_slide` and :py:meth:`.Draw.bullets_slide` create a new bullets-based slide.
 
 .. _ch17_master_pg:
@@ -421,66 +429,83 @@ The ``main()`` method for |m_use_py|_ is:
             def main(self) -> None:
                 loader = Lo.load_office(Lo.ConnectPipe())
                 try:
-                    doc = Draw.create_impress_doc(loader)
+                    doc = ImpressDoc(Draw.create_impress_doc(loader))
 
                     # report on the shapes on the default master page
-                    master_page = Draw.get_master_page(doc=doc, idx=0)
+                    master_page = doc.get_master_page(idx=0)
                     print("Default Master Page")
-                    Draw.show_shapes_info(master_page)
+                    Draw.show_shapes_info(master_page.component)
 
                     # set the master page's footer text
-                    Draw.set_master_footer(master=master_page, text="Master Use Slides")
+                    master_page.set_master_footer(text="Master Use Slides")
 
                     # add a rectangle and text to the default master page
                     # at the top-left of the slide
-                    sz = Draw.get_slide_size(master_page)
-                    _ = Draw.draw_rectangle(
-                        slide=master_page, x=5, y=7, width=round(sz.Width / 6), height=round(sz.Height / 6)
+                    sz = master_page.get_size_mm()
+                    _ = master_page.draw_rectangle(
+                        x=5,
+                        y=7,
+                        width=round(sz.Width / 6),
+                        height=round(sz.Height / 6),
                     )
-                    _ = Draw.draw_text(
-                        slide=master_page, msg="Default Master Page",
-                        x=10, y=15, width=100, height=10, font_size=24
+                    _ = master_page.draw_text(
+                        msg="Default Master Page",
+                        x=10,
+                        y=15,
+                        width=100,
+                        height=10,
+                        font_size=24,
                     )
 
                     # set slide 1 to use the master page's slide number
                     # but its own footer text
-                    slide1 = Draw.get_slide(doc=doc, idx=0)
-                    Draw.title_slide(slide=slide1, title="Slide 1")
+                    slide1 = doc.get_slide(idx=0)
+                    slide1.title_slide(title="Slide 1")
 
                     # IsPageNumberVisible = True: use the master page's slide number
-                    # change the master page's footer for first slide;
-                    # does not work if the master already has a footer
-                    Props.set(
-                        slide1, IsPageNumberVisible=True, IsFooterVisible=True, FooterText="MU Slides"
+                    # change the master page's footer for first slide; does not work if the master already has a footer
+                    slide1.set_property(
+                        IsPageNumberVisible=True,
+                        IsFooterVisible=True,
+                        FooterText="MU Slides",
                     )
 
                     # add three more slides, which use the master page's
                     # slide number and footer
                     for i in range(1, 4):  # 1, 2, 3
-                        slide = Draw.insert_slide(doc=doc, idx=i)
-                        _ = Draw.bullets_slide(slide=slide, title=f"Slide {i}")
-                        Props.set(slide, IsPageNumberVisible=True, IsFooterVisible=True)
+                        slide = doc.insert_slide(idx=i)
+                        _ = slide.bullets_slide(title=f"Slide {i}")
+                        slide.set_property(IsPageNumberVisible=True, IsFooterVisible=True)
 
                     # create master page 2
-                    master2 = Draw.insert_master_page(doc=doc, idx=1)
-                    _ = Draw.add_slide_number(master2)
+                    master2 = doc.insert_master_page(idx=1)
+                    _ = master2.add_slide_number()
 
                     print("Master Page 2")
-                    Draw.show_shapes_info(master2)
+                    Draw.show_shapes_info(master2.component)
 
                     # link master page 2 to third slide
-                    Draw.set_master_page(slide=Draw.get_slide(doc=doc, idx=2), page=master2)
+
+                    doc.get_slide(idx=2).set_master_page(master2.component)
 
                     # put ellipse and text on master page 2
-                    ellipse = Draw.draw_ellipse(
-                        slide=master2, x=5, y=7, width=round(sz.Width / 6), height=round(sz.Height / 6)
+                    ellipse = master2.draw_ellipse(
+                        x=5,
+                        y=7,
+                        width=round(sz.Width / 6),
+                        height=round(sz.Height / 6),
                     )
-                    Props.set(ellipse, FillColor=CommonColor.GREEN_YELLOW)
-                    _ = Draw.draw_text(
-                        slide=master2, msg="Master Page 2", x=10, y=15, width=100, height=10, font_size=24
+                    ellipse.component.FillColor = CommonColor.GREEN_YELLOW
+                    _ = master2.draw_text(
+                        msg="Master Page 2",
+                        x=10,
+                        y=15,
+                        width=100,
+                        height=10,
+                        font_size=24,
                     )
 
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                    doc.set_visible()
 
                     Lo.delay(2_000)
 
@@ -491,7 +516,7 @@ The ``main()`` method for |m_use_py|_ is:
                         buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                     )
                     if msg_result == MessageBoxResultsEnum.YES:
-                        Lo.close_doc(doc=doc, deliver_ownership=True)
+                        doc.close_doc()
                         Lo.close_office()
                     else:
                         print("Keeping document open")
@@ -516,8 +541,23 @@ A presentation (or drawing) document can access its master pages through the XMa
 .. tabs::
 
     .. code-tab:: python
+        # doc is an XComponent
+        mp_supp = Lo.qi(XMasterPagesSupplier, doc, True)
+        pgs = mp_supp.getMasterPages()  # XDrawPages
 
-        mp_supp = Lo.qi(XMasterPagesSupplier, doc)
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Or for :ref:`class_draw_impress_doc`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        mp_supp = doc.qi(XMasterPagesSupplier, True)
         pgs = mp_supp.getMasterPages()  # XDrawPages
 
     .. only:: html
@@ -598,9 +638,9 @@ The default master page was shown in :numref:`ch17fig_default_master_page`, and 
     .. code-tab:: python
 
         # in main() of master_use.py
-        master_page = Draw.get_master_page(doc=doc, idx=0)
+        master_page = doc.get_master_page(idx=0)
         print("Default Master Page")
-        Draw.show_shapes_info(master_page)
+        Draw.show_shapes_info(master_page.component)
 
     .. only:: html
 
@@ -661,16 +701,24 @@ and places a blue rectangle and some text in the top-left corner of the master:
 
         # in main of master_use.py
         # set the master page's footer text
-        Draw.set_master_footer(master=master_page, text="Master Use Slides")
+        master_page.set_master_footer(text="Master Use Slides")
 
         # add a rectangle and text to the default master page
         # at the top-left of the slide
-        sz = Draw.get_slide_size(master_page)
-        _ = Draw.draw_rectangle(
-            slide=master_page, x=5, y=7, width=round(sz.Width / 6), height=round(sz.Height / 6)
+        sz = master_page.get_size_mm()
+        _ = master_page.draw_rectangle(
+            x=5,
+            y=7,
+            width=round(sz.Width / 6),
+            height=round(sz.Height / 6),
         )
-        _ = Draw.draw_text(
-            slide=master_page, msg="Default Master Page", x=10, y=15, width=100, height=10, font_size=24
+        _ = master_page.draw_text(
+            msg="Default Master Page",
+            x=10,
+            y=15,
+            width=100,
+            height=10,
+            font_size=24,
         )
 
     .. only:: html
@@ -712,16 +760,25 @@ An ellipse and some text are added to it in the same way as for the default mast
     .. code-tab:: python
 
         # in main of master_use.py
-        master2 = Draw.insert_master_page(doc=doc, idx=1)
-        _ = Draw.add_slide_number(master2)
+        master2 = doc.insert_master_page(idx=1)
+        _ = master2.add_slide_number()
 
         # put ellipse and text on master page 2
-        ellipse = Draw.draw_ellipse(
-            slide=master2, x=5, y=7, width=round(sz.Width / 6), height=round(sz.Height / 6)
+        ellipse = master2.draw_ellipse(
+            x=5,
+            y=7,
+            width=round(sz.Width / 6),
+            height=round(sz.Height / 6),
         )
-        Props.set(ellipse, FillColor=CommonColor.GREEN_YELLOW)
-        _ = Draw.draw_text(
-            slide=master2, msg="Master Page 2", x=10, y=15, width=100, height=10, font_size=24
+        ellipse.component.FillColor = CommonColor.GREEN_YELLOW
+
+        _ = master2.draw_text(
+            msg="Master Page 2",
+            x=10,
+            y=15,
+            width=100,
+            height=10,
+            font_size=24,
         )
 
     .. only:: html
@@ -730,13 +787,13 @@ An ellipse and some text are added to it in the same way as for the default mast
 
             .. group-tab:: None
 
-Unlike the default master page, a number shape must be explicitly added to the second master, by calling :py:meth:`.Draw.add_slide_number`:
+Unlike the default master page, a number shape must be explicitly added to the second master, by calling ``master2.add_slide_number()`` which invokes :py:meth:`.Draw.add_slide_number`:
 
 .. tabs::
 
     .. code-tab:: python
 
-        _ = Draw.add_slide_number(master2)
+        _ = master2.add_slide_number()
 
     .. only:: html
 
@@ -816,11 +873,15 @@ For example, the footer and page number are drawn on a slide like so:
     .. code-tab:: python
 
         # in main of master_use.py
-        slide1 = Draw.get_slide(doc=doc, idx=0)
+        slide1 = doc.get_slide(idx=0)
         
         # ... 
 
-        Props.set(slide1, IsPageNumberVisible=True, IsFooterVisible=True, FooterText="MU Slides")
+        slide1.set_property(
+            IsPageNumberVisible=True,
+            IsFooterVisible=True,
+            FooterText="MU Slides",
+        )
 
     .. only:: html
 
@@ -843,7 +904,7 @@ A slide can be linked to a different master by calling :py:meth:`.Draw.set_maste
 
         # in main of master_use.py
         # link master page 2 to third slide
-        Draw.set_master_page(slide=Draw.get_slide(doc=doc, idx=2), page=master2)
+        doc.get_slide(idx=2).set_master_page(master2.component)
 
     .. only:: html
 
@@ -899,29 +960,33 @@ It finishes by saving the modified deck to a new file:
                 loader = Lo.load_office(Lo.ConnectPipe())
 
                 try:
-                    doc = Lo.open_doc(self._fnm, loader)
+                    doc_component = Lo.open_doc(self._fnm, loader)
 
                     # slideshow start() crashes if the doc is not visible
-                    GUI.set_visible(is_visible=True, odoc=doc)
 
-                    if not Info.is_doc_type(obj=doc, doc_type=Lo.Service.IMPRESS):
+                    if not Info.is_doc_type(obj=doc_component, doc_type=Lo.Service.IMPRESS):
                         print("-- Not a slides presentation")
                         Lo.close_office()
                         return
 
-                    slides = Draw.get_slides(doc)
-                    num_slides = slides.getCount()
+                    doc = ImpressDoc(doc_component)
+                    doc.set_visible()
+
+                    slides = doc.get_slides()
+                    num_slides = slides.get_count()
                     print(f"No. of slides: {num_slides}")
 
                     # add a title-only slide with a graphic at the end
-                    last_page = slides.insertNewByIndex(num_slides)
-                    Draw.title_only_slide(slide=last_page, header="Any Questions?")
-                    Draw.draw_image(slide=last_page, fnm=self._im_fnm)
+                    last_page = ImpressPage(
+                        owner=doc, component=slides.insert_new_by_index(num_slides)
+                    )
+                    last_page.title_only_slide(header="Any Questions?")
+                    last_page.draw_image(fnm=self._im_fnm)
 
                     # add a title/subtitle slide at the start
-                    first_page = slides.insertNewByIndex(0)
-                    Draw.title_slide(
-                        slide=first_page, title="Interesting Slides", sub_title="Brought to you by ODEV"
+                    first_page = ImpressPage(owner=doc, component=slides.insert_new_by_index(0))
+                    first_page.title_slide(
+                        title="Interesting Slides", sub_title="Brought to you by OooDev"
                     )
 
                     Lo.delay(2000)
@@ -932,7 +997,7 @@ It finishes by saving the modified deck to a new file:
                         buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                     )
                     if msg_result == MessageBoxResultsEnum.YES:
-                        Lo.close_doc(doc=doc, deliver_ownership=True)
+                        doc.close_doc()
                         Lo.close_office()
                     else:
                         print("Keeping document open")
@@ -964,7 +1029,25 @@ If you did want to do this, the code would be something like:
 
     .. code-tab:: python
 
-        dup = Lo.qi(XDrawPageDuplicator, doc)
+        # doc is an XComponent
+        dup = Lo.qi(XDrawPageDuplicator, doc, True)
+        dup_slide = dup.duplicate(slide)  # XDrawPage
+            # dup_slide is located after original slide in the deck
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Or for :ref:`class_draw_impress_doc`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # doc is ImpressDoc instance
+        dup = doc.qi(XDrawPageDuplicator, True)
         dup_slide = dup.duplicate(slide)  # XDrawPage
             # dup_slide is located after original slide in the deck
 
@@ -1006,20 +1089,20 @@ The ``main()`` method of |copy_slide_py|_:
             loader = Lo.load_office(Lo.ConnectPipe())
 
             try:
-                doc = Lo.open_doc(fnm=self._fnm, loader=loader)
-                num_slides = Draw.get_slides_count(doc)
+                doc = ImpressDoc(Lo.open_doc(fnm=self._fnm, loader=loader))
+                num_slides = doc.get_slides_count()
                 if self._from_idx >= num_slides or self._to_idx >= num_slides:
                     Lo.close_office()
-                    raise IndexError("One or both indicies are out of range")
+                    raise IndexError("One or both indices are out of range")
 
-                GUI.set_visible(is_visible=True, odoc=doc)
+                doc.set_visible()
 
                 self._copy_to(doc=doc)
 
-                # Draw.delete_slide(doc=doc, idx=self._from_idx)
+                # doc.delete_slide(idx=self._from_idx)
                 # a problem if the copying changes the indices
 
-                # Lo.save(doc) # overwrites original
+                # Lo.save(doc.component) # overwrites original
 
                 Lo.delay(2000)
                 msg_result = MsgBox.msgbox(
@@ -1029,7 +1112,7 @@ The ``main()`` method of |copy_slide_py|_:
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
@@ -1095,11 +1178,9 @@ The ``_copy_to()`` function in |copy_slide_py|_:
     .. code-tab:: python
 
         # in copy_slide.py
-        def _copy_to(self, doc: XComponent) -> None:
+        def _copy_to(self, doc: ImpressDoc) -> None:
             # Copy fromIdx slide to the clipboard in slide-sorter mode,
             # then paste it to after the toIdx slide.
-
-            ctrl = GUI.get_current_controller(doc)
 
             # Switch to slide sorter view so that slides can be pasted
             Lo.delay(1000)
@@ -1108,15 +1189,14 @@ The ``_copy_to()`` function in |copy_slide_py|_:
             # give Office a few seconds of time to do it
             Lo.delay(3000)
 
-            from_slide = Draw.get_slide(doc, self._from_idx)
-            to_slide = Draw.get_slide(doc, self._to_idx)
-
-            Draw.goto_page(ctrl, from_slide)
+            from_slide = doc.get_slide(idx=self._from_idx)
+            to_slide = doc.get_slide(idx=self._to_idx)
+            doc.goto_page(from_slide.component)
             Lo.dispatch_cmd(cmd=GlobalEditDispatch.COPY)
             Lo.delay(500)
             print(f"Copied {self._from_idx}")
 
-            Draw.goto_page(ctrl, to_slide)
+            doc.goto_page(to_slide.component)
             Lo.delay(500)
             Lo.dispatch_cmd(GlobalEditDispatch.PASTE)
             Lo.delay(500)
@@ -1144,26 +1224,55 @@ The first call ensures that the source slide is the visible, active window befor
 The second :py:meth:`.Draw.goto_page` call makes sure the destination slide is now visible.
 This means that ``Paste`` will insert the copied slide after the destination slide, as required.
 
-Normally the call is :py:meth:`.Draw.goto_page` with a document argument (:abbreviation:`e.g.` ``Draw.goto_page(doc, from_slide)``).
-This does not work correctly for the pasting of the slide, for reasons unknown.
-The solution is to use a reference to the document's controller, as shown in ``_copy_to()``:
+If for any reason the above ``_copy()`` method is not working correctly try the following alternative:
+
 
 .. tabs::
 
     .. code-tab:: python
 
-        # in _copy_to()
-        ctrl = GUI.get_current_controller(doc)
-        # ...
-        Draw.goto_page(ctrl, from_slide)
-        # ...
-        Draw.goto_page(ctrl, to_slide)
+        from ooodev.utils.gui import GUI
+        from ooodev.draw import Draw
+
+        def _copy_to(self, doc: ImpressDoc) -> None:
+            # Copy fromIdx slide to the clipboard in slide-sorter mode,
+            # then paste it to after the toIdx slide.
+
+            ctl = GUI.get_current_controller(doc.component)
+            # Switch to slide sorter view so that slides can be pasted
+            Lo.delay(1000)
+            Lo.dispatch_cmd(cmd=DrawViewDispatch.DIA_MODE)
+
+            # give Office a few seconds of time to do it
+            Lo.delay(3000)
+
+            from_slide = doc.get_slide(idx=self._from_idx)
+            to_slide = doc.get_slide(idx=self._to_idx)
+
+            Draw.goto_page(ctl=ctl, page=from_slide.component)
+            Lo.dispatch_cmd(cmd=GlobalEditDispatch.COPY)
+            Lo.delay(500)
+            print(f"Copied {self._from_idx}")
+
+            Draw.goto_page(ctl=ctl, page=to_slide.component)
+            Lo.delay(500)
+            Lo.dispatch_cmd(GlobalEditDispatch.PASTE)
+            Lo.delay(500)
+            print(f"Paste to after {self._to_idx}")
+
+            # Lo.dispatchCmd("PageMode");  // back to normal mode (not working)
+            Lo.dispatch_cmd(cmd=DrawDrawingDispatch.DRAWING_MODE)
+            Lo.delay(500)
 
     .. only:: html
 
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+Normally the call is :py:meth:`.Draw.goto_page` with a document argument (:abbreviation:`e.g.` ``Draw.goto_page(doc, from_slide)``).
+In some cases does not work correctly for the pasting of the slide, for reasons unknown.
+The solution is to use a reference to the document's controller, as shown in the above ``_copy_to()`` method:
 
 .. _ch17_deck_append:
 
