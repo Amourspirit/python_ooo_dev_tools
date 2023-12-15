@@ -27,7 +27,7 @@ Many new classes which make working with Writer documents much easier.
 Version 0.15.1
 ==============
 
-Entended ``ooodev.calc`` classes with new methods
+Extended ``ooodev.calc`` classes with new methods
 
 Version 0.15.0
 ==============
