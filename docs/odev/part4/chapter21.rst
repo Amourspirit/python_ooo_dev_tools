@@ -47,21 +47,23 @@ Numerical data is stored in the cell range ``A2:D7`` and the rest of the values 
         # from extract_nums.py
         from __future__ import annotations
         from typing import cast
-
         import uno
         from com.sun.star.sheet import XCellRangesQuery
+        from ooo.dyn.sheet.cell_flags import CellFlags
 
         from ooodev.dialog.msgbox import (
-            MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
+            MsgBox,
+            MessageBoxType,
+            MessageBoxButtonsEnum,
+            MessageBoxResultsEnum,
         )
-        from ooodev.office.calc import Calc
+        from ooodev.calc import Calc
+        from ooodev.calc import CalcDoc
         from ooodev.formatters.formatter_table import FormatterTable, FormatTableItem
         from ooodev.utils.file_io import FileIO
-        from ooodev.utils.gui import GUI
         from ooodev.utils.lo import Lo
         from ooodev.utils.type_var import PathOrStr, Row, Column
 
-        from ooo.dyn.sheet.cell_flags import CellFlags
 
 
         class ExtractNums:
@@ -73,76 +75,83 @@ Numerical data is stored in the cell range ``A2:D7`` and the rest of the values 
                 loader = Lo.load_office(Lo.ConnectSocket())
 
                 try:
-                    doc = Calc.open_doc(fnm=self._fnm, loader=loader)
+                    doc = CalcDoc(Calc.open_doc(fnm=self._fnm, loader=loader))
 
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                    doc.set_visible()
 
-                    sheet = Calc.get_sheet(doc=doc, index=0)
+                    sheet = doc.get_active_sheet()
 
                     # basic data extraction
                     # this code assumes the input file is "small totals.ods"
                     print()
-                    # get string value
-                    print(f'A1 string: {Calc.get_val(sheet=sheet, cell_name="A1")}')
+                    print(f'A1 string: {sheet.get_val(cell_name="A1")}')  # string
 
                     cell_name = "A2"
-                    cell = Calc.get_cell(sheet=sheet, cell_name=cell_name)
-                    print(f"{cell_name} type: {Calc.get_type_string(cell)}")
-                    # get float value
-                    print(f"{cell_name} value: {Calc.get_num(sheet=sheet, cell_name=cell_name)}")
+                    cell = sheet.get_cell(cell_name=cell_name)
+                    print(f"{cell_name} type: {cell.get_type_string()}")
+                    print(f"{cell_name} value: {sheet.get_num(cell_name=cell_name)}")  # float
 
                     cell_name = "E2"
-                    cell = Calc.get_cell(sheet=sheet, cell_name=cell_name)
-                    print(f"{cell_name} type: {Calc.get_type_string(cell)}")
-                    # get formula string
-                    print(f"{cell_name} value: {Calc.get_val(sheet=sheet, cell_name=cell_name)}")
+                    cell = sheet.get_cell(cell_name=cell_name)
+                    print(f"{cell_name} type: {cell.get_type_string()}")
+                    print(f"{cell_name} value: {cell.get_val()}")  # formula string
 
-                    data = Calc.get_array(sheet=sheet, range_name="A1:E10")
+                    rng = sheet.get_range(range_name="A1:E10")
+                    data = rng.get_array()
                     # apply formatting entire table except for first and last rows.
+                    start_idx = Calc.get_row_used_first_index(sheet.component)
+                    end_idx = Calc.get_row_used_last_index(sheet.component)
                     # format as float with two decimal places.
-                    fl = FormatterTable(format=(".2f", ">9"), idxs=(0, 9))
+                    fl = FormatterTable(format=(".2f", ">9"), idxs=(start_idx, end_idx))
 
                     # add a custom row item formatter for first and last row only and pad items 9 spaces.
-                    fl.row_formats.append(FormatTableItem(format=">9", idxs_inc=(0, 9)))
+                    fl.row_formats.append(
+                        FormatTableItem(format=">9", idxs_inc=(start_idx, end_idx))
+                    )
 
-                    # add a custom columm formatter that formats the first column as integer values
-                    and move center in the column
+                    # add a custom column formatter that formats the first column as integer values and move center in the column
                     fl.col_formats.append(
-                        FormatTableItem(format=(".0f", "^9"), idxs_inc=(0,), row_idxs_exc=(0, 9))
+                        FormatTableItem(
+                            format=(".0f", "^9"),
+                            idxs_inc=(start_idx,),
+                            row_idxs_exc=(start_idx, end_idx),
+                        )
                     )
 
                     # add a custom column formatter that formats the last column as percent
                     fl.col_formats.append(
-                        FormatTableItem(format=(".0%", ">9"), idxs_inc=(4,), row_idxs_exc=(0, 9))
+                        FormatTableItem(
+                            format=(".0%", ">9"),
+                            idxs_inc=(4,),
+                            row_idxs_exc=(start_idx, end_idx),
+                        )
                     )
                     Calc.print_array(data, fl)
 
-                    ids = Calc.get_float_array(sheet=sheet, range_name="A2:A7")
+                    ids = sheet.get_float_array(range_name="A2:A7")
                     fl = FormatterTable(format=(".1f", ">9"))
                     Calc.print_array(ids, fl)
 
-                    projs = Calc.convert_to_floats(
-                        cast(Column, Calc.get_col(sheet=sheet, range_name="B2:B7"))
+                    projects = Calc.convert_to_floats(
+                        cast(Column, sheet.get_col(range_name="B2:B7"))
                     )
                     print("Project scores")
-                    for proj in projs:
+                    for proj in projects:
                         print(f"  {proj:.2f}")
 
-                    stud = Calc.convert_to_floats(
-                        cast(Row, Calc.get_row(sheet=sheet, range_name="A4:E4"))
-                    )
+                    stud = Calc.convert_to_floats(cast(Row, sheet.get_row(range_name="A4:E4")))
                     print()
                     print("Student scores")
                     for v in stud:
                         print(f"  {v:.2f}")
 
                     # create a cell range that spans the used area of the sheet
-                    used_cell_rng = Calc.find_used_range(sheet)
+                    used_cell_rng = sheet.find_used_range()
                     print()
-                    print(f"The used area is: {Calc.get_range_str(cell_range=used_cell_rng)}")
+                    print(f"The used area is: {used_cell_rng.get_range_str()}")
 
                     # find cell ranges that cover all the specified data types
-                    cr_qry = Lo.qi(XCellRangesQuery, used_cell_rng)
+                    cr_qry = used_cell_rng.qi(XCellRangesQuery, True)
                     cell_ranges = cr_qry.queryContentCells(CellFlags.VALUE)
                     # (CellFlags.VALUE | CellFlags.FORMULA)
                     # (CellFlags.STRING)
@@ -154,18 +163,20 @@ Numerical data is stored in the cell range ``A2:D7`` and the rest of the values 
                     else:
                         print(f"Found cell ranges: {cell_ranges.getRangeAddressesAsString()}")
                         print()
-                        addrs = cell_ranges.getRangeAddresses()
-                        print(f'Cell Ranges: ({len(addrs)}):')
+                        addresses = cell_ranges.getRangeAddresses()
+                        print(f"Cell Ranges: ({len(addresses)}):")
                         fl = FormatterTable(format=(".2f", "<7"))
                         # format the first col as integers
-                        fl.col_formats.append(FormatTableItem(format=(".0f", "<7"), idxs_inc=(0,)))
-                        for addr in addrs:
+                        fl.col_formats.append(
+                            FormatTableItem(format=(".0f", "<7"), idxs_inc=(start_idx,))
+                        )
+                        for addr in addresses:
                             Calc.print_address(addr)
-                            vals = Calc.get_float_array(sheet=sheet, range_name=Calc.get_range_str(addr))
+                            vals = sheet.get_float_array(range_name=Calc.get_range_str(addr))
                             print("WITH FORMATTING")
                             Calc.print_array(vals, fl)
-                            print("WITHOUT FORMATTING")
-                            Calc.print_array(vals)
+                            # print("WITHOUT FORMATTING")
+                            # Calc.print_array(vals)
 
                     msg_result = MsgBox.msgbox(
                         "Do you wish to close document?",
@@ -174,7 +185,7 @@ Numerical data is stored in the cell range ``A2:D7`` and the rest of the values 
                         buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                     )
                     if msg_result == MessageBoxResultsEnum.YES:
-                        Lo.close_doc(doc=doc, deliver_ownership=True)
+                        doc.close_doc()
                         Lo.close_office()
                     else:
                         print("Keeping document open")
@@ -182,6 +193,7 @@ Numerical data is stored in the cell range ``A2:D7`` and the rest of the values 
                 except Exception:
                     Lo.close_office()
                     raise
+
 
     .. only:: html
 
@@ -393,7 +405,8 @@ This can be seen in the output from:
     .. code-tab:: python
 
         # from extract_nums.py
-        data = Calc.get_array(sheet=sheet, range_name="A1:E10")
+        rng = sheet.get_range(range_name="A1:E10")
+        data = rng.get_array()
 
     .. only:: html
 
@@ -531,11 +544,11 @@ The following code fragment illustrates how :py:meth:`.Calc.find_used_range` and
 
         # in extract_nums.py
         # create a cell range that spans the used area of the sheet
-        used_cell_rng = Calc.find_used_range(sheet)
+        used_cell_rng = sheet.find_used_range()
         # ...
 
-         # find cell ranges that cover all the specified data types
-        cr_qry = Lo.qi(XCellRangesQuery, used_cell_rng)
+        # find cell ranges that cover all the specified data types
+        cr_qry = used_cell_rng.qi(XCellRangesQuery, True)
         cell_ranges = cr_qry.queryContentCells(CellFlags.VALUE)
 
     .. only:: html
@@ -544,6 +557,7 @@ The following code fragment illustrates how :py:meth:`.Calc.find_used_range` and
 
             .. group-tab:: None
 
+``sheet.find_used_range()`` invokes :py:meth:`.Calc.find_used_range`.
 The cell range returned by :py:meth:`.Calc.find_used_range` is converted to XCellRangesQuery_, which contains the SheetRangesQuery_ methods.
 ``XCellRangesQuery.queryContentCells()`` is passed the ``CellFlags.VALUE`` constant so that the search will returns ranges that cover all the numerical data.
 
@@ -613,15 +627,20 @@ The following code prints out each range address and the numerical data in the r
         else:
             print(f"Found cell ranges: {cell_ranges.getRangeAddressesAsString()}")
             print()
-            addrs = cell_ranges.getRangeAddresses()
+            addresses = cell_ranges.getRangeAddresses()
+            print(f"Cell Ranges: ({len(addresses)}):")
             fl = FormatterTable(format=(".2f", "<7"))
             # format the first col as integers
-            fl.col_formats.append(FormatTableItem(format=(".0f", "<7"), idxs_inc=(0,)))
-            for addr in addrs:
+            fl.col_formats.append(
+                FormatTableItem(format=(".0f", "<7"), idxs_inc=(start_idx,))
+            )
+            for addr in addresses:
                 Calc.print_address(addr)
-                vals = Calc.get_float_array(sheet=sheet, range_name=Calc.get_range_str(addr))
+                vals = sheet.get_float_array(range_name=Calc.get_range_str(addr))
                 print("WITH FORMATTING")
                 Calc.print_array(vals, fl)
+                # print("WITHOUT FORMATTING")
+                # Calc.print_array(vals)
         # ...
 
     .. only:: html

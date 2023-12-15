@@ -225,9 +225,9 @@ The steps required in creating and using a new style are illustrated by |build_t
                 loader = Lo.load_office(Lo.ConnectSocket())
 
                 try:
-                    doc = Calc.create_doc(loader)
-                    GUI.set_visible(is_visible=True, odoc=doc)
-                    sheet = Calc.get_sheet(doc=doc, index=0)
+                    doc = CalcDoc(Calc.create_doc(loader))
+                    doc.set_visible()
+                    sheet = doc.get_sheet(0)
                     self._convert_addresses(sheet)
 
                     self._build_array(sheet)
@@ -306,11 +306,11 @@ If the resulting spreadsheet is saved and this document is examined by the |stle
     .. code-tab:: python
 
         # in build_table.py
-        def _create_styles(self, doc: XSpreadsheetDocument) -> None:
+        def _create_styles(self, doc: CalcDoc) -> None:
             try:
                 # create a style using Calc
-                header_style = Calc.create_cell_style(
-                    doc=doc, style_name=BuildTable.HEADER_STYLE_NAME
+                header_style = doc.create_cell_style(
+                    style_name=BuildTable.HEADER_STYLE_NAME
                 )
 
                 # create formats to apply to header_style
@@ -331,7 +331,7 @@ If the resulting spreadsheet is saved and this document is examined by the |stle
                 )
 
                 # create style
-                data_style = Calc.create_cell_style(doc=doc, style_name=BuildTable.DATA_STYLE_NAME)
+                data_style = doc.create_cell_style(style_name=BuildTable.DATA_STYLE_NAME)
 
                 # create formats to apply to data_style
                 footer_bg_color_style = BgColor(
@@ -342,9 +342,7 @@ If the resulting spreadsheet is saved and this document is examined by the |stle
                 )
 
                 # Apply formatting to data_style
-                Styler.apply(
-                    data_style, footer_bg_color_style, bdr_style, txt_align_style
-                )
+                Styler.apply(data_style, footer_bg_color_style, bdr_style, txt_align_style)
 
             except Exception as e:
                 print(e)
@@ -406,19 +404,26 @@ The new styles, ``My HeaderStyle`` and ``My DataStyle``, are applied to the spre
     .. code-tab:: python
 
         # in build_table.py
-        def _apply_styles(self, sheet: XSpreadsheet) -> None:
+        def _apply_styles(self, sheet: CalcSheet) -> None:
+            sheet.change_style(style_name=BuildTable.HEADER_STYLE_NAME, range_name="B1:N1")
 
-            Calc.change_style(
-                sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="B1:N1"
-            )
-            Calc.change_style(
-                sheet=sheet, style_name=BuildTable.HEADER_STYLE_NAME, range_name="A2:A4"
-            )
-            Calc.change_style(
-                sheet=sheet, style_name=BuildTable.DATA_STYLE_NAME, range_name="B2:N4"
-            )
+            sheet.change_style(style_name=BuildTable.HEADER_STYLE_NAME, range_name="A2:A4")
+            rng = sheet.get_range(range_name="B2:N4")
+            rng.change_style(style_name=BuildTable.DATA_STYLE_NAME)
 
-            # ... other code
+            # create a border side, default width units are points
+            side = direct_borders.Side(width=2.85, color=CommonColor.DARK_BLUE)
+            # create a border setting bottom side
+            bdr = direct_borders.Borders(bottom=side)
+            # Apply border to range
+
+            sheet.set_style_range(range_name="A4:N4", styles=[bdr])
+
+            # create a border with left and right
+            bdr = direct_borders.Borders(left=side, right=side)
+            # Apply border to range
+            rng = sheet.get_range(range_name="N1:N4")
+            rng.set_style(styles=[bdr])
 
     .. only:: html
 
@@ -492,7 +497,7 @@ and to the left and right of the ``N1:N4`` range by creating a second :py:class:
         from ooodev.format.calc.direct.cell import borders as direct_borders
         # ... other imports
 
-        def _apply_styles(self, sheet: XSpreadsheet) -> None:
+        def _apply_styles(self, sheet: CalcSheet) -> None:
 
             # ... other code
 
@@ -501,12 +506,13 @@ and to the left and right of the ``N1:N4`` range by creating a second :py:class:
             # create a border setting bottom side
             bdr = direct_borders.Borders(bottom=side)
             # Apply border to range
-            Calc.set_style_range(sheet=sheet, range_name="A4:N4", styles=[bdr])
+            sheet.set_style_range(range_name="A4:N4", styles=[bdr])
 
             # create a border with left and right
             bdr = direct_borders.Borders(left=side, right=side)
             # Apply border to range
-            Calc.set_style_range(sheet=sheet, range_name="N1:N4", styles=[bdr])
+            rng = sheet.get_range(range_name="N1:N4")
+            rng.set_style(styles=[bdr])
 
     .. only:: html
 
