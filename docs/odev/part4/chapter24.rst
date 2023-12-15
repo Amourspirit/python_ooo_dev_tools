@@ -41,12 +41,12 @@ These steps are illustrated by the |d_sort_py|_ example, which begins by buildin
             loader = Lo.load_office(Lo.ConnectSocket())
 
             try:
-                doc = Calc.create_doc(loader)
+                doc = CalcDoc(Calc.create_doc(loader))
 
-                GUI.set_visible(is_visible=True, odoc=doc)
+                doc.set_visible()
 
-                sheet = Calc.get_sheet(doc=doc, index=0)
-                
+                sheet = doc.get_sheet(0)
+
                 # create the table that needs sorting
                 vals = (
                     ("Level", "Code", "No.", "Team", "Name"),
@@ -58,25 +58,27 @@ These steps are illustrated by the |d_sort_py|_ example, which begins by buildin
                     ("MS", 10, 3, "B", "Kevin"),
                     ("CS", 30, 7, "C", "Tom"),
                 )
-                Calc.set_array(values=vals, sheet=sheet, name="A1:E8")  # or just "A1"
+                sheet.set_array(values=vals, name="A1:E8")  # or just "A1"
 
                 # 1. obtain an XSortable interface for the cell range
-                source_range = Calc.get_cell_range(sheet=sheet, range_name="A1:E8")
-                xsort = Lo.qi(XSortable, source_range, True)
+                source_range = sheet.get_range(range_name="A1:E8")
+                x_sort = source_range.qi(XSortable, True)
 
                 # 2. specify the sorting criteria as a TableSortField array
                 sort_fields = (self._make_sort_asc(1, True), self._make_sort_asc(2, True))
 
                 # 3. define a sort descriptor
-                props = Props.make_props(SortFields=Props.any(*sort_fields), ContainsHeader=True)
+                props = Props.make_props(
+                    SortFields=Props.any(*sort_fields), ContainsHeader=True
+                )
 
                 Lo.wait(2_000)  # wait so user can see original before it is sorted
                 # 4. do the sort
                 print("Sorting...")
-                xsort.sort(props)
+                x_sort.sort(props)
 
                 if self._out_fnm:
-                    Lo.save_doc(doc=doc, fnm=self._out_fnm)
+                    doc.save_doc(fnm=self._out_fnm)
 
                 msg_result = MsgBox.msgbox(
                     "Do you wish to close document?",
@@ -85,7 +87,7 @@ These steps are illustrated by the |d_sort_py|_ example, which begins by buildin
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
@@ -243,19 +245,19 @@ For example, rows ``7``, ``8``, and ``9`` of :numref:`ch24fig_filler_py_sheet_de
         # set first two values of three rows
 
         # ascending integers: 1, 2
-        Calc.set_val(sheet=sheet, cell_name="B7", value=2)
-        Calc.set_val(sheet=sheet, cell_name="A7", value=1)
+        sheet.set_val(cell_name="B7", value=2)
+        sheet.set_val(cell_name="A7", value=1)
 
         # dates, decreasing by month
-        Calc.set_date(sheet=sheet, cell_name="A8", day=28, month=2, year=2015)
-        Calc.set_date(sheet=sheet, cell_name="B8", day=28, month=1, year=2015)
+        sheet.get_cell(cell_name="A8").set_date(day=28, month=2, year=2015)
+        sheet.get_cell(cell_name="B8").set_date(day=28, month=1, year=2015)
 
         # descending integers: 6, 4
-        Calc.set_val(sheet=sheet, cell_name="A9", value=6)
-        Calc.set_val(sheet=sheet, cell_name="B9", value=4)
+        sheet.set_val(cell_name="A9", value=6)
+        sheet.set_val(cell_name="B9", value=4)
 
         # get cell range series
-        series = Calc.get_cell_series(sheet=sheet, range_name="A7:G9")
+        series = sheet.get_range(range_name="A7:G9").get_cell_series()
 
         # use first 2 cells for series, and fill to the right
         series.fillAuto(FillDirection.TO_RIGHT, 2)
@@ -327,12 +329,12 @@ For example:
 
         # in Filler._fill_series() of filler.py
         # ...
-        Calc.set_val(sheet=sheet, cell_name="A2", value=1)
-        Calc.set_val(sheet=sheet, cell_name="A3", value=4)
+        sheet.set_val(cell_name="A2", value=1)
+        sheet.set_val(cell_name="A3", value=4)
 
         # Fill 2 rows; the 2nd row is not filled completely since
         # the end value is reached
-        series = Calc.get_cell_series(sheet=sheet, range_name="A2:E3")
+        series = sheet.get_range(range_name="A2:E3").get_cell_series()
         series.fillSeries(FillDirection.TO_RIGHT, FillMode.LINEAR, Calc.NO_DATE, 2, 9)
                         # ignore date mode; step == 2; end at 9
 
@@ -375,12 +377,16 @@ For example, the seed date at the start of row ``4`` (``20th Nov. 2015``) can be
 
         # in Filler._fill_series() of filler.py
         # ...
-        Calc.set_date(sheet=sheet, cell_name="A4", day=20, month=11, year=2015)
+        sheet.get_cell(cell_name="A4").set_date(day=20, month=11, year=2015)
 
         # fill by adding one month to date
-        series = Calc.get_cell_series(sheet=sheet, range_name="A4:E4")
+        series = sheet.get_range(range_name="A4:E4").get_cell_series()
         series.fillSeries(
-            FillDirection.TO_RIGHT, FillMode.DATE, FillDateMode.FILL_DATE_MONTH, 1, Calc.MAX_VALUE
+            FillDirection.TO_RIGHT,
+            FillMode.DATE,
+            FillDateMode.FILL_DATE_MONTH,
+            1,
+            Calc.MAX_VALUE,
         )
 
     .. only:: html
@@ -423,11 +429,13 @@ The code:
 
         # in Filler._fill_series() of filler.py
         # ...
-        Calc.set_val(sheet=sheet, cell_name="G6", value=10)
+        sheet.set_val(cell_name="G6", value=10)
 
         # Fill from  bottom to top with a geometric series (*2)
-        series = Calc.get_cell_series(sheet=sheet, range_name="G2:G6")
-        series.fillSeries(FillDirection.TO_TOP, FillMode.GROWTH, Calc.NO_DATE, 2, Calc.MAX_VALUE)
+        series = sheet.get_range(range_name="G2:G6").get_cell_series()
+        series.fillSeries(
+            FillDirection.TO_TOP, FillMode.GROWTH, Calc.NO_DATE, 2, Calc.MAX_VALUE
+        )
 
     .. only:: html
 
@@ -482,7 +490,9 @@ The sheet ends up looking like :numref:`ch24fig_text_manipulation_sht`.
 
         # in cell_texts.py
         Calc.highlight_range(
-            sheet=sheet, range_name="A2:C7", headline="Cells and Cell Ranges"
+            sheet=sheet.component,
+            range_name="A2:C7",
+            headline="Cells and Cell Ranges",
         )
 
     .. only:: html
@@ -594,7 +604,7 @@ The definition for this version of :py:meth:`~.Calc.get_cell` is:
 
     .. code-tab:: python
 
-        # in Calc class (overload method, simpilified)
+        # in Calc class (overload method, simplified)
         @classmethod
         def get_cell(cls, cell_range: XCellRange, col: int, row: int) -> XCell:
             return cell_range.getCellByPosition(col, row)
@@ -647,17 +657,17 @@ For example:
 
         # in cell_texts.py
         # ...
+        cell = sheet.get_cell(cell_name="B4")
         # Insert two text paragraphs and a hyperlink into the cell
-        xtext = Lo.qi(XText, xcell, True)
-        cursor = xtext.createTextCursor()
+        x_text = cell.qi(XText, True)
+        cursor = x_text.createTextCursor()
         Write.append_para(cursor=cursor, text="Text in first line.")
         Write.append(cursor=cursor, text="And a ")
         Write.add_hyperlink(
             cursor=cursor,
             label="hyperlink",
-            url_str="https://github.com/Amourspirit/python_ooo_dev_tools"
+            url_str="https://github.com/Amourspirit/python_ooo_dev_tools",
         )
-
     .. only:: html
 
         .. cssclass:: tab-none
@@ -677,12 +687,9 @@ which contain the properties related to cell text:
         # in cell_texts.py
         # ...
         # beautify the cell
-        Props.set(
-            xcell,
-            CharColor=CommonColor.DARK_BLUE,  # from styles.CharacterProperties
-            CharHeight=18.0,  # from styles.CharacterProperties
-            ParaLeftMargin=500,  # from styles.ParagraphProperties
-        )
+        font = Font(color=CommonColor.DARK_BLUE, size=18.0)
+        bdr = Borders(padding=Padding(left=UnitMM(5)))
+        Styler.apply(cell.component, font, bdr)
 
     .. only:: html
 
