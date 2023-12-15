@@ -14,6 +14,8 @@ Chapter 19. Calc API Overview
     The Spreadsheet Document; Document Spreadsheets; Spreadsheet Data; The Spreadsheet Service; Cell Range Services; Cell Services; Sheet Cell Ranges
 
 This chapter gives an overview of the main services and interfaces used in the Calc parts of the Office API, illustrated with small code fragments.
+In |odev| version ``0.15.0`` the :ref:`ns_calc` module was added. This module contains many classes and methods that simplify the use of the Calc API,
+such as :ref:`class_calc_calc_doc`, :ref:`class_calc_calc_sheet`, :ref:`class_calc_calc_cell`, and :ref:`class_calc_calc_cell_range`.
 We'll revisit these topics in greater details (and with larger examples) in subsequent chapters.
 
 If you're unfamiliar with Calc, then a good starting point is its user guide, available from https://libreoffice.org/get-help/documentation.
@@ -39,8 +41,9 @@ There's also a few examples in the "Spreadsheet Document Examples" section of ht
 
         :Some Spreadsheet Services and Interfaces.
 
-Calc's functionality is mostly divided between two Java packages (modules), sheet and table,
-which are documented at https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html and https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1table.html.
+Calc's functionality is mostly divided between two packages (modules), sheet and table,
+which are documented at `com.sun.star.sheet Module Reference <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet.html>`__
+and `com.sun.star.table Module Reference <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1table.html>`__.
 Alternatively, you can try ``lodoc star sheet module`` and ``lodoc star table module``, but these only get you 'close' to the right pages.
 
 The reason for this module division is Office's support for three types of 'table': text tables, database tables, and spreadsheets.
@@ -98,6 +101,23 @@ These steps are hidden by methods in the :py:class:`~.calc.Calc` utility class, 
         loader = Lo.load_office(Lo.ConnectSocket())
         Calc.open_doc(doc_path, loader)
         sheet = Calc.get_sheet(doc, 0)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Since ``0.15.0`` can also be written as:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # from ooodev.calc import CalcDoc, Calc
+        loader = Lo.load_office(Lo.ConnectSocket())
+        doc = CalcDoc(Calc.open_doc(doc_path, loader))
+        sheet = doc.get_sheet(0) # CalcSheet instance
 
     .. only:: html
 
@@ -226,7 +246,11 @@ they don't handle ``~``, ``!``, or absolute references using ``$``.
 19.4 The Spreadsheet Service
 ============================
 
-The Spreadsheet_ service is a subclass of SheetCellRange_, as shown in :numref:`ch19fig_spreadsheet_service`, which means that a sheet can be treated as a very big cell range.
+The Spreadsheet_ service is a subclass of SheetCellRange_, as shown in :numref:`ch19fig_spreadsheet_service`,
+which means that a sheet can be treated as a very big cell range.
+
+|odev| has :ref:`class_calc_calc_sheet` which is usually accessed via :ref:`class_calc_calc_doc`,
+and provides a more convenient way of accessing a sheet's cells and cell ranges and working with the Spreadsheet_ service.
 
 ..
     figure 5
@@ -271,6 +295,8 @@ Oddly enough there's no ``getCellByName()`` method, but the :py:meth:`.Calc.get_
 
 The main service for cell ranges is SheetCellRange_, which inherits the CellRange_ service from the table
 module and several property-based classes, as indicated in :numref:`ch19fig_cell_range_service`.
+
+|odev| has :ref:`class_calc_calc_cell_range` for working with cell ranges.
 
 ..
     figure 6
@@ -320,6 +346,7 @@ Code for obtaining the first row of a sheet is:
     .. code-tab:: python
 
         # get the XColumnRowRange interface for the sheet
+        # sheet is XSpreadsheet
         cr_range = Lo.qi(XColumnRowRange, sheet)
 
         # get all the rows
@@ -386,6 +413,8 @@ Similar coding is used to retrieve a column: ``XColumnRowRange.getColumns()`` ge
 19.6 Cell Services
 ==================
 
+|odev| has :ref:`class_calc_calc_cell` for working with cells.
+
 ``XCellRange.getCellByPosition()`` returns a single cell from a given cell range.
 However, this method can also be applied to a sheet because the API considers a sheet to be a very big cell range.
 For example:
@@ -394,7 +423,24 @@ For example:
 
     .. code-tab:: python
 
+        # sheet is XSpreadsheet
         cell = sheet.getCellByPosition(2, 4)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Or using :ref:`class_calc_calc_cell`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        doc = CalcDoc(Calc.create_doc())
+        sheet = doc.get_sheet(idx=0)
+        cell = sheet.get_cell(col=2, row=4) # Zero-based
 
     .. only:: html
 
@@ -429,6 +475,23 @@ For example, the following stores the number 9 in the cell at coordinate ``(2, 4
         sheet = Calc.get_sheet(doc, 0)
         cell = sheet.getCellByPosition(2, 4) # (column,row)
         cell.setValue(9)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Or using :ref:`class_calc_calc_cell`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        doc = CalcDoc(Calc.create_doc())
+        sheet = doc.get_sheet(idx=0)
+        cell = sheet.get_cell(col=2, row=4) # Zero-based
+        cell.set_val(9)
 
     .. only:: html
 
@@ -475,12 +538,22 @@ The XCell_ class diagram is shown in :numref:`ch19fig_xcell_class`.
 
 The documentation for XCell can be found using ``lodoc xcell``.
 
+.. seealso::
+
+    :ref:`ooodev.utils.data_type.cell_obj.CellObj`.
+
 .. _ch19_sht_cell_rng:
 
 19.7 Sheet Cell Ranges
 ======================
 
 A collection of cell ranges has its own service, SheetCellRanges_, shown in :numref:`ch19fig_sheet_cell_ranges_service`.
+
+|odev| has :ref:`class_calc_calc_cell_range` for working with cell ranges.
+
+.. seealso::
+
+    :ref:`ooodev.utils.data_type.range_obj.RangeObj`
 
 ..
     figure 12

@@ -54,23 +54,24 @@ The ``main()`` function of |show_sheet_py|_:
             loader = Lo.load_office(Lo.ConnectSocket())
 
             try:
-                doc = Calc.open_doc(fnm=self._input_fnm, loader=loader)
+                doc = CalcDoc(Calc.open_doc(fnm=self._input_fnm, loader=loader))
 
                 # doc = Lo.open_readonly_doc(fnm=self._input_fnm, loader=loader)
                 # doc = Calc.get_ss_doc(doc)
 
                 if self._visible:
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                    doc.set_visible()
 
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                sheet_names = Calc.get_sheet_names(doc=doc)
+                sheet = doc.get_active_sheet()
+
+                sheet.goto_cell(cell_name="A1")
+                sheet_names = doc.get_sheet_names()
                 print(f"Names of Sheets ({len(sheet_names)}):")
                 for name in sheet_names:
                     print(f"  {name}")
 
-                sheet = Calc.get_sheet(doc=doc, index=0)
-                Calc.set_active_sheet(doc=doc, sheet=sheet)
-                pro = Lo.qi(XProtectable, sheet, True)
+                doc.set_active_sheet(sheet.component)
+                pro = sheet.qi(XProtectable, True)
                 pro.protect("foobar")
                 print(f"Is protected: {pro.isProtected()}")
 
@@ -79,12 +80,16 @@ The ``main()`` function of |show_sheet_py|_:
                 pwd = GUI.get_password("Password", "Enter sheet Password")
                 if pwd == "foobar":
                     pro.unprotect(pwd)
-                    MsgBox.msgbox("Password is Correct", "Password", boxtype=MessageBoxType.INFOBOX)
+                    MsgBox.msgbox(
+                        "Password is Correct", "Password", boxtype=MessageBoxType.INFOBOX
+                    )
                 else:
-                    MsgBox.msgbox("Password is incorrect", "Password", boxtype=MessageBoxType.ERRORBOX)
+                    MsgBox.msgbox(
+                        "Password is incorrect", "Password", boxtype=MessageBoxType.ERRORBOX
+                    )
 
                 if self._out_fnm:
-                    Lo.save_doc(doc=doc, fnm=self._out_fnm)
+                    doc.save_doc(fnm=self._out_fnm)
 
                 msg_result = MsgBox.msgbox(
                     "Do you wish to close document?",
@@ -93,7 +98,7 @@ The ``main()`` function of |show_sheet_py|_:
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
@@ -108,7 +113,7 @@ The ``main()`` function of |show_sheet_py|_:
 
             .. group-tab:: None
 
-:py:meth:`.Calc.open_doc` opens the document, returning an XSpreadsheetDocument_ reference:
+:py:meth:`.Calc.open_doc` opens the document, returning an XSpreadsheetDocument_ reference which then is used to create an instance of :py:class:`~ooodev.calc.CalcDoc`.
 
 .. tabs::
 
@@ -337,12 +342,14 @@ If you want to actually stop the user from changing the spreadsheet, then it mus
 
     Also see :ref:`help_calc_format_direct_cell_cell_protection` for more information on cell protection.
 
+    Aos of version ``0.15.0`` :ref:`class_calc_calc_doc` has corresponding methods.
+
 .. tabs::
 
     .. code-tab:: python
 
         # in ShoWSheet.main() of show_sheet.py
-        pro = Lo.qi(XProtectable, sheet, True)
+        pro = sheet.qi(XProtectable, True)
         pro.protect("foobar")
 
 
@@ -362,7 +369,7 @@ The best we can do is to apply protection to individual sheets. Namely:
     .. code-tab:: python
 
         # 
-        pro = Lo.qi(XProtectable, sheet, True)
+        pro = sheet.qi(XProtectable, True)
         pro.protect("foobar")
 
         # query the user for the password
@@ -488,8 +495,8 @@ For example, a new document will name its first sheet ``Sheet1``.
 
     .. code-tab:: python
 
-        sheet = Calc.get_sheet(doc=doc, sheet_name="Sheet1")
-        Calc.set_active_sheet(doc=doc, sheet=sheet)
+        sheet = doc.get_sheet(sheet_name="Sheet1")
+        doc.set_active_sheet(sheet.component)
 
     .. only:: html
 
@@ -581,7 +588,27 @@ For example, the entire sheet can be made visible by calling:
 
     .. code-tab:: python
 
-        Calc.Zoom(doc=doc, type=GUI.ZoomEnum.ENTIRE_PAGE)
+        # doc is an XSpreadsheetDocument
+        from ooodev.calc import Calc, ZoomKind
+        # ...
+        Calc.Zoom(doc=doc, type=ZoomKind.ENTIRE_PAGE)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Or using :ref:`class_calc_calc_doc`:
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.calc import Calc,CalcDoc, ZoomKind
+        # ...
+        doc = CalcDoc(Calc.open_doc(fnm=self._input_fnm, loader=loader))
+        doc.zoom(type=ZoomKind.ENTIRE_PAGE)
 
     .. only:: html
 
@@ -629,11 +656,13 @@ The ``main()`` method of |build_tbl_py|_ is:
             loader = Lo.load_office(Lo.ConnectSocket())
 
             try:
-                doc = Calc.create_doc(loader)
+                doc = CalcDoc(Calc.create_doc(loader))
 
-                GUI.set_visible(is_visible=True, doc=doc)
+                doc.set_visible()
+                Lo.delay(300)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_sheet(doc=doc, index=0)
+                sheet = doc.get_sheet(0)
 
                 self._convert_addresses(sheet)
 
@@ -645,16 +674,20 @@ The ``main()`` method of |build_tbl_py|_ is:
                 self._build_array(sheet)
 
                 if self._add_pic:
-                    self._add_picture(sheet=sheet, doc=doc)
+                    self._add_picture(sheet)
 
                 # add a chart
                 if self._add_chart and Chart2:
                     # assumes _build_array() has filled the spreadsheet with data
+                    rng_addr = sheet.get_address(range_name="B2:M4")
                     chart_cell = "B6" if self._add_pic else "D6"
-                    rng_addr = Calc.get_address(sheet=sheet, range_name="B2:M4")
                     Chart2.insert_chart(
-                        sheet=sheet, cells_range=rng_addr, cell_name=chart_cell,
-                        width=21, height=11, diagram_name="Column"
+                        sheet=sheet.component,
+                        cells_range=rng_addr,
+                        cell_name=chart_cell,
+                        width=21,
+                        height=11,
+                        diagram_name="Column",
                     )
 
                 if self._add_style:
@@ -662,7 +695,7 @@ The ``main()`` method of |build_tbl_py|_ is:
                     self._apply_styles(sheet)
 
                 if self._out_fnm:
-                    Lo.save_doc(doc=doc, fnm=self._out_fnm)
+                    doc.save_doc(fnm=self._out_fnm)
 
                 msg_result = MsgBox.msgbox(
                     "Do you wish to close document?",
@@ -671,7 +704,7 @@ The ``main()`` method of |build_tbl_py|_ is:
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
@@ -687,7 +720,7 @@ The ``main()`` method of |build_tbl_py|_ is:
             .. group-tab:: None
 
 
-``main()`` can call one of four different build methods to demonstrate various :py:class:`~calc.Calc` methods for filling cells and cell ranges.
+``main()`` can call one of four different build methods to demonstrate various methods for filling cells and cell ranges.
 ``_convert_addresses()`` illustrates the :py:class:`~calc.Calc` methods for converting between cell names and positions, and between cell range names and position intervals.
 
 .. _ch20_switch_name_range_pos:
@@ -703,15 +736,15 @@ it's still sometimes necessary to convert between the different formats. ``_conv
     .. code-tab:: python
 
         # in build_table.py
-        def _convert_addresses(self, sheet: XSpreadsheet) -> None:
+        def _convert_addresses(self, sheet: CalcSheet) -> None:
             # cell name <--> position
-            pos = Calc.get_cell_position(cell_name="AA2")
+            pos = sheet.get_cell(cell_name="A22").get_cell_position()
             print(f"Position of AA2: ({pos.X}, {pos.Y})")
 
-            cell = Calc.get_cell(sheet=sheet, col=pos.X, row=pos.Y)
-            Calc.print_cell_address(cell)
+            cell = sheet.get_cell(col=pos.X, row=pos.Y)
+            Calc.print_cell_address(cell.component)
 
-            print(f"AA2: {Calc.get_cell_str(col=pos.X, row=pos.Y)}")
+            print(f"AA2: {cell.get_cell_str()}")
             print()
 
             # cell range name <--> position
@@ -719,13 +752,21 @@ it's still sometimes necessary to convert between the different formats. ``_conv
             print(f"Range of A1:D5: ({rng[0].X}, {rng[0].Y}) -- ({rng[1].X}, {rng[1].Y})")
 
             cell_rng = Calc.get_cell_range(
-                sheet=sheet, col_start=rng[0].X, row_start=rng[0].Y, col_end=rng[1].X, row_end=rng[1].Y
+                sheet=sheet.component,
+                col_start=rng[0].X,
+                row_start=rng[0].Y,
+                col_end=rng[1].X,
+                row_end=rng[1].Y,
             )
             Calc.print_address(cell_rng)
             print(
-                "A1:D5: " + Calc.get_range_str(
-                                col_start=rng[0].X, row_start=rng[0].Y, col_end=rng[1].X, row_end=rng[1].Y
-                            )
+                "A1:D5: "
+                + Calc.get_range_str(
+                    col_start=rng[0].X,
+                    row_start=rng[0].Y,
+                    col_end=rng[1].X,
+                    row_end=rng[1].Y,
+                )
             )
             print()
 
@@ -756,6 +797,13 @@ Cell Name Manipulation
 :py:meth:`.Calc.get_cell_position` converts a cell name, such as ``AA2``, into a (column, row) position coordinate, which it returns as a Point_ object.
 For ``AA2`` the result is ``(26, 1)``, since the column labeled ``AA`` follows ``Z`` in a spreadsheet.
 The implementation uses regular expression parsing of the input string to separate out the alphabetic and numerical parts before processing them:
+
+.. seealso::
+
+    .. cssclass:: ul-list
+
+        * :py:meth:`~ooodev.office.calc.Calc.get_cell_obj`
+        * :py:meth:`~ooodev.office.calc.Calc.get_cell_range`
 
 .. tabs::
 
@@ -870,8 +918,8 @@ The second half of ``_convert_addresses()`` shows off some of the cell range add
     .. code-tab:: python
 
         # in BuildTable._convert_addresses() of build_table.py
-        pos = Calc.get_cell_position(cell_name="AA2")
-        print(f"Positon of AA2: ({pos.X}, {pos.Y})")
+        pos = sheet.get_cell(cell_name="A22").get_cell_position()
+        print(f"Position of AA2: ({pos.X}, {pos.Y})")
         # ...
 
     .. only:: html
@@ -885,11 +933,11 @@ Range operators, such as ``~``, ``!``, and absolute references using ``$`` are *
 
 :py:meth:`.Calc.get_cell_range` converts a range address into an XCellRange_ reference:
 
-
 .. tabs::
 
     .. code-tab:: python
 
+        # sheet is an XSpreadsheet
         cell = Calc.get_cell_range(sheet=sheet, range_name="A1:D5");
 
     .. only:: html
@@ -940,14 +988,12 @@ For example:
         # in _build_cells() of build_table.py
         # ...
         for i, val in enumerate(header_vals):
-            # set by name
-            Calc.set_val(value=val, sheet=sheet, col=i + 1, row=0)
+            sheet.set_val(value=val, col=i + 1, row=0)
 
         # ...
         for i, val in enumerate(vals):
-            # set by row, column
             cell_name = TableHelper.make_cell_name(row=2, col=i + 2)
-            Calc.set_val(value=val, sheet=sheet, cell_name=cell_name)
+            sheet.set_val(value=val, cell_name=cell_name)
         # ...
 
     .. only:: html
@@ -957,6 +1003,8 @@ For example:
             .. group-tab:: None
 
 Both methods store a number or a string in a cell, by processing the input value as an Object:
+
+``sheet.set_val()`` invokes ``Calc.set_val()``.
 
 .. tabs::
 
@@ -1008,19 +1056,19 @@ The ``_build_array()`` method in |build_tbl_py|_ shows how a block of data can b
     .. code-tab:: python
 
         # in build_table.py
-        def _build_array(self, sheet: XSpreadsheet) -> None:
+        def _build_array(self, sheet: CalcSheet) -> None:
             vals = (
                 ("", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"),
                 ("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3, -67.3, 30.5, 23.2, -97.3, 22.4, 23.5),
                 ("Jones", 21, 40.9, -57.5, -23.4, 34.5, 59.3, 27.3, -38.5, 43.2, 57.3, 25.4, 28.5),
                 ("Brown", 31.45, -20.9, -117.5, 23.4, -114.5, 115.3, -171.3, 89.5, 41.2, 71.3, 25.4, 38.5),
             )
-            Calc.set_array(values=vals, sheet=sheet, name="A1:M4")  # or just A1
+            sheet.set_array(values=vals, name="A1:M4")  # or just A1
 
-            Calc.set_val(sheet=sheet, cell_name="N1", value="SUM")
-            Calc.set_val(sheet=sheet, cell_name="N2", value="=SUM(B2:M2)")
-            Calc.set_val(sheet=sheet, cell_name="N3", value="=SUM(B3:M3)")
-            Calc.set_val(sheet=sheet, cell_name="N4", value="=SUM(B4:M4)")
+            sheet.set_val(cell_name="N1", value="SUM")
+            sheet.set_val(cell_name="N2", value="=SUM(B2:M2)")
+            sheet.set_val(cell_name="N3", value="=SUM(B3:M3)")
+            sheet.set_val(cell_name="N4", value="=SUM(B4:M4)")
 
     .. only:: html
 
@@ -1028,7 +1076,8 @@ The ``_build_array()`` method in |build_tbl_py|_ shows how a block of data can b
 
             .. group-tab:: None
 
-:py:meth:`.Calc.set_array` accepts a 2D array of Object values (which means it can contain a mix of strings and doubles) with the data arranged in row-order.
+``sheet.set_array()`` invokes :py:meth:`.Calc.set_array` which accepts a 2D array of Object values
+(that means it can contain a mix of strings and doubles) with the data arranged in row-order.
 For example, the data shown above is stored in the sheet as in :numref:`ch20fig_bt_block_data`.
 
 ..
@@ -1052,7 +1101,7 @@ This means that the call used above could be rewritten as:
     .. code-tab:: python
 
         # in BuildTable._build_array() of build_table.py
-        Calc.set_array(values=vals, sheet=sheet, name="A1:M4")  # or just A1
+        sheet.set_array(values=vals, name="A1")
 
     .. only:: html
 
@@ -1157,7 +1206,7 @@ XCellRange_ is converted into XCellRangeData_ which has a ``setDataArray()`` met
 
         # in BuildTable._build_rows() of build_table.py
         vals = (42, 58.9, -66.5, 43.4, 44.5, 45.3, -67.3, 30.5, 23.2, -97.3, 22.4, 23.5)
-        Calc.set_row(sheet=sheet, values=vals, cell_name="B2")
+        sheet.set_row(values=vals, cell_name="B2")
 
     .. only:: html
 
@@ -1215,25 +1264,25 @@ XCellRange_ is converted into XCellRangeData_ which has a ``setDataArray()`` met
     .. code-tab:: python
 
         # in BuildTable._build_cols() of build_table.py
-        def _build_cols(self, sheet: XSpreadsheet) -> None:
+        def _build_cols(self, sheet: CalcSheet) -> None:
             vals = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
-            Calc.set_col(sheet=sheet, values=vals, cell_name="A2")
-            Calc.set_val(value="SUM", sheet=sheet, cell_name="A14")
+            sheet.set_col(values=vals, cell_name="A2")
+            sheet.set_val(value="SUM", cell_name="A14")
 
-            Calc.set_val(value="Smith", sheet=sheet, cell_name="B1")
+            sheet.set_val(value="Smith", cell_name="B1")
             vals = (42, 58.9, -66.5, 43.4, 44.5, 45.3, -67.3, 30.5, 23.2, -97.3, 22.4, 23.5)
-            Calc.set_col(sheet=sheet, values=vals, cell_name="B2")
-            Calc.set_val(value="=SUM(B2:M2)", sheet=sheet, cell_name="B14")
+            sheet.set_col(values=vals, cell_name="B2")
+            sheet.set_val(value="=SUM(B2:M2)", cell_name="B14")
 
-            Calc.set_val(value="Jones", sheet=sheet, col=2, row=0)
+            sheet.set_val(value="Jones", col=2, row=0)
             vals = (21, 40.9, -57.5, -23.4, 34.5, 59.3, 27.3, -38.5, 43.2, 57.3, 25.4, 28.5)
-            Calc.set_col(sheet=sheet, values=vals, col_start=2, row_start=1)
-            Calc.set_val(value="=SUM(B3:M3)", sheet=sheet, col=2, row=13)
+            sheet.set_col(values=vals, col_start=2, row_start=1)
+            sheet.set_val(value="=SUM(B3:M3)", col=2, row=13)
 
-            Calc.set_val(value="Brown", sheet=sheet, col=3, row=0)
+            sheet.set_val(value="Brown", col=3, row=0)
             vals = (31.45, -20.9, -117.5, 23.4, -114.5, 115.3, -171.3, 89.5, 41.2, 71.3, 25.4, 38.5)
-            Calc.set_col(sheet=sheet, values=vals, col_start=3, row_start=1)
-            Calc.set_val(value="=SUM(A4:L4)", sheet=sheet, col=3, row=13)
+            sheet.set_col(values=vals, col_start=3, row_start=1)
+            sheet.set_val(value="=SUM(A4:L4)", col=3, row=13)
 
     .. only:: html
 
@@ -1306,13 +1355,21 @@ Adding a picture is done by calling :py:meth:`.Draw.draw_image`:
 
     .. code-tab:: python
 
-        # in BuildTable._add_picture() of build_table.py
-        # ...
-        dp_sup = Lo.qi(XDrawPageSupplier, sheet, True)
-        page = dp_sup.getDrawPage()
-        x = 230 if self._add_chart else 125
-        Draw.draw_image(slide=page, fnm=self._im_fnm, x=x, y=32)
-        # ...
+        # BuildTable._add_picture() of build_table.py
+        def _add_picture(self, sheet: CalcSheet) -> None:
+            # add a picture to the draw page for this sheet
+            dp_sup = sheet.qi(XDrawPageSupplier, True)
+            page = dp_sup.getDrawPage()
+            x = 230 if self._add_chart else 125
+            Draw.draw_image(slide=page, fnm=self._im_fnm, x=x, y=32)
+
+            # look at all the draw pages
+            supplier = sheet.calc_doc.qi(XDrawPagesSupplier, True)
+            pages = supplier.getDrawPages()
+            print(f"1. No. of draw pages: {pages.getCount()}")
+
+            comp_doc = sheet.calc_doc.qi(XComponent, True)
+            print(f"2. No. of draw pages: {Draw.get_slides_count(comp_doc)}")
 
     .. only:: html
 
@@ -1334,6 +1391,7 @@ Many of the :py:class:`~.draw.Draw` methods take a document argument, such as :p
 
     .. code-tab:: python
 
+        # doc is XComponent
         print(f'No of draw pages: {Draw.get_slides_count(doc)}')
 
     .. only:: html
@@ -1394,12 +1452,19 @@ For example, the cell range for ``A1:N4`` is passed to :py:meth:`.Chart2.insert_
     .. code-tab:: python
 
         # in BuildTable.main() of build_table.py
-        # assumes _build_array() has filled the spreadsheet with data
-        rng_addr = Calc.get_address(sheet=sheet, range_name="B2:M4")
-        chart_cell = "B6" if self._add_pic else "D6"
-        Chart2.insert_chart(
-            sheet=sheet, cells_range=rng_addr, cell_name=chart_cell, width=21, height=11, diagram_name="Column"
-        )
+        # add a chart
+        if self._add_chart and Chart2:
+            # assumes _build_array() has filled the spreadsheet with data
+            rng_addr = sheet.get_address(range_name="B2:M4")
+            chart_cell = "B6" if self._add_pic else "D6"
+            Chart2.insert_chart(
+                sheet=sheet.component,
+                cells_range=rng_addr,
+                cell_name=chart_cell,
+                width=21,
+                height=11,
+                diagram_name="Column",
+            )
 
     .. only:: html
 
