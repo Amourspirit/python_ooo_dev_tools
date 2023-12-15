@@ -1,3 +1,5 @@
+.. _ooodev.utils.data_type.cell_obj.CellObj:
+
 Class CellObj
 =============
 
