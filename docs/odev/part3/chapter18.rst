@@ -56,11 +56,11 @@ The |basic_show_py|_ module:
 
         # basic_show.py module.
         from __future__ import annotations
+
         import uno
-        from ooodev.office.draw import Draw
+        from ooodev.draw import Draw, ImpressDoc
         from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
         from ooodev.utils.file_io import FileIO
-        from ooodev.utils.gui import GUI
         from ooodev.utils.lo import Lo
         from ooodev.utils.props import Props
         from ooodev.utils.type_var import PathOrStr
@@ -73,12 +73,12 @@ The |basic_show_py|_ module:
 
             def main(self) -> None:
                 with Lo.Loader(Lo.ConnectPipe()) as loader:
-                    doc = Lo.open_doc(fnm=self._fnm, loader=loader)
+                    doc = ImpressDoc(Lo.open_doc(fnm=self._fnm, loader=loader))
                     try:
                         # slideshow start() crashes if the doc is not visible
-                        GUI.set_visible(is_visible=True, odoc=doc)
+                        doc.set_visible()
 
-                        show = Draw.get_show(doc=doc)
+                        show = doc.get_show()
                         Props.show_obj_props("Slide show", show)
 
                         Lo.delay(500)
@@ -86,11 +86,12 @@ The |basic_show_py|_ module:
                         # show.start() starts slideshow but not necessarily in 100% full screen
                         # show.start()
 
-                        sc = Draw.get_show_controller(show)
+                        sc = doc.get_show_controller()
                         Draw.wait_ended(sc)
 
                     finally:
-                        Lo.close_doc(doc)
+                        doc.close_doc()
+
 
     .. only:: html
 
@@ -98,7 +99,7 @@ The |basic_show_py|_ module:
 
             .. group-tab:: None
 
-The document is opened in the normal way and a slide show object created by calling :py:meth:`.Draw.get_show`, which is defined as:
+The document is opened in the normal way and a slide show object created by calling ``doc.get_show()`` that invokes :py:meth:`.Draw.get_show`, which is defined as:
 
 .. tabs::
 
@@ -238,23 +239,22 @@ The |auto_show_py|_ example removes the need for a presenter to click on a slide
             loader = Lo.load_office(Lo.ConnectPipe())
 
             try:
-                doc = Lo.open_doc(self._fnm, loader)
+                doc = ImpressDoc(Lo.open_doc(self._fnm, loader))
 
                 # slideshow start() crashes if the doc is not visible
-                GUI.set_visible(is_visible=True, odoc=doc)
+                doc.set_visible()
 
                 # set up a fast automatic change between all the slides
-                slides = Draw.get_slides_list(doc)
+                slides = doc.get_slides_list()
                 for slide in slides:
-                    Draw.set_transition(
-                        slide=slide,
+                    slide.set_transition(
                         fade_effect=self._fade_effect,
                         speed=AnimationSpeed.FAST,
                         change=DrawingSlideShowKind.AUTO_CHANGE,
                         duration=self._duration,
                     )
 
-                show = Draw.get_show(doc)
+                show = doc.get_show()
                 Props.show_obj_props("Slide Show", show)
                 self._set_show_prop(show)
                 # Props.set(show, IsEndless=True, Pause=0)
@@ -262,9 +262,8 @@ The |auto_show_py|_ example removes the need for a presenter to click on a slide
                 Lo.delay(500)
                 Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
                 # show.start() starts slideshow but not necessarily in 100% full screen
-                # show.start()
 
-                sc = Draw.get_show_controller(show)
+                sc = doc.get_show_controller()
                 Draw.wait_last(sc=sc, delay=self._end_delay)
                 Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION_END)
                 Lo.delay(500)
@@ -277,7 +276,7 @@ The |auto_show_py|_ example removes the need for a presenter to click on a slide
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
                     print("Ending the slide show")
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
@@ -296,15 +295,14 @@ The |auto_show_py|_ example removes the need for a presenter to click on a slide
 Automatic Slide Transitioning
 -----------------------------
 
-The automated transition between slides is configured by calling :py:meth:`.Draw.set_transition` on every slide in the deck:
+The automated transition between slides is configured by calling ``slide.set_transition()`` that invokes :py:meth:`.Draw.set_transition` on every slide in the deck:
 
 .. tabs::
 
     .. code-tab:: python
 
         # in AutoShow.main() of auto_show.py
-        Draw.set_transition(
-            slide=slide,
+        slide.set_transition(
             fade_effect=self._fade_effect,
             speed=AnimationSpeed.FAST,
             change=DrawingSlideShowKind.AUTO_CHANGE,
@@ -429,17 +427,17 @@ This only requires a few lines to be changed in |auto_show_py|_, shown in below:
 
         # in auto_show.py
         # ...
-        show = Draw.get_show(doc)
-        Props.showObjProps("Slide show", show);
-        Props.set(show, IsEndless=True, Pause=0);
+        show = doc.get_show()
+        Props.show_obj_props("Slide Show", show)
+        self._set_show_prop(show)
         show.start()
 
-        sc = Draw.get_show_controller(show)
+        sc = doc.get_show_controller()
         Draw.wait_ended(sc)
-        print("Ending the slide show")
-        sc.deactivate()
-        show.end()
         # ...
+
+        def _set_show_prop(self, show: XPresentation2) -> None:
+            Props.set(show, IsEndless=self._is_endless, Pause=self._pause)
 
     .. only:: html
 
@@ -484,14 +482,17 @@ This creates a play list called "ShortPlay" which will show the slides with indi
 
         # custom_show.py module
         from __future__ import annotations
+
         import uno
         from ooodev.dialog.msgbox import (
-            MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
+            MsgBox,
+            MessageBoxType,
+            MessageBoxButtonsEnum,
+            MessageBoxResultsEnum,
         )
-        from ooodev.office.draw import Draw
+        from ooodev.draw import Draw, ImpressDoc
         from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
         from ooodev.utils.file_io import FileIO
-        from ooodev.utils.gui import GUI
         from ooodev.utils.lo import Lo
         from ooodev.utils.props import Props
         from ooodev.utils.type_var import PathOrStr
@@ -510,20 +511,20 @@ This creates a play list called "ShortPlay" which will show the slides with indi
                 loader = Lo.load_office(Lo.ConnectPipe())
 
                 try:
-                    doc = Lo.open_doc(fnm=self._fnm, loader=loader)
+                    doc = ImpressDoc(Lo.open_doc(fnm=self._fnm, loader=loader))
                     # slideshow start() crashes if the doc is not visible
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                    doc.set_visible()
 
                     if len(self._idxs) > 0:
-                        _ = Draw.build_play_list(doc, "ShortPlay", *self._idxs)
-                        show = Draw.get_show(doc=doc)
+                        _ = doc.build_play_list("ShortPlay", *self._idxs)
+                        show = doc.get_show()
                         Props.set(show, CustomShow="ShortPlay")
                         Props.show_obj_props("Slide show", show)
                         Lo.delay(500)
                         Lo.dispatch_cmd(DrawViewDispatch.PRESENTATION)
                         # show.start() starts slideshow but not necessarily in 100% full screen
                         # show.start()
-                        sc = Draw.get_show_controller(show)
+                        sc = doc.get_show_controller()
                         Draw.wait_ended(sc)
 
                         Lo.delay(2000)
@@ -534,7 +535,7 @@ This creates a play list called "ShortPlay" which will show the slides with indi
                             buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                         )
                         if msg_result == MessageBoxResultsEnum.YES:
-                            Lo.close_doc(doc=doc, deliver_ownership=True)
+                            doc.close_doc()
                             Lo.close_office()
                         else:
                             print("Keeping document open")
@@ -548,6 +549,7 @@ This creates a play list called "ShortPlay" which will show the slides with indi
                 except Exception:
                     Lo.close_office()
                     raise
+
 
     .. only:: html
 
@@ -572,6 +574,7 @@ The most confusing part of :py:meth:`.Draw.build_play_list` is its use of two co
         # part of the build_play_list in draw class
         # ...
         # get name container for the slide show
+        # doc is an XComponent``
         play_list = cls.get_play_list(doc)
 
         # get factory from the container
