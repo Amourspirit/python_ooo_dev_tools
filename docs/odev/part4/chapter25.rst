@@ -53,13 +53,16 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                                 self._out_fnm = ""
                             self.closed = False
                             loader = Lo.load_office(Lo.ConnectPipe())
-                            self._doc = Calc.create_doc(loader)
+                            self._doc = CalcDoc(Calc.create_doc(loader))
 
-                            GUI.set_visible(visible=True, doc=self._doc)
-                            self._sheet = Calc.get_sheet(doc=self._doc, index=0)
+                            self._doc.set_visible()
+                            self._sheet = self._doc.get_sheet(0)
 
                             # insert some data
-                            Calc.set_col(sheet=self._sheet, cell_name="A1", values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3))
+                            self._sheet.set_col(
+                                cell_name="A1",
+                                values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3),
+                            )
 
                             # Event handlers are defined as methods on the class.
                             # However class methods are not callable by the event system.
@@ -68,19 +71,28 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                             self._fn_on_modified = self.on_modified
                             self._fn_on_disposing = self.on_disposing
 
+                            # Since OooDev 0.15.0 it is possible to set call backs directly on the document.
+                            # No deed to create a ModifyEvents object.
+                            # It is possible to subscribe to event for document, sheets, ranges, cells, etc.
+                            self._doc.add_event_modified(self._fn_on_modified)
+                            self._doc.add_event_modify_events_disposing(self._fn_on_disposing)
+
+                            # This is the pre 0.15.0 way of doing it.
                             # pass doc to constructor, this will allow listener to be automatically attached to document.
-                            self._m_events = ModifyEvents(subscriber=self._doc)
-                            self._m_events.add_event_modified(self._fn_on_modified)
-                            self._m_events.add_event_modify_events_disposing(self._fn_on_disposing)
+                            # self._m_events = ModifyEvents(subscriber=self._doc.component)
+                            # self._m_events.add_event_modified(self._fn_on_modified)
+                            # self._m_events.add_event_modify_events_disposing(self._fn_on_disposing)
 
                             # close down when window closes
                             self._top_win_ev = TopWindowEvents(add_window_listener=True)
                             self._top_win_ev.add_event_window_closing(self._fn_on_window_closing)
 
-                        def on_window_closing(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
+                        def on_window_closing(
+                            self, source: Any, event_args: EventArgs, *args, **kwargs
+                        ) -> None:
                             print("Closing")
                             try:
-                                Lo.close_doc(self._doc)
+                                self._doc.close_doc()
                                 Lo.close_office()
                                 self.closed = True
                             except Exception as e:
@@ -92,8 +104,10 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                                 # event = cast("EventObject", event_args.event_data)
                                 # doc = Lo.qi(XSpreadsheetDocument, event.Source, True)
                                 doc = self._doc
-                                addr = Calc.get_selected_cell_addr(doc)
-                                print(f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=self._sheet, addr=addr)}")
+                                addr = doc.get_selected_cell_addr()
+                                print(
+                                    f"  {Calc.get_cell_str(addr=addr)} = {self._sheet.get_val(addr=addr)}"
+                                )
                             except Exception as e:
                                 print(e)
 
@@ -108,34 +122,31 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                         def __init__(self, out_fnm: PathOrStr) -> None:
                             super().__init__()
                             if out_fnm:
-                                outf = FileIO.get_absolute_path(out_fnm)
-                                _ = FileIO.make_directory(outf)
-                                self._out_fnm = outf
+                                out_file = FileIO.get_absolute_path(out_fnm)
+                                _ = FileIO.make_directory(out_file)
+                                self._out_fnm = out_file
                             else:
                                 self._out_fnm = ""
                             self.closed = False
                             loader = Lo.load_office(Lo.ConnectPipe())
-                            self._doc = Calc.create_doc(loader)
+                            self._doc = CalcDoc(Calc.create_doc(loader))
 
-                            GUI.set_visible(is_visible=True, odoc=self._doc)
-                            self._sheet = Calc.get_sheet(doc=self._doc, index=0)
+                            self._doc.set_visible()
+                            self._sheet = self._doc.get_sheet(0)
 
                             # insert some data
-                            Calc.set_col(
-                                sheet=self._sheet,
+                            self._sheet.set_col(
                                 cell_name="A1",
-                                values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3)
+                                values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3),
                             )
 
-                            mb = Lo.qi(XModifyBroadcaster, self._doc, True)
+                            mb = self._doc.qi(XModifyBroadcaster, True)
                             mb.addModifyListener(self)
 
                             # Event handlers are defined as methods on the class.
                             # However class methods are not callable by the event system.
-                            # The solution is to create a function that calls the class method and pass
-                            # that function to the event system.
-                            # Also the function must be a member of the class so that it
-                            # is not garbage collected.
+                            # The solution is to create a function that calls the class method and pass that function to the event system.
+                            # Also the function must be a member of the class so that it is not garbage collected.
 
                             def _on_window_closing(
                                 source: Any, event_args: EventArgs, *args, **kwargs
@@ -153,19 +164,37 @@ One way of doing this is to attach a XModifyListener_ interface to the open docu
                         ) -> None:
                             print("Closing")
                             try:
-                                Lo.close_doc(self._doc)
+                                self._doc.close_doc()
                                 Lo.close_office()
                                 self.closed = True
                             except Exception as e:
                                 print(f"  {e}")
 
                         def modified(self, event: EventObject) -> None:
+                            """
+                            is called when something changes in the object.
+
+                            Due to such an event, it may be necessary to update views or controllers.
+
+                            The source of the event may be the content of the object to which the listener
+                            is registered.
+                            """
                             print("Modified")
                             doc = Lo.qi(XSpreadsheetDocument, event.Source, True)
                             addr = Calc.get_selected_cell_addr(doc)
-                            print(f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=self._sheet, addr=addr)}")
+                            print(f"  {Calc.get_cell_str(addr=addr)} = {self._sheet.get_val(addr=addr)}")
 
                         def disposing(self, event: EventObject) -> None:
+                            """
+                            gets called when the broadcaster is about to be disposed.
+
+                            All listeners and all other objects, which reference the broadcaster
+                            should release the reference to the source. No method should be invoked
+                            anymore on this object ( including XComponent.removeEventListener() ).
+
+                            This method is called for every listener registration of derived listener
+                            interfaced, not only for registrations at XComponent.
+                            """
                             print("Disposing")
 
     .. only:: html
@@ -304,10 +333,10 @@ and it responds by closing the document and Office:
         # in ModifyListener class
         def __init__(self, trigger_args: GenericArgs | None = None, doc: XComponent | None = None) -> None:
             super().__init__(trigger_args=trigger_args)
-            if doc is None:
-                return
+            self._doc = CalcDoc(Calc.create_doc(loader))
+            # ... other code
 
-            mb = Lo.qi(XModifyBroadcaster, doc, True)
+            mb = self._doc.qi(XModifyBroadcaster, True)
             mb.addModifyListener(self)
 
     .. only:: html
@@ -316,7 +345,7 @@ and it responds by closing the document and Office:
 
             .. group-tab:: None
 
-|mod_list_adapter_py|_ Creates an instance of |modify_events| and subscribes to ``modified`` event.
+|mod_list_adapter_py|_ has a built in |modify_events|.
 
 .. tabs::
 
@@ -326,8 +355,8 @@ and it responds by closing the document and Office:
         def __init__(self, out_fnm: PathOrStr) -> None:
             # ... other code
             self._fn_on_modified = self.on_modified
-            self._m_events = ModifyEvents(subscriber=self._doc)
-            self._m_events.add_event_modified(self._fn_on_modified)
+            self._doc.add_event_modified(self._fn_on_modified)
+
             # ... other code
 
         def on_modified(self, source: Any, event_args: EventArgs, *args, **kwargs) -> None:
@@ -336,8 +365,10 @@ and it responds by closing the document and Office:
                 # event = cast("EventObject", event_args.event_data)
                 # doc = Lo.qi(XSpreadsheetDocument, event.Source, True)
                 doc = self._doc
-                addr = Calc.get_selected_cell_addr(doc)
-                print(f"  {Calc.get_cell_str(addr=addr)} = {Calc.get_val(sheet=self._sheet, addr=addr)}")
+                addr = doc.get_selected_cell_addr()
+                print(
+                    f"  {Calc.get_cell_str(addr=addr)} = {self._sheet.get_val(addr=addr)}"
+                )
             except Exception as e:
                 print(e)
 
@@ -367,7 +398,8 @@ While ``modified()`` is being executed, the modified cell in the document is sti
     .. code-tab:: python
 
         # in modify_listener_adapter.py
-        addr = Calc.get_selected_cell_addr(doc)
+        doc = self._doc
+        addr = doc.get_selected_cell_addr()
 
     .. only:: html
 
@@ -491,21 +523,20 @@ The |sel_list|_ example is similar to |mod_list|_ except that it uses |selection
                 super().__init__()
                 self.closed = False
                 loader = Lo.load_office(Lo.ConnectSocket())
-                self._doc = Calc.create_doc(loader)
+                self._doc = CalcDoc(Calc.create_doc(loader))
 
-                GUI.set_visible(is_visible=True, odoc=self._doc)
-                self.sheet = Calc.get_sheet(doc=self._doc, index=0)
+                self._doc.set_visible()
+                self._sheet = self._doc.get_sheet(0)
 
-                self.curr_addr = Calc.get_selected_cell_addr(self._doc)
-                self.curr_val = self._get_cell_float(self.curr_addr)  # may be None
+                self._curr_addr = self._doc.get_selected_cell_addr()
+                self._curr_val = self._get_cell_float(self._curr_addr)  # may be None
 
                 self._attach_listener()
 
                 # insert some data
-                Calc.set_col(
-                    sheet=self.sheet,
+                self._sheet.set_col(
+                    values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3),
                     cell_name="A1",
-                    values=("Smith", 42, 58.9, -66.5, 43.4, 44.5, 45.3)
                 )
 
     .. only:: html
@@ -525,7 +556,6 @@ If the cell doesn't contain a float then ``self.curr_val`` is assigned ``None``.
 
         # in select_listener.py
         def _attach_listener(self) -> None:
-
             # Event handlers are defined as methods on the class.
             # However class methods are not callable by the event system.
             # The solution is to assign the method to class fields and use them to add the event callbacks.
@@ -538,7 +568,7 @@ If the cell doesn't contain a float then ``self.curr_val`` is assigned ``None``.
             self._twe.add_event_window_closing(self._fn_on_window_closing)
 
             # pass doc to constructor, this will allow listener events to be automatically attached to document.
-            self._sel_events = SelectionChangeEvents(doc=self._doc)
+            self._sel_events = SelectionChangeEvents(doc=self._doc.component)
             self._sel_events.add_event_selection_changed(self._on_selection_changed)
             self._sel_events.add_event_selection_change_events_disposing(self._on_disposing)
 
@@ -618,38 +648,40 @@ The output from ``on_selection_changed()`` shown above shows how the user moved 
 
         # in select_listener.py
         def on_selection_changed(
-            self, source: Any, event_args: EventArgs, *args, **kwargs
-        ) -> None:
-            event = cast("EventObject", event_args.event_data)
-            ctrl = Lo.qi(XController, event.Source)
-            if ctrl is None:
-                print("No ctrl for event source")
-                return
+        self, source: Any, event_args: EventArgs, *args, **kwargs
+    ) -> None:
+        event = cast("EventObject", event_args.event_data)
+        ctrl = Lo.qi(XController, event.Source)
+        if ctrl is None:
+            print("No ctrl for event source")
+            return
 
-            addr = Calc.get_selected_cell_addr(self._doc)
-            if addr is None:
-                return
-            try:
-                # better to wrap in try block.
-                # otherwise errors crahses office
-                if not Calc.is_equal_addresses(addr, self.curr_addr):
-                    flt = self._get_cell_float(self.curr_addr)
-                    if flt is not None:
-                        if self.curr_val is None:  # so previously stored value was null
-                            print(f"{Calc.get_cell_str(self.curr_addr)} new value: {flt:.2f}")
-                        else:
-                            if self.curr_val != flt:
-                                print(
-                                    f"{Calc.get_cell_str(self.curr_addr)} has changed from {self.curr_val:.2f} to {flt:.2f}"
-                                )
+        addr = self._doc.get_selected_cell_addr()
+        if addr is None:
+            return
+        try:
+            # better to wrap in try block.
+            # otherwise errors crashes office
+            if not Calc.is_equal_addresses(addr, self._curr_addr):
+                flt = self._get_cell_float(self._curr_addr)
+                if flt is not None:
+                    if self._curr_val is None:  # so previously stored value was null
+                        print(
+                            f"{Calc.get_cell_str(self._curr_addr)} new value: {flt:.2f}"
+                        )
+                    else:
+                        if self._curr_val != flt:
+                            print(
+                                f"{Calc.get_cell_str(self._curr_addr)} has changed from {self._curr_val:.2f} to {flt:.2f}"
+                            )
 
-                # update current address and value
-                self.curr_addr = addr
-                self.curr_val = self._get_cell_float(addr)
-                if self.curr_val is not None:
-                    print(f"{Calc.get_cell_str(self.curr_addr)} value: {self.curr_val}")
-            except Exception as e:
-                print(e)
+            # update current address and value
+            self._curr_addr = addr
+            self._curr_val = self._get_cell_float(addr)
+            if self._curr_val is not None:
+                print(f"{Calc.get_cell_str(self._curr_addr)} value: {self._curr_val}")
+        except Exception as e:
+            print(e)
 
     .. only:: html
 
