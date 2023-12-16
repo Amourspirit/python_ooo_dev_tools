@@ -28,6 +28,7 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
         from ooodev.format.calc.direct.cell.background import Color as BgColor
         from ooodev.format.calc.direct.cell.borders import Borders, BorderLineKind, Side, LineSize
         from ooodev.format.calc.direct.cell.font import Font
+        from ooodev.calc import Calc, CalcDoc, CalcCellRange, ZoomKind
         # ... other imports
 
         class ReplaceAll:
@@ -44,11 +45,13 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
                 loader = Lo.load_office(Lo.ConnectSocket())
 
                 try:
-                    doc = Calc.create_doc(loader)
+                    doc = CalcDoc(Calc.create_doc(loader))
 
-                    GUI.set_visible(is_visible=True, odoc=doc)
+                    doc.set_visible()
+                    Lo.delay(300)
+                    doc.zoom(ZoomKind.ZOOM_150_PERCENT)
 
-                    sheet = Calc.get_sheet(doc=doc, index=0)
+                    sheet = doc.get_sheet(0)
 
                     def cb(row: int, col: int, prev) -> str:
                         # call back function for make_2d_array, sets the value for the cell
@@ -68,27 +71,25 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
 
                     # create styles that can be applied to the cells via Calc.set_array_range().
                     inner_side = Side()
-                    outter_side = Side(width=LineSize.THICK)
+                    outer_side = Side(width=LineSize.THICK)
                     bdr = Borders(
-                        border_side=outter_side, vertical=inner_side, horizontal=inner_side
+                        border_side=outer_side, vertical=inner_side, horizontal=inner_side
                     )
                     bg_color = BgColor(StandardColor.BLUE)
                     ft = Font(color=StandardColor.WHITE)
 
-                    Calc.set_array_range(
-                        sheet=sheet, range_name="A1:F15", values=tbl, styles=[bdr, bg_color, ft]
+                    sheet.set_array_range(
+                        range_name="A1:F15", values=tbl, styles=[bdr, bg_color, ft]
                     )
 
                     # A1:F15
-                    cell_rng = Calc.get_cell_range(
-                        sheet=sheet, col_start=0, row_start=0, col_end=5, row_end=15
-                    )
+                    cell_rng = sheet.get_range(col_start=0, row_start=0, col_end=5, row_end=15)
 
                     for s in self._srch_strs:
                         if self._is_search_all:
-                            self._search_all(sheet=sheet, cell_rng=cell_rng, srch_str=s)
+                            self._search_all(cell_rng=cell_rng, srch_str=s)
                         else:
-                            self._search_iter(sheet=sheet, cell_rng=cell_rng, srch_str=s)
+                            self._search_iter(cell_rng=cell_rng, srch_str=s)
 
                     if self._repl_str is not None:
                         for s in self._srch_strs:
@@ -97,7 +98,7 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
                             )
 
                     if self._out_fnm:
-                        Lo.save_doc(doc=doc, fnm=self._out_fnm)
+                        doc.save_doc(fnm=self._out_fnm)
 
                     msg_result = MsgBox.msgbox(
                         "Do you wish to close document?",
@@ -106,7 +107,7 @@ Another approach is to employ the XSearchable_ and XReplaceable_ interfaces, as 
                         buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                     )
                     if msg_result == MessageBoxResultsEnum.YES:
-                        Lo.close_doc(doc=doc, deliver_ownership=True)
+                        doc.close_doc()
                         Lo.close_office()
                     else:
                         print("Keeping document open")
@@ -156,7 +157,7 @@ A cell range's XSearchable_ interface is accessed through casting:
     .. code-tab:: python
 
         # in replace_all.py
-        srch = Lo.qi(XSearchable, cell_rng, True)
+        srch = cell_rng.qi(XSearchable, True)
 
     .. only:: html
 
@@ -172,7 +173,7 @@ The XReplaceable_ interface for the range is obtained in the same way:
     .. code-tab:: python
 
         # in replace_all.py
-        repl = Lo.qi(XReplaceable, cell_rng, True)
+        repl = cell_rng.qi(XReplaceable, True)
 
     .. only:: html
 
@@ -197,7 +198,7 @@ These search properties are stored in the SearchDescriptor_ service, which is ac
 
         # in ReplaceAll._search_iter() of replace_all.py
         # ...
-        srch = Lo.qi(XSearchable, cell_rng, True)
+        srch = cell_rng.qi(XSearchable, True)
         sd = srch.createSearchDescriptor()
 
         sd.setSearchString(srch_str)
@@ -268,10 +269,10 @@ It uses ``XSearchable.findFirst()`` and ``XSearchable.findNext()`` to incrementa
     .. code-tab:: python
 
         # in ReplaceAll._search_iter() of replace_all.py
-        def _search_iter(self, sheet: XSpreadsheet, cell_rng: XCellRange, srch_str: str) -> None:
+        def _search_iter(self, cell_rng: CalcCellRange, srch_str: str) -> None:
             print(f'Searching (iterating) for all occurrences of "{srch_str}"')
             try:
-                srch = Lo.qi(XSearchable, cell_rng, True)
+                srch = cell_rng.qi(XSearchable, True)
                 sd = srch.createSearchDescriptor()
 
                 sd.setSearchString(srch_str)
@@ -279,7 +280,10 @@ It uses ``XSearchable.findFirst()`` and ``XSearchable.findNext()`` to incrementa
                 sd.setPropertyValue("SearchWords", True)
                 # sd.setPropertyValue("SearchRegularExpression", True)
 
-                cr = Lo.qi(XCellRange, srch.findFirst(sd))
+                o_first = srch.findFirst(sd)
+                # Info.show_services("Find First", o_first)
+
+                cr = Lo.qi(XCellRange, o_first)
                 if cr is None:
                     print(f'  No match found for "{srch_str}"')
                     return
@@ -314,12 +318,13 @@ It uses ``XSearchable.findFirst()`` and ``XSearchable.findNext()`` to incrementa
 
         # in ReplaceAll._highlight() of replace_all.py
         def _highlight(self, cr: XCellRange) -> None:
-            # highlight by make cell bold, with text color of Light purple and
-            # a background color of light blue.
+            # highlight by make cell bold, with text color of Light purple and a background color of light blue.
             ft = Font(b=True, color=StandardColor.PURPLE_LIGHT1)
             bg_color = BgColor(StandardColor.DEFAULT_BLUE)
-            bdrs = Borders(border_side=Side(line=BorderLineKind.SOLID, color=StandardColor.RED_DARK3))
-            Styler.apply(cr, ft, bg_color, bdrs)
+            borders = Borders(
+                border_side=Side(line=BorderLineKind.SOLID, color=StandardColor.RED_DARK3)
+            )
+            Styler.apply(cr, ft, bg_color, borders)
 
     .. only:: html
 
@@ -474,10 +479,10 @@ The ``_search_all()`` method in |replace_all_py|_ utilizes ``XSearchable.findAll
     .. code-tab:: python
 
         # in ReplaceAll._search_all() of replace_all.py
-        def _search_all(self, sheet: XSpreadsheet, cell_rng: XCellRange, srch_str: str) -> None:
+        def _search_all(self, cell_rng: CalcCellRange, srch_str: str) -> None:
             print(f'Searching (find all) for all occurrences of "{srch_str}"')
             try:
-                srch = Lo.qi(XSearchable, cell_rng, True)
+                srch = cell_rng.qi(XSearchable, True)
                 sd = srch.createSearchDescriptor()
 
                 sd.setSearchString(srch_str)
@@ -520,11 +525,13 @@ The ``_replace_all()`` method is:
     .. code-tab:: python
 
         # in ReplaceAll._replace_all() of replace_all.py
-        def _replace_all(self, cell_rng: XCellRange, srch_str: str, repl_str: str) -> None:
+        def _replace_all(
+            self, cell_rng: CalcCellRange, srch_str: str, repl_str: str
+        ) -> None:
             print(f'Replacing "{srch_str}" with "{repl_str}"')
             Lo.delay(2000)  # wait a bit before search & replace
             try:
-                repl = Lo.qi(XReplaceable, cell_rng, True)
+                repl = cell_rng.qi(XReplaceable, True)
                 rd = repl.createReplaceDescriptor()
 
                 rd.setSearchString(srch_str)

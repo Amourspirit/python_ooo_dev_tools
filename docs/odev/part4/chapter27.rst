@@ -127,7 +127,7 @@ Function calls can be nested, as in:
 
         # in calc_functions.py
         print("SIN result for 30 degrees is:", end="")
-        print(f'{Calc.call_fun("SIN", Calc.call_fun("RADIANS", 30)):.3f}')
+        print(f'{doc.call_fun("SIN", doc.call_fun("RADIANS", 30)):.3f}')
 
     .. only:: html
 
@@ -146,7 +146,7 @@ For instance:
     .. code-tab:: python
 
         # in calc_functions.py
-        avg = float(Calc.call_fun("AVERAGE", 1, 2, 3, 4, 5))
+        avg = float(doc.call_fun("AVERAGE", 1, 2, 3, 4, 5))
         print(f"Average of the numbers is: {avg:.1f}")
 
     .. only:: html
@@ -173,11 +173,11 @@ Now ``xrng`` and ``yrng`` can be passed to ``SLOPE``.
         # in calc_functions.py
         # the slope function only seems to work if passed XCellRange
         arr = [[1.0, 2.0, 3.0], [3.0, 6.0, 9.0]]
-        Calc.set_array(values=arr, sheet=sheet, name="A1")
+        sheet.set_array(values=arr, name="A1")
         Lo.delay(500)
-        xrng = Calc.get_cell_range(sheet=sheet, range_name="A1:C1")
-        yrng = Calc.get_cell_range(sheet=sheet, range_name="A2:C2")
-        slope = float(Calc.call_fun("SLOPE", yrng, xrng))
+        x_rng = sheet.get_range(range_name="A1:C1").get_cell_range()
+        y_rng = sheet.get_range(range_name="A2:C2").get_cell_range()
+        slope = float(Calc.call_fun("SLOPE", y_rng, x_rng))
         print(f"SLOPE of the line: {slope}")
 
     .. only:: html
@@ -197,10 +197,10 @@ The functions in the "Array" category almost all use 2D arrays as arguments. For
 
         # in calc_functions.py
         arr = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
-        Calc.set_array(values=arr, sheet=sheet, name="A1")
+        sheet.set_array(values=arr, name="A1")
         Lo.delay(500)
-        rng = Calc.get_cell_range(sheet=sheet, range_name="A1:C3")
-        trans_mat = Calc.call_fun("TRANSPOSE", rng)
+        rng = sheet.get_range(range_name="A1:C3").get_cell_range()
+        trans_mat = doc.call_fun("TRANSPOSE", rng)
         # add a little extra formatting
         fl = FormatterTable(format=(".1f", ">5"))
         Calc.print_array(trans_mat, fl)
@@ -234,7 +234,7 @@ For example, ``IMSUM`` sums a series of complex numbers like so:
 
         # in calc_functions.py
         # sum two imaginary numbers: "13+4j" + "5+3j" returns 18+7j.
-        sum = Calc.call_fun("IMSUM", "13+4j", "5+3j")
+        sum = doc.call_fun("IMSUM", "13+4j", "5+3j")
         print(f"13+4j + 5+3j: {sum}")
 
     .. only:: html
@@ -437,9 +437,9 @@ For example, here are two ways to convert ``999`` into Roman form:
 
         # in calc_functions.py
         # Roman numbers
-        roman = Calc.call_fun("ROMAN", 999)
+        roman = doc.call_fun("ROMAN", 999)
         # use max simplification
-        roman4 = Calc.call_fun("ROMAN", 999, 4)
+        roman4 = doc.call_fun("ROMAN", 999, 4)
         print(f"999 in Roman numerals: {roman} or {roman4}")
 
     .. only:: html
@@ -690,18 +690,18 @@ The program begins by opening the ``pivottable1.ods`` file (:numref:`ch27fig_piv
             loader = Lo.load_office(Lo.ConnectSocket())
 
             try:
-                doc = Calc.open_doc(fnm=self._fnm, loader=loader)
+                doc = CalcDoc(Calc.open_doc(fnm=self._fnm, loader=loader))
 
-                GUI.set_visible(is_visible=True, odoc=doc)
+                doc.set_visible()
 
-                sheet = Calc.get_sheet(doc=doc)
-                dp_sheet = Calc.insert_sheet(doc=doc, name="Pivot Table", idx=1)
+                sheet = doc.get_sheet()
+                dp_sheet = doc.insert_sheet(name="Pivot Table", idx=1)
 
                 self._create_pivot_table(sheet=sheet, dp_sheet=dp_sheet)
-                Calc.set_active_sheet(doc=doc, sheet=dp_sheet)
+                dp_sheet.set_active()
 
                 if self._out_fnm:
-                    Lo.save_doc(doc=doc, fnm=self._out_fnm)
+                    doc.save_doc(fnm=self._out_fnm)
 
                 msg_result = MsgBox.msgbox(
                     "Do you wish to close document?",
@@ -710,7 +710,7 @@ The program begins by opening the ``pivottable1.ods`` file (:numref:`ch27fig_piv
                     buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
                 )
                 if msg_result == MessageBoxResultsEnum.YES:
-                    Lo.close_doc(doc=doc, deliver_ownership=True)
+                    doc.close_doc()
                     Lo.close_office()
                 else:
                     print("Keeping document open")
@@ -718,6 +718,7 @@ The program begins by opening the ``pivottable1.ods`` file (:numref:`ch27fig_piv
             except Exception:
                 Lo.close_office()
                 raise
+
 
     .. only:: html
 
@@ -732,14 +733,16 @@ A second sheet (called ``dp_sheet``) is created to hold the generated pivot tabl
     .. code-tab:: python
 
         # in pivot_table1.py
-        def _create_pivot_table(self, sheet: XSpreadsheet, dp_sheet: XSpreadsheet) -> XDataPilotTable | None:
-            cell_range = Calc.find_used_range(sheet)
-            print(f"The used area is: { Calc.get_range_str(cell_range)}")
+        def _create_pivot_table(
+            self, sheet: CalcSheet, dp_sheet: CalcSheet
+        ) -> XDataPilotTable | None:
+            cell_range = sheet.find_used_range()
+            print(f"The used area is: { cell_range.get_range_str()}")
             print()
 
-            dp_tables = Calc.get_pilot_tables(sheet)
+            dp_tables = sheet.get_pilot_tables()
             dp_desc = dp_tables.createDataPilotDescriptor()
-            dp_desc.setSourceRange(Calc.get_address(cell_range))
+            dp_desc.setSourceRange(cell_range.get_address())
 
             # XIndexAccess fields = dpDesc.getDataPilotFields();
             fields = dp_desc.getHiddenFields()
@@ -764,20 +767,15 @@ A second sheet (called ``dp_sheet``) is created to hold the generated pivot tabl
             Props.set(props, Function=GeneralFunction.SUM)
 
             # place onto sheet
-            dest_addr = Calc.get_cell_address(sheet=dp_sheet, cell_name="A1")
+            dest_addr = dp_sheet.get_cell_address(cell_name="A1")
             dp_tables.insertNewByName("PivotTableExample", dest_addr, dp_desc)
-            Calc.set_col_width(sheet=dp_sheet, width=60, idx=0)
+            dp_sheet.set_col_width(width=60, idx=0)
             # A column; in mm
 
-            # Usually the table is not fully updated. The cells are often
-            # drawn with #VALUE! contents (?).
-
-            # This can be fixed by explicitly refreshing the table, but it has to
-            # be accessed via the sheet or the tables container is considered
-            # empty, and the table is not found.
-
-            dp_tables2 = Calc.get_pilot_tables(sheet=dp_sheet)
-            # return self._refresh_table(dp_tables=dp_tables2, table_name="PivotTableExample")
+            dp_tables2 = dp_sheet.get_pilot_tables()
+            return self._refresh_table(
+                dp_tables=dp_tables2, table_name="PivotTableExample"
+            )
 
     .. only:: html
 
@@ -978,12 +976,18 @@ This problem can be fixed by explicitly requesting a refresh of the pivot table,
     .. code-tab:: python
 
         # in PivotTable1._create_pivot_table()
-        def _create_pivot_table(self, sheet: XSpreadsheet, dp_sheet: XSpreadsheet) -> XDataPilotTable | None:
+        def _create_pivot_table(
+            self, sheet: CalcSheet, dp_sheet: CalcSheet
+        ) -> XDataPilotTable | None:
             # ...
-            dp_tables2 = Calc.get_pilot_tables(sheet=dp_sheet)
-            return self._refresh_table(dp_tables=dp_tables2, table_name="PivotTableExample")
+            dp_tables2 = dp_sheet.get_pilot_tables()
+            return self._refresh_table(
+                dp_tables=dp_tables2, table_name="PivotTableExample"
+            )
 
-        def _refresh_table(self, dp_tables: XDataPilotTables, table_name: str) -> XDataPilotTable | None:
+        def _refresh_table(
+            self, dp_tables: XDataPilotTables, table_name: str
+        ) -> XDataPilotTable | None:
             nms = dp_tables.getElementNames()
             print(f"No. of DP tables: {len(nms)}")
             for nm in nms:
@@ -993,6 +997,7 @@ This problem can be fixed by explicitly requesting a refresh of the pivot table,
             if dp_table is not None:
                 dp_table.refresh()
             return dp_table
+
     .. only:: html
 
         .. cssclass:: tab-none
@@ -1021,16 +1026,19 @@ The |goal_ex|_ example contains several uses of "goal seeking". It begins like s
         # in goal_seek.py
         def main(self) -> None:
             with Lo.Loader(connector=Lo.ConnectPipe()) as loader:
-                doc = Calc.create_doc(loader)
-                sheet = Calc.get_sheet(doc=doc)
-                gs = Lo.qi(XGoalSeek, doc)
+                doc = CalcDoc(Calc.create_doc(loader))
+                sheet = doc.get_sheet(0)
+                gs = doc.qi(XGoalSeek, True)
 
                 # -------------------------------------------------
                 # x-variable and starting value
-                Calc.set_val(value=9, sheet=sheet, cell_name="C1")
+                cell1 = sheet.get_cell(cell_name="C1")
                 # formula
-                Calc.set_val(value="=SQRT(C1)", sheet=sheet, cell_name="C2")
-                x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="C1", formula_cell_name="C2", result=4.0)
+                cell2 = cell1.get_cell_down()
+                cell2.set_val("=SQRT(C1)")
+                x = cell1.goal_seek(
+                    gs=gs, formula_cell_name=cell2.cell_obj, result=4.0
+                )
                 print(f"x == {x}\n")  # 16.0
 
                 # more goal seek examples ...
@@ -1092,7 +1100,7 @@ This can be demonstrated by asking "goal seek" to look for an impossible ``x-val
 
         # in goal_seek.py
         try:
-            x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="C1", formula_cell_name="C2", result=-4.0)
+            x = cell1.goal_seek(gs=gs, formula_cell_name=cell2.cell_obj, result=-4.0)
             # The formula is still y = sqrt(x)
             # Find x when sqrt(x) == -4, which is impossible
             print(f"x == {x} when sqrt(x) == -4\n")
@@ -1128,9 +1136,14 @@ But let's do things the number-crunching way, and supply the original formula to
     .. code-tab:: python
 
         # in goal_seek.py
-        Calc.set_val(sheet=sheet, cell_name="D1", value=0.8)
-        Calc.set_val(sheet=sheet, cell_name="D2", value="=(D1^2 - 1)/(D1 - 1)")
-        x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="D1", formula_cell_name="D2", result=2)
+        cell1 = cell1.get_cell_right()  # D1
+        cell2 = cell2.get_cell_down()  # D2
+        cell1.set_val(0.8)
+        cell2.set_val("=(D1^2 - 1)/(D1 - 1)")
+
+        x = cell1.goal_seek(
+            gs=gs, formula_cell_name=cell2.cell_obj, result=2
+        )
         print(f"x == {x} when x+1 == 2\n")
 
     .. only:: html
@@ -1150,16 +1163,26 @@ As usual, the ``x-variable`` has a starting value in a cell, but ``n`` and ``i``
     .. code-tab:: python
 
         # in goal_seek.py
-        Calc.set_val(value=100000, sheet=sheet, cell_name="B1")
-        Calc.set_val(value=1, sheet=sheet, cell_name="B2")
-        Calc.set_val(value=0.075, sheet=sheet, cell_name="B3")
-        Calc.set_val("=B1*B2*B3", sheet, "B4")
-        x = Calc.goal_seek(gs=gs, sheet=sheet, cell_name="B1", formula_cell_name="B4", result=15000)
+        cell1 = sheet.get_cell(cell_name="B1")
+        cell2 = cell1.get_cell_down()  # B2
+        cell3 = cell2.get_cell_down()  # B3
+        cell4 = cell3.get_cell_down()  # B4
+
+        cell1.set_val(100000)
+        # n, no. of years
+        cell2.set_val(1)
+        # i, interest rate (7.5%)
+        cell3.set_val(0.075)
+        # formula
+        cell4.set_val("=B1*B2*B3")
+        x = cell1.goal_seek(
+            gs=gs, formula_cell_name=cell4.cell_obj, result=15000
+        )
         print(
             (
                 f"x == {x} when x*"
-                f'{Calc.get_val(sheet=sheet, cell_name="B2")}*'
-                f'{Calc.get_val(sheet=sheet, cell_name="B3")}'
+                f"{cell2.get_val()}*"
+                f"{cell3.get_val()}"
                 " == 15000\n"
             )
         )
@@ -1280,47 +1303,75 @@ The main() function for |solve_ex_py|_:
     .. code-tab:: python
 
         # in linear_solve.py
-        def main(verose: bool = False) -> None:
-            with Lo.Loader(connector=Lo.ConnectPipe(), opt=Lo.Options(verbose=verose)) as loader:
-                doc = Calc.create_doc(loader)
-                sheet = Calc.get_sheet(doc=doc)
+        @staticmethod
+        def main(verbose: bool = False) -> None:
+            with Lo.Loader(
+                connector=Lo.ConnectPipe(), opt=Lo.Options(verbose=verbose)
+            ) as loader:
+                doc = CalcDoc(Calc.create_doc(loader))
+                sheet = doc.get_active_sheet()
                 Calc.list_solvers()
 
                 # specify the variable cells
-                xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
-                ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
-
-                vars = (xpos, ypos)
+                x_pos = Calc.get_cell_address(sheet=sheet.component, cell_name="B1")  # X
+                y_pos = Calc.get_cell_address(sheet=sheet.component, cell_name="B2")  # Y
+                vars = (x_pos, y_pos)
 
                 # specify profit equation
-                Calc.set_val(value="=143*B1 + 60*B2", sheet=sheet, cell_name="B3")
-                profit_eq = Calc.get_cell_address(sheet, "B3")
+                sheet.set_val(value="=143*B1 + 60*B2", cell_name="B3")
+                profit_eq = Calc.get_cell_address(sheet.component, "B3")
 
                 # set up equation formulae without inequalities
-                Calc.set_val(value="=120*B1 + 210*B2", sheet=sheet, cell_name="B4")
-                Calc.set_val(value="=110*B1 + 30*B2", sheet=sheet, cell_name="B5")
-                Calc.set_val(value="=B1 + B2", sheet=sheet, cell_name="B6")
+                sheet.set_val(value="=120*B1 + 210*B2", cell_name="B4")
+                sheet.set_val(value="=110*B1 + 30*B2", cell_name="B5")
+                sheet.set_val(value="=B1 + B2", cell_name="B6")
 
                 # create the constraints
                 # constraints are equations and their inequalities
-                sc1 = Calc.make_constraint(num=15000, op="<=", sheet=sheet, cell_name="B4")
+                sc1 = Calc.make_constraint(
+                    num=15000, op="<=", sheet=sheet.component, cell_name="B4"
+                )
                 #   20x + 210y <= 15000
                 #   B4 is the address of the cell that is constrained
                 sc2 = Calc.make_constraint(
-                    num=4000, op=SolverConstraintOperator.LESS_EQUAL, sheet=sheet, cell_name="B5"
+                    num=4000,
+                    op=SolverConstraintOperator.LESS_EQUAL,
+                    sheet=sheet.component,
+                    cell_name="B5",
                 )
                 #   110x + 30y <= 4000
-                sc3 = Calc.make_constraint(num=75, op="<=", sheet=sheet, cell_name="B6")
+                sc3 = Calc.make_constraint(
+                    num=75, op="<=", sheet=sheet.component, cell_name="B6"
+                )
                 #   x + y <= 75
 
                 # could also include x >= 0 and y >= 0
                 constraints = (sc1, sc2, sc3)
 
-                solver = "com.sun.star.comp.Calc.CoinMPSolver"
+                # for unknown reason CoinMPSolver stopped working on linux.
+                # Ubuntu 22.04 LibreOffice 7.3 no-longer list com.sun.star.comp.Calc.CoinMPSolver
+                # as a reported service.
+                # strangely Windows 10, LibreOffice 7.3 does still list com.sun.star.comp.Calc.CoinMPSolver
+                # as a service.
+                # srv_solver = "com.sun.star.comp.Calc.LpsolveSolver"
+                solvers = Info.get_service_names(service_name="com.sun.star.sheet.Solver")
+                potential_solvers = (
+                    "com.sun.star.comp.Calc.CoinMPSolver",
+                    "com.sun.star.comp.Calc.LpsolveSolver",
+                )
 
+                srv_solver = ""
+                for val in potential_solvers:
+                    if val in solvers:
+                        srv_solver = val
+                        break
+
+                if not srv_solver:
+                    raise ValueError("No valid solver was found")
                 # initialize the linear solver (CoinMP or basic linear)
-                solver = Lo.create_instance_mcf(XSolver, solver, raise_err=True)
-                solver.Document = doc
+                solver = Lo.create_instance_mcf(XSolver, srv_solver, raise_err=True)
+
+                solver.Document = doc.component
                 solver.Objective = profit_eq
                 solver.Variables = vars
                 solver.Constraints = constraints
@@ -1332,7 +1383,7 @@ The main() function for |solve_ex_py|_:
                 # execute the solver
                 solver.solve()
                 Calc.solver_report(solver)
-                Lo.close_doc(doc)
+                doc.close_doc()
 
     .. only:: html
 
@@ -1389,8 +1440,12 @@ The two variables in this problem (``x`` and ``y``) are assigned to the cells ``
     .. code-tab:: python
 
         # in linear_solve.py
-        xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
-        ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
+        x_pos = Calc.get_cell_address(
+            sheet=sheet.component, cell_name="B1"
+        )  # X
+        y_pos = Calc.get_cell_address(
+            sheet=sheet.component, cell_name="B2"
+        )  # Y
         vars = (xpos, ypos)
 
     .. only:: html
@@ -1407,13 +1462,15 @@ Next the equations are defined. Their formulae are assigned to cells without the
 
         # in linear_solve.py
         # specify profit equation
-        Calc.set_val(value="=143*B1 + 60*B2", sheet=sheet, cell_name="B3")
-        profit_eq = Calc.get_cell_address(sheet, "B3")
+        sheet = doc.get_active_sheet()
+
+        sheet.set_val(value="=143*B1 + 60*B2", cell_name="B3")
+        profit_eq = Calc.get_cell_address(sheet.component, "B3")
 
         # set up equation formulae without inequalities
-        Calc.set_val(value="=120*B1 + 210*B2", sheet=sheet, cell_name="B4")
-        Calc.set_val(value="=110*B1 + 30*B2", sheet=sheet, cell_name="B5")
-        Calc.set_val(value="=B1 + B2", sheet=sheet, cell_name="B6")
+        sheet.set_val(value="=120*B1 + 210*B2", cell_name="B4")
+        sheet.set_val(value="=110*B1 + 30*B2", cell_name="B5")
+        sheet.set_val(value="=B1 + B2", cell_name="B6")
 
     .. only:: html
 
@@ -1430,14 +1487,21 @@ Now the three equation formulae are converted into SolverConstraint objects by c
         # in linear_solve.py
         # create the constraints
         # constraints are equations and their inequalities
-        sc1 = Calc.make_constraint(num=15000, op="<=", sheet=sheet, cell_name="B4")
+        sc1 = Calc.make_constraint(
+            num=15000, op="<=", sheet=sheet.component, cell_name="B4"
+        )
         #   20x + 210y <= 15000
         #   B4 is the address of the cell that is constrained
         sc2 = Calc.make_constraint(
-            num=4000, op=SolverConstraintOperator.LESS_EQUAL, sheet=sheet, cell_name="B5"
+            num=4000,
+            op=SolverConstraintOperator.LESS_EQUAL,
+            sheet=sheet.component,
+            cell_name="B5",
         )
         #   110x + 30y <= 4000
-        sc3 = Calc.make_constraint(num=75, op="<=", sheet=sheet, cell_name="B6")
+        sc3 = Calc.make_constraint(
+            num=75, op="<=", sheet=sheet.component, cell_name="B6"
+        )
         #   x + y <= 75
 
         # could also include x >= 0 and y >= 0
@@ -1514,10 +1578,23 @@ Now the solver is created, and its parameters are set:
     .. code-tab:: python
 
         # in linear_solve.py
-        solver = Lo.create_instance_mcf(
-            XSolver, "com.sun.star.comp.Calc.LpsolveSolver", raise_err=True
+        solvers = Info.get_service_names(service_name="com.sun.star.sheet.Solver")
+        potential_solvers = (
+            "com.sun.star.comp.Calc.CoinMPSolver",
+            "com.sun.star.comp.Calc.LpsolveSolver",
         )
-        solver.Document = doc
+
+        srv_solver = ""
+        for val in potential_solvers:
+            if val in solvers:
+                srv_solver = val
+                break
+
+        if not srv_solver:
+            raise ValueError("No valid solver was found")
+        # initialize the linear solver (CoinMP or basic linear)
+        solver = Lo.create_instance_mcf(XSolver, srv_solver, raise_err=True)
+        solver.Document = doc.component
         solver.Objective = profit_eq
         solver.Variables = vars
         solver.Constraints = constraints
@@ -1616,6 +1693,7 @@ The solver's results are printed by :py:meth:`.Calc.solver_report`:
         # in linear_solve.py
         solver.solve()
         Calc.solver_report(solver)
+        doc.close_doc()
 
     .. only:: html
 
@@ -1699,25 +1777,26 @@ Much of ``main()`` in |nl_solve_ex1_py|_ is very similar to |solve_ex|_:
     .. code-tab:: python
 
         # part of main() in solver1.py
-        sheet = Calc.get_sheet(doc=doc)
+        doc = CalcDoc(Calc.create_doc(loader))
+        sheet = doc.get_sheet(0)
 
         # specify the variable cells
-        xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
-        ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
-        zpos = Calc.get_cell_address(sheet=sheet, cell_name="B3")  # z
-        vars = (xpos, ypos, zpos)
+        x_pos = sheet.get_cell_address(cell_name="B1")  # X
+        y_pos = sheet.get_cell_address(cell_name="B2")  # Y
+        z_pos = sheet.get_cell_address(cell_name="B3")  # z
+        vars = (x_pos, y_pos, z_pos)
 
         # set up equation formula without inequality
-        Calc.set_val(value="=B1+B2-B3", sheet=sheet, cell_name="B4")
-        objective = Calc.get_cell_address(sheet, "B4")
+        sheet.set_val(value="=B1+B2-B3", cell_name="B4")
+        objective = sheet.get_cell_address(cell_name="B4")
 
         # create three constraints (using the 3 variables)
 
-        sc1 = Calc.make_constraint(num=6, op="<=", sheet=sheet, cell_name="B1")
+        sc1 = sheet.make_constraint(num=6, op="<=", cell_name="B1")
         #   x <= 6
-        sc2 = Calc.make_constraint(num=8, op="<=", sheet=sheet, cell_name="B2")
+        sc2 = sheet.make_constraint(num=8, op="<=", cell_name="B2")
         #   y <= 8
-        sc3 = Calc.make_constraint(num=4, op=">=", sheet=sheet, cell_name="B3")
+        sc3 = sheet.make_constraint(num=4, op=">=", cell_name="B3")
         #   z >= 4
 
         constraints = (sc1, sc2, sc3)
@@ -1726,7 +1805,7 @@ Much of ``main()`` in |nl_solve_ex1_py|_ is very similar to |solve_ex|_:
         solver = Lo.create_instance_mcf(
             XSolver, "com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl", raise_err=True
         )
-        solver.Document = doc
+        solver.Document = doc.component
         solver.Objective = objective
         solver.Variables = vars
         solver.Constraints = constraints
@@ -1741,6 +1820,7 @@ Much of ``main()`` in |nl_solve_ex1_py|_ is very similar to |solve_ex|_:
         solver.solve()
         # Profit max == 10; vars are very close to 6, 8, and 4, but off by 6-7 dps
         Calc.solver_report(solver)
+        doc.close_doc()
 
     .. only:: html
 
@@ -1851,26 +1931,28 @@ The code in |nl_solve_ex2_py|_ is only slightly different from the previous two 
     .. code-tab:: python
 
         # part of main() in solver2.py
-        sheet = Calc.get_sheet(doc=doc)
+        doc = CalcDoc(Calc.create_doc(loader))
+        sheet = doc.get_sheet(0)
+
 
         # specify the variable cells
-        xpos = Calc.get_cell_address(sheet=sheet, cell_name="B1")  # X
-        ypos = Calc.get_cell_address(sheet=sheet, cell_name="B2")  # Y
-        vars = (xpos, ypos)
+        x_pos = sheet.get_cell_address(cell_name="B1")  # X
+        y_pos = sheet.get_cell_address(cell_name="B2")  # Y
+        vars = (x_pos, y_pos)
 
         # specify profit equation
-        Calc.set_val(value="=B1+B2", sheet=sheet, cell_name="B3")
-        objective = Calc.get_cell_address(sheet, "B3")
+        sheet.set_val(value="=B1+B2", cell_name="B3")
+        objective = sheet.get_cell_address(cell_name="B3")
 
         # set up equation formula without inequality (only one needed)
         # x^2 + y^2
-        Calc.set_val(value="=B1*B1 + B2*B2", sheet=sheet, cell_name="B4")
+        sheet.set_val(value="=B1*B1 + B2*B2", cell_name="B4")
 
         # create three constraints (using the 3 variables)
 
-        sc1 = Calc.make_constraint(num=1, op=">=", sheet=sheet, cell_name="B4")
+        sc1 = sheet.make_constraint(num=1, op=">=", cell_name="B4")
         #   x^2 + y^2 >= 1
-        sc2 = Calc.make_constraint(num=2, op="<=", sheet=sheet, cell_name="B4")
+        sc2 = sheet.make_constraint(num=2, op="<=", cell_name="B4")
         #   x^2 + y^2 <= 2
 
         constraints = (sc1, sc2)
@@ -1879,7 +1961,7 @@ The code in |nl_solve_ex2_py|_ is only slightly different from the previous two 
         solver = Lo.create_instance_mcf(
             XSolver, "com.sun.star.comp.Calc.NLPSolver.SCOSolverImpl", raise_err=True
         )
-        solver.Document = doc
+        solver.Document = doc.component
         solver.Objective = objective
         solver.Variables = vars
         solver.Constraints = constraints
@@ -1893,6 +1975,7 @@ The code in |nl_solve_ex2_py|_ is only slightly different from the previous two 
         # execute the solver
         solver.solve()
         Calc.solver_report(solver)
+        doc.close_doc()
 
 
     .. only:: html
@@ -1901,15 +1984,15 @@ The code in |nl_solve_ex2_py|_ is only slightly different from the previous two 
 
             .. group-tab:: None
 
-Only one inequality equation is defined: ``Calc.set_val(value="=B1*B1 + B2*B2", sheet=sheet, cell_name="B4")`` because it can be used twice to define the nonlinear constraints:
+Only one inequality equation is defined: ``sheet.set_val(value="=B1*B1 + B2*B2", cell_name="B4")`` because it can be used twice to define the nonlinear constraints:
 
 .. tabs::
 
     .. code-tab:: python
 
-        sc1 = Calc.make_constraint(num=1, op=">=", sheet=sheet, cell_name="B4")
+        sc1 = sheet.make_constraint(num=1, op=">=", cell_name="B4")
         #   x^2 + y^2 >= 1
-        sc2 = Calc.make_constraint(num=2, op="<=", sheet=sheet, cell_name="B4")
+        sc2 = sheet.make_constraint(num=2, op="<=", cell_name="B4")
         #   x^2 + y^2 <= 2
 
     .. only:: html
