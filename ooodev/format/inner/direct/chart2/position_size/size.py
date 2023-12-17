@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload
+from typing import Any, Tuple, overload, TYPE_CHECKING
 import uno
 from ooo.dyn.awt.size import Size as UnoSize
 
@@ -7,7 +7,10 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitT, UnitConvert, UnitMM
+from ooodev.units import UnitConvert, UnitMM
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 
 class Size(StyleBase):
@@ -46,10 +49,10 @@ class Size(StyleBase):
     # region Overridden Methods
     def apply(self, obj: Any, **kwargs) -> None:
         """
-        Applies tab properties to ``obj``
+        Applies properties to ``obj``
 
         Args:
-            obj (object): UNO object.
+            obj (Any): UNO object.
 
         Returns:
             None:
@@ -57,9 +60,13 @@ class Size(StyleBase):
         name = self._get_property_name()
         if not name:
             return
-        struct = UnoSize(Width=self._width, Height=self._height)
-        props = {name: struct}
-        super().apply(obj=obj, override_dv=props)
+        props = kwargs.pop("override_dv", {})
+        update_dv = bool(kwargs.pop("update_dv", True))
+        if update_dv:
+            struct = UnoSize(Width=self._width, Height=self._height)
+            props.update({name: struct})
+        if props:
+            super().apply(obj=obj, override_dv=props)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -92,7 +99,7 @@ class Size(StyleBase):
         Returns:
             Position: The copied instance.
         """
-        cp = super().copy(**kwargs)
+        cp = super().copy(width=0, height=0, **kwargs)
         cp._width = self._width
         cp._height = self._height
         return cp

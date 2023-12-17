@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.format.draw.direct.position_size.position_size.position
+   ooodev.format.draw.direct.position_size.position_size.size
 
 Module contents
 ---------------

@@ -5,9 +5,8 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.utils.lo import Lo
 from ooodev.draw import Draw, DrawDoc
-from ooodev.format.draw.direct.position_size import Position, ShapeBasePointKind
+from ooodev.format.draw.direct.position_size.position_size import Position, ShapeBasePointKind
 
 
 def test_draw_position(loader) -> None:

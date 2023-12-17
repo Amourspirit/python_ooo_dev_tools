@@ -97,7 +97,7 @@ class Position(StyleBase):
             Position: The copied instance.
         """
         # pylint: disable=protected-access
-        cp = cast(Position, super().copy(**kwargs))
+        cp = cast(Position, super().copy(pos_x=0, pos_y=0, **kwargs))
         cp._pos_x = self._pos_x
         cp._pos_y = self._pos_y
         return cp

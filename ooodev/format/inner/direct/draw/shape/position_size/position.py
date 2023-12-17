@@ -7,13 +7,13 @@ from ooo.dyn.awt.point import Point as UnoPoint
 from ooodev.utils import lo as mLo
 from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 from ooodev.utils.data_type.size import Size
-from ooodev.units import UnitT
 from ooodev.format.inner.direct.chart2.position_size.position import Position as ShapePosition
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
 
 if TYPE_CHECKING:
+    from ooodev.units import UnitT
     from com.sun.star.drawing import DrawPage
 else:
     DrawPage = Any
@@ -165,6 +165,15 @@ class Position(ShapePosition):
     # region from_obj()
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> Position:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            Position: New instance.
+        """
         shape = mLo.Lo.qi(XShape, obj, True)
 
         inst = cls(pos_x=0, pos_y=0, **kwargs)
@@ -189,8 +198,9 @@ class Position(ShapePosition):
         # 'com.sun.star.drawing.DrawPage'
 
         point = cast(UnoPoint, mProps.Props.get(obj, name, None))
-        inst._pos_x = point.X - offset_x
-        inst._pos_y = point.Y - offset_y
+        if point is not None:
+            inst._pos_x = point.X - offset_x
+            inst._pos_y = point.Y - offset_y
         return inst
 
     # endregion from_obj()
