@@ -5,7 +5,7 @@ from ooodev.format.inner.direct.draw.shape.position_size.protect import Protect 
 
 class Protect(ShapeProtect):
     """
-    Frame Protections
+    Shape Protection
 
     .. seealso::
 

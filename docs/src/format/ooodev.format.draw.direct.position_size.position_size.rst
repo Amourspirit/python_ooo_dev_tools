@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.draw.direct.position_size.position_size.adapt
    ooodev.format.draw.direct.position_size.position_size.position
    ooodev.format.draw.direct.position_size.position_size.protect
    ooodev.format.draw.direct.position_size.position_size.size
