@@ -285,10 +285,10 @@ class ImageCrop(StyleMulti):
             self._supported_services_values = ("com.sun.star.text.TextGraphicObject",)
         return self._supported_services_values
 
-    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifying(source, event)
+        return super()._on_modifying(source, event_args)
 
     # region Copy()
     @overload

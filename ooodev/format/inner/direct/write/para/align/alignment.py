@@ -115,10 +115,10 @@ class Alignment(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifying(source, event)
+        return super()._on_modifying(source, event_args)
 
     # region apply()
     @overload
@@ -196,6 +196,7 @@ class Alignment(StyleMulti):
         Returns:
             Alignment: Alignment that represents ``obj`` alignment.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -458,11 +459,12 @@ class Alignment(StyleMulti):
     @property
     def default(self: _TAlignment) -> _TAlignment:
         """Gets Alignment default."""
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:
             if self.prop_inner_mode is None:
-                mode = WritingMode(_cattribs=self._get_internal_cattribs()).default
+                mode = WritingMode(_cattribs=self._get_internal_cattribs()).default  # type: ignore
             else:
                 mode = self.prop_inner_mode.default
             self._default_inst = self.__class__(
@@ -472,8 +474,9 @@ class Alignment(StyleMulti):
                 align_last=LastLineKind.START,
                 expand_single_word=False,
                 snap_to_grid=True,
-                _cattribs=self._get_internal_cattribs(),
+                _cattribs=self._get_internal_cattribs(),  # type: ignore
             )
+            # pylint: disable=protected-access
             self._default_inst._is_default_inst = True
         return self._default_inst
 

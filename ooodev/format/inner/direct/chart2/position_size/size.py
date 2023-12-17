@@ -8,7 +8,6 @@ from ooodev.utils import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitT, UnitConvert, UnitMM
-from ooodev.format.inner.direct.structs.size_struct import SizeStruct
 
 
 class Size(StyleBase):

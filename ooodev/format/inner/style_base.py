@@ -97,52 +97,25 @@ class StyleBase(metaclass=MetaStyle):
         self._set_style_internal_events()
 
     def _set_style_internal_events(self):
-        def on_getting_cattribs(source: Any, event_args: CancelEventArgs) -> None:
-            self._on_getting_cattribs(source=source, event_args=event_args)
+        self._fn_on_getting_cattribs = self._on_getting_cattribs
+        self._fn_on_clearing = self._on_clearing
+        self._fn_on_removing = self._on_removing
+        self._fn_on_setting = self._on_setting
+        self._fn_on_copying = self._on_copying
+        self._fn_on_backing_up = self.on_property_backing_up
+        self._fn_on_backed_up = self.on_property_backed_up
+        self._fn_on_applying = self.on_applying
+        self._fn_on_applied = self.on_applied
 
-        def on_clearing(source: Any, event_args: CancelEventArgs) -> None:
-            self._on_clearing(source=source, event_args=event_args)
-
-        def on_removing(source: Any, event_args: CancelEventArgs) -> None:
-            self._on_removing(source=source, event_args=event_args)
-
-        def on_setting(source: Any, event_args: KeyValCancelArgs) -> None:
-            self._on_setting(source=source, event_args=event_args)
-
-        def on_copying(source: Any, event_args: CancelEventArgs) -> None:
-            self._on_copying(source=source, event_args=event_args)
-
-        def on_backing_up(source: Any, event_args: KeyValCancelArgs) -> None:
-            self.on_property_backing_up(source=source, event_args=event_args)
-
-        def on_backed_up(source: Any, event_args: KeyValArgs) -> None:
-            self.on_property_backed_up(source=source, event_args=event_args)
-
-        def on_applying(source: Any, event_args: CancelEventArgs) -> None:
-            self.on_applying(source=source, event_args=event_args)
-
-        def on_applied(source: Any, event_args: EventArgs) -> None:
-            self.on_applied(source=source, event_args=event_args)
-
-        self._fn_on_getting_cattribs = on_getting_cattribs
-        self._fn_on_clearing = on_clearing
-        self._fn_on_removing = on_removing
-        self._fn_on_setting = on_setting
-        self._fn_on_copying = on_copying
-        self._fn_on_backing_up = on_backing_up
-        self._fn_on_backed_up = on_backed_up
-        self._fn_on_applying = on_applying
-        self._fn_on_applied = on_applied
-
-        self._events.on("internal_cattribs", on_getting_cattribs)
-        self._events.on(FormatNamedEvent.STYLE_CLEARING, on_clearing)
-        self._events.on(FormatNamedEvent.STYLE_REMOVING, on_removing)
-        self._events.on(FormatNamedEvent.STYLE_SETTING, on_setting)
-        self._events.on(FormatNamedEvent.STYLE_COPYING, on_copying)
-        self._events.on(FormatNamedEvent.STYLE_BACKING_UP, on_backing_up)
-        self._events.on(FormatNamedEvent.STYLE_BACKED_UP, on_backed_up)
-        self._events.on(FormatNamedEvent.STYLE_APPLYING, on_applying)
-        self._events.on(FormatNamedEvent.STYLE_APPLIED, on_applied)
+        self._events.on("internal_cattribs", self._fn_on_getting_cattribs)
+        self._events.on(FormatNamedEvent.STYLE_CLEARING, self._fn_on_clearing)
+        self._events.on(FormatNamedEvent.STYLE_REMOVING, self._fn_on_removing)
+        self._events.on(FormatNamedEvent.STYLE_SETTING, self._fn_on_setting)
+        self._events.on(FormatNamedEvent.STYLE_COPYING, self._fn_on_copying)
+        self._events.on(FormatNamedEvent.STYLE_BACKING_UP, self._fn_on_backing_up)
+        self._events.on(FormatNamedEvent.STYLE_BACKED_UP, self._fn_on_backed_up)
+        self._events.on(FormatNamedEvent.STYLE_APPLYING, self._fn_on_applying)
+        self._events.on(FormatNamedEvent.STYLE_APPLIED, self._fn_on_applied)
 
     # endregion Init
 
@@ -918,47 +891,23 @@ class StyleMulti(StyleBase):
     def _set_style_internal_events(self) -> None:
         super()._set_style_internal_events()
 
-        def on_multi_style_setting(source: Any, event_args: KeyValCancelArgs) -> None:
-            self._on_multi_style_setting(source, event_args)
+        self._fn_on_multi_style_setting = self._on_multi_style_setting
+        self._fn_on_multi_style_set = self._on_multi_style_set
+        self._fn_on_multi_style_removing = self._on_multi_style_removing
+        self._fn_on_multi_style_removed = self._on_multi_style_removed
+        self._fn_on_multi_style_updating = self._on_multi_style_updating
+        self._fn_on_multi_style_updated = self._on_multi_style_updated
+        self._fn_on_multi_child_style_applying = self._on_multi_child_style_applying
+        self._fn_on_multi_child_style_applied = self._on_multi_child_style_applied
 
-        def on_multi_style_set(source: Any, event_args: KeyValArgs) -> None:
-            self._on_multi_style_set(source, event_args)
-
-        def on_multi_style_removing(source: Any, event_args: CancelEventArgs) -> None:
-            self._on_multi_style_removing(source, event_args)
-
-        def on_multi_style_removed(source: Any, event_args: EventArgs) -> None:
-            self._on_multi_style_removed(source, event_args)
-
-        def on_multi_style_updating(source: Any, event_args: CancelEventArgs) -> None:
-            self._on_multi_style_updating(source, event_args)
-
-        def on_multi_style_updated(source: Any, event_args: EventArgs) -> None:
-            self._on_multi_style_updated(source, event_args)
-
-        def on_multi_child_style_applying(source: Any, event_args: KeyValCancelArgs) -> None:
-            self._on_multi_child_style_applying(source, event_args)
-
-        def on_multi_child_style_applied(source: Any, event_args: KeyValArgs) -> None:
-            self._on_multi_child_style_applied(source, event_args)
-
-        self._fn_on_multi_style_setting = on_multi_style_setting
-        self._fn_on_multi_style_set = on_multi_style_set
-        self._fn_on_multi_style_removing = on_multi_style_removing
-        self._fn_on_multi_style_removed = on_multi_style_removed
-        self._fn_on_multi_style_updating = on_multi_style_updating
-        self._fn_on_multi_style_updated = on_multi_style_updated
-        self._fn_on_multi_child_style_applying = on_multi_child_style_applying
-        self._fn_on_multi_child_style_applied = on_multi_child_style_applied
-
-        self._events.on(FormatNamedEvent.MULTI_STYLE_SETTING, on_multi_style_setting)
-        self._events.on(FormatNamedEvent.MULTI_STYLE_SET, on_multi_style_set)
-        self._events.on(FormatNamedEvent.MULTI_STYLE_REMOVING, on_multi_style_removing)
-        self._events.on(FormatNamedEvent.MULTI_STYLE_REMOVED, on_multi_style_removed)
-        self._events.on(FormatNamedEvent.MULTI_STYLE_UPDATING, on_multi_style_updating)
-        self._events.on(FormatNamedEvent.MULTI_STYLE_UPDATED, on_multi_style_updated)
-        self._events.on(FormatNamedEvent.STYLE_MULTI_CHILD_APPLYING, on_multi_child_style_applying)
-        self._events.on(FormatNamedEvent.STYLE_MULTI_CHILD_APPLIED, on_multi_child_style_applied)
+        self._events.on(FormatNamedEvent.MULTI_STYLE_SETTING, self._fn_on_multi_style_setting)
+        self._events.on(FormatNamedEvent.MULTI_STYLE_SET, self._fn_on_multi_style_set)
+        self._events.on(FormatNamedEvent.MULTI_STYLE_REMOVING, self._fn_on_multi_style_removing)
+        self._events.on(FormatNamedEvent.MULTI_STYLE_REMOVED, self._fn_on_multi_style_removed)
+        self._events.on(FormatNamedEvent.MULTI_STYLE_UPDATING, self._fn_on_multi_style_updating)
+        self._events.on(FormatNamedEvent.MULTI_STYLE_UPDATED, self._fn_on_multi_style_updated)
+        self._events.on(FormatNamedEvent.STYLE_MULTI_CHILD_APPLYING, self._fn_on_multi_child_style_applying)
+        self._events.on(FormatNamedEvent.STYLE_MULTI_CHILD_APPLIED, self._fn_on_multi_child_style_applied)
 
     # region apply()
 
