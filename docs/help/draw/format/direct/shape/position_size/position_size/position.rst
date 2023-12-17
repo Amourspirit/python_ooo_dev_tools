@@ -93,7 +93,7 @@ Setting position of the shape is done by using the ``Position`` class.
 
             .. group-tab:: None
 
-The results of the setting the shape shadow can be seen in :numref:`d2de7b14-c995-44c5-8b49-9d4eec8f2156`.
+The results of the setting the shape position can be seen in :numref:`d2de7b14-c995-44c5-8b49-9d4eec8f2156`.
 
 .. cssclass:: screen_shot
 
