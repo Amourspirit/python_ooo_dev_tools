@@ -8,7 +8,7 @@ Draw Direct Shape Position Size - Adapt
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.direct.position_size.position_size.position.Adapt` class is used to modify the values seen in :numref:`c4bf44f7-94bc-4e6c-a713-11c5856bfa88` of a shape.
+The :py:class:`ooodev.format.draw.direct.position_size.position_size.Adapt` class is used to modify the values seen in :numref:`c4bf44f7-94bc-4e6c-a713-11c5856bfa88` of a shape.
 
 Setup
 -----
@@ -101,8 +101,8 @@ The results of the setting the shape adaption can be seen in :numref:`708a0b0d-1
 
     Adapt only applies to text shapes.
 
-Get Shape Position
-^^^^^^^^^^^^^^^^^^
+Get Shape Adapt
+^^^^^^^^^^^^^^^
 
 We can get the Adapt properties of the shape by using the ``Adapt.from_obj()`` method.
 
@@ -127,4 +127,4 @@ We can get the Adapt properties of the shape by using the ``Adapt.from_obj()`` m
 
     .. cssclass:: ul-list
 
-        - :py:class:`ooodev.format.draw.direct.position_size.position_size.position.Adapt`
+        - :py:class:`ooodev.format.draw.direct.position_size.position_size.Adapt`

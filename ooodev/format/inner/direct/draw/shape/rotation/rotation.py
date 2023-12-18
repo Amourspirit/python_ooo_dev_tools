@@ -1,117 +1,119 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, cast, Tuple, TYPE_CHECKING, TypeVar, Type, overload
 import uno
-from com.sun.star.drawing import XShape
-from ooo.dyn.awt.point import Point as UnoPoint
 
-from ooodev.utils import lo as mLo
-from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
-from ooodev.utils.data_type.size import Size
-from ooodev.format.inner.direct.chart2.position_size.position import Position as ShapePosition
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.utils import info as mInfo
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils.data_type.angle import Angle
-from ..position_size import position as mPosition
-from ooodev.utils.data_type.point import Point
-from ooodev.utils.data_type.point_unit import PointUnit
-from ooodev.units import UnitMM100
+from ooodev.units import Angle100
+from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
-    from com.sun.star.drawing import DrawPage
-else:
-    DrawPage = Any
+    from ooodev.units import AngleUnitT
+
+_TRotation = TypeVar(name="_TRotation", bound="Rotation")
+
+# pivot point and base point are difficult to calculate.
+# pivot point is the point that the shape rotates around.
+# base point is the point that the shape is positioned on the page.
+# the Shape position change when the shape is rotated.
+# this means shape.getPosition() will show a different value then the dialog box after a rotation.
+# Maybe a shape's rotation should be set to zero before setting the position. Not sure about this.
+# Because the values in the dialog box seem to be calculated on the fly will not implement the same here for now.
 
 
 class Rotation(StyleBase):
     """
     Rotation of a shape.
 
-    .. versionadded:: 0.17.3
+    .. versionadded:: 0.17.4
     """
 
-    def __init__(
-        self,
-        rotation: int | Angle = 0,
-        pivot_point: Point | PointUnit | None = None,
-        base_point: ShapeBasePointKind = ShapeBasePointKind.CENTER,
-    ) -> None:
+    def __init__(self, rotation: int | AngleUnitT = 0) -> None:
         """
         Constructor
 
         Args:
-            rotation (int, Angle, optional): Specifies the rotation angle of the shape in degrees.
+            rotation (int, AngleUnitT, optional): Specifies the rotation angle of the shape in degrees.
                 Default is ``0``.
-            pivot_point (Point, PointUnit, optional): Specifies the x and y coordinates of the position of the shape.
-                ``Point`` is in ``mm`` units and ``PointUnit`` is in :ref:`proto_unit_obj` units.
-            base_point (ShapeBasePointKind): Specifies the base point of the shape used to calculate the X and Y coordinates. Default is ``CENTER``.
 
         Returns:
             None:
         """
         super().__init__()
-        rotation = Angle(int(rotation))
-        self._set("RotateAngle", rotation.value)
-        self._pivot_point = None  # none or UnitMM100 points
-        if pivot_point is not None:
-            if isinstance(pivot_point, Point):  # mm
-                self._pivot_point = PointUnit(UnitMM100.from_mm(pivot_point.x), UnitMM100.from_mm(pivot_point.y))
-            else:
-                self._pivot_point = PointUnit(
-                    UnitMM100(pivot_point.x.get_value_mm100()), UnitMM100(pivot_point.y.get_value_mm100())
-                )
 
-        self._base_point = base_point
+        self.prop_rotation = rotation
 
     # region override
-    def apply(self, obj: Any, **kwargs) -> None:
-        """
-        Apply the rotation to the shape.
-
-        Args:
-            shape (XShape): Shape to apply the rotation to.
-
-        Returns:
-            None:
-        """
-        shape = mLo.Lo.qi(XShape, obj)
-        if shape is None:
-            return
-        if self._pivot_point is not None:
-            # must check the position
-            # get the shapes current position
-            pos = mPosition.Position.from_obj(shape)
-
-            if (
-                pos.prop_pos_x != self._pivot_point.x.get_value_mm100()
-                or pos.prop_pos_y != self._pivot_point.y.get_value_mm100()
-            ):
-                raise mEx.Exc("Pivot point must be the same as the position of the shape")
-
-        if self._base_point != ShapeBasePointKind.CENTER:
-            self._set("RotateAngleReference", self._base_point.value)
-
-        super().apply(shape)
+    def _supported_services(self) -> Tuple[str, ...]:
+        try:
+            return self._supported_services_values
+        except AttributeError:
+            self._supported_services_values = ("com.sun.star.drawing.Shape",)
+        return self._supported_services_values
 
     # endregion override
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TRotation], obj: object) -> _TRotation:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TRotation], obj: Any, **kwargs) -> _TRotation:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            Rotation: New instance.
+        """
+        inst = cls(**kwargs)
+
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError("Object is not supported for conversion to Position")
+
+        angle = cast(int, mProps.Props.get(obj, "RotateAngle", 0))
+        inst.prop_rotation = Angle100(angle)
+        return inst
+
+    # endregion from_obj()
 
     # region Properties
     @property
-    def prop_rotation(self) -> Angle:
-        """
-        Gets/Sets Rotation angle of the shape in degrees.
+    def prop_format_kind(self) -> FormatKind:
+        """Gets the kind of style"""
+        try:
+            return self._format_kind_prop
+        except AttributeError:
+            self._format_kind_prop = FormatKind.SHAPE
+        return self._format_kind_prop
 
-        Property can be set by passing int or Angle.
-
-        Returns:
-            Angle:
+    @property
+    def prop_rotation(self) -> Angle100:
         """
-        return Angle(self._get("RotateAngle"))
+        Gets/Sets Rotation angle of the shape in degrees in ``1/100 units``.
+
+        Property can be set by passing int in degrees or AngleUnitT object.
+        """
+        # in 1/10 degree units
+        pv = cast(int, self._get("RotateAngle"))
+        return Angle100(pv)
 
     @prop_rotation.setter
-    def prop_rotation(self, value: int | Angle) -> None:
-        self._set("RotateAngle", Angle(int(value)).value)
+    def prop_rotation(self, value: int | AngleUnitT) -> None:
+        # in 1/10 degree units
+        try:
+            val = value.get_angle100()  # type: ignore
+        except AttributeError:
+            val = Angle100.from_angle(value).value  # type: ignore
+        self._set("RotateAngle", val)
 
     # endregion Properties

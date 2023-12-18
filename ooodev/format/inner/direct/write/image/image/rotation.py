@@ -101,7 +101,11 @@ class Rotation(StyleBase):
 
     @property
     def prop_rotation(self) -> Angle:
-        """Gets/Sets Vertical flip option"""
+        """
+        Gets/Sets Rotation angle of the shape in degrees.
+
+        Property can be set by passing int or Angle.
+        """
         # in 1/10 degree units
         pv = cast(int, self._get(self._props.rotation))
         if pv == 0:

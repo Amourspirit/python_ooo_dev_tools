@@ -2,8 +2,10 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 from com.sun.star.drawing import XShape
-from ooo.dyn.awt.point import Point as UnoPoint
+from com.sun.star.awt import Rectangle
 
+from ooo.dyn.awt.point import Point as UnoPoint
+from ooodev.utils.data_type.point import Point as OooDevPoint
 from ooodev.utils import lo as mLo
 from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 from ooodev.utils.data_type.size import Size
@@ -12,6 +14,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
 
+
 if TYPE_CHECKING:
     from ooodev.units import UnitT
     from com.sun.star.drawing import DrawPage
@@ -19,7 +22,7 @@ else:
     DrawPage = Any
 
 
-def calculate_x_and_y_from_point_kind(x: int, y: int, shape_size: Size, point_kind: ShapeBasePointKind) -> Size:
+def calculate_point_from_point_kind(x: int, y: int, shape_size: Size, point_kind: ShapeBasePointKind) -> OooDevPoint:
     """
     Calculates the x and y coordinates from the point kind for a shapes size.
 
@@ -65,7 +68,7 @@ def calculate_x_and_y_from_point_kind(x: int, y: int, shape_size: Size, point_ki
         y = y + shape_size.height
     else:
         raise ValueError(f"Unknown point_kind: {point_kind}")
-    return Size(width=x, height=y)
+    return OooDevPoint(x=x, y=y)
 
 
 class Position(ShapePosition):
@@ -131,11 +134,11 @@ class Position(ShapePosition):
                 offset_y = parent.BorderTop
         if self._base_point != ShapeBasePointKind.TOP_LEFT:
             sz = shape.getSize()
-            size = calculate_x_and_y_from_point_kind(
+            pt = calculate_point_from_point_kind(
                 x=self._pos_x, y=self._pos_y, shape_size=Size(sz.Width, sz.Height), point_kind=self._base_point
             )
         else:
-            size = Size(width=self._pos_x, height=self._pos_y)
+            pt = OooDevPoint(x=self._pos_x, y=self._pos_y)
 
         name = self._get_property_name()
         if not name:
@@ -143,7 +146,7 @@ class Position(ShapePosition):
 
         # Draw automatically add the page borders to the position when setting.
         # struct = UnoPoint(X=size.width + self._draw_page.BorderLeft, Y=size.height + self._draw_page.BorderTop)
-        struct = UnoPoint(X=size.width + offset_x, Y=size.height + offset_y)
+        struct = UnoPoint(X=pt.x + offset_x, Y=pt.y + offset_y)
         props = kwargs.pop("override_dv", {})
         props.update({name: struct})
         super().apply(obj=obj, override_dv=props, update_dv=False)
@@ -177,9 +180,6 @@ class Position(ShapePosition):
         shape = mLo.Lo.qi(XShape, obj, True)
 
         inst = cls(pos_x=0, pos_y=0, **kwargs)
-        name = inst._get_property_name()
-        if not name:
-            raise mEx.NotSupportedError("Object is not supported for conversion to Position")
 
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not supported for conversion to Position")
@@ -197,10 +197,15 @@ class Position(ShapePosition):
                 offset_y = parent.BorderTop
         # 'com.sun.star.drawing.DrawPage'
 
-        point = cast(UnoPoint, mProps.Props.get(obj, name, None))
-        if point is not None:
-            inst._pos_x = point.X - offset_x
-            inst._pos_y = point.Y - offset_y
+        # Position is affected by rotation and may not be what is expected.
+        # BoundRect is not affected by rotation and is the same as the dialog box,
+        # it seems to be the same for FrameRect
+        # name = inst._get_property_name()
+        name = "BoundRect"  # BoundRect is read only
+        rect = cast(Rectangle, mProps.Props.get(obj, name, None))
+        if rect is not None:
+            inst._pos_x = rect.X - offset_x
+            inst._pos_y = rect.Y - offset_y
         return inst
 
     # endregion from_obj()
