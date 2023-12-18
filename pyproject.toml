@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.17.2"
+version = "0.17.3"
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
@@ -88,12 +88,6 @@ env_files = [
     ".test.env"
 ]
 
-[tool.ruff]
-extended-select=["ANN", "C4", "N", "SIM", "TCH"]
-ignore=[]
-show-fixes=true
-target="py37"
-
 [tool.pylint.'MESSAGES CONTROL']
 max-line-length = 120
 disable = """
@@ -122,3 +116,32 @@ exclude = ["tests",
     "**/__pycache__",
     ".venv"
 ]
+
+# https://docs.astral.sh/ruff/configuration/
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "tmp",
+]
+line-length = 119
+target-version = "py38"

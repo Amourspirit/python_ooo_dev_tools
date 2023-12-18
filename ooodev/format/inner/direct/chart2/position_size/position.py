@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload
+from typing import Any, cast, Tuple, overload
 import uno
 from ooo.dyn.awt.point import Point as UnoPoint
 
@@ -46,20 +46,22 @@ class Position(StyleBase):
     # region Overridden Methods
     def apply(self, obj: Any, **kwargs) -> None:
         """
-        Applies tab properties to ``obj``
+        Applies position properties to ``obj``
 
         Args:
-            obj (object): UNO object.
+            obj (Any): UNO object.
 
         Returns:
             None:
         """
-        name = self._get_property_name()
-        if not name:
-            return
-        struct = UnoPoint(X=self._pos_x, Y=self._pos_y)
         props = kwargs.pop("override_dv", {})
-        props.update({name: struct})
+        update_dv = bool(kwargs.pop("update_dv", True))
+        if update_dv:
+            name = self._get_property_name()
+            if not name:
+                return
+            struct = UnoPoint(X=self._pos_x, Y=self._pos_y)
+            props.update({name: struct})
         # props[name] = struct
         super().apply(obj=obj, override_dv=props)
 
@@ -94,7 +96,8 @@ class Position(StyleBase):
         Returns:
             Position: The copied instance.
         """
-        cp = super().copy(**kwargs)
+        # pylint: disable=protected-access
+        cp = cast(Position, super().copy(pos_x=0, pos_y=0, **kwargs))
         cp._pos_x = self._pos_x
         cp._pos_y = self._pos_y
         return cp

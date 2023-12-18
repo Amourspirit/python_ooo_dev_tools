@@ -405,6 +405,7 @@ class Position(StyleBase):
             Position: Instance that represents Frame Position.
         """
 
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')

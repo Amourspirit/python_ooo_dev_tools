@@ -8,3 +8,4 @@ Draw Format Direct Shape
     :maxdepth: 1
 
     area/index
+    position_size/index

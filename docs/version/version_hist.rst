@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.17.3
+==============
+
+Added new formats for Draw Shapes.
+
 Version 0.17.2
 ==============
 

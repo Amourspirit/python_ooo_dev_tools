@@ -101,10 +101,10 @@ class IndentSpacing(StyleMulti):
             )
         return self._supported_services_values
 
-    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifying(source, event)
+        return super()._on_modifying(source, event_args)
 
     # region from_obj()
     @overload
@@ -131,6 +131,7 @@ class IndentSpacing(StyleMulti):
         Returns:
             IndentSpacing: ``IndentSpacing`` instance that represents ``obj`` Indents and spacing.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not supported for conversion to IndentSpacing")
@@ -195,7 +196,7 @@ class IndentSpacing(StyleMulti):
             ls = LineSpacing().default
             indent = Indent().default
             spc = Spacing().default
-
+            # pylint: disable=unexpected-keyword-arg
             self._default_inst = self.__class__(
                 ln_mode=ls.prop_mode,
                 ln_value=ls.prop_value,
@@ -209,6 +210,7 @@ class IndentSpacing(StyleMulti):
                 id_auto=indent.prop_auto,
                 _cattribs=self._get_internal_cattribs(),  # type: ignore
             )
+            # pylint: disable=protected-access
             self._default_inst._is_default_inst = True
         return self._default_inst
 

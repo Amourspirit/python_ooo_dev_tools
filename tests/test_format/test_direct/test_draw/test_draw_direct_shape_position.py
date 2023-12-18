@@ -1,49 +1,97 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, Any, cast
-import random
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
-from ooodev.office.draw import Draw
-
-# from ooodev.format.inner.direct.write.fill.area.hatch import Hatch, PresetHatchKind
-from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
-from ooodev.format.draw.direct.area import Hatch, PresetHatchKind
-from ooodev.utils.color import StandardColor
-from ooodev.utils.table_helper import TableHelper
-
-from ooo.dyn.drawing.fill_style import FillStyle
-from ooo.dyn.drawing.hatch_style import HatchStyle
-
-if TYPE_CHECKING:
-    from com.sun.star.drawing import FillProperties  # service
+from ooodev.draw import Draw, DrawDoc
+from ooodev.format.draw.direct.position_size.position_size import Position, ShapeBasePointKind
 
 
-def test_draw(loader) -> None:
-    # Tabs inherits from Tab and tab is tested in test_struct_tab
-    delay = 0
-    # delay = 0 if Lo.bridge_connector.headless else 3_000
-
-    doc = Draw.create_draw_doc()
-    if not Lo.bridge_connector.headless:
-        GUI.set_visible()
-        Lo.delay(500)
-        GUI.zoom(GUI.ZoomEnum.ZOOM_75_PERCENT)
+def test_draw_position(loader) -> None:
+    doc = DrawDoc(Draw.create_draw_doc())
     try:
-        slide = Draw.get_slide(doc)
-
+        slide = doc.get_slide()
+        # left_border = slide.component.BorderLeft
+        # top_border = slide.component.BorderTop
         width = 36
         height = 36
-        x = width / 2
-        y = height / 2
+        x = round(width / 2)
+        y = round(height / 2)
 
-        rec = Draw.draw_rectangle(slide=slide, x=x, y=y, width=width, height=height)
+        rect = slide.draw_rectangle(x=x, y=y, width=width, height=height)
+        pos = Position(pos_x=8, pos_y=8)
+        pos.apply(rect.component)
+        assert pos.prop_pos_x.get_value_mm100() == 800
 
-        Lo.delay(delay)
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 800
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.TOP_CENTER)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 2600
+        assert pos2.prop_pos_y.get_value_mm100() == 800
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.TOP_RIGHT)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 4400
+        assert pos2.prop_pos_y.get_value_mm100() == 800
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.CENTER_LEFT)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 800
+        assert pos2.prop_pos_y.get_value_mm100() == 2600
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.CENTER)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 2600
+        assert pos2.prop_pos_y.get_value_mm100() == 2600
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.CENTER_RIGHT)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 4400
+        assert pos2.prop_pos_y.get_value_mm100() == 2600
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.BOTTOM_LEFT)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 800
+        assert pos2.prop_pos_y.get_value_mm100() == 4400
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.BOTTOM_CENTER)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 2600
+        assert pos2.prop_pos_y.get_value_mm100() == 4400
+
+        pos = Position(pos_x=8, pos_y=8, base_point=ShapeBasePointKind.BOTTOM_RIGHT)
+        pos.apply(rect.component)
+
+        pos2 = Position.from_obj(rect.component)
+        assert pos2 is not None
+        assert pos2.prop_pos_x.get_value_mm100() == 4400
+        assert pos2.prop_pos_y.get_value_mm100() == 4400
+
     finally:
-        Lo.close_doc(doc)
+        doc.close_doc()
