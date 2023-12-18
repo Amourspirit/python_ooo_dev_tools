@@ -1,13 +1,20 @@
 from __future__ import annotations
+from typing import Tuple, cast, overload, Any, TYPE_CHECKING, TypeVar, Type
 import uno
-from typing import Tuple, cast, overload
+
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_border_line_props
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitConvert, UnitMM
-from ooodev.units import UnitT
+from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
+
+_TLineProperties = TypeVar(name="_TLineProperties", bound="LineProperties")
 
 
 class LineProperties(StyleBase):
@@ -71,8 +78,59 @@ class LineProperties(StyleBase):
                 "com.sun.star.chart2.Title",
                 "com.sun.star.drawing.LineProperties",
                 "com.sun.star.chart2.Axis",
+                "com.sun.star.drawing.LineProperties",
             )
         return self._supported_services_values
+
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TLineProperties], obj: object) -> _TLineProperties:
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls: Type[_TLineProperties], obj: object, **kwargs) -> _TLineProperties:
+        ...
+
+    @classmethod
+    def from_obj(cls: Type[_TLineProperties], obj: Any, **kwargs) -> _TLineProperties:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            LineProperties: New instance.
+        """
+        inst = cls(**kwargs)
+
+        if not inst._is_valid_obj(obj):
+            raise mEx.NotSupportedError("Object is not supported for conversion to Line Properties")
+
+        props = {
+            "LineCap",
+            "LineDash",
+            "LineDashName",
+            "LineJoint",
+            "LineStyle",
+            "LineColor",
+            "LineWidth",
+            "LineTransparence",
+        }
+
+        def set_property(prop: str):
+            value = mProps.Props.get(obj, prop, None)
+            if value is not None:
+                inst._set(prop, value)
+
+        for prop in props:
+            set_property(prop)
+
+        return inst
+
+    # endregion from_obj()
 
     # region copy()
     @overload

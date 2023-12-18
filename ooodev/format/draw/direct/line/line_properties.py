@@ -1,24 +1,22 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
-
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.utils.color import Color
+from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties as LineProps
 from ooodev.utils.data_type.intensity import Intensity
-
-from ...chart.borders.line_properties import LineProperties as ChartLineProperties
 
 if TYPE_CHECKING:
     from ooodev.units import UnitT
 
 
-class LineProperties(ChartLineProperties):
+class LineProperties(LineProps):
     """
-    This class represents the line properties of a chart axis line properties.
+    This class represents the line properties of a shape.
 
     .. seealso::
 
-        - :ref:`help_chart2_format_direct_axis_line`
+        - :ref:`help_chart2_format_direct_general_borders`
     """
 
     def __init__(
@@ -41,6 +39,6 @@ class LineProperties(ChartLineProperties):
             None:
 
         See Also:
-            - :ref:`help_chart2_format_direct_axis_line`
+            - :ref:`help_chart2_format_direct_general_borders`
         """
         super().__init__(style=style, color=color, width=width, transparency=transparency)

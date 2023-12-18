@@ -9,3 +9,4 @@ Draw Format Direct Shape
 
     area/index
     position_size/index
+    line/index
