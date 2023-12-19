@@ -10,6 +10,8 @@ class CornerCaps(ShapesCornerCaps):
     .. seealso::
 
         - :ref:`help_draw_format_direct_shape_line_corner_caps`
+
+    .. versionadded:: 0.17.4
     """
 
     def __init__(self, corner_style: LineJoint = LineJoint.ROUND, cap_style: LineCap = LineCap.BUTT) -> None:

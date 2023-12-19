@@ -1,8 +1,10 @@
-from ooodev.format.inner.preset.preset_border_line import BorderLineKind as BorderLineKind
-from ooo.dyn.drawing.line_joint import LineJoint as LineJoint
 from ooo.dyn.drawing.line_cap import LineCap as LineCap
-from .line_properties import LineProperties as LineProperties
+from ooo.dyn.drawing.line_joint import LineJoint as LineJoint
+from ooodev.format.inner.preset.preset_border_line import BorderLineKind as BorderLineKind
+from ooodev.utils.kind.graphic_arrow_style_kind import GraphicArrowStyleKind as GraphicArrowStyleKind
+from .arrow_styles import ArrowStyles as ArrowStyles
 from .corner_caps import CornerCaps as CornerCaps
+from .line_properties import LineProperties as LineProperties
 
 
-__all__ = ["LineProperties", "CornerCaps"]
+__all__ = ["ArrowStyles", "LineProperties", "CornerCaps"]

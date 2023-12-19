@@ -18,6 +18,8 @@ class LineProperties(LineProps):
     .. seealso::
 
         - :ref:`help_draw_format_direct_shape_line_properties`
+
+    .. versionadded:: 0.17.4
     """
 
     def __init__(

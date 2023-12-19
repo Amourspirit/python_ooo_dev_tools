@@ -141,4 +141,4 @@ We can get the corner and caps style of the shape by using the ``CornerCaps.from
 
     .. cssclass:: ul-list
 
-        - :py:class:`ooodev.format.draw.direct.line.LineProperties`
+        - :py:class:`ooodev.format.draw.direct.line.CornerCaps`
