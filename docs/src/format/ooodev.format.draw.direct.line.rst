@@ -10,6 +10,7 @@ Submodules
    ooodev.format.draw.direct.line.arrow_styles
    ooodev.format.draw.direct.line.corner_caps
    ooodev.format.draw.direct.line.line_properties
+   ooodev.format.draw.direct.line.shadow
 
 Module contents
 ---------------
