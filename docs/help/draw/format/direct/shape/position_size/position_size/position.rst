@@ -8,7 +8,7 @@ Draw Direct Shape Position Size - Position
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.direct.position_size.position_size.position.Position` class is used to modify the values seen in :numref:`c4bf44f7-94bc-4e6c-a713-11c5856bfa88` of a shape.
+The :py:class:`ooodev.format.draw.direct.position_size.position_size.Position` class is used to modify the values seen in :numref:`c4bf44f7-94bc-4e6c-a713-11c5856bfa88` of a shape.
 
 Setup
 -----
@@ -138,4 +138,4 @@ We can get the position of the shape by using the ``Position.from_obj()`` method
 
     .. cssclass:: ul-list
 
-        - :py:class:`ooodev.format.draw.direct.position_size.position_size.position.Position`
+        - :py:class:`ooodev.format.draw.direct.position_size.position_size.Position`
