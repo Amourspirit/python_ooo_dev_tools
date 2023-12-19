@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
-from ooodev.format.inner.preset.preset_border_line import BorderLineKind
-from ooodev.utils.color import Color
 from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties as LineProps
+from ooodev.format.inner.preset.preset_border_line import BorderLineKind
+from ooodev.format.inner.preset.preset_border_line import get_preset_border_line_props
+from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ class LineProperties(LineProps):
 
     .. seealso::
 
-        - :ref:`help_chart2_format_direct_general_borders`
+        - :ref:`help_draw_format_direct_shape_line_properties`
     """
 
     def __init__(
@@ -39,6 +40,15 @@ class LineProperties(LineProps):
             None:
 
         See Also:
-            - :ref:`help_chart2_format_direct_general_borders`
+            - :ref:`help_draw_format_direct_shape_line_properties`
         """
         super().__init__(style=style, color=color, width=width, transparency=transparency)
+
+    def _set_line_style(self, style: BorderLineKind):
+        # LineCaps and LineJoint are set Separately using CornerCap
+        props = get_preset_border_line_props(kind=style)
+        # self._set("LineCap", props.line_cap)
+        self._set("LineDash", props.line_dash)
+        self._set("LineDashName", props.line_dash_name)
+        # self._set("LineJoint", props.line_joint)
+        self._set("LineStyle", props.line_style)

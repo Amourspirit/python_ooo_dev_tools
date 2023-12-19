@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.inner.direct.draw.shape.line
    ooodev.format.inner.direct.draw.shape.position_size
    ooodev.format.inner.direct.draw.shape.rotation
 

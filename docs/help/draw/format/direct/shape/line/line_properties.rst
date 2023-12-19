@@ -71,11 +71,11 @@ Setup
     .. _bb764719-da32-4497-874c-a54f7c9f7aaa:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bb764719-da32-4497-874c-a54f7c9f7aaa
-        :alt: Area Pattern dialog
+        :alt: Shape Line Properties Dialog
         :figclass: align-center
         :width: 450px
 
-        Area Pattern dialog
+        Shape Line Properties Dialog
 
 Add a Line Properties to the shape
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -130,7 +130,7 @@ We can get the line properties of the shape by using the ``LineProperties.from_o
         from ooodev.format.draw.direct.line import LineProperties
         # ... other code
 
-        # get the shadow from the shape
+        # get the properties from the shape
         f_style = LineProperties.from_obj(rect.component)
         assert f_style.prop_color == StandardColor.RED_DARK3
 

@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.draw.direct.line.corner_caps
    ooodev.format.draw.direct.line.line_properties
 
 Module contents
