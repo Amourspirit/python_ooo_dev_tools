@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.draw.direct.position_size.position_size
+   ooodev.format.draw.direct.position_size.rotation
 
 Module contents
 ---------------

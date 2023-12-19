@@ -43,8 +43,8 @@ def test_draw(loader) -> None:
 
         width = 36
         height = 36
-        x = width / 2
-        y = height / 2
+        x = width // 2
+        y = height // 2
 
         rec = Draw.draw_rectangle(slide=slide, x=x, y=y, width=width, height=height)
         ts = Gradient(angle=30, grad_intensity=IntensityRange(0, 100))

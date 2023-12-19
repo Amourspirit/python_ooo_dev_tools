@@ -8,7 +8,7 @@ Draw Direct Shape Position Size - Protect
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.direct.position_size.position_size.position.Protect` class is used to modify the values seen in :numref:`c4bf44f7-94bc-4e6c-a713-11c5856bfa88` of a shape.
+The :py:class:`ooodev.format.draw.direct.position_size.position_size.Protect` class is used to modify the values seen in :numref:`c4bf44f7-94bc-4e6c-a713-11c5856bfa88` of a shape.
 
 Setup
 -----
@@ -126,4 +126,4 @@ We can get the protection of the shape by using the ``Protect.from_obj()`` metho
 
     .. cssclass:: ul-list
 
-        - :py:class:`ooodev.format.draw.direct.position_size.position_size.position.Protect`
+        - :py:class:`ooodev.format.draw.direct.position_size.position_size.Protect`

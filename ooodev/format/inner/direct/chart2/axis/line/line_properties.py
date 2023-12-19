@@ -1,12 +1,15 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import uno
 
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
-from ooodev.units import UnitT
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
 from ...chart.borders.line_properties import LineProperties as ChartLineProperties
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 
 class LineProperties(ChartLineProperties):

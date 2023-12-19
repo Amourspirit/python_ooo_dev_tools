@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 import pytest
 
 # angle implements BaseIntValue so this test all dunder methods.
@@ -96,7 +96,7 @@ def test_lt_angle(start: int, val: int) -> None:
     a2 = Angle(val)
     assert a1 < a2
     gt = a1 > a2
-    assert gt == False
+    assert gt is False
 
 
 @pytest.mark.parametrize("start,val", [(0, 1), (2, 3), (5, 5), (55, 198), (360, 360)])
@@ -105,7 +105,7 @@ def test_le_angle(start: int, val: int) -> None:
     a2 = Angle(val)
     assert a1 <= a2
     gt = a1 > a2
-    assert gt == False
+    assert gt is False
 
 
 @pytest.mark.parametrize("start,val", [(1, 0), (3, 2), (77, 3), (198, 10), (359, 3)])
@@ -114,7 +114,7 @@ def test_gt_angle(start: int, val: int) -> None:
     a2 = Angle(val)
     assert a1 > a2
     lt = a1 < a2
-    assert lt == False
+    assert lt is False
 
 
 @pytest.mark.parametrize("start,val", [(1, 0), (3, 2), (5, 5), (198, 44), (360, 360)])
@@ -123,7 +123,7 @@ def test_ge_angle(start: int, val: int) -> None:
     a2 = Angle(val)
     assert a1 >= a2
     lt = a1 < a2
-    assert lt == False
+    assert lt is False
 
 
 @pytest.mark.parametrize(("val", "expected"), [(360, 0), (-3, 357), (-181, 179), (2500, 340), (-2500, 20)])

@@ -38,7 +38,7 @@ class ShadowLocationKind(Enum):
 
 class Shadow(StyleBase):
     """
-    Frame Vertical Alignment
+    Shape Shadow
 
     .. seealso::
 
@@ -66,7 +66,7 @@ class Shadow(StyleBase):
             location (ShadowLocationKind , optional): Specifies the shadow location.
             color (Color , optional): Specifies shadow color.
             distance (float, UnitT , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
-            blur (int, UnitT, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
+            blur (int, UnitT, optional): Specifies shadow blur in ``pt`` units or :ref:`proto_unit_obj`.
             transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
 
         Returns:

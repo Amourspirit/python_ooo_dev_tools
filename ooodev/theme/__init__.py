@@ -1,4 +1,5 @@
 from .theme import ThemeKind as ThemeKind
+from .theme import ThemeColorKind as ThemeColorKind
 from .theme_general import ThemeGeneral as ThemeGeneral
 from .theme_rpt_builder import ThemeRptBuilder as ThemeRptBuilder
 from .theme_sql import ThemeSql as ThemeSql
@@ -10,6 +11,7 @@ from .theme_basic import ThemeBasic as ThemeBasic
 
 __all__ = [
     "ThemeKind",
+    "ThemeColorKind",
     "ThemeGeneral",
     "ThemeRptBuilder",
     "ThemeSql",

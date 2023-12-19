@@ -9,3 +9,4 @@ Draw Format Direct Shape Position and Size
     
 
     position_size/index
+    rotation/rotation
