@@ -7,7 +7,8 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.writer.modify.para.area import Color
-from ooodev.format.writer.modify.para.transparency import Gradient, Intensity, IntensityRange, GradientStyle, Angle
+from ooodev.format.writer.modify.para.transparency import Gradient, IntensityRange, GradientStyle
+from ooodev.units import Angle
 from ooodev.format.styler import Styler
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
@@ -15,7 +16,6 @@ from ooodev.utils.lo import Lo
 from ooodev.office.write import Write
 
 if TYPE_CHECKING:
-    from com.sun.star.style import ParagraphProperties  # service
     from com.sun.star.drawing import FillProperties  # service
 
 

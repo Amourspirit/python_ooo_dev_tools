@@ -49,6 +49,8 @@ class Angle(BaseIntValue):
             return self.value == other.value
         with contextlib.suppress(AttributeError):
             return self.get_angle100() == other.get_angle100()  # type: ignore
+        if isinstance(other, int):
+            return self.value == other
         return False
 
     def get_angle(self) -> int:

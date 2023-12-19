@@ -150,8 +150,9 @@ class GradientStruct(StructBase):
         obj2 = None
         if isinstance(oth, GradientStruct):
             obj2 = oth.get_uno_struct()
-        if getattr(oth, "typeName", None) == "com.sun.star.awt.Gradient":
+        if getattr(oth, "typeName", None) in ("com.sun.star.awt.Gradient", "com.sun.star.awt.Gradient2"):
             obj2 = cast(Gradient, oth)
+            # Gradient2 is new in LO 7.6 and has a new property ColorStops
         if obj2:
             obj1 = self.get_uno_struct()
             return (

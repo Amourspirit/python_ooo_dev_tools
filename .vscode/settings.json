@@ -186,5 +186,8 @@
     "python.analysis.typeCheckingMode": "basic",
     "editor.formatOnPaste": true,
     "editor.defaultFormatter": "ms-python.black-formatter",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "[xml]": {
+        "editor.defaultFormatter": "redhat.vscode-xml"
+    }
 }

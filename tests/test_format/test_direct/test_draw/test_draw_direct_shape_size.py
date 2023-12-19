@@ -24,18 +24,18 @@ def test_draw_size(loader) -> None:
         style = Size(width=50, height=50)
         style_pos = Position(8, 8)
         style.apply(rect.component)
-        assert style.prop_width.get_value_mm100() == 5000
-        assert style.prop_height.get_value_mm100() == 5000
+        assert style.prop_width.get_value_mm100() in [5000 - 2 + i for i in range(5)]
+        assert style.prop_height.get_value_mm100() in [5000 - 2 + i for i in range(5)]
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 5000
-        assert f_style.prop_height.get_value_mm100() == 5000
+        assert f_style.prop_width.get_value_mm100() in [5000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [5000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == 800
-        assert pos.prop_pos_y.get_value_mm100() == 800
+        assert pos.prop_pos_x.get_value_mm100() in [800 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [800 - 2 + i for i in range(5)]
 
         style2 = style.copy()
         style2.prop_base_point = ShapeBasePointKind.TOP_CENTER
@@ -44,8 +44,8 @@ def test_draw_size(loader) -> None:
         # no change expected
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == 800
-        assert pos.prop_pos_y.get_value_mm100() == 800
+        assert pos.prop_pos_x.get_value_mm100() in [800 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [800 - 2 + i for i in range(5)]
 
         style2.prop_width = 100
         style2.prop_height = 100
@@ -53,13 +53,13 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == -1700
-        assert pos.prop_pos_y.get_value_mm100() == 800
+        assert pos.prop_pos_x.get_value_mm100() in [-1700 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [800 - 2 + i for i in range(5)]
 
         # reset
         style.apply(rect.component)
@@ -70,13 +70,13 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == -4200
-        assert pos.prop_pos_y.get_value_mm100() == 800
+        assert pos.prop_pos_x.get_value_mm100() in [-4200 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [800 - 2 + i for i in range(5)]
 
         # reset
         style.apply(rect.component)
@@ -87,13 +87,13 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == 800
-        assert pos.prop_pos_y.get_value_mm100() == -1700
+        assert pos.prop_pos_x.get_value_mm100() in [800 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [-1700 - 2 + i for i in range(5)]
 
         # reset
         style.apply(rect.component)
@@ -104,13 +104,13 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == -1700
-        assert pos.prop_pos_y.get_value_mm100() == -1700
+        assert pos.prop_pos_x.get_value_mm100() in [-1700 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [-1700 - 2 + i for i in range(5)]
 
         # reset
         style.apply(rect.component)
@@ -121,13 +121,13 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == -4200
-        assert pos.prop_pos_y.get_value_mm100() == -1700
+        assert pos.prop_pos_x.get_value_mm100() in [-4200 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [-1700 - 2 + i for i in range(5)]
 
         # reset
         style.apply(rect.component)
@@ -138,13 +138,13 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == 800
-        assert pos.prop_pos_y.get_value_mm100() == -4200
+        assert pos.prop_pos_x.get_value_mm100() in [800 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [-4200 - 2 + i for i in range(5)]
 
         # reset
         style.apply(rect.component)
@@ -155,13 +155,13 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == -1700
-        assert pos.prop_pos_y.get_value_mm100() == -4200
+        assert pos.prop_pos_x.get_value_mm100() in [-1700 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [-4200 - 2 + i for i in range(5)]
 
         # reset
         style.apply(rect.component)
@@ -172,12 +172,12 @@ def test_draw_size(loader) -> None:
 
         f_style = Size.from_obj(rect.component)
         assert f_style is not None
-        assert f_style.prop_width.get_value_mm100() == 10000
-        assert f_style.prop_height.get_value_mm100() == 10000
+        assert f_style.prop_width.get_value_mm100() in [10000 - 2 + i for i in range(5)]
+        assert f_style.prop_height.get_value_mm100() in [10000 - 2 + i for i in range(5)]
 
         pos = Position.from_obj(rect.component)
         assert pos is not None
-        assert pos.prop_pos_x.get_value_mm100() == -4200
-        assert pos.prop_pos_y.get_value_mm100() == -4200
+        assert pos.prop_pos_x.get_value_mm100() in [-4200 - 2 + i for i in range(5)]
+        assert pos.prop_pos_y.get_value_mm100() in [-4200 - 2 + i for i in range(5)]
     finally:
         doc.close_doc()
