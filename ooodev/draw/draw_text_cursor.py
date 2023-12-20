@@ -20,7 +20,7 @@ from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class ShapeTextCursor(
+class DrawTextCursor(
     Generic[_T],
     TextCursorPartial,
     TextCursorComp,

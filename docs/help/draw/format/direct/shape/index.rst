@@ -12,3 +12,4 @@ Draw Format Direct Shape
     paragraph/paragraph
     position_size/index
     line/index
+    text/index
