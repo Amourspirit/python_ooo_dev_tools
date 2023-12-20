@@ -74,13 +74,13 @@ Setup
         if __name__ == "__main__":
             raise SystemExit(main())
 
-The results of running the above code is seen in :numref:`be148d55-3b72-40d0-89d0-b912e739ca19`.
-
     .. only:: html
 
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+The results of running the above code is seen in :numref:`be148d55-3b72-40d0-89d0-b912e739ca19`.
 
 .. cssclass:: screen_shot
 
