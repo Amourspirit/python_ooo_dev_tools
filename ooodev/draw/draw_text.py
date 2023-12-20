@@ -7,27 +7,27 @@ if TYPE_CHECKING:
     from com.sun.star.text import XText
 
 from ooodev.adapter.drawing.text_comp import TextComp
+from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.office import draw as mDraw
 
-T = TypeVar("T", bound="ComponentT")
+_T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawText(Generic[T], TextComp, QiPartial):
+class DrawText(Generic[_T], TextComp, QiPartial):
     """
-    Represents writer text content.
+    Represents text content.
 
     Contains Enumeration Access.
     """
 
-    def __init__(self, owner: T, component: XText) -> None:
+    def __init__(self, owner: _T, component: XText) -> None:
         """
         Constructor
 
         Args:
-            owner (T): Owner of this component.
+            owner (_T): Owner of this component.
             component (XText): UNO object that supports ``com.sun.star.text.Text`` service.
         """
         self.__owner = owner
@@ -55,7 +55,7 @@ class DrawText(Generic[T], TextComp, QiPartial):
 
     # region Properties
     @property
-    def owner(self) -> T:
+    def owner(self) -> _T:
         """Owner of this component."""
         return self.__owner
 

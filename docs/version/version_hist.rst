@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.17.5
+==============
+
+Add ``get_shape_text_cursor()`` to Draw Shapes that allows for getting the text cursor of a shape.
+This allows editing and formatting of the text in a shape.
+
 Version 0.17.4
 ==============
 
