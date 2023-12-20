@@ -1,10 +1,11 @@
-.. _help_draw_format_direct_shape_paragraph_paragraph:
+.. _help_draw_format_direct_shape_character_character:
 
-Draw Direct Shape Text Paragraph
+Draw Direct Shape Text Character
 ================================
 
-Paragraph formatting can be applied by getting the shape text cursor and using the ``append()``, ``append_para()`` or any method that supports setting styles.
-This is similar behavior to Writer Direct Paragraph Text. See :ref:`help_writer_format_direct_para` for more information.
+Character like :ref:`help_draw_format_direct_shape_paragraph_paragraph` formatting can be applied by getting the shape text cursor and using the ``append()``, ``append_para()`` or
+any method that supports setting styles.
+This is similar behavior to Writer Direct Character Text. See :ref:`help_writer_format_direct_char` for more information.
 
 Code Example
 ------------
@@ -75,11 +76,11 @@ Code Example
 
             .. group-tab:: None
 
-The results of running the above code is seen in :numref:`be148d55-3b72-40d0-89d0-b912e739ca19`.
+The results of running the above code is seen in :numref:`be148d55-3b72-40d0-89d0-b912e739ca19_2`.
 
 .. cssclass:: screen_shot
 
-    .. _be148d55-3b72-40d0-89d0-b912e739ca19:
+    .. _be148d55-3b72-40d0-89d0-b912e739ca19_2:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/be148d55-3b72-40d0-89d0-b912e739ca19
         :alt: Shape with paragraph and character formatting

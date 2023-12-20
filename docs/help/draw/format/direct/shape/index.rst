@@ -8,6 +8,7 @@ Draw Format Direct Shape
     :maxdepth: 1
 
     area/index
+    character/character
     paragraph/paragraph
     position_size/index
     line/index
