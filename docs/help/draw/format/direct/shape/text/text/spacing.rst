@@ -80,7 +80,7 @@ Setup
 Set Spacing of Shape Text
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Setting spacinf of the shape text is done by using the ``Spacing`` class.
+Setting spacing of the shape text is done by using the ``Spacing`` class.
 
 .. tabs::
 
