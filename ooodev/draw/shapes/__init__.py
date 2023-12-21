@@ -11,6 +11,7 @@ from .poly_line_shape import PolyLineShape as PolyLineShape
 from .poly_polygon_shape import PolyPolygonShape as PolyPolygonShape
 from .rectangle_shape import RectangleShape as RectangleShape
 from .text_shape import TextShape as TextShape
+from .shape_text_cursor import ShapeTextCursor as ShapeTextCursor
 
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "PolyPolygonShape",
     "RectangleShape",
     "TextShape",
+    "ShapeTextCursor",
 ]

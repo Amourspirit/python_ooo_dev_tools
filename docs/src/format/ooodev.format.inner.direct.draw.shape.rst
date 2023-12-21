@@ -10,6 +10,7 @@ Subpackages
    ooodev.format.inner.direct.draw.shape.line
    ooodev.format.inner.direct.draw.shape.position_size
    ooodev.format.inner.direct.draw.shape.rotation
+   ooodev.format.inner.direct.draw.shape.text
 
 Module contents
 ---------------

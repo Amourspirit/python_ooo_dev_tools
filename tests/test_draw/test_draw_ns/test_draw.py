@@ -245,3 +245,18 @@ def test_lines_and_move_to_top(loader) -> None:
     assert pos2.Y == line_pos.Y
 
     doc.close_doc()
+
+
+def test_cursor(loader) -> None:
+    doc = DrawDoc(Draw.create_draw_doc(loader))
+    slide = doc.get_slide(idx=0)
+
+    rect = slide.draw_rectangle(x=10, y=10, width=10, height=10)
+    cursor = rect.get_shape_text_cursor()
+    assert cursor is not None
+    cursor.append_para("Hello World")
+    cursor.goto_start()
+    cursor.goto_end(True)
+    assert cursor.get_string().startswith("Hello World")
+
+    doc.close_doc()

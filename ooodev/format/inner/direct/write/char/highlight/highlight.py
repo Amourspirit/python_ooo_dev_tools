@@ -148,6 +148,7 @@ class Highlight(StyleBase):
         return cp
 
     # endregion set styles
+
     @property
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""

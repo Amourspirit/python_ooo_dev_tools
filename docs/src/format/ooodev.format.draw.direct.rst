@@ -11,6 +11,7 @@ Subpackages
    ooodev.format.draw.direct.line
    ooodev.format.draw.direct.position_size
    ooodev.format.draw.direct.shadow
+   ooodev.format.draw.direct.text
    ooodev.format.draw.direct.transparency
 
 Module contents

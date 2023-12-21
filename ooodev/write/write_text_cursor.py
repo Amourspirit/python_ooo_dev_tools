@@ -6,12 +6,13 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextCursor
     from ooodev.proto.style_obj import StyleT
-    from ooodev.units import UnitT
-    from ooodev.utils.type_var import PathOrStr, Table
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.text.paragraph_cursor_partial import ParagraphCursorPartial
+from ooodev.adapter.text.sentence_cursor_partial import SentenceCursorPartial
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
+from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
 from ooodev.office import write as mWrite
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
@@ -28,6 +29,9 @@ class WriteTextCursor(
     Generic[T],
     TextCursorPartial,
     TextCursorComp,
+    ParagraphCursorPartial,
+    SentenceCursorPartial,
+    WordCursorPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
     PropPartial,
@@ -50,6 +54,9 @@ class WriteTextCursor(
         self.__owner = owner
         TextCursorPartial.__init__(self, owner=owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
+        ParagraphCursorPartial.__init__(self, component, None)  # type: ignore
+        SentenceCursorPartial.__init__(self, component, None)  # type: ignore
+        WordCursorPartial.__init__(self, component, None)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

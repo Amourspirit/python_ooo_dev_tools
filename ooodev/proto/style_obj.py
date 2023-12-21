@@ -84,18 +84,21 @@ class StyleT(Protocol):
         """
         ...
 
-    @property
-    def prop_has_attribs(self) -> bool:
-        """Gets If instance has any attributes set."""
-        ...
+    # don't know why but pyright complains about this if properties are specific types.
+    # May be a bug in pyright. May only be for child classes.
 
     @property
-    def prop_has_backup(self) -> bool:
+    def prop_has_backup(self) -> Any:
         """Gets If instance has backup data set."""
         ...
 
     @property
-    def prop_format_kind(self) -> FormatKind:
+    def prop_has_attribs(self) -> Any:
+        """Gets If instance has any attributes set."""
+        ...
+
+    @property
+    def prop_format_kind(self) -> Any:
         """Gets the kind of style"""
         ...
 

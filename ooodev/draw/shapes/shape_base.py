@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic, overload, Tuple
 import uno
 from com.sun.star.drawing import XDrawPage
+from com.sun.star.text import XText
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.proto.component_proto import ComponentT
@@ -10,6 +11,7 @@ from ooodev.utils.data_type.angle import Angle
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
+from .shape_text_cursor import ShapeTextCursor
 
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -39,6 +41,16 @@ class ShapeBase(
     def __init__(self, owner: _T, component: XShape) -> None:
         self.__owner = owner
         self.__component = component
+
+    def get_shape_text_cursor(self) -> ShapeTextCursor[_T]:
+        """
+        Gets a cursor object for this text.
+
+        Returns:
+            ShapeTextCursor: Cursor.
+        """
+        xtext = mLo.Lo.qi(XText, self.__component, True)
+        return ShapeTextCursor(owner=self.__owner, component=xtext.createTextCursor())
 
     def get_glue_points(self) -> Tuple[GluePoint2, ...]:
         """
