@@ -20,6 +20,7 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from .partial.text_cursor_partial import TextCursorPartial
+from .write_text import WriteText
 
 
 T = TypeVar("T", bound="ComponentT")
@@ -66,6 +67,16 @@ class WriteTextCursor(
 
     def __len__(self) -> int:
         return mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)
+
+    def get_write_text(self) -> WriteText[WriteTextCursor]:
+        """
+        Gets the WriteText (XText Component) object from the cursor.
+
+        Returns:
+            WriteText: WriteText object
+        """
+
+        return WriteText(self, self.get_text())
 
     # region style_prev_paragraph()
     @overload
