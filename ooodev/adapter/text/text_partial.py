@@ -31,12 +31,12 @@ class TextPartial(SimpleTextPartial):
         self.__component = component
 
     # region XText
-    def insert_text_content(self, range: XTextRange, content: XTextContent, absorb: bool) -> None:
+    def insert_text_content(self, rng: XTextRange, content: XTextContent, absorb: bool) -> None:
         """
         Inserts a content, such as a text table, text frame or text field.
 
         Args:
-            range (XTextRange): The position at which the content is inserted.
+            rng (XTextRange): The position at which the content is inserted.
             content (XTextContent): The content to be inserted.
             absorb (bool): Specifies whether the text spanned by xRange will be replaced.
                 If ``True`` then the content of range will be replaced by content,
@@ -45,7 +45,7 @@ class TextPartial(SimpleTextPartial):
         Returns:
             None:
         """
-        self.__component.insertTextContent(range, content, absorb)
+        self.__component.insertTextContent(rng, content, absorb)
 
     def remove_text_content(self, content: XTextContent) -> None:
         """

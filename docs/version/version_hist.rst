@@ -2,6 +2,16 @@
 Version History
 ***************
 
+Version 0.17.7
+==============
+
+Added ``get_write_text()`` to ``WriteTextCursor()`` that allows for easier access to the ``XText`` of a cursor.
+
+Version 0.17.6
+==============
+
+Add text animation support to Draw Shapes.
+
 Version 0.17.5
 ==============
 
