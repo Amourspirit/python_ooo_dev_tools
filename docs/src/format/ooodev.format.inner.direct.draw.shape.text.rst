@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.inner.direct.draw.shape.text.animation
    ooodev.format.inner.direct.draw.shape.text.text
 
 Module contents

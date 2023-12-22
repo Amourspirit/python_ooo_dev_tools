@@ -8,3 +8,4 @@ Draw Format Direct Shape Text
     :maxdepth: 1
 
     text/index
+    animation/animation
