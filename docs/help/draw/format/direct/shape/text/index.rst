@@ -7,5 +7,6 @@ Draw Format Direct Shape Text
     :titlesonly:
     :maxdepth: 1
 
-    text/index
     animation/animation
+    text/index
+    text_columns/text_columns

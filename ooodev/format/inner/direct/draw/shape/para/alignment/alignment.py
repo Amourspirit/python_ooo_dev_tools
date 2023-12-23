@@ -1,12 +1,11 @@
 """
-Module for managing paragraph alignment.
+Module for managing shape paragraph alignment.
 
-.. versionadded:: 0.9.0
+.. versionadded:: 0.17.8
 """
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
-from enum import Enum
-
+import uno
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
 from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum as ParagraphVertAlignEnum
 
@@ -15,36 +14,21 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.style_base import StyleMulti
-from .writing_mode import WritingMode as WritingMode
+from ooodev.format.inner.style_base import StyleBase
+from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind
 
 _TAlignment = TypeVar(name="_TAlignment", bound="Alignment")
 
 
-class LastLineKind(Enum):
-    """Last Line Alignment kind"""
-
-    START = 0
-    """Align Start"""
-    JUSTIFY = 2
-    """Align justified"""
-    CENTER = 3
-    """Align Center"""
-
-
-class Alignment(StyleMulti):
+class Alignment(StyleBase):
     """
-    Paragraph Alignment
+    Shape Paragraph Alignment
 
     Any properties starting with ``prop_`` set or get current instance values.
 
     All methods starting with ``fmt_`` can be used to chain together properties.
 
-    .. seealso::
-
-        - :ref:`help_writer_format_direct_para_alignment`
-
-    .. versionadded:: 0.9.0
+    .. versionadded:: 0.17.8
     """
 
     # region init
@@ -53,30 +37,20 @@ class Alignment(StyleMulti):
         self,
         *,
         align: ParagraphAdjust | None = None,
-        align_vert: ParagraphVertAlignEnum | None = None,
-        txt_direction: WritingMode | None = None,
         align_last: LastLineKind | None = None,
         expand_single_word: bool | None = None,
-        snap_to_grid: bool | None = None,
     ) -> None:
         """
         Constructor
 
         Args:
             align (ParagraphAdjust, optional): Determines horizontal alignment of a paragraph.
-            align_vert (ParagraphVertAlignEnum, optional): Determines vertical alignment of a paragraph.
-            text_direction (WritingMode, optional): Determines the text direction.
             align_last (LastLineKind, optional): Determines the adjustment of the last line.
             expand_single_word (bool, optional): Determines if single words are stretched.
                 It is only valid if ``align`` and ``align_last`` are also valid.
-            snap_to_grid (bool, optional): Determines snap to text grid (if active).
 
         Returns:
             None:
-
-        See Also:
-
-            - :ref:`help_writer_format_direct_para_alignment`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         init_vals = {}
@@ -85,22 +59,13 @@ class Alignment(StyleMulti):
             # ParagraphAdjust.STRETCH seems to be the same as LEFT
             init_vals["ParaAdjust"] = align
 
-        if align_vert is not None:
-            init_vals["ParaVertAlignment"] = align_vert.value
-
         if align_last is not None:
             init_vals["ParaLastLineAdjust"] = align_last.value
-
-        # SnapToGrid: could not find what service this property is part of, may not be any.
-        if snap_to_grid is not None:
-            init_vals["SnapToGrid"] = snap_to_grid
 
         if expand_single_word is not None:
             init_vals["ParaExpandSingleWord"] = expand_single_word
 
         super().__init__(**init_vals)
-        if txt_direction is not None:
-            self._set_style("txt_direction", txt_direction, *txt_direction.get_attrs())
 
     # endregion init
 
@@ -208,26 +173,12 @@ class Alignment(StyleMulti):
             if val is not None:
                 align._set(key, val)
 
-        set_prop("ParaVertAlignment", inst)
         set_prop("ParaLastLineAdjust", inst)
         set_prop("ParaExpandSingleWord", inst)
 
         # LibreOffice Writer converts ParagraphAdjust to an int value
         adjust = cast(int, mProps.Props.get(obj, "ParaAdjust"))
         inst._set("ParaAdjust", cls.convert_int_to_paragraph_adjust(adjust))
-        try:
-            # SnapToGrid is not part of any known service
-            snap = mProps.Props.get(obj, "SnapToGrid")
-            inst._set("SnapToGrid", snap)
-        except mEx.PropertyNotFoundError as e:
-            mLo.Lo.print("Alignment.from_obj(), SnapToGrid property not found")
-            mLo.Lo.print(f"  {e}")
-
-        try:
-            txt_dir = WritingMode.from_obj(obj)
-            inst._set_style("txt_direction", txt_dir, *txt_dir.get_attrs())
-        except Exception:
-            mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
         return inst
 
     # endregion from_obj()
@@ -249,20 +200,6 @@ class Alignment(StyleMulti):
         """
         cp = self.copy()
         cp.prop_align = value
-        return cp
-
-    def fmt_align_vert(self: _TAlignment, value: ParagraphVertAlignEnum | None) -> _TAlignment:
-        """
-        Gets copy of instance with vertical alignment set or removed
-
-        Args:
-            value (ParagraphVertAlignEnum | None): Alignment value
-
-        Returns:
-            Alignment: Alignment instance
-        """
-        cp = self.copy()
-        cp.prop_align_vert = value
         return cp
 
     def fmt_align_last(self: _TAlignment, value: LastLineKind | None) -> _TAlignment:
@@ -293,47 +230,9 @@ class Alignment(StyleMulti):
         cp.prop_expand_single_word = value
         return cp
 
-    def fmt_snap_to_grid(self: _TAlignment, value: bool | None) -> _TAlignment:
-        """
-        Gets copy of instance with snap to grid set or removed
-
-        Args:
-            value (LastLineKind | None): Snap to grid value
-
-        Returns:
-            Alignment: Alignment instance
-        """
-        cp = self.copy()
-        cp.prop_snap_to_grid = value
-        return cp
-
-    def fmt_txt_direction(self: _TAlignment, value: WritingMode | None) -> _TAlignment:
-        """
-        Gets copy of instance with vertical alignment set or removed
-
-        Args:
-            value (ParagraphVertAlignEnum | None): Alignment value
-
-        Returns:
-            Alignment: Alignment instance
-        """
-        cp = self.copy()
-        if value is None:
-            self._remove_style("txt_direction")
-        else:
-            self._set_style("txt_direction", value)
-        return cp
-
     # endregion style methods
 
     # region Style Properties
-    @property
-    def snap_to_grid(self: _TAlignment) -> _TAlignment:
-        """Gets copy of instance with snap to grid set"""
-        al = self.copy()
-        al.prop_snap_to_grid = True
-        return al
-
     @property
     def expand_single_word(self: _TAlignment) -> _TAlignment:
         """Gets copy of instance with expand single word set"""
@@ -378,7 +277,7 @@ class Alignment(StyleMulti):
         try:
             return self._format_kind_prop
         except AttributeError:
-            self._format_kind_prop = FormatKind.PARA
+            self._format_kind_prop = FormatKind.PARA | FormatKind.SHAPE
         return self._format_kind_prop
 
     @property
@@ -392,19 +291,6 @@ class Alignment(StyleMulti):
             self._remove("ParaAdjust")
             return
         self._set("ParaAdjust", value)
-
-    @property
-    def prop_align_vert(self) -> ParagraphVertAlignEnum | None:
-        """Gets/Sets vertical alignment of a paragraph."""
-        pv = cast(int, self._get("ParaVertAlignment"))
-        return None if pv is None else ParagraphVertAlignEnum(pv)
-
-    @prop_align_vert.setter
-    def prop_align_vert(self, value: ParagraphVertAlignEnum | None):
-        if value is None:
-            self._remove("ParaVertAlignment")
-            return
-        self._set("ParaVertAlignment", value)
 
     @property
     def prop_align_last(self) -> LastLineKind | None:
@@ -436,45 +322,16 @@ class Alignment(StyleMulti):
         self._set("ParaExpandSingleWord", value)
 
     @property
-    def prop_snap_to_grid(self) -> bool | None:
-        """Gets/Sets snap to text grid (if active)."""
-        # SnapToGrid is not part of any know service
-        return self._get("SnapToGrid")
-
-    @prop_snap_to_grid.setter
-    def prop_snap_to_grid(self, value: bool | None):
-        if value is None:
-            self._remove("SnapToGrid")
-            return
-        self._set("SnapToGrid", value)
-
-    @property
-    def prop_inner_mode(self) -> WritingMode | None:
-        """Gets Writing Mode (``txt_direction``) instance if exist."""
-        try:
-            return self._direct_inner_mode
-        except AttributeError:
-            self._direct_inner_mode = cast(WritingMode, self._get_style_inst("txt_direction"))
-        return self._direct_inner_mode
-
-    @property
     def default(self: _TAlignment) -> _TAlignment:
         """Gets Alignment default."""
         # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:
-            if self.prop_inner_mode is None:
-                mode = WritingMode(_cattribs=self._get_internal_cattribs()).default  # type: ignore
-            else:
-                mode = self.prop_inner_mode.default
             self._default_inst = self.__class__(
                 align=ParagraphAdjust.LEFT,
-                align_vert=ParagraphVertAlignEnum.AUTOMATIC,
-                txt_direction=mode,
                 align_last=LastLineKind.START,
                 expand_single_word=False,
-                snap_to_grid=True,
                 _cattribs=self._get_internal_cattribs(),  # type: ignore
             )
             # pylint: disable=protected-access

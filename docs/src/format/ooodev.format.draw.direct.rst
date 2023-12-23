@@ -9,6 +9,7 @@ Subpackages
 
    ooodev.format.draw.direct.area
    ooodev.format.draw.direct.line
+   ooodev.format.draw.direct.para
    ooodev.format.draw.direct.position_size
    ooodev.format.draw.direct.shadow
    ooodev.format.draw.direct.text
