@@ -6,6 +6,8 @@ Draw Direct Shape Text Paragraph
 Paragraph formatting can be applied by getting the shape text cursor and using the ``append()``, ``append_para()`` or any method that supports setting styles.
 This is similar behavior to Writer Direct Paragraph Text. See :ref:`help_writer_format_direct_para` for more information.
 
+Alignment for a paragraph should be set using :ref:`help_draw_format_direct_shape_paragraph_alignment`.
+
 Code Example
 ------------
 
@@ -28,7 +30,7 @@ Code Example
             with Lo.Loader(connector=Lo.ConnectSocket()):
                 doc = DrawDoc(Draw.create_draw_doc())
                 doc.set_visible()
-                Lo.delay(700)
+                Lo.delay(500)
                 doc.zoom(ZoomKind.ZOOM_75_PERCENT)
 
                 slide = doc.get_slide()
@@ -95,3 +97,4 @@ The results of running the above code is seen in :numref:`be148d55-3b72-40d0-89d
 
         - :ref:`help_writer_format_direct_para`
         - :ref:`help_writer_format_direct_char`
+        - :ref:`help_draw_format_direct_shape_paragraph_alignment`

@@ -146,3 +146,4 @@ We can get the text anchor of the shape by using the ``TextAnchor.from_obj()`` m
     .. cssclass:: ul-list
 
         - :py:class:`ooodev.format.draw.direct.text.text.TextAnchor`
+        - :ref:`help_draw_format_direct_shape_text_text_columns`

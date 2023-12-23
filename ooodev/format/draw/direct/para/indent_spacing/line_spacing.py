@@ -1,7 +1,7 @@
 """
 Module for managing paragraph Line Spacing.
 
-.. versionadded:: 0.9.0
+.. versionadded:: 0.17.8
 """
 # region Import
 from __future__ import annotations
@@ -41,7 +41,6 @@ class LineSpacing(StyleMulti):
         *,
         mode: ModeKind | None = None,
         value: int | float | UnitT = 0,
-        active_ln_spacing: bool | None = None,
     ) -> None:
         """
         Constructor
@@ -50,7 +49,7 @@ class LineSpacing(StyleMulti):
             mode (ModeKind, optional): Determines the mode that is used to apply units.
             value (Real, UnitT, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
                 ``AT_LEAST``, ``LEADING``, or ``FIXED``.
-            active_ln_spacing (bool, optional): Determines active page line-spacing.
+
         Returns:
             None:
 
@@ -77,9 +76,6 @@ class LineSpacing(StyleMulti):
                 value=value,
                 _cattribs=self._get_ls_cattribs(),  # type: ignore
             )
-
-        if active_ln_spacing is not None:
-            self._set("ParaRegisterModeActive", active_ln_spacing)
 
         if ls is not None:
             self._set_style("line_spacing", ls, *ls.get_attrs())
@@ -168,14 +164,6 @@ class LineSpacing(StyleMulti):
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
-        def set_prop(key: str, ls_inst: LineSpacing):
-            nonlocal obj
-            val = mProps.Props.get(obj, key, None)
-            if val is not None:
-                ls_inst._set(key, val)
-
-        set_prop("ParaRegisterModeActive", inst)
-
         pls = cast(UnoLineSpacing, mProps.Props.get(obj, "ParaLineSpacing", None))
         ls = mLs.LineSpacingStruct.from_uno_struct(
             pls,
@@ -196,20 +184,8 @@ class LineSpacing(StyleMulti):
         try:
             return self._format_kind_prop
         except AttributeError:
-            self._format_kind_prop = FormatKind.PARA
+            self._format_kind_prop = FormatKind.PARA | FormatKind.SHAPE
         return self._format_kind_prop
-
-    @property
-    def prop_active_ln_spacing(self) -> bool | None:
-        """Gets/Sets active page line-spacing."""
-        return self._get("ParaRegisterModeActive")
-
-    @prop_active_ln_spacing.setter
-    def prop_active_ln_spacing(self, value: bool | None):
-        if value is None:
-            self._remove("ParaRegisterModeActive")
-            return
-        self._set("ParaRegisterModeActive", value)
 
     @property
     def prop_mode(self) -> ModeKind | None:

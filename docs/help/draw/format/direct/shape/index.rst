@@ -9,7 +9,7 @@ Draw Format Direct Shape
 
     area/index
     character/character
-    paragraph/paragraph
-    position_size/index
     line/index
+    paragraph/index
+    position_size/index
     text/index
