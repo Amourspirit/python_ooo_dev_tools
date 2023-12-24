@@ -9,6 +9,14 @@ Subpackages
 
    ooodev.format.draw.modify.area
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ooodev.format.draw.modify.font_only
+
 Module contents
 ---------------
 

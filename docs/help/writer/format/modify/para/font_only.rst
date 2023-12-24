@@ -28,19 +28,18 @@ Setting the font
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 13, 14, 15, 16, 17, 18, 19
 
-        from ooodev.format.writer.modify.para.font import FontOnly, FontLang, StyleParaKind
-        from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.format.writer.modify.para.font import FontOnly, FontLang
+        from ooodev.format.writer.modify.para.font import StyleParaKind
+        from ooodev.write import Write, WriteDoc, ZoomKind
         from ooodev.utils.lo import Lo
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):
-                doc = Write.create_doc()
-                GUI.set_visible(doc=doc)
+                doc = WriteDoc(Write.create_doc())
+                doc.set_visible()
                 Lo.delay(300)
-                GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
+                doc.zoom(ZoomKind.ENTIRE_PAGE)
 
                 para_font_style = FontOnly(
                     name="Arial",
@@ -48,10 +47,8 @@ Setting the font
                     lang=FontLang().french_switzerland,
                     style_name=StyleParaKind.STANDARD,
                 )
-                para_font_style.apply(doc)
+                doc.apply_styles(font_style)
 
-                style_obj = FontOnly.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-                assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
                 Lo.delay(1_000)
 
                 Lo.close_doc(doc)
@@ -91,8 +88,10 @@ Getting font from a style
 
         # ... other code
 
-        style_obj = FontOnly.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
-        assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
+        f_style = FontOnly.from_style(
+            doc=doc.component, style_name=StyleParaKind.STANDARD
+        )
+        assert f_style.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html
 
