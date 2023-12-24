@@ -60,6 +60,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234429874-d86ddec0-381e-4411-854f-6f2f8148de2e:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234429874-d86ddec0-381e-4411-854f-6f2f8148de2e.png
         :alt: Writer dialog Paragraph Area Pattern style default
         :figclass: align-center
@@ -94,6 +95,7 @@ After appling style
 .. cssclass:: screen_shot
 
     .. _234428550-31533a46-102b-4a1b-99cf-4cb2d5eb6e19:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234428550-31533a46-102b-4a1b-99cf-4cb2d5eb6e19.png
         :alt: Writer dialog Paragraph Area Pattern style changed
         :figclass: align-center

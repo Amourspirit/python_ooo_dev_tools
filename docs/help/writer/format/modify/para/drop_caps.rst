@@ -62,6 +62,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234729276-17e99b85-3e71-44d4-896f-d75563705088:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234729276-17e99b85-3e71-44d4-896f-d75563705088.png
         :alt: Writer dialog Paragraph Drop Caps style default
         :figclass: align-center
@@ -96,6 +97,7 @@ After appling style
 .. cssclass:: screen_shot
 
     .. _234729668-176ce8e4-a2b6-475f-9fb5-cad05d713e11:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234729668-176ce8e4-a2b6-475f-9fb5-cad05d713e11.png
         :alt: Writer dialog Paragraph Drops Caps style changed
         :figclass: align-center

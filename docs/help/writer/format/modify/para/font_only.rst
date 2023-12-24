@@ -13,6 +13,7 @@ The :py:class:`ooodev.format.writer.modify.para.font.FontOnly`, class is used to
 .. cssclass:: screen_shot
 
     .. _234660447-f39415b9-ddda-46cc-be7e-1b3231f8350f:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234660447-f39415b9-ddda-46cc-be7e-1b3231f8350f.png
         :alt: Writer dialog Paragraph Font default
         :figclass: align-center
@@ -72,6 +73,7 @@ Note: that the language is changed to French (Switzerland), this is optional via
 .. cssclass:: screen_shot
 
     .. _234714325-06e76d31-d19d-413e-8bab-8c854b08f00a:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234714325-06e76d31-d19d-413e-8bab-8c854b08f00a.png
         :alt: Writer dialog Paragraph Font style changed
         :figclass: align-center

@@ -60,6 +60,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234417354-92e0d839-5fcd-414f-8b5f-487aece63b03:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234417354-92e0d839-5fcd-414f-8b5f-487aece63b03.png
         :alt: Writer dialog Paragraph Area Gradient style default
         :figclass: align-center
@@ -94,6 +95,7 @@ After appling style
 .. cssclass:: screen_shot
 
     .. _234418293-d0282e9a-8183-4015-9d62-eb72cda84a09:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234418293-d0282e9a-8183-4015-9d62-eb72cda84a09.png
         :alt: Writer dialog Paragraph Area Gradient style changed
         :figclass: align-center

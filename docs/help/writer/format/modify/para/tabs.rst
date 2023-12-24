@@ -13,6 +13,7 @@ The :py:class:`ooodev.format.writer.modify.para.tabs.Tabs`, class is used to set
 .. cssclass:: screen_shot
 
     .. _234718068-f6527b7c-49e3-4384-af05-ab5b65fe9158:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234718068-f6527b7c-49e3-4384-af05-ab5b65fe9158.png
         :alt: Writer dialog Paragraph Tabs default
         :figclass: align-center
@@ -70,6 +71,7 @@ Running the above code will produce the following results in the Writer dialog.
 .. cssclass:: screen_shot
 
     .. _234718550-a1907764-4f3c-419d-ac98-42801eb881a7:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234718550-a1907764-4f3c-419d-ac98-42801eb881a7.png
         :alt: Writer dialog Paragraph Tabs changed
         :figclass: align-center

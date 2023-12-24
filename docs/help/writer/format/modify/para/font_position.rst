@@ -13,6 +13,7 @@ The :py:class:`ooodev.format.writer.modify.para.font.FontPosition`, class is use
 .. cssclass:: screen_shot
 
     .. _234710910-1b0015cf-a605-49d1-bb54-2b3c39714cad:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234710910-1b0015cf-a605-49d1-bb54-2b3c39714cad.png
         :alt: Writer dialog Paragraph Position default
         :figclass: align-center
@@ -74,6 +75,7 @@ Running the above code will produce the following results in the Writer dialog.
 .. cssclass:: screen_shot
 
     .. _235550243-87c843e4-3747-4471-99e4-34962f47cddc:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235550243-87c843e4-3747-4471-99e4-34962f47cddc.png
         :alt: Writer dialog Paragraph Position style changed
         :figclass: align-center
@@ -91,7 +93,7 @@ Getting font position from a style
 
         # ... other code
 
-       style_obj = FontPosition.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
+        style_obj = FontPosition.from_style(doc=doc, style_name=StyleParaKind.STANDARD)
         assert style_obj.prop_style_name == str(StyleParaKind.STANDARD)
 
     .. only:: html

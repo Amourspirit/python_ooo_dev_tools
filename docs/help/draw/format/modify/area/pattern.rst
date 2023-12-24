@@ -1,14 +1,14 @@
-.. _help_draw_format_modify_area_gradient:
+.. _help_draw_format_modify_area_pattern:
 
-Write Modify Draw Area Gradient
-===============================
+Write Modify Draw Area Pattern
+==============================
 
 .. contents:: Table of Contents
     :local:
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.modify.area.Gradient` class is used to modify the values seen in :numref:`8722a949-cef8-4e7e-90cc-0187cf9b19bf` of a style.
+The :py:class:`ooodev.format.draw.modify.area.Pattern` class is used to modify the values seen in :numref:`eed969b9-f125-4638-8d07-d93668e42029` of a style.
 
 Setup
 -----
@@ -21,9 +21,8 @@ Setup
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
         from ooodev.utils.lo import Lo
-        from ooodev.format.draw.modify.area import Gradient, PresetGradientKind
+        from ooodev.format.draw.modify.area import Pattern, PresetPatternKind
         from ooodev.format.draw.modify.area import FamilyGraphics, DrawStyleFamilyKind
-
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
@@ -41,8 +40,8 @@ Setup
 
                 rect = slide.draw_rectangle(x=x, y=y, width=width, height=height)
                 rect.set_string("Hello World!")
-                style_modify = Gradient.from_preset(
-                    preset=PresetGradientKind.MAHOGANY,
+                style_modify = Pattern.from_preset(
+                    preset=PresetPatternKind.SHINGLE,
                     style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
                     style_family=DrawStyleFamilyKind.GRAPHICS,
                 )
@@ -52,9 +51,9 @@ Setup
                 doc.close_doc()
             return 0
 
-
         if __name__ == "__main__":
             raise SystemExit(main())
+
 
     .. only:: html
 
@@ -70,19 +69,19 @@ Before applying Style
 
 .. cssclass:: screen_shot
 
-    .. _8722a949-cef8-4e7e-90cc-0187cf9b19bf:
+    .. _eed969b9-f125-4638-8d07-d93668e42029:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8722a949-cef8-4e7e-90cc-0187cf9b19bf
-        :alt: Draw dialog Area Gradient style default
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/eed969b9-f125-4638-8d07-d93668e42029
+        :alt: Draw dialog Area Pattern style default
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Area Gradient style default
+        Draw dialog Area Pattern style default
 
 Apply style
 ^^^^^^^^^^^
 
-The gradient can be loaded from a preset using the :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` class as a lookup.
+The gradient can be loaded from a preset using the :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` class as a lookup.
 
 .. tabs::
 
@@ -90,8 +89,8 @@ The gradient can be loaded from a preset using the :py:class:`~ooodev.format.inn
 
         # ... other code
 
-        style_modify = Gradient.from_preset(
-            preset=PresetGradientKind.MAHOGANY,
+        style_modify = Pattern.from_preset(
+            preset=PresetPatternKind.SHINGLE,
             style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
             style_family=DrawStyleFamilyKind.GRAPHICS,
         )
@@ -111,39 +110,39 @@ Dialog after applying style.
 
 .. cssclass:: screen_shot
 
-    .. _2e06e576-82e8-4b09-9bdd-12b3b0eacf4c:
+    .. _5a815341-75bb-400b-b266-0611ef54f5a8:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/2e06e576-82e8-4b09-9bdd-12b3b0eacf4c
-        :alt: Draw dialog Area Gradient style changed
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/5a815341-75bb-400b-b266-0611ef54f5a8
+        :alt: Draw dialog Area Pattern style changed
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Area Gradient style changed
+        Draw dialog Area Pattern style changed
 
 
 Shape after applying style.
 
 .. cssclass:: screen_shot
 
-    .. _a956eb5e-84c0-4651-9de0-5d2b7819cb6d:
+    .. _9d9f2545-d6df-4a7c-bf1c-83ee6d4df9f5:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/a956eb5e-84c0-4651-9de0-5d2b7819cb6d
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9d9f2545-d6df-4a7c-bf1c-83ee6d4df9f5
         :alt: Shape after Style applied
         :figclass: align-center
 
         Shape after Style applied
 
-Getting the area image from a style
------------------------------------
+Getting the area pattern from a style
+-------------------------------------
 
-We can get the area image from the document.
+We can get the area pattern from the document.
 
 .. tabs::
 
     .. code-tab:: python
 
         # ... other code
-        f_style = Gradient.from_style(
+        f_style = Pattern.from_style(
             doc=doc.component,
             style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
             style_family=DrawStyleFamilyKind.GRAPHICS,
@@ -165,5 +164,5 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`ooodev.format.draw.modify.area.Gradient`
-        - :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind`
+        - :py:class:`ooodev.format.draw.modify.area.Pattern`
+        - :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind`

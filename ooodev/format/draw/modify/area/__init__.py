@@ -11,6 +11,7 @@ from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRo
 from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
 from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
@@ -19,5 +20,6 @@ from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 from .color import Color as Color
 from .gradient import Gradient as Gradient
 from .img import Img as Img
+from .pattern import Pattern as Pattern
 
-__all__ = ["Color", "Gradient", "Img"]
+__all__ = ["Color", "Gradient", "Img", "Pattern"]

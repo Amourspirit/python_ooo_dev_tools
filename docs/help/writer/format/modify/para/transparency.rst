@@ -18,6 +18,7 @@ Default Paragraph Transparency Style Dialog
 .. cssclass:: screen_shot
 
     .. _234730425-52bcadf8-d827-4198-93a0-8bfb4168e609:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234730425-52bcadf8-d827-4198-93a0-8bfb4168e609.png
         :alt: Writer dialog Paragraph Transparency default
         :figclass: align-center
@@ -102,6 +103,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234732332-0c3f5ce4-ee03-4719-b3c1-737c8f9ce081:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234732332-0c3f5ce4-ee03-4719-b3c1-737c8f9ce081.png
         :alt: Writer dialog Paragraph Transparency style Transparency changed
         :figclass: align-center
@@ -164,6 +166,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234733094-02ec8616-679e-40e0-9e2f-951764b0a0e9:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234733094-02ec8616-679e-40e0-9e2f-951764b0a0e9.png
         :alt: Writer dialog Paragraph Transparency style Gradient changed
         :figclass: align-center
