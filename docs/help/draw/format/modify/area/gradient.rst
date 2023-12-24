@@ -1,14 +1,14 @@
-.. _help_draw_format_modify_area_color:
+.. _help_draw_format_modify_area_gradient:
 
-Write Modify Draw Area Color
-============================
+Write Modify Draw Area Gradient
+===============================
 
 .. contents:: Table of Contents
     :local:
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.modify.area.Color` class is used to modify the values seen in :numref:`f335230c-b84f-4beb-962d-59c8db3561e0` of a style.
+The :py:class:`ooodev.format.draw.modify.area.Gradient` class is used to modify the values seen in :numref:`8722a949-cef8-4e7e-90cc-0187cf9b19bf` of a style.
 
 Setup
 -----
@@ -20,11 +20,9 @@ Setup
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
-        from ooodev.format.draw.modify.area.color import Color
         from ooodev.utils.lo import Lo
-        from ooodev.format.draw.modify.area import Color as FillColor
+        from ooodev.format.draw.modify.area import Gradient, PresetGradientKind
         from ooodev.format.draw.modify.area import FamilyGraphics, DrawStyleFamilyKind
-        from ooodev.utils.color import StandardColor
 
 
         def main() -> int:
@@ -43,8 +41,8 @@ Setup
 
                 rect = slide.draw_rectangle(x=x, y=y, width=width, height=height)
                 rect.set_string("Hello World!")
-                style_modify = FillColor(
-                    color=StandardColor.LIME_LIGHT2,
+                style_modify = Gradient.from_preset(
+                    preset=PresetGradientKind.MAHOGANY,
                     style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
                     style_family=DrawStyleFamilyKind.GRAPHICS,
                 )
@@ -64,25 +62,27 @@ Setup
 
             .. group-tab:: None
 
-Apply color to a style
-----------------------
+Apply gradient to a style
+-------------------------
 
 Before applying Style
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. cssclass:: screen_shot
 
-    .. _f335230c-b84f-4beb-962d-59c8db3561e0:
+    .. _8722a949-cef8-4e7e-90cc-0187cf9b19bf:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f335230c-b84f-4beb-962d-59c8db3561e0
-        :alt: Draw dialog Area Color style default
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8722a949-cef8-4e7e-90cc-0187cf9b19bf
+        :alt: Draw dialog Area Gradient style default
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Area Color style default
+        Draw dialog Area Gradient style default
 
 Apply style
 ^^^^^^^^^^^
+
+The gradient can be loaded from a preset using the :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind` class as a lookup.
 
 .. tabs::
 
@@ -90,8 +90,8 @@ Apply style
 
         # ... other code
 
-        style_modify = FillColor(
-            color=StandardColor.LIME_LIGHT2,
+        style_modify = Gradient.from_preset(
+            preset=PresetGradientKind.MAHOGANY,
             style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
             style_family=DrawStyleFamilyKind.GRAPHICS,
         )
@@ -111,23 +111,23 @@ Dialog after applying style.
 
 .. cssclass:: screen_shot
 
-    .. _1af864bc-5ec4-4b10-91bf-238f39818a51:
+    .. _2e06e576-82e8-4b09-9bdd-12b3b0eacf4c:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1af864bc-5ec4-4b10-91bf-238f39818a51
-        :alt: Draw dialog Area Color style changed
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/2e06e576-82e8-4b09-9bdd-12b3b0eacf4c
+        :alt: Draw dialog Area Gradient style changed
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Area Color style changed
+        Draw dialog Area Gradient style changed
 
 
 Shape after applying style.
 
 .. cssclass:: screen_shot
 
-    .. _3f2f80c2-8231-4dfd-87b7-1c6f5ec31cc9:
+    .. _a956eb5e-84c0-4651-9de0-5d2b7819cb6d:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3f2f80c2-8231-4dfd-87b7-1c6f5ec31cc9
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/a956eb5e-84c0-4651-9de0-5d2b7819cb6d
         :alt: Shape after Style applied
         :figclass: align-center
 
@@ -143,8 +143,7 @@ We can get the area image from the document.
     .. code-tab:: python
 
         # ... other code
-
-        f_style = FillColor.from_style(
+        f_style = Gradient.from_style(
             doc=doc.component,
             style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
             style_family=DrawStyleFamilyKind.GRAPHICS,
@@ -166,4 +165,5 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`ooodev.format.draw.modify.area.Color`
+        - :py:class:`ooodev.format.draw.modify.area.Img`
+        - :py:class:`~ooodev.format.inner.preset.preset_gradient.PresetGradientKind`

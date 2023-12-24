@@ -8,7 +8,7 @@ Write Modify Draw Area Image
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.modify.area.Img` class is used to modify the values seen in :numref:`76aab8df-4dc9-42f6-b677-9b19d3ce7501` of a paragraph style.
+The :py:class:`ooodev.format.draw.modify.area.Img` class is used to modify the values seen in :numref:`76aab8df-4dc9-42f6-b677-9b19d3ce7501` of a style.
 
 Setup
 -----
@@ -28,7 +28,7 @@ Setup
             with Lo.Loader(connector=Lo.ConnectSocket()):
                 doc = DrawDoc(Draw.create_draw_doc())
                 doc.set_visible()
-                Lo.delay(700)
+                Lo.delay(500)
                 doc.zoom(ZoomKind.ZOOM_75_PERCENT)
 
                 slide = doc.get_slide()
