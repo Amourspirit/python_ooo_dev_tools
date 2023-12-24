@@ -12,6 +12,7 @@ from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetIma
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
+from .color import Color as Color
 from .img import Img as Img
 
-__all__ = ["Img"]
+__all__ = ["Color", "Img"]

@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.draw.modify.area.color
    ooodev.format.draw.modify.area.img
 
 Module contents

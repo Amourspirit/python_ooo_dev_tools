@@ -23,6 +23,10 @@ class Img(FillImg):
     """
     Shape Style Modify Area Fill Image
 
+    .. seealso::
+
+        - :ref:`help_draw_format_modify_area_image`
+
     .. versionadded:: 0.17.9
     """
 
@@ -55,12 +59,15 @@ class Img(FillImg):
             pos_offset (Offset, optional): Tiling position offset.
             tile_offset (OffsetColumn, OffsetRow, optional): The tiling offset.
             auto_name (bool, optional): Specifies if ``name`` is ensured to be unique. Defaults to ``False``.
-            style_name (FamilyGraphics, str, optional): Specifies the Paragraph Style that instance applies to.
+            style_name (FamilyGraphics, str, optional): Specifies the Style that instance applies to.
                 Default is Default ``standard`` Style.
-            style_family (str, DrawStyleFamilyKind, optional): Family Style.
+            style_family (str, DrawStyleFamilyKind, optional): Family Style. Defaults to ``graphics``.
 
         Returns:
             None:
+
+        See Also:
+            - :ref:`help_draw_format_modify_area_image`
         """
         super().__init__(
             bitmap=bitmap,

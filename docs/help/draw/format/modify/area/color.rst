@@ -1,6 +1,6 @@
-.. _help_draw_format_modify_area_image:
+.. _help_draw_format_modify_area_color:
 
-Write Modify Draw Area Image
+Write Modify Draw Area Color
 ============================
 
 .. contents:: Table of Contents
@@ -8,7 +8,7 @@ Write Modify Draw Area Image
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.modify.area.Img` class is used to modify the values seen in :numref:`76aab8df-4dc9-42f6-b677-9b19d3ce7501` of a paragraph style.
+The :py:class:`ooodev.format.draw.modify.area.Color` class is used to modify the values seen in :numref:`f335230c-b84f-4beb-962d-59c8db3561e0` of a paragraph style.
 
 Setup
 -----
@@ -20,15 +20,18 @@ Setup
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
+        from ooodev.format.draw.modify.area.color import Color
         from ooodev.utils.lo import Lo
-        from ooodev.format.draw.modify.area import Img as FillImg
-        from ooodev.format.draw.modify.area import PresetImageKind
+        from ooodev.format.draw.modify.area import Color as FillColor
+        from ooodev.format.draw.modify.area import FamilyGraphics, DrawStyleFamilyKind
+        from ooodev.utils.color import StandardColor
+
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
                 doc = DrawDoc(Draw.create_draw_doc())
                 doc.set_visible()
-                Lo.delay(700)
+                Lo.delay(500)
                 doc.zoom(ZoomKind.ZOOM_75_PERCENT)
 
                 slide = doc.get_slide()
@@ -40,12 +43,17 @@ Setup
 
                 rect = slide.draw_rectangle(x=x, y=y, width=width, height=height)
                 rect.set_string("Hello World!")
-                style_modify = FillImg.from_preset(preset=PresetImageKind.POOL)
+                style_modify = FillColor(
+                    color=StandardColor.LIME_LIGHT2,
+                    style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
+                    style_family=DrawStyleFamilyKind.GRAPHICS,
+                )
                 doc.apply_styles(style_modify)
 
                 Lo.delay(1_000)
                 doc.close_doc()
             return 0
+
 
         if __name__ == "__main__":
             raise SystemExit(main())
@@ -56,7 +64,7 @@ Setup
 
             .. group-tab:: None
 
-Apply image to a style
+Apply color to a style
 ----------------------
 
 Before applying Style
@@ -64,19 +72,17 @@ Before applying Style
 
 .. cssclass:: screen_shot
 
-    .. _76aab8df-4dc9-42f6-b677-9b19d3ce7501:
+    .. _f335230c-b84f-4beb-962d-59c8db3561e0:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/76aab8df-4dc9-42f6-b677-9b19d3ce7501
-        :alt: Draw dialog Area Image style default
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f335230c-b84f-4beb-962d-59c8db3561e0
+        :alt: Draw dialog Area Color style default
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Area Image style default
+        Draw dialog Area Color style default
 
 Apply style
 ^^^^^^^^^^^
-
-The image can be loaded from a preset using the :py:class:`~ooodev.format.inner.preset.preset_image.PresetImageKind` class as a lookup.
 
 .. tabs::
 
@@ -84,7 +90,11 @@ The image can be loaded from a preset using the :py:class:`~ooodev.format.inner.
 
         # ... other code
 
-        style_modify = FillImg.from_preset(preset=PresetImageKind.POOL)
+        style_modify = FillColor(
+            color=StandardColor.LIME_LIGHT2,
+            style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
+            style_family=DrawStyleFamilyKind.GRAPHICS,
+        )
         doc.apply_styles(style_modify)
 
     .. only:: html
@@ -101,23 +111,23 @@ Dialog after applying style.
 
 .. cssclass:: screen_shot
 
-    .. _8ea541ab-ffea-451c-bf56-93fe00ca99eb:
+    .. _1af864bc-5ec4-4b10-91bf-238f39818a51:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8ea541ab-ffea-451c-bf56-93fe00ca99eb
-        :alt: Draw dialog Area Image style changed
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1af864bc-5ec4-4b10-91bf-238f39818a51
+        :alt: Draw dialog Area Color style changed
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Area Image style changed
+        Draw dialog Area Color style changed
 
 
 Shape after applying style.
 
 .. cssclass:: screen_shot
 
-    .. _9ecb81d6-66b9-4499-add2-3ac48b95dd8f:
+    .. _3f2f80c2-8231-4dfd-87b7-1c6f5ec31cc9:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9ecb81d6-66b9-4499-add2-3ac48b95dd8f
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3f2f80c2-8231-4dfd-87b7-1c6f5ec31cc9
         :alt: Shape after Style applied
         :figclass: align-center
 
@@ -134,12 +144,12 @@ We can get the area image from the document.
 
         # ... other code
 
-        f_style = FillImg.from_style(
+        f_style = FillColor.from_style(
             doc=doc.component,
-            style_name=style_modify.prop_style_name,
-            style_family=style_modify.prop_style_family_name,
+            style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
+            style_family=DrawStyleFamilyKind.GRAPHICS,
         )
-        assert f_style.prop_style_name == style_modify.prop_style_name
+        assert f_style is not None
 
     .. only:: html
 
@@ -156,5 +166,4 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`ooodev.format.draw.modify.area.Img`
-        - :py:class:`~ooodev.format.inner.preset.preset_image.PresetImageKind`
+        - :py:class:`ooodev.format.draw.modify.area.Color`

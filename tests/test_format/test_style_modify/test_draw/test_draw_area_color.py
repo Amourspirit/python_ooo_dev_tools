@@ -8,9 +8,9 @@ import uno
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.draw import Draw, DrawDoc
-from ooodev.format.draw.modify.area import Img, PresetImageKind, SizeMM
-
-from ooo.dyn.drawing.fill_style import FillStyle
+from ooodev.format.draw.modify.area import Color as FillColor
+from ooodev.format.draw.modify.area import FamilyGraphics, DrawStyleFamilyKind
+from ooodev.utils.color import StandardColor
 
 
 def test_draw(loader) -> None:
@@ -31,23 +31,22 @@ def test_draw(loader) -> None:
         x = int(width / 2)
         y = int(height / 2)
 
-        style = Img.from_preset(preset=PresetImageKind.FLORAL)
+        style = FillColor(
+            color=StandardColor.LIME_LIGHT2,
+            style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
+            style_family=DrawStyleFamilyKind.GRAPHICS,
+        )
         doc.apply_styles(style)
 
         _ = slide.draw_rectangle(x=x, y=y, width=width, height=height)
-        props = style.get_style_props(doc.component)
-        assert props.getPropertyValue("FillStyle") == FillStyle.BITMAP
-        assert props.getPropertyValue("FillBitmapName") == str(PresetImageKind.FLORAL)
+        # props = style.get_style_props(doc.component)
 
-        f_style = Img.from_style(doc.component)
-        point = PresetImageKind.FLORAL._get_point()
-        x_lst = [(point.x - 2) + i for i in range(5)]  # plus or minus 2
-        y_lst = [(point.y - 2) + i for i in range(5)]  # plus or minus 2
-        assert f_style.prop_inner.prop_is_size_mm
-        size = f_style.prop_inner.prop_size
-        assert isinstance(size, SizeMM)
-        assert round(size.width * 100) in x_lst
-        assert round(size.height * 100) in y_lst
+        f_style = FillColor.from_style(
+            doc=doc.component,
+            style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
+            style_family=DrawStyleFamilyKind.GRAPHICS,
+        )
+        assert f_style.prop_inner.prop_color == StandardColor.LIME_LIGHT2
 
         Lo.delay(delay)
     finally:
