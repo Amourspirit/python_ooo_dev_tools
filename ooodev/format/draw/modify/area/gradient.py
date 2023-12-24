@@ -124,9 +124,9 @@ class Gradient(FillStyleBaseMulti):
 
         Args:
             doc (Any): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to.
-                Default is Default Paragraph Style.
-            style_family (str, optional): Style family. Default ``ParagraphStyles``.
+            style_name (FamilyGraphics, str, optional): Specifies the Style that instance applies to.
+                Default is ``FamilyGraphics.DEFAULT_DRAWING_STYLE``.
+            style_family (DrawStyleFamilyKind, str, optional): Style family. Default ``DrawStyleFamilyKind.GRAPHICS``.
 
         Returns:
             Gradient: ``Gradient`` instance from document properties.
@@ -147,7 +147,7 @@ class Gradient(FillStyleBaseMulti):
 
     @property
     def prop_inner(self) -> InnerGradient:
-        """Gets Inner Color instance"""
+        """Gets Inner instance"""
         try:
             return self._direct_inner
         except AttributeError:

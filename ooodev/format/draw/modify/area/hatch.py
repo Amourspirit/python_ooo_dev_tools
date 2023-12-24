@@ -7,23 +7,26 @@ from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.modify.write.fill.fill_style_base_multi import FillStyleBaseMulti
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
-from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
+from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
+from ooodev.utils.color import Color, StandardColor
+from ooo.dyn.drawing.hatch_style import HatchStyle
+from ooodev.units import Angle
 
-from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import XBitmap
+    from ooodev.units import UnitT
 
 # endregion Import
 
 
-class Pattern(FillStyleBaseMulti):
+class Hatch(FillStyleBaseMulti):
     """
-    Draw Style Fill Pattern
+    Draw Style Fill Hatch
 
     .. seealso::
 
-        - :ref:`help_draw_format_modify_area_pattern`
+        - :ref:`help_draw_format_modify_area_hatch`
 
     .. versionadded:: 0.17.9
     """
@@ -31,11 +34,11 @@ class Pattern(FillStyleBaseMulti):
     def __init__(
         self,
         *,
-        bitmap: XBitmap | None = None,
-        name: str = "",
-        tile: bool = True,
-        stretch: bool = False,
-        auto_name: bool = False,
+        style: HatchStyle = HatchStyle.SINGLE,
+        color: Color = StandardColor.BLACK,
+        space: float | UnitT = 0.0,
+        angle: Angle | int = 0,
+        bg_color: Color = StandardColor.AUTO_COLOR,
         style_name: str = FamilyGraphics.DEFAULT_DRAWING_STYLE,
         style_family: str | DrawStyleFamilyKind = DrawStyleFamilyKind.GRAPHICS,
     ) -> None:
@@ -56,15 +59,15 @@ class Pattern(FillStyleBaseMulti):
             None:
 
         See Also:
-            - :ref:`help_draw_format_modify_area_pattern`
+            - :ref:`help_draw_format_modify_area_hatch`
         """
 
-        direct = InnerPattern(
-            bitmap=bitmap,
-            name=name,
-            tile=tile,
-            stretch=stretch,
-            auto_name=auto_name,
+        direct = InnerHatch(
+            style=style,
+            color=color,
+            space=space,
+            angle=angle,
+            bg_color=bg_color,
         )
         super().__init__()
         self._style_family_name = str(style_family)
@@ -74,20 +77,20 @@ class Pattern(FillStyleBaseMulti):
     @classmethod
     def from_preset(
         cls,
-        preset: PresetPatternKind,
+        preset: PresetHatchKind,
         style_name: str = FamilyGraphics.DEFAULT_DRAWING_STYLE,
         style_family: str | DrawStyleFamilyKind = DrawStyleFamilyKind.GRAPHICS,
-    ) -> Pattern:
+    ) -> Hatch:
         """
         Gets an instance from a preset
 
         Args:
-            preset (PresetPatternKind): Preset
+            preset (PresetHatchKind): Preset
 
         Returns:
-            Pattern: Instance from preset.
+            Hatch: Instance from preset.
         """
-        direct = InnerPattern.from_preset(preset)
+        direct = InnerHatch.from_preset(preset)
         inst = cls(style_name=style_name, style_family=style_family)
         inst._set_style("direct", direct)
         return inst
@@ -98,7 +101,7 @@ class Pattern(FillStyleBaseMulti):
         doc: Any,
         style_name: FamilyGraphics | str = FamilyGraphics.DEFAULT_DRAWING_STYLE,
         style_family: str | DrawStyleFamilyKind = DrawStyleFamilyKind.GRAPHICS,
-    ) -> Pattern:
+    ) -> Hatch:
         """
         Gets instance from Document.
 
@@ -109,10 +112,10 @@ class Pattern(FillStyleBaseMulti):
             style_family (DrawStyleFamilyKind, str, optional): Style family. Default ``DrawStyleFamilyKind.GRAPHICS``.
 
         Returns:
-            Pattern: ``Pattern`` instance from document properties.
+            Hatch: ``Hatch`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerPattern.from_obj(inst.get_style_props(doc))
+        direct = InnerHatch.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct)
         return inst
 
@@ -126,10 +129,10 @@ class Pattern(FillStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> InnerPattern:
+    def prop_inner(self) -> InnerHatch:
         """Gets Inner instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(InnerPattern, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerHatch, self._get_style_inst("direct"))
         return self._direct_inner

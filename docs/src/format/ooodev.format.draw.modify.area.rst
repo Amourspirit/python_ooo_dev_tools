@@ -9,6 +9,7 @@ Submodules
 
    ooodev.format.draw.modify.area.color
    ooodev.format.draw.modify.area.gradient
+   ooodev.format.draw.modify.area.hatch
    ooodev.format.draw.modify.area.img
    ooodev.format.draw.modify.area.pattern
 
