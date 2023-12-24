@@ -14,7 +14,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import color as mColor
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset

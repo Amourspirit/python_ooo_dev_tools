@@ -62,7 +62,7 @@ from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle as Angle
 from ..utils.kind.axis_kind import AxisKind as AxisKind
 from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes

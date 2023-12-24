@@ -7,7 +7,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.units import UnitT
 from ooodev.utils.color import Color, StandardColor
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ...header.area.hatch import Hatch as HeaderHatch
 
 

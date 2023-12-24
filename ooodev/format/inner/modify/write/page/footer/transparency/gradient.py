@@ -8,7 +8,7 @@ from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterSt
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ...header.transparency.gradient import Gradient as HeaderGradient
 
 

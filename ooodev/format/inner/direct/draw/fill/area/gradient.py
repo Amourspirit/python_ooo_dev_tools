@@ -8,7 +8,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as FillGradient
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ooodev.utils.data_type.color_range import ColorRange
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange

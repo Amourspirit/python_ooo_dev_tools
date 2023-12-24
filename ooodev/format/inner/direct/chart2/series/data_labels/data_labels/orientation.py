@@ -7,7 +7,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ooodev.utils import props as mProps
 
 

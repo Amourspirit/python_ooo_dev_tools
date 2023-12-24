@@ -13,7 +13,7 @@ from .struct_base import StructBase
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.units import UnitT
 from ooodev.units import UnitMM

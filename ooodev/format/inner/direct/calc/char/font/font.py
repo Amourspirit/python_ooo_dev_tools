@@ -12,7 +12,7 @@ from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
 from ooodev.units import UnitT
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 
 
 class Font(CharFont):

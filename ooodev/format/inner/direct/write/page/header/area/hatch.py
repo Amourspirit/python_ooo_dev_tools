@@ -8,7 +8,7 @@ from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 
 # endregion Import
 

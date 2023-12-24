@@ -6,7 +6,7 @@ from com.sun.star.chart2 import XChartDocument
 
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils import lo as mLo
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset

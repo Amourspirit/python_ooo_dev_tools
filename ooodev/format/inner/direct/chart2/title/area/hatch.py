@@ -6,7 +6,7 @@ from ooo.dyn.drawing.hatch_style import HatchStyle
 from ooodev.format.inner.direct.chart2.chart.area.hatch import Hatch as ChartHatch
 from ooodev.units import UnitT
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 
 

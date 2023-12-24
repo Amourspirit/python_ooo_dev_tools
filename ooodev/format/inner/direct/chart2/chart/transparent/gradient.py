@@ -17,7 +17,7 @@ from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as WriteGradient
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset

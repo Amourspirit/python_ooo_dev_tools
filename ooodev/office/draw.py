@@ -73,14 +73,16 @@ from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.draw_named_event import DrawNamedEvent
 from ..events.event_singleton import _Events
 from ..exceptions import ex as mEx
+from ..units import Angle as Angle
+from ..units import UnitMM100, UnitPT, UnitMM
 from ..utils import color as mColor
 from ..utils import file_io as mFileIO
+from ..utils import gen_util as gUtil
 from ..utils import gui as mGui
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..utils.data_type.angle import Angle as Angle
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
 from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
@@ -100,8 +102,6 @@ from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
 from ..utils.kind.presentation_layout_kind import PresentationLayoutKind as PresentationLayoutKind
 from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
 from ..utils.type_var import PathOrStr
-from ..units import UnitMM100, UnitPT, UnitMM
-from ..utils import gen_util as gUtil
 
 
 if TYPE_CHECKING:

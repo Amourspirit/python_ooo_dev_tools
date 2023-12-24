@@ -12,7 +12,7 @@ from ooo.dyn.awt.font_weight import FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat
 
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ooodev.units import UnitT
 from ooodev.units import UnitPT
 from ooodev.format.inner.direct.write.char.font.font import FontLine

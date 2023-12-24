@@ -36,7 +36,7 @@ from ooodev.format.chart2.direct.wall.transparency import Gradient as WallGradie
 
 from ooodev.utils.color import StandardColor
 from ooodev.utils.info import Info
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 
 
 def test_calc_set_styles_floor_chart(loader, copy_fix_calc) -> None:

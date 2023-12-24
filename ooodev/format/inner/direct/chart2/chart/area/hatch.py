@@ -18,7 +18,7 @@ from ooodev.units import UnitT
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 
 
