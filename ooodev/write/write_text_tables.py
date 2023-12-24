@@ -4,11 +4,9 @@ import uno
 
 from ooodev.adapter.text.text_comp import TextComp
 from ooodev.proto.component_proto import ComponentT
-
-from ooodev.proto.component_proto import ComponentT
+from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils import info as mInfo
 from . import write_text_table as mWriteTextTable
 
 T = TypeVar("T", bound="ComponentT")
@@ -16,7 +14,7 @@ T = TypeVar("T", bound="ComponentT")
 
 class WriteTextTables(Generic[T], TextComp, QiPartial):
     """
-    Represents writer paragraphs.
+    Represents writer text tables.
 
     Contains Enumeration Access.
     """

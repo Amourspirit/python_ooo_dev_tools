@@ -31,9 +31,9 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.events.event_singleton import _Events
-from ooodev.events.event_singleton import _Events
 from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.format.writer.style import FamilyNamesKind
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
@@ -79,6 +79,7 @@ class WriteDoc(
     VetoableChangeImplement,
     QiPartial,
     PropPartial,
+    StylePartial,
 ):
     """A class to represent a Write document."""
 
@@ -99,6 +100,7 @@ class WriteDoc(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        StylePartial.__init__(self, component=doc)
 
     # region Lazy Listeners
 

@@ -12,12 +12,13 @@ from ooodev.adapter.beans.property_change_implement import PropertyChangeImpleme
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.text_view_cursor_comp import TextViewCursorComp
 from ooodev.adapter.view.line_cursor_partial import LineCursorPartial
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import write as mWrite
 from ooodev.proto.component_proto import ComponentT
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 
 from .partial.text_cursor_partial import TextCursorPartial
 
@@ -33,6 +34,7 @@ class WriteTextViewCursor(
     VetoableChangeImplement,
     PropPartial,
     QiPartial,
+    StylePartial,
 ):
     """Represents a writer text view cursor."""
 
@@ -53,6 +55,7 @@ class WriteTextViewCursor(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        StylePartial.__init__(self, component=component)
 
     def __len__(self) -> int:
         return mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)

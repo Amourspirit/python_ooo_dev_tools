@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.text_range_comp import TextRangeComp
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -18,7 +19,7 @@ T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextRange(
-    Generic[T], TextRangeComp, PropertyChangeImplement, VetoableChangeImplement, QiPartial, PropPartial
+    Generic[T], TextRangeComp, PropertyChangeImplement, VetoableChangeImplement, QiPartial, PropPartial, StylePartial
 ):
     """Represents writer TextRange."""
 
@@ -37,7 +38,7 @@ class WriteTextRange(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
-        # self.__doc = doc
+        StylePartial.__init__(self, component=component)
 
     # region Properties
     @property

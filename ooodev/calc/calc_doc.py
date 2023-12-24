@@ -28,6 +28,7 @@ from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
 from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.event_singleton import _Events
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
@@ -39,7 +40,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
 
 
-class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
+class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
     """Defines a Calc Document"""
 
     def __init__(self, doc: XSpreadsheetDocument) -> None:
@@ -52,6 +53,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial):
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        StylePartial.__init__(self, component=doc)
 
     def create_cell_style(self, style_name: str) -> XStyle:
         """

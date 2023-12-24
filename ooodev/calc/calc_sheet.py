@@ -30,14 +30,15 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
     from .calc_doc import CalcDoc
 
+from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.office import calc as mCalc
-from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
-from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
@@ -45,12 +46,22 @@ from . import calc_table_col as mCalcTableCol
 from . import calc_table_row as mCalcTableRow
 
 
-class CalcSheet(SpreadsheetComp, QiPartial, PropPartial):
+class CalcSheet(SpreadsheetComp, QiPartial, PropPartial, StylePartial):
+    """Class for managing Calc Sheet"""
+
     def __init__(self, owner: CalcDoc, sheet: XSpreadsheet) -> None:
+        """
+        Constructor
+
+        Args:
+            owner (CalcDoc): Owner Document
+            sheet (XSpreadsheet): Sheet instance.
+        """
         self.__owner = owner
         SpreadsheetComp.__init__(self, sheet)  # type: ignore
         QiPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
+        StylePartial.__init__(self, component=sheet)
 
     # region get_address()
     @overload

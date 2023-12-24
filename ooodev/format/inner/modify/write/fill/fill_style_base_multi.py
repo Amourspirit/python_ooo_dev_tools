@@ -20,6 +20,4 @@ class FillStyleBaseMulti(StyleModifyMulti):
         return ("com.sun.star.drawing.FillProperties",)
 
     def _is_valid_doc(self, obj: Any) -> bool:
-        if mInfo.Info.is_doc_type(obj, mLo.Lo.Service.DRAW):
-            return True
-        return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.IMPRESS)
+        return mInfo.Info.support_service(obj, str(mLo.Lo.Service.DRAW), str(mLo.Lo.Service.IMPRESS))

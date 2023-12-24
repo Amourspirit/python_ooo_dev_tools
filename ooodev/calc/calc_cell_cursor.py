@@ -13,21 +13,23 @@ if TYPE_CHECKING:
 else:
     XSheetCellCursor = object
 
-from ooodev.utils import lo as mLo
-from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.sheet_cell_cursor_comp import SheetCellCursorComp
-from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.office import calc as mCalc
+from ooodev.utils import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 
 
-class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial):
+class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial):
     def __init__(self, owner: CalcSheet, cursor: XSheetCellCursor) -> None:
         self.__owner = owner
         SheetCellCursorComp.__init__(self, cursor)  # type: ignore
         QiPartial.__init__(self, component=cursor, lo_inst=mLo.Lo.current_lo)  # type: ignore
         PropPartial.__init__(self, component=cursor, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        StylePartial.__init__(self, component=cursor)
 
     def find_used_cursor(self) -> mCalcCellRange.CalcCellRange:
         """

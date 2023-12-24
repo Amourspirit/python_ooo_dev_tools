@@ -20,6 +20,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.format.inner.style_base
+   ooodev.format.inner.style_partial
 
 Module contents
 ---------------

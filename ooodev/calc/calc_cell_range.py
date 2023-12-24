@@ -14,11 +14,12 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row
     from ooodev.utils.data_type.size import Size
+    from ooodev.proto.style_obj import StyleT
     from . import calc_cell_cursor as mCalcCellCursor
 else:
     CellRangeAddress = object
 
-from ooodev.proto.style_obj import StyleT
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -27,7 +28,7 @@ from ooodev.utils import lo as mLo
 from . import calc_cell as mCalcCell
 
 
-class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial):
+class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial):
     """Represents a calc cell range."""
 
     def __init__(self, owner: CalcSheet, rng: Any) -> None:
@@ -48,6 +49,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial):
         SheetCellRangeComp.__init__(self, cell_range)  # type: ignore
         QiPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)  # type: ignore
         PropPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        StylePartial.__init__(self, component=cell_range)
         # self.__doc = doc
 
     def change_style(self, style_name: str) -> bool:

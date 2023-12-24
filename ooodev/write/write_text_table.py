@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from com.sun.star.container import XEnumerationAccess
 
 from ooodev.adapter.text.text_table_comp import TextTableComp
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -16,7 +17,7 @@ from . import write_text_portions as mWriteTextPortions
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextTable(Generic[T], TextTableComp, QiPartial):
+class WriteTextTable(Generic[T], TextTableComp, QiPartial, StylePartial):
     """Represents writer text content."""
 
     def __init__(self, owner: T, component: XTextContent) -> None:
@@ -30,7 +31,7 @@ class WriteTextTable(Generic[T], TextTableComp, QiPartial):
         self.__owner = owner
         TextTableComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
-        # self.__doc = doc
+        StylePartial.__init__(self, component=component)
 
     def get_text_portions(self) -> mWriteTextPortions.WriteTextPortions[T]:
         """Returns the text portions of this paragraph."""
