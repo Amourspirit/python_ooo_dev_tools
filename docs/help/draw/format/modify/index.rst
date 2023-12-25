@@ -5,7 +5,6 @@ Modify
 
 .. toctree::
     :maxdepth: 2
-    :glob:
 
-    *
     area/index
+    font/index

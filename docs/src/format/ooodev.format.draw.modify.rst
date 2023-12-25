@@ -8,14 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.draw.modify.area
-
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 4
-
-   ooodev.format.draw.modify.font_only
+   ooodev.format.draw.modify.font
 
 Module contents
 ---------------

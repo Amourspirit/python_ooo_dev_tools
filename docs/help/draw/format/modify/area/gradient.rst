@@ -16,6 +16,7 @@ Setup
 .. tabs::
 
     .. code-tab:: python
+        :emphasize-lines: 25, 26, 27, 28, 29, 30
 
         from __future__ import annotations
         import uno

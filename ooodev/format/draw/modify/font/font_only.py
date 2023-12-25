@@ -1,14 +1,21 @@
+"""
+Font Only Style for Draw Documents
+
+.. versionadded:: 0.17.9
+"""
 # region Imports
 from __future__ import annotations
-from typing import cast, Any
+from typing import cast, Any, TYPE_CHECKING
 import uno
 
-from ooodev.units import UnitT
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as InnerFontOnly
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
 from ooodev.format.inner.modify.draw.char_style_base_multi import CharStyleBaseMulti
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 # endregion Imports
 
@@ -19,7 +26,7 @@ class FontOnly(CharStyleBaseMulti):
 
     .. seealso::
 
-        - :ref:`help_draw_format_modify_font_only`
+        - :ref:`help_draw_format_modify_font_font_only`
 
     .. versionadded:: 0.17.9
     """
@@ -51,7 +58,7 @@ class FontOnly(CharStyleBaseMulti):
             None:
 
         See Also:
-            - :ref:`help_draw_format_modify_font_only`
+            - :ref:`help_draw_format_modify_font_font_only`
         """
 
         direct = InnerFontOnly(name=name, size=size, font_style=font_style_name, lang=lang)
@@ -72,8 +79,9 @@ class FontOnly(CharStyleBaseMulti):
 
         Args:
             doc (Any): UNO Document Object.
-            style_name (StyleCharKind, str, optional): Specifies the Character Style that instance applies to. Default is Default Character Style.
-            style_family (str, optional): Style family. Default ``CharacterStyles``.
+            style_name (FamilyGraphics, str, optional): Specifies the Style that instance applies to.
+                Default is ``FamilyGraphics.DEFAULT_DRAWING_STYLE``.
+            style_family (DrawStyleFamilyKind, str, optional): Style family. Default ``DrawStyleFamilyKind.GRAPHICS``.
 
         Returns:
             FontOnly: ``FontOnly`` instance from document properties.
