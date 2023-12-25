@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.format.inner.modify.draw.char_style_base_multi
+   ooodev.format.inner.modify.draw.fill_properties_style_base_multi
 
 Module contents
 ---------------

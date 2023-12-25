@@ -23,7 +23,7 @@ Setup
         from ooodev.draw import Draw, DrawDoc, ZoomKind
         from ooodev.utils.lo import Lo
         from ooodev.format.draw.modify.area import Gradient, PresetGradientKind
-        from ooodev.format.draw.modify.area import FamilyGraphics, DrawStyleFamilyKind
+        from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
 
 
         def main() -> int:

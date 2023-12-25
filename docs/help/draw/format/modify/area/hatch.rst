@@ -16,14 +16,14 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 25, 26, 27, 28, 29
+        :emphasize-lines: 24, 25, 26, 27, 28, 29
 
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
         from ooodev.utils.lo import Lo
         from ooodev.format.draw.modify.area import Hatch, PresetHatchKind
-        from ooodev.format.draw.modify.area import FamilyGraphics, DrawStyleFamilyKind
+        from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):

@@ -24,7 +24,7 @@ Setup
         from ooodev.format.draw.modify.area.color import Color
         from ooodev.utils.lo import Lo
         from ooodev.format.draw.modify.area import Color as FillColor
-        from ooodev.format.draw.modify.area import FamilyGraphics, DrawStyleFamilyKind
+        from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
         from ooodev.utils.color import StandardColor
 
 
