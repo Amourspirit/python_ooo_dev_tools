@@ -1,5 +1,5 @@
 """
-Draw Fill Transparency.
+Draw Fill Transparency Gradient.
 
 .. versionadded:: 0.17.9
 """
@@ -7,37 +7,56 @@ from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
 import uno
 
+from ooo.dyn.awt.gradient_style import GradientStyle
+
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
-from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as InnerTransparency
+from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
 from ooodev.format.inner.modify.draw.fill_properties_style_base_multi import FillPropertiesStyleBaseMulti
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset as Offset
 
 if TYPE_CHECKING:
+    from ooodev.units import Angle
     from ooodev.utils.data_type.intensity import Intensity
 
 
-class Transparency(FillPropertiesStyleBaseMulti):
+class Gradient(FillPropertiesStyleBaseMulti):
     """
-    Transparency Style value.
+    Gradient Style value.
 
     .. seealso::
 
-        - :ref:`help_draw_format_modify_transparency_transparency`
+        - :ref:`help_draw_format_modify_transparency_gradient`
 
     .. versionadded:: 0.17.9
     """
 
     def __init__(
         self,
-        value: Intensity | int = 0,
+        style: GradientStyle = GradientStyle.LINEAR,
+        offset: Offset = Offset(50, 50),
+        angle: Angle | int = 0,
+        border: Intensity | int = 0,
+        grad_intensity: IntensityRange = IntensityRange(0, 0),
         style_name: str = FamilyGraphics.DEFAULT_DRAWING_STYLE,
         style_family: str | DrawStyleFamilyKind = DrawStyleFamilyKind.GRAPHICS,
+        **kwargs: Any,
     ) -> None:
         """
         Constructor
 
         Args:
-            value (Intensity, int, optional): Specifies the transparency value from ``0`` to ``100``.
+            style (GradientStyle, optional): Specifies the style of the gradient. Defaults to ``GradientStyle.LINEAR``.
+            step_count (int, optional): Specifies the number of steps of change color. Defaults to ``0``.
+            offset (offset, optional): Specifies the X-coordinate (start) and Y-coordinate (end),
+                where the gradient begins. X is effectively the center of the ``RADIAL``, ``ELLIPTICAL``, ``SQUARE`` and
+                ``RECT`` style gradients. Defaults to ``Offset(50, 50)``.
+            angle (Angle, int, optional): Specifies angle of the gradient. Defaults to ``0``.
+            border (int, optional): Specifies percent of the total width where just the start color is used.
+                Defaults to ``0``.
+            grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of
+                the gradient. Defaults to ``IntensityRange(0, 0)``.
             style_name (FamilyGraphics, str, optional): Specifies the Style that instance applies to.
                 Default is Default ``standard`` Style.
             style_family (str, DrawStyleFamilyKind, optional): Family Style. Defaults to ``graphics``.
@@ -46,10 +65,17 @@ class Transparency(FillPropertiesStyleBaseMulti):
             None:
 
         See Also:
-            - :ref:`help_draw_format_modify_transparency_transparency`
+            - :ref:`help_draw_format_modify_transparency_gradient`
         """
 
-        direct = InnerTransparency(value=value)
+        direct = InnerGradient(
+            style=style,
+            offset=offset,
+            angle=angle,
+            border=border,
+            grad_intensity=grad_intensity,
+            **kwargs,
+        )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = str(style_family)
@@ -61,7 +87,7 @@ class Transparency(FillPropertiesStyleBaseMulti):
         doc: Any,
         style_name: str = FamilyGraphics.DEFAULT_DRAWING_STYLE,
         style_family: str | DrawStyleFamilyKind = DrawStyleFamilyKind.GRAPHICS,
-    ) -> Transparency:
+    ) -> Gradient:
         """
         Gets instance from Document.
 
@@ -72,10 +98,10 @@ class Transparency(FillPropertiesStyleBaseMulti):
             style_family (DrawStyleFamilyKind, str, optional): Style family. Default ``DrawStyleFamilyKind.GRAPHICS``.
 
         Returns:
-            Transparency: ``Transparency`` instance from document properties.
+            Gradient: ``Gradient`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerTransparency.from_obj(inst.get_style_props(doc))
+        direct = InnerGradient.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct)
         return inst
 
@@ -89,17 +115,17 @@ class Transparency(FillPropertiesStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> InnerTransparency:
+    def prop_inner(self) -> InnerGradient:
         """Gets/Sets Inner Font instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(InnerTransparency, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerGradient, self._get_style_inst("direct"))
         return self._direct_inner
 
     @prop_inner.setter
-    def prop_inner(self, value: InnerTransparency) -> None:
-        if not isinstance(value, InnerTransparency):
-            raise TypeError(f'Expected type of InnerTransparency, got "{type(value).__name__}"')
+    def prop_inner(self, value: InnerGradient) -> None:
+        if not isinstance(value, InnerGradient):
+            raise TypeError(f'Expected type of InnerGradient, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         self._set_style("direct", value, *value.get_attrs())

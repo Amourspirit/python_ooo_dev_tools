@@ -12,7 +12,6 @@ from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
 
 
 def test_draw(loader) -> None:
-    # Tabs inherits from Tab and tab is tested in test_struct_tab
     delay = 0
     # delay = 0 if Lo.bridge_connector.headless else 3_000
 

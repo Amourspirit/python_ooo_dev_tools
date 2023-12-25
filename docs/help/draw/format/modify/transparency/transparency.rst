@@ -131,4 +131,5 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
+        - :ref:`help_draw_format_modify_transparency_gradient`
         - :py:class:`ooodev.format.draw.modify.transparency.Transparency`
