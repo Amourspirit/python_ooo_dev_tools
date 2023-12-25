@@ -9,6 +9,7 @@ from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
 from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
@@ -33,6 +34,7 @@ class DrawPage(
     VetoableChangeImplement,
     QiPartial,
     PropPartial,
+    StylePartial,
 ):
     """Represents a draw page."""
 
@@ -50,6 +52,7 @@ class DrawPage(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
+        StylePartial.__init__(self, component=component)
 
     def get_master_page(self) -> DrawPage[_T]:
         """

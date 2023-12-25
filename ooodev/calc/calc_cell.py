@@ -7,23 +7,24 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XSheetAnnotation
     from com.sun.star.sheet import XGoalSeek
     from .calc_sheet import CalcSheet
+    from ooodev.proto.style_obj import StyleT
     from . import calc_cell_cursor as mCalcCellCursor
 else:
     XSheetAnnotation = object
 
-from ooodev.exceptions import ex as mEx
-from ooodev.proto.style_obj import StyleT
-from ooodev.units import UnitT
-from ooodev.utils.data_type import cell_obj as mCellObj
-from ooodev.utils.type_var import Row, Table
-from ooodev.office import calc as mCalc
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils import lo as mLo
 from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
+from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.office import calc as mCalc
+from ooodev.units import UnitT
+from ooodev.utils import lo as mLo
+from ooodev.utils.data_type import cell_obj as mCellObj
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.type_var import Row, Table
 
 
-class CalcCell(SheetCellComp, QiPartial, PropPartial):
+class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj) -> None:
         self.__owner = owner
         self.__cell_obj = mCellObj.CellObj.from_cell(cell)
@@ -32,6 +33,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial):
         SheetCellComp.__init__(self, sheet_cell)  # type: ignore
         QiPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
+        StylePartial.__init__(self, component=sheet_cell)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """

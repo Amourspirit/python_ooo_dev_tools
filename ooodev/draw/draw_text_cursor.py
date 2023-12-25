@@ -15,6 +15,7 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
+from ooodev.format.inner.style_partial import StylePartial
 
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -28,6 +29,7 @@ class DrawTextCursor(
     VetoableChangeImplement,
     PropPartial,
     QiPartial,
+    StylePartial,
 ):
     """
     Represents a text cursor.
@@ -51,6 +53,7 @@ class DrawTextCursor(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        StylePartial.__init__(self, component=component)
         # self.__doc = doc
 
     def __len__(self) -> int:

@@ -3,7 +3,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange

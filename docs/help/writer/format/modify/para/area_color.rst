@@ -62,6 +62,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234414996-29658481-e0e6-4d6f-9f46-bd645e21da64:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234414996-29658481-e0e6-4d6f-9f46-bd645e21da64.png
         :alt: Writer dialog Paragraph Area Color style default
         :figclass: align-center
@@ -96,6 +97,7 @@ After applying style
 .. cssclass:: screen_shot
 
     .. _234415852-4f17c6b9-0379-445f-83a5-d8c3c184beeb:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234415852-4f17c6b9-0379-445f-83a5-d8c3c184beeb.png
         :alt: Writer dialog Paragraph Area Color style changed
         :figclass: align-center

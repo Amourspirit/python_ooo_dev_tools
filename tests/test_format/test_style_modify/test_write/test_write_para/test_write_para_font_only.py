@@ -33,6 +33,7 @@ def test_write(loader, para_text) -> None:
 
         f_style = FontOnly.from_style(doc=doc, style_name=style.prop_style_name)
         assert f_style.prop_inner.prop_name == InnerFontOnly.default.prop_name
+        assert f_style.prop_inner.prop_size is not None
         assert f_style.prop_inner.prop_size.value == 18.0
         Lo.delay(delay)
     finally:

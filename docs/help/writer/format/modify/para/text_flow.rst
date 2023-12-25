@@ -19,6 +19,7 @@ Default Paragraph Text Flow Style Dialog
 .. cssclass:: screen_shot
 
     .. _234623240-f02a99f3-83e5-49d9-86ad-ea641bfd336d:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234623240-f02a99f3-83e5-49d9-86ad-ea641bfd336d.png
         :alt: Writer dialog Paragraph Text Flow default
         :figclass: align-center
@@ -99,6 +100,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234625239-bc127505-5d69-4c3a-8957-4924c524b1c2:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234625239-bc127505-5d69-4c3a-8957-4924c524b1c2.png
         :alt: Writer dialog Paragraph Text Flow style changed hyphenation
         :figclass: align-center
@@ -151,6 +153,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234626344-4a168449-92a5-4e70-b6e2-97926f1c8c91:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234626344-4a168449-92a5-4e70-b6e2-97926f1c8c91.png
         :alt: Writer dialog Paragraph Text Flow style changed flow options
         :figclass: align-center

@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING, TypeVar, Generic, overload
 import uno
 from com.sun.star.text import XTextRange
 
-
 if TYPE_CHECKING:
     from com.sun.star.text import XText
     from com.sun.star.text import XTextContent
 
-from ooodev.adapter.text.text_comp import TextComp
-from ooodev.proto.component_proto import ComponentT
 from ooodev.adapter.text.relative_text_content_insert_partial import RelativeTextContentInsertPartial
+from ooodev.adapter.text.text_comp import TextComp
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from . import write_paragraphs as mWriteParagraphs
@@ -19,7 +19,7 @@ from . import write_text_tables as mWriteTextTables
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartial):
+class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartial, StylePartial):
     """
     Represents writer text content.
 
@@ -38,7 +38,7 @@ class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartia
         TextComp.__init__(self, component)  # type: ignore
         RelativeTextContentInsertPartial.__init__(self, component=component, interface=None)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
-        # self.__doc = doc
+        StylePartial.__init__(self, component=component)
 
     def get_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[T]:
         """Returns the paragraphs of this text."""

@@ -8,17 +8,18 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.units import UnitT
 
-from ooodev.office import calc as mCalc
 from ooodev.adapter.table.table_row_comp import TableRowComp
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils import lo as mLo
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM100
+from ooodev.utils import lo as mLo
+from ooodev.utils.partial.qi_partial import QiPartial
 
 if TYPE_CHECKING:
     from com.sun.star.table import TableColumn  # service
 
 
-class CalcTableRow(TableRowComp, QiPartial):
+class CalcTableRow(TableRowComp, QiPartial, StylePartial):
     """Represents a calc table row."""
 
     def __init__(self, owner: CalcSheet, row_obj: TableColumn | int) -> None:
@@ -38,6 +39,7 @@ class CalcTableRow(TableRowComp, QiPartial):
             comp = row_obj
         TableRowComp.__init__(self, comp)  # type: ignore
         QiPartial.__init__(self, component=comp, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        StylePartial.__init__(self, component=comp)
         # self.__doc = doc
 
     # region Properties

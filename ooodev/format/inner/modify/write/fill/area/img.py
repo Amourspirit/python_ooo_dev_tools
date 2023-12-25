@@ -103,7 +103,7 @@ class Img(FillStyleBaseMulti):
 
         Args:
             doc (object): UNO Document Object.
-            style_name (StyleParaKind, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
+            style_name (FamilyGraphics, str, optional): Specifies the Paragraph Style that instance applies to. Default is Default Paragraph Style.
             style_family (str, optional): Style family. Default ``ParagraphStyles``.
 
         Returns:
@@ -120,7 +120,7 @@ class Img(FillStyleBaseMulti):
         return self._style_name
 
     @prop_style_name.setter
-    def prop_style_name(self, value: str | StyleParaKind):
+    def prop_style_name(self, value: str | FamilyGraphics):
         self._style_name = str(value)
 
     @property

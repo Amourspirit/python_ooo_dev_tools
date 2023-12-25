@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ..cell_style_base_multi import CellStyleBaseMulti
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
 from ooodev.format.inner.direct.calc.alignment.text_orientation import EdgeKind as EdgeKind

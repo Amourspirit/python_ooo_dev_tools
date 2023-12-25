@@ -4,7 +4,7 @@ from typing import Any, cast
 import uno
 from com.sun.star.awt import XBitmap
 
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange

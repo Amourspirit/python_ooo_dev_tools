@@ -15,7 +15,7 @@ from ooodev.format.inner.modify.write.para.font.font_only import InnerFontOnly a
 from ooodev.format.inner.modify.write.para.font.font_position import FontPosition as FontPosition
 from ooodev.format.inner.modify.write.para.font.font_position import InnerFontPosition as InnerFontPosition
 from ooodev.format.writer.style.para import StyleParaKind as StyleParaKind
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 
 

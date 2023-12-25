@@ -2,15 +2,16 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING, List, overload
 import uno
 
-from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
-from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.view.print_job_events import PrintJobEvents
+from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
 from ooodev.adapter.util.modify_events import ModifyEvents
+from ooodev.adapter.view.print_job_events import PrintJobEvents
+from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.office import draw as mDraw
+from ooodev.utils import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils import lo as mLo
-from ooodev.office import draw as mDraw
 from .partial.draw_doc_partial import DrawDocPartial
 from . import impress_page as mImpressPage
 from . import master_draw_page as mMasterDrawPage
@@ -31,6 +32,7 @@ class ImpressDoc(
     PrintJobEvents,
     QiPartial,
     PropPartial,
+    StylePartial,
 ):
     def __init__(self, doc: XComponent) -> None:
         DrawDocPartial.__init__(self, owner=self, component=doc)
@@ -41,6 +43,7 @@ class ImpressDoc(
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        StylePartial.__init__(self, component=doc)
 
     # region Lazy Listeners
 

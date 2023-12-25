@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.units import UnitT
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind

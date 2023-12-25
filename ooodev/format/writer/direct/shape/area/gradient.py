@@ -8,7 +8,7 @@ from __future__ import annotations
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange

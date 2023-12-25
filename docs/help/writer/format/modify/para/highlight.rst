@@ -61,6 +61,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234734093-1997fb9d-1b50-4c0e-bd75-5f2f2b04409a:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234734093-1997fb9d-1b50-4c0e-bd75-5f2f2b04409a.png
         :alt: Writer dialog Paragraph Area Color style default
         :figclass: align-center
@@ -87,12 +88,13 @@ Apply style
             .. group-tab:: None
 
 
-After appling style
-^^^^^^^^^^^^^^^^^^^
+After applying style
+^^^^^^^^^^^^^^^^^^^^
 
 .. cssclass:: screen_shot
 
     .. _234734961-a056b02d-56e1-4da0-8854-e9bf002b001f:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234734961-a056b02d-56e1-4da0-8854-e9bf002b001f.png
         :alt: Writer dialog Paragraph Highlight Color style changed
         :figclass: align-center

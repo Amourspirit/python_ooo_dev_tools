@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XText
 
 from ooodev.adapter.drawing.text_comp import TextComp
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
@@ -16,7 +17,7 @@ from .draw_text_cursor import DrawTextCursor
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawText(Generic[_T], TextComp, QiPartial):
+class DrawText(Generic[_T], TextComp, QiPartial, StylePartial):
     """
     Represents text content.
 
@@ -34,7 +35,7 @@ class DrawText(Generic[_T], TextComp, QiPartial):
         self.__owner = owner
         TextComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
-        # self.__doc = doc
+        StylePartial.__init__(self, component=component)
 
     def add_bullet(self, level: int, text: str) -> None:
         """

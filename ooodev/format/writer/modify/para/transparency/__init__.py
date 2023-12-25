@@ -6,7 +6,7 @@ from ooodev.format.inner.modify.write.para.transparent.gradient import InnerGrad
 from ooodev.format.inner.modify.write.para.transparent.transparency import InnerTransparency as InnerTransparency
 from ooodev.format.inner.modify.write.para.transparent.transparency import Transparency as Transparency
 from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset

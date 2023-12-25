@@ -8,7 +8,7 @@ from ooodev.format.inner.common.props.transparent_gradient_props import Transpar
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset

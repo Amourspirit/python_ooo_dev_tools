@@ -9,7 +9,7 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
    ooodev.format.calc
    ooodev.format.chart2
@@ -22,7 +22,7 @@ Submodules
 ----------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    ooodev.format.styler
 

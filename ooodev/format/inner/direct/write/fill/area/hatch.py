@@ -4,7 +4,7 @@ Module for Fill Properties Fill Hatch.
 .. versionadded:: 0.9.0
 """
 from __future__ import annotations
-from typing import Any, Tuple, cast, overload, Type, TypeVar
+from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
@@ -16,9 +16,8 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.units import UnitMM
-from ooodev.units import UnitT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_hatch as mPreset
@@ -30,6 +29,8 @@ from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from .fill_color import FillColor
 
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 _THatch = TypeVar(name="_THatch", bound="Hatch")
 

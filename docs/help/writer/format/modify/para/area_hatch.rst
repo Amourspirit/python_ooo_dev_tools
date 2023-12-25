@@ -1,7 +1,7 @@
 .. _help_writer_format_modify_para_hatch:
 
-Write Modify Paragraph Area Pattern
-===================================
+Write Modify Paragraph Area Hatch
+=================================
 
 .. contents:: Table of Contents
     :local:
@@ -60,6 +60,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234430722-50c899fa-9e11-494b-bd56-daa7989c435a:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234430722-50c899fa-9e11-494b-bd56-daa7989c435a.png
         :alt: Writer dialog Paragraph Area Hatch style default
         :figclass: align-center
@@ -94,6 +95,7 @@ After appling style
 .. cssclass:: screen_shot
 
     .. _234431194-448bedd6-0e3e-44af-88b7-1fc68902f230:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234431194-448bedd6-0e3e-44af-88b7-1fc68902f230.png
         :alt: Writer dialog Paragraph Area Hatch style changed
         :figclass: align-center

@@ -18,6 +18,7 @@ Default Paragraph Outline & List Style Dialog
 .. cssclass:: screen_shot
 
     .. _234433333-c024a6cf-71fe-47f7-be4c-a3590a24499b:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234433333-c024a6cf-71fe-47f7-be4c-a3590a24499b.png
         :alt: Writer dialog Paragraph Outline & List default
         :figclass: align-center
@@ -94,6 +95,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234434393-f7c5b8fd-8dd4-4c59-a93e-fa1b22305d16:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234434393-f7c5b8fd-8dd4-4c59-a93e-fa1b22305d16.png
         :alt: Writer dialog Paragraph Outline & List style changed
         :figclass: align-center
@@ -148,6 +150,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234434962-ccc0d8ee-ac17-4314-b7fd-6ed51b433a6a:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234434962-ccc0d8ee-ac17-4314-b7fd-6ed51b433a6a.png
         :alt: Writer dialog Paragraph Outline & List style changed
         :figclass: align-center
@@ -201,6 +204,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234435651-fb052287-3f55-42ae-8e0f-b53a35499565:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234435651-fb052287-3f55-42ae-8e0f-b53a35499565.png
         :alt: Writer dialog Paragraph Outline & List style changed
         :figclass: align-center

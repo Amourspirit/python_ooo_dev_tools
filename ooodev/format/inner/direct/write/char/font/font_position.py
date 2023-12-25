@@ -13,7 +13,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.units import UnitT
 from ooodev.units import UnitPT
@@ -640,7 +640,7 @@ class FontPosition(StyleBase):
         try:
             return self._default_instance
         except AttributeError:
-            fp = self.__class__(_cattribs=self._get_internal_cattribs()) # type: ignore
+            fp = self.__class__(_cattribs=self._get_internal_cattribs())  # type: ignore
             fp._set("CharEscapement", 0)
             fp._set("CharEscapementHeight", 100)
             fp._set("CharRotation", 0)

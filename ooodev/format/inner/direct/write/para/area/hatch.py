@@ -12,7 +12,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.units import UnitT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind

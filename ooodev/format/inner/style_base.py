@@ -1219,7 +1219,7 @@ class StyleModifyMulti(StyleMulti):
         if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.style.XStyle"):
             return self._is_obj_service(obj)
         # pylint: disable=unused-variable
-        if valid := self._is_obj_service(obj):
+        if self._is_obj_service(obj):
             return True
         return mInfo.Info.is_doc_type(obj, mLo.Lo.Service.WRITER)
 

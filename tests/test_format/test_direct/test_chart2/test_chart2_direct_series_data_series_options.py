@@ -25,7 +25,7 @@ from ooodev.format.chart2.direct.series.data_series.options import Settings as S
 from ooodev.format.chart2.direct.series.data_series.options import LegendEntry as SeriesOptLegendEntry
 from ooodev.format.chart2.direct.series.data_series.options import MissingValueKind
 from ooodev.format.chart2.direct.series.data_series.options import Orientation
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info

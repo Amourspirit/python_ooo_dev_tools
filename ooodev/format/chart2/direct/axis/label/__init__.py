@@ -6,6 +6,6 @@ from ooodev.format.inner.direct.chart2.axis.label.orientation import Orientation
 from ooodev.format.inner.direct.chart2.axis.label.show import Show as Show
 from ooodev.format.inner.direct.chart2.axis.label.text_flow import TextFlow as TextFlow
 from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind as DirectionModeKind
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 
 __all__ = ["Order", "Orientation", "Show", "TextFlow"]

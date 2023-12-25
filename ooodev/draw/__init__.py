@@ -5,7 +5,7 @@ from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpee
 from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
 
 from ooodev.office.draw import Draw as Draw
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.image_offset import ImageOffset as ImageOffset
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.poly_sides import PolySides as PolySides

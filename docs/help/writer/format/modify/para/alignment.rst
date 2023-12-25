@@ -78,6 +78,7 @@ Before applying Style
 .. cssclass:: screen_shot
 
     .. _234373498-bc618e71-6d0d-42fe-abac-d8c2437165bc:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234373498-bc618e71-6d0d-42fe-abac-d8c2437165bc.png
         :alt: Writer dialog Paragraph Alignmet style default
         :figclass: align-center
@@ -117,6 +118,7 @@ After appling style
 .. cssclass:: screen_shot
 
     .. _234381289-24adf761-cf5b-4bbb-ba53-4f855b1a3232:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234381289-24adf761-cf5b-4bbb-ba53-4f855b1a3232.png
         :alt: Writer dialog Paragraph Alignmet style changed
         :figclass: align-center

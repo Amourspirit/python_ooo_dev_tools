@@ -19,7 +19,7 @@ except ImportError:
     Chart2 = None
     CurveKind = None
 
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
 from ooodev.format.chart2.direct.title.area import (

@@ -13,6 +13,7 @@ The :py:class:`ooodev.format.writer.modify.para.font.FontEffects`, class is used
 .. cssclass:: screen_shot
 
     .. _234707232-b0aca0fb-1e06-4d65-b7a5-3a3638cb950a:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234707232-b0aca0fb-1e06-4d65-b7a5-3a3638cb950a.png
         :alt: Writer dialog Paragraph Font Effects default
         :figclass: align-center
@@ -37,7 +38,7 @@ Setting the font
         from ooodev.utils.lo import Lo
 
         def main() -> int:
-           with Lo.Loader(Lo.ConnectPipe()):
+            with Lo.Loader(Lo.ConnectPipe()):
                 doc = Write.create_doc()
                 GUI.set_visible(doc=doc)
                 Lo.delay(300)
@@ -72,6 +73,7 @@ Running the above code will produce the following results in the Writer dialog.
 .. cssclass:: screen_shot
 
     .. _234708184-72e9ad07-1bc2-4200-8857-513743318a50:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234708184-72e9ad07-1bc2-4200-8857-513743318a50.png
         :alt: Writer dialog Paragraph Font Effects style changed
         :figclass: align-center

@@ -7,7 +7,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.proto.component_proto import ComponentT
 from ooodev.office import draw as mDraw
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind

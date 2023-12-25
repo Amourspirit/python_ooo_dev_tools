@@ -55,6 +55,7 @@ from ..events.args.event_args import EventArgs
 from ..events.chart2_named_event import Chart2NamedEvent
 from ..exceptions import ex as mEx
 from ..proto.style_obj import StyleT
+from ..units import Angle as Angle
 from ..utils import color as mColor
 from ..utils import file_io as mFileIo
 from ..utils import gui as mGui
@@ -62,7 +63,6 @@ from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
-from ..utils.data_type.angle import Angle as Angle
 from ..utils.kind.axis_kind import AxisKind as AxisKind
 from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
 from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes

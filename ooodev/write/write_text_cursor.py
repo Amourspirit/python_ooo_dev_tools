@@ -13,6 +13,7 @@ from ooodev.adapter.text.paragraph_cursor_partial import ParagraphCursorPartial
 from ooodev.adapter.text.sentence_cursor_partial import SentenceCursorPartial
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import write as mWrite
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
@@ -37,6 +38,7 @@ class WriteTextCursor(
     VetoableChangeImplement,
     PropPartial,
     QiPartial,
+    StylePartial,
 ):
     """
     Represents a writer text cursor.
@@ -63,7 +65,7 @@ class WriteTextCursor(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
-        # self.__doc = doc
+        StylePartial.__init__(self, component=component)
 
     def __len__(self) -> int:
         return mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)

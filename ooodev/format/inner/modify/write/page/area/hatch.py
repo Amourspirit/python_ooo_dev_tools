@@ -5,7 +5,7 @@ import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ooodev.units import UnitT
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind

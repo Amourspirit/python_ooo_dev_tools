@@ -4,7 +4,7 @@ from typing import Tuple, cast, Any
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind

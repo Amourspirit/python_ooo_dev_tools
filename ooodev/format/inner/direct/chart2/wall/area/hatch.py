@@ -7,7 +7,7 @@ from ooo.dyn.drawing.hatch_style import HatchStyle
 from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 from ...chart.area.hatch import Hatch as ChartAreaHatch
 
 

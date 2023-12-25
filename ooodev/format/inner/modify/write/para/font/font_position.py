@@ -6,7 +6,7 @@ import uno
 from ooodev.units import UnitT
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.angle import Angle as Angle
+from ooodev.units import Angle as Angle
 from ooodev.format.inner.direct.write.char.font.font_position import FontScriptKind as FontScriptKind
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind as CharSpacingKind
 from ooodev.format.inner.direct.write.char.font.font_position import FontPosition as InnerFontPosition

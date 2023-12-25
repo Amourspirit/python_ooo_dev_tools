@@ -18,6 +18,7 @@ Default Paragraph Transparency Style Dialog
 .. cssclass:: screen_shot
 
     .. _234730425-52bcadf8-d827-4198-93a0-8bfb4168e609:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234730425-52bcadf8-d827-4198-93a0-8bfb4168e609.png
         :alt: Writer dialog Paragraph Transparency default
         :figclass: align-center
@@ -35,36 +36,38 @@ General function used to run these examples.
 
     .. code-tab:: python
 
-        from ooodev.format.writer.modify.para.transparency import Transparency, Gradient, StyleParaKind
+        import uno
+        from ooodev.format.writer.modify.para.transparency import Transparency, Gradient
         from ooodev.format.writer.modify.para.transparency import GradientStyle, IntensityRange
+        from ooodev.format.writer.modify.para import StyleParaKind
         from ooodev.format.writer.modify.para.area import Color as StyleAreaColor
-        from ooodev.format import Styler
         from ooodev.utils.color import StandardColor
-        from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.write import Write, WriteDoc, ZoomKind
         from ooodev.utils.lo import Lo
 
         def main() -> int:
+
             with Lo.Loader(Lo.ConnectPipe()):
-                doc = Write.create_doc()
-                GUI.set_visible(doc=doc)
+                doc = WriteDoc(Write.create_doc())
+                doc.set_visible()
                 Lo.delay(300)
-                GUI.zoom(GUI.ZoomEnum.ZOOM_150_PERCENT)
+                doc.zoom(ZoomKind.ENTIRE_PAGE)
 
                 para_kind = StyleParaKind.STANDARD
                 para_color_style = StyleAreaColor(color=StandardColor.BLUE_LIGHT2, style_name=para_kind)
                 para_transparency_style = Transparency(value=52, style_name=para_kind)
-                Styler.apply(doc, para_color_style, para_transparency_style)
+                doc.apply_styles(para_color_style, para_transparency_style)
 
-                style_obj = Transparency.from_style(doc=doc, style_name=para_kind)
+                style_obj = Transparency.from_style(doc=doc.component, style_name=para_kind)
                 assert style_obj.prop_style_name == str(para_kind)
-                Lo.delay(1_000)
 
-                Lo.close_doc(doc)
+                Lo.delay(1_000)
+                doc.close_doc()
+
             return 0
 
         if __name__ == "__main__":
-            SystemExit(main())
+            raise SystemExit(main())
 
     .. only:: html
 
@@ -78,7 +81,8 @@ Transparency
 Setting Transparency
 ^^^^^^^^^^^^^^^^^^^^
 
-Note that we first set a color for the paragraph style. This is because the transparency is not visible unless there is a color.
+Note that we first set a color for the paragraph style.
+This is because the transparency is not visible unless there is a color.
 
 .. tabs::
 
@@ -89,7 +93,7 @@ Note that we first set a color for the paragraph style. This is because the tran
         para_kind = StyleParaKind.STANDARD
         para_color_style = StyleAreaColor(color=StandardColor.BLUE_LIGHT2, style_name=para_kind)
         para_transparency_style = Transparency(value=52, style_name=para_kind)
-        Styler.apply(doc, para_color_style, para_transparency_style)
+        doc.apply_styles(para_color_style, para_transparency_style)
 
     .. only:: html
 
@@ -102,6 +106,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234732332-0c3f5ce4-ee03-4719-b3c1-737c8f9ce081:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234732332-0c3f5ce4-ee03-4719-b3c1-737c8f9ce081.png
         :alt: Writer dialog Paragraph Transparency style Transparency changed
         :figclass: align-center
@@ -119,8 +124,8 @@ Getting transparency from a style
 
         # ... other code
 
-        style_obj = Transparency.from_style(doc=doc, style_name=para_kind)
-                assert style_obj.prop_style_name == str(para_kind)
+        style_obj = Transparency.from_style(doc=doc.component, style_name=para_kind)
+        assert style_obj.prop_style_name == str(para_kind)
 
     .. only:: html
 
@@ -151,7 +156,7 @@ Note that we first set a color for the paragraph style. This is because the grad
             grad_intensity=IntensityRange(0, 100),
             style_name=para_kind,
         )
-        Styler.apply(doc, para_color_style, para_gradient_style)
+        doc.apply_styles(para_color_style, para_gradient_style)
 
     .. only:: html
 
@@ -164,6 +169,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234733094-02ec8616-679e-40e0-9e2f-951764b0a0e9:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234733094-02ec8616-679e-40e0-9e2f-951764b0a0e9.png
         :alt: Writer dialog Paragraph Transparency style Gradient changed
         :figclass: align-center
@@ -180,7 +186,7 @@ Getting gradient from a style
 
         # ... other code
 
-        style_obj = Gradient.from_style(doc=doc, style_name=para_kind)
+        style_obj = Gradient.from_style(doc=doc.component, style_name=para_kind)
         assert style_obj.prop_style_name == str(para_kind)
 
     .. only:: html

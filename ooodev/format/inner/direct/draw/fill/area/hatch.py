@@ -8,7 +8,7 @@ from ooodev.utils.color import StandardColor
 
 if TYPE_CHECKING:
     from ooodev.utils.color import Color
-    from ooodev.utils.data_type.angle import Angle
+    from ooodev.units import Angle
     from ooodev.units import UnitT
 
 

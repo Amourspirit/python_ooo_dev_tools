@@ -18,6 +18,7 @@ Default Paragraph Indent & Spacing Style Dialog
 .. cssclass:: screen_shot
 
     .. _234613266-c0e6eb88-a924-4b80-b6fb-3db7e52d859c:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234613266-c0e6eb88-a924-4b80-b6fb-3db7e52d859c.png
         :alt: Writer dialog Paragraph Indent & Spacing default
         :figclass: align-center
@@ -96,6 +97,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234614646-ca9a3c9f-dfa5-41be-81ac-0e811300ed80:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234614646-ca9a3c9f-dfa5-41be-81ac-0e811300ed80.png
         :alt: Writer dialog Paragraph Indent & Spacing style changed indent
         :figclass: align-center
@@ -148,6 +150,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234616355-8c595049-ac4b-4b27-a3b6-c9cbff24b6c4:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234616355-8c595049-ac4b-4b27-a3b6-c9cbff24b6c4.png
         :alt: Writer dialog Paragraph Indent & Spacing style changed spacing
         :figclass: align-center
@@ -201,6 +204,7 @@ Style results.
 .. cssclass:: screen_shot
 
     .. _234617906-3211917c-f926-455d-813f-f39fee06df20:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234617906-3211917c-f926-455d-813f-f39fee06df20.png
         :alt: Writer dialog Paragraph Indent & Spacing style changed line spacing
         :figclass: align-center

@@ -2,6 +2,16 @@
 Version History
 ***************
 
+Version 0.17.9
+==============
+
+Add support for modifying Draw Style Area Image.
+
+Version 0.17.8
+==============
+
+Add support for formatting Draw Shape Text columns and Text Alignment.
+
 Version 0.17.7
 ==============
 

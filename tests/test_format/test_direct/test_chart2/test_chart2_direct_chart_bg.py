@@ -41,7 +41,7 @@ from ooodev.format.chart2.direct.general.transparency import Gradient as ChartGr
 
 from ooodev.utils.color import StandardColor
 from ooodev.utils.info import Info
-from ooodev.utils.data_type.angle import Angle
+from ooodev.units import Angle
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Title
