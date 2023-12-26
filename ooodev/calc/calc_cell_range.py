@@ -19,6 +19,8 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.data_type.size import Size
     from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row
+    from ooodev.proto.style_obj import StyleT
+    from . import calc_cell_cursor as mCalcCellCursor
 else:
     CellRangeAddress = object
 

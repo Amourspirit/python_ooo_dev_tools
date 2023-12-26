@@ -12,6 +12,7 @@ Version 0.17.9
 ==============
 
 Add support for modifying Draw Style Area Image.
+
 Add support for modifying Draw Style Area Gradient.
 Add support for modifying Draw Style Area Transparency.
 Add support for modifying Draw Style Font.
