@@ -2,9 +2,10 @@ from __future__ import annotations
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
-from com.sun.star.sheet import XSpreadsheet
-from com.sun.star.util import XProtectable
 from com.sun.star.sheet import XSheetCellRange
+from com.sun.star.sheet import XSpreadsheet
+from com.sun.star.table import XCell
+from com.sun.star.util import XProtectable
 
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
@@ -17,14 +18,14 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XSheetCellCursor
     from com.sun.star.table import CellAddress
     from com.sun.star.table import CellAddress
-    from com.sun.star.table import XCell
     from com.sun.star.table import XCellRange
-    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
-
-    from ooo.dyn.beans.property_value import PropertyValue
-    from ooo.dyn.table.cell_range_address import CellRangeAddress
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
+
+    from ooo.dyn.beans.property_value import PropertyValue
+    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
+    from ooo.dyn.table.cell_range_address import CellRangeAddress
+
     from ooodev.proto.style_obj import StyleT
     from ooodev.units import UnitT
     from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
@@ -44,9 +45,10 @@ from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
 from . import calc_table_col as mCalcTableCol
 from . import calc_table_row as mCalcTableRow
+from .partial import sheet_cell_partial as mSheetCellPartial
 
 
-class CalcSheet(SpreadsheetComp, QiPartial, PropPartial, StylePartial):
+class CalcSheet(SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, PropPartial, StylePartial):
     """Class for managing Calc Sheet"""
 
     def __init__(self, owner: CalcDoc, sheet: XSpreadsheet) -> None:
@@ -62,6 +64,7 @@ class CalcSheet(SpreadsheetComp, QiPartial, PropPartial, StylePartial):
         QiPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=sheet)
+        mSheetCellPartial.SheetCellPartial.__init__(self, owner=self)
 
     # region get_address()
     @overload
@@ -376,127 +379,6 @@ class CalcSheet(SpreadsheetComp, QiPartial, PropPartial, StylePartial):
         return mCalc.Calc.get_float_array(**kwargs)
 
     # endregion get_float_array()
-
-    # region get_cell()
-    @overload
-    def get_cell(self, *, cell: XCell) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            cell (XCell): Cell
-
-        Returns:
-            CalcCell: cell
-        """
-        ...
-
-    @overload
-    def get_cell(self, *, addr: CellAddress) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            addr (CellAddress): Cell Address
-
-        Returns:
-            CalcCell: cell
-        """
-        ...
-
-    @overload
-    def get_cell(self, *, cell_name: str) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            cell_name (str): Cell Name such as 'A1'
-
-        Returns:
-            CalcCell: cell
-        """
-        ...
-
-    @overload
-    def get_cell(self, *, cell_obj: mCellObj.CellObj) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            cell_obj: (CellObj): Cell object
-
-        Returns:
-            CalcCell: cell
-        """
-        ...
-
-    @overload
-    def get_cell(self, *, col: int, row: int) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            col (int): Cell column
-            row (int): cell row
-
-        Returns:
-            CalcCell: cell
-        """
-        ...
-
-    @overload
-    def get_cell(self, *, cell_range: XCellRange) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            cell_range (XCellRange): Cell Range
-
-        Returns:
-            CalcCell: cell
-        """
-        ...
-
-    @overload
-    def get_cell(self, *, cell_range: XCellRange, col: int, row: int) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            cell_range (XCellRange): Cell Range
-            col (int): Cell column
-            row (int): cell row
-
-        Returns:
-            CalcCell: cell
-        """
-        ...
-
-    def get_cell(self, **kwargs) -> mCalcCell.CalcCell:
-        """
-        Gets a cell
-
-        Args:
-            addr (CellAddress): Cell Address
-            cell_name (str): Cell Name such as 'A1'
-            cell_obj: (CellObj): Cell object
-            cell_range (XCellRange): Cell Range
-            col (int): Cell column
-            row (int): cell row
-            cell (XCell): Cell
-
-        Returns:
-            CalcCell: cell
-        """
-        sheet_names = {"addr", "cell_name", "cell_obj", "col"}
-        if kwargs.keys() & sheet_names:
-            if not "cell_range" in kwargs:
-                kwargs["sheet"] = self.component
-        x_cell = mCalc.Calc.get_cell(**kwargs)
-        cell_obj = mCalc.Calc.get_cell_obj(cell=x_cell)
-        return mCalcCell.CalcCell(owner=self, cell=cell_obj)
-
-    # endregion get_cell()
 
     def get_pilot_tables(self) -> XDataPilotTables:
         """

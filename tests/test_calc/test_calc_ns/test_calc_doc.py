@@ -61,6 +61,18 @@ def test_get_other_cells(loader) -> None:
         val = cell.get_val()
         assert val == "A1"
 
+        cell = sheet.get_cell("A1")
+        cell.set_val("A1")
+        val = cell.get_val()
+        assert val == "A1"
+
+        cell = sheet["A1"]
+        val = cell.get_val()
+        assert val == "A1"
+
+        sheet["A1"].set_val("A ONE")
+        assert sheet["A1"].get_val() == "A ONE"
+
         cell_b1 = cell.get_cell_right()
         assert cell_b1.cell_obj.col == "B"
         assert cell_b1.cell_obj.row == 1
@@ -79,6 +91,27 @@ def test_get_other_cells(loader) -> None:
 
     finally:
         Lo.close_doc(doc)
+
+
+# def test_sheet_row(loader) -> None:
+#     from ooodev.utils.lo import Lo
+#     from ooodev.office.calc import Calc
+#     from ooodev.calc import CalcDoc
+
+#     assert loader is not None
+#     vals = get_vals()
+#     doc = CalcDoc(Calc.create_doc(loader))
+#     try:
+#         sheet = doc.get_active_sheet()
+#         sheet.set_array(values=vals, name="A1")
+
+#         row = sheet.get_row_range(idx=0)
+
+#         for cell in row:
+#             assert cell is not None
+
+#     finally:
+#         Lo.close_doc(doc.component)
 
 
 def test_insert_remove_sheet(loader) -> None:
@@ -255,7 +288,7 @@ def test_insert_row(loader) -> None:
     doc = CalcDoc(Calc.create_doc(loader))
     try:
         sheet = doc.get_active_sheet()
-        cell = sheet.get_cell(cell_name="A2")
+        cell = sheet["A2"]
         cell.set_val("test")
         assert sheet.insert_row(idx=1, count=2)
 
@@ -275,11 +308,12 @@ def test_delete_row(loader) -> None:
     doc = CalcDoc(Calc.create_doc(loader))
     try:
         sheet = doc.get_active_sheet()
-        cell = sheet.get_cell(cell_name="A5")
+        cell_obj = Calc.get_cell_obj("A5")
+        cell = sheet[cell_obj]
         cell.set_val("test")
         assert sheet.delete_row(idx=1, count=3)
 
-        cell = sheet.get_cell(cell_name="A2")
+        cell = sheet.get_cell("A2")
         assert cell.get_val() == "test"
 
     finally:

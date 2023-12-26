@@ -12,6 +12,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.proto.component_proto import ComponentT
 
 from .. import draw_page as mDrawPage
 from .. import master_draw_page as mMasterDrawPage
@@ -26,7 +27,6 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import XShapes
     from com.sun.star.frame import XController
     from com.sun.star.lang import XComponent
-    from ooodev.proto.component_proto import ComponentT
     from ooodev.utils.data_type.size import Size
 
 

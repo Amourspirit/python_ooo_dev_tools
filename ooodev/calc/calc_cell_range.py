@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Sequence, TYPE_CHECKING
+from typing import Any, List, overload, Sequence, TYPE_CHECKING
 import uno
 
 
@@ -9,13 +9,16 @@ from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 
 if TYPE_CHECKING:
-    from ooo.dyn.table.cell_range_address import CellRangeAddress
-    from .calc_sheet import CalcSheet
-    from ooodev.utils.data_type.range_obj import RangeObj
-    from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row
-    from ooodev.utils.data_type.size import Size
-    from ooodev.proto.style_obj import StyleT
     from . import calc_cell_cursor as mCalcCellCursor
+    from .calc_sheet import CalcSheet
+    from com.sun.star.table import CellAddress
+    from ooo.dyn.table.cell_range_address import CellRangeAddress
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.utils.data_type.cell_obj import CellObj
+    from ooodev.utils.data_type.cell_values import CellValues
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.data_type.size import Size
+    from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row
 else:
     CellRangeAddress = object
 
@@ -400,6 +403,81 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial):
             CalcCellCursor: Cell cursor
         """
         return self.calc_sheet.create_cursor_by_range(range_obj=self.__range_obj)
+
+    # region contains()
+
+    @overload
+    def contains(self, cell_obj: CellObj) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_obj (CellObj): Cell object
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def contains(self, cell_addr: CellAddress) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_addr (CellAddress): Cell address
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def contains(self, cell_vals: CellValues) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_vals (CellValues): Cell Values
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def contains(self, cell_name: str) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_name (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    def contains(self, *args, **kwargs) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_obj (CellObj): Cell object
+            cell_addr (CellAddress): Cell address
+            cell_vals (CellValues): Cell Values
+            cell_name (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+
+        Note:
+            If cell input contains sheet info the it is use in comparison.
+            Otherwise sheet is ignored.
+        """
+        return self.range_obj.contains(*args, **kwargs)
+
+    # endregion contains()
 
     # region Properties
     @property
