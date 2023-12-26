@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XScenario
     from com.sun.star.sheet import XSheetCellCursor
     from com.sun.star.table import CellAddress
-    from com.sun.star.table import CellAddress
     from com.sun.star.table import XCellRange
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
@@ -491,7 +490,7 @@ class CalcSheet(SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, 
         """
         sheet_names = {"cell_range", "col_start"}
         if kwargs.keys() & sheet_names:
-            if not "sheet" in kwargs:
+            if "sheet" not in kwargs:
                 kwargs["sheet"] = self.component
         range_obj = mCalc.Calc.get_range_obj(**kwargs)
         return mCalcCellRange.CalcCellRange(self, range_obj)

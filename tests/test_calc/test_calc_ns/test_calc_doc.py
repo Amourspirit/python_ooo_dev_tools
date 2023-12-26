@@ -1,4 +1,4 @@
-from typing import Any, cast
+from __future__ import annotations
 import pytest
 
 if __name__ == "__main__":
@@ -115,8 +115,6 @@ def test_get_other_cells(loader) -> None:
 
 
 def test_insert_remove_sheet(loader) -> None:
-    # get_sheet is overload method.
-    # testing each overload.
     from ooodev.utils.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
@@ -142,6 +140,55 @@ def test_insert_remove_sheet(loader) -> None:
         assert sheet_names[0] == "Sheet1"
     finally:
         Lo.close_doc(doc)
+
+
+def test_calc_sheet(loader) -> None:
+    from ooodev.utils.lo import Lo
+    from ooodev.calc import Calc
+    from ooodev.calc import CalcDoc
+
+    doc = CalcDoc(Calc.create_doc(loader))
+    try:
+        sheet_names = doc.sheets.get_sheet_names()
+        assert len(sheet_names) == 1
+        assert sheet_names[0] == "Sheet1"
+
+        assert doc.sheets.has_by_name("Sheet1")
+
+        sheet = doc.get_sheet("Sheet1")
+        assert sheet.get_sheet_name() == "Sheet1"
+        assert doc.sheets.has_by_name("Sheet2") is False
+        doc.sheets.insert_new_by_name("Sheet2", 1)
+
+        for sheet in doc.sheets:
+            assert sheet is not None
+            assert sheet.sheet_name in ("Sheet1", "Sheet2")
+            sheet["A1"].set_val("test")
+            assert sheet["A1"].get_val() == "test"
+
+        sheet2 = doc.get_sheet("Sheet2")
+        assert sheet2.get_sheet_name() == "Sheet2"
+        assert sheet2.sheet_name == "Sheet2"
+        assert sheet2.sheet_index == 1
+
+        doc.sheets.remove_by_name(sheet2.sheet_name)
+        sheet_names = doc.sheets.get_sheet_names()
+        assert len(sheet_names) == 1
+        assert sheet_names[0] == "Sheet1"
+
+        sheet = doc.sheets[0]
+        assert sheet.sheet_name == "Sheet1"
+
+        sheet = doc.sheets["Sheet1"]
+        assert sheet.sheet_name == "Sheet1"
+
+        assert doc.sheets["Sheet1"]["A1"].get_val() == "test"
+        assert doc.sheets[0]["A1"].get_val() == "test"
+        
+        doc.sheets[0]["A2"].set_val("TEST2")
+        assert doc.sheets["Sheet1"]["A2"].get_val() == "TEST2"
+    finally:
+        doc.close_doc()
 
 
 def test_merge_unmerge(loader) -> None:

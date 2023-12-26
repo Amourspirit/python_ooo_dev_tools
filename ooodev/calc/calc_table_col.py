@@ -8,6 +8,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM100
 from ooodev.utils import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.utils.partial.qi_partial import QiPartial
 
 
@@ -33,11 +34,11 @@ class CalcTableCol(TableColumnComp, QiPartial, StylePartial):
             col_obj (Any): Range object.
         """
         self.__owner = owner
-        if isinstance(col_obj, int):
-            comp = mCalc.Calc.get_col_range(sheet=self.calc_sheet.component, idx=col_obj)
+        if mInfo.Info.is_instance(col_obj, int):
+            comp = mCalc.Calc.get_col_range(sheet=self.calc_sheet.component, idx=col_obj)  # type: ignore
             self.__range_obj = mCalc.Calc.get_range_obj(cell_range=comp)
         else:
-            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=col_obj)
+            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=col_obj)  # type: ignore
             comp = col_obj
         TableColumnComp.__init__(self, comp)  # type: ignore
         QiPartial.__init__(self, component=comp, lo_inst=mLo.Lo.current_lo)  # type: ignore

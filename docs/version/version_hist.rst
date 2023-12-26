@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.17.11
+===============
+
+Added ``ooodev.calc.CalcSheets`` class that is accessed via ``CalcDoc.sheets`` property.
+
 Version 0.17.10
 ===============
 

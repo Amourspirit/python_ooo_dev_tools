@@ -2,11 +2,12 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
+import sys
 import contextlib
 from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
-from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional, Set
+from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional, Set, TypeVar
 import uno
 
 from com.sun.star.awt import XToolkit
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
     from com.sun.star.document import XDocumentProperties
     from com.sun.star.reflection import XIdlMethod
 
+
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from ooo.dyn.beans.the_introspection import theIntrospection
@@ -53,6 +55,9 @@ from .kind.info_paths_kind import InfoPathsKind as InfoPathsKind
 from .sys_info import SysInfo
 from .type_var import PathOrStr
 from ooodev.proto import uno_proto
+
+_T = TypeVar("_T")
+_TClassTuple = TypeVar("_TClassTuple")
 
 
 class Info(metaclass=StaticProperty):
@@ -2153,6 +2158,31 @@ class Info(metaclass=StaticProperty):
         .. versionadded:: 0.9.0
         """
         return type(obj).__name__ == "pyuno"
+
+    @classmethod
+    def is_instance(cls, obj: Any, class_or_tuple: Any) -> bool:
+        """
+        Return whether an object is an instance of a class or of a subclass thereof.
+
+        UNO object error when used with ``isinstance``.
+        This method will return ``False`` if ``obj`` is a UNO object.
+
+        Args:
+            obj (Any): Any object, If UNO object then ``False`` is returned. Otherwise built in ``isinstance`` is used.
+            class_or_tuple (Any): A tuple, as in ``isinstance(x, (A, B, ...))``, may be given as the target to check against.
+                This is equivalent to ``isinstance(x, A)`` or ``isinstance(x, B)`` or ... etc.
+
+        Returns:
+            bool: ``True`` if is instance; Otherwise, ``False``.
+
+        .. versionadded:: 0.17.11
+        """
+        if cls.is_uno(obj):
+            return False
+        try:
+            return isinstance(obj, class_or_tuple)
+        except TypeError:
+            return False
 
     # region is_type_enum_multi()
     @overload
