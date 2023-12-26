@@ -1,12 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import overload, TYPE_CHECKING
 import uno
-
-
-if TYPE_CHECKING:
-    from .calc_sheet import CalcSheet
-    from ooodev.utils.data_type.range_obj import RangeObj
-    from ooodev.units import UnitT
 
 from ooodev.adapter.table.table_row_comp import TableRowComp
 from ooodev.format.inner.style_partial import StylePartial
@@ -15,20 +9,27 @@ from ooodev.units import UnitMM100
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 
+
 if TYPE_CHECKING:
-    from com.sun.star.table import TableColumn  # service
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import TableRow  # service
+    from ooodev.units import UnitT
+    from ooodev.utils.data_type.cell_obj import CellObj
+    from ooodev.utils.data_type.cell_values import CellValues
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from .calc_sheet import CalcSheet
 
 
 class CalcTableRow(TableRowComp, QiPartial, StylePartial):
     """Represents a calc table row."""
 
-    def __init__(self, owner: CalcSheet, row_obj: TableColumn | int) -> None:
+    def __init__(self, owner: CalcSheet, row_obj: TableRow | int) -> None:
         """
         Constructor
 
         Args:
             owner (CalcSheet): Sheet that owns this cell range.
-            TableColumn | int (Any): Range object.
+            TableRow | int (Any): Range object.
         """
         self.__owner = owner
         if isinstance(row_obj, int):
@@ -40,7 +41,97 @@ class CalcTableRow(TableRowComp, QiPartial, StylePartial):
         TableRowComp.__init__(self, comp)  # type: ignore
         QiPartial.__init__(self, component=comp, lo_inst=mLo.Lo.current_lo)  # type: ignore
         StylePartial.__init__(self, component=comp)
-        # self.__doc = doc
+
+    #     self.__current_cell = None
+
+    # def __iter__(self):
+    #     self.__current_cell = self.range_obj.cell_start
+    #     return self
+
+    # def __next__(self):
+    #     if self.__current_cell is None:
+    #         raise StopIteration
+    #     if self.__current_cell.col_obj > self.range_obj.cell_end.col_obj:
+    #         raise StopIteration
+
+    #     result = self.__current_cell
+    #     self.__current_cell = self.__current_cell.right
+    #     return result
+
+    # region contains()
+
+    @overload
+    def contains(self, cell_obj: CellObj) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_obj (CellObj): Cell object
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def contains(self, cell_addr: CellAddress) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_addr (CellAddress): Cell address
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def contains(self, cell_vals: CellValues) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_vals (CellValues): Cell Values
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def contains(self, cell_name: str) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_name (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+        """
+        ...
+
+    def contains(self, *args, **kwargs) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            cell_obj (CellObj): Cell object
+            cell_addr (CellAddress): Cell address
+            cell_vals (CellValues): Cell Values
+            cell_name (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+
+        Note:
+            If cell input contains sheet info the it is use in comparison.
+            Otherwise sheet is ignored.
+        """
+        return self.range_obj.contains(*args, **kwargs)
+
+    # endregion contains()
 
     # region Properties
     @property

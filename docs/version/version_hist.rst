@@ -2,10 +2,21 @@
 Version History
 ***************
 
+Version 0.17.10
+===============
+
+Calc Sheets now can use ``sheet["A1"]`` to get a cell. This is a shortcut for ``sheet.get_cell("A1")``.
+Any single parameter method of ``get_cell()`` can now use this shortcut such as ``cell_range``, ``cell_name``, ``cell_obj``, ``cell`` and ``addr``.
+
 Version 0.17.9
 ==============
 
 Add support for modifying Draw Style Area Image.
+
+Add support for modifying Draw Style Area Gradient.
+Add support for modifying Draw Style Area Transparency.
+Add support for modifying Draw Style Font.
+Add support for modifying Draw Style Font Effects.
 
 Version 0.17.8
 ==============
