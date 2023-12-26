@@ -43,7 +43,7 @@ class ElementAccessPartial:
         if not mLo.Lo.is_uno_interfaces(component, self.__interface):
             raise mEx.MissingInterfaceError(self.__interface)
 
-    # region Methods
+    # region XElementAccess
     def get_element_type(self) -> Any:
         """
         Gets the type of the elements contained in the container.
@@ -57,4 +57,4 @@ class ElementAccessPartial:
         """Determines whether the container has elements."""
         return self.__component.hasElements()
 
-    # endregion Methods
+    # endregion XElementAccess

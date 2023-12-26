@@ -1,7 +1,7 @@
 .. _help_draw_format_modify_transparency_gradient:
 
-Draw Modify Transparency
-========================
+Draw Modify Gradient Transparency
+=================================
 
 .. contents:: Table of Contents
     :local:

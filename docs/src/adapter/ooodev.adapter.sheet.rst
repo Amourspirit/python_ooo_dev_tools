@@ -9,6 +9,7 @@ Submodules
 
    ooodev.adapter.sheet.activation_event_events
    ooodev.adapter.sheet.activation_event_listener
+   ooodev.adapter.sheet.cell_range_access_partial
    ooodev.adapter.sheet.range_selection_change_events
    ooodev.adapter.sheet.range_selection_change_listener
    ooodev.adapter.sheet.range_selection_events
@@ -24,6 +25,8 @@ Submodules
    ooodev.adapter.sheet.spreadsheet_document_comp
    ooodev.adapter.sheet.spreadsheet_document_settings_comp
    ooodev.adapter.sheet.spreadsheet_view_comp
+   ooodev.adapter.sheet.spreadsheets_comp
+   ooodev.adapter.sheet.spreadsheets_partial
    ooodev.adapter.sheet.volatile_result_comp
 
 Module contents

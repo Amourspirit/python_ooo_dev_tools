@@ -13,6 +13,7 @@ from . import calc_cell_cursor as mCalcCellCursor
 from ooodev.adapter.sheet.spreadsheet_view_comp import SpreadsheetViewComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 
@@ -74,13 +75,13 @@ class CalcSheetView(SpreadsheetViewComp, QiPartial, PropPartial, StylePartial):
         Returns:
             bool: True if selection was successful; Otherwise, False
         """
-        if isinstance(selection, mCalcCellRange.CalcCellRange):
+        if mInfo.Info.is_instance(selection, mCalcCellRange.CalcCellRange):
             cursor = selection.create_cursor()
             return self.component.select(cursor.component)
-        elif isinstance(selection, mCalcCell.CalcCell):
+        elif mInfo.Info.is_instance(selection, mCalcCell.CalcCell):
             cursor = selection.create_cursor()
             return self.component.select(cursor.component)
-        elif isinstance(selection, mCalcCellCursor.CalcCellCursor):
+        elif mInfo.Info.is_instance(selection, mCalcCellCursor.CalcCellCursor):
             cell_rng = selection.get_calc_cell_range()
             cursor = cell_rng.create_cursor()
             return self.component.select(cursor.component)

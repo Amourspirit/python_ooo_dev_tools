@@ -4,7 +4,6 @@ import uno
 
 from com.sun.star.frame import XModel
 from com.sun.star.sheet import XSpreadsheet
-from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.sheet import XSpreadsheets
 
 
@@ -17,11 +16,14 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCellRange
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
+    from com.sun.star.sheet import XSpreadsheetDocument
 
 else:
-    CellRangeAddress = object
+    CellRangeAddress = Any
+    SpreadsheetDocument = Any
 
 from . import calc_sheet as mCalcSheet
+from . import calc_sheets as mCalcSheets
 from . import calc_sheet_view as mCalcSheetView
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.events.args.calc.sheet_args import SheetArgs
@@ -31,6 +33,7 @@ from ooodev.events.event_singleton import _Events
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import gui as mGUI
+from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
@@ -54,6 +57,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
+        self._sheets = None
 
     def create_cell_style(self, style_name: str) -> XStyle:
         """
@@ -301,10 +305,6 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         """
         Gets a sheet of spreadsheet document
 
-        Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
-
         Returns:
             CalcSheet: Spreadsheet at index.
         """
@@ -318,10 +318,6 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         Args:
             idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
 
-        Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
-
         Returns:
             CalcSheet: Spreadsheet at index.
         """
@@ -334,10 +330,6 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
 
         Args:
             sheet_name (str, optional): Name of spreadsheet
-
-        Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
 
         Returns:
             CalcSheet: Spreadsheet at index.
@@ -354,7 +346,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
 
         Raises:
             Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
+            CancelEventError: If ``SHEET_GETTING`` event is canceled
 
         Returns:
             CalcSheet: Spreadsheet at index.
@@ -622,7 +614,28 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         view = mCalc.Calc.get_view(self.component)
         return mCalcSheetView.CalcSheetView(self, view)
 
+    # region set_active_sheet()
+    @overload
     def set_active_sheet(self, sheet: XSpreadsheet) -> None:
+        """
+        Sets the active sheet
+
+        Args:
+            sheet (XSpreadsheet): Sheet to set active
+        """
+        ...
+
+    @overload
+    def set_active_sheet(self, sheet: mCalcSheet.CalcSheet) -> None:
+        """
+        Sets the active sheet
+
+        Args:
+            sheet (CalcSheet): Sheet to set active
+        """
+        ...
+
+    def set_active_sheet(self, sheet: Any) -> None:
         """
         Sets the active sheet
 
@@ -638,7 +651,12 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         Note:
             Event arg properties modified on SHEET_ACTIVATING it is reflected in this method.
         """
-        mCalc.Calc.set_active_sheet(self.component, sheet)
+        if mInfo.Info.is_instance(sheet, mCalcSheet.CalcSheet):
+            mCalc.Calc.set_active_sheet(self.component, sheet.component)
+        else:
+            mCalc.Calc.set_active_sheet(self.component, sheet)
+
+    # endregion set_active_sheet()
 
     def set_view_data(self, view_data: str) -> None:
         """
@@ -807,3 +825,22 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
             type (ZoomKind, optional): Type of Zoom to set. Default is ``ZoomKind.ZOOM_100_PERCENT``.
         """
         mCalc.Calc.zoom(doc=self.component, type=type)
+
+    @property
+    def sheets(self) -> mCalcSheets.CalcSheets:
+        """
+        Sheets of Calc Document
+
+        Returns:
+            CalcSheets: Calc Sheets
+
+        .. code-block:: python
+
+            # example of setting the value of cell A2 to TEST
+            doc.sheets[0]["A2"].set_val("TEST")
+
+        .. versionchanged:: 0.17.11
+        """
+        if self._sheets is None:
+            self._sheets = mCalcSheets.CalcSheets(owner=self, sheets=self.component.getSheets())
+        return self._sheets
