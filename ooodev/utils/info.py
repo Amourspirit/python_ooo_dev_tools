@@ -7,7 +7,9 @@ import contextlib
 from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
-from typing import TYPE_CHECKING, Any, Tuple, List, Type, cast, overload, Optional, Set, TypeVar
+from typing import TYPE_CHECKING, Any, Tuple, List, cast, overload, Optional, Set
+from typing import Type, TypeVar, Union
+
 import uno
 
 from com.sun.star.awt import XToolkit
@@ -28,6 +30,7 @@ from com.sun.star.style import XStyleFamiliesSupplier
 from com.sun.star.util import XChangesBatch
 
 from ooodev.utils.decorator.deprecated import deprecated
+
 
 if TYPE_CHECKING:
     from com.sun.star.awt import FontDescriptor
@@ -56,8 +59,14 @@ from .sys_info import SysInfo
 from .type_var import PathOrStr
 from ooodev.proto import uno_proto
 
+if sys.version_info >= (3, 10):
+    from typing import TypeGuard, TypeAlias
+else:
+    from typing_extensions import TypeGuard, TypeAlias
+
+
 _T = TypeVar("_T")
-_TClassTuple = TypeVar("_TClassTuple")
+ClassInfo: TypeAlias = Union[Type[_T], Tuple["ClassInfo[_T]", ...]]
 
 
 class Info(metaclass=StaticProperty):
@@ -2157,10 +2166,22 @@ class Info(metaclass=StaticProperty):
 
         .. versionadded:: 0.9.0
         """
-        return type(obj).__name__ == "pyuno"
+        with contextlib.suppress(Exception):
+            return type(obj).__name__ == "pyuno"
+        return False
+
+    # @overload
+    # @classmethod
+    # def is_instance(cls, obj: Any, class_or_tuple: Type[T]) -> TypeGuard[T]:
+    #     ...
+
+    # @overload
+    # @classmethod
+    # def is_instance(cls, obj: Any, class_or_tuple: Tuple[Type[T], ...]) -> TypeGuard[T]:
+    #     ...
 
     @classmethod
-    def is_instance(cls, obj: Any, class_or_tuple: Any) -> bool:
+    def is_instance(cls, obj: Any, class_or_tuple: ClassInfo[_T]) -> TypeGuard[_T]:
         """
         Return whether an object is an instance of a class or of a subclass thereof.
 
