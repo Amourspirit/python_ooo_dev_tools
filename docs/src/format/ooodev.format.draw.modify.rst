@@ -9,6 +9,7 @@ Subpackages
 
    ooodev.format.draw.modify.area
    ooodev.format.draw.modify.font
+   ooodev.format.draw.modify.shadow
    ooodev.format.draw.modify.transparency
 
 Module contents

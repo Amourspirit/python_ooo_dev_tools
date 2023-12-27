@@ -2170,16 +2170,6 @@ class Info(metaclass=StaticProperty):
             return type(obj).__name__ == "pyuno"
         return False
 
-    # @overload
-    # @classmethod
-    # def is_instance(cls, obj: Any, class_or_tuple: Type[T]) -> TypeGuard[T]:
-    #     ...
-
-    # @overload
-    # @classmethod
-    # def is_instance(cls, obj: Any, class_or_tuple: Tuple[Type[T], ...]) -> TypeGuard[T]:
-    #     ...
-
     @classmethod
     def is_instance(cls, obj: Any, class_or_tuple: ClassInfo[_T]) -> TypeGuard[_T]:
         """

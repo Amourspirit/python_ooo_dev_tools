@@ -22,7 +22,7 @@ The :py:class:`ooodev.format.draw.modify.transparency.Transparency`, class is us
         Draw dialog Transparency default
 
 
-Setting the Font Effects
+Setting the Transparency
 ------------------------
 
 .. tabs::
@@ -100,8 +100,8 @@ Shape after applying style.
         Shape after Style applied
 
 
-Getting font effects from a style
----------------------------------
+Getting shadow from a style
+---------------------------
 
 .. tabs::
 
