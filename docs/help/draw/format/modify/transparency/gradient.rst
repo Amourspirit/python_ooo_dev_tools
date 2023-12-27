@@ -141,5 +141,5 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_draw_format_modify_transparency_transparency`
-        - :ref:`_help_draw_format_modify_area_color`
+        - :ref:`help_draw_format_modify_area_color`
         - :py:class:`ooodev.format.draw.modify.transparency.Gradient`
