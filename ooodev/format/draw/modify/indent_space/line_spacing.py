@@ -1,5 +1,5 @@
 """
-Draw Style Shadow.
+Draw Style Line Spacing.
 
 .. versionadded:: 0.17.12
 """
@@ -7,25 +7,23 @@ from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
 import uno
 
+from ooodev.format.draw.direct.para.indent_spacing.line_spacing import LineSpacing as InnerLineSpacing
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
-from ooodev.format.inner.modify.draw.fill_properties_style_base_multi import FillPropertiesStyleBaseMulti
-from ooodev.format.draw.direct.shadow import Shadow as InnerShadow
+from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
+from ooodev.format.inner.modify.draw.para_style_base_multi import ParaStyleBaseMulti
 
 if TYPE_CHECKING:
     from ooodev.units import UnitT
-    from ooodev.utils.data_type.intensity import Intensity
-    from ooodev.utils.color import Color
-    from ooodev.format.inner.direct.write.shape.area.shadow import ShadowLocationKind
 
 
-class Shadow(FillPropertiesStyleBaseMulti):
+class LineSpacing(ParaStyleBaseMulti):
     """
-    Shadow Style value.
+    Line Spacing Style values.
 
     .. seealso::
 
-        - :ref:`help_draw_format_modify_shadow_shadow`
+        - :ref:`help_draw_format_modify_indent_space_line_spacing`
 
     .. versionadded:: 0.17.12
     """
@@ -33,12 +31,8 @@ class Shadow(FillPropertiesStyleBaseMulti):
     def __init__(
         self,
         *,
-        use_shadow: bool | None = None,
-        location: ShadowLocationKind | None = None,
-        color: Color | None = None,
-        distance: float | UnitT | None = None,
-        blur: int | UnitT | None = None,
-        transparency: int | Intensity | None = None,
+        mode: ModeKind | None = None,
+        value: int | float | UnitT = 0,
         style_name: str = FamilyGraphics.DEFAULT_DRAWING_STYLE,
         style_family: str | DrawStyleFamilyKind = DrawStyleFamilyKind.GRAPHICS,
     ) -> None:
@@ -46,12 +40,9 @@ class Shadow(FillPropertiesStyleBaseMulti):
         Constructor
 
         Args:
-            use_shadow (bool, optional): Specifies if shadow is used.
-            location (ShadowLocationKind , optional): Specifies the shadow location.
-            color (Color , optional): Specifies shadow color.
-            distance (float, UnitT , optional): Specifies shadow distance in ``mm`` units or :ref:`proto_unit_obj`.
-            blur (int, UnitT, optional): Specifies shadow blur in ``pt`` units or in ``mm`` units  or :ref:`proto_unit_obj`.
-            transparency (int , optional): Specifies shadow transparency value from ``0`` to ``100``.
+            mode (ModeKind, optional): Determines the mode that is used to apply units.
+            value (Real, UnitT, optional): Value of line spacing. Only applies when ``ModeKind`` is ``PROPORTIONAL``,
+                ``AT_LEAST``, ``LEADING``, or ``FIXED``.
             style_name (FamilyGraphics, str, optional): Specifies the Style that instance applies to.
                 Default is Default ``standard`` Style.
             style_family (str, DrawStyleFamilyKind, optional): Family Style. Defaults to ``graphics``.
@@ -59,18 +50,20 @@ class Shadow(FillPropertiesStyleBaseMulti):
         Returns:
             None:
 
+        Note:
+            If ``ModeKind`` is ``SINGLE``, ``LINE_1_15``, ``LINE_1_5``, or ``DOUBLE`` then ``value`` is ignored.
+
+            If ``ModeKind`` is ``AT_LEAST``, ``LEADING``, or ``FIXED`` then ``value`` is a float (``in mm units``)
+            or :ref:`proto_unit_obj`
+
+            If ``ModeKind`` is ``PROPORTIONAL`` then value is an int representing percentage.
+            For example ``95`` equals ``95%``, ``130`` equals ``130%``
+
         See Also:
-            - :ref:`help_draw_format_modify_shadow_shadow`
+            - :ref:`help_draw_format_modify_indent_space_line_spacing`
         """
 
-        direct = InnerShadow(
-            use_shadow=use_shadow,
-            location=location,
-            color=color,
-            distance=distance,
-            blur=blur,
-            transparency=transparency,
-        )
+        direct = InnerLineSpacing(mode=mode, value=value)
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = str(style_family)
@@ -82,7 +75,7 @@ class Shadow(FillPropertiesStyleBaseMulti):
         doc: Any,
         style_name: str = FamilyGraphics.DEFAULT_DRAWING_STYLE,
         style_family: str | DrawStyleFamilyKind = DrawStyleFamilyKind.GRAPHICS,
-    ) -> Shadow:
+    ) -> LineSpacing:
         """
         Gets instance from Document.
 
@@ -93,10 +86,10 @@ class Shadow(FillPropertiesStyleBaseMulti):
             style_family (DrawStyleFamilyKind, str, optional): Style family. Default ``DrawStyleFamilyKind.GRAPHICS``.
 
         Returns:
-            Shadow: ``Shadow`` instance from document properties.
+            LineSpacing: ``LineSpacing`` instance from document properties.
         """
         inst = cls(style_name=style_name, style_family=style_family)
-        direct = InnerShadow.from_obj(inst.get_style_props(doc))
+        direct = InnerLineSpacing.from_obj(inst.get_style_props(doc))
         inst._set_style("direct", direct)
         return inst
 
@@ -110,17 +103,17 @@ class Shadow(FillPropertiesStyleBaseMulti):
         self._style_name = str(value)
 
     @property
-    def prop_inner(self) -> InnerShadow:
+    def prop_inner(self) -> InnerLineSpacing:
         """Gets/Sets Inner Font instance"""
         try:
             return self._direct_inner
         except AttributeError:
-            self._direct_inner = cast(InnerShadow, self._get_style_inst("direct"))
+            self._direct_inner = cast(InnerLineSpacing, self._get_style_inst("direct"))
         return self._direct_inner
 
     @prop_inner.setter
-    def prop_inner(self, value: InnerShadow) -> None:
-        if not isinstance(value, InnerShadow):
-            raise TypeError(f'Expected type of InnerShadow, got "{type(value).__name__}"')
+    def prop_inner(self, value: InnerLineSpacing) -> None:
+        if not isinstance(value, InnerLineSpacing):
+            raise TypeError(f'Expected type of InnerLineSpacing, got "{type(value).__name__}"')
         self._del_attribs("_direct_inner")
         self._set_style("direct", value, *value.get_attrs())

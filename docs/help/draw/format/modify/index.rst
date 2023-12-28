@@ -8,5 +8,6 @@ Modify
 
     area/index
     font/index
+    indent_space/index
     shadow/index
     transparency/index

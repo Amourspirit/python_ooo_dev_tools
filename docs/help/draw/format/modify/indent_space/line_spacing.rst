@@ -1,42 +1,40 @@
-.. _help_draw_format_modify_shadow_shadow:
+.. _help_draw_format_modify_indent_space_line_spacing:
 
-Draw Modify Shadow
-==================
+Draw Modify Line Spacing
+========================
 
 .. contents:: Table of Contents
     :local:
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.modify.shadow.Shadow`, class is used to modify the values seen in :numref:`9a0a1fba-ae02-4f2e-b6e1-eb99299dbf9c` of a style.
+The :py:class:`ooodev.format.draw.modify.indent_space.LineSpacing`, class is used to modify the values seen in :numref:`f415d725-5f5c-4454-b380-80db1a9cbe2e` of a style.
 
 .. cssclass:: screen_shot
 
-    .. _9a0a1fba-ae02-4f2e-b6e1-eb99299dbf9c:
+    .. _f415d725-5f5c-4454-b380-80db1a9cbe2e:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9a0a1fba-ae02-4f2e-b6e1-eb99299dbf9c
-        :alt: Draw dialog Shadow default
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f415d725-5f5c-4454-b380-80db1a9cbe2e
+        :alt: Draw dialog Line Spacing default
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Shadow default
+        Draw dialog Line Spacing default
 
 
-Setting the Shadow
-------------------
+Setting the Line Spacing
+------------------------
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37
+        :emphasize-lines: 25, 26, 27, 28, 29, 30, 31
 
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
         from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
-        from ooodev.format.draw.modify.shadow import Shadow, ShadowLocationKind
-        from ooodev.format.draw.modify.area.color import Color as AreaColor
-        from ooodev.utils.color import StandardColor
+        from ooodev.format.draw.modify.indent_space import LineSpacing, ModeKind
         from ooodev.utils.lo import Lo
 
         def main() -> int:
@@ -56,13 +54,9 @@ Setting the Shadow
                 rect = slide.draw_rectangle(x=x, y=y, width=width, height=height)
                 rect.set_string("Hello World!")
 
-                style = Shadow(
-                    use_shadow=True,
-                    location=ShadowLocationKind.BOTTOM_RIGHT,
-                    color=StandardColor.YELLOW_LIGHT2,
-                    distance=1.5,
-                    blur=3,
-                    transparency=88,
+                style = LineSpacing(
+                    mode=ModeKind.PROPORTIONAL,
+                    value=87,
                     style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
                     style_family=DrawStyleFamilyKind.GRAPHICS,
                 )
@@ -85,30 +79,17 @@ Running the above code will produce the following results in the Draw dialog.
 
 .. cssclass:: screen_shot
 
-    .. _aa15b057-04c8-4a90-9235-abec6d767f9b:
+    .. _be655f75-5671-4d22-b25b-2485c09b8137:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/aa15b057-04c8-4a90-9235-abec6d767f9b
-        :alt: Draw dialog Shadow style changed
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/be655f75-5671-4d22-b25b-2485c09b8137
+        :alt: Draw dialog Spacing style changed
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Shadow style changed
+        Draw dialog Spacing style changed
 
-Shape after applying style.
-
-.. cssclass:: screen_shot
-
-    .. _8e18313e-9726-43bc-b7b6-5c30007183be:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8e18313e-9726-43bc-b7b6-5c30007183be
-        :alt: Shape after Style applied
-        :figclass: align-center
-
-        Shape after Style applied
-
-
-Getting shadow from a style
----------------------------
+Getting line spacing from a style
+---------------------------------
 
 .. tabs::
 
@@ -116,13 +97,13 @@ Getting shadow from a style
 
         # ... other code
 
-        f_style = Shadow.from_style(
+        f_style = LineSpacing.from_style(
             doc=doc.component,
             style_name=style.prop_style_name,
             style_family=style.prop_style_family_name
         )
+        assert f_style is not None
         assert f_style.prop_style_name == str(FamilyGraphics.DEFAULT_DRAWING_STYLE)
-        assert f_style.prop_inner.prop_color == StandardColor.YELLOW_LIGHT2
 
     .. only:: html
 
@@ -139,4 +120,6 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`ooodev.format.draw.modify.shadow.Shadow`
+        - :ref:`help_draw_format_modify_indent_space_indent`
+        - :ref:`help_draw_format_modify_indent_space_spacing`
+        - :py:class:`ooodev.format.draw.modify.indent_space.LineSpacing`

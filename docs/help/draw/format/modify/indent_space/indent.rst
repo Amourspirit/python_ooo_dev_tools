@@ -1,6 +1,6 @@
-.. _help_draw_format_modify_shadow_shadow:
+.. _help_draw_format_modify_indent_space_indent:
 
-Draw Modify Shadow
+Draw Modify Indent
 ==================
 
 .. contents:: Table of Contents
@@ -8,35 +8,33 @@ Draw Modify Shadow
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.modify.shadow.Shadow`, class is used to modify the values seen in :numref:`9a0a1fba-ae02-4f2e-b6e1-eb99299dbf9c` of a style.
+The :py:class:`ooodev.format.draw.modify.indent_space.Indent`, class is used to modify the values seen in :numref:`26662808-1f45-4dbd-885f-74fa3583edf4` of a style.
 
 .. cssclass:: screen_shot
 
-    .. _9a0a1fba-ae02-4f2e-b6e1-eb99299dbf9c:
+    .. _26662808-1f45-4dbd-885f-74fa3583edf4:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9a0a1fba-ae02-4f2e-b6e1-eb99299dbf9c
-        :alt: Draw dialog Shadow default
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/26662808-1f45-4dbd-885f-74fa3583edf4
+        :alt: Draw dialog Indent default
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Shadow default
+        Draw dialog Indent default
 
 
-Setting the Shadow
-------------------
+Setting the Indent
+-------------------
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37
+        :emphasize-lines: 25, 26, 27, 28, 29, 30, 31, 32
 
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
         from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
-        from ooodev.format.draw.modify.shadow import Shadow, ShadowLocationKind
-        from ooodev.format.draw.modify.area.color import Color as AreaColor
-        from ooodev.utils.color import StandardColor
+        from ooodev.format.draw.modify.indent_space import Indent
         from ooodev.utils.lo import Lo
 
         def main() -> int:
@@ -56,13 +54,10 @@ Setting the Shadow
                 rect = slide.draw_rectangle(x=x, y=y, width=width, height=height)
                 rect.set_string("Hello World!")
 
-                style = Shadow(
-                    use_shadow=True,
-                    location=ShadowLocationKind.BOTTOM_RIGHT,
-                    color=StandardColor.YELLOW_LIGHT2,
-                    distance=1.5,
-                    blur=3,
-                    transparency=88,
+                style = Indent(
+                    before=4.5,
+                    after=5.5,
+                    first=5.2,
                     style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
                     style_family=DrawStyleFamilyKind.GRAPHICS,
                 )
@@ -85,29 +80,28 @@ Running the above code will produce the following results in the Draw dialog.
 
 .. cssclass:: screen_shot
 
-    .. _aa15b057-04c8-4a90-9235-abec6d767f9b:
+    .. _9f9d7f38-4b24-4196-b896-daf8ffa01a7c:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/aa15b057-04c8-4a90-9235-abec6d767f9b
-        :alt: Draw dialog Shadow style changed
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9f9d7f38-4b24-4196-b896-daf8ffa01a7c
+        :alt: Draw dialog Indent style changed
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Shadow style changed
+        Draw dialog Indent style changed
 
-Shape after applying style.
+.. note::
 
-.. cssclass:: screen_shot
+    The ``auto`` argument of the ``Indent`` class constructor is suppose to set the styles ``ParaIsAutoFirstLineIndent`` property.
+    The ``ParaIsAutoFirstLineIndent`` is suppose to be part of the ``com.sun.star.style.ParagraphProperties`` service;
+    However, for some reason it is missing for Draw styles. Setting this ``auto`` argument will result
+    in a print warning message in verbose mode. It is better to not set this argument.
+    It is left in just in case it starts working in the future.
 
-    .. _8e18313e-9726-43bc-b7b6-5c30007183be:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8e18313e-9726-43bc-b7b6-5c30007183be
-        :alt: Shape after Style applied
-        :figclass: align-center
-
-        Shape after Style applied
+    There is a option in the Indent and Spacing dialog for ``Automatic`` as seen in :numref:`26662808-1f45-4dbd-885f-74fa3583edf4`.
+    It seems to work, but it is not clear how it is implemented. It is not clear if it is a style property.
 
 
-Getting shadow from a style
+Getting indent from a style
 ---------------------------
 
 .. tabs::
@@ -116,13 +110,13 @@ Getting shadow from a style
 
         # ... other code
 
-        f_style = Shadow.from_style(
+        f_style = Indent.from_style(
             doc=doc.component,
             style_name=style.prop_style_name,
             style_family=style.prop_style_family_name
         )
+        assert f_style is not None
         assert f_style.prop_style_name == str(FamilyGraphics.DEFAULT_DRAWING_STYLE)
-        assert f_style.prop_inner.prop_color == StandardColor.YELLOW_LIGHT2
 
     .. only:: html
 
@@ -139,4 +133,6 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`ooodev.format.draw.modify.shadow.Shadow`
+        - :ref:`help_draw_format_modify_indent_space_spacing`
+        - :ref:`help_draw_format_modify_indent_space_line_spacing`
+        - :py:class:`ooodev.format.draw.modify.indent_space.Indent`

@@ -21,7 +21,7 @@ def test_draw(loader) -> None:
         Lo.delay(500)
         doc.zoom(ZoomKind.ZOOM_75_PERCENT)
     try:
-        slide = slide = doc.get_slide(idx=0)
+        slide = doc.get_slide(idx=0)
 
         width = 100
         height = 100
