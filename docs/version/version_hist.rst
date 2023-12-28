@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.17.12
+===============
+
+Added support for modifying Draw Style Indent and Spacing.
+
 Version 0.17.11
 ===============
 

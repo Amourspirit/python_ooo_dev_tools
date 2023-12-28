@@ -35,6 +35,19 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         # or set the value of cell A2 to TEST
         doc.sheets[0]["A2"].set_val("TEST")
 
+        # get the last sheet of the document
+        last_sheet = doc.sheets[-1]
+
+        # get the second last sheet of the document
+        second_last_sheet = doc.sheets[-2]
+
+        # get the number of sheets
+        num_sheets = len(doc.sheets)
+
+    .. versionchanged:: 0.17.13
+        - Added negative index access.
+        - Added ``__len__`` method.
+
     .. versionadded:: 0.17.11
     """
 
@@ -55,7 +68,15 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         return mCalcSheet.CalcSheet(owner=self.__owner, sheet=super().__next__())
 
     def __getitem__(self, index: str | int) -> mCalcSheet.CalcSheet:
+        if isinstance(index, int):
+            if index < 0:
+                index = len(self) + index
+                if index < 0:
+                    raise IndexError("list index out of range")
         return self.get_sheet(index)
+
+    def __len__(self) -> int:
+        return self.component.getCount()
 
     def get_active_sheet(self) -> mCalcSheet.CalcSheet:
         """
@@ -182,6 +203,85 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         self.calc_doc.set_active_sheet(sheet)
 
     # endregion set_active_sheet()
+
+    def insert_sheet(self, name: str, idx: int) -> mCalcSheet.CalcSheet:
+        """
+        Inserts a spreadsheet into document.
+
+        Args:
+            name (str): Name of sheet to insert
+            idx (int): zero-based index position of the sheet to insert.
+                Can be a negative value to insert from the end of the list.
+
+        Raises:
+            Exception: If unable to insert spreadsheet
+            CancelEventError: If SHEET_INSERTING event is canceled
+
+        Returns:
+            CalcSheet: The newly inserted sheet
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTING` :eventref:`src-docs-sheet-event-inserting`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
+        """
+        return self.calc_doc.insert_sheet(name, idx)
+
+    # region    remove_sheet()
+
+    @overload
+    def remove_sheet(self, sheet_name: str) -> bool:
+        """
+        Removes a sheet from document
+
+        Args:
+            sheet_name (str): Name of sheet to remove
+
+        Returns:
+            bool: True of sheet was removed; Otherwise, False
+        """
+        ...
+
+    @overload
+    def remove_sheet(self, idx: int) -> bool:
+        """
+        Removes a sheet from document
+
+        Args:
+            idx (int): Zero based index of sheet to remove.
+                Can be a negative value to insert from the end of the list.
+
+        Returns:
+            bool: True of sheet was removed; Otherwise, False
+        """
+        ...
+
+    def remove_sheet(self, *args, **kwargs) -> bool:
+        """
+        Removes a sheet from document
+
+        Args:
+            sheet_name (str): Name of sheet to remove
+            idx (int): Zero based index of sheet to remove.
+                Can be a negative value to insert from the end of the list.
+
+        Returns:
+            bool: True of sheet was removed; Otherwise, False
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_REMOVING` :eventref:`src-docs-sheet-event-removing`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_REMOVED` :eventref:`src-docs-sheet-event-removed`
+
+        Note:
+            Event args ``event_data`` is set to a dictionary.
+            If ``idx`` is available then args ``event_data["fn_type"]`` is set to a value ``idx``; Otherwise, set to a value ``name``.
+        """
+        return self.calc_doc.remove_sheet(*args, **kwargs)
+
+    # endregion remove_sheet()
 
     # region Properties
     @property

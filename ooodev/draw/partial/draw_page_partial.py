@@ -867,6 +867,20 @@ class DrawPagePartial(Generic[_T]):
         """
         return mDraw.Draw.get_line_thickness(self.component)  # type: ignore
 
+    def get_name(self) -> str:
+        """
+        Gets the name of the slide.
+
+        Raises:
+            DrawError: If error occurs setting name.
+
+        Returns:
+            str: Slide name.
+
+        .. versionadded:: 0.17.13
+        """
+        return mDraw.Draw.get_name(slide=self.component)  # type: ignore
+
     def get_ordered_shapes(self) -> List[DrawShape[_T]]:
         """
         Gets ordered shapes
