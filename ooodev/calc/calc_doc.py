@@ -839,7 +839,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
             # example of setting the value of cell A2 to TEST
             doc.sheets[0]["A2"].set_val("TEST")
 
-        .. versionchanged:: 0.17.11
+        .. versionadded:: 0.17.11
         """
         if self._sheets is None:
             self._sheets = mCalcSheets.CalcSheets(owner=self, sheets=self.component.getSheets())

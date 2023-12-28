@@ -1,6 +1,6 @@
-.. _help_draw_format_modify_transparency_transparency:
+.. _help_draw_format_modify_indent_space_line_spacing:
 
-Draw Modify Transparency
+Draw Modify Line Spacing
 ========================
 
 .. contents:: Table of Contents
@@ -8,33 +8,33 @@ Draw Modify Transparency
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.draw.modify.transparency.Transparency`, class is used to modify the values seen in :numref:`c128d890-357d-4c40-afa3-34eec7e69ffd` of a style.
+The :py:class:`ooodev.format.draw.modify.indent_space.LineSpacing`, class is used to modify the values seen in :numref:`f415d725-5f5c-4454-b380-80db1a9cbe2e` of a style.
 
 .. cssclass:: screen_shot
 
-    .. _c128d890-357d-4c40-afa3-34eec7e69ffd:
+    .. _f415d725-5f5c-4454-b380-80db1a9cbe2e:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/c128d890-357d-4c40-afa3-34eec7e69ffd
-        :alt: Draw dialog Transparency default
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f415d725-5f5c-4454-b380-80db1a9cbe2e
+        :alt: Draw dialog Line Spacing default
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Transparency default
+        Draw dialog Line Spacing default
 
 
-Setting the Transparency
+Setting the Line Spacing
 ------------------------
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 24, 25, 26, 27, 28, 29
+        :emphasize-lines: 25, 26, 27, 28, 29, 30, 31
 
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
         from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
-        from ooodev.format.draw.modify.transparency import Transparency, Intensity
+        from ooodev.format.draw.modify.indent_space import LineSpacing, ModeKind
         from ooodev.utils.lo import Lo
 
         def main() -> int:
@@ -53,8 +53,10 @@ Setting the Transparency
 
                 rect = slide.draw_rectangle(x=x, y=y, width=width, height=height)
                 rect.set_string("Hello World!")
-                style = Transparency(
-                    value=Intensity(88),
+
+                style = LineSpacing(
+                    mode=ModeKind.PROPORTIONAL,
+                    value=87,
                     style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
                     style_family=DrawStyleFamilyKind.GRAPHICS,
                 )
@@ -67,7 +69,6 @@ Setting the Transparency
         if __name__ == "__main__":
             raise SystemExit(main())
 
-
     .. only:: html
 
         .. cssclass:: tab-none
@@ -78,30 +79,17 @@ Running the above code will produce the following results in the Draw dialog.
 
 .. cssclass:: screen_shot
 
-    .. _377585e8-2815-4044-9763-100b663bdc36:
+    .. _be655f75-5671-4d22-b25b-2485c09b8137:
 
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/377585e8-2815-4044-9763-100b663bdc36
-        :alt: Draw dialog Transparency style changed
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/be655f75-5671-4d22-b25b-2485c09b8137
+        :alt: Draw dialog Spacing style changed
         :figclass: align-center
         :width: 450px
 
-        Draw dialog Transparency style changed
+        Draw dialog Spacing style changed
 
-Shape after applying style.
-
-.. cssclass:: screen_shot
-
-    .. _16c3459a-b219-4739-b903-8ffb21d2c3d7:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/16c3459a-b219-4739-b903-8ffb21d2c3d7
-        :alt: Shape after Style applied
-        :figclass: align-center
-
-        Shape after Style applied
-
-
-Getting shadow from a style
----------------------------
+Getting line spacing from a style
+---------------------------------
 
 .. tabs::
 
@@ -109,12 +97,13 @@ Getting shadow from a style
 
         # ... other code
 
-        f_style = Transparency.from_style(
+        f_style = LineSpacing.from_style(
             doc=doc.component,
-            style_name=FamilyGraphics.DEFAULT_DRAWING_STYLE,
-            style_family=DrawStyleFamilyKind.GRAPHICS,
+            style_name=style.prop_style_name,
+            style_family=style.prop_style_family_name
         )
-        assert f_style.prop_inner.prop_value == Intensity(88)
+        assert f_style is not None
+        assert f_style.prop_style_name == str(FamilyGraphics.DEFAULT_DRAWING_STYLE)
 
     .. only:: html
 
@@ -131,5 +120,6 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :ref:`help_draw_format_modify_transparency_gradient`
-        - :py:class:`ooodev.format.draw.modify.transparency.Transparency`
+        - :ref:`help_draw_format_modify_indent_space_indent`
+        - :ref:`help_draw_format_modify_indent_space_spacing`
+        - :py:class:`ooodev.format.draw.modify.indent_space.LineSpacing`

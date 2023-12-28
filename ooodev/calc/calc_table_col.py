@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import overload, TYPE_CHECKING
+from typing import cast, overload, TYPE_CHECKING
 import uno
 
 
@@ -15,6 +15,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
     from com.sun.star.table import TableColumn  # service
+    from com.sun.star.table import XCellRange
     from ooodev.units import UnitT
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.cell_values import CellValues
@@ -35,10 +36,10 @@ class CalcTableCol(TableColumnComp, QiPartial, StylePartial):
         """
         self.__owner = owner
         if mInfo.Info.is_instance(col_obj, int):
-            comp = mCalc.Calc.get_col_range(sheet=self.calc_sheet.component, idx=col_obj)  # type: ignore
+            comp = mCalc.Calc.get_col_range(sheet=self.calc_sheet.component, idx=col_obj)
             self.__range_obj = mCalc.Calc.get_range_obj(cell_range=comp)
         else:
-            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=col_obj)  # type: ignore
+            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=cast("XCellRange", col_obj))
             comp = col_obj
         TableColumnComp.__init__(self, comp)  # type: ignore
         QiPartial.__init__(self, component=comp, lo_inst=mLo.Lo.current_lo)  # type: ignore

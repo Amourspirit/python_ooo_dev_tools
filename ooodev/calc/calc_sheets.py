@@ -35,7 +35,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         # or set the value of cell A2 to TEST
         doc.sheets[0]["A2"].set_val("TEST")
 
-    .. versionchanged:: 0.17.11
+    .. versionadded:: 0.17.11
     """
 
     def __init__(self, owner: CalcDoc, sheets: XSpreadsheets) -> None:

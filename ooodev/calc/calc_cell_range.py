@@ -9,8 +9,6 @@ from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 
 if TYPE_CHECKING:
-    from . import calc_cell_cursor as mCalcCellCursor
-    from .calc_sheet import CalcSheet
     from com.sun.star.table import CellAddress
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from ooodev.proto.style_obj import StyleT
@@ -19,8 +17,9 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.data_type.size import Size
     from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row
-    from ooodev.proto.style_obj import StyleT
     from . import calc_cell_cursor as mCalcCellCursor
+    from . import calc_cell_cursor as mCalcCellCursor
+    from .calc_sheet import CalcSheet
 else:
     CellRangeAddress = object
 

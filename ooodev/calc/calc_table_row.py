@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import overload, TYPE_CHECKING
+from typing import cast, overload, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.table.table_row_comp import TableRowComp
@@ -7,12 +7,14 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM100
 from ooodev.utils import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.utils.partial.qi_partial import QiPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
     from com.sun.star.table import TableRow  # service
+    from com.sun.star.table import XCellRange
     from ooodev.units import UnitT
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.cell_values import CellValues
@@ -32,11 +34,11 @@ class CalcTableRow(TableRowComp, QiPartial, StylePartial):
             TableRow | int (Any): Range object.
         """
         self.__owner = owner
-        if isinstance(row_obj, int):
+        if mInfo.Info.is_instance(row_obj, int):
             comp = mCalc.Calc.get_row_range(sheet=self.calc_sheet.component, idx=row_obj)
             self.__range_obj = mCalc.Calc.get_range_obj(cell_range=comp)
         else:
-            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=row_obj)
+            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=cast("XCellRange", row_obj))
             comp = row_obj
         TableRowComp.__init__(self, comp)  # type: ignore
         QiPartial.__init__(self, component=comp, lo_inst=mLo.Lo.current_lo)  # type: ignore

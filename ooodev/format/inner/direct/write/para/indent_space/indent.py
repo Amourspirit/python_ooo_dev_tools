@@ -65,7 +65,6 @@ class Indent(StyleBase):
             None:
 
         See Also:
-
             - :ref:`help_writer_format_direct_para_indent_spacing`
         """
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html

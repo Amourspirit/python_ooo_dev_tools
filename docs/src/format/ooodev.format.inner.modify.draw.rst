@@ -9,6 +9,7 @@ Submodules
 
    ooodev.format.inner.modify.draw.char_style_base_multi
    ooodev.format.inner.modify.draw.fill_properties_style_base_multi
+   ooodev.format.inner.modify.draw.para_style_base_multi
 
 Module contents
 ---------------

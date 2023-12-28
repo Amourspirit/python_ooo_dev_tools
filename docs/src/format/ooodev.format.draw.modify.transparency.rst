@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.draw.modify.transparency.gradient
    ooodev.format.draw.modify.transparency.transparency
 
 Module contents
