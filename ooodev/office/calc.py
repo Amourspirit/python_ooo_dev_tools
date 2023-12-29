@@ -658,7 +658,7 @@ class Calc:
         try:
             sheets_idx = mLo.Lo.qi(XIndexAccess, sheets, True)
             sheet = mLo.Lo.qi(XSpreadsheet, sheets_idx.getByIndex(index), True)
-            sheet_name = cls.get_sheet_name(sheet)
+            sheet_name = cls.get_sheet_name(sheet, safe_quote=False)
             if sheet_name is None:
                 return False
             sheets.removeByName(sheet_name)
@@ -911,8 +911,7 @@ class Calc:
         .. versionchanged:: 0.11.12
             Added safe_quote parameter.
         """
-        safe_quote = bool(kwargs.pop("safe_quote", True))
-        ordered_keys = (1,)
+        ordered_keys = (1, 2)
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
 
@@ -920,7 +919,7 @@ class Calc:
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = ("sheet", "idx")
+            valid_keys = {"sheet", "idx", "safe_quote"}
             check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_sheet_name() got an unexpected keyword argument")
@@ -928,9 +927,13 @@ class Calc:
                 if key in kwargs:
                     ka[1] = kwargs[key]
                     break
+            if count == 1:
+                return ka
+            if "safe_quote" in kwargs:
+                ka[2] = kwargs["safe_quote"]
             return ka
 
-        if count not in (0, 1):
+        if count not in (0, 1, 2):
             raise TypeError("get_sheet_name() got an invalid number of arguments")
 
         if count == 0:
@@ -941,11 +944,21 @@ class Calc:
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        arg1 = kargs[1]
-        if isinstance(arg1, int):
-            sheet = cls.get_sheet(arg1)
+        safe_quote = True
+        arg1 = kargs[1] # "sheet", "idx", "safe_quote"
+        if count == 1:
+            if mInfo.Info.is_instance(arg1, bool):
+                # int is not bool but bool is int
+                safe_quote = arg1
+                sheet = cls.get_active_sheet()
+            elif mInfo.Info.is_instance(arg1, int):
+                sheet = cls.get_sheet(arg1)
+            else:
+                sheet = cast(XSpreadsheet, arg1)
         else:
+            # count == 2
             sheet = cast(XSpreadsheet, arg1)
+            safe_quote = cast(bool, kargs[2])
 
         xnamed = mLo.Lo.qi(XNamed, sheet, True)
         sheet_name = xnamed.getName()

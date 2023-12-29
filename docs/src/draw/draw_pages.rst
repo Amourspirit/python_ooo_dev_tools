@@ -11,7 +11,7 @@ Class DrawPages
 Introduction
 ------------
 
-The DrawPages class represents the collection of pages in a draw document.
+The DrawPages class represents the collection of pages in a document.
 
 This class contains several python magic methods to make it behave like a collection.
 

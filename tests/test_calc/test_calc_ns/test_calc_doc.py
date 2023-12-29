@@ -35,7 +35,9 @@ def test_get_sheet(loader) -> None:
 
         assert calc_doc.sheets[0].sheet_name == "Sheet1"
         assert calc_doc.sheets["Sheet1"].sheet_name == "Sheet1"
-        assert calc_doc.sheets[-1].sheet_name == "Sheet1"
+        assert calc_doc.sheets[-1].name == "Sheet1"
+        calc_doc.sheets[-1].name = "My Sheet"
+        assert calc_doc.sheets[-1].name == "My Sheet"
 
     finally:
         Lo.close_doc(doc)
@@ -59,6 +61,7 @@ def test_get_other_cells(loader) -> None:
 
         sheet_name = sheet.get_sheet_name()
         assert sheet_name == "Sheet1"
+        assert sheet.name == sheet_name
 
         cell = sheet.get_cell(cell_name="A1")
         cell.set_val("A1")
@@ -119,35 +122,55 @@ def test_get_other_cells(loader) -> None:
 
 
 def test_insert_remove_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = Calc.create_doc(loader)
+    doc = CalcDoc(Calc.create_doc(loader))
     try:
-        calc_doc = CalcDoc(doc)
-        sheet_names = calc_doc.get_sheet_names()
+        sheet_names = doc.get_sheet_names()
         assert len(sheet_names) == 1
         assert sheet_names[0] == "Sheet1"
 
-        assert len(calc_doc.sheets) == 1
+        assert len(doc.sheets) == 1
 
-        sheet = calc_doc.get_sheet(sheet_name="Sheet1")
+        sheet = doc.get_sheet(sheet_name="Sheet1")
         assert sheet.get_sheet_name() == "Sheet1"
-        calc_doc.insert_sheet(name="Sheet2", idx=1)
-        assert len(calc_doc.sheets) == 2
+        assert sheet.name == "Sheet1"
+        doc.insert_sheet(name="Sheet2")
+        assert len(doc.sheets) == 2
 
-        sheet2 = calc_doc.get_sheet(sheet_name="Sheet2")
+        sheet2 = doc.get_sheet(sheet_name="Sheet2")
         assert sheet2.get_sheet_name() == "Sheet2"
         assert sheet2.sheet_name == "Sheet2"
         assert sheet2.sheet_index == 1
 
-        assert calc_doc.remove_sheet(sheet2.sheet_name)
-        sheet_names = calc_doc.get_sheet_names()
+        assert doc.remove_sheet(sheet2.sheet_name)
+        sheet_names = doc.get_sheet_names()
         assert len(sheet_names) == 1
         assert sheet_names[0] == "Sheet1"
+
+        for i in range(8):
+            doc.sheets.insert_new_by_name(f"Sheet {i}", -1)
+        assert len(doc.sheets) == 9
+
+        del doc.sheets[0]
+        assert len(doc.sheets) == 8
+
+        del doc.sheets[-1]
+        assert len(doc.sheets) == 7
+
+        sheet = doc.sheets[-1]
+        assert sheet.sheet_name == "Sheet 7"
+
+        del doc.sheets[sheet.name]
+        assert len(doc.sheets) == 6
+
+        sheet = doc.sheets[-1]
+        del doc.sheets[sheet]
+        assert len(doc.sheets) == 5
+
     finally:
-        Lo.close_doc(doc)
+        doc.close_doc()
 
 
 def test_calc_sheet(loader) -> None:
