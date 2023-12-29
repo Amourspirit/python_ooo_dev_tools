@@ -795,7 +795,7 @@ class Draw:
         try:
             slide = mLo.Lo.qi(XDrawPage, slides.getByIndex(idx), True)
         except Exception as e:
-            mLo.Lo.print(f"could not find slide: {idx}")
+            mLo.Lo.print(f"Error: Could not delete slide: {idx}: {e}")
             return False
         slides.remove(slide)
         return True

@@ -57,3 +57,40 @@ def test_slides_draw(loader) -> None:
         assert last_slide.get_name() == "New Slide"
     finally:
         doc.close_doc()
+
+
+def test_del_slides(loader) -> None:
+    doc = DrawDoc(Draw.create_draw_doc(loader))
+    try:
+        assert isinstance(doc, DrawDoc)
+
+        for i in range(8):
+            slide = doc.slides.insert_new_by_index(idx=-1)
+            # Slide is reserved it seems for Impress
+            #  slide.name = f"Slide {i + 1}" does not work for Draw
+            #  slide.name = f"Slide{i + 1}" does work for Draw
+            slide.name = f"Page {i + 1}"
+
+        assert len(doc.slides) == 9
+
+        del doc.slides[-1]
+        assert len(doc.slides) == 8
+
+        last_slide = doc.slides[-1]
+        del doc.slides[last_slide.get_name()]
+        assert len(doc.slides) == 7
+
+        last_slide = doc.slides[-1]
+        del doc.slides[last_slide]
+        assert len(doc.slides) == 6
+
+        last_slide = doc.slides[-1]
+        del doc.slides[last_slide.component]  # type: ignore
+        assert len(doc.slides) == 5
+
+        last_slide_name = doc.slides[-1].name
+        last_slide = doc.slides[last_slide_name]
+        assert last_slide.name == last_slide_name
+
+    finally:
+        doc.close_doc()

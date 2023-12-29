@@ -2179,16 +2179,47 @@ class Info(metaclass=StaticProperty):
         This method will return ``False`` if ``obj`` is a UNO object.
 
         Args:
-            obj (Any): Any object, If UNO object then ``False`` is returned. Otherwise built in ``isinstance`` is used.
+            obj (Any): Any object. If UNO object then comparison is done by ``Lo.is_uno_interfaces()``;
+                Otherwise, built in ``isinstance`` is used.
             class_or_tuple (Any): A tuple, as in ``isinstance(x, (A, B, ...))``, may be given as the target to check against.
                 This is equivalent to ``isinstance(x, A)`` or ``isinstance(x, B)`` or ... etc.
+                When a UNO object is being compared then this should be a type or tuple of types that are expected by ``Lo.is_uno_interfaces()``
 
         Returns:
             bool: ``True`` if is instance; Otherwise, ``False``.
 
+        Example:
+            .. code-block:: python
+
+                def __delitem__(self, _item: int | str | DrawPage | XDrawPage) -> None:
+                    if mInfo.Info.is_instance(_item, int):
+                        self.delete_slide(_item)
+                    elif mInfo.Info.is_instance(_item, str):
+                        slide = super().get_by_name(_item)
+                        if slide is None:
+                            raise MissingNameError(f"Unable to find slide with name '{_item}'")
+                        super().remove(slide)
+                    elif mInfo.Info.is_instance(_item, mDrawPage.DrawPage):
+                        super().remove(_item.component)
+                    elif mInfo.Info.is_instance(_item, XDrawPage):
+                        super().remove(_item)
+                    else:
+                        raise TypeError(f"Unsupported type: {type(_item)}")
+
+        See Also:
+            :py:meth:`~ooodev.utils.lo.Lo.is_uno_interfaces`
+
+        .. versionchanged:: 0.17.14
+            Add support to check UNO objects.
+
         .. versionadded:: 0.17.11
         """
         if cls.is_uno(obj):
+            with contextlib.suppress(Exception):
+                # Lo.is_uno_interfaces will handle not uno types gracefully
+                if isinstance(class_or_tuple, tuple):
+                    return mLo.Lo.is_uno_interfaces(obj, *class_or_tuple)
+                return mLo.Lo.is_uno_interfaces(obj, class_or_tuple)
             return False
         try:
             return isinstance(obj, class_or_tuple)

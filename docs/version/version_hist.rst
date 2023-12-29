@@ -7,8 +7,8 @@ Version 0.17.13
 
 Added ``ooodev.draw.DrawPages`` class that is accessed via ``DrawDoc.slides`` property.
 
-Break changes
--------------
+Breaking changes
+----------------
 
 ``CalcDoc.get_by_index()`` Now returns a ``CalcSheet`` instance instead of ``com.sun.star.sheet.Spreadsheet`` service.
 The ``CalcSheet.component`` will return the ``com.sun.star.sheet.Spreadsheet`` service.
