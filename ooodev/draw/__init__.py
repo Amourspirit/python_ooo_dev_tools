@@ -25,10 +25,20 @@ from ooodev.utils.kind.zoom_kind import ZoomKind as ZoomKind
 
 from .draw_doc import DrawDoc as DrawDoc
 from .draw_page import DrawPage as DrawPage
+from .draw_pages import DrawPages as DrawPages
 from .draw_text import DrawText as DrawText
+from .draw_text_cursor import DrawTextCursor as DrawTextCursor
 from .impress_doc import ImpressDoc as ImpressDoc
 from .impress_page import ImpressPage as ImpressPage
 from .master_draw_page import MasterDrawPage as MasterDrawPage
-from .draw_text_cursor import DrawTextCursor as DrawTextCursor
 
-__all__ = ["DrawDoc", "DrawPage", "DrawText", "DrawTextCursor", "ImpressDoc", "ImpressPage", "MasterDrawPage"]
+__all__ = [
+    "DrawDoc",
+    "DrawPage",
+    "DrawPages",
+    "DrawText",
+    "DrawTextCursor",
+    "ImpressDoc",
+    "ImpressPage",
+    "MasterDrawPage",
+]

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
@@ -99,13 +99,13 @@ class DrawDoc(
     # region Properties
 
     @property
-    def slides(self) -> DrawPages:
+    def slides(self) -> DrawPages[DrawDoc]:
         """
         Returns:
             Any: Draw Pages.
         """
         if self._pages is None:
             self._pages = DrawPages(owner=self, slides=self.component.getDrawPages())
-        return self._pages
+        return cast("DrawPages[DrawDoc]", self._pages)
 
     # endregion Properties

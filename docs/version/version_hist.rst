@@ -2,6 +2,20 @@
 Version History
 ***************
 
+Version 0.17.13
+===============
+
+Added ``ooodev.draw.DrawPages`` class that is accessed via ``DrawDoc.slides`` property.
+
+Break changes
+-------------
+
+``CalcDoc.get_by_index()`` Now returns a ``CalcSheet`` instance instead of ``com.sun.star.sheet.Spreadsheet`` service.
+The ``CalcSheet.component`` will return the ``com.sun.star.sheet.Spreadsheet`` service.
+
+``CalcDoc.get_by_name()`` Now returns a ``CalcSheet`` instance instead of ``com.sun.star.sheet.Spreadsheet`` service.
+The ``CalcSheet.component`` will return the ``com.sun.star.sheet.Spreadsheet`` service.
+
 Version 0.17.12
 ===============
 

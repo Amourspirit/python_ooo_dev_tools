@@ -7,15 +7,15 @@ from .draw_style_base_multi import DrawStyleBaseMulti
 # endregion Imports
 
 
-class CharStyleBaseMulti(DrawStyleBaseMulti):
+class LinePropertiesStyleBaseMulti(DrawStyleBaseMulti):
     """
-    Char Style Base Multi
+    Line Properties Style Base Multi
 
-    .. versionadded:: 0.17.9
+    .. versionadded:: 0.17.13
     """
 
     def _supported_services(self) -> Tuple[str, ...]:
         return (
-            "com.sun.star.style.CharacterProperties",
-            "com.sun.star.style.CharacterStyle",
+            "com.sun.star.drawing.LineProperties",
+            "com.sun.star.style.Style",
         )

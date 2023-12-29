@@ -36,16 +36,16 @@ class IndexAccessPartial(ElementAccessPartial):
         """
         return self.__component.getCount()
 
-    def get_by_index(self, index: int) -> Any:
+    def get_by_index(self, idx: int) -> Any:
         """
         Gets the element at the specified index.
 
         Args:
-            index (int): The Zero-based index of the element.
+            idx (int): The Zero-based index of the element.
 
         Returns:
             Any: The element at the specified index.
         """
-        return self.__component.getByIndex(index)
+        return self.__component.getByIndex(idx)
 
     # endregion Methods

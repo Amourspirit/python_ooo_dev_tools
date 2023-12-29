@@ -316,7 +316,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         Gets a sheet of spreadsheet document
 
         Args:
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            idx (int): The Zero-based index of the sheet. Idx can be a negative value to index from the end of the list.
+                For example, -1 will return the last sheet.
 
         Returns:
             CalcSheet: Spreadsheet at index.
@@ -341,27 +342,18 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         Gets a sheet of spreadsheet document
 
         Args:
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            idx (int, optional): Zero based index of spreadsheet. Idx can be a negative value to index from the end of the list.
+                For example, -1 will return the last element.
             sheet_name (str, optional): Name of spreadsheet
 
         Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If ``SHEET_GETTING`` event is canceled
+            MissingNameError: If spreadsheet is not found by name.
+            IndexError: If spreadsheet is not found by index.
 
         Returns:
             CalcSheet: Spreadsheet at index.
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GETTING` :eventref:`src-docs-sheet-event-getting`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
-
-        Note:
-            For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
         """
-        sheet = mCalc.Calc.get_sheet(self.component, *args, **kwargs)
-        return mCalcSheet.CalcSheet(owner=self, sheet=sheet)
+        return self.sheets.get_sheet(*args, **kwargs)
 
     # endregion get_sheet()
 

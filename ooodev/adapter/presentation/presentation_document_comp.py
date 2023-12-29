@@ -23,7 +23,6 @@ class PresentationDocumentComp(GenericDrawingDocumentComp):
         """
 
         super().__init__(component)
-        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

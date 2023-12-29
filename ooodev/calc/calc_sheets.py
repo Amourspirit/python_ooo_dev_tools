@@ -1,13 +1,14 @@
 from __future__ import annotations
-from typing import overload, TYPE_CHECKING, Tuple
+from typing import cast, overload, TYPE_CHECKING, Tuple
 
 import uno
 from . import calc_sheet as mCalcSheet
-from ooodev.office import calc as mCalc
+from ooodev.adapter.sheet.cell_range_access_partial import CellRangeAccessPartial
 from ooodev.adapter.sheet.spreadsheets_comp import SpreadsheetsComp
+from ooodev.exceptions import ex as mEx
+from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.adapter.sheet.cell_range_access_partial import CellRangeAccessPartial
 
 if TYPE_CHECKING:
     from .calc_doc import CalcDoc
@@ -73,10 +74,59 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
                 index = len(self) + index
                 if index < 0:
                     raise IndexError("list index out of range")
-        return self.get_sheet(index)
+            return self.get_by_index(index)
+        return self.get_by_name(index)
 
     def __len__(self) -> int:
         return self.component.getCount()
+
+    # region XIndexAccess overrides
+
+    def get_by_index(self, idx: int) -> mCalcSheet.CalcSheet:
+        """
+        Gets the element at the specified index.
+
+        Args:
+            idx (int): The Zero-based index of the element. Idx can be a negative value to index from the end of the list.
+                For example, -1 will return the last element.
+
+        Returns:
+            CalcSheet: The element at the specified index.
+        """
+        if idx < 0:
+            idx = len(self) + idx
+            if idx < 0:
+                raise IndexError("Index out of range")
+        if idx >= len(self):
+            raise IndexError(f"Index out of range: '{idx}'")
+
+        result = super().get_by_index(idx)
+        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result)
+
+    # endregion XIndexAccess overrides
+
+    # region XNameAccess overrides
+
+    def get_by_name(self, name: str) -> mCalcSheet.CalcSheet:
+        """
+        Gets the element with the specified name.
+
+        Args:
+            name (str): The name of the element.
+
+        Raises:
+            MissingNameError: If sheet is not found.
+
+        Returns:
+            Any: The element with the specified name.
+        """
+        if not self.has_by_name(name):
+            raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
+
+        result = super().get_by_name(name)
+        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result)
+
+    # endregion XNameAccess overrides
 
     def get_active_sheet(self) -> mCalcSheet.CalcSheet:
         """
@@ -92,7 +142,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
     @overload
     def get_sheet(self) -> mCalcSheet.CalcSheet:
         """
-        Gets a sheet of spreadsheet document
+        Gets the active sheet of spreadsheet document.
 
         Returns:
             CalcSheet: Spreadsheet at index.
@@ -105,7 +155,8 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         Gets a sheet of spreadsheet document
 
         Args:
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            idx (int): The Zero-based index of the sheet. Idx can be a negative value to index from the end of the list.
+                For example, -1 will return the last sheet.
 
         Returns:
             CalcSheet: Spreadsheet at index.
@@ -130,27 +181,29 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         Gets a sheet of spreadsheet document
 
         Args:
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            idx (int, optional): Zero based index of spreadsheet. Idx can be a negative value to index from the end of the list.
+                For example, -1 will return the last element.
             sheet_name (str, optional): Name of spreadsheet
 
         Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If ``SHEET_GETTING`` event is canceled
+            MissingNameError: If spreadsheet is not found by name.
+            IndexError: If spreadsheet is not found by index.
 
         Returns:
             CalcSheet: Spreadsheet at index.
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GETTING` :eventref:`src-docs-sheet-event-getting`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
-
-        Note:
-            For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
         """
-        sheet = mCalc.Calc.get_sheet(self.calc_doc.component, *args, **kwargs)
-        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=sheet)
+
+        args_values = [args]
+        args_values.extend(kwargs.values())
+        arg_len = len(args_values)
+        if arg_len == 0:
+            return self.get_active_sheet()
+        arg1 = args_values[0]
+        if arg_len == 1:
+            if isinstance(arg1, int):
+                return self.get_by_index(arg1)
+            return self.get_by_name(cast(str, arg1))
+        raise TypeError("get_sheet() got an invalid number of arguments")
 
     # endregion get_sheet()
 
