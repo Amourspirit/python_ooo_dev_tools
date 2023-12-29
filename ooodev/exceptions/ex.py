@@ -19,6 +19,16 @@ class NotFoundError(Exception):
     pass
 
 
+class MissingNameError(NotFoundError):
+    """
+    Error when a name is not found.
+
+    .. versionadded:: 0.17.13
+    """
+
+    pass
+
+
 class MissingInterfaceError(NotFoundError):
     """Error when a interface is not found for a uno object"""
 

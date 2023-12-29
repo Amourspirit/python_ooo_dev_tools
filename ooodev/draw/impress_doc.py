@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, List, overload
+from typing import Any, cast, TYPE_CHECKING, List, overload
 import uno
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
@@ -15,6 +15,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from .partial.draw_doc_partial import DrawDocPartial
 from . import impress_page as mImpressPage
 from . import master_draw_page as mMasterDrawPage
+from .draw_pages import DrawPages
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -44,6 +45,7 @@ class ImpressDoc(
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
+        self._pages = None
 
     # region Lazy Listeners
 
@@ -162,7 +164,7 @@ class ImpressDoc(
         if not kwargs:
             result = mDraw.Draw.get_slide(doc=self.component)
             return mImpressPage.ImpressPage(self, result)
-        if not "slides" in kwargs:
+        if "slides" not in kwargs:
             kwargs["doc"] = self.component
         result = mDraw.Draw.get_slide(**kwargs)
         return mImpressPage.ImpressPage(self, result)
@@ -290,3 +292,16 @@ class ImpressDoc(
             None:
         """
         mDraw.Draw.remove_master_page(doc=self.component, slide=slide)
+
+    # region Properties
+    @property
+    def slides(self) -> DrawPages[ImpressDoc]:
+        """
+        Returns:
+            Any: Draw Pages.
+        """
+        if self._pages is None:
+            self._pages = DrawPages(owner=self, slides=self.component.getDrawPages())
+        return cast("DrawPages[ImpressDoc]", self._pages)
+
+    # endregion Properties

@@ -316,7 +316,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         Gets a sheet of spreadsheet document
 
         Args:
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            idx (int): The Zero-based index of the sheet. Idx can be a negative value to index from the end of the list.
+                For example, -1 will return the last sheet.
 
         Returns:
             CalcSheet: Spreadsheet at index.
@@ -341,27 +342,18 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         Gets a sheet of spreadsheet document
 
         Args:
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
+            idx (int, optional): Zero based index of spreadsheet. Idx can be a negative value to index from the end of the list.
+                For example, -1 will return the last element.
             sheet_name (str, optional): Name of spreadsheet
 
         Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If ``SHEET_GETTING`` event is canceled
+            MissingNameError: If spreadsheet is not found by name.
+            IndexError: If spreadsheet is not found by index.
 
         Returns:
             CalcSheet: Spreadsheet at index.
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GETTING` :eventref:`src-docs-sheet-event-getting`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_GET` :eventref:`src-docs-sheet-event-get`
-
-        Note:
-            For Event args, if ``index`` is available then ``name`` is ``None`` and if ``sheet_name`` is available then ``index`` is ``None``.
         """
-        sheet = mCalc.Calc.get_sheet(self.component, *args, **kwargs)
-        return mCalcSheet.CalcSheet(owner=self, sheet=sheet)
+        return self.sheets.get_sheet(*args, **kwargs)
 
     # endregion get_sheet()
 
@@ -371,7 +363,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
 
         Args:
             name (str): Name of sheet to insert
-            idx (int): zero-based index position of the sheet to insert
+            idx (int): zero-based index position of the sheet to insert.
+                Can be a negative value to insert from the end of the list.
 
         Raises:
             Exception: If unable to insert spreadsheet
@@ -386,7 +379,10 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTING` :eventref:`src-docs-sheet-event-inserting`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
         """
-        # sourcery skip: raise-specific-error
+        if idx < 0:
+            idx = len(self.sheets) + idx
+            if idx < 0:
+                raise IndexError("list index out of range")
         sheet = mCalc.Calc.insert_sheet(doc=self.component, name=name, idx=idx)
         return mCalcSheet.CalcSheet(owner=self, sheet=sheet)
 
@@ -483,6 +479,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         Args:
             sheet_name (str): Name of sheet to remove
             idx (int): Zero based index of sheet to remove.
+                Can be a negative value to insert from the end of the list.
 
         Returns:
             bool: True of sheet was removed; Otherwise, False
@@ -497,6 +494,15 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
             Event args ``event_data`` is set to a dictionary.
             If ``idx`` is available then args ``event_data["fn_type"]`` is set to a value ``idx``; Otherwise, set to a value ``name``.
         """
+
+        def get_idx(index: int) -> int:
+            if index >= 0:
+                return index
+            idx = len(self.sheets) + index
+            if idx < 0:
+                raise IndexError("list index out of range")
+            return idx
+
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
         if count == 0:
@@ -504,14 +510,16 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         if "sheet_name" in kwargs:
             return mCalc.Calc.remove_sheet(doc=self.component, sheet_name=kwargs["sheet_name"])
         if "idx" in kwargs:
-            return mCalc.Calc.remove_sheet(doc=self.component, idx=kwargs["idx"])
+            idx = get_idx(kwargs["idx"])
+            return mCalc.Calc.remove_sheet(doc=self.component, idx=idx)
         if kwargs:
             raise TypeError("remove_sheet() got an unexpected keyword argument")
         if count != 1:
             raise TypeError("remove_sheet() got an invalid number of arguments")
         arg = args[0]
         if isinstance(arg, int):
-            return mCalc.Calc.remove_sheet(doc=self.component, idx=arg)
+            idx = get_idx(arg)
+            return mCalc.Calc.remove_sheet(doc=self.component, idx=idx)
         if isinstance(arg, str):
             return mCalc.Calc.remove_sheet(doc=self.component, sheet_name=arg)
         raise TypeError("get_sheet() got an invalid argument")

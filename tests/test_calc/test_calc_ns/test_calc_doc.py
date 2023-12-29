@@ -33,6 +33,10 @@ def test_get_sheet(loader) -> None:
         val = text.getString()
         assert val == "test"
 
+        assert calc_doc.sheets[0].sheet_name == "Sheet1"
+        assert calc_doc.sheets["Sheet1"].sheet_name == "Sheet1"
+        assert calc_doc.sheets[-1].sheet_name == "Sheet1"
+
     finally:
         Lo.close_doc(doc)
 
@@ -126,9 +130,13 @@ def test_insert_remove_sheet(loader) -> None:
         assert len(sheet_names) == 1
         assert sheet_names[0] == "Sheet1"
 
+        assert len(calc_doc.sheets) == 1
+
         sheet = calc_doc.get_sheet(sheet_name="Sheet1")
         assert sheet.get_sheet_name() == "Sheet1"
         calc_doc.insert_sheet(name="Sheet2", idx=1)
+        assert len(calc_doc.sheets) == 2
+
         sheet2 = calc_doc.get_sheet(sheet_name="Sheet2")
         assert sheet2.get_sheet_name() == "Sheet2"
         assert sheet2.sheet_name == "Sheet2"
@@ -143,7 +151,6 @@ def test_insert_remove_sheet(loader) -> None:
 
 
 def test_calc_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
@@ -157,6 +164,10 @@ def test_calc_sheet(loader) -> None:
 
         sheet = doc.get_sheet("Sheet1")
         assert sheet.get_sheet_name() == "Sheet1"
+
+        sheet = doc.get_sheet(sheet_name="Sheet1")
+        assert sheet.get_sheet_name() == "Sheet1"
+
         assert doc.sheets.has_by_name("Sheet2") is False
         doc.sheets.insert_new_by_name("Sheet2", 1)
 
@@ -184,7 +195,7 @@ def test_calc_sheet(loader) -> None:
 
         assert doc.sheets["Sheet1"]["A1"].get_val() == "test"
         assert doc.sheets[0]["A1"].get_val() == "test"
-        
+
         doc.sheets[0]["A2"].set_val("TEST2")
         assert doc.sheets["Sheet1"]["A2"].get_val() == "TEST2"
     finally:

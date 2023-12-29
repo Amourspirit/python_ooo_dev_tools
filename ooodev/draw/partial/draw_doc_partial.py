@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import List, overload, TYPE_CHECKING, TypeVar, Generic
+from typing import cast, List, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
 from com.sun.star.frame import XModel
 
 from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
+from ooodev.draw import draw_pages as mDrawPages
 from ooodev.office import draw as mDraw
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XController
     from com.sun.star.lang import XComponent
     from ooodev.utils.data_type.size import Size
+    from ..draw_doc import DrawDoc
 
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -415,7 +417,7 @@ class DrawDocPartial(Generic[_T]):
         if not kwargs:
             result = mDraw.Draw.get_slide(doc=self.__component)
             return mDrawPage.DrawPage(self.__owner, result)
-        if not "slides" in kwargs:
+        if "slides" not in kwargs:
             kwargs["doc"] = self.__component
         result = mDraw.Draw.get_slide(**kwargs)
         return mDrawPage.DrawPage(self.__owner, result)
@@ -452,7 +454,7 @@ class DrawDocPartial(Generic[_T]):
         """
         return mDraw.Draw.get_slide_size(self.__component)  # type: ignore
 
-    def get_slides(self) -> DrawPagesComp:
+    def get_slides(self) -> mDrawPages.DrawPages:
         """
         Gets the draw pages of a document.
 
@@ -464,10 +466,10 @@ class DrawDocPartial(Generic[_T]):
             DrawPageError: If any other error occurs.
 
         Returns:
-            DrawPagesComp: Draw Pages.
+            DrawPages: Draw Pages.
         """
         pages = mDraw.Draw.get_slides(self.__component)
-        return DrawPagesComp(pages)
+        return mDrawPages.DrawPages(owner=cast("DrawDoc", self.__component), slides=pages)
 
     def get_slides_count(self) -> int:
         """
@@ -537,7 +539,8 @@ class DrawDocPartial(Generic[_T]):
         Inserts a slide at the given position in the document
 
         Args:
-            idx (int): Index
+            idx (int): Index, can be a negative value to insert from the end of the document.
+                For example, -1 will insert at the end of the document.
 
         Raises:
             DrawPageMissingError: If unable to get pages.
@@ -546,6 +549,10 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPage: New slide that was inserted.
         """
+        if idx < 0:
+            idx = self.get_slides_count() + idx
+            if idx < 0:
+                raise IndexError("list index out of range")
         slide = mDraw.Draw.insert_slide(doc=self.__component, idx=idx)
         return mDrawPage.DrawPage(self.__owner, slide)
 

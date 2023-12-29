@@ -46,7 +46,7 @@ class DrawPage(
         DrawPageComp.__init__(self, component)
         IndexAccessPartial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
-        Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
+        Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

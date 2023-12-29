@@ -1402,6 +1402,28 @@ class Draw:
             raise mEx.SizeError("Could not get shape size") from e
 
     @staticmethod
+    def get_name(slide: XDrawPage) -> str:
+        """
+        Gets the name of a slide.
+
+        Args:
+            slide (XDrawPage): Slide.
+
+        Raises:
+            DrawError: If error occurs getting name.
+
+        Returns:
+            str: Slide name.
+        
+        .. versionadded:: 0.17.13
+        """
+        try:
+            page_name = mLo.Lo.qi(XNamed, slide, True)
+            return page_name.getName()
+        except Exception as e:
+            raise mEx.DrawError("Unable to get Name") from e
+
+    @staticmethod
     def set_name(slide: XDrawPage, name: str) -> None:
         """
         Sets the name of a slide.
