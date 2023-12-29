@@ -92,8 +92,8 @@ To iterate over the sheets in a document, use the ``for`` keyword:
     Sheet2
     Sheet3
 
-Class Hierarchy
----------------
+Class Declaration
+-----------------
 
 .. autoclass:: ooodev.calc.CalcSheets
     :members:

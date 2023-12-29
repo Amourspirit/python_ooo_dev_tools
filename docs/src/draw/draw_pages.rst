@@ -104,8 +104,8 @@ To iterate over the pages in a draw document, use the built in ``for`` loop:
     ...     print(slide)
     <ooodev.draw.DrawPage object at 0x7f7f0c0b2b90>
 
-Class Hierarchy
----------------
+Class Declaration
+-----------------
 
 .. autoclass:: ooodev.draw.DrawPages
     :members:

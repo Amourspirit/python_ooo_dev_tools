@@ -20,9 +20,11 @@ class SheetCellPartial:
     def __init__(self, owner: mCalcSheet.CalcSheet) -> None:
         self.__owner = owner
 
-    def __getitem__(self, index: Any) -> mCalcCell.CalcCell:
+    def __getitem__(self, _val: Any) -> mCalcCell.CalcCell:
         # print(f"Getting item at index {index}")
-        return self.get_cell(index)
+        if isinstance(_val, tuple):
+            return self.get_cell(int(_val[0]), int(_val[1]))
+        return self.get_cell(_val)
 
     # region get_cell()
     @overload
