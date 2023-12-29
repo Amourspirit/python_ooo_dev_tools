@@ -151,7 +151,6 @@ def test_insert_remove_sheet(loader) -> None:
 
 
 def test_calc_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
@@ -165,6 +164,10 @@ def test_calc_sheet(loader) -> None:
 
         sheet = doc.get_sheet("Sheet1")
         assert sheet.get_sheet_name() == "Sheet1"
+
+        sheet = doc.get_sheet(sheet_name="Sheet1")
+        assert sheet.get_sheet_name() == "Sheet1"
+
         assert doc.sheets.has_by_name("Sheet2") is False
         doc.sheets.insert_new_by_name("Sheet2", 1)
 

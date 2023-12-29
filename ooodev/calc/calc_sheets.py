@@ -193,7 +193,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
             CalcSheet: Spreadsheet at index.
         """
 
-        args_values = [args]
+        args_values = [arg for arg in args]
         args_values.extend(kwargs.values())
         arg_len = len(args_values)
         if arg_len == 0:
