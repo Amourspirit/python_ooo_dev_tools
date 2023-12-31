@@ -14,6 +14,7 @@ from com.sun.star.container import XNamed
 from com.sun.star.document import XDocumentInsertable
 from com.sun.star.document import XEmbeddedObjectSupplier2
 from com.sun.star.drawing import XDrawPageSupplier
+from com.sun.star.drawing import XDrawPagesSupplier
 from com.sun.star.drawing import XShape
 from com.sun.star.frame import XModel
 from com.sun.star.lang import Locale  # struct class
@@ -90,6 +91,7 @@ if TYPE_CHECKING:
     from com.sun.star.container import XEnumeration
     from com.sun.star.container import XNameAccess
     from com.sun.star.drawing import XDrawPage
+    from com.sun.star.drawing import XDrawPages
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XFrame
     from com.sun.star.graphic import XGraphic
@@ -747,6 +749,17 @@ class Write(mSel.Selection):
 
         Returns:
             str: coordinates as string
+        
+        Warning:
+            The ``X`` is relative to the document window and not the document page.
+            This means when the document window size changes the ``X`` coordinate will change even if the cursor has not moved.
+            This is also the case if the document zoom changes.
+
+            When the document page is zoomed all the way to fill the document window the ``X`` coordinate
+            is ``0`` when at the left hand page margin (beginning of a line).
+
+            The ``Y`` coordinate is relative to the top of the document window and not the top of the document page.
+            The ``Y`` coordinate seems not to be affected by Document Zoom or scroll position.
         """
         pos = tv_cursor.getPosition()
         return f"({pos.X}, {pos.Y})"
@@ -2325,6 +2338,23 @@ class Write(mSel.Selection):
         """
         supp_page = mLo.Lo.qi(XDrawPageSupplier, text_doc, True)
         return supp_page.getDrawPage()
+
+    @staticmethod
+    def get_draw_pages(text_doc: XTextDocument) -> XDrawPages:
+        """
+        Gets draw pages
+
+        Args:
+            text_doc (XTextDocument): Text Document
+
+        Raises:
+            MissingInterfaceError: If text_doc does not implement XDrawPageSupplier interface.
+
+        Returns:
+            XDrawPages: Draw Page
+        """
+        supp = mLo.Lo.qi(XDrawPagesSupplier, text_doc, True)
+        return supp.getDrawPages()
 
     # endregion ---------- headers and footers -------------------------
 

@@ -1,6 +1,6 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
@@ -34,6 +34,24 @@ class Spacing(AbstractPadding):
                 "com.sun.star.text.TextGraphicObject",
             )
         return self._supported_services_values
+
+    def _is_valid_obj(self, obj: Any) -> bool:
+        """
+        Gets if ``obj`` supports one of the services required by style class
+
+        Args:
+            obj (Any): UNO object that must have requires service
+
+        Returns:
+            bool: ``True`` if has a required service; Otherwise, ``False``
+        """
+        if super()._is_valid_obj(obj):
+            return True
+        # check if obj has matching property
+        # Some objects such as 'com.sun.star.drawing.shape' sometime support this style.
+        # Such is the case when a shape is added to a Writer drawing page.
+        # Assume if on attribute matches then it all is a match.
+        return hasattr(obj, self._props.left)
 
     @property
     def prop_format_kind(self) -> FormatKind:

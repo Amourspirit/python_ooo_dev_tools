@@ -15,7 +15,6 @@ from ooodev.utils.color import CommonColor
 from ooodev.utils.images_lo import ImagesLo
 from ooodev.utils.info import Info
 from ooodev.exceptions import ex
-from ooodev.utils.color import CommonColor
 from ooodev.utils.date_time_util import DateUtil
 
 
@@ -152,7 +151,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
             cursor.append_para(f'The following image comes from "{im_fnm.name}":')
             cursor.append_para()
 
-            cursor.append(f"Image as a link: ")
+            cursor.append("Image as a link: ")
 
             img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
             assert img_size.Height == 5751

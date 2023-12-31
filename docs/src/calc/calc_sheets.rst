@@ -24,7 +24,7 @@ To get the number of pages in a draw document, use the built in ``len()`` method
 
     >>> doc = CalcDoc(Calc.create_doc(loader))
     >>> len(doc.sheets)
-    3
+    1
 
 Getting a sheet
 ^^^^^^^^^^^^^^^
@@ -32,7 +32,7 @@ Getting a sheet
 There are several ways to get a page from a Calc document.
 The simplest is to use the ``[]`` method:
 
-Get Page by Index.
+Get Sheet by Index.
 
 .. code-block:: python
 
@@ -40,7 +40,7 @@ Get Page by Index.
     >>> doc.sheets[0]
     <ooodev.calc.CalcSheet object at 0x7f8b1c0b4a90>
 
-Get Page by Name.
+Get Sheet by Name.
 
 .. code-block:: python
 
@@ -48,7 +48,7 @@ Get Page by Name.
     >>> doc.sheets['Sheet1']
     <ooodev.calc.CalcSheet object at 0x7f8b1c0b4a90>
 
-To get the last page in a document, use the ``-1`` index:
+To get the last sheet in a document, use the ``-1`` index:
 
 .. code-block:: python
 

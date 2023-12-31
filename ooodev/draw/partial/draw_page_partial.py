@@ -210,6 +210,13 @@ class DrawPagePartial(Generic[_T]):
         See Also:
             - :py:meth:`~.draw.Draw.warns_position`
             - :py:meth:`~.draw.Draw.make_shape`
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         result = mDraw.Draw.add_shape(slide=self.component, shape_type=shape_type, x=x, y=y, width=width, height=height)  # type: ignore
         return DrawShape(self.__owner, result)
@@ -391,6 +398,13 @@ class DrawPagePartial(Generic[_T]):
 
         Returns:
             XShape: Formula Shape.
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         shape = mDraw.Draw.draw_formula(
             slide=self.component, formula=formula, x=x, y=y, width=width, height=height  # type: ignore
@@ -548,6 +562,13 @@ class DrawPagePartial(Generic[_T]):
 
         Returns:
             XShape: Media shape.
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         # could not find MediaShape in api.
         # https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1drawing.html
@@ -650,6 +671,13 @@ class DrawPagePartial(Generic[_T]):
 
         Returns:
             RectangleShape: Rectangle Shape.
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         shape = mDraw.Draw.draw_rectangle(slide=self.component, x=x, y=y, width=width, height=height)  # type: ignore
         return RectangleShape(self.__owner, shape)
@@ -680,6 +708,13 @@ class DrawPagePartial(Generic[_T]):
 
         Returns:
             TextShape: Shape
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         shape = mDraw.Draw.draw_text(
             slide=self.component, msg=msg, x=x, y=y, width=width, height=height, font_size=font_size  # type: ignore

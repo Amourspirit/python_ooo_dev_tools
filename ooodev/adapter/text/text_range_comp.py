@@ -1,7 +1,7 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
-from .text_range_partial import TextRangePartial
+from . import text_range_partial as mTextRangePartial
 
 
 if TYPE_CHECKING:
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
 
 
-class TextRangeComp(ComponentBase, TextRangePartial):
+class TextRangeComp(ComponentBase, mTextRangePartial.TextRangePartial):
     """
     Class for managing TextRange Component.
     """
@@ -25,8 +25,7 @@ class TextRangeComp(ComponentBase, TextRangePartial):
         """
 
         ComponentBase.__init__(self, component)
-        TextRangePartial.__init__(self, component)
-        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
+        mTextRangePartial.TextRangePartial.__init__(self, component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

@@ -137,11 +137,31 @@ class Draw:
         return f"{name}_{gUtil.Util.generate_random_string(gen_len)}"
 
     @staticmethod
-    def _get_unit_mm_int(value: UnitT | float) -> int:
+    def _get_unit_mm_int(value: UnitT | float, min_val: int = -9999) -> int:
+        """Gets the value in mm as an int.
+
+        Args:
+            value (UnitT | float): UnitT or float
+            min_val (int, optional): The min value allowed.
+                If not != -9999 then value must be greater than or equal to ``min_val``.
+                Defaults to -9999.
+
+        Raises:
+            ValueError: If min_val != -9999 and value < min_val
+
+        Returns:
+            int: mm units as int.
+        """
         with contextlib.suppress(AttributeError):
             result = value.get_value_mm()  # type: ignore
-            return round(result)
-        return round(value)  # type: ignore
+            i = round(result)
+            if min_val != -9999 and i < min_val:
+                raise ValueError("Value must be positive")
+            return i
+        i = round(value)  # type: ignore
+        if min_val != -9999 and i < min_val:
+            raise ValueError("Value must be positive")
+        return i
 
     @staticmethod
     def _get_unit_pt(value: UnitT | float) -> float:
@@ -157,11 +177,31 @@ class Draw:
         return round(value)  # type: ignore
 
     @staticmethod
-    def _get_mm100_obj_from_mm(value: UnitT | float) -> UnitMM100:
+    def _get_mm100_obj_from_mm(value: UnitT | float, min_value: int = -9999) -> UnitMM100:
+        """
+        Gets a UnitMM100 object from mm.
+
+        Args:
+            value (UnitT | float): Units in mm or UnitT
+            min_value (int, optional): The min value in ``1/100 mm`.
+                If not != -9999 then value must be greater than or equal to ``min_val``.
+                Defaults to -9999.
+
+        Raises:
+            ValueError: If min_val != -9999 and value < min_val
+
+        Returns:
+            UnitMM100: MM 100 units.
+        """
         with contextlib.suppress(AttributeError):
             result = value.get_value_mm100()  # type: ignore
+            if min_value != -9999 and result < min_value:
+                raise ValueError("Value must be positive")
             return UnitMM100(result)
-        return UnitMM100.from_mm(value)  # type: ignore
+        result = UnitMM100.from_mm(value)  # type: ignore
+        if min_value != -9999 and result.value < min_value:
+            raise ValueError("Value must be positive")
+        return result
 
     @staticmethod
     def _get_pt_obj_from_pt(value: UnitT | float) -> UnitPT:
@@ -1414,7 +1454,7 @@ class Draw:
 
         Returns:
             str: Slide name.
-        
+
         .. versionadded:: 0.17.13
         """
         try:
@@ -2056,8 +2096,15 @@ class Draw:
         Returns:
             XShape: New Shape
 
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
         See Also:
             :py:meth:`~.draw.Draw.add_shape`
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         try:
             x = cls._get_mm100_obj_from_mm(x).value
@@ -2065,8 +2112,10 @@ class Draw:
             width = cls._get_mm100_obj_from_mm(width).value
             height = cls._get_mm100_obj_from_mm(height).value
             shape = mLo.Lo.create_instance_msf(XShape, f"com.sun.star.drawing.{shape_type}", raise_err=True)
-            shape.setPosition(Point(x, y))
-            shape.setSize(UnoSize(width, height))
+            if x > 0 and y > 0:
+                shape.setPosition(Point(x, y))
+            if width > 0 and height > 0:
+                shape.setSize(UnoSize(width, height))
             return shape
         except Exception as e:
             raise mEx.ShapeError(f'Unable to create shape "{shape_type}"') from e
@@ -2136,9 +2185,16 @@ class Draw:
         Returns:
             XShape: Newly added Shape.
 
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
         See Also:
             - :py:meth:`~.draw.Draw.warns_position`
             - :py:meth:`~.draw.Draw.make_shape`
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         # shape are position from center.
         # a square of 20x20 would be x=10, y=10 for top right corer to be at 0x0
@@ -2171,6 +2227,13 @@ class Draw:
 
         Returns:
             XShape: Rectangle Shape.
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         return cls.add_shape(
             slide=slide, shape_type=DrawingShapeKind.RECTANGLE_SHAPE, x=x, y=y, width=width, height=height
@@ -2194,9 +2257,9 @@ class Draw:
             XShape: Circle Shape.
         """
         # get the mm value of the units
-        x = cls._get_unit_mm_int(x)
-        y = cls._get_unit_mm_int(y)
-        radius = cls._get_unit_mm_int(radius)
+        x = cls._get_unit_mm_int(x, 1)
+        y = cls._get_unit_mm_int(y, 1)
+        radius = cls._get_unit_mm_int(radius, 1)
         return cls.add_shape(
             slide=slide,
             shape_type=DrawingShapeKind.ELLIPSE_SHAPE,
@@ -2308,9 +2371,9 @@ class Draw:
             Tuple[Point, ...]: Tuple of points.
         """
         try:
-            x = cls._get_mm100_obj_from_mm(x).value
-            y = cls._get_mm100_obj_from_mm(y).value
-            radius = cls._get_mm100_obj_from_mm(radius).value
+            x = cls._get_mm100_obj_from_mm(x, 1).value
+            y = cls._get_mm100_obj_from_mm(y, 1).value
+            radius = cls._get_mm100_obj_from_mm(radius, 1).value
             sides = PolySides(int(sides))
             pts: List[Point] = []
             angle_step = math.pi / sides.value
@@ -2381,10 +2444,10 @@ class Draw:
         Returns:
             XShape: Line Shape.
         """
-        x1 = cls._get_unit_mm_int(x1)
-        y1 = cls._get_unit_mm_int(y1)
-        x2 = cls._get_unit_mm_int(x2)
-        y2 = cls._get_unit_mm_int(y2)
+        x1 = cls._get_unit_mm_int(x1, 1)
+        y1 = cls._get_unit_mm_int(y1, 1)
+        x2 = cls._get_unit_mm_int(x2, 1)
+        y2 = cls._get_unit_mm_int(y2, 1)
         # make sure size is non-zero
         if (x1 == x2) and (y1 == y2):
             raise ValueError("Cannot create a line from a point")
@@ -2422,9 +2485,9 @@ class Draw:
             XShape: Polar Line Shape.
         """
         try:
-            distance = cls._get_unit_mm_int(distance)
-            x = cls._get_unit_mm_int(x)
-            y = cls._get_unit_mm_int(y)
+            distance = cls._get_unit_mm_int(distance, 1)
+            x = cls._get_unit_mm_int(x, 1)
+            y = cls._get_unit_mm_int(y, 1)
             x_dist = round(math.cos(math.radians(degrees)) * distance)
             y_dist = round(math.sin(math.radians(degrees)) * distance) * -1  # convert to negative
             return cls.draw_line(slide=slide, x1=x, y1=y, x2=x + x_dist, y2=y + y_dist)
@@ -2453,8 +2516,8 @@ class Draw:
         Note:
             The number of points must be the same for both ``xs`` and ``ys``.
         """
-        xs = [cls._get_unit_mm_int(x) for x in xs]
-        ys = [cls._get_unit_mm_int(y) for y in ys]
+        xs = [cls._get_unit_mm_int(x, 1) for x in xs]
+        ys = [cls._get_unit_mm_int(y, 1) for y in ys]
         num_points = len(xs)
         if num_points != len(ys):
             raise IndexError("xs and ys must be the same length")
@@ -2520,6 +2583,13 @@ class Draw:
 
         Returns:
             XShape: Shape
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         try:
             shape = cls.add_shape(
@@ -2717,6 +2787,13 @@ class Draw:
 
         Returns:
             XShape: Formula Shape.
+        
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         try:
             x = cls._get_unit_mm_int(x)
@@ -2762,6 +2839,13 @@ class Draw:
 
         Returns:
             XShape: Media shape.
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set size and/or position unless the values are greater than ``0``.
         """
         # could not find MediaShape in api.
         # https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1drawing.html
@@ -3235,6 +3319,12 @@ class Draw:
 
         Returns:
             None:
+
+        Note:
+            If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
+
+        .. versionchanged:: 0.17.14
+            Now does not set position unless the values are greater than ``0``.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -3272,13 +3362,13 @@ class Draw:
                 pt_in = cast(Point, kargs[2])
                 x = cls._get_mm100_obj_from_mm(pt_in.X).value
                 y = cls._get_mm100_obj_from_mm(pt_in.Y).value
-                pt = Point(x, y)
             else:
                 # def set_position(shape: XShape, x:int, y: int)
                 x = cls._get_mm100_obj_from_mm(kargs[2]).value
                 y = cls._get_mm100_obj_from_mm(kargs[3]).value
+            if x > 0 and y > 0:
                 pt = Point(x, y)
-            cast(XShape, kargs[1]).setPosition(pt)
+                cast(XShape, kargs[1]).setPosition(pt)
         except Exception as e:
             raise mEx.ShapeError("Error setting position") from e
 
@@ -3312,6 +3402,13 @@ class Draw:
 
         Returns:
             None:
+
+        Note:
+            If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.
+
+
+        .. versionchanged:: 0.17.14
+            Now does not set size unless the values are greater than ``0``.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -3348,12 +3445,13 @@ class Draw:
                 sz_in = cast(SizeObj, kargs[2])
                 width = cls._get_mm100_obj_from_mm(sz_in.Width).value
                 height = cls._get_mm100_obj_from_mm(sz_in.Height).value
-                sz = Size(width, height)
             else:
                 # def set_size(shape: XShape, width:int, height: int)
                 width = cls._get_mm100_obj_from_mm(kargs[2]).value
                 height = cls._get_mm100_obj_from_mm(kargs[3]).value
-                sz = Size(width, height)
+            if width <= 0 or height <= 0:
+                return
+            sz = Size(width, height)
             cast(XShape, kargs[1]).setSize(sz.get_uno_size())
         except Exception as e:
             raise mEx.ShapeError("Error setting size") from e

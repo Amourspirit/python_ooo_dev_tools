@@ -12,12 +12,13 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.utils.partial.qi_partial import QiPartial
-from .partial.draw_doc_t import DrawDocT
+
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
 
-_T = TypeVar("_T", bound="DrawDocT")
+_T = TypeVar("_T", bound="ComponentT")
 
 
 class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
