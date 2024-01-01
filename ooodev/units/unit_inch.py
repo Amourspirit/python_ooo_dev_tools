@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import TypeVar, Type
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
@@ -21,6 +22,175 @@ class UnitInch(BaseFloatValue):
     def __post_init__(self):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
+
+    # region math and comparison
+    def __int__(self) -> int:
+        return round(self.value)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, UnitInch):
+            return self.almost_equal(other.value)
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            return self.almost_equal(oth_val)
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() == other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.almost_equal(float(other))  # type: ignore
+        return False
+
+    def __add__(self, other: object) -> UnitInch:
+        if isinstance(other, UnitInch):
+            return self.from_inch(self.value + other.value)
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            return self.from_inch(self.value + oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_inch = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.IN)
+            return self.from_inch(self.value + oth_val_inch)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_inch(self.value + other)  # type: ignore
+        return NotImplemented
+
+    def __radd__(self, other: object) -> UnitInch:
+        return self if other == 0 else self.__add__(other)
+
+    def __sub__(self, other: object) -> UnitInch:
+        if isinstance(other, UnitInch):
+            return self.from_inch(self.value - other.value)
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            return self.from_inch(self.value - oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_inch = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.IN)
+            return self.from_inch(self.value - oth_val_inch)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_inch(self.value - other)  # type: ignore
+        return NotImplemented
+
+    def __rsub__(self, other: object) -> UnitInch:
+        if isinstance(other, (int, float)):
+            return self.from_inch(other - self.value)  # type: ignore
+        return NotImplemented
+
+    def __mul__(self, other: object) -> UnitInch:
+        if isinstance(other, UnitInch):
+            return self.from_inch(self.value * other.value)
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            return self.from_inch(self.value * oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_inch = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.IN)
+            return self.from_inch(self.value * oth_val_inch)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_inch(self.value * other)  # type: ignore
+
+        return NotImplemented
+
+    def __rmul__(self, other: int) -> UnitInch:
+        return self if other == 0 else self.__mul__(other)
+
+    def __truediv__(self, other: object) -> UnitInch:
+        if isinstance(other, UnitInch):
+            if other.value == 0:
+                raise ZeroDivisionError
+            return self.from_inch(self.value / other.value)
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            if oth_val == 0:
+                raise ZeroDivisionError
+            return self.from_inch(self.value / oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_inch = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.IN)
+            if oth_val_inch == 0:
+                raise ZeroDivisionError
+            return self.from_inch(self.value / oth_val_inch)  # type: ignore
+        if isinstance(other, (int, float)):
+            if other == 0:
+                raise ZeroDivisionError
+            return self.from_inch(self.value / other)  # type: ignore
+        return NotImplemented
+
+    def __rtruediv__(self, other: object) -> UnitInch:
+        if isinstance(other, (int, float)):
+            if self.value == 0:
+                raise ZeroDivisionError
+            return self.from_inch(other / self.value)  # type: ignore
+        return NotImplemented
+
+    def __abs__(self) -> float:
+        return abs(self.value)
+
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, UnitInch):
+            return self.value < other.value
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            return self.value < oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() < other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value < float(other)  # type: ignore
+        return False
+
+    def __le__(self, other: object) -> bool:
+        if isinstance(other, UnitInch):
+            if self.almost_equal(other.value):
+                return True
+            return self.value < other.value
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value < oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() <= other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            oth_val = float(other)  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value < oth_val
+        return False
+
+    def __gt__(self, other: object) -> bool:
+        if isinstance(other, UnitInch):
+            return self.value > other.value
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            return self.value > oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() > other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value > float(other)  # type: ignore
+        return False
+
+    def __ge__(self, other: object) -> bool:
+        if isinstance(other, UnitInch):
+            if self.almost_equal(other.value):
+                return True
+            return self.value > other.value
+        if hasattr(other, "get_value_inch"):
+            oth_val = other.get_value_inch()  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value > oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() >= other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            oth_val = float(other)  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value > oth_val
+        return False
+
+    # endregion math and comparison
 
     def get_value_cm(self) -> float:
         """
@@ -67,6 +237,42 @@ class UnitInch(BaseFloatValue):
         """
         return UnitConvert.convert(num=self.value, frm=UnitLength.IN, to=UnitLength.PX)
 
+    def get_value_inch(self) -> float:
+        """
+        Gets instance value in inch units.
+
+        Returns:
+            float: Value in inch units.
+        """
+        return self.value
+
+    def get_value_inch10(self) -> float:
+        """
+        Gets instance value in ``1/10th inch`` units.
+
+        Returns:
+            float: Value in ``1/10th inch`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.IN, to=UnitLength.IN10)
+
+    def get_value_inch100(self) -> float:
+        """
+        Gets instance value in ``1/100th inch`` units.
+
+        Returns:
+            float: Value in ``1/100th inch`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.IN, to=UnitLength.IN100)
+
+    def get_value_inch1000(self) -> int:
+        """
+        Gets instance value in ``1/1000th inch`` units.
+
+        Returns:
+            int: Value in ``1/100th inch`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.IN, to=UnitLength.IN1000))
+
     @classmethod
     def from_mm(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
         """
@@ -78,8 +284,23 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.IN))
+        return inst
+
+    @classmethod
+    def from_mm10(cls: Type[_TUnitInch], value: int) -> _TUnitInch:
+        """
+        Get instance from ``1/10th mm`` value.
+
+        Args:
+            value (int): ``1/10th mm`` value.
+
+        Returns:
+            UnitInch:
+        """
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
+        inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.IN))
         return inst
 
     @classmethod
@@ -93,7 +314,7 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.IN))
         return inst
 
@@ -108,7 +329,7 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.IN))
         return inst
 
@@ -123,8 +344,23 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.IN))
+        return inst
+
+    @classmethod
+    def from_inch(cls: Type[_TUnitInch], value: float) -> _TUnitInch:
+        """
+        Get instance from inch value.
+
+        Args:
+            value (int): Inch value.
+
+        Returns:
+            UnitInch:
+        """
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
+        inst.__init__(value)
         return inst
 
     @classmethod
@@ -138,7 +374,7 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.IN))
         return inst
 
@@ -153,7 +389,7 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.IN))
         return inst
 
@@ -168,7 +404,7 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.IN))
         return inst
 
@@ -183,6 +419,6 @@ class UnitInch(BaseFloatValue):
         Returns:
             UnitInch:
         """
-        inst = super(UnitInch, cls).__new__(cls)
+        inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.IN))
         return inst
