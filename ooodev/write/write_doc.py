@@ -50,7 +50,10 @@ from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from . import write_draw_page as mWriteDrawPage
+from ooodev.draw import draw_page as mDrawPage
+from ooodev.draw import draw_pages as mDrawPages
+
+# from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
 from . import write_paragraphs as mWriteParagraphs
 from . import write_sentence_cursor as mWriteSentenceCursor
@@ -464,15 +467,25 @@ class WriteDoc(
         """
         return mSelection.Selection.get_selected_text_str(self.component)
 
-    def get_draw_page(self) -> mWriteDrawPage.WriteDrawPage[WriteDoc]:
+    def get_draw_page(self) -> mDrawPage.DrawPage[WriteDoc]:
         """
         Gets draw page.
 
         Returns:
-            WriteDrawPage: Draw Page
+            DrawPage: Draw Page
         """
         draw_page = mWrite.Write.get_draw_page(self.component)
-        return mWriteDrawPage.WriteDrawPage(self, draw_page)
+        return mDrawPage.DrawPage(self, draw_page)
+
+    def get_draw_pages(self) -> mDrawPages.DrawPages[WriteDoc]:
+        """
+        Gets draw pages.
+
+        Returns:
+            DrawPages: Draw Page
+        """
+        draw_pages = mWrite.Write.get_draw_pages(self.component)
+        return mDrawPages.DrawPages(self, draw_pages)
 
     def get_paragraph_cursor(self) -> mWriteParagraphCursorCursor.WriteParagraphCursor:
         """

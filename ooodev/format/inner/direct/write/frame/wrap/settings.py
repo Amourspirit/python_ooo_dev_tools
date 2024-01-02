@@ -47,13 +47,23 @@ class Settings(StyleBase):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: object, **kwargs: Any) -> None:
-        try:
-            return super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
+    def _is_valid_obj(self, obj: Any) -> bool:
+        """
+        Gets if ``obj`` supports one of the services required by style class
+
+        Args:
+            obj (Any): UNO object that must have requires service
+
+        Returns:
+            bool: ``True`` if has a required service; Otherwise, ``False``
+        """
+        if super()._is_valid_obj(obj):
+            return True
+        # check if obj has matching property
+        # Some objects such as 'com.sun.star.drawing.shape' sometime support this style.
+        # Such is the case when a shape is added to a Writer drawing page.
+        # Assume if on attribute matches then it is a match.
+        return hasattr(obj, self._props.name)
 
     # endregion Overrides
     # region from_obj()

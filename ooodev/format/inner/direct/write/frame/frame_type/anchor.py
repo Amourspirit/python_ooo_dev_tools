@@ -57,7 +57,7 @@ else:
 
 class Anchor(StyleBase):
     """
-    Fill Transparency
+    Anchor Position Class.
 
     .. versionadded:: 0.9.0
     """
@@ -78,13 +78,7 @@ class Anchor(StyleBase):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = (
-                "com.sun.star.style.Style",
-                "com.sun.star.text.BaseFrame",
-                "com.sun.star.text.TextEmbeddedObject",
-                "com.sun.star.text.TextFrame",
-                "com.sun.star.text.TextGraphicObject",
-            )
+            self._supported_services_values = ("com.sun.star.text.TextContent", "com.sun.star.text.Shape")
         return self._supported_services_values
 
     def _props_set(self, obj: Any, **kwargs: Any) -> None:
@@ -94,6 +88,23 @@ class Anchor(StyleBase):
             mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
             for err in e.errors:
                 mLo.Lo.print(f"  {err}")
+
+    def _is_valid_obj(self, obj: Any) -> bool:
+        """
+        Gets if ``obj`` supports one of the services required by style class
+
+        Args:
+            obj (Any): UNO object that must have requires service
+
+        Returns:
+            bool: ``True`` if has a required service; Otherwise, ``False``
+        """
+        if super()._is_valid_obj(obj):
+            return True
+        # check if obj has AnchorType property
+        # Although reported services are com.sun.star.text.TextContent and com.sun.star.text.Shape in the api,
+        # some objects do implement the AnchorType property. Such as Drawing Shapes inserted into a Write document draw page.
+        return hasattr(obj, "AnchorType")
 
     # endregion Overrides
     # region from_obj()

@@ -3610,14 +3610,20 @@ class CalcSheet(SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, 
         return self.__owner
 
     @property
-    def sheet_name(self) -> str:
+    def name(self) -> str:
         """
-        Gets the sheet Name.
+        Gets/Sets the sheet Name.
 
         Returns:
             str: Sheet name
         """
-        return self.component.getName()
+        return self.component.Name  # type: ignore
+
+    @name.setter
+    def name(self, value: str) -> None:
+        self.component.Name = value  # type: ignore
+
+    sheet_name = name
 
     @property
     def sheet_index(self) -> int:

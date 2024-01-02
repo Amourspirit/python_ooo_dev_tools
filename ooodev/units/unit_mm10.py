@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import TypeVar, Type
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
@@ -21,6 +22,175 @@ class UnitMM10(BaseFloatValue):
     def __post_init__(self):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
+
+    # region math and comparison
+    def __int__(self) -> int:
+        return round(self.value)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, UnitMM10):
+            return self.almost_equal(other.value)
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            return self.almost_equal(oth_val)
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() == other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.almost_equal(float(other))  # type: ignore
+        return False
+
+    def __add__(self, other: object) -> UnitMM10:
+        if isinstance(other, UnitMM10):
+            return self.from_mm10(self.value + other.value)
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            return self.from_mm10(self.value + oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_mm10 = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.MM10)
+            return self.from_mm10(self.value + oth_val_mm10)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_mm10(self.value + other)  # type: ignore
+        return NotImplemented
+
+    def __radd__(self, other: object) -> UnitMM10:
+        return self if other == 0 else self.__add__(other)
+
+    def __sub__(self, other: object) -> UnitMM10:
+        if isinstance(other, UnitMM10):
+            return self.from_mm10(self.value - other.value)
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            return self.from_mm10(self.value - oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_mm10 = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.MM10)
+            return self.from_mm10(self.value - oth_val_mm10)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_mm10(self.value - other)  # type: ignore
+        return NotImplemented
+
+    def __rsub__(self, other: object) -> UnitMM10:
+        if isinstance(other, (int, float)):
+            return self.from_mm10(other - self.value)  # type: ignore
+        return NotImplemented
+
+    def __mul__(self, other: object) -> UnitMM10:
+        if isinstance(other, UnitMM10):
+            return self.from_mm10(self.value * other.value)
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            return self.from_mm10(self.value * oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_mm10 = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.MM10)
+            return self.from_mm10(self.value * oth_val_mm10)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_mm10(self.value * other)  # type: ignore
+
+        return NotImplemented
+
+    def __rmul__(self, other: int) -> UnitMM10:
+        return self if other == 0 else self.__mul__(other)
+
+    def __truediv__(self, other: object) -> UnitMM10:
+        if isinstance(other, UnitMM10):
+            if other.value == 0:
+                raise ZeroDivisionError
+            return self.from_mm10(self.value / other.value)
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            if oth_val == 0:
+                raise ZeroDivisionError
+            return self.from_mm10(self.value / oth_val)
+        if hasattr(other, "get_value_mm100"):
+            oth_val = other.get_value_mm100()  # type: ignore
+            oth_val_mm10 = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.MM10)
+            if oth_val_mm10 == 0:
+                raise ZeroDivisionError
+            return self.from_mm10(self.value / oth_val_mm10)  # type: ignore
+        if isinstance(other, (int, float)):
+            if other == 0:
+                raise ZeroDivisionError
+            return self.from_mm10(self.value / other)  # type: ignore
+        return NotImplemented
+
+    def __rtruediv__(self, other: object) -> UnitMM10:
+        if isinstance(other, (int, float)):
+            if self.value == 0:
+                raise ZeroDivisionError
+            return self.from_mm10(other / self.value)  # type: ignore
+        return NotImplemented
+
+    def __abs__(self) -> float:
+        return abs(self.value)
+
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, UnitMM10):
+            return self.value < other.value
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            return self.value < oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() < other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value < float(other)  # type: ignore
+        return False
+
+    def __le__(self, other: object) -> bool:
+        if isinstance(other, UnitMM10):
+            if self.almost_equal(other.value):
+                return True
+            return self.value < other.value
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value < oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() <= other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            oth_val = float(other)  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value < oth_val
+        return False
+
+    def __gt__(self, other: object) -> bool:
+        if isinstance(other, UnitMM10):
+            return self.value > other.value
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            return self.value > oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() > other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value > float(other)  # type: ignore
+        return False
+
+    def __ge__(self, other: object) -> bool:
+        if isinstance(other, UnitMM10):
+            if self.almost_equal(other.value):
+                return True
+            return self.value > other.value
+        if hasattr(other, "get_value_mm10"):
+            oth_val = other.get_value_mm10()  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value > oth_val
+        if hasattr(other, "get_value_mm100"):
+            return self.get_value_mm100() >= other.get_value_mm100()  # type: ignore
+        with contextlib.suppress(Exception):
+            oth_val = float(other)  # type: ignore
+            if self.almost_equal(oth_val):
+                return True
+            return self.value > oth_val
+        return False
+
+    # endregion math and comparison
 
     def get_value_cm(self) -> float:
         """
@@ -78,7 +248,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(float(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.MM10)))
         return inst
 
@@ -93,7 +263,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.MM10))
         return inst
 
@@ -108,12 +278,12 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.MM10))
         return inst
 
     @classmethod
-    def from_mm10(cls: Type[_TUnitMM10], value: int) -> _TUnitMM10:
+    def from_mm10(cls: Type[_TUnitMM10], value: float) -> _TUnitMM10:
         """
         Get instance from ``1/10th mm`` value.
 
@@ -123,7 +293,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(value)
         return inst
 
@@ -138,7 +308,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.MM10))
         return inst
 
@@ -153,7 +323,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.MM10))
         return inst
 
@@ -168,7 +338,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.MM10))
         return inst
 
@@ -183,7 +353,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.MM10))
         return inst
 
@@ -198,7 +368,7 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.MM10))
         return inst
 
@@ -213,6 +383,6 @@ class UnitMM10(BaseFloatValue):
         Returns:
             UnitMM10:
         """
-        inst = super(UnitMM10, cls).__new__(cls)
+        inst = super(UnitMM10, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.MM10))
         return inst

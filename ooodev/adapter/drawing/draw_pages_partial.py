@@ -27,17 +27,17 @@ class DrawPagesPartial(IndexAccessPartial):
         self.__component = component
 
     # region XDrawPages
-    def insert_new_by_index(self, index: int) -> Any:
+    def insert_new_by_index(self, idx: int) -> Any:
         """
         Creates and inserts a new DrawPage or MasterPage into this container.
 
         Args:
-            index (int): The index at which the new page will be inserted.
+            idx (int): The index at which the new page will be inserted.
 
         Returns:
             Any: The new page.
         """
-        return self.__component.insertNewByIndex(index)
+        return self.__component.insertNewByIndex(idx)
 
     def remove(self, page: Any) -> None:
         """

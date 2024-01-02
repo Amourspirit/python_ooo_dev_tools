@@ -8,3 +8,4 @@ calc
     :glob:
 
     *
+    partial/index
