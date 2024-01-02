@@ -1,6 +1,20 @@
 ***************
 Version History
 ***************
+Version 0.17.14
+===============
+
+Now the Units in the ``ooodev.units`` can do math such has ``+``, ``-``, ``*``, ``/``, ``+-``, ``-+``.
+Eg:
+
+.. code-block:: python
+
+    from ooodev.units import UnitCM, UnitInch
+    u1 = UnitCM(0.44)
+    u1 = += 1 # 1.44 cm
+    u2 = UnitInch(2)
+    u3 = u1 + u2
+    assert u3 == 6.52
 
 Version 0.17.13
 ===============

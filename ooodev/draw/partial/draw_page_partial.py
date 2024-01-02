@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING, TypeVar, Generic, Union
+from typing import List, Tuple, overload, Sequence, TYPE_CHECKING, TypeVar, Generic, Union
 import uno
 
 
@@ -21,7 +21,6 @@ from ooodev.utils.kind.drawing_shape_kind import DrawingShapeKind
 from ooodev.utils.kind.glue_points_kind import GluePointsKind
 from ooodev.utils.kind.presentation_kind import PresentationKind
 from ooodev.utils.type_var import PathOrStr
-from ooodev.write.write_text import WriteText
 from ooodev.exceptions import ex as mEx
 from .. import draw_text as mDrawText
 from ..shapes import (
