@@ -50,7 +50,28 @@ class TextViewCursorPartial(mTextCursorPartial.TextCursorPartial):
         self.__component.setVisible(visible)
 
     def get_position(self) -> Point:
-        """Returns the position of the cursor."""
+        """
+        Gets the cursor's coordinates relative to the top left position of the first page
+        of the document in ``1/100 mm``.
+
+        Returns:
+            Point: The cursor's coordinates as ``com.sun.star.awt.Point``. in ``1/100 mm``.
+
+        Note:
+            The ``X`` coordinate is the horizontal position, the ``Y`` coordinate is the vertical position.
+
+        Warning:
+            The ``X`` is relative to the document window and not the document page.
+            This means when the document window size changes the ``X`` coordinate will
+            change even if the cursor has not moved.
+            This is also the case if the document zoom changes.
+
+            When the document page is zoomed all the way to fill the document window the ``X`` coordinate
+            is ``0`` when at the left hand page margin (beginning of a line).
+
+            The ``Y`` coordinate is relative to the top of the document window and not the top of the document page.
+            The ``Y`` coordinate seems not to be affected by Document Zoom or scroll position.
+        """
         return self.__component.getPosition()
 
     # endregion XTextViewCursor

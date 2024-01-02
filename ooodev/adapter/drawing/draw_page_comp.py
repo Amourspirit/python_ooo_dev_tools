@@ -28,7 +28,10 @@ class DrawPageComp(GenericDrawPageComp):
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.drawing.DrawPage",)
+        return (
+            "com.sun.star.drawing.DrawPage",
+            "com.sun.star.drawing.GenericDrawPage",
+        )
 
     # endregion Overrides
     # region Properties

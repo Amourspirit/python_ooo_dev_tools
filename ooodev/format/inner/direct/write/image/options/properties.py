@@ -45,14 +45,6 @@ class Properties(StyleBase):
             )
         return self._supported_services_values
 
-    def _props_set(self, obj: Any, **kwargs: Any) -> None:
-        try:
-            return super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
-
     # endregion Overrides
 
     # region Static Methods

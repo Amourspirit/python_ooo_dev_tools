@@ -1,14 +1,31 @@
 ***************
 Version History
 ***************
+Version 0.18.00
+===============
+
+Now many Draw shape will accept -1 as a value for ``width``, ``height``, ``x``, ``y``.
+This will usually mean that the shape size and/or position will not be set when created.
+
+Now the Units in the ``ooodev.units`` can do math such has ``+``, ``-``, ``*``, ``/``, ``+-``, ``-+``.
+Eg:
+
+.. code-block:: python
+
+    from ooodev.units import UnitCM, UnitInch
+    u1 = UnitCM(0.44)
+    u1 = += 1 # 1.44 cm
+    u2 = UnitInch(2)
+    u3 = u1 + u2
+    assert u3 == 6.52
 
 Version 0.17.13
 ===============
 
 Added ``ooodev.draw.DrawPages`` class that is accessed via ``DrawDoc.slides`` property.
 
-Break changes
--------------
+Breaking changes
+----------------
 
 ``CalcDoc.get_by_index()`` Now returns a ``CalcSheet`` instance instead of ``com.sun.star.sheet.Spreadsheet`` service.
 The ``CalcSheet.component`` will return the ``com.sun.star.sheet.Spreadsheet`` service.

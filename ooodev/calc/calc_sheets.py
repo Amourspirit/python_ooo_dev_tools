@@ -1,22 +1,23 @@
 from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING, Tuple
-
 import uno
-from . import calc_sheet as mCalcSheet
+
 from ooodev.adapter.sheet.cell_range_access_partial import CellRangeAccessPartial
 from ooodev.adapter.sheet.spreadsheets_comp import SpreadsheetsComp
+from ooodev.adapter.container.name_replace_partial import NameReplacePartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
+from . import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
-    from .calc_doc import CalcDoc
     from com.sun.star.sheet import XSpreadsheet
     from com.sun.star.sheet import XSpreadsheets
+    from .calc_doc import CalcDoc
 
 
-class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
+class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, QiPartial):
     """
     Class for managing Calc Sheets.
 
@@ -63,6 +64,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         self.__owner = owner
         SpreadsheetsComp.__init__(self, sheets)  # type: ignore
         CellRangeAccessPartial.__init__(self, component=sheets, interface=None)  # type: ignore
+        NameReplacePartial.__init__(self, component=sheets, interface=None)  # type: ignore
         QiPartial.__init__(self, component=sheets, lo_inst=mLo.Lo.current_lo)
 
     def __next__(self) -> mCalcSheet.CalcSheet:
@@ -79,6 +81,80 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
 
     def __len__(self) -> int:
         return self.component.getCount()
+
+    def __delitem__(self, _item: int | str | mCalcSheet.CalcSheet) -> None:
+        # using remove_sheet here instead of remove_by_name. This will force Calc module event to be fired.
+        if isinstance(_item, (int, str)):
+            self.remove_sheet(_item)
+        elif isinstance(_item, mCalcSheet.CalcSheet):
+            self.remove_sheet(_item.name)
+        else:
+            raise TypeError(f"Invalid type for __delitem__: {type(_item)}")
+
+    def _get_index(self, idx: int, allow_greater: bool = False) -> int:
+        """
+        Gets the index.
+
+        Args:
+            idx (int): Index of sheet. Can be a negative value to index from the end of the list.
+            allow_greater (bool, optional): If True and index is greater then the number of
+                sheets then the index becomes the next index if sheet were appended. Defaults to False.
+
+        Returns:
+            int: Index value.
+        """
+        count = len(self)
+        if idx < 0:
+            idx = count + idx
+            if idx < 0:
+                raise IndexError("list index out of range")
+        if idx >= count:
+            if allow_greater:
+                idx = count
+            else:
+                raise IndexError("list index out of range")
+        return idx
+
+    # region XSpreadsheets Overrides
+    def copy_by_name(self, name: str, copy: str, idx: int) -> None:
+        """
+        Copies the sheet with the specified name.
+
+        Args:
+            name (str): The name of the sheet to be copied.
+            copy (str): The name of the copy of the spreadsheet.
+            idx (int, optional): The index of the copy in the collection.
+                ``idx`` can be a negative value to index from the end of the collection.
+
+        """
+        idx = self._get_index(idx)
+        super().copy_by_name(name, copy, idx)
+
+    def insert_new_by_name(self, name: str, idx: int) -> None:
+        """
+        Inserts a new sheet with the specified name.
+
+        Args:
+            name (str): The name of the sheet to be inserted.
+            idx (int, optional): The index of the new sheet.
+                ``idx`` can be a negative value to index from the end of the collection.
+        """
+        idx = self._get_index(idx=idx, allow_greater=True)
+        super().insert_new_by_name(name, idx)
+
+    def move_by_name(self, name: str, idx: int) -> None:
+        """
+        Moves the sheet with the specified name.
+
+        Args:
+            name (str): The name of the sheet to be moved.
+            idx (int): The new index of the sheet.
+                ``idx`` can be a negative value to index from the end of the collection.
+        """
+        idx = self._get_index(idx)
+        super().move_by_name(name, idx)
+
+    # endregion XSpreadsheets Overrides
 
     # region XIndexAccess overrides
 
@@ -122,7 +198,6 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
         """
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
-
         result = super().get_by_name(name)
         return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result)
 
@@ -257,14 +332,39 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
 
     # endregion set_active_sheet()
 
+    # region insert_sheet
+    @overload
+    def insert_sheet(self, name: str) -> mCalcSheet.CalcSheet:
+        """
+        Inserts a spreadsheet into the end of the documents sheet collection.
+
+        Args:
+            name (str): Name of sheet to insert
+        """
+        ...
+
+    @overload
     def insert_sheet(self, name: str, idx: int) -> mCalcSheet.CalcSheet:
         """
-        Inserts a spreadsheet into document.
+        Inserts a spreadsheet into document sheet collections.
 
         Args:
             name (str): Name of sheet to insert
             idx (int): zero-based index position of the sheet to insert.
-                Can be a negative value to insert from the end of the list.
+                Can be a negative value to insert from the end of the collection.
+                Default is ``-1`` which inserts at the end of the collection.
+        """
+        ...
+
+    def insert_sheet(self, name: str, idx: int = -1) -> mCalcSheet.CalcSheet:
+        """
+        Inserts a spreadsheet into document sheet collections.
+
+        Args:
+            name (str): Name of sheet to insert
+            idx (int, optional): zero-based index position of the sheet to insert.
+                Can be a negative value to insert from the end of the collection.
+                Default is ``-1`` which inserts at the end of the collection.
 
         Raises:
             Exception: If unable to insert spreadsheet
@@ -280,6 +380,8 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, QiPartial):
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
         """
         return self.calc_doc.insert_sheet(name, idx)
+
+    # endregion insert_sheet
 
     # region    remove_sheet()
 

@@ -1,6 +1,12 @@
 from __future__ import annotations
-from ooodev.units import Angle
+from __future__ import annotations
 import pytest
+
+if __name__ == "__main__":
+    pytest.main([__file__])
+
+from ooodev.units import Angle
+
 
 # angle implements BaseIntValue so this test all dunder methods.
 

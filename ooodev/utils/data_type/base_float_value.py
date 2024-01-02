@@ -23,6 +23,27 @@ class BaseFloatValue:
     def _from_float(self: _TBaseFloatValue, value: float) -> _TBaseFloatValue:
         ...
 
+    def almost_equal(self, val: float, epsilon: float = 1e-9) -> bool:
+        """
+        Comparing float values directly using equality (``==``) can sometimes lead to
+        unexpected results due to the way floating-point numbers are represented in computers.
+        A small rounding error can make two floats that should be equal appear unequal.
+
+        A common way to compare floats is to check if the absolute difference between them
+        is less than a small number, often called the machine epsilon.
+
+        In this function, ``epsilon`` is the maximum difference for which ``a`` and ``b``
+        are considered equal. You can adjust ``epsilon`` based on the precision you need.
+
+        Args:
+            val (float): The value to compare with.
+            epsilon (float): The maximum difference for which ``a`` and ``b`` are considered equal.
+
+        Returns:
+            bool: True if current value and ``val`` are considered equal, False otherwise.
+        """
+        return abs(self.value - val) < epsilon
+
     # Override "int" method
     def __float__(self) -> float:
         return self.value

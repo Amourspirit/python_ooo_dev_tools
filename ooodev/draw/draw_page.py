@@ -92,4 +92,20 @@ class DrawPage(
         """Component Owner"""
         return self.__owner
 
+    @property
+    def name(self) -> str:
+        """
+        Gets/Sets the name of the draw page.
+
+        Note:
+            Naming for Impress pages seems a little different then Draw pages.
+            Attempting to name a Draw page `Slide #` where `#` is a number will fail and Draw will auto name the page.
+            It seems that `Slide` followed by a space and a number is reserved for Impress.
+        """
+        return self.component.Name  # type: ignore
+
+    @name.setter
+    def name(self, value: str) -> None:
+        self.component.Name = value  # type: ignore
+
     # endregion Properties

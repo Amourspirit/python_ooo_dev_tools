@@ -357,14 +357,39 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
 
     # endregion get_sheet()
 
+    # region insert_sheet
+    @overload
+    def insert_sheet(self, name: str) -> mCalcSheet.CalcSheet:
+        """
+        Inserts a spreadsheet into the end of the documents sheet collection.
+
+        Args:
+            name (str): Name of sheet to insert
+        """
+        ...
+
+    @overload
     def insert_sheet(self, name: str, idx: int) -> mCalcSheet.CalcSheet:
         """
-        Inserts a spreadsheet into document.
+        Inserts a spreadsheet into document sheet collections.
 
         Args:
             name (str): Name of sheet to insert
             idx (int): zero-based index position of the sheet to insert.
-                Can be a negative value to insert from the end of the list.
+                Can be a negative value to insert from the end of the collection.
+                Default is ``-1`` which inserts at the end of the collection.
+        """
+        ...
+
+    def insert_sheet(self, name: str, idx: int = -1) -> mCalcSheet.CalcSheet:
+        """
+        Inserts a spreadsheet into document sheet collections.
+
+        Args:
+            name (str): Name of sheet to insert
+            idx (int, optional): zero-based index position of the sheet to insert.
+                Can be a negative value to insert from the end of the collection.
+                Default is ``-1`` which inserts at the end of the collection.
 
         Raises:
             Exception: If unable to insert spreadsheet
@@ -380,11 +405,17 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
         """
         if idx < 0:
-            idx = len(self.sheets) + idx
+            # add the + 1 becuase the index is being inserted
+            sheets_len = len(self.sheets)
+            idx = sheets_len + idx + 1
             if idx < 0:
                 raise IndexError("list index out of range")
+            if idx > sheets_len:
+                idx = sheets_len
         sheet = mCalc.Calc.insert_sheet(doc=self.component, name=name, idx=idx)
         return mCalcSheet.CalcSheet(owner=self, sheet=sheet)
+
+    # endregion insert_sheet
 
     def freeze(self, num_cols: int, num_rows: int) -> None:
         """

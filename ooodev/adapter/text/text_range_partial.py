@@ -6,7 +6,7 @@ from com.sun.star.text import XTextRange
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
-from . import text_range_comp as mTextRangeComp
+
 
 if TYPE_CHECKING:
     from com.sun.star.text import XText
@@ -77,3 +77,6 @@ class TextRangePartial:
         self.__component.setString(string)
 
     # endregion Methods
+
+
+from . import text_range_comp as mTextRangeComp
