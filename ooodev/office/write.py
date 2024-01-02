@@ -749,7 +749,7 @@ class Write(mSel.Selection):
 
         Returns:
             str: coordinates as string
-        
+
         Warning:
             The ``X`` is relative to the document window and not the document page.
             This means when the document window size changes the ``X`` coordinate will change even if the cursor has not moved.
@@ -2436,10 +2436,10 @@ class Write(mSel.Selection):
             formula_props.setPropertyValue("Formula", formula)
             result = embed_content
             if styles:
-                srv = ("com.sun.star.text.TextEmbeddedObject",)
+                # srv = ("com.sun.star.text.TextEmbeddedObject",)
                 for style in styles:
-                    if style.support_service(*srv):
-                        style.apply(embed_content)
+                    # if style.support_service(*srv):
+                    style.apply(embed_content)
             mLo.Lo.print(f'Inserted formula "{formula}"')
         except Exception as e:
             raise Exception(f'Insertion fo formula "{formula}" failed:') from e
@@ -2735,10 +2735,10 @@ class Write(mSel.Selection):
                 xframe_text.insertString(xtext_range, text, False)
 
             if styles:
-                srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
+                # srv = ("com.sun.star.text.TextFrame", "com.sun.star.text.ChainedTextFrame")
                 for style in styles:
-                    if style.support_service(*srv):
-                        style.apply(xframe)
+                    # if style.support_service(*srv):
+                    style.apply(xframe)
             # add text into the text frame
         except Exception as e:
             raise Exception("Insertion of text frame failed:") from e
@@ -3139,10 +3139,10 @@ class Write(mSel.Selection):
             if styles:
                 # is is important for some format styles such as Crop that styles
                 # not be applied until after they have been added to the document.
-                srv = ("com.sun.star.text.TextGraphicObject",)
+                # srv = ("com.sun.star.text.TextGraphicObject",)
                 for style in styles:
-                    if style.support_service(*srv):
-                        style.apply(tgo)
+                    # if style.support_service(*srv):
+                    style.apply(tgo)
             result = tgo
         except Exception as e:
             raise Exception(f"Insertion of graphic in '{fnm}' failed:") from e
