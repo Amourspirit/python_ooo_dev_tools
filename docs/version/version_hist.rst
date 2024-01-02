@@ -1,8 +1,11 @@
 ***************
 Version History
 ***************
-Version 0.17.14
+Version 0.18.00
 ===============
+
+Now many Draw shape will accept -1 as a value for ``width``, ``height``, ``x``, ``y``.
+This will usually mean that the shape size and/or position will not be set when created.
 
 Now the Units in the ``ooodev.units`` can do math such has ``+``, ``-``, ``*``, ``/``, ``+-``, ``-+``.
 Eg:
