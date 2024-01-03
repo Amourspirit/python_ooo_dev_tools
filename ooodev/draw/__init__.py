@@ -28,6 +28,8 @@ from .draw_page import DrawPage as DrawPage
 from .draw_pages import DrawPages as DrawPages
 from .draw_text import DrawText as DrawText
 from .draw_text_cursor import DrawTextCursor as DrawTextCursor
+from .generic_draw_page import GenericDrawPage as GenericDrawPage
+from .generic_draw_pages import GenericDrawPages as GenericDrawPages
 from .impress_doc import ImpressDoc as ImpressDoc
 from .impress_page import ImpressPage as ImpressPage
 from .master_draw_page import MasterDrawPage as MasterDrawPage
@@ -38,6 +40,8 @@ __all__ = [
     "DrawPages",
     "DrawText",
     "DrawTextCursor",
+    "GenericDrawPage",
+    "GenericDrawPages",
     "ImpressDoc",
     "ImpressPage",
     "MasterDrawPage",

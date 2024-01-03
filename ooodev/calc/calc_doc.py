@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
 
+from com.sun.star.drawing import XDrawPagesSupplier
 from com.sun.star.frame import XModel
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheets
@@ -41,6 +42,7 @@ from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
+from .spreadsheet_draw_pages import SpreadsheetDrawPages
 
 
 class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
@@ -58,6 +60,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
         self._sheets = None
+        self._draw_pages = None
 
     def create_cell_style(self, style_name: str) -> XStyle:
         """
@@ -883,3 +886,17 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         if self._sheets is None:
             self._sheets = mCalcSheets.CalcSheets(owner=self, sheets=self.component.getSheets())
         return self._sheets
+
+    @property
+    def draw_pages(self) -> SpreadsheetDrawPages[CalcDoc]:
+        """
+        Gets draw pages.
+
+        Returns:
+            SpreadsheetDrawPages: Draw Pages
+        """
+        if self._draw_pages is None:
+            supp = self.qi(XDrawPagesSupplier, True)
+            draw_pages = supp.getDrawPages()
+            self._draw_pages = SpreadsheetDrawPages(self, draw_pages)
+        return self._draw_pages  # type: ignore

@@ -57,6 +57,7 @@
         "classmethod",
         "clazz",
         "CLIPCHILDREN",
+        "Cloneable",
         "CLSID",
         "cmds",
         "Codespace",

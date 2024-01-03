@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
+from com.sun.star.drawing import XDrawPageSupplier
 from com.sun.star.sheet import XSheetCellRange
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.table import XCell
@@ -39,6 +40,7 @@ from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from .spreadsheet_draw_page import SpreadsheetDrawPage
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
@@ -64,6 +66,7 @@ class CalcSheet(SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, 
         PropPartial.__init__(self, component=sheet, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=sheet)
         mSheetCellPartial.SheetCellPartial.__init__(self, owner=self)
+        self._draw_page = None
 
     # region get_address()
     @overload
@@ -3634,5 +3637,19 @@ class CalcSheet(SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, 
             int: Sheet index
         """
         return self.component.getRangeAddress().Sheet
+
+    @property
+    def draw_page(self) -> SpreadsheetDrawPage[CalcSheet]:
+        """
+        Gets draw page.
+
+        Returns:
+            SpreadsheetDrawPage: Draw Page
+        """
+        if self._draw_page is None:
+            supp = self.qi(XDrawPageSupplier, True)
+            draw_page = supp.getDrawPage()
+            self._draw_page = SpreadsheetDrawPage(self, draw_page)
+        return self._draw_page  # type: ignore
 
     # endregion Properties

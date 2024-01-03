@@ -7,8 +7,10 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.container.child_partial
    ooodev.adapter.container.container_events
    ooodev.adapter.container.container_listener
+   ooodev.adapter.container.container_partial
    ooodev.adapter.container.element_access_partial
    ooodev.adapter.container.enumeration_access_partial
    ooodev.adapter.container.enumeration_partial

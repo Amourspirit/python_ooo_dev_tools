@@ -40,7 +40,7 @@ class NamedPartial:
         if not mLo.Lo.is_uno_interfaces(component, self.__interface):
             raise mEx.MissingInterfaceError(self.__interface)
 
-    # region Methods
+    # region XNamed
     def get_name(self) -> str:
         """Returns the name of the object."""
         return self.__component.getName()
@@ -49,4 +49,4 @@ class NamedPartial:
         """Sets the name of the object."""
         self.__component.setName(name)
 
-    # endregion Methods
+    # endregion XNamed

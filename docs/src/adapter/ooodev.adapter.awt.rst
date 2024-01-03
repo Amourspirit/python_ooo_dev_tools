@@ -41,6 +41,7 @@ Submodules
    ooodev.adapter.awt.paint_listener
    ooodev.adapter.awt.spin_events
    ooodev.adapter.awt.spin_listener
+   ooodev.adapter.awt.tab_controller_model_partial
    ooodev.adapter.awt.text_events
    ooodev.adapter.awt.text_listener
    ooodev.adapter.awt.top_window_events

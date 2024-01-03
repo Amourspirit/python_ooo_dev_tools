@@ -15,6 +15,7 @@ Submodules
    ooodev.adapter.drawing.custom_shape_comp
    ooodev.adapter.drawing.defaults_comp
    ooodev.adapter.drawing.draw_page_comp
+   ooodev.adapter.drawing.draw_page_partial
    ooodev.adapter.drawing.draw_pages_comp
    ooodev.adapter.drawing.draw_pages_partial
    ooodev.adapter.drawing.drawing_document_comp

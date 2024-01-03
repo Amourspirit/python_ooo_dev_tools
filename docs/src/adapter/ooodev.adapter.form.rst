@@ -21,6 +21,10 @@ Submodules
    ooodev.adapter.form.change_events
    ooodev.adapter.form.change_listener
    ooodev.adapter.form.data_aware_control_model_partial
+   ooodev.adapter.form.form_components_comp
+   ooodev.adapter.form.forms_comp
+   ooodev.adapter.form.forms_component_partial
+   ooodev.adapter.form.forms_partial
    ooodev.adapter.form.grid_control_events
    ooodev.adapter.form.grid_control_listener
    ooodev.adapter.form.reset_events

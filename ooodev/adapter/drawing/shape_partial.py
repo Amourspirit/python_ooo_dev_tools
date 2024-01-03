@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class ShapePartial:
     """
-    Class for managing IndexAccess.
+    Partial Class XShape.
     """
 
     # pylint: disable=unused-argument

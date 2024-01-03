@@ -1,8 +1,27 @@
 ***************
 Version History
 ***************
-Version 0.18.00
-===============
+
+Version 0.18.1
+==============
+
+
+Added ``ooodev.draw.GenericDrawPage`` class. Handles generic draw page such as ``ooodev.write.WriteDoc.get_draw_page()``.
+Added ``ooodev.draw.GenericDrawPages`` class. Handles generic draw pages such as ``ooodev.write.WriteDoc.get_draw_pages()``.
+Added ``ooodev.calc.SpreadsheetDrawPages`` class.
+Added ``ooodev.calc.SpreadsheetDrawPage`` class.
+
+``ooodev.calc.CalcDoc`` now have has a ``draw_pages`` property that returns a ``ooodev.calc.SpreadsheetDrawPages`` class.
+``ooodev.calc.CalcSheet`` now have has a ``draw_page`` property that returns a ``ooodev.calc.SpreadsheetDrawPage`` class.
+
+Breaking Changes
+----------------
+
+``ooodev.write.WriteDrawPage`` has been removed. Now ``ooodev.write.WriteDoc.get_draw_page()`` returns a ``ooodev.draw.GenericDrawPage[WriteDoc]``:
+
+
+Version 0.18.0
+==============
 
 Now many Draw shape will accept -1 as a value for ``width``, ``height``, ``x``, ``y``.
 This will usually mean that the shape size and/or position will not be set when created.
