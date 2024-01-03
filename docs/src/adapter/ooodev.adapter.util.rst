@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.util.cloneable_partial
    ooodev.adapter.util.modify_events
    ooodev.adapter.util.modify_listener
    ooodev.adapter.util.refresh_events
