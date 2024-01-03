@@ -18,6 +18,7 @@ Subpackages
    ooodev.adapter.drawing
    ooodev.adapter.form
    ooodev.adapter.frame
+   ooodev.adapter.io
    ooodev.adapter.lang
    ooodev.adapter.presentation
    ooodev.adapter.script

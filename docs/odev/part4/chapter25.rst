@@ -648,38 +648,39 @@ The output from ``on_selection_changed()`` shown above shows how the user moved 
 
         # in select_listener.py
         def on_selection_changed(
-        self, source: Any, event_args: EventArgs, *args, **kwargs
-    ) -> None:
-        event = cast("EventObject", event_args.event_data)
-        ctrl = Lo.qi(XController, event.Source)
-        if ctrl is None:
-            print("No ctrl for event source")
-            return
+            self, source: Any, event_args: EventArgs, *args, **kwargs
+        ) -> None:
+            event = cast("EventObject", event_args.event_data)
+            ctrl = Lo.qi(XController, event.Source)
+            if ctrl is None:
+                print("No ctrl for event source")
+                return
 
-        addr = self._doc.get_selected_cell_addr()
-        if addr is None:
-            return
-        try:
-            # better to wrap in try block.
-            # otherwise errors crashes office
-            if not Calc.is_equal_addresses(addr, self._curr_addr):
-                flt = self._get_cell_float(self._curr_addr)
-                if flt is not None:
-                    if self._curr_val is None:  # so previously stored value was null
-                        print(
-                            f"{Calc.get_cell_str(self._curr_addr)} new value: {flt:.2f}"
-                        )
-                    else:
-                        if self._curr_val != flt:
+            addr = self._doc.get_selected_cell_addr()
+            if addr is None:
+                return
+            try:
+                # better to wrap in try block.
+                # otherwise errors crashes office
+                if not Calc.is_equal_addresses(addr, self._curr_addr):
+                    flt = self._get_cell_float(self._curr_addr)
+                    if flt is not None:
+                        if self._curr_val is None:  # so previously stored value was null
                             print(
-                                f"{Calc.get_cell_str(self._curr_addr)} has changed from {self._curr_val:.2f} to {flt:.2f}"
+                                f"{Calc.get_cell_str(self._curr_addr)} new value: {flt:.2f}"
                             )
+                        else:
+                            if self._curr_val != flt:
+                                print(
+                                    f"{Calc.get_cell_str(self._curr_addr)} has changed from {self._curr_val:.2f} to {flt:.2f}"
+                                )
 
-            # update current address and value
-            self._curr_addr = addr
-            self._curr_val = self._get_cell_float(addr)
-            if self._curr_val is not None:
-                print(f"{Calc.get_cell_str(self._curr_addr)} value: {self._curr_val}")
+                # update current address and value
+                self._curr_addr = addr
+                self._curr_val = self._get_cell_float(addr)
+                if self._curr_val is not None:
+                    print(f"{Calc.get_cell_str(self._curr_addr)} value: {self._curr_val}")
+
         except Exception as e:
             print(e)
 
