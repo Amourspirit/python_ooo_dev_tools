@@ -24,9 +24,15 @@ def test_draw_page(loader):
 
         pages = doc.get_draw_pages()
         page = pages[0]
+        # page = doc.get_draw_page()
         rect = page.draw_rectangle(10, 10, 100, 100)
         assert rect is not None
-        # GUI.set_visible(True, doc)
+
+        rect2 = doc.draw_page.draw_rectangle(20, 20, 100, 100)
+        assert rect2 is not None
+
+        rect3 = doc.draw_pages[0].draw_rectangle(30, 30, 100, 100)
+        assert rect3 is not None
         Lo.delay(delay)
 
     finally:
