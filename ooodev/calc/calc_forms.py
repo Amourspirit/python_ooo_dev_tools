@@ -87,6 +87,8 @@ class CalcForms(FormsComp, QiPartial):
         """
         count = len(self)
         if idx < 0:
+            if count == 0 and allow_greater:
+                return 0
             idx = count + idx
             if idx < 0:
                 raise IndexError("list index out of range")
@@ -109,6 +111,16 @@ class CalcForms(FormsComp, QiPartial):
         return nm
 
     # region add_form
+    @overload
+    def add_form(self) -> CalcForm:
+        """
+        Adds a new form at the end.
+
+        Returns:
+            CalcForm: Form
+        """
+        ...
+
     @overload
     def add_form(self, idx: int) -> CalcForm:
         """
@@ -151,6 +163,10 @@ class CalcForms(FormsComp, QiPartial):
         """
         all_args = [arg for arg in args]
         all_args.extend(kwargs.values())
+        if len(all_args) == 0:
+            # add a new form at the end
+            all_args.append(-1)
+
         if len(all_args) != 1:
             raise TypeError("add_form() takes 1 argument but {} were given".format(len(all_args)))
         arg1 = all_args[0]
@@ -182,7 +198,7 @@ class CalcForms(FormsComp, QiPartial):
                 For example, -1 will return the last element.
 
         Returns:
-            CalcSheet: The element at the specified index.
+            CalcForm: The element at the specified index.
         """
         if idx < 0:
             idx = len(self) + idx
@@ -209,7 +225,7 @@ class CalcForms(FormsComp, QiPartial):
             MissingNameError: If sheet is not found.
 
         Returns:
-            Any: The element with the specified name.
+            CalcForm: The element with the specified name.
         """
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
