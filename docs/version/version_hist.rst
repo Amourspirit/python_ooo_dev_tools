@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.18.2
+==============
+
+Added ``ooodev.calc.SpreadsheetDrawPages``class. Handles working with Calc Draw Pages.
+Added ``ooodev.calc.SpreadsheetDrawPage``class. Handles working with Calc Sheet Draw Page.
+
+Added ``ooodev.calc.CalcForms``class. Handles working with Calc Sheet Forms.
+Added ``ooodev.calc.CalcForm``class. Handles working with Calc Sheet Form.
+
 Version 0.18.1
 ==============
 
