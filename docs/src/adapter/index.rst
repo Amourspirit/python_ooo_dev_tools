@@ -22,6 +22,7 @@ Subpackages
    ooodev.adapter.lang
    ooodev.adapter.presentation
    ooodev.adapter.script
+   ooodev.adapter.sdb
    ooodev.adapter.sdbc
    ooodev.adapter.sdbcx
    ooodev.adapter.sheet

@@ -1,56 +1,26 @@
+"""Partial Class for Form Component. Not intended to be used directly."""
+# region Imports
 from __future__ import annotations
-from typing import Any, cast, Iterable, TYPE_CHECKING
+from typing import cast, Iterable, TYPE_CHECKING
+import datetime
+
 import uno
 from com.sun.star.form import XForms
 from com.sun.star.container import XChild
-
-from ooodev.form import forms as mForms
-from ooodev.utils import lo as mLo
-from ooodev.utils import info as mInfo
-
-# region Other Imports
-import contextlib
-import datetime
-import uno
-
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
-from com.sun.star.awt import XView
-from com.sun.star.beans import XPropertySet
-from com.sun.star.container import XChild
-from com.sun.star.container import XIndexContainer
-from com.sun.star.container import XNameAccess
-from com.sun.star.container import XNameContainer
-from com.sun.star.container import XNamed
-from com.sun.star.drawing import XControlShape
 from com.sun.star.drawing import XDrawPage
-from com.sun.star.drawing import XDrawPagesSupplier
-from com.sun.star.drawing import XDrawPageSupplier
-from com.sun.star.drawing import XShapes
-from com.sun.star.form import XForm
-from com.sun.star.form import XFormsSupplier
-from com.sun.star.form import XGridColumnFactory
-from com.sun.star.lang import XServiceInfo
-from com.sun.star.script import XEventAttacherManager
 
-from ooo.dyn.awt.point import Point
-from ooo.dyn.awt.size import Size as UnoSize
-from ooo.dyn.form.form_component_type import FormComponentType
-from ooo.dyn.form.list_source_type import ListSourceType
-from ooo.dyn.script.script_event_descriptor import ScriptEventDescriptor
-from ooo.dyn.sdb.command_type import CommandType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 
-
+from ooodev.exceptions import ex as mEx
+from ooodev.form import forms as mForms
+from ooodev.proto.component_proto import ComponentT
 from ooodev.proto.style_obj import StyleT
-from ooodev.utils import gen_util as gUtil
-from ooodev.utils import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
-from ooodev.utils import props as mProps
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
-from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.utils.kind.language_kind import LanguageKind as LanguageKind
 from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
 from ooodev.utils.kind.state_kind import StateKind as StateKind
@@ -92,21 +62,13 @@ from ..controls.database import FormCtlDbTextField
 from ..controls.database import FormCtlDbTimeField
 
 if TYPE_CHECKING:
-    from com.sun.star.uno import XInterface
-    from com.sun.star.lang import EventObject
+    from com.sun.star.form.component import Form
+    from com.sun.star.lang import XComponent
     from ooodev.units import UnitT
     from ooodev.utils.type_var import PathOrStr
-    from ..controls.form_ctl_base import FormCtlBase
-# endregion Other Imports
 
-from ooodev.exceptions import ex as mEx
 
-if TYPE_CHECKING:
-    from com.sun.star.lang import XComponent
-    from com.sun.star.form.component import Form
-    from ooodev.units import UnitT
-
-from ooodev.proto.component_proto import ComponentT
+# endregion Imports
 
 
 class FormPartial:

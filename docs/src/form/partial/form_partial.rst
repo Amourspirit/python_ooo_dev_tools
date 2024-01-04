@@ -1,5 +1,5 @@
-module ctl_base
-===============
+module form_partial
+===================
 
 Partial Class. Not intended to be used directly.
 
