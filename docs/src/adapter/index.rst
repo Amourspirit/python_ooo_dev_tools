@@ -22,6 +22,8 @@ Subpackages
    ooodev.adapter.lang
    ooodev.adapter.presentation
    ooodev.adapter.script
+   ooodev.adapter.sdbc
+   ooodev.adapter.sdbcx
    ooodev.adapter.sheet
    ooodev.adapter.style
    ooodev.adapter.table

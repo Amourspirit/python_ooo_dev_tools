@@ -13,7 +13,6 @@ from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XChild
 from com.sun.star.container import XIndexContainer
 from com.sun.star.container import XNameAccess
-from com.sun.star.container import XNameAccess
 from com.sun.star.container import XNameContainer
 from com.sun.star.container import XNamed
 from com.sun.star.drawing import XControlShape
@@ -131,12 +130,12 @@ class Forms:
     # endregion     get_forms()
 
     @staticmethod
-    def get_draw_page(doc: XComponent) -> XDrawPage:
+    def get_draw_page(doc: XComponent | XDrawPage) -> XDrawPage:
         """
         Gets draw page
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
 
         Raises:
             Exception: If unable to get draw page
@@ -146,6 +145,9 @@ class Forms:
         """
         # sourcery skip: raise-specific-error
         try:
+            dp = mLo.Lo.qi(XDrawPage, doc)
+            if dp is not None:
+                return dp
             supp_page = mLo.Lo.qi(XDrawPageSupplier, doc)
             if supp_page is not None:
                 return supp_page.getDrawPage()
@@ -943,7 +945,7 @@ class Forms:
     @classmethod
     def add_control(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         label: str | None,
         comp_kind: FormComponentKind | str,
@@ -960,7 +962,7 @@ class Forms:
         Add a control
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             name (str): Control Name
             label (str | None): Label to assign to control
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
@@ -999,9 +1001,11 @@ class Forms:
 
             if anchor_type is None:
                 # anchor_type was allowed to be None in pre .0.13.8 versions
-                shape_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
+                if mProps.Props.has_property(shape_props, "AnchorType"):
+                    shape_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
             else:
-                shape_props.setPropertyValue("AnchorType", TextContentAnchorType(anchor_type))
+                if mProps.Props.has_property(shape_props, "AnchorType"):
+                    shape_props.setPropertyValue("AnchorType", TextContentAnchorType(anchor_type))
 
             # create the control's model, this is a service
             # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1form_1_1FormControlModel.html
@@ -1081,7 +1085,7 @@ class Forms:
     @classmethod
     def add_labelled_control(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         label: str,
         comp_kind: FormComponentKind | str,
@@ -1098,7 +1102,7 @@ class Forms:
         Create a label and data field control, with the label preceding the control
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             label (str): Label to assign to control
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
             y (int): Control Y Position
@@ -1134,7 +1138,7 @@ class Forms:
     @classmethod
     def _add_labelled_control(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         label: str,
         comp_kind: FormComponentKind | str,
@@ -1204,7 +1208,7 @@ class Forms:
     @classmethod
     def add_button(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         name: str,
         label: str | None,
@@ -1222,7 +1226,7 @@ class Forms:
         By Default the button has no tab stop and does not focus on click.
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             name (str): Button name
             label (str | None): Button Label
             x (int): Button X position
@@ -1230,7 +1234,7 @@ class Forms:
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
-            arent_form (XNameContainer, optional): Parent form in which to add control.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
@@ -1268,7 +1272,7 @@ class Forms:
     @classmethod
     def add_list(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         name: str,
         entries: Iterable[str],
         x: int | UnitT,
@@ -1282,7 +1286,7 @@ class Forms:
         Adds a list
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component | Draw Page.
             name (str): List Name
             entries (Iterable[str]): List Entries
             x (int): List X position
@@ -1325,7 +1329,7 @@ class Forms:
     @classmethod
     def add_database_list(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         name: str,
         sql_cmd: str,
@@ -1339,7 +1343,7 @@ class Forms:
         Add a list with a SQL command as it data source
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             name (str): List Name
             sql_cmd (str): SQL Command
             x (int): List X position
@@ -1521,6 +1525,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlButton:
         """
         Inserts a button control.
@@ -1538,6 +1543,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlButton: Button Control
@@ -1551,7 +1558,7 @@ class Forms:
             styles = ()
         try:
             btn_props = cls.add_button(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 x=x,
@@ -1589,6 +1596,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlCheckBox:
         """
@@ -1601,7 +1609,6 @@ class Forms:
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             label (str, optional): Label (text) to assign to checkbox.
-            anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -1609,6 +1616,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlCheckBox: Checkbox Control
@@ -1628,7 +1637,7 @@ class Forms:
             name = cls.create_name(parent_form, "CheckBox")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,

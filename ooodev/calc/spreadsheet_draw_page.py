@@ -8,11 +8,11 @@ from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
 from ooodev.adapter.sheet.spreadsheet_draw_page_comp import SpreadsheetDrawPageComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.draw.partial.draw_page_partial import DrawPagePartial
+from .calc_forms import CalcForms
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -43,6 +43,7 @@ class SpreadsheetDrawPage(
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=component)
+        self._forms = None
 
     def __len__(self) -> int:
         return self.get_count()
@@ -68,5 +69,14 @@ class SpreadsheetDrawPage(
     @name.setter
     def name(self, value: str) -> None:
         self.component.Name = value  # type: ignore
+
+    @property
+    def forms(self) -> CalcForms:
+        """
+        Gets the forms of the draw page.
+        """
+        if self._forms is None:
+            self._forms = CalcForms(owner=self, forms=self.component.getForms())  # type: ignore
+        return self._forms
 
     # endregion Properties

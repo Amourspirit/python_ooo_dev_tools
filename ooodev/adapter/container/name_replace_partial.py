@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from com.sun.star.container import XNameReplace
 from .name_access_partial import NameAccessPartial
-from ooodev.utils.type_var import UnoInterface
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import UnoInterface
 
 
 class NameReplacePartial(NameAccessPartial):
