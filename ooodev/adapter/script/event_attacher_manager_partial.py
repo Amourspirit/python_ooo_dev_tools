@@ -6,12 +6,11 @@ from com.sun.star.script import XEventAttacherManager
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
-from ooodev.utils.type_var import UnoInterface
 
 if TYPE_CHECKING:
-    from com.sun.star.uno import XInterface
     from com.sun.star.script import XScriptListener
     from com.sun.star.script import ScriptEventDescriptor  # struct
+    from ooodev.utils.type_var import UnoInterface
 
 
 class EventAttacherManagerPartial:

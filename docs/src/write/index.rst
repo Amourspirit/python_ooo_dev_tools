@@ -8,4 +8,5 @@ write
     :glob:
 
     *
+    partial/index
     style/index

@@ -13,7 +13,6 @@ from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XChild
 from com.sun.star.container import XIndexContainer
 from com.sun.star.container import XNameAccess
-from com.sun.star.container import XNameAccess
 from com.sun.star.container import XNameContainer
 from com.sun.star.container import XNamed
 from com.sun.star.drawing import XControlShape
@@ -131,12 +130,12 @@ class Forms:
     # endregion     get_forms()
 
     @staticmethod
-    def get_draw_page(doc: XComponent) -> XDrawPage:
+    def get_draw_page(doc: XComponent | XDrawPage) -> XDrawPage:
         """
         Gets draw page
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
 
         Raises:
             Exception: If unable to get draw page
@@ -146,6 +145,9 @@ class Forms:
         """
         # sourcery skip: raise-specific-error
         try:
+            dp = mLo.Lo.qi(XDrawPage, doc)
+            if dp is not None:
+                return dp
             supp_page = mLo.Lo.qi(XDrawPageSupplier, doc)
             if supp_page is not None:
                 return supp_page.getDrawPage()
@@ -814,7 +816,7 @@ class Forms:
         return ctl
 
     @classmethod
-    def get_control_model(cls, doc: XComponent, ctl_name) -> XControlModel | None:
+    def get_control_model(cls, doc: XComponent, ctl_name: str) -> XControlModel | None:
         """
         Gets Control Model by Name
 
@@ -943,7 +945,7 @@ class Forms:
     @classmethod
     def add_control(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         label: str | None,
         comp_kind: FormComponentKind | str,
@@ -960,7 +962,7 @@ class Forms:
         Add a control
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             name (str): Control Name
             label (str | None): Label to assign to control
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
@@ -999,9 +1001,11 @@ class Forms:
 
             if anchor_type is None:
                 # anchor_type was allowed to be None in pre .0.13.8 versions
-                shape_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
+                if mProps.Props.has_property(shape_props, "AnchorType"):
+                    shape_props.setPropertyValue("AnchorType", TextContentAnchorType.AT_PARAGRAPH)
             else:
-                shape_props.setPropertyValue("AnchorType", TextContentAnchorType(anchor_type))
+                if mProps.Props.has_property(shape_props, "AnchorType"):
+                    shape_props.setPropertyValue("AnchorType", TextContentAnchorType(anchor_type))
 
             # create the control's model, this is a service
             # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1form_1_1FormControlModel.html
@@ -1081,7 +1085,7 @@ class Forms:
     @classmethod
     def add_labelled_control(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         label: str,
         comp_kind: FormComponentKind | str,
@@ -1098,7 +1102,7 @@ class Forms:
         Create a label and data field control, with the label preceding the control
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             label (str): Label to assign to control
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
             y (int): Control Y Position
@@ -1134,7 +1138,7 @@ class Forms:
     @classmethod
     def _add_labelled_control(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         label: str,
         comp_kind: FormComponentKind | str,
@@ -1204,7 +1208,7 @@ class Forms:
     @classmethod
     def add_button(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         name: str,
         label: str | None,
@@ -1222,7 +1226,7 @@ class Forms:
         By Default the button has no tab stop and does not focus on click.
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             name (str): Button name
             label (str | None): Button Label
             x (int): Button X position
@@ -1230,7 +1234,7 @@ class Forms:
             height (int): Button Height
             width (int, optional): Button Height. Defaults to 6.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
-            arent_form (XNameContainer, optional): Parent form in which to add control.
+            parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
@@ -1268,7 +1272,7 @@ class Forms:
     @classmethod
     def add_list(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         name: str,
         entries: Iterable[str],
         x: int | UnitT,
@@ -1282,7 +1286,7 @@ class Forms:
         Adds a list
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component | Draw Page.
             name (str): List Name
             entries (Iterable[str]): List Entries
             x (int): List X position
@@ -1325,7 +1329,7 @@ class Forms:
     @classmethod
     def add_database_list(
         cls,
-        doc: XComponent,
+        doc: XComponent | XDrawPage,
         *,
         name: str,
         sql_cmd: str,
@@ -1339,7 +1343,7 @@ class Forms:
         Add a list with a SQL command as it data source
 
         Args:
-            doc (XComponent): Component
+            doc (XComponent, XDrawPage): Component or Draw Page.
             name (str): List Name
             sql_cmd (str): SQL Command
             x (int): List X position
@@ -1521,6 +1525,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlButton:
         """
         Inserts a button control.
@@ -1538,6 +1543,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlButton: Button Control
@@ -1551,7 +1558,7 @@ class Forms:
             styles = ()
         try:
             btn_props = cls.add_button(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 x=x,
@@ -1589,6 +1596,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlCheckBox:
         """
@@ -1601,7 +1609,6 @@ class Forms:
             width (int | UnitT): Width
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             label (str, optional): Label (text) to assign to checkbox.
-            anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -1609,6 +1616,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlCheckBox: Checkbox Control
@@ -1628,7 +1637,7 @@ class Forms:
             name = cls.create_name(parent_form, "CheckBox")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -1673,6 +1682,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlComboBox:
         """
@@ -1695,6 +1705,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlComboBox: ComboBox Control
@@ -1714,7 +1726,7 @@ class Forms:
             name = cls.create_name(parent_form, "ComboBox")
         try:
             btn_props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -1762,6 +1774,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlCurrencyField:
         """
@@ -1783,6 +1796,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlCurrencyField: Currency Field Control
@@ -1802,7 +1817,7 @@ class Forms:
             name = cls.create_name(parent_form, "CurrencyField")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -1849,6 +1864,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlDateField:
         """
@@ -1870,6 +1886,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlDateField: Date Field Control
@@ -1889,7 +1907,7 @@ class Forms:
             name = cls.create_name(parent_form, "DateField")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -1929,6 +1947,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlFile:
         """
         Inserts a file control.
@@ -1943,6 +1962,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlFile: File Control
@@ -1956,7 +1977,7 @@ class Forms:
             styles = ()
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.FILE_CONTROL,
@@ -1992,6 +2013,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlFormattedField:
         """
@@ -2011,6 +2033,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlFormattedField: Currency Field Control
@@ -2030,7 +2054,7 @@ class Forms:
             name = cls.create_name(parent_form, "FormattedField")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -2070,6 +2094,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlGroupBox:
         """
         Inserts a Groupbox control into the form.
@@ -2085,6 +2110,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlGroupBox: Groupbox Control
@@ -2099,7 +2126,7 @@ class Forms:
             name = cls.create_name(parent_form, "GroupBox")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=label,
                 comp_kind=FormComponentKind.GROUP_BOX,
@@ -2132,6 +2159,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlGrid:
         """
         Inserts a Grid control.
@@ -2147,6 +2175,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlGrid: Grid Control
@@ -2161,7 +2191,7 @@ class Forms:
             name = cls.create_name(parent_form, "GroupBox")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=label,
                 comp_kind=FormComponentKind.GRID_CONTROL,
@@ -2191,19 +2221,22 @@ class Forms:
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
         parent_form: XNameContainer | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlHidden:
         """
         Inserts a Hidden control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT): Height.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlHidden: Hidden Control
@@ -2215,7 +2248,7 @@ class Forms:
             name = cls.create_name(parent_form, "Hidden")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.HIDDEN_CONTROL,
@@ -2249,15 +2282,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlImageButton:
         """
         Inserts an Image Button control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT): Height.
             image_url (PathOrStr, optional): Image URL. When setting the value it can be a string or a Path object.
                 If a string is passed it can be a URL or a path to a file.
@@ -2268,6 +2302,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlImageButton: Image Button Control
@@ -2282,7 +2318,7 @@ class Forms:
             name = cls.create_name(parent_form, "FormattedField")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.IMAGE_BUTTON,
@@ -2318,21 +2354,24 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlFixedText:
         """
         Inserts a Label control.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
-            label (str): Contents of label
+            label (str): Contents of label.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlFixedText: Label Control
@@ -2346,7 +2385,7 @@ class Forms:
             styles = ()
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=label,
                 comp_kind=FormComponentKind.FIXED_TEXT,
@@ -2383,16 +2422,17 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlListBox:
         """
         Inserts a ListBox control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT): Height.
             entries (Iterable[str], optional): Combo box entries
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
@@ -2404,6 +2444,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlListBox: ListBox Control
@@ -2423,7 +2465,7 @@ class Forms:
             name = cls.create_name(parent_form, "ListBox")
         try:
             btn_props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -2465,20 +2507,23 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlNavigationToolBar:
         """
         Inserts a Navigation Toolbar control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT): Height.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlNavigationToolBar: Navigation Toolbar Control
@@ -2493,7 +2538,7 @@ class Forms:
             name = cls.create_name(parent_form, "NavigationToolBar")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.NAVIGATION_TOOL_BAR,
@@ -2531,16 +2576,17 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlNumericField:
         """
         Inserts a Numeric field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -2552,6 +2598,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlNumericField: Numeric Field Control
@@ -2571,7 +2619,7 @@ class Forms:
             name = cls.create_name(parent_form, "NumericField")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -2615,16 +2663,17 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlPatternField:
         """
         Inserts a Pattern field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
@@ -2633,6 +2682,8 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
             FormCtlPatternField: Pattern Field Control
@@ -2652,7 +2703,7 @@ class Forms:
             name = cls.create_name(parent_form, "PatternField")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -2694,16 +2745,17 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlRadioButton:
         """
         Inserts a radio button control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             label (str, optional): Label (text) of control.
             anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
@@ -2715,9 +2767,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlRadioButton: Radio Button Control
+            FormCtlRadioButton: Radio Button Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2734,7 +2788,7 @@ class Forms:
             name = cls.create_name(parent_form, "RadioButton")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -2775,14 +2829,15 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlRichText:
         """
         Inserts a Rich Text control.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -2790,9 +2845,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlRichText: Rich Text Control
+            FormCtlRichText: Rich Text Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2803,7 +2860,7 @@ class Forms:
             styles = ()
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.RICH_TEXT_CONTROL,
@@ -2840,14 +2897,15 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlScrollBar:
         """
         Inserts a Scrollbar control.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             height (int): Height. If ``-1``, the dialog Size is not set.
@@ -2859,9 +2917,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlScrollBar: Scrollbar Control
+            FormCtlScrollBar: Scrollbar Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2872,7 +2932,7 @@ class Forms:
             styles = ()
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.SCROLL_BAR,
@@ -2913,15 +2973,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlSpinButton:
         """
         Inserts a Spin Button control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             value (int, optional): Specifies the initial value of the control. Defaults to ``0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
@@ -2932,9 +2993,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlSpinButton: Spin Button Control
+            FormCtlSpinButton: Spin Button Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2946,7 +3009,7 @@ class Forms:
             name = cls.create_name(parent_form, "SpinButton")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.SPIN_BUTTON,
@@ -2983,23 +3046,26 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlSubmitButton:
         """
         Inserts a submit button control.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlSubmitButton: Submit Button Control
+            FormCtlSubmitButton: Submit Button Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3010,7 +3076,7 @@ class Forms:
             styles = ()
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=FormComponentKind.SUBMIT_BUTTON,
@@ -3045,15 +3111,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlTextField:
         """
         Inserts a Text field control.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
             text (str, optional): Text value.
@@ -3063,9 +3130,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlTextField: Text Field Control
+            FormCtlTextField: Text Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3081,7 +3150,7 @@ class Forms:
             styles = ()
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -3127,16 +3196,17 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlTimeField:
         """
         Inserts a Time field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
             min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
@@ -3149,9 +3219,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlTimeField: Time Field Control
+            FormCtlTimeField: Time Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3168,7 +3240,7 @@ class Forms:
             name = cls.create_name(parent_form, "TimeField")
         try:
             props = cls.add_control(
-                doc=doc,
+                doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
                 comp_kind=comp_kind,
@@ -3217,15 +3289,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbCheckBox:
         """
         Inserts a database check box control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
@@ -3235,9 +3308,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbCheckBox: Database Checkbox Control
+            FormCtlDbCheckBox: Database Checkbox Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3246,7 +3321,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "DatabaseCheckBox")
         result = cls.insert_control_check_box(
-            doc,
+            doc=doc,
             x=x,
             y=y,
             width=width,
@@ -3259,6 +3334,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbCheckBox, result)
 
@@ -3280,15 +3356,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbComboBox:
         """
         Inserts a  Database ComboBox control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             entries (Iterable[str], optional): Combo box entries
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
@@ -3301,9 +3378,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbComboBox: Database ComboBox Control
+            FormCtlDbComboBox: Database ComboBox Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3326,6 +3405,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbComboBox, result)
 
@@ -3348,15 +3428,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbCurrencyField:
         """
         Inserts a database currency field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -3368,9 +3449,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbCurrencyField: Database Currency Field Control
+            FormCtlDbCurrencyField: Database Currency Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3394,6 +3477,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbCurrencyField, result)
 
@@ -3415,16 +3499,17 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
         **kwargs: Any,
     ) -> FormCtlDbDateField:
         """
         Inserts a Database Date field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
             min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
@@ -3436,9 +3521,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbDateField: Database Date Field Control
+            FormCtlDbDateField: Database Date Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3461,6 +3548,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
             **kwargs,
         )
         return cast(FormCtlDbDateField, result)
@@ -3482,15 +3570,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbFormattedField:
         """
         Inserts a Database currency field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -3500,9 +3589,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbFormattedField: Database Currency Field Control
+            FormCtlDbFormattedField: Database Currency Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3524,6 +3615,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbFormattedField, result)
 
@@ -3546,15 +3638,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbListBox:
         """
         Inserts a Database ListBox control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT): Height.
             entries (Iterable[str], optional): Combo box entries
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
@@ -3566,9 +3659,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbListBox: Database ListBox Control
+            FormCtlDbListBox: Database ListBox Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3592,6 +3687,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbListBox, result)
 
@@ -3614,15 +3710,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbNumericField:
         """
         Inserts a Database Numeric field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -3634,9 +3731,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbNumericField: Database Numeric Field Control
+            FormCtlDbNumericField: Database Numeric Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3660,6 +3759,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbNumericField, result)
 
@@ -3679,15 +3779,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbPatternField:
         """
         Inserts a Database Pattern field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
@@ -3696,9 +3797,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbPatternField: Database Pattern Field Control
+            FormCtlDbPatternField: Database Pattern Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3719,6 +3822,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbPatternField, result)
 
@@ -3738,15 +3842,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbRadioButton:
         """
         Inserts a Database radio button control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
             tri_state (StateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
@@ -3757,9 +3862,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbRadioButton: Database Radio Button Control
+            FormCtlDbRadioButton: Database Radio Button Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3780,6 +3887,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbRadioButton, result)
 
@@ -3799,6 +3907,7 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbTextField:
         """
         Inserts a Database Text field control.
@@ -3816,9 +3925,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDbTextField: Database Text Field Control
+            FormCtlDbTextField: Database Text Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3839,6 +3950,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbTextField, result)
 
@@ -3861,15 +3973,16 @@ class Forms:
         name: str = "",
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
+        draw_page: XDrawPage | None = None,
     ) -> FormCtlDbTimeField:
         """
         Inserts a Database Time field control into the form.
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
             min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
@@ -3882,9 +3995,11 @@ class Forms:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
+            draw_page (XDrawPage, optional): Draw Page in which to add control.
+                If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlTimeField: Database Time Field Control
+            FormCtlTimeField: Database Time Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -3908,6 +4023,7 @@ class Forms:
             parent_form=parent_form,
             styles=styles,
             comp_kind=comp_kind,
+            draw_page=draw_page,
         )
         return cast(FormCtlDbTimeField, result)
 
