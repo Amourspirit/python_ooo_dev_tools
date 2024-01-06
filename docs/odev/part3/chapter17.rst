@@ -541,6 +541,7 @@ A presentation (or drawing) document can access its master pages through the XMa
 .. tabs::
 
     .. code-tab:: python
+
         # doc is an XComponent
         mp_supp = Lo.qi(XMasterPagesSupplier, doc, True)
         pgs = mp_supp.getMasterPages()  # XDrawPages

@@ -519,3 +519,9 @@ class StyleError(Exception):
     """Generic Dialog Error"""
 
     pass
+
+
+class NameClashError(Exception):
+    """Generic Name Clash Error"""
+
+    pass

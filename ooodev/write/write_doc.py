@@ -50,8 +50,11 @@ from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
+<<<<<<< HEAD
 from ooodev.draw import draw_page as mDrawPage
 from ooodev.draw import draw_pages as mDrawPages
+=======
+>>>>>>> 0.18.3
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -63,13 +66,15 @@ from . import write_text_cursor as mWriteTextCursor
 from . import write_text_range as mWriteTextRange
 from . import write_text_view_cursor as mWriteTextViewCursor
 from . import write_word_cursor as mWriteWordCursor
-from .style import write_paragraph_style as mWriteParagraphStyle
-from .style import write_page_style as mWritePageStyle
-from .style import write_character_style as mWriteCharacterStyle
 from .style import write_cell_style as mWriteCellStyle
-from .style import write_style as mWriteStyle
+from .style import write_character_style as mWriteCharacterStyle
 from .style import write_numbering_style as mWriteNumberingStyle
+from .style import write_page_style as mWritePageStyle
+from .style import write_paragraph_style as mWriteParagraphStyle
+from .style import write_style as mWriteStyle
 from .style import write_style_families as mWriteStyleFamilies
+from .write_draw_page import WriteDrawPage
+from .write_draw_pages import WriteDrawPages
 
 
 class WriteDoc(
@@ -104,6 +109,8 @@ class WriteDoc(
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
+        self._draw_page = None
+        self._draw_pages = None
 
     # region Lazy Listeners
 
@@ -467,25 +474,23 @@ class WriteDoc(
         """
         return mSelection.Selection.get_selected_text_str(self.component)
 
-    def get_draw_page(self) -> mDrawPage.DrawPage[WriteDoc]:
+    def get_draw_page(self) -> WriteDrawPage[WriteDoc]:
         """
         Gets draw page.
 
         Returns:
-            DrawPage: Draw Page
+            GenericDrawPage: Draw Page
         """
-        draw_page = mWrite.Write.get_draw_page(self.component)
-        return mDrawPage.DrawPage(self, draw_page)
+        return self.draw_page
 
-    def get_draw_pages(self) -> mDrawPages.DrawPages[WriteDoc]:
+    def get_draw_pages(self) -> WriteDrawPages:
         """
         Gets draw pages.
 
         Returns:
-            DrawPages: Draw Page
+            GenericDrawPages: Draw Page
         """
-        draw_pages = mWrite.Write.get_draw_pages(self.component)
-        return mDrawPages.DrawPages(self, draw_pages)
+        return self.draw_pages
 
     def get_paragraph_cursor(self) -> mWriteParagraphCursorCursor.WriteParagraphCursor:
         """
@@ -982,3 +987,32 @@ class WriteDoc(
             value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default ``100``.
         """
         mGUI.GUI.zoom_value(value=value)
+
+    # region Properties
+    @property
+    def draw_page(self) -> WriteDrawPage[WriteDoc]:
+        """
+        Gets draw page.
+
+        Returns:
+            GenericDrawPage: Draw Page
+        """
+        if self._draw_page is None:
+            draw_page = mWrite.Write.get_draw_page(self.component)
+            self._draw_page = WriteDrawPage(self, draw_page)
+        return self._draw_page  # type: ignore
+
+    @property
+    def draw_pages(self) -> WriteDrawPages:
+        """
+        Gets draw pages.
+
+        Returns:
+            GenericDrawPages: Draw Pages
+        """
+        if self._draw_pages is None:
+            draw_pages = mWrite.Write.get_draw_pages(self.component)
+            self._draw_pages = WriteDrawPages(self, draw_pages)
+        return self._draw_pages  # type: ignore
+
+    # endregion Properties

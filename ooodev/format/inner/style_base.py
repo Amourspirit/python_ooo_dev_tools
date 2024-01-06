@@ -6,6 +6,7 @@
 # region Imports
 from __future__ import annotations
 from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
+import contextlib
 import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
@@ -28,6 +29,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.prop_pair import PropPair
+from ooodev.units import UnitT, UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -95,6 +97,32 @@ class StyleBase(metaclass=MetaStyle):
                 self._dv[key] = value
         super().__init__()
         self._set_style_internal_events()
+    
+    def _get_mm100_obj_from_mm(self, value: UnitT | float, min_value: int = -9999) -> UnitMM100:
+        """
+        Gets a UnitMM100 object from mm.
+
+        Args:
+            value (UnitT | float): Units in mm or UnitT
+            min_value (int, optional): The min value in ``1/100 mm`.
+                If not != -9999 then value must be greater than or equal to ``min_val``.
+                Defaults to -9999.
+
+        Raises:
+            ValueError: If min_val != -9999 and value < min_val
+
+        Returns:
+            UnitMM100: MM 100 units.
+        """
+        with contextlib.suppress(AttributeError):
+            result = value.get_value_mm100()  # type: ignore
+            if min_value != -9999 and result < min_value:
+                raise ValueError("Value must be positive")
+            return UnitMM100(result)
+        result = UnitMM100.from_mm(value)  # type: ignore
+        if min_value != -9999 and result.value < min_value:
+            raise ValueError("Value must be positive")
+        return result
 
     def _set_style_internal_events(self):
         self._fn_on_getting_cattribs = self._on_getting_cattribs

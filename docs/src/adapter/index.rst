@@ -18,9 +18,13 @@ Subpackages
    ooodev.adapter.drawing
    ooodev.adapter.form
    ooodev.adapter.frame
+   ooodev.adapter.io
    ooodev.adapter.lang
    ooodev.adapter.presentation
    ooodev.adapter.script
+   ooodev.adapter.sdb
+   ooodev.adapter.sdbc
+   ooodev.adapter.sdbcx
    ooodev.adapter.sheet
    ooodev.adapter.style
    ooodev.adapter.table

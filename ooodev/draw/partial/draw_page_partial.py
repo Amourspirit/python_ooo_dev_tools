@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING, TypeVar, Generic, Union
+from typing import List, Tuple, overload, Sequence, TYPE_CHECKING, TypeVar, Generic, Union
 import uno
 
 
@@ -9,6 +9,7 @@ from ooo.dyn.awt.point import Point
 from ooo.dyn.drawing.polygon_flags import PolygonFlags
 
 from ooodev.adapter.container.index_container_comp import IndexContainerComp
+from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import color as mColor
@@ -21,23 +22,8 @@ from ooodev.utils.kind.drawing_shape_kind import DrawingShapeKind
 from ooodev.utils.kind.glue_points_kind import GluePointsKind
 from ooodev.utils.kind.presentation_kind import PresentationKind
 from ooodev.utils.type_var import PathOrStr
-from ooodev.write.write_text import WriteText
-from ooodev.exceptions import ex as mEx
-from .. import draw_text as mDrawText
-from ..shapes import (
-    OpenBezierShape,
-    ClosedBezierShape,
-    DrawShape,
-    ConnectorShape,
-    EllipseShape,
-    OLE2Shape,
-    GraphicObjectShape,
-    LineShape,
-    PolyLineShape,
-    PolyPolygonShape,
-    RectangleShape,
-    TextShape,
-)
+
+# more import at bottom of this module
 
 if TYPE_CHECKING:
     from com.sun.star.animations import XAnimationNode
@@ -1117,3 +1103,25 @@ class DrawPagePartial(Generic[_T]):
         mDraw.Draw.set_transition(
             slide=self.component, fade_effect=fade_effect, speed=speed, change=change, duration=duration  # type: ignore
         )
+
+
+# These import have to be here to avoid circular imports.
+# pylint: disable=wrong-import-position
+# ruff: noqa: E402
+
+from .. import draw_text as mDrawText
+
+from ..shapes import (
+    OpenBezierShape,
+    ClosedBezierShape,
+    DrawShape,
+    ConnectorShape,
+    EllipseShape,
+    OLE2Shape,
+    GraphicObjectShape,
+    LineShape,
+    PolyLineShape,
+    PolyPolygonShape,
+    RectangleShape,
+    TextShape,
+)

@@ -194,7 +194,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
             MissingNameError: If sheet is not found.
 
         Returns:
-            Any: The element with the specified name.
+            CalcSheet: The element with the specified name.
         """
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")

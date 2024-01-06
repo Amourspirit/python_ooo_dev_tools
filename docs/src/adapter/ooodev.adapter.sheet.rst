@@ -24,6 +24,7 @@ Submodules
    ooodev.adapter.sheet.spreadsheet_comp
    ooodev.adapter.sheet.spreadsheet_document_comp
    ooodev.adapter.sheet.spreadsheet_document_settings_comp
+   ooodev.adapter.sheet.spreadsheet_draw_page_comp
    ooodev.adapter.sheet.spreadsheet_view_comp
    ooodev.adapter.sheet.spreadsheets_comp
    ooodev.adapter.sheet.spreadsheets_partial
