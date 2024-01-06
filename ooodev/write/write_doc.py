@@ -50,8 +50,6 @@ from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.draw import generic_draw_page as mGenericDrawPage
-from ooodev.draw import generic_draw_pages as mGenericDrawPages
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -63,13 +61,15 @@ from . import write_text_cursor as mWriteTextCursor
 from . import write_text_range as mWriteTextRange
 from . import write_text_view_cursor as mWriteTextViewCursor
 from . import write_word_cursor as mWriteWordCursor
-from .style import write_paragraph_style as mWriteParagraphStyle
-from .style import write_page_style as mWritePageStyle
-from .style import write_character_style as mWriteCharacterStyle
 from .style import write_cell_style as mWriteCellStyle
-from .style import write_style as mWriteStyle
+from .style import write_character_style as mWriteCharacterStyle
 from .style import write_numbering_style as mWriteNumberingStyle
+from .style import write_page_style as mWritePageStyle
+from .style import write_paragraph_style as mWriteParagraphStyle
+from .style import write_style as mWriteStyle
 from .style import write_style_families as mWriteStyleFamilies
+from .write_draw_page import WriteDrawPage
+from .write_draw_pages import WriteDrawPages
 
 
 class WriteDoc(
@@ -469,7 +469,7 @@ class WriteDoc(
         """
         return mSelection.Selection.get_selected_text_str(self.component)
 
-    def get_draw_page(self) -> mGenericDrawPage.GenericDrawPage[WriteDoc]:
+    def get_draw_page(self) -> WriteDrawPage[WriteDoc]:
         """
         Gets draw page.
 
@@ -478,7 +478,7 @@ class WriteDoc(
         """
         return self.draw_page
 
-    def get_draw_pages(self) -> mGenericDrawPages.GenericDrawPages[WriteDoc]:
+    def get_draw_pages(self) -> WriteDrawPages:
         """
         Gets draw pages.
 
@@ -985,7 +985,7 @@ class WriteDoc(
 
     # region Properties
     @property
-    def draw_page(self) -> mGenericDrawPage.GenericDrawPage[WriteDoc]:
+    def draw_page(self) -> WriteDrawPage[WriteDoc]:
         """
         Gets draw page.
 
@@ -994,11 +994,11 @@ class WriteDoc(
         """
         if self._draw_page is None:
             draw_page = mWrite.Write.get_draw_page(self.component)
-            self._draw_page = mGenericDrawPage.GenericDrawPage(self, draw_page)
+            self._draw_page = WriteDrawPage(self, draw_page)
         return self._draw_page  # type: ignore
 
     @property
-    def draw_pages(self) -> mGenericDrawPages.GenericDrawPages[WriteDoc]:
+    def draw_pages(self) -> WriteDrawPages:
         """
         Gets draw pages.
 
@@ -1007,7 +1007,7 @@ class WriteDoc(
         """
         if self._draw_pages is None:
             draw_pages = mWrite.Write.get_draw_pages(self.component)
-            self._draw_pages = mGenericDrawPages.GenericDrawPages(self, draw_pages)
+            self._draw_pages = WriteDrawPages(self, draw_pages)
         return self._draw_pages  # type: ignore
 
     # endregion Properties

@@ -2,8 +2,6 @@ from __future__ import annotations
 import contextlib
 from typing import TypeVar, Type
 from dataclasses import dataclass
-
-from attr import has
 from ooodev.utils.decorator import enforce
 from .unit_convert import UnitConvert, UnitLength
 

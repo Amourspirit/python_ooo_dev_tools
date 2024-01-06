@@ -7,18 +7,18 @@ from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
-from .calc_form import CalcForm
+from .write_form import WriteForm
 
 if TYPE_CHECKING:
     from com.sun.star.form import XForms
-    from .spreadsheet_draw_page import SpreadsheetDrawPage
+    from .write_draw_page import WriteDrawPage
 
 
-class CalcForms(FormsComp, QiPartial):
+class WriteForms(FormsComp, QiPartial):
     """
-    Class for managing Calc Forms.
+    Class for managing Writer Forms.
 
-    This class is Enumerable and returns ``CalcForm`` instance on iteration.
+    This class is Enumerable and returns ``WriteForm`` instance on iteration.
 
     .. code-block:: python
 
@@ -43,25 +43,25 @@ class CalcForms(FormsComp, QiPartial):
         # get the number of sheets
         num_sheets = len(doc.sheets)
 
-    .. versionadded:: 0.18.2
+    .. versionadded:: 0.18.3
     """
 
-    def __init__(self, owner: SpreadsheetDrawPage, forms: XForms) -> None:
+    def __init__(self, owner: WriteDrawPage, forms: XForms) -> None:
         """
         Constructor
 
         Args:
-            owner (SpreadsheetDrawPage): Owner Component
+            owner (WriteDrawPage): Owner Component
             forms (XForms): Forms instance.
         """
         self.__owner = owner
         FormsComp.__init__(self, forms)  # type: ignore
         QiPartial.__init__(self, component=forms, lo_inst=mLo.Lo.current_lo)
 
-    def __next__(self) -> CalcForm:
-        return CalcForm(owner=self, component=super().__next__())
+    def __next__(self) -> WriteForm:
+        return WriteForm(owner=self, component=super().__next__())
 
-    def __getitem__(self, index: str | int) -> CalcForm:
+    def __getitem__(self, index: str | int) -> WriteForm:
         if isinstance(index, int):
             return self.get_by_index(index)
         return self.get_by_name(index)
@@ -108,17 +108,17 @@ class CalcForms(FormsComp, QiPartial):
 
     # region add_form
     @overload
-    def add_form(self) -> CalcForm:
+    def add_form(self) -> WriteForm:
         """
         Adds a new form at the end.
 
         Returns:
-            CalcForm: Form
+            WriteForm: Form
         """
         ...
 
     @overload
-    def add_form(self, idx: int) -> CalcForm:
+    def add_form(self, idx: int) -> WriteForm:
         """
         Adds a new form.
 
@@ -126,12 +126,12 @@ class CalcForms(FormsComp, QiPartial):
             idx (int): Index of form.
 
         Returns:
-            CalcForm: Form
+            WriteForm: Form
         """
         ...
 
     @overload
-    def add_form(self, name: str) -> CalcForm:
+    def add_form(self, name: str) -> WriteForm:
         """
         Adds a new form.
 
@@ -139,11 +139,11 @@ class CalcForms(FormsComp, QiPartial):
             name (str): Name of form.
 
         Returns:
-            CalcForm: Form
+            WriteForm: Form
         """
         ...
 
-    def add_form(self, *args, **kwargs) -> CalcForm:
+    def add_form(self, *args, **kwargs) -> WriteForm:
         """
         Adds a new form.
 
@@ -155,7 +155,7 @@ class CalcForms(FormsComp, QiPartial):
             NameClashError: If name already exists.
 
         Returns:
-            CalcForm: Form
+            WriteForm: Form
         """
         all_args = [arg for arg in args]
         all_args.extend(kwargs.values())
@@ -185,7 +185,7 @@ class CalcForms(FormsComp, QiPartial):
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> CalcForm:
+    def get_by_index(self, idx: int) -> WriteForm:
         """
         Gets the element at the specified index.
 
@@ -194,17 +194,17 @@ class CalcForms(FormsComp, QiPartial):
                 For example, -1 will return the last element.
 
         Returns:
-            CalcForm: The element at the specified index.
+            WriteForm: The element at the specified index.
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return CalcForm(owner=self, component=result)
+        return WriteForm(owner=self, component=result)
 
     # endregion XIndexAccess overrides
 
     # region XNameAccess overrides
 
-    def get_by_name(self, name: str) -> CalcForm:
+    def get_by_name(self, name: str) -> WriteForm:
         """
         Gets the element with the specified name.
 
@@ -215,21 +215,21 @@ class CalcForms(FormsComp, QiPartial):
             MissingNameError: If sheet is not found.
 
         Returns:
-            CalcForm: The element with the specified name.
+            WriteForm: The element with the specified name.
         """
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return CalcForm(owner=self, component=result)
+        return WriteForm(owner=self, component=result)
 
     # endregion XNameAccess overrides
 
     # region Properties
     @property
-    def owner(self) -> SpreadsheetDrawPage:
+    def owner(self) -> WriteDrawPage:
         """
         Returns:
-            SpreadsheetDrawPage: Calc doc
+            WriteDrawPage: Calc doc
         """
         return self.__owner
 
