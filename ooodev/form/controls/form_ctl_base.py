@@ -6,7 +6,6 @@ from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XChild
 from com.sun.star.container import XNamed
 
-from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.form.form_component_type import FormComponentType
 
 # from ooodev.adapter.lang.event_events import EventEvents
@@ -23,8 +22,12 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
 from ooodev.utils.kind.form_component_kind import FormComponentKind
+from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
+from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
+from ooodev.units import UnitMM
 
 if TYPE_CHECKING:
+    from com.sun.star.drawing import ControlShape  # service
     from com.sun.star.awt import XControl
     from com.sun.star.awt import UnoControlModel  # service
     from com.sun.star.awt import UnoControl  # service
@@ -65,6 +68,7 @@ class FormCtlBase(
         PropertyChangeImplement.__init__(self, component=model, trigger_args=generic_args)
         PropertiesChangeImplement.__init__(self, component=model, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=model, trigger_args=generic_args)
+        self.__control_shape = cast("ControlShape", None)
 
     # endregion init
 
@@ -229,18 +233,6 @@ class FormCtlBase(
         return form_id
 
     @property
-    def height(self) -> int:
-        """Gets/Sets the height of the control"""
-        return self.get_view().getSize().Height
-
-    @height.setter
-    def height(self, value: int) -> None:
-        view = self.get_view()
-        pos_size = view.getPosSize()
-        pos_size.Height = value
-        view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
-
-    @property
     def name(self) -> str:
         """Gets the name for the control model"""
         return self.get_model().Name
@@ -264,39 +256,28 @@ class FormCtlBase(
         self.get_model().Tag = value
 
     @property
-    def width(self) -> int:
-        """Gets the width of the control"""
-        return self.get_view().getSize().Width
-
-    @width.setter
-    def width(self, value: int) -> None:
-        view = self.get_view()
-        pos_size = view.getPosSize()
-        pos_size.Width = value
-        view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
+    def size(self) -> GenericUnitSize[UnitMM, float]:
+        """Gets the size of the control in ``UnitMM`` Values."""
+        if self.control_shape is None:
+            raise ValueError("control_shape property is None")
+        sz = self.control_shape.getSize()
+        return GenericUnitSize(UnitMM.from_mm100(sz.Width), UnitMM.from_mm100(sz.Height))
 
     @property
-    def x(self) -> int:
-        """Gets/Sets the x position for the control"""
-        return self.get_view().getPosSize().X
-
-    @x.setter
-    def x(self, value: int) -> None:
-        view = self.get_view()
-        pos_size = view.getPosSize()
-        pos_size.X = value
-        view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.X)
+    def position(self) -> GenericUnitPoint[UnitMM, float]:
+        """Gets the Position of the control in ``UnitMM`` Values."""
+        if self.control_shape is None:
+            raise ValueError("control_shape property is None")
+        ps = self.control_shape.getPosition()
+        return GenericUnitPoint(UnitMM.from_mm100(ps.X), UnitMM.from_mm100(ps.Y))
 
     @property
-    def y(self) -> int:
-        """Gets/Sets the y position for the control"""
-        return self.get_view().getPosSize().Y
+    def control_shape(self) -> ControlShape:
+        """Gets the owner of the control"""
+        return self.__control_shape
 
-    @y.setter
-    def y(self, value: int) -> None:
-        view = self.get_view()
-        pos_size = view.getPosSize()
-        pos_size.Y = value
-        view.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.Y)
+    @control_shape.setter
+    def control_shape(self, value: ControlShape) -> None:
+        self.__control_shape = value
 
     # endregion Properties
