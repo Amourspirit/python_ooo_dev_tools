@@ -101,6 +101,9 @@ class DrawPage(
     def forms(self) -> DrawForms:
         """
         Gets the forms of the draw page.
+
+        Returns:
+            DrawForms: Forms of the draw page.
         """
         if self._forms is None:
             self._forms = DrawForms(owner=self, forms=self.component.getForms())  # type: ignore

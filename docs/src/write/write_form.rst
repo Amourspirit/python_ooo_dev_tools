@@ -1,7 +1,7 @@
-.. _class_calc_calc_form:
+.. _class_write_write_form:
 
-Class CalcForm
-==============
+Class WriteForm
+===============
 
 .. contents:: Table of Contents
     :local:
@@ -11,7 +11,7 @@ Class CalcForm
 Introduction
 ------------
 
-The ``CalcForm`` class is can manage a form for a Calc Sheet.
+The ``WriteForm`` class is can manage a form for a Write document.
 
 Adding Controls
 ---------------
@@ -24,18 +24,15 @@ Here is an example of adding a button to a form and adding an event handler for 
 .. code-block:: python
 
     >>> from typing import Any
-    >>> from ooodev.calc import Calc, CalcDoc
+    >>> from ooodev.write import Write, WriteDoc
     >>> from ooodev.events.args.event_args import EventArgs
     >>> from ooodev.form.controls import FormCtlButton
     >>>
-    >>> doc = CalcDoc(Calc.open_doc("form.ods"))
+    >>> doc = WriteDoc(Write.create_doc())
     >>> doc.set_visible()
-    >>> sheet = doc.sheets[0]
-    >>> if len(sheet.draw_page.forms) == 0:
-    ...     sheet.draw_page.forms.add() # add a form with a default name of Form1
-    >>> frm = sheet.draw_page.forms[0]
+    >>> frm = doc.draw_page.forms.add_form("MainForm")
     >>> print(frm.name)
-    Form1
+    MainForm
     >>> btn = frm.insert_control_button(x=10, y=10, width=40, height=10, label="Button Test")
     >>> btn.add_event_action_performed(on_btn_action_preformed)
     >>>
@@ -47,7 +44,7 @@ Here is an example of adding a button to a form and adding an event handler for 
 Class Declaration
 -----------------
 
-.. autoclass:: ooodev.calc.CalcForm
+.. autoclass:: ooodev.write.WriteForm
     :members:
     :undoc-members:
     :show-inheritance:
