@@ -7,7 +7,6 @@ from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from .spreadsheet_draw_page import SpreadsheetDrawPage
-from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -39,12 +38,8 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial):
         QiPartial.__init__(self, component=slides, lo_inst=mLo.Lo.current_lo)
         self._current_index = 0
 
-    def __getitem__(self, _itm: int) -> SpreadsheetDrawPage[_T]:
-        if _itm < 0:
-            _itm = len(self) + _itm
-            if _itm < 0:
-                raise IndexError("list index out of range")
-        return self.get_by_index(idx=_itm)
+    def __getitem__(self, idx: int) -> SpreadsheetDrawPage[_T]:
+        return self.get_by_index(idx=idx)
 
     def __len__(self) -> int:
         return self.component.getCount()
@@ -70,6 +65,32 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial):
         else:
             raise TypeError(f"Unsupported type: {type(_item)}")
 
+    def _get_index(self, idx: int, allow_greater: bool = False) -> int:
+        """
+        Gets the index.
+
+        Args:
+            idx (int): Index of sheet. Can be a negative value to index from the end of the list.
+            allow_greater (bool, optional): If True and index is greater then the number of
+                sheets then the index becomes the next index if sheet were appended. Defaults to False.
+
+        Returns:
+            int: Index value.
+        """
+        count = len(self)
+        if idx < 0:
+            if count == 0 and allow_greater:
+                return 0
+            idx = count + idx
+            if idx < 0:
+                raise IndexError("list index out of range")
+        if idx >= count:
+            if allow_greater:
+                idx = count
+            else:
+                raise IndexError("list index out of range")
+        return idx
+
     def insert_page(self, idx: int) -> SpreadsheetDrawPage[_T]:
         """
         Inserts a draw page at the given position in the document
@@ -78,17 +99,10 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial):
             idx (int): Index, can be a negative value to insert from the end of the document.
                 For example, -1 will insert at the end of the document.
 
-        Raises:
-            DrawPageMissingError: If unable to get pages.
-            DrawPageError: If any other error occurs.
-
         Returns:
             SpreadsheetDrawPage: New slide that was inserted.
         """
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
+        idx = self._get_index(idx=idx, allow_greater=True)
         return SpreadsheetDrawPage(self.owner, self.component.insertNewByIndex(idx))
 
     def delete_page(self, idx: int) -> bool:
@@ -102,10 +116,7 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial):
         Returns:
             bool: ``True`` on success; Otherwise, ``False``
         """
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
+        idx = self._get_index(idx=idx, allow_greater=False)
         with contextlib.suppress(Exception):
             # get the slide as UNO object and remove it
             result = super().get_by_index(idx)
@@ -131,10 +142,7 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial):
         Returns:
             SpreadsheetDrawPage: The drawpage with the specified index.
         """
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("Index out of range")
+        idx = self._get_index(idx=idx, allow_greater=False)
         if idx >= len(self):
             raise IndexError(f"Index out of range: '{idx}'")
 
@@ -156,13 +164,7 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial):
         Returns:
             SpreadsheetDrawPage: The new page.
         """
-        if idx >= len(self):
-            # if index is greater than the number of slides, then insert at the end
-            idx = -1
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("Index out of range")
+        idx = self._get_index(idx=idx, allow_greater=True)
         result = super().insert_new_by_index(idx)
         return SpreadsheetDrawPage(owner=self.owner, component=result)
 

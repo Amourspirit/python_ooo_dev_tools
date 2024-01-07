@@ -2,6 +2,19 @@
 Version History
 ***************
 
+Version 0.19.0
+==============
+
+``ooodev.draw.DrawPage`` now has a ``forms`` property that returns a ``ooodev.Draw.DrawForms`` class for working with and accessing forms.
+
+Breaking Changes
+----------------
+
+``ooodev.form.control.*`` controls no longer have ``width``, ``height``, ``x``, ``y`` properties. They were not reporting the correct value from the draw page.
+They can still be accessed via the controls ``ctl.get_view().getPosSize()`` method.
+
+Now there are ``size`` and ``position`` properties that return the expected values as ``UnitMM`` objects.
+
 Version 0.18.2
 ==============
 

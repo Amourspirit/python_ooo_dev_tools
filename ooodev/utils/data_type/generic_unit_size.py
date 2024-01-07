@@ -8,6 +8,8 @@ _T = TypeVar("_T", bound=UnitT)
 TNum = TypeVar(name="TNum", bound=Union[int, float])
 _TNum = TypeVar(name="_TNum", bound=Union[int, float])
 
+# example usage in: ooodev.form.controls.form_ctl_base.py
+
 
 class GenericUnitSize(Generic[_T, TNum]):
     """

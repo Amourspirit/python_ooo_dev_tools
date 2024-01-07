@@ -1,31 +1,28 @@
 """DrawPages class for Draw documents."""
 from __future__ import annotations
-from typing import TYPE_CHECKING, TypeVar, Generic
+from typing import TYPE_CHECKING
 import contextlib
 import uno
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
-from ooodev.draw import generic_draw_page as mGenericDrawPage
-from ooodev.exceptions import ex as mEx
+from .write_draw_page import WriteDrawPage
 from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.utils.partial.qi_partial import QiPartial
 
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
+    from .write_doc import WriteDoc
 
-_T = TypeVar("_T", bound="ComponentT")
 
-
-class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
+class WriteDrawPages(DrawPagesComp, QiPartial):
     """
-    Class for managing Generic Draw Pages.
+    Class for managing Writer Draw Pages.
     """
 
-    def __init__(self, owner: _T, slides: XDrawPages) -> None:
+    def __init__(self, owner: WriteDoc, slides: XDrawPages) -> None:
         """
         Constructor
 
@@ -39,7 +36,7 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
         QiPartial.__init__(self, component=slides, lo_inst=mLo.Lo.current_lo)
         self._current_index = 0
 
-    def __getitem__(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
+    def __getitem__(self, idx: int) -> WriteDrawPage[WriteDoc]:
         return self.get_by_index(idx=idx)
 
     def __len__(self) -> int:
@@ -48,33 +45,18 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
     def __iter__(self):
         return self
 
-    def __next__(self) -> mGenericDrawPage.GenericDrawPage[_T]:
+    def __next__(self) -> WriteDrawPage[WriteDoc]:
         if self._current_index >= len(self):
             self._current_index = 0
             raise StopIteration
         self._current_index += 1
         return self[self._current_index - 1]
 
-    def __delitem__(self, _item: int | mGenericDrawPage.GenericDrawPage[_T] | XDrawPage) -> None:
+    def __delitem__(self, _item: int | WriteDrawPage[WriteDoc] | XDrawPage) -> None:
         # Delete slide by index, name, or object
-        # Usage:
-        # del doc.slides[-1]
-        # assert len(doc.slides) == 8
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide.get_name()]
-        # assert len(doc.slides) == 7
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide]
-        # assert len(doc.slides) == 6
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide.component] # type: ignore
-        # assert len(doc.slides) == 5
         if mInfo.Info.is_instance(_item, int):
             self.delete_page(_item)
-        elif mInfo.Info.is_instance(_item, mGenericDrawPage.GenericDrawPage):
+        elif mInfo.Info.is_instance(_item, WriteDrawPage):
             super().remove(_item.component)
         elif mInfo.Info.is_instance(_item, XDrawPage):
             super().remove(_item)
@@ -107,7 +89,7 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
                 raise IndexError("list index out of range")
         return idx
 
-    def insert_page(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
+    def insert_page(self, idx: int) -> WriteDrawPage[WriteDoc]:
         """
         Inserts a draw page at the given position in the document
 
@@ -115,15 +97,11 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
             idx (int): Index, can be a negative value to insert from the end of the document.
                 For example, -1 will insert at the end of the document.
 
-        Raises:
-            DrawPageMissingError: If unable to get pages.
-            DrawPageError: If any other error occurs.
-
         Returns:
-            GenericDrawPage: New slide that was inserted.
+            WriteDrawPage: New slide that was inserted.
         """
         idx = self._get_index(idx=idx, allow_greater=True)
-        return mGenericDrawPage.GenericDrawPage(self.owner, self.component.insertNewByIndex(idx))
+        return WriteDrawPage(self.owner, self.component.insertNewByIndex(idx))
 
     def delete_page(self, idx: int) -> bool:
         """
@@ -148,7 +126,7 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
+    def get_by_index(self, idx: int) -> WriteDrawPage[WriteDoc]:
         """
         Gets the element with the specified index.
 
@@ -160,19 +138,19 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
             IndexError: If unable to find slide with index.
 
         Returns:
-            GenericDrawPage: The drawpage with the specified index.
+            WriteDrawPage: The drawpage with the specified index.
         """
         idx = self._get_index(idx=idx, allow_greater=False)
         if idx >= len(self):
             raise IndexError(f"Index out of range: '{idx}'")
 
         result = super().get_by_index(idx)
-        return mGenericDrawPage.GenericDrawPage(owner=self.owner, component=result)
+        return WriteDrawPage(owner=self.owner, component=result)
 
     # endregion XIndexAccess overrides
 
     # region XDrawPages overrides
-    def insert_new_by_index(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
+    def insert_new_by_index(self, idx: int) -> WriteDrawPage[WriteDoc]:
         """
         Creates and inserts a new GenericDrawPage or MasterPage into this container.
 
@@ -182,17 +160,17 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
                 For example, ``-1`` will insert at the end of the document.
 
         Returns:
-            GenericDrawPage: The new page.
+            WriteDrawPage: The new page.
         """
         idx = self._get_index(idx=idx, allow_greater=True)
         result = super().insert_new_by_index(idx)
-        return mGenericDrawPage.GenericDrawPage(owner=self.owner, component=result)
+        return WriteDrawPage(owner=self.owner, component=result)
 
     # endregion XDrawPages overrides
 
     # region Properties
     @property
-    def owner(self) -> _T:
+    def owner(self) -> WriteDoc:
         """
         Returns:
             _T: Draw or Impress document.
