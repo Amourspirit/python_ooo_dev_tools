@@ -21,9 +21,9 @@ from ooodev.adapter.beans.property_change_implement import PropertyChangeImpleme
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
-from ooodev.utils.kind.form_component_kind import FormComponentKind
-from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
+from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
+from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.units import UnitMM
 
 if TYPE_CHECKING:
@@ -57,27 +57,26 @@ class FormCtlBase(
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         self._set_control(ctl)
-        model = self.get_model()
-        generic_args = self._get_generic_args()
-        FocusEvents.__init__(self, trigger_args=generic_args, cb=self._on_focus_listener_add_remove)
-        KeyEvents.__init__(self, trigger_args=generic_args, cb=self._on_key_events_listener_add_remove)
-        MouseEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_listener_add_remove)
-        MouseMotionEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_motion_listener_add_remove)
-        PaintEvents.__init__(self, trigger_args=generic_args, cb=self._on_paint_listener_add_remove)
-        WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_event_listener_add_remove)
-        PropertyChangeImplement.__init__(self, component=model, trigger_args=generic_args)
-        PropertiesChangeImplement.__init__(self, component=model, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=model, trigger_args=generic_args)
+        # in some cases the contol model is removed from the control.
+        # This means that self.get_control().getModel() return None.
+        # By capturing the model here, we can set it back to the control if it is removed.
+        # The model is removed for instance when a control is on a spreadsheet and the sheet is deactivated.
+        self.__model = self.get_control().getModel()
+        trigger_args = self._get_generic_args()
+        FocusEvents.__init__(self, trigger_args=trigger_args, cb=self._on_focus_listener_add_remove)
+        KeyEvents.__init__(self, trigger_args=trigger_args, cb=self._on_key_events_listener_add_remove)
+        MouseEvents.__init__(self, trigger_args=trigger_args, cb=self._on_mouse_listener_add_remove)
+        MouseMotionEvents.__init__(self, trigger_args=trigger_args, cb=self._on_mouse_motion_listener_add_remove)
+        PaintEvents.__init__(self, trigger_args=trigger_args, cb=self._on_paint_listener_add_remove)
+        WindowEvents.__init__(self, trigger_args=trigger_args, cb=self._on_window_event_listener_add_remove)
+        PropertyChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
+        PropertiesChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
+        VetoableChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
         self.__control_shape = cast("ControlShape", None)
 
     # endregion init
 
     # region Lazy Listeners
-    # def _on_event_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
-    #     # will only ever fire once
-    #     model = self.get_model()
-    #     model.addEventListener(self.events_listener_event)
-    #     event.remove_callback = True
 
     def _on_mouse_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
         # will only ever fire once
@@ -133,7 +132,23 @@ class FormCtlBase(
 
     def get_model(self) -> UnoControlModel:
         """Gets the model for this control"""
-        return cast("UnoControlModel", self.get_control().getModel())
+        # upon testing in Calc, I noticed that the model is not available
+        # after the sheet that the control is on is deactivated ( another sheet is activated).
+        # So, I am going to try to get the model from the form that the control is on.
+
+        ctl = self.get_control()
+        model = ctl.getModel()
+        if model is not None:
+            return cast("UnoControlModel", model)
+        if self.__model is not None:
+            ctl.setModel(self.__model)
+        model = ctl.getModel()
+        if model is not None:
+            return cast("UnoControlModel", model)
+        # if we get here, then we have no model
+        raise ValueError(
+            "Unable to get model for control. Consider setting the model manually using add_event_listener_no_model() event."
+        )
 
     def get_view(self) -> UnoControl:
         """Gets the view of this control"""

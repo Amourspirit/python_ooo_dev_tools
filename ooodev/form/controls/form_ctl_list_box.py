@@ -240,8 +240,24 @@ class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemLi
 
     @property
     def selected_items(self) -> Tuple[int, ...]:
-        """Gets the selected items"""
+        """
+        Gets/Sets the selected items.
+
+        When setting the selected items, any iterable of integers can be passed in
+        such as a list or tuple of integers.
+
+        Returns:
+            Tuple[int, ...]: Tuple of selected items
+
+        .. versionchanged:: 0.19.1
+            Allows setting the selected items
+        """
         return cast(Tuple[int, ...], self.model.SelectedItems)
+
+    @selected_items.setter
+    def selected_items(self, value: Iterable[int]) -> None:
+        """Sets the selected items"""
+        self.model.SelectedItems = tuple(value)  # type: ignore
 
     @property
     def step(self) -> int:
