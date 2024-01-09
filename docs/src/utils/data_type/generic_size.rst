@@ -1,3 +1,5 @@
+.. _generic_size:
+
 Class GenericSize
 =================
 
