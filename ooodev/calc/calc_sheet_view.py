@@ -1,27 +1,32 @@
 from __future__ import annotations
-from typing import Any, overload, TYPE_CHECKING
+from typing import Any, overload, TYPE_CHECKING, Union
 import uno
 
 
-if TYPE_CHECKING:
-    from com.sun.star.sheet import XSpreadsheetView
-    from .calc_doc import CalcDoc
-
-from . import calc_cell_range as mCalcCellRange
-from . import calc_cell as mCalcCell
-from . import calc_cell_cursor as mCalcCellCursor
 from ooodev.adapter.sheet.spreadsheet_view_comp import SpreadsheetViewComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.adapter.sheet.spreadsheet_view_settings_comp import SpreadsheetViewSettingsComp
+from . import calc_cell_range as mCalcCellRange
+from . import calc_cell as mCalcCell
+from . import calc_cell_cursor as mCalcCellCursor
+
+if TYPE_CHECKING:
+    from com.sun.star.sheet import XSpreadsheetView
+
+    # from com.sun.star.sheet import SpreadsheetView  # service
+    # from com.sun.star.sheet import SpreadsheetViewSettings  # service
+    from .calc_doc import CalcDoc
 
 
-class CalcSheetView(SpreadsheetViewComp, QiPartial, PropPartial, StylePartial):
+class CalcSheetView(SpreadsheetViewComp, SpreadsheetViewSettingsComp, QiPartial, PropPartial, StylePartial):
     def __init__(self, owner: CalcDoc, view: XSpreadsheetView) -> None:
         self.__owner = owner
         SpreadsheetViewComp.__init__(self, view)  # type: ignore
+        SpreadsheetViewSettingsComp.__init__(self, view)  # type: ignore
         QiPartial.__init__(self, component=view, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=view, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=view)
@@ -85,6 +90,7 @@ class CalcSheetView(SpreadsheetViewComp, QiPartial, PropPartial, StylePartial):
             cell_rng = selection.get_calc_cell_range()
             cursor = cell_rng.create_cursor()
             return self.component.select(cursor.component)
+
         return self.component.select(selection)
 
     def get_selection(self) -> Any:
@@ -97,6 +103,13 @@ class CalcSheetView(SpreadsheetViewComp, QiPartial, PropPartial, StylePartial):
         return self.component.getSelection()
 
     # region Properties
+    # if TYPE_CHECKING:
+
+    #     @property
+    #     def component(self) -> Union[SpreadsheetView, SpreadsheetViewSettings]:
+    #         """Spreadsheet View Component"""
+    #         return super().component  # type: ignore
+
     @property
     def calc_doc(self) -> CalcDoc:
         """

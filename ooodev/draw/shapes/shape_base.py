@@ -4,10 +4,13 @@ import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
-from ooodev.proto.component_proto import ComponentT
 from ooodev.office import draw as mDraw
+from ooodev.proto.component_proto import ComponentT
 from ooodev.units import Angle
+from ooodev.units import UnitMM
+from ooodev.utils import lo as mLo
+from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
+from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
@@ -522,8 +525,6 @@ class ShapeBase(
         """
         mDraw.Draw.set_rotation(shape=self.__component, angle=angle)
 
-    # region Properties
-
     # region set_size()
     @overload
     def set_size(self, sz: SizeObj) -> None:
@@ -614,9 +615,23 @@ class ShapeBase(
         """
         mDraw.Draw.set_zorder(shape=self.__component, order=order)
 
+    # region Properties
+
     @property
     def owner(self) -> _T:
         """Component Owner"""
         return self.__owner
+
+    @property
+    def size(self) -> GenericUnitSize[UnitMM, float]:
+        """Gets the size of the shape in ``UnitMM`` Values."""
+        sz = self.__component.getSize()
+        return GenericUnitSize(UnitMM.from_mm100(sz.Width), UnitMM.from_mm100(sz.Height))
+
+    @property
+    def position(self) -> GenericUnitPoint[UnitMM, float]:
+        """Gets the Position of the shape in ``UnitMM`` Values."""
+        ps = self.__component.getPosition()
+        return GenericUnitPoint(UnitMM.from_mm100(ps.X), UnitMM.from_mm100(ps.Y))
 
     # endregion Properties

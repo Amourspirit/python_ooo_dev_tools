@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from com.sun.star.sheet import XSpreadsheetDocument
-
 else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any
@@ -61,6 +60,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         StylePartial.__init__(self, component=doc)
         self._sheets = None
         self._draw_pages = None
+        self._current_controller = None
 
     def create_cell_style(self, style_name: str) -> XStyle:
         """
@@ -868,6 +868,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         """
         mCalc.Calc.zoom(doc=self.component, type=type)
 
+    # region Properties
+
     @property
     def sheets(self) -> mCalcSheets.CalcSheets:
         """
@@ -900,3 +902,17 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
             draw_pages = supp.getDrawPages()
             self._draw_pages = SpreadsheetDrawPages(self, draw_pages)
         return self._draw_pages  # type: ignore
+
+    @property
+    def current_controller(self) -> mCalcSheetView.CalcSheetView:
+        """
+        Gets the current controller.
+
+        Returns:
+            CalcSheetView: Current Controller
+        """
+        if self._current_controller is None:
+            self._current_controller = mCalcSheetView.CalcSheetView(self, self.component.getCurrentController())  # type: ignore
+        return self._current_controller
+
+    # endregion Properties
