@@ -18,7 +18,7 @@ class SpreadsheetsPartial(NameContainerPartial):
         Constructor
 
         Args:
-            component (XSpreadsheets): UNO Component that implements ``com.sun.star.container.XSpreadsheets``.
+            component (XSpreadsheets): UNO Component that implements ``com.sun.star.sheet.XSpreadsheets``.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XSpreadsheets``.
         """
         NameContainerPartial.__init__(self, component, interface)

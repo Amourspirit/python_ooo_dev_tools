@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING, Tuple
 import uno
+from com.sun.star.sheet import XSpreadsheet
 
 from ooodev.adapter.sheet.cell_range_access_partial import CellRangeAccessPartial
 from ooodev.adapter.sheet.spreadsheets_comp import SpreadsheetsComp
@@ -8,11 +9,11 @@ from ooodev.adapter.container.name_replace_partial import NameReplacePartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.utils.partial.qi_partial import QiPartial
 from . import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
-    from com.sun.star.sheet import XSpreadsheet
     from com.sun.star.sheet import XSpreadsheets
     from .calc_doc import CalcDoc
 
@@ -251,6 +252,19 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
         """
         ...
 
+    @overload
+    def get_sheet(self, sheet: XSpreadsheet) -> mCalcSheet.CalcSheet:
+        """
+        Gets a sheet of spreadsheet document
+
+        Args:
+            sheet (XSpreadsheet): Sheet to get as CalcSheet.
+
+        Returns:
+            CalcSheet: Spreadsheet from sheet.
+        """
+        ...
+
     def get_sheet(self, *args, **kwargs) -> mCalcSheet.CalcSheet:
         """
         Gets a sheet of spreadsheet document
@@ -266,6 +280,9 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
 
         Returns:
             CalcSheet: Spreadsheet at index.
+
+        .. versionchanged:: 0.20.0
+            - Added support for ``XSpreadsheet``.
         """
 
         args_values = [arg for arg in args]
@@ -275,6 +292,8 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
             return self.get_active_sheet()
         arg1 = args_values[0]
         if arg_len == 1:
+            if mInfo.Info.is_instance(arg1, XSpreadsheet):
+                return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=arg1)
             if isinstance(arg1, int):
                 return self.get_by_index(arg1)
             return self.get_by_name(cast(str, arg1))

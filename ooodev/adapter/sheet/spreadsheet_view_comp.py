@@ -1,23 +1,42 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.component_base import ComponentBase
+
 from ooodev.adapter.awt.enhanced_mouse_click_events import EnhancedMouseClickEvents
 from ooodev.adapter.awt.key_events import KeyEvents
 from ooodev.adapter.awt.mouse_click_events import MouseClickEvents
-from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
-from .activation_event_events import ActivationEventEvents
-from .range_selection_change_events import RangeSelectionChangeEvents
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
+from ooodev.adapter.container.index_access_partial import IndexAccessPartial
+from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
+from ooodev.adapter.view.selection_supplier_partial import SelectionSupplierPartial
+from ooodev.events.args.listener_event_args import ListenerEventArgs
+from .activation_broadcaster_partial import ActivationBroadcasterPartial
+from .activation_event_events import ActivationEventEvents
+from .enhanced_mouse_click_broadcaster_partial import EnhancedMouseClickBroadcasterPartial
+from .range_selection_change_events import RangeSelectionChangeEvents
+from .range_selection_partial import RangeSelectionPartial
+from .spreadsheet_view_pane_comp import SpreadsheetViewPaneComp
+from .spreadsheet_view_partial import SpreadsheetViewPartial
+from .view_freezable_partial import ViewFreezablePartial
+from .view_splitable_partial import ViewSplitablePartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
 
 
 class SpreadsheetViewComp(
-    ComponentBase,
+    SpreadsheetViewPaneComp,
+    ActivationBroadcasterPartial,
     ActivationEventEvents,
+    EnhancedMouseClickBroadcasterPartial,
+    EnumerationAccessPartial,
+    IndexAccessPartial,
+    RangeSelectionPartial,
+    SelectionSupplierPartial,
+    SpreadsheetViewPartial,
+    ViewFreezablePartial,
+    ViewSplitablePartial,
     EnhancedMouseClickEvents,
     KeyEvents,
     MouseClickEvents,
@@ -39,7 +58,16 @@ class SpreadsheetViewComp(
         Args:
             component (SpreadsheetView): UNO Spreadsheet View Component
         """
-        ComponentBase.__init__(self, component)
+        SpreadsheetViewPaneComp.__init__(self, component)
+        ActivationBroadcasterPartial.__init__(self, component=component, interface=None)
+        EnhancedMouseClickBroadcasterPartial.__init__(self, component=component, interface=None)
+        EnumerationAccessPartial.__init__(self, component=component, interface=None)
+        IndexAccessPartial.__init__(self, component=component, interface=None)
+        RangeSelectionPartial.__init__(self, component=component, interface=None)
+        SelectionSupplierPartial.__init__(self, component=component, interface=None)
+        SpreadsheetViewPartial.__init__(self, component=component, interface=None)
+        ViewFreezablePartial.__init__(self, component=component, interface=None)
+        ViewSplitablePartial.__init__(self, component=component, interface=None)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ActivationEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_activation_events_add_remove)
         EnhancedMouseClickEvents.__init__(self, trigger_args=generic_args, cb=self._on_enhanced_mouse_click_add_remove)
@@ -93,9 +121,11 @@ class SpreadsheetViewComp(
     # endregion Overrides
 
     # region Properties
-    @property
-    def component(self) -> SpreadsheetView:
-        """Spreadsheet View Component"""
-        return cast("SpreadsheetView", self._ComponentBase__get_component())  # type: ignore
+    if TYPE_CHECKING:
+
+        @property
+        def component(self) -> SpreadsheetView:
+            """Spreadsheet View Component"""
+            return cast("SpreadsheetView", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

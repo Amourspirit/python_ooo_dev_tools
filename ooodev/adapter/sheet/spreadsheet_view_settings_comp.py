@@ -11,13 +11,15 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetViewSettings  # service
 
 
-class SpreadsheetViewComp(
+class SpreadsheetViewSettingsComp(
     ComponentBase,
     PropertyChangeImplement,
     VetoableChangeImplement,
 ):
     """
-    Class for managing Spreadsheet View Component.
+    Class for managing Spreadsheet View Settings Component.
+
+    .. versionadded:: 0.20.0
     """
 
     # pylint: disable=unused-argument
@@ -27,7 +29,7 @@ class SpreadsheetViewComp(
         Constructor
 
         Args:
-            component (SpreadsheetView): UNO Spreadsheet View Component
+            component (SpreadsheetView): UNO Component that supports ``com.sun.star.sheet.SpreadsheetViewSettings`` service.
         """
         ComponentBase.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore

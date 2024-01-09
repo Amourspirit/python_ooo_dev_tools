@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.20.0
+==============
+
+Many new classes for working with Calc Spreadsheet view added to ``ooodev.adapter`` module.
+
+Added ``ooodev.adapter.calc.CalcDoc.current_controller`` property.
+
+Other minor bug fixes and updates.
+
 Version 0.19.0
 ==============
 

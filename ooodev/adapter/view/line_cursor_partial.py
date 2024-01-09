@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class LineCursorPartial:
     """
-    Partial class for XSentenceCursor.
+    Partial class for XLineCursor.
     """
 
     # pylint: disable=unused-argument
