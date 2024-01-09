@@ -16,9 +16,11 @@ from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
+from ooodev.units import UnitMM
 from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils.data_type import cell_obj as mCellObj
+from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import Row, Table
@@ -379,13 +381,35 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
         return self.__cell_obj
 
     @property
-    def position(self) -> Point:
+    def position(self) -> GenericUnitPoint[UnitMM, float]:
         """
-        Contains the position of the top left cell of this range in the sheet (in 1/100 mm).
+        Gets the Position of the cell in ``UnitMM`` Values.
+
+        Contains the position of the top left cell of this range.
 
         This property contains the absolute position in the whole sheet,
         not the position in the visible area.
+
+        .. versionchanged:: 0.20.1
+            Now return :ref:`generic_unit_point` instead of ``Point``.
         """
-        return self.component.Position
+        ps = self.component.Position
+        return GenericUnitPoint(UnitMM.from_mm100(ps.X), UnitMM.from_mm100(ps.Y))
+
+    @property
+    def value(self) -> str | float | None:
+        """
+        Gets/Sets the value of cell.
+
+        If the cell has a value, then the value is returned; Otherwise, None is returned.
+
+        .. versionadded:: 0.20.1
+        """
+        return self.get_val()
+
+    @value.setter
+    def value(self, value: Any) -> None:
+        """Sets value of cell."""
+        self.set_val(value=value)
 
     # endregion Properties

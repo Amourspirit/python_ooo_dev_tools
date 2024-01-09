@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.20.1
+==============
+
+``ooodev.calc.CalcCell`` Now has a ``value`` attribute that can get or set the value of the cell.
+
+Breaking Changes
+----------------
+
+``ooodev.calc.CalcCell.position`` now returns :ref:`generic_unit_point` instead of a UNO ``Point``.
+UNO ``Point`` can still be accessed via ``ooodev.calc.CalcCell.component.Position``.
+
+
 Version 0.20.0
 ==============
 

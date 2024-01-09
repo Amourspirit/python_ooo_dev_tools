@@ -28,10 +28,15 @@ def test_get_sheet(loader) -> None:
         cell.set_val("test")
         val = cell.get_val()
         assert val == "test"
+        assert cell.value == val
 
         text = cell.component.getText()
         val = text.getString()
         assert val == "test"
+
+        cell = sheet.get_cell(cell_name="A2")
+        cell.value = 2.5
+        assert cell.value == 2.5
 
         assert calc_doc.sheets[0].sheet_name == "Sheet1"
         assert calc_doc.sheets["Sheet1"].sheet_name == "Sheet1"

@@ -1,3 +1,5 @@
+.. _generic_unit_size:
+
 Class GenericUnitSize
 =====================
 
