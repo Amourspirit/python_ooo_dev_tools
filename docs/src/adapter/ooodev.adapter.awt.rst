@@ -30,6 +30,8 @@ Submodules
    ooodev.adapter.awt.item_list_listener
    ooodev.adapter.awt.item_listener
    ooodev.adapter.awt.key_events
+   ooodev.adapter.awt.key_handler
+   ooodev.adapter.awt.key_handler_events
    ooodev.adapter.awt.key_listener
    ooodev.adapter.awt.mouse_click_events
    ooodev.adapter.awt.mouse_click_handler
@@ -46,6 +48,7 @@ Submodules
    ooodev.adapter.awt.text_listener
    ooodev.adapter.awt.top_window_events
    ooodev.adapter.awt.top_window_listener
+   ooodev.adapter.awt.user_input_interception_partial
    ooodev.adapter.awt.window_events
    ooodev.adapter.awt.window_listener
 
