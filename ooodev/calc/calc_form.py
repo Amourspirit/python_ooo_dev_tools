@@ -13,6 +13,14 @@ if TYPE_CHECKING:
 
 
 class CalcForm(DataFormComp, QiPartial, FormPartial):
+    """
+    Calc From. Represents a form in a Calc document.
+
+    This class is Enumerable.
+
+    ``len(calc_form)`` returns the number of controls in the form.
+    """
+
     def __init__(self, owner: CalcForms, component: Form) -> None:
         self.__owner = owner
         DataFormComp.__init__(self, component)

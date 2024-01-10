@@ -26,6 +26,10 @@ class IndexAccessPartial(ElementAccessPartial):
         ElementAccessPartial.__init__(self, component, interface)
         self.__component = component
 
+    def __len__(self) -> int:
+        """.. versionadded:: 0.20.2"""
+        return self.get_count()
+
     # region Methods
     def get_count(self) -> int:
         """
