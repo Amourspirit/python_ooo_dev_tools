@@ -50,11 +50,8 @@ from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-<<<<<<< HEAD
 from ooodev.draw import draw_page as mDrawPage
 from ooodev.draw import draw_pages as mDrawPages
-=======
->>>>>>> 0.18.3
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor

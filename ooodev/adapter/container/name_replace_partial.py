@@ -1,9 +1,5 @@
 from __future__ import annotations
-<<<<<<< HEAD
-from typing import Any
-=======
 from typing import Any, TYPE_CHECKING
->>>>>>> 0.18.3
 
 from com.sun.star.container import XNameReplace
 from .name_access_partial import NameAccessPartial
