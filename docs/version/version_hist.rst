@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.20.2
+==============
+
+Updated ``ooodev.draw.DrawDoc``. Now has a ``save_doc`` method for saving the document.
+
+Updated ``ooodev.draw.ImpressDoc``. Now has a ``save_doc`` method for saving the document.
+
+Other minor bug fixes and updates.
+
 Version 0.20.1
 ==============
 

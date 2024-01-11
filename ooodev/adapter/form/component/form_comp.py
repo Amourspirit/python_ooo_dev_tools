@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.awt.tab_controller_model_partial import TabControllerModelPartial
 from ooodev.adapter.beans.property_bag_partial import PropertyBagPartial
@@ -16,8 +17,11 @@ from ooodev.adapter.lang.component_partial import ComponentPartial
 from ooodev.adapter.lang.event_events import EventEvents
 from ooodev.adapter.script.event_attacher_manager_partial import EventAttacherManagerPartial
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.adapter.container.index_access_t import IndexAccessT
+from ooodev.adapter.container.element_index_partial import ElementIndexPartial
 
 if TYPE_CHECKING:
+    from com.sun.star.container import XNamed
     from com.sun.star.form.component import Form  # service
 
 
@@ -37,9 +41,10 @@ class FormComp(
     ContainerEvents,
     PropertyChangeImplement,
     VetoableChangeImplement,
+    ElementIndexPartial,
 ):
     """
-    Class for managing Sheet Cell Component.
+    Class for managing Form Component.
     """
 
     # pylint: disable=unused-argument
@@ -49,7 +54,7 @@ class FormComp(
         Constructor
 
         Args:
-            component (SheetCell): UNO Sheet Cell Component
+            component (SheetCell): UNO Component that supports ``com.sun.star.form.component.Form`` service.
         """
         ComponentBase.__init__(self, component)
         ComponentPartial.__init__(self, component=component, interface=None)
@@ -67,6 +72,7 @@ class FormComp(
         ContainerEvents.__init__(self, trigger_args=generic_args, cb=self._on_container_events_add_remove)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        ElementIndexPartial.__init__(self, component=self)
 
     # region Lazy Listeners
 
@@ -85,7 +91,7 @@ class FormComp(
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.sheet.SheetCell",)
+        return ("com.sun.star.form.component.Form",)
 
     # endregion Overrides
     # region Properties

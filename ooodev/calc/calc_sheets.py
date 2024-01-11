@@ -10,7 +10,9 @@ from ooodev.exceptions import ex as mEx
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.adapter.container.element_index_partial import ElementIndexPartial
 from . import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
@@ -18,7 +20,7 @@ if TYPE_CHECKING:
     from .calc_doc import CalcDoc
 
 
-class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, QiPartial):
+class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, QiPartial, ElementIndexPartial):
     """
     Class for managing Calc Sheets.
 
@@ -67,6 +69,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
         CellRangeAccessPartial.__init__(self, component=sheets, interface=None)  # type: ignore
         NameReplacePartial.__init__(self, component=sheets, interface=None)  # type: ignore
         QiPartial.__init__(self, component=sheets, lo_inst=mLo.Lo.current_lo)
+        ElementIndexPartial.__init__(self, component=self)  # type: ignore
 
     def __next__(self) -> mCalcSheet.CalcSheet:
         return mCalcSheet.CalcSheet(owner=self.__owner, sheet=super().__next__())
@@ -105,16 +108,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
             int: Index value.
         """
         count = len(self)
-        if idx < 0:
-            idx = count + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
-        if idx >= count:
-            if allow_greater:
-                idx = count
-            else:
-                raise IndexError("list index out of range")
-        return idx
+        return mGenUtil.Util.get_index(idx, count, allow_greater)
 
     # region XSpreadsheets Overrides
     def copy_by_name(self, name: str, copy: str, idx: int) -> None:

@@ -46,6 +46,7 @@ class EnumerationAccessPartial(ElementAccessPartial):
         return True
 
     def __iter__(self):
+        self.__enumeration = None
         return self
 
     def __next__(self):

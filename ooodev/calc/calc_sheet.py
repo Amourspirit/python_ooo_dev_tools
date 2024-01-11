@@ -2039,10 +2039,28 @@ class CalcSheet(SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, 
     # region    goto_cell()
     @overload
     def goto_cell(self, cell_name: str) -> mCalcCell.CalcCell:
+        """
+        Go to a cell
+
+        Args:
+            cell_name (str): Cell Name such as 'B4'.
+
+        Returns:
+            CalcCell: Cell Object.
+        """
         ...
 
     @overload
     def goto_cell(self, cell_obj: mCellObj.CellObj) -> mCalcCell.CalcCell:
+        """
+        Go to a cell
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            CalcCell: Cell Object.
+        """
         ...
 
     def goto_cell(self, *args, **kwargs) -> mCalcCell.CalcCell:
@@ -2051,8 +2069,7 @@ class CalcSheet(SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, 
 
         Args:
             cell_name (str): Cell Name such as 'B4'.
-            doc (XSpreadsheetDocument): Spreadsheet Document.
-            frame (XFrame): Spreadsheet frame.
+            cell_obj (CellObj): Cell Object.
 
         Returns:
             CalcCell: Cell Object.

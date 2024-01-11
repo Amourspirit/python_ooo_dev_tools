@@ -5,6 +5,7 @@ from com.sun.star.form import XForm
 
 from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from .write_form import WriteForm
@@ -82,18 +83,7 @@ class WriteForms(FormsComp, QiPartial):
             int: Index value.
         """
         count = len(self)
-        if idx < 0:
-            if count == 0 and allow_greater:
-                return 0
-            idx = count + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
-        if idx >= count:
-            if allow_greater:
-                idx = count
-            else:
-                raise IndexError("list index out of range")
-        return idx
+        return mGenUtil.Util.get_index(idx, count, allow_greater)
 
     def _create_name(self, name: str) -> str:
         used_name = True

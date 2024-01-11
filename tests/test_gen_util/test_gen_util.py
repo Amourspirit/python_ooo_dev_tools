@@ -1,3 +1,4 @@
+from multiprocessing import allow_connection_pickling
 import pytest
 from typing import Iterable
 from ooodev.utils import gen_util
@@ -19,7 +20,7 @@ from ooodev.utils import gen_util
     ),
 )
 def test_is_iterable(arg: object, excluded_types: Iterable[type], expected: bool) -> None:
-    result = gen_util.Util.is_iterable(arg, excluded_types)
+    result = gen_util.Util.is_iterable(arg, excluded_types)  # type: ignore
     assert result == expected
 
 
@@ -128,3 +129,49 @@ def test_to_single_space(s: str, strip: bool, expected: str) -> None:
 def test_to_single_space_default(s: str, expected: str) -> None:
     result = gen_util.Util.to_single_space(s)
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "count,idx,allow_greater,result",
+    (
+        (1, 0, False, 0),
+        (2, 0, False, 0),
+        (3, -1, False, 2),
+        (23, -1, False, 22),
+        (23, -2, False, 20),
+        (3, 1, False, 1),
+        (10, -5, False, 4),
+        (100, -3, False, 96),
+        (3, 5, True, 3),
+        (23, -1, True, 23),
+        (23, 23, True, 23),
+        (23, 25, True, 23),
+        (3, 0, True, 0),
+        (3, 3, True, 3),
+        (0, 0, True, 0),
+        (0, -1, True, 0),
+        (1, -1, True, 1),
+        (2, -1, True, 2),
+        (3, -1, True, 3),
+    ),
+)
+def test_get_index(count: int, idx: int, allow_greater: bool, result: int) -> None:
+    index = gen_util.Util.get_index(idx=idx, count=count, allow_greater=allow_greater)
+    assert result == index
+
+
+@pytest.mark.parametrize(
+    "count,idx,allow_greater",
+    (
+        (1, 1, False),
+        (2, 2, False),
+        (0, 0, False),
+        (0, -1, False),
+        (0, -2, False),
+        (1, -2, False),
+        (1, -2, True),
+    ),
+)
+def test_get_index_error(count: int, idx: int, allow_greater: bool) -> None:
+    with pytest.raises(IndexError):
+        _ = gen_util.Util.get_index(idx=idx, count=count, allow_greater=allow_greater)

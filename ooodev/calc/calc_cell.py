@@ -57,6 +57,21 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
         return self.__cell_obj.col == "A"
 
     # endregion Cell Properties
+    def goto(self) -> None:
+        """
+        Go to this cell in the spreadsheet.
+
+        Returns:
+            None:
+
+        Attention:
+            :py:meth:`~.utils.lo.Lo.dispatch_cmd` method is called along with any of its events.
+
+            Dispatch command is ``GoToCell``.
+
+        .. versionadded:: 0.20.2
+        """
+        _ = self.calc_sheet.goto_cell(cell_obj=self.__cell_obj)
 
     def goal_seek(
         self,

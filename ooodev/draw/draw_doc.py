@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING, overload
 import uno
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
@@ -9,6 +9,7 @@ from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import lo as mLo
+from ooodev.utils.type_var import PathOrStr
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from .draw_pages import DrawPages
@@ -95,6 +96,87 @@ class DrawDoc(
         return super().delete_slide(idx=idx)
 
     # endregion Overrides
+
+    # region save_doc
+
+    @overload
+    def save_doc(self, fnm: PathOrStr) -> bool:
+        """
+        Save document.
+
+        Args:
+            fnm (PathOrStr): file path to save as.
+
+        Returns:
+            bool: ``False`` if ``DOC_SAVING`` event is canceled; Otherwise, ``True``
+        """
+        ...
+
+    @overload
+    def save_doc(self, fnm: PathOrStr, password: str) -> bool:
+        """
+        Save document.
+
+        Args:
+            fnm (PathOrStr): file path to save as.
+            password (str): Password to save document with.
+
+
+        Returns:
+            bool: ``False`` if ``DOC_SAVING`` event is canceled; Otherwise, ``True``
+        """
+        ...
+
+    @overload
+    def save_doc(self, fnm: PathOrStr, password: str, format: str) -> bool:  # pylint: disable=W0622
+        """
+        Save document.
+
+        Args:
+            fnm (PathOrStr): file path to save as.
+            password (str): Password to save document with.
+            format (str): document format such as 'odt' or 'xml'.
+
+        Returns:
+            bool: ``False`` if ``DOC_SAVING`` event is canceled; Otherwise, ``True``.
+        """
+        ...
+
+    def save_doc(self, fnm: PathOrStr, password: str | None = None, format: str | None = None) -> bool:
+        """
+        Save document.
+
+        Args:
+            fnm (PathOrStr): file path to save as.
+            password (str, optional): password to save document with.
+            format (str, optional): document format such as 'odt' or 'xml'.
+
+        Raises:
+            MissingInterfaceError: If doc does not implement XStorable interface.
+
+        Returns:
+            bool: ``False`` if DOC_SAVING event is canceled; Otherwise, ``True``
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_SAVING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing all method parameters.
+
+        Attention:
+            :py:meth:`~.utils.lo.Lo.store_doc` method is called along with any of its events.
+
+        See Also:
+            :ref:`ch02_save_doc`
+
+        .. versionadded:: 0.20.2
+        """
+        return mLo.Lo.save_doc(self.component, fnm, password, format)  # type: ignore
+
+    # endregion save_doc
 
     # region Properties
 

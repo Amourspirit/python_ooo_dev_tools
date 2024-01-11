@@ -483,6 +483,7 @@ class Forms:
 
             except Exception as e:
                 mLo.Lo.print(f'Could not access "{name}"')
+                mLo.Lo.print(f"  {e}")
         return models
 
     @classmethod

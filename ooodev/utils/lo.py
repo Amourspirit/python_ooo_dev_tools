@@ -924,10 +924,10 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def save(cls, doc: object) -> bool:
         """
-        Save as document
+        Save as document.
 
         Args:
-            doc (object): Office document
+            doc (object): Office document.
 
         Raises:
             Exception: If unable to save document
@@ -953,14 +953,14 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def save_doc(cls, doc: object, fnm: PathOrStr) -> bool:
         """
-        Save document
+        Save document.
 
         Args:
-            doc (object): Office document
-            fnm (PathOrStr): file path to save as
+            doc (object): Office document.
+            fnm (PathOrStr): file path to save as.
 
         Returns:
-            bool: False if DOC_SAVING event is canceled; Otherwise, True
+            bool: False if ``DOC_SAVING`` event is canceled; Otherwise, True
         """
         ...
 
@@ -968,16 +968,16 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def save_doc(cls, doc: object, fnm: PathOrStr, password: str) -> bool:
         """
-        Save document
+        Save document.
 
         Args:
-            doc (object): Office document
-            fnm (PathOrStr): file path to save as
-            password (str): Optional password
+            doc (object): Office document.
+            fnm (PathOrStr): file path to save as.
+            password (str): Password to save document with.
 
 
         Returns:
-            bool: False if DOC_SAVING event is canceled; Otherwise, True
+            bool: False if ``DOC_SAVING`` event is canceled; Otherwise, True
         """
         ...
 
@@ -985,16 +985,16 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def save_doc(cls, doc: object, fnm: PathOrStr, password: str, format: str) -> bool:  # pylint: disable=W0622
         """
-        Save document
+        Save document.
 
         Args:
             doc (object): Office document
             fnm (PathOrStr): file path to save as
-            password (str): Optional password
-            format (str): _description_. Defaults to None.
+            password (str): Password to save document with.
+            format (str): document format such as 'odt' or 'xml'.
 
         Returns:
-            bool: False if DOC_SAVING event is canceled; Otherwise, True
+            bool: False if ``DOC_SAVING`` event is canceled; Otherwise, True
         """
         ...
 
@@ -1002,19 +1002,19 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def save_doc(cls, doc: object, fnm: PathOrStr, password: str | None = None, format: str | None = None) -> bool:
         """
-        Save document
+        Save document.
 
         Args:
-            doc (object): Office document
+            doc (object): Office document.
             fnm (PathOrStr): file path to save as
-            password (str): password
-            format (str): document format such as 'odt' or 'xml'
+            password (str, optional): password to save document with.
+            format (str, optional): document format such as 'odt' or 'xml'.
 
         Raises:
             MissingInterfaceError: If doc does not implement XStorable interface
 
         Returns:
-            bool: False if DOC_SAVING event is canceled; Otherwise, True
+            bool: ``False`` if ``DOC_SAVING`` event is canceled; Otherwise, ``True``
 
         :events:
             .. cssclass:: lo_event
