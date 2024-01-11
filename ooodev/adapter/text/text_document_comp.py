@@ -31,11 +31,12 @@ class TextDocumentComp(GenericTextDocumentComp):
 
     # endregion Overrides
     # region Properties
-    if TYPE_CHECKING:
 
-        @property
-        def component(self) -> TextDocument:
-            """Sheet Cell Cursor Component"""
-            return cast("TextDocument", self._ComponentBase__get_component())  # type: ignore
+    @property
+    def component(self) -> TextDocument:
+        """Sheet Cell Cursor Component"""
+        # override to satisfy documentation and type
+        return cast("TextDocument", super().component)
+        # return cast("TextDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

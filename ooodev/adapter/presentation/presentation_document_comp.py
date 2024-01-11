@@ -31,11 +31,12 @@ class PresentationDocumentComp(GenericDrawingDocumentComp):
 
     # endregion Overrides
     # region Properties
-    if TYPE_CHECKING:
 
-        @property
-        def component(self) -> PresentationDocument:
-            """PresentationDocument Component"""
-            return cast("PresentationDocument", self._ComponentBase__get_component())  # type: ignore
+    @property
+    def component(self) -> PresentationDocument:
+        """PresentationDocument Component"""
+        # override to satisfy documentation and type
+        return cast("PresentationDocument", super().component)
+        # return cast("PresentationDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

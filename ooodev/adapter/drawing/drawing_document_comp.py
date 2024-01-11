@@ -32,11 +32,12 @@ class DrawingDocumentComp(GenericDrawingDocumentComp):
 
     # endregion Overrides
     # region Properties
-    if TYPE_CHECKING:
 
-        @property
-        def component(self) -> DrawingDocument:
-            """DrawingDocument Component"""
-            return cast("DrawingDocument", self._ComponentBase__get_component())  # type: ignore
+    @property
+    def component(self) -> DrawingDocument:
+        """DrawingDocument Component"""
+        # override to satisfy documentation and type
+        # return cast("DrawingDocument", self._ComponentBase__get_component())  # type: ignore
+        return cast("DrawingDocument", super().component)  # type: ignore
 
     # endregion Properties
