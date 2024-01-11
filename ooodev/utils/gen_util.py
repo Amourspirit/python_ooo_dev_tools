@@ -258,3 +258,50 @@ class Util:
         # (See Toothy's implementation in the comments)
         # https://stackoverflow.com/questions/5967500/how-to-correctly-sort-a-string-with-a-number-inside
         return [Util._atoi(c) for c in re.split(r"(\d+)", text)]
+
+    @staticmethod
+    def get_index(idx: int, count: int, allow_greater: bool = False) -> int:
+        """
+        Gets the index.
+
+        Args:
+            idx (int): Index of element. Can be a negative value to index from the end of the list.
+            count (int): Number of elements.
+            allow_greater (bool, optional): If True and index is greater then the count
+                then the index becomes the next index if element is appended. Defaults to False.
+
+        Raises:
+            ValueError: If ``count`` is less than ``0``.
+            IndexError: If index is out or range.
+
+        Returns:
+            int: Index value.
+
+        .. versionadded:: 0.20.2
+        """
+        if count < 0:
+            raise ValueError("count cannot be less than 0")
+        if idx == -1:
+            index = 0
+            if allow_greater:
+                if count == 0:
+                    return index
+                else:
+                    index = count
+            else:
+                index = count - 1
+            if index < 0:
+                raise IndexError("list index out of range")
+            return index
+
+        index = idx
+        if index < 0:
+            index = count + index - 1
+            if index < 0:
+                raise IndexError("list index out of range")
+        if index >= count:
+            if allow_greater:
+                index = count
+            else:
+                raise IndexError("list index out of range")
+        return index

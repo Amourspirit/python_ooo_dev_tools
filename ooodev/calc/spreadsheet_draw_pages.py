@@ -6,10 +6,11 @@ import uno
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
-from .spreadsheet_draw_page import SpreadsheetDrawPage
-from ooodev.utils import lo as mLo
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
+from .spreadsheet_draw_page import SpreadsheetDrawPage
 
 from ooodev.proto.component_proto import ComponentT
 
@@ -79,18 +80,7 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial):
             int: Index value.
         """
         count = len(self)
-        if idx < 0:
-            if count == 0 and allow_greater:
-                return 0
-            idx = count + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
-        if idx >= count:
-            if allow_greater:
-                idx = count
-            else:
-                raise IndexError("list index out of range")
-        return idx
+        return mGenUtil.Util.get_index(idx, count, allow_greater)
 
     def insert_page(self, idx: int) -> SpreadsheetDrawPage[_T]:
         """

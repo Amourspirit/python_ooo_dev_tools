@@ -44,6 +44,10 @@ def test_get_sheet(loader) -> None:
         calc_doc.sheets[-1].name = "My Sheet"
         assert calc_doc.sheets[-1].name == "My Sheet"
 
+        calc_doc.sheets.insert_new_by_name("Last Sheet", -1)
+
+        assert calc_doc.sheets.get_index_by_name("Last Sheet") == 1
+
     finally:
         Lo.close_doc(doc)
 
@@ -161,11 +165,17 @@ def test_insert_remove_sheet(loader) -> None:
         del doc.sheets[0]
         assert len(doc.sheets) == 8
 
+        names = doc.sheets.get_sheet_names()
+        assert len(names) == 8
+        assert names[-1] == "Sheet 7"
         del doc.sheets[-1]
         assert len(doc.sheets) == 7
 
         sheet = doc.sheets[-1]
-        assert sheet.sheet_name == "Sheet 7"
+        names = doc.sheets.get_sheet_names()
+        assert len(names) == 7
+        assert names[-1] == "Sheet 6"
+        assert sheet.sheet_name == "Sheet 6"
 
         del doc.sheets[sheet.name]
         assert len(doc.sheets) == 6
