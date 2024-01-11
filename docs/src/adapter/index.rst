@@ -14,6 +14,7 @@ Subpackages
    ooodev.adapter.chart
    ooodev.adapter.chart2
    ooodev.adapter.container
+   ooodev.adapter.datatransfer
    ooodev.adapter.document
    ooodev.adapter.drawing
    ooodev.adapter.form
@@ -30,6 +31,7 @@ Subpackages
    ooodev.adapter.table
    ooodev.adapter.text
    ooodev.adapter.tree
+   ooodev.adapter.ui
    ooodev.adapter.util
    ooodev.adapter.view
 

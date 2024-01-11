@@ -16,6 +16,10 @@ from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind a
 from ooodev.office.write import Write as Write
 from ooodev.utils.kind.zoom_kind import ZoomKind as ZoomKind
 from .write_doc import WriteDoc as WriteDoc
+from .write_draw_page import WriteDrawPage as WriteDrawPage
+from .write_draw_pages import WriteDrawPages as WriteDrawPages
+from .write_form import WriteForm as WriteForm
+from .write_forms import WriteForms as WriteForms
 from .write_paragraph import WriteParagraph as WriteParagraph
 from .write_paragraph_cursor import WriteParagraphCursor as WriteParagraphCursor
 from .write_paragraphs import WriteParagraphs as WriteParagraphs
@@ -34,6 +38,10 @@ from .write_word_cursor import WriteWordCursor as WriteWordCursor
 
 __all__ = [
     "WriteDoc",
+    "WriteDrawPage",
+    "WriteDrawPages",
+    "WriteForm",
+    "WriteForms",
     "WriteParagraph",
     "WriteParagraphCursor",
     "WriteParagraphs",

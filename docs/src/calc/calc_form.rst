@@ -11,7 +11,7 @@ Class CalcForm
 Introduction
 ------------
 
-The ``CalcForm`` class is can manage a from for a Calc Sheet.
+The ``CalcForm`` class is can manage a form for a Calc Sheet.
 
 Adding Controls
 ---------------
@@ -33,10 +33,10 @@ Here is an example of adding a button to a form and adding an event handler for 
     >>> sheet = doc.sheets[0]
     >>> if len(sheet.draw_page.forms) == 0:
     ...     sheet.draw_page.forms.add() # add a form with a default name of Form1
-    >>> form = sheet.draw_page.forms[0]
+    >>> frm = sheet.draw_page.forms[0]
     >>> print(frm.name)
     Form1
-    >>> btn = form.insert_control_button(x=10, y=10, width=40, height=10, label="Button Test")
+    >>> btn = frm.insert_control_button(x=10, y=10, width=40, height=10, label="Button Test")
     >>> btn.add_event_action_performed(on_btn_action_preformed)
     >>>
     >>> def on_btn_action_preformed(src: Any, event: EventArgs, control_src: FormCtlButton, *args, **kwargs) -> None:

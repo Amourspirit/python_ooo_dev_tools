@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING, Tuple
 import uno
+from com.sun.star.sheet import XSpreadsheet
 
 from ooodev.adapter.sheet.cell_range_access_partial import CellRangeAccessPartial
 from ooodev.adapter.sheet.spreadsheets_comp import SpreadsheetsComp
@@ -8,16 +9,18 @@ from ooodev.adapter.container.name_replace_partial import NameReplacePartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
+from ooodev.utils import info as mInfo
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.adapter.container.element_index_partial import ElementIndexPartial
 from . import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
-    from com.sun.star.sheet import XSpreadsheet
     from com.sun.star.sheet import XSpreadsheets
     from .calc_doc import CalcDoc
 
 
-class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, QiPartial):
+class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, QiPartial, ElementIndexPartial):
     """
     Class for managing Calc Sheets.
 
@@ -66,6 +69,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
         CellRangeAccessPartial.__init__(self, component=sheets, interface=None)  # type: ignore
         NameReplacePartial.__init__(self, component=sheets, interface=None)  # type: ignore
         QiPartial.__init__(self, component=sheets, lo_inst=mLo.Lo.current_lo)
+        ElementIndexPartial.__init__(self, component=self)  # type: ignore
 
     def __next__(self) -> mCalcSheet.CalcSheet:
         return mCalcSheet.CalcSheet(owner=self.__owner, sheet=super().__next__())
@@ -104,16 +108,7 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
             int: Index value.
         """
         count = len(self)
-        if idx < 0:
-            idx = count + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
-        if idx >= count:
-            if allow_greater:
-                idx = count
-            else:
-                raise IndexError("list index out of range")
-        return idx
+        return mGenUtil.Util.get_index(idx, count, allow_greater)
 
     # region XSpreadsheets Overrides
     def copy_by_name(self, name: str, copy: str, idx: int) -> None:
@@ -251,6 +246,19 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
         """
         ...
 
+    @overload
+    def get_sheet(self, sheet: XSpreadsheet) -> mCalcSheet.CalcSheet:
+        """
+        Gets a sheet of spreadsheet document
+
+        Args:
+            sheet (XSpreadsheet): Sheet to get as CalcSheet.
+
+        Returns:
+            CalcSheet: Spreadsheet from sheet.
+        """
+        ...
+
     def get_sheet(self, *args, **kwargs) -> mCalcSheet.CalcSheet:
         """
         Gets a sheet of spreadsheet document
@@ -266,6 +274,9 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
 
         Returns:
             CalcSheet: Spreadsheet at index.
+
+        .. versionchanged:: 0.20.0
+            - Added support for ``XSpreadsheet``.
         """
 
         args_values = [arg for arg in args]
@@ -275,6 +286,8 @@ class CalcSheets(SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, Q
             return self.get_active_sheet()
         arg1 = args_values[0]
         if arg_len == 1:
+            if mInfo.Info.is_instance(arg1, XSpreadsheet):
+                return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=arg1)
             if isinstance(arg1, int):
                 return self.get_by_index(arg1)
             return self.get_by_name(cast(str, arg1))

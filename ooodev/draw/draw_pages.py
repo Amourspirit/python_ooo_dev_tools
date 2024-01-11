@@ -54,6 +54,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
         return self.component.getCount()
 
     def __iter__(self):
+        self._current_index = 0
         return self
 
     def __next__(self) -> mDrawPage.DrawPage[_T]:

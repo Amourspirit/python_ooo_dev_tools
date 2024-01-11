@@ -2,6 +2,49 @@
 Version History
 ***************
 
+Version 0.20.2
+==============
+
+Updated ``ooodev.draw.DrawDoc``. Now has a ``save_doc`` method for saving the document.
+
+Updated ``ooodev.draw.ImpressDoc``. Now has a ``save_doc`` method for saving the document.
+
+Other minor bug fixes and updates.
+
+Version 0.20.1
+==============
+
+``ooodev.calc.CalcCell`` Now has a ``value`` attribute that can get or set the value of the cell.
+
+Breaking Changes
+----------------
+
+``ooodev.calc.CalcCell.position`` now returns :ref:`generic_unit_point` instead of a UNO ``Point``.
+UNO ``Point`` can still be accessed via ``ooodev.calc.CalcCell.component.Position``.
+
+
+Version 0.20.0
+==============
+
+Many new classes for working with Calc Spreadsheet view added to ``ooodev.adapter`` module.
+
+Added ``ooodev.adapter.calc.CalcDoc.current_controller`` property.
+
+Other minor bug fixes and updates.
+
+Version 0.19.0
+==============
+
+``ooodev.draw.DrawPage`` now has a ``forms`` property that returns a ``ooodev.Draw.DrawForms`` class for working with and accessing forms.
+
+Breaking Changes
+----------------
+
+``ooodev.form.control.*`` controls no longer have ``width``, ``height``, ``x``, ``y`` properties. They were not reporting the correct value from the draw page.
+They can still be accessed via the controls ``ctl.get_view().getPosSize()`` method.
+
+Now there are ``size`` and ``position`` properties that return the expected values as ``UnitMM`` objects.
+
 Version 0.18.2
 ==============
 

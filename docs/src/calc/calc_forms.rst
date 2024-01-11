@@ -101,6 +101,9 @@ To iterate over the forms in a sheet, use the ``for`` keyword:
     ...     print(form.name)
     MyForm
 
+Class Declaration
+-----------------
+
 .. autoclass:: ooodev.calc.CalcForms
     :members:
     :undoc-members:

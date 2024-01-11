@@ -1,14 +1,13 @@
 # coding: utf-8
 # region Imports
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Iterable, List, cast, overload
+from typing import Any, TYPE_CHECKING, Iterable, List, cast, overload, Tuple
 import contextlib
 import datetime
 import uno
 
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
-from com.sun.star.awt import XView
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XChild
 from com.sun.star.container import XIndexContainer
@@ -86,8 +85,9 @@ from .controls.database import FormCtlDbTextField
 from .controls.database import FormCtlDbTimeField
 
 if TYPE_CHECKING:
-    from com.sun.star.uno import XInterface
+    from com.sun.star.drawing import ControlShape  # service
     from com.sun.star.lang import EventObject
+    from com.sun.star.uno import XInterface
     from ooodev.units import UnitT
     from ooodev.utils.type_var import PathOrStr
     from .controls.form_ctl_base import FormCtlBase
@@ -483,6 +483,7 @@ class Forms:
 
             except Exception as e:
                 mLo.Lo.print(f'Could not access "{name}"')
+                mLo.Lo.print(f"  {e}")
         return models
 
     @classmethod
@@ -909,7 +910,10 @@ class Forms:
             For ``comp_kind`` `API component Module Namespace <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1form_1_1component.html>`_
         """
         try:
-            shape = mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True)
+            shape = cast(
+                "ControlShape",
+                mLo.Lo.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True),
+            )
 
             width_value = cls._get_unit100_value(width)
             height_value = cls._get_unit100_value(height)
@@ -931,6 +935,7 @@ class Forms:
 
             # link model to the shape
             shape.setControl(model)
+            shape.Name = f"SHAPE_{name}"
 
             # set Name and Label properties for the model
             model_props = mLo.Lo.qi(XPropertySet, model, True)
@@ -943,7 +948,7 @@ class Forms:
             raise
 
     @classmethod
-    def add_control(
+    def _add_control(
         cls,
         doc: XComponent | XDrawPage,
         *,
@@ -957,7 +962,7 @@ class Forms:
         anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         parent_form: XNameContainer | None = None,
         styles: Iterable[StyleT] | None = None,
-    ) -> XPropertySet:
+    ) -> Tuple[XPropertySet, XControlShape]:
         """
         Add a control
 
@@ -975,13 +980,7 @@ class Forms:
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
-            XPropertySet: Control Property Set
-
-        See Also:
-            For ``comp_kind`` `API component Module Namespace <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1form_1_1component.html>`_
-
-        .. versionchanged:: 0.9.2
-            Added ``styles`` argument.
+            Tuple[XPropertySet, XControlShape]: Control Property Set and Control Shape
         """
         try:
             shape = cls.get_shape(
@@ -1040,10 +1039,66 @@ class Forms:
             model_props = mLo.Lo.qi(XPropertySet, model, True)
             model_props.setPropertyValue("Name", name)
 
-            return model_props
+            return (model_props, shape)
         except Exception:
             raise
         # endregion add_control
+
+    @classmethod
+    def add_control(
+        cls,
+        doc: XComponent | XDrawPage,
+        *,
+        label: str | None,
+        comp_kind: FormComponentKind | str,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
+        name: str = "",
+        anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
+        parent_form: XNameContainer | None = None,
+        styles: Iterable[StyleT] | None = None,
+    ) -> XPropertySet:
+        """
+        Add a control
+
+        Args:
+            doc (XComponent, XDrawPage): Component or Draw Page.
+            name (str): Control Name
+            label (str | None): Label to assign to control
+            comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
+            x (int, UnitT): Control X position
+            y (int, UnitT): Control Y Position
+            width (int, UnitT): Control width#
+            height (int, UnitT): control height
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            parent_form (XNameContainer, optional): Parent form in which to add control.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
+
+        Returns:
+            XPropertySet: Control Property Set
+
+        See Also:
+            For ``comp_kind`` `API component Module Namespace <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1form_1_1component.html>`_
+
+        .. versionchanged:: 0.9.2
+            Added ``styles`` argument.
+        """
+        result = cls._add_control(
+            doc=doc,
+            label=label,
+            comp_kind=comp_kind,
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+            name=name,
+            anchor_type=anchor_type,
+            parent_form=parent_form,
+            styles=styles,
+        )
+        return result[0]
 
     # region    add_labelled_control
 
@@ -1206,6 +1261,65 @@ class Forms:
 
     # region    add_button
     @classmethod
+    def _add_button(
+        cls,
+        doc: XComponent | XDrawPage,
+        *,
+        name: str,
+        label: str | None,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 6,
+        anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
+        parent_form: XNameContainer | None = None,
+        styles: Iterable[StyleT] | None = None,
+    ) -> Tuple[XPropertySet, XControlShape]:
+        """
+        Adds a button control.
+
+        By Default the button has no tab stop and does not focus on click.
+
+        Args:
+            doc (XComponent, XDrawPage): Component or Draw Page.
+            name (str): Button name
+            label (str | None): Button Label
+            x (int): Button X position
+            y (int): Button Y position
+            height (int): Button Height
+            width (int, optional): Button Height. Defaults to 6.
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            parent_form (XNameContainer, optional): Parent form in which to add control.
+            styles (Iterable[StyleT], optional): One or more styles to apply.
+
+        Returns:
+            Tuple[XPropertySet, XControlShape]: Button Property Set and Control Shape
+        """
+        try:
+            btn_props, ctl_shape = cls._add_control(
+                doc=doc,
+                name=name,
+                label=label,
+                comp_kind=FormComponentKind.COMMAND_BUTTON,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                anchor_type=anchor_type,
+                parent_form=parent_form,
+                styles=styles,
+            )
+            # don't want button to be accessible by the "tab" key
+            btn_props.setPropertyValue("Tabstop", False)
+
+            # the button should not steal focus when clicked
+            btn_props.setPropertyValue("FocusOnClick", False)
+
+            return (btn_props, ctl_shape)
+        except Exception:
+            raise
+
+    @classmethod
     def add_button(
         cls,
         doc: XComponent | XDrawPage,
@@ -1243,29 +1357,19 @@ class Forms:
         .. versionchanged:: 0.9.2
             Added ``styles`` argument.
         """
-        try:
-            btn_props = cls.add_control(
-                doc=doc,
-                name=name,
-                label=label,
-                comp_kind=FormComponentKind.COMMAND_BUTTON,
-                x=x,
-                y=y,
-                width=width,
-                height=height,
-                anchor_type=anchor_type,
-                parent_form=parent_form,
-                styles=styles,
-            )
-            # don't want button to be accessible by the "tab" key
-            btn_props.setPropertyValue("Tabstop", False)
-
-            # the button should not steal focus when clicked
-            btn_props.setPropertyValue("FocusOnClick", False)
-
-            return btn_props
-        except Exception:
-            raise
+        result = cls._add_button(
+            doc=doc,
+            name=name,
+            label=label,
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+            anchor_type=anchor_type,
+            parent_form=parent_form,
+            styles=styles,
+        )
+        return result[0]
 
     # endregion add_button
 
@@ -1557,7 +1661,7 @@ class Forms:
             # keeps type checker happy
             styles = ()
         try:
-            btn_props = cls.add_button(
+            btn_props, ctl_shape = cls._add_button(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -1572,6 +1676,7 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, btn_props, True)
             ctl = cls.get_control(doc, model)
             result = FormCtlButton(ctl)
+            result.control_shape = cast("ControlShape", ctl_shape)
             result.tab_stop = True
             if label:
                 result.label = label
@@ -1636,7 +1741,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "CheckBox")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -1655,6 +1760,7 @@ class Forms:
                 checkbox = FormCtlCheckBox(ctl)
             else:
                 checkbox = FormCtlDbCheckBox(ctl)
+            checkbox.control_shape = cast("ControlShape", ctl_shape)
             checkbox.border = border
             checkbox.state = state
             checkbox.tri_state = tri_state
@@ -1725,7 +1831,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "ComboBox")
         try:
-            btn_props = cls.add_control(
+            btn_props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -1744,6 +1850,7 @@ class Forms:
                 combo = FormCtlComboBox(ctl)
             else:
                 combo = FormCtlDbComboBox(ctl)
+            combo.control_shape = cast("ControlShape", ctl_shape)
             max_text_len = max(max_text_len, 0)
             combo.border = border
             combo.read_only = read_only
@@ -1816,7 +1923,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "CurrencyField")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -1835,6 +1942,7 @@ class Forms:
                 currency = FormCtlCurrencyField(ctl)
             else:
                 currency = FormCtlDbCurrencyField(ctl)
+            currency.control_shape = cast("ControlShape", ctl_shape)
             currency = FormCtlCurrencyField(ctl)
             currency.max_value = max_value
             currency.min_value = min_value
@@ -1906,7 +2014,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "DateField")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -1925,6 +2033,7 @@ class Forms:
                 date_field = FormCtlDateField(ctl)
             else:
                 date_field = FormCtlDbDateField(ctl)
+            date_field.control_shape = cast("ControlShape", ctl_shape)
             date_field.date_min = min_date
             date_field.date_max = max_date
             date_field.dropdown = drop_down
@@ -1976,7 +2085,7 @@ class Forms:
             # keeps type checker happy
             styles = ()
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -1992,6 +2101,7 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
             result = FormCtlFile(ctl)
+            result.control_shape = cast("ControlShape", ctl_shape)
             return result
         except Exception:
             raise
@@ -2053,7 +2163,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "FormattedField")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2072,6 +2182,7 @@ class Forms:
                 formatted_field = FormCtlFormattedField(ctl)
             else:
                 formatted_field = FormCtlDbFormattedField(ctl)
+            formatted_field.control_shape = cast("ControlShape", ctl_shape)
             formatted_field.max_value = max_value
             formatted_field.min_value = min_value
             formatted_field.spin = spin_button
@@ -2125,7 +2236,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "GroupBox")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=label,
@@ -2140,7 +2251,9 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
-            return FormCtlGroupBox(ctl)
+            gb = FormCtlGroupBox(ctl)
+            gb.control_shape = cast("ControlShape", ctl_shape)
+            return gb
 
         except Exception:
             raise
@@ -2190,7 +2303,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "GroupBox")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=label,
@@ -2205,7 +2318,9 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
-            return FormCtlGrid(ctl)
+            ctl_grid = FormCtlGrid(ctl)
+            ctl_grid.control_shape = cast("ControlShape", ctl_shape)
+            return ctl_grid
         except Exception:
             raise
 
@@ -2247,7 +2362,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "Hidden")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2262,7 +2377,10 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
-            return FormCtlHidden(ctl)
+
+            ctl_hidden = FormCtlHidden(ctl)
+            ctl_hidden.control_shape = cast("ControlShape", ctl_shape)
+            return ctl_hidden
 
         except Exception:
             raise
@@ -2317,7 +2435,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "FormattedField")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2333,6 +2451,7 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
             img_btn = FormCtlImageButton(ctl)
+            img_btn.control_shape = cast("ControlShape", ctl_shape)
             img_btn.border = border
             if image_url:
                 img_btn.picture = image_url
@@ -2384,7 +2503,7 @@ class Forms:
             # keeps type checker happy
             styles = ()
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=label,
@@ -2399,7 +2518,9 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
-            return FormCtlFixedText(ctl)
+            ft = FormCtlFixedText(ctl)
+            ft.control_shape = cast("ControlShape", ctl_shape)
+            return ft
         except Exception:
             raise
 
@@ -2464,7 +2585,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "ListBox")
         try:
-            btn_props = cls.add_control(
+            btn_props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2483,6 +2604,7 @@ class Forms:
                 lst_box = FormCtlListBox(ctl)
             else:
                 lst_box = FormCtlDbListBox(ctl)
+            lst_box.control_shape = cast("ControlShape", ctl_shape)
             lst_box.border = border
             lst_box.read_only = read_only
             lst_box.drop_down = drop_down
@@ -2537,7 +2659,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "NavigationToolBar")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2552,7 +2674,9 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
-            return FormCtlNavigationToolBar(ctl)
+            nav_ctl = FormCtlNavigationToolBar(ctl)
+            nav_ctl.control_shape = cast("ControlShape", ctl_shape)
+            return nav_ctl
 
         except Exception:
             raise
@@ -2618,7 +2742,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "NumericField")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2637,6 +2761,7 @@ class Forms:
                 num_field = FormCtlNumericField(ctl)
             else:
                 num_field = FormCtlDbNumericField(ctl)
+            num_field.control_shape = cast("ControlShape", ctl_shape)
             num_field.max_value = max_value
             num_field.min_value = min_value
             num_field.spin_button = spin_button
@@ -2702,7 +2827,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "PatternField")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2718,13 +2843,14 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
             if comp_kind == FormComponentKind.PATTERN_FIELD:
-                num_field = FormCtlPatternField(ctl)
+                pattern_field = FormCtlPatternField(ctl)
             else:
-                num_field = FormCtlDbPatternField(ctl)
-            num_field.border = border
-            num_field.edit_mask = edit_mask
-            num_field.literal_mask = literal_mask
-            return num_field
+                pattern_field = FormCtlDbPatternField(ctl)
+            pattern_field.control_shape = cast("ControlShape", ctl_shape)
+            pattern_field.border = border
+            pattern_field.edit_mask = edit_mask
+            pattern_field.literal_mask = literal_mask
+            return pattern_field
         except Exception:
             raise
 
@@ -2787,7 +2913,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "RadioButton")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2806,6 +2932,7 @@ class Forms:
                 radio_btn = FormCtlRadioButton(ctl)
             else:
                 radio_btn = FormCtlDbRadioButton(ctl)
+            radio_btn.control_shape = cast("ControlShape", ctl_shape)
             radio_btn.border = border
             radio_btn.state = state
             radio_btn.multi_line = multiline
@@ -2859,7 +2986,7 @@ class Forms:
             # keeps type checker happy
             styles = ()
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2875,6 +3002,7 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
             rich_text = FormCtlRichText(ctl)
+            rich_text.control_shape = cast("ControlShape", ctl_shape)
             rich_text.border = border
             return rich_text
         except Exception:
@@ -2931,7 +3059,7 @@ class Forms:
             # keeps type checker happy
             styles = ()
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -2947,6 +3075,7 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
             scroll = FormCtlScrollBar(ctl)
+            scroll.control_shape = cast("ControlShape", ctl_shape)
             scroll.border = border
             scroll.min_value = min_value
             scroll.max_value = max_value
@@ -3008,7 +3137,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "SpinButton")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -3024,6 +3153,7 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
             spin = FormCtlSpinButton(ctl)
+            spin.control_shape = cast("ControlShape", ctl_shape)
             spin.max_value = max_value
             spin.min_value = min_value
             spin.increment = increment
@@ -3075,7 +3205,7 @@ class Forms:
             # keeps type checker happy
             styles = ()
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -3091,6 +3221,7 @@ class Forms:
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
             result = FormCtlSubmitButton(ctl)
+            result.control_shape = cast("ControlShape", ctl_shape)
             return result
         except Exception:
             raise
@@ -3149,7 +3280,7 @@ class Forms:
             # keeps type checker happy
             styles = ()
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -3168,6 +3299,7 @@ class Forms:
                 text_field = FormCtlTextField(ctl)
             else:
                 text_field = FormCtlDbTextField(ctl)
+            text_field.control_shape = cast("ControlShape", ctl_shape)
             text_field.border = border
             if text:
                 text_field.text = text
@@ -3239,7 +3371,7 @@ class Forms:
         if not name:
             name = cls.create_name(parent_form, "TimeField")
         try:
-            props = cls.add_control(
+            props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
                 name=name,
                 label=None,
@@ -3258,6 +3390,7 @@ class Forms:
                 time_field = FormCtlTimeField(ctl)
             else:
                 time_field = FormCtlDbTimeField(ctl)
+            time_field.control_shape = cast("ControlShape", ctl_shape)
             time_field.time_max = max_time
             time_field.time_min = min_time
             time_field.time_format = time_format

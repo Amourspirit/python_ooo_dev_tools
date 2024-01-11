@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from com.sun.star.sheet import XSpreadsheetDocument
-
 else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any
@@ -26,6 +25,7 @@ else:
 from . import calc_sheet as mCalcSheet
 from . import calc_sheets as mCalcSheets
 from . import calc_sheet_view as mCalcSheetView
+from .spreadsheet_draw_pages import SpreadsheetDrawPages
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
@@ -33,6 +33,7 @@ from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.event_singleton import _Events
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import gui as mGUI
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
@@ -42,7 +43,6 @@ from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from .spreadsheet_draw_pages import SpreadsheetDrawPages
 
 
 class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
@@ -61,6 +61,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         StylePartial.__init__(self, component=doc)
         self._sheets = None
         self._draw_pages = None
+        self._current_controller = None
 
     def create_cell_style(self, style_name: str) -> XStyle:
         """
@@ -530,12 +531,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         """
 
         def get_idx(index: int) -> int:
-            if index >= 0:
-                return index
-            idx = len(self.sheets) + index
-            if idx < 0:
-                raise IndexError("list index out of range")
-            return idx
+            count = len(self.sheets)
+            return mGenUtil.Util.get_index(index, count, False)
 
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
@@ -868,6 +865,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         """
         mCalc.Calc.zoom(doc=self.component, type=type)
 
+    # region Properties
+
     @property
     def sheets(self) -> mCalcSheets.CalcSheets:
         """
@@ -900,3 +899,17 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
             draw_pages = supp.getDrawPages()
             self._draw_pages = SpreadsheetDrawPages(self, draw_pages)
         return self._draw_pages  # type: ignore
+
+    @property
+    def current_controller(self) -> mCalcSheetView.CalcSheetView:
+        """
+        Gets the current controller.
+
+        Returns:
+            CalcSheetView: Current Controller
+        """
+        if self._current_controller is None:
+            self._current_controller = mCalcSheetView.CalcSheetView(self, self.component.getCurrentController())  # type: ignore
+        return self._current_controller
+
+    # endregion Properties

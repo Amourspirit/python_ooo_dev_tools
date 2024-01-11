@@ -45,7 +45,7 @@ class DocumentEventEvents:
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
-    def add_event_document_event_occured(self, cb: EventArgsCallbackT) -> None:
+    def add_event_document_event_occurred(self, cb: EventArgsCallbackT) -> None:
         """
         Adds a listener for an event.
 
@@ -53,12 +53,16 @@ class DocumentEventEvents:
 
         The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.document.DocumentEvent`` struct.
         """
+        # renamed in version 0.19.1, was named add_event_document_event_occured, alias added below
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="documentEventOccured")
             self.__callback(self, args)
             if args.remove_callback:
                 self.__callback = None
         self.__listener.on("documentEventOccured", cb)
+
+    # alias for add_event_document_event_occurred, added in version 0.19.1
+    add_event_document_event_occured = add_event_document_event_occurred
 
     def add_event_document_event_events_disposing(self, cb: EventArgsCallbackT) -> None:
         """
@@ -76,16 +80,20 @@ class DocumentEventEvents:
                 self.__callback = None
         self.__listener.on("disposing", cb)
 
-    def remove_event_document_event_occured(self, cb: EventArgsCallbackT) -> None:
+    def remove_event_document_event_occurred(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """
+        # renamed in version 0.19.1, was named remove_event_document_event_occured, alias added below
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="documentEventOccured", is_add=False)
             self.__callback(self, args)
             if args.remove_callback:
                 self.__callback = None
         self.__listener.off("documentEventOccured", cb)
+
+    # alias for remove_event_document_event_occurred, added in version 0.19.1
+    remove_event_document_event_occured = remove_event_document_event_occurred
 
     def remove_event_document_event_events_disposing(self, cb: EventArgsCallbackT) -> None:
         """
