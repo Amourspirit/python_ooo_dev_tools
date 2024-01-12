@@ -34,7 +34,7 @@ class TextDocumentComp(GenericTextDocumentComp):
 
     @property
     def component(self) -> TextDocument:
-        """Sheet Cell Cursor Component"""
+        """TextDocument Component"""
         # override to satisfy documentation and type
         return cast("TextDocument", super().component)
         # return cast("TextDocument", self._ComponentBase__get_component())  # type: ignore
