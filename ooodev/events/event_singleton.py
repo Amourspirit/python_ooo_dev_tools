@@ -8,8 +8,9 @@ This module is for the purpose of sharing events between classes internally
 from __future__ import annotations
 import contextlib
 from weakref import ref, ReferenceType
-from .args.event_args import EventArgs, AbstractEvent
-from typing import List, Dict, Union, cast
+from .args.event_args import EventArgs
+from .args.event_args_t import EventArgsT
+from typing import List, Dict, Union
 from ..utils import type_var
 from ..proto import event_observer
 
@@ -50,13 +51,13 @@ class _Events(object):
         else:
             self._callbacks[event_name].append(ref(callback))
 
-    def trigger(self, event_name: str, event_args: AbstractEvent, *args, **kwargs) -> None:
+    def trigger(self, event_name: str, event_args: EventArgsT, *args, **kwargs) -> None:
         """
         Trigger event(s) for a given name.
 
         Args:
             event_name (str): Name of event to trigger/
-            event_args (AbstractEvent): Event args passed to the callback for trigger.
+            event_args (EventArgsT): Event args passed to the callback for trigger.
             args (Any, optional): Optional positional args to pass to callback
             kwargs (Any, optional): Optional keyword args to pass to callback
         """

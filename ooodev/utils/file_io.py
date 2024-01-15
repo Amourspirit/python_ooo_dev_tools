@@ -66,6 +66,31 @@ class FileIO:
         p = Path(fnm)
         return p if p.is_absolute() else p.absolute().resolve()
 
+    @staticmethod
+    def get_ext(fnm: PathOrStr) -> str | None:
+        """
+        Gets file extension without the ``.``
+
+        Args:
+            fnm (PathOrStr): file path
+
+        Raises:
+            ValueError: If fnm is empty string
+
+        Returns:
+            str | None: Extension if Found; Otherwise, None
+        """
+        if fnm == "":
+            raise ValueError("Empty string")
+        p = Path(fnm)
+        # if not p.is_file():
+        #     mLo.Lo.print(f"Not a file: {fnm}")
+        #     return None
+        if not p.suffix:
+            mLo.Lo.print(f"No extension found for '{fnm}'")
+            return None
+        return p.suffix[1:]
+
     @classmethod
     def url_to_path(cls, url: str) -> Path:
         """

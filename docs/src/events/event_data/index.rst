@@ -1,0 +1,8 @@
+Partial
+=======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

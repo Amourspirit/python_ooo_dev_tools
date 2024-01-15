@@ -6,6 +6,7 @@ from ooodev.utils.data_type.cell_obj import CellObj as CellObj
 from ooodev.utils.data_type.range_obj import RangeObj as RangeObj
 from ooodev.utils.data_type.range_values import RangeValues as RangeValues
 from ooodev.utils.kind.zoom_kind import ZoomKind as ZoomKind
+from ooodev.events.calc_named_event import CalcNamedEvent as CalcNamedEvent
 
 from ..office.calc import Calc as Calc
 from .calc_cell import CalcCell as CalcCell

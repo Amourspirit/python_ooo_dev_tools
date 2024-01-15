@@ -2,6 +2,20 @@
 Version History
 ***************
 
+Version 0.20.3
+==============
+
+Now a Calc spreadsheet range can be exported to an image (png or jpg) file.
+Exported is done via `` class.
+
+Example of saving range as image.
+
+.. code-block:: python
+
+    sheet = doc.sheets[0]
+    rng = sheet.get_range(range_name="A1:M4")
+    rng.export_as_image("./my_image.png")
+
 Version 0.20.2
 ==============
 
