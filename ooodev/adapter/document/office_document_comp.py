@@ -59,7 +59,7 @@ class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, Print
     # region Properties
     @property
     def component(self) -> OfficeDocument:
-        """Sheet Cell Component"""
+        """OfficeDocument Component"""
         return cast("OfficeDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

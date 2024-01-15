@@ -5,7 +5,9 @@ import uno
 
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
+from com.sun.star.frame import XStorable
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
+from ooo.dyn.beans.property_state import PropertyState  # enum
 
 
 if TYPE_CHECKING:
@@ -16,23 +18,31 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.cell_values import CellValues
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.data_type.size import Size
-    from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row
-    from . import calc_cell_cursor as mCalcCellCursor
+    from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row, PathOrStr
     from . import calc_cell_cursor as mCalcCellCursor
     from .calc_sheet import CalcSheet
+    from ooodev.events.event_data.img_export_t import ImgExportT
 else:
-    CellRangeAddress = object
+    CellRangeAddress = Any
+    ImgExportT = Any
 
+from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
+from ooodev.calc import CalcNamedEvent
+from ooodev.events.args.cancel_event_args_generic import CancelEventArgsGeneric
+from ooodev.events.args.event_args_generic import EventArgsGeneric
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
-from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils import file_io as mFile
 from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 from . import calc_cell as mCalcCell
 
 
-class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial):
+class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, EventsPartial):
     """Represents a calc cell range."""
 
     def __init__(self, owner: CalcSheet, rng: Any) -> None:
@@ -54,6 +64,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial):
         QiPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)  # type: ignore
         PropPartial.__init__(self, component=cell_range, lo_inst=mLo.Lo.current_lo)  # type: ignore
         StylePartial.__init__(self, component=cell_range)
+        EventsPartial.__init__(self)
         # self.__doc = doc
 
     def change_style(self, style_name: str) -> bool:
@@ -356,6 +367,19 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial):
         cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj)
         cell.set_val(value=value)
 
+    def select(self) -> None:
+        """
+        Selects the range of cells represented by this instance.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.20.3
+        """
+        _ = mCalc.Calc.set_selected_range(
+            doc=self.calc_sheet.calc_doc.component, sheet=self.calc_sheet.component, range_val=self.__range_obj
+        )
+
     def get_address(self) -> CellRangeAddress:
         """
         Gets Range Address.
@@ -479,6 +503,152 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial):
         return self.range_obj.contains(*args, **kwargs)
 
     # endregion contains()
+
+    # region export
+    def export_as_image(self, fnm: PathOrStr) -> None:
+        """
+        Exports a range of cells as an image.
+
+        If the filename extension is ``.png`` then the image is exported as a PNG;
+        Otherwise, image is exported as a JPEG.
+
+        Args:
+            fnm (PathOrStr): Filename to export to.
+
+        Returns:
+            None:
+
+        Raises:
+            CancelEventError: If ``RANGE_EXPORTING_IMAGE`` is canceled.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.RANGE_EXPORTING_IMAGE` :eventref:`src-docs-event-cancel-generic`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.RANGE_EXPORTED_IMAGE` :eventref:`src-docs-event-generic`
+
+        Note:
+            Event args ``event_data`` an instance of ``~ooodev.events.event_data.img_export_t.ImgExportT``.
+
+
+        Example:
+
+            .. code-block:: python
+
+                from ooodev.events.args.cancel_event_args_generic import CancelEventArgsGeneric
+                from ooodev.events.args.event_args_generic import EventArgsGeneric
+                from ooodev.events.event_data.img_export_t import ImgExportT
+                from ooodev.calc import CalcNamedEvent
+
+                def on_exporting(source: Any, args: CancelEventArgsGeneric[ImgExportT]) -> None:
+                    args.event_data["compression"] = 9
+
+                def on_exported(source: Any, args: EventArgsGeneric[ImgExportT]) -> None:
+                    print(f"Image has been exported to {args.event_data['file']}")
+
+                rng = sheet.get_range(range_name="A1:M4")
+                rng.subscribe_event(CalcNamedEvent.RANGE_EXPORTING_IMAGE, on_exporting)
+                rng.subscribe_event(CalcNamedEvent.RANGE_EXPORTED_IMAGE, on_exported)
+                rng.export_as_image(pth)
+
+        .. versionadded:: 0.20.3
+        """
+        ext = mFile.FileIO.get_ext(fnm=fnm)
+        if ext and ext.lower() == "png":
+            self._export_as_png(fnm=fnm)
+        else:
+            self._export_as_jpg(fnm=fnm)
+
+    def _export_as_jpg(self, fnm: PathOrStr) -> None:
+        """
+        Exports a range of cells as an jpeg.
+
+        Returns:
+            None:
+        """
+        # https://ask.libreoffice.org/t/export-as-png-with-macro/74337/11
+        # https://ask.libreoffice.org/t/how-to-export-cell-range-to-images/57828/2
+
+        event_data: ImgExportT = {
+            "image_type": "jpg",
+            "compression": 9,
+            "interlaced": 1,
+            "translucent": 0,
+            "pixel_width": 1192,
+            "pixel_height": 1673,
+            "logical_width": 27522,
+            "logical_height": 38628,
+            "file": fnm,
+        }
+        cargs = CancelEventArgsGeneric(source=self, event_data=event_data)
+        self.trigger_event(CalcNamedEvent.RANGE_EXPORTING_IMAGE, cargs)
+        if cargs.cancel and cargs.handled is False:
+            raise mEx.CancelEventError(cargs)
+
+        dv = PropertyState.DIRECT_VALUE
+        # name, handle, value, state
+        filter_data = (
+            ("Compression", 0, cargs.event_data["compression"], dv),
+            ("Interlaced", 0, cargs.event_data["interlaced"], dv),
+            ("Translucent", 0, cargs.event_data["translucent"], dv),
+            ("PixelWidth", 0, cargs.event_data["pixel_width"], dv),
+            ("PixelHeight", 0, cargs.event_data["pixel_height"], dv),
+            ("LogicalWidth", 0, cargs.event_data["logical_width"], dv),
+            ("LogicalHeight", 0, cargs.event_data["logical_height"], dv),
+        )
+        self._export_as_img(fnm=event_data["file"], filter_name="calc_jpg_Export", filter_data=filter_data)
+        self.trigger_event(CalcNamedEvent.RANGE_EXPORTED_IMAGE, EventArgsGeneric.from_args(cargs))
+
+    def _export_as_png(self, fnm: PathOrStr) -> None:
+        """
+        Exports a range of cells as an jpeg.
+
+        Returns:
+            None:
+        """
+        event_data: ImgExportT = {
+            "image_type": "png",
+            "compression": 6,
+            "interlaced": 1,
+            "translucent": 1,
+            "pixel_width": 256,
+            "pixel_height": 194,
+            "logical_width": 6772,
+            "logical_height": 5132,
+            "file": fnm,
+        }
+        cargs = CancelEventArgsGeneric(source=self, event_data=event_data)
+        self.trigger_event(CalcNamedEvent.RANGE_EXPORTING_IMAGE, cargs)
+        if cargs.cancel and cargs.handled is False:
+            raise mEx.CancelEventError(cargs)
+
+        dv = PropertyState.DIRECT_VALUE
+        # name, handle, value, state
+        filter_data = (
+            ("Compression", 0, cargs.event_data["compression"], dv),
+            ("Interlaced", 0, cargs.event_data["interlaced"], dv),
+            ("Translucent", 0, cargs.event_data["translucent"], dv),
+            ("PixelWidth", 0, cargs.event_data["pixel_width"], dv),
+            ("PixelHeight", 0, cargs.event_data["pixel_height"], dv),
+            ("LogicalWidth", 0, cargs.event_data["logical_width"], dv),
+            ("LogicalHeight", 0, cargs.event_data["logical_height"], dv),
+        )
+        self._export_as_img(fnm=event_data["file"], filter_name="calc_png_Export", filter_data=filter_data)
+        self.trigger_event(CalcNamedEvent.RANGE_EXPORTED_IMAGE, EventArgsGeneric.from_args(cargs))
+
+    def _export_as_img(self, fnm: PathOrStr, filter_name: str, filter_data: tuple) -> None:
+        url = mFile.FileIO.fnm_to_url(fnm=fnm)
+        # capture the current selection.
+        current_sel = self.calc_sheet.get_selected()
+        self.select()
+
+        args = mProps.Props.make_props(FilterName=filter_name, FilterData=filter_data, SelectionOnly=True)
+        storable = self.calc_sheet.calc_doc.qi(XStorable, True)
+        storable.storeToURL(url, args)  # save PNG
+        # restore previous selection.
+        current_sel.select()
+
+    # endregion export
 
     # region Properties
     @property

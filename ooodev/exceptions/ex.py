@@ -4,7 +4,7 @@ from typing import Any, List, TYPE_CHECKING
 from ..utils.type_var import PathOrStr
 
 if TYPE_CHECKING:
-    from ..events.args.event_args import AbstractEvent
+    from ooodev.events.args.event_args_t import EventArgsT
 
 
 class NoneError(Exception):
@@ -247,12 +247,12 @@ class CreateInstanceMcfError(CreateInstanceError):
 class CancelEventError(Exception):
     """Error when an Event is canceled"""
 
-    def __init__(self, event_args: AbstractEvent, message: Any = None, *args) -> None:
+    def __init__(self, event_args: EventArgsT, message: Any = None, *args) -> None:
         """
         Cancel Event Error constructor
 
         Args:
-            event_args (AbstractEvent): Event args that was canceled
+            event_args (EventArgsT): Event args that was canceled
             message (Any, optional): Message of error
         """
         if message is None:

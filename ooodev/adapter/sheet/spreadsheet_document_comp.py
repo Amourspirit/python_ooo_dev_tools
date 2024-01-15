@@ -36,12 +36,11 @@ class SpreadsheetDocumentComp(OfficeDocumentComp, PropertyChangeImplement, Vetoa
 
     # endregion Overrides
     # region Properties
-    if TYPE_CHECKING:
-
-        @property
-        def component(self) -> SpreadsheetDocument:
-            """Spreadsheet Document Component"""
-            return cast("SpreadsheetDocument", self._ComponentBase__get_component())  # type: ignore
+    @property
+    def component(self) -> SpreadsheetDocument:
+        """Spreadsheet Document Component"""
+        return cast("SpreadsheetDocument", super().component)  # type: ignore
+        # return cast("SpreadsheetDocument", self._ComponentBase__get_component())  # type: ignore
 
     @property
     def spreadsheet_document_settings(self) -> SpreadsheetDocumentSettingsComp:

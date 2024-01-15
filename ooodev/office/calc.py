@@ -222,7 +222,7 @@ class Calc:
             loader (XComponentLoader): Component loader
 
         Raises:
-            CancelEventError: If DOC_OPENING is canceled
+            CancelEventError: If ``DOC_OPENING`` is canceled
 
         Returns:
             XSpreadsheetDocument: Spreadsheet document
@@ -945,7 +945,7 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         safe_quote = True
-        arg1 = kargs[1] # "sheet", "idx", "safe_quote"
+        arg1 = kargs[1]  # "sheet", "idx", "safe_quote"
         if count == 1:
             if mInfo.Info.is_instance(arg1, bool):
                 # int is not bool but bool is int
