@@ -97,7 +97,31 @@ class WriteTextViewCursor(
     # region export images
     def export_page_png(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
         """
-        Exports the current page as PNG image.
+        Exports doc pages as png images.
+
+        Args:
+            fnm (PathOrStr, optional): Image file name.
+            resolution (int, optional): Resolution in dpi. Defaults to 96.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.EXPORTING_PAGE_PNG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.EXPORTED_PAGE_PNG` :eventref:`src-docs-event-export`
+
+        Returns:
+            None:
+
+        Note:
+            On exporting event is :ref:`cancel_event_args_export`.
+            On exported event is :ref:`event_args_export`.
+            Args ``event_data`` is a :py:class:`~ooodev.write.filter.export_png.ExportPngT` dictionary.
+
+            If ``fnm`` is not specified, the image file name is created based on the document name and page number
+            and written to the same folder as the document.
+
+        See Also:
+            :py:class:`~ooodev.write.export.page_png.PagePng`
         """
         if not isinstance(self.owner, mWriteDoc.WriteDoc):
             raise TypeError(f"Owner must be of type {mWriteDoc.WriteDoc.__name__}")
@@ -120,7 +144,31 @@ class WriteTextViewCursor(
 
     def export_page_jpg(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
         """
-        Exports the current page as JPG image.
+        Exports doc pages as jpg images.
+
+        Args:
+            fnm (PathOrStr, optional): Image file name.
+            resolution (int, optional): Resolution in dpi. Defaults to 96.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.EXPORTING_PAGE_JPG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~.events.write_named_event.WriteNamedEvent.EXPORTED_PAGE_JPG` :eventref:`src-docs-event-export`
+
+        Returns:
+            None:
+
+        Note:
+            On exporting event is :ref:`cancel_event_args_export`.
+            On exported event is :ref:`event_args_export`.
+            Args ``event_data`` is a :py:class:`~ooodev.write.filter.export_jpg.ExportJpgT` dictionary.
+
+            If ``fnm`` is not specified, the image file name is created based on the document name and page number
+            and written to the same folder as the document.
+
+        See Also:
+            :py:class:`~ooodev.write.export.page_jpg.PageJpg`
         """
         if not isinstance(self.owner, mWriteDoc.WriteDoc):
             raise TypeError(f"Owner must be of type {mWriteDoc.WriteDoc.__name__}")

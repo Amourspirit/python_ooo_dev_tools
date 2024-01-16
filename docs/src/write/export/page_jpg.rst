@@ -1,6 +1,6 @@
 Class PageJpg
 =============
-.. autoclass:: oooodev.write.export.page_jpg.PageJpg
+.. autoclass:: ooodev.write.export.page_jpg.PageJpg
     :members:
     :undoc-members:
     :show-inheritance:

@@ -72,5 +72,3 @@ Standard Export Cancel Event with Generic Event Data.
 .. seealso::
 
     :ref:`cancel_event_args_export`
-
-.. _src-docs-event-cancel-export:
