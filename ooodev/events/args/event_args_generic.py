@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import Any, Generic, TypeVar
-from abc import ABC
 from ooodev.utils.gen_util import NULL_OBJ
-from ooodev.events.args.event_args_t import EventArgsT
 
 _T = TypeVar("_T")
 
@@ -29,8 +27,6 @@ class EventArgsGeneric(Generic[_T]):
 
         Returns:
             Any: Data for ``key`` if found; Otherwise, if ``default`` is set then ``default``.
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             if default is NULL_OBJ:
@@ -51,8 +47,6 @@ class EventArgsGeneric(Generic[_T]):
 
         Returns:
             bool: ``True`` if values is written; Otherwise, ``False``
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             self._kv_data = {}
@@ -73,8 +67,6 @@ class EventArgsGeneric(Generic[_T]):
 
         Returns:
             bool: ``True`` if key exist; Otherwise ``False``
-
-        .. versionadded:: 0.9.0
         """
         return False if self._kv_data is None else key in self._kv_data
 
@@ -87,8 +79,6 @@ class EventArgsGeneric(Generic[_T]):
 
         Returns:
             bool: ``True`` if key was found and removed; Otherwise, ``False``
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             return False
@@ -112,7 +102,7 @@ class EventArgsGeneric(Generic[_T]):
         return self._event_source
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self.event_name}>"
+        return f"<{self.__class__.__name__}: {self.source}, {self.event_data}>"
 
     @staticmethod
     def from_args(args: EventArgsGeneric) -> EventArgsGeneric:
@@ -129,4 +119,6 @@ class EventArgsGeneric(Generic[_T]):
         eargs._event_name = args.event_name
         eargs._event_source = args.event_source
         eargs.event_data = args.event_data
+        if args._kv_data is not None:
+            eargs._kv_data = args._kv_data.copy()
         return eargs

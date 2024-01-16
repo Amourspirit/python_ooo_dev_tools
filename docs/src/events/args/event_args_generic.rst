@@ -1,3 +1,5 @@
+.. _event_args_generic:
+
 Class EventArgsGeneric
 ======================
 

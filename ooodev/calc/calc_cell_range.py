@@ -530,7 +530,6 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
         Note:
             Event args ``event_data`` an instance of ``~ooodev.events.event_data.img_export_t.ImgExportT``.
 
-
         Example:
 
             .. code-block:: python
@@ -550,6 +549,9 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
                 rng.subscribe_event(CalcNamedEvent.RANGE_EXPORTING_IMAGE, on_exporting)
                 rng.subscribe_event(CalcNamedEvent.RANGE_EXPORTED_IMAGE, on_exported)
                 rng.export_as_image(pth)
+
+        See Also:
+            `Export Calc Sheet Range as Image Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_export_calc_image>`__
 
         .. versionadded:: 0.20.3
         """

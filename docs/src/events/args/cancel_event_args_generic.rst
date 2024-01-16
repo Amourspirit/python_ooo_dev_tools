@@ -1,3 +1,5 @@
+.. _cancel_event_args_generic:
+
 Class CancelEventArgsGeneric
 ============================
 

@@ -98,3 +98,41 @@ class WriteNamedEvent:
 
     STYLE_PREV_PARA_PROP_SETTING = "write_prev_para_prop_setting"
     STYLE_PREV_PARA_PROP_SET = "write_prev_para_prop_set"
+
+    EXPORTING_PAGE_PNG = "write_exporting_page_png"
+    """
+    Exporting a Write Page to image format of PNG.
+    
+    .. seealso::
+    
+        - :py:meth:`WriteTextViewCursor.export_page_png() <ooodev.write.WriteTextViewCursor.export_page_png>`
+        - :py:class:`PagePng <ooodev.write.export.page_png.PagePng>`
+    """
+    EXPORTED_PAGE_PNG = "write_exported_page_png"
+    """
+    Exported a Write Page to image format of PNG.
+    
+    .. seealso::
+    
+        - :py:meth:`WriteTextViewCursor.export_page_png() <ooodev.write.WriteTextViewCursor.export_page_png>`
+        - :py:class:`PagePng <ooodev.write.export.page_png.PagePng>`
+    """
+
+    EXPORTING_PAGE_JPG = "write_exporting_page_jpg"
+    """
+    Exporting a Write Page to image format of JPG.
+    
+    .. seealso::
+    
+        - :py:meth:`WriteTextViewCursor.export_page_jpg() <ooodev.write.WriteTextViewCursor.export_page_jpg>`
+        - :py:class:`PageJpg <ooodev.write.export.page_jpg.PageJpg>`
+    """
+    EXPORTED_PAGE_JPG = "write_exported_page_jpg"
+    """
+    Exported a Write Page to image format of JPG.
+    
+    .. seealso::
+    
+        - :py:meth:`WriteTextViewCursor.export_page_jpg() <ooodev.write.WriteTextViewCursor.export_page_jpg>`
+        - :py:class:`PageJpg <ooodev.write.export.page_jpg.PageJpg>`
+    """

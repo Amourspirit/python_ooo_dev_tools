@@ -47,4 +47,6 @@ class CancelEventArgs(AbstractCancelEventArgs):
         eargs.event_data = args.event_data
         eargs.cancel = args.cancel
         eargs.handled = args.handled
+        if args._kv_data is not None:
+            eargs._kv_data = args._kv_data.copy()
         return eargs

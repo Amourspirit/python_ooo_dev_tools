@@ -7,6 +7,7 @@ from ooo.dyn.text.page_number_type import PageNumberType as PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType as TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as PaperFormat
 
+from ooodev.events.write_named_event import WriteNamedEvent as WriteNamedEvent
 from ooodev.format.writer.style import FamilyNamesKind as FamilyNamesKind
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
@@ -35,6 +36,7 @@ from .write_text_table import WriteTextTable as WriteTextTable
 from .write_text_tables import WriteTextTables as WriteTextTables
 from .write_text_view_cursor import WriteTextViewCursor as WriteTextViewCursor
 from .write_word_cursor import WriteWordCursor as WriteWordCursor
+
 
 __all__ = [
     "WriteDoc",
