@@ -747,16 +747,7 @@ class Info(metaclass=StaticProperty):
         Returns:
             str | None: Extension if Found; Otherwise, None
         """
-        if fnm == "":
-            raise ValueError("Empty string")
-        p = Path(fnm)
-        # if not p.is_file():
-        #     mLo.Lo.print(f"Not a file: {fnm}")
-        #     return None
-        if not p.suffix:
-            mLo.Lo.print(f"No extension found for '{fnm}'")
-            return None
-        return p.suffix[1:]
+        return mFileIO.FileIO.get_ext(fnm)
 
     @staticmethod
     def get_unique_fnm(fnm: PathOrStr) -> str:

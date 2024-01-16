@@ -1,11 +1,10 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING, TypeVar, Generic
+from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic
 import uno
 
 from com.sun.star.text import XTextViewCursor
 
 if TYPE_CHECKING:
-    from com.sun.star.text import XTextViewCursor
     from com.sun.star.text import XTextDocument
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -19,6 +18,10 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.type_var import PathOrStr
+from ooodev.write import write_doc as mWriteDoc
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.write import WriteNamedEvent
 
 from .partial.text_cursor_partial import TextCursorPartial
 
@@ -35,6 +38,7 @@ class WriteTextViewCursor(
     PropPartial,
     QiPartial,
     StylePartial,
+    EventsPartial,
 ):
     """Represents a writer text view cursor."""
 
@@ -56,6 +60,7 @@ class WriteTextViewCursor(
         PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
         StylePartial.__init__(self, component=component)
+        EventsPartial.__init__(self)
 
     def __len__(self) -> int:
         return mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)
@@ -78,6 +83,8 @@ class WriteTextViewCursor(
         """
         return mWrite.Write.get_current_page(self.component)  # type: ignore
 
+    get_current_page = get_current_page_num
+
     def get_text_view_cursor(self) -> XTextViewCursor:
         """
         Gets the text view cursor.
@@ -87,18 +94,54 @@ class WriteTextViewCursor(
         """
         return self.qi(XTextViewCursor, True)
 
-    def get_current_page(self) -> int:
+    # region export images
+    def export_page_png(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
         """
-        Gets the current page
-
-
-        Returns:
-            int: Page number if present; Otherwise, -1
-
-        See Also:
-            :py:meth:`~.Write.get_page_number`
+        Exports the current page as PNG image.
         """
-        return mWrite.Write.get_current_page(self.get_text_view_cursor())
+        if not isinstance(self.owner, mWriteDoc.WriteDoc):
+            raise TypeError(f"Owner must be of type {mWriteDoc.WriteDoc.__name__}")
+
+        def on_exporting(source: Any, args: Any) -> None:
+            self.trigger_event(WriteNamedEvent.EXPORTING_PAGE_PNG, args)
+
+        def on_exported(source: Any, args: Any) -> None:
+            self.trigger_event(WriteNamedEvent.EXPORTED_PAGE_PNG, args)
+
+        # don't import to avoid unnecessary dependencies and overhead until needed.
+        from .export.page_png import PagePng
+
+        doc = self.owner
+        exporter = PagePng(doc)
+        exporter.subscribe_event_exporting(on_exporting)
+        exporter.subscribe_event_exported(on_exported)
+
+        exporter.export(fnm=fnm, resolution=resolution)
+
+    def export_page_jpg(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
+        """
+        Exports the current page as JPG image.
+        """
+        if not isinstance(self.owner, mWriteDoc.WriteDoc):
+            raise TypeError(f"Owner must be of type {mWriteDoc.WriteDoc.__name__}")
+
+        def on_exporting(source: Any, args: Any) -> None:
+            self.trigger_event(WriteNamedEvent.EXPORTING_PAGE_JPG, args)
+
+        def on_exported(source: Any, args: Any) -> None:
+            self.trigger_event(WriteNamedEvent.EXPORTED_PAGE_JPG, args)
+
+        # don't import to avoid unnecessary dependencies and overhead until needed.
+        from .export.page_jpg import PageJpg
+
+        doc = self.owner
+        exporter = PageJpg(doc)
+        exporter.subscribe_event_exporting(on_exporting)
+        exporter.subscribe_event_exported(on_exported)
+
+        exporter.export(fnm=fnm, resolution=resolution)
+
+    # endregion export images
 
     # region Properties
     @property

@@ -5,11 +5,11 @@ This module is for the purpose of sharing events between classes.
 from __future__ import annotations
 import contextlib
 from weakref import ref, ReferenceType, proxy
-from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union, cast
+from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union
 from . import event_singleton
 from ..proto import event_observer
 from ..utils.type_var import EventCallback as EventCallback
-from .args.event_args import EventArgs, AbstractEvent
+from .args.event_args_t import EventArgsT
 from .args.generic_args import GenericArgs as GenericArgs
 
 
@@ -74,19 +74,19 @@ class _event_base(object):
         if self._callbacks is not None:
             self._callbacks.clear()
 
-    def _set_event_args(self, event_name: str, event_args: AbstractEvent) -> None:
+    def _set_event_args(self, event_name: str, event_args: EventArgsT) -> None:
         if event_args is None:
             return
         event_args._event_name = event_name
         event_args._event_source = self  # type: ignore
 
-    def trigger(self, event_name: str, event_args: AbstractEvent, *args, **kwargs):
+    def trigger(self, event_name: str, event_args: EventArgsT, *args, **kwargs):
         """
         Trigger event(s) for a given name.
 
         Args:
             event_name (str): Name of event to trigger
-            event_args (AbstractEvent): Event args passed to the callback for trigger.
+            event_args (EventArgsT): Event args passed to the callback for trigger.
             args (Any, optional): Optional positional args to pass to callback
             kwargs (Any, optional): Optional keyword args to pass to callback
 
@@ -152,7 +152,7 @@ class Events(_event_base):
         self._source = source
         self._t_args = trigger_args
         # register wih LoEvents so this instance get triggered when LoEvents() are triggered.
-        LoEvents().add_observer(self)
+        LoEvents().add_observer(self)  # type: ignore
 
     def clear(self) -> None:
         """
@@ -162,13 +162,13 @@ class Events(_event_base):
         """
         super()._clear()
 
-    def trigger(self, event_name: str, event_args: AbstractEvent):
+    def trigger(self, event_name: str, event_args: EventArgsT):
         if self._t_args is None:
             super().trigger(event_name=event_name, event_args=event_args)
         else:
             super().trigger(event_name, event_args, *self._t_args.args, **self._t_args.kwargs)
 
-    def _set_event_args(self, event_name: str, event_args: AbstractEvent) -> None:
+    def _set_event_args(self, event_name: str, event_args: EventArgsT) -> None:
         if event_args is None:
             return
         event_args._event_name = event_name
@@ -189,7 +189,7 @@ class LoEvents(_event_base):
             # cls._instance._observers: List[ReferenceType[event_observer.EventObserver]] | None = None
             cls._instance._observers = None
             # register wih _Events so this instance get triggered when _Events() are triggered.
-            event_singleton._Events().add_observer(cls._instance)
+            event_singleton._Events().add_observer(cls._instance)  # type: ignore
         return cls._instance
 
     def __init__(self) -> None:
@@ -213,11 +213,11 @@ class LoEvents(_event_base):
         for observer in args:
             self._observers.append(ref(observer))
 
-    def trigger(self, event_name: str, event_args: AbstractEvent):
+    def trigger(self, event_name: str, event_args: EventArgsT):
         super().trigger(event_name, event_args)
         self._update_observers(event_name, event_args)
 
-    def _update_observers(self, event_name: str, event_args: AbstractEvent) -> None:
+    def _update_observers(self, event_name: str, event_args: EventArgsT) -> None:
         # sourcery skip: last-if-guard
         if self._observers is not None:
             cleanup = None
@@ -247,7 +247,7 @@ class DummyEvents:
     def remove(self, event_name: str, callback: EventCallback) -> bool:
         return True
 
-    def trigger(self, event_name: str, event_args: AbstractEvent, *args, **kwargs) -> None:
+    def trigger(self, event_name: str, event_args: EventArgsT, *args, **kwargs) -> None:
         pass
 
 

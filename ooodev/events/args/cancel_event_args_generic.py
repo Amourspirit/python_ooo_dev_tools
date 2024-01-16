@@ -1,13 +1,21 @@
 from __future__ import annotations
-from typing import Any
-from .event_args import AbstractEvent
+from typing import Any, Generic, TypeVar
+from .event_args_generic import EventArgsGeneric
+
+_T = TypeVar("_T")
 
 
-class AbstractCancelEventArgs(AbstractEvent):
-    # https://stackoverflow.com/questions/472000/usage-of-slots
-    __slots__ = ()
+class CancelEventArgsGeneric(EventArgsGeneric[_T], Generic[_T]):
+    """Cancel Event Arguments"""
 
-    def __init__(self, source: Any, cancel=False) -> None:
+    __slots__ = ("cancel", "handled")
+
+    def __init__(
+        self,
+        source: Any,
+        event_data: _T,
+        cancel=False,
+    ) -> None:
         """
         Constructor
 
@@ -15,23 +23,20 @@ class AbstractCancelEventArgs(AbstractEvent):
             source (Any): Event Source
             cancel (bool, optional): Cancel value. Defaults to False.
         """
-        super().__init__(source)
+        super().__init__(source, event_data)
         self.cancel = cancel
         self.handled = False
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: {self.source}, {self.event_data}, {self.cancel}>"
 
     cancel: bool
     """Gets/Sets cancel value"""
     handled: bool
     """Get/Set Handled value. Typically if set to ``True`` then ``cancel`` is ignored."""
 
-
-class CancelEventArgs(AbstractCancelEventArgs):
-    """Cancel Event Arguments"""
-
-    __slots__ = ("source", "_event_name", "event_data", "cancel", "handled", "_event_source", "_kv_data")
-
     @staticmethod
-    def from_args(args: AbstractCancelEventArgs) -> CancelEventArgs:
+    def from_args(args: CancelEventArgsGeneric) -> CancelEventArgsGeneric:
         """
         Gets a new instance from existing instance
 
@@ -41,7 +46,7 @@ class CancelEventArgs(AbstractCancelEventArgs):
         Returns:
             CancelEventArgs: args
         """
-        eargs = CancelEventArgs(source=args.source)
+        eargs = CancelEventArgsGeneric(source=args.source, event_data=args.event_data)
         eargs._event_name = args.event_name
         eargs._event_source = args.event_source
         eargs.event_data = args.event_data

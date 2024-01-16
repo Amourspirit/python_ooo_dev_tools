@@ -1,30 +1,21 @@
 from __future__ import annotations
-from typing import Any
-from abc import ABC
+from typing import Any, Generic, TypeVar
 from ooodev.utils.gen_util import NULL_OBJ
 
+_T = TypeVar("_T")
 
-class AbstractEvent(ABC):
-    # https://stackoverflow.com/questions/472000/usage-of-slots
-    __slots__ = ()
 
-    def __init__(self, source: Any) -> None:
-        """
-        Constructor
+class EventArgsGeneric(Generic[_T]):
+    """Generic Event Args"""
 
-        Args:
-            source (Any): Event Source
-        """
+    __slots__ = ("source", "_event_name", "event_data", "_event_source", "_kv_data")
+
+    def __init__(self, source: Any, event_data: _T) -> None:
         self.source = source
+        self.event_data = event_data
         self._event_name = ""
         self._event_source = None
-        self.event_data = None
         self._kv_data = None
-
-    source: Any
-    """Gets/Sets Event source"""
-    event_data: Any
-    """Gets/Sets any extra data associated with the event"""
 
     def get(self, key: str, default: Any = NULL_OBJ) -> Any:
         """
@@ -36,8 +27,6 @@ class AbstractEvent(ABC):
 
         Returns:
             Any: Data for ``key`` if found; Otherwise, if ``default`` is set then ``default``.
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             if default is NULL_OBJ:
@@ -58,8 +47,6 @@ class AbstractEvent(ABC):
 
         Returns:
             bool: ``True`` if values is written; Otherwise, ``False``
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             self._kv_data = {}
@@ -80,8 +67,6 @@ class AbstractEvent(ABC):
 
         Returns:
             bool: ``True`` if key exist; Otherwise ``False``
-
-        .. versionadded:: 0.9.0
         """
         return False if self._kv_data is None else key in self._kv_data
 
@@ -94,8 +79,6 @@ class AbstractEvent(ABC):
 
         Returns:
             bool: ``True`` if key was found and removed; Otherwise, ``False``
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             return False
@@ -119,28 +102,20 @@ class AbstractEvent(ABC):
         return self._event_source
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self.event_name}>"
-
-
-class EventArgs(AbstractEvent):
-    """
-    Event Arguments Class
-    """
-
-    __slots__ = ("source", "_event_name", "event_data", "_event_source", "_kv_data")
+        return f"<{self.__class__.__name__}: {self.source}, {self.event_data}>"
 
     @staticmethod
-    def from_args(args: AbstractEvent) -> EventArgs:
+    def from_args(args: EventArgsGeneric) -> EventArgsGeneric:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (AbstractEvent): Existing Instance
+            args (EventArgsGeneric): Existing Instance
 
         Returns:
             EventArgs: args
         """
-        eargs = EventArgs(source=args.source)
+        eargs = EventArgsGeneric(source=args.source, event_data=args.event_data)
         eargs._event_name = args.event_name
         eargs._event_source = args.event_source
         eargs.event_data = args.event_data
