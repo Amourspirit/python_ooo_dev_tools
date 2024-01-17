@@ -1,5 +1,5 @@
-Event Data
-==========
+Event Partial
+=============
 
 .. toctree::
     :titlesonly:

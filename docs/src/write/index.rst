@@ -8,5 +8,7 @@ write
     :glob:
 
     *
+    export/index
+    filter/index
     partial/index
     style/index

@@ -35,7 +35,7 @@ class KeyValArgs(AbstractKeyValArgs):
     __slots__ = ("source", "_event_name", "event_data", "key", "value", "_event_source", "_kv_data", "default")
 
     @staticmethod
-    def from_args(args: AbstractKeyValArgs) -> KeyValArgs:
+    def from_args(args: KeyValArgs) -> KeyValArgs:
         """
         Gets a new instance from existing instance
 

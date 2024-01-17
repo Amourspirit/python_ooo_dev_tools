@@ -1,18 +1,21 @@
 from __future__ import annotations
 from typing import Any, Generic, TypeVar
 from ooodev.utils.gen_util import NULL_OBJ
+from ooodev.utils.type_var import PathOrStr
 
 _T = TypeVar("_T")
 
 
-class EventArgsGeneric(Generic[_T]):
-    """Generic Event Args"""
+class EventArgsExport(Generic[_T]):
+    """Generic Event Args for export events."""
 
-    __slots__ = ("source", "_event_name", "event_data", "_event_source", "_kv_data")
+    __slots__ = ("source", "_event_name", "event_data", "_event_source", "_kv_data", "fnm", "overwrite")
 
-    def __init__(self, source: Any, event_data: _T) -> None:
+    def __init__(self, source: Any, event_data: _T, fnm: PathOrStr = "", overwrite: bool = True) -> None:
         self.source = source
         self.event_data = event_data
+        self.fnm = fnm
+        self.overwrite = overwrite
         self._event_name = ""
         self._event_source = None
         self._kv_data = None
@@ -102,23 +105,27 @@ class EventArgsGeneric(Generic[_T]):
         return self._event_source
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self.source}, {self.event_data}>"
+        return f"<{self.__class__.__name__}: {self.source}, {self.event_data}, {self.fnm}, {self.overwrite}>"
+
+    fnm: PathOrStr
+    """File name"""
+    overwrite: bool
+    """Overwrite file if it exist"""
 
     @staticmethod
-    def from_args(args: EventArgsGeneric) -> EventArgsGeneric:
+    def from_args(args: EventArgsExport) -> EventArgsExport:
         """
         Gets a new instance from existing instance
 
         Args:
-            args (EventArgsGeneric): Existing Instance
+            args (EventArgsExport): Existing Instance
 
         Returns:
-            EventArgsGeneric: args
+            EventArgsExport: args
         """
-        eargs = EventArgsGeneric(source=args.source, event_data=args.event_data)
+        eargs = EventArgsExport(source=args.source, event_data=args.event_data, fnm=args.fnm, overwrite=args.overwrite)
         eargs._event_name = args.event_name
         eargs._event_source = args.event_source
-        eargs.event_data = args.event_data
         if args._kv_data is not None:
             eargs._kv_data = args._kv_data.copy()
         return eargs

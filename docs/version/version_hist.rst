@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.20.4
+==============
+
+Now ``ooodev.write.WriteTextViewCursor`` export Writer document pages as images (png or jpg) files.
+See ``./tests/test_write/test_write_ns/test_export_image.py``file for examples.
+
 Version 0.20.3
 ==============
 
@@ -62,11 +68,11 @@ Now there are ``size`` and ``position`` properties that return the expected valu
 Version 0.18.2
 ==============
 
-Added ``ooodev.calc.SpreadsheetDrawPages``class. Handles working with Calc Draw Pages.
-Added ``ooodev.calc.SpreadsheetDrawPage``class. Handles working with Calc Sheet Draw Page.
+Added ``ooodev.calc.SpreadsheetDrawPages`` class. Handles working with Calc Draw Pages.
+Added ``ooodev.calc.SpreadsheetDrawPage`` class. Handles working with Calc Sheet Draw Page.
 
-Added ``ooodev.calc.CalcForms``class. Handles working with Calc Sheet Forms.
-Added ``ooodev.calc.CalcForm``class. Handles working with Calc Sheet Form.
+Added ``ooodev.calc.CalcForms`` class. Handles working with Calc Sheet Forms.
+Added ``ooodev.calc.CalcForm`` class. Handles working with Calc Sheet Form.
 
 Version 0.18.1
 ==============

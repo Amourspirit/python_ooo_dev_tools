@@ -1,5 +1,7 @@
-Event Data
-==========
+.. _ns_write_filter:
+
+filter
+======
 
 .. toctree::
     :titlesonly:

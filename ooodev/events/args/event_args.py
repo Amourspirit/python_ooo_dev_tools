@@ -144,4 +144,6 @@ class EventArgs(AbstractEvent):
         eargs._event_name = args.event_name
         eargs._event_source = args.event_source
         eargs.event_data = args.event_data
+        if args._kv_data is not None:
+            eargs._kv_data = args._kv_data.copy()
         return eargs

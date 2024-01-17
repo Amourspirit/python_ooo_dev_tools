@@ -27,10 +27,10 @@ def test_export_range_jpg(loader, tmp_path) -> None:
         rng.export_as_image(pth)
         assert pth.exists()
 
-        # filter_names = Info.get_filter_names()
-        # assert filter_names
-        # fp = Info.get_filter_props("calc_jpg_Export")
-        # assert fp
+        filter_names = Info.get_filter_names()
+        assert filter_names
+        fp = Info.get_filter_props("calc_jpg_Export")
+        assert fp
 
     finally:
         doc.close_doc()

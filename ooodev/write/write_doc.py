@@ -50,6 +50,8 @@ from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
+from ooodev.draw import draw_page as mDrawPage
+from ooodev.draw import draw_pages as mDrawPages
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -319,6 +321,20 @@ class WriteDoc(
         """
         cursor = mSelection.Selection.get_view_cursor(self.component)
         return mWriteTextViewCursor.WriteTextViewCursor(self, cursor)
+
+    def get_doc_path(self) -> str:
+        """
+        Gets document path as a System path such has ``C:\\Users\\User\\Documents\\MyDoc.odt``.
+
+        Returns:
+            PathOrStr: Document path if available; Otherwise empty string.
+
+        .. versionadded:: 0.20.4
+        """
+        try:
+            return uno.fileUrlToSystemPath(self.component.URL)  # type: ignore
+        except Exception:
+            return ""
 
     def get_doc_settings(self) -> XPropertySet:
         """

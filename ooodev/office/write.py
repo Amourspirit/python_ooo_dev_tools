@@ -749,7 +749,11 @@ class Write(mSel.Selection):
 
         Returns:
             str: coordinates as string
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 0.18.3
         Warning:
             The ``X`` is relative to the document window and not the document page.
             This means when the document window size changes the ``X`` coordinate will change even if the cursor has not moved.
