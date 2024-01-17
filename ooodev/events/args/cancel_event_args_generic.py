@@ -41,10 +41,10 @@ class CancelEventArgsGeneric(EventArgsGeneric[_T], Generic[_T]):
         Gets a new instance from existing instance
 
         Args:
-            args (AbstractCancelEventArgs): Existing Instance
+            args (CancelEventArgsGeneric): Existing Instance
 
         Returns:
-            CancelEventArgs: args
+            CancelEventArgsGeneric: args
         """
         eargs = CancelEventArgsGeneric(source=args.source, event_data=args.event_data)
         eargs._event_name = args.event_name

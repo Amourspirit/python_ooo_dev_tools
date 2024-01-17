@@ -113,7 +113,7 @@ class EventArgsGeneric(Generic[_T]):
             args (EventArgsGeneric): Existing Instance
 
         Returns:
-            EventArgs: args
+            EventArgsGeneric: args
         """
         eargs = EventArgsGeneric(source=args.source, event_data=args.event_data)
         eargs._event_name = args.event_name

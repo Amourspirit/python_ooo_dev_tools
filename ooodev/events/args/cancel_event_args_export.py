@@ -44,10 +44,10 @@ class CancelEventArgsExport(EventArgsExport[_T], Generic[_T]):
         Gets a new instance from existing instance
 
         Args:
-            args (CancelEventArgsExportImg): Existing Instance
+            args (CancelEventArgsExport): Existing Instance
 
         Returns:
-            CancelEventArgsExportImg: args
+            CancelEventArgsExport: args
         """
         eargs = CancelEventArgsExport(
             source=args.source, event_data=args.event_data, fnm=args.fnm, overwrite=args.overwrite, cancel=args.cancel

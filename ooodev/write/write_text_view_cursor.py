@@ -120,6 +120,46 @@ class WriteTextViewCursor(
             If ``fnm`` is not specified, the image file name is created based on the document name and page number
             and written to the same folder as the document.
 
+        Example:
+
+            .. code-block:: python
+
+                from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
+                from ooodev.events.args.event_args_export import EventArgsExport
+                from ooodev.write import Write, WriteDoc
+                from ooodev.write import WriteNamedEvent
+                from ooodev.write.filter.export_png import ExportPngT
+
+                # ... code omitted ...
+
+                def export_pages_png(doc_file: str):
+                    doc = WriteDoc(Write.open_doc(fnm=doc_file))
+
+                    def on_exporting(source: Any, args: CancelEventArgsExport[ExportPngT]) -> None:
+                        args.event_data["compression"] = 5 # default is 6
+
+                    def on_exported(source: Any, args: EventArgsExport[ExportPngT]) -> None:
+                        print(args.get("url"))
+
+                    try:
+                        view = doc.get_view_cursor()
+
+                        doc_path = Path(doc.get_doc_path())
+                        view.jump_to_last_page()
+                        # optionally subscribe to events to make fine tune export
+                        view.subscribe_event(WriteNamedEvent.EXPORTED_PAGE_PNG, on_exported)
+                        view.subscribe_event(WriteNamedEvent.EXPORTING_PAGE_PNG, on_exporting)
+
+                        for i in range(view.get_page(), 0, -1):
+                            img_path = Path(tmp_path_fn, f"{doc_path.stem}_{i}.png")
+                            # export 300 DPI
+                            view.export_page_png(fnm=img_path, resolution=300)
+                            view.jump_to_previous_page()
+
+                        view.jump_to_first_page()
+                    finally:
+                        doc.close_doc()
+
         See Also:
             :py:class:`~ooodev.write.export.page_png.PagePng`
         """
@@ -166,6 +206,46 @@ class WriteTextViewCursor(
 
             If ``fnm`` is not specified, the image file name is created based on the document name and page number
             and written to the same folder as the document.
+
+        Example:
+
+            .. code-block:: python
+
+                from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
+                from ooodev.events.args.event_args_export import EventArgsExport
+                from ooodev.write import Write, WriteDoc
+                from ooodev.write import WriteNamedEvent
+                from ooodev.write.filter.export_jpg import ExportJpgT
+
+                # ... code omitted ...
+
+                def export_pages_jpg(doc_file: str):
+                    doc = WriteDoc(Write.open_doc(fnm=doc_file))
+
+                    def on_exporting(source: Any, args: CancelEventArgsExport[ExportJpgT]) -> None:
+                        args.event_data["quality"] = 80 # Default is 75
+
+                    def on_exported(source: Any, args: EventArgsExport[ExportJpgT]) -> None:
+                        print(args.get("url"))
+
+                    try:
+                        view = doc.get_view_cursor()
+
+                        doc_path = Path(doc.get_doc_path())
+                        view.jump_to_last_page()
+                        # optionally subscribe to events to make fine tune export
+                        view.subscribe_event(WriteNamedEvent.EXPORTED_PAGE_JPG, on_exported)
+                        view.subscribe_event(WriteNamedEvent.EXPORTING_PAGE_JPG, on_exporting)
+
+                        for i in range(view.get_page(), 0, -1):
+                            img_path = Path(tmp_path_fn, f"{doc_path.stem}_{i}.jpg")
+                            # export 300 DPI
+                            view.export_page_jpg(fnm=img_path, resolution=300)
+                            view.jump_to_previous_page()
+
+                        view.jump_to_first_page()
+                    finally:
+                        doc.close_doc()
 
         See Also:
             :py:class:`~ooodev.write.export.page_jpg.PageJpg`

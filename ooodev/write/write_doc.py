@@ -322,6 +322,20 @@ class WriteDoc(
         cursor = mSelection.Selection.get_view_cursor(self.component)
         return mWriteTextViewCursor.WriteTextViewCursor(self, cursor)
 
+    def get_doc_path(self) -> str:
+        """
+        Gets document path as a System path such has ``C:\\Users\\User\\Documents\\MyDoc.odt``.
+
+        Returns:
+            PathOrStr: Document path if available; Otherwise empty string.
+
+        .. versionadded:: 0.20.4
+        """
+        try:
+            return uno.fileUrlToSystemPath(self.component.URL)  # type: ignore
+        except Exception:
+            return ""
+
     def get_doc_settings(self) -> XPropertySet:
         """
         Gets Text Document Settings

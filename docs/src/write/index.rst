@@ -9,5 +9,6 @@ write
 
     *
     export/index
+    filter/index
     partial/index
     style/index

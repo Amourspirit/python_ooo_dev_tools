@@ -118,10 +118,10 @@ class EventArgsExport(Generic[_T]):
         Gets a new instance from existing instance
 
         Args:
-            args (EventArgsGeneric): Existing Instance
+            args (EventArgsExport): Existing Instance
 
         Returns:
-            EventArgs: args
+            EventArgsExport: args
         """
         eargs = EventArgsExport(source=args.source, event_data=args.event_data, fnm=args.fnm, overwrite=args.overwrite)
         eargs._event_name = args.event_name

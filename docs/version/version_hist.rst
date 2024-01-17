@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.20.4
+==============
+
+Now ``ooodev.write.WriteTextViewCursor`` export Writer document pages as images (png or jpg) files.
+See ``./tests/test_write/test_write_ns/test_export_image.py``file for examples.
+
 Version 0.20.3
 ==============
 
