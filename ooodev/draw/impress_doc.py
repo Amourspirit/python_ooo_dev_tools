@@ -10,6 +10,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.utils import lo as mLo
+from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
@@ -34,6 +35,7 @@ class ImpressDoc(
     PrintJobEvents,
     QiPartial,
     PropPartial,
+    GuiPartial,
     StylePartial,
 ):
     def __init__(self, doc: XComponent) -> None:
@@ -45,6 +47,7 @@ class ImpressDoc(
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
         self._pages = None
 

@@ -10,7 +10,6 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 
 if TYPE_CHECKING:
-    from com.sun.star.drawing import XShape
     from ooodev.utils.type_var import UnoInterface
 
 
@@ -63,10 +62,11 @@ class ShapeGrouperPartial:
         Un-groups the given shape.
 
         Args:
-            shape (XShape): The shape to ungroup.
+            shape (XShapeGroup): The shape to ungroup.
 
         Returns:
-            XShapes: The ungrouped shapes.
+            None:
         """
         self.__component.ungroup(shape)
+
     # endregion XShapeGrouper

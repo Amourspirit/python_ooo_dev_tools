@@ -130,11 +130,10 @@ class GUI:
         Add a user-defined icon and command to the start of the specified toolbar.
 
         Args:
-            doc (XComponent): office document
-            toolbar_name (str): toolbar name
-            item_name (str): item name
-            im_fnm (str): image file path
-
+            doc (XComponent): office document.
+            toolbar_name (str): toolbar name.
+            item_name (str): item name.
+            im_fnm (str): image file path.
         """
         from com.sun.star.graphic import XGraphicProvider
 

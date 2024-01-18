@@ -5,6 +5,7 @@ import uno
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.drawing.open_bezier_shape_comp import OpenBezierShapeComp
+from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -22,6 +23,7 @@ class OpenBezierShape(
     OpenBezierShapeComp,
     Generic[_T],
     DrawShapePartial,
+    ShapePartialProps,
     QiPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
@@ -32,6 +34,7 @@ class OpenBezierShape(
         self.__owner = owner
         ShapeBase.__init__(self, owner=owner, component=component)
         OpenBezierShapeComp.__init__(self, component)
+        ShapePartialProps.__init__(self, component=component)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

@@ -40,12 +40,13 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
 
 
-class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
+class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, StylePartial):
     """Defines a Calc Document"""
 
     def __init__(self, doc: XSpreadsheetDocument) -> None:
@@ -58,6 +59,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, StylePartial):
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
         self._sheets = None
         self._draw_pages = None

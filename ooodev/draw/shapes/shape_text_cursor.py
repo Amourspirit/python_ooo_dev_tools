@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
@@ -25,6 +26,7 @@ class ShapeTextCursor(
     Generic[_T],
     TextCursorPartial,
     TextCursorComp,
+    ShapePartialProps,
     PropertyChangeImplement,
     VetoableChangeImplement,
     PropPartial,
@@ -48,6 +50,7 @@ class ShapeTextCursor(
         self.__owner = owner
         TextCursorPartial.__init__(self, owner=owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
+        ShapePartialProps.__init__(self, component=component)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

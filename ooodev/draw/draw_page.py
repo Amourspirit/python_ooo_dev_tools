@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
-
+from com.sun.star.drawing import XShapes
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -42,6 +42,26 @@ class DrawPage(
 
     def __len__(self) -> int:
         return self.component.getCount()
+
+    def __next__(self) -> DrawShape[DrawPage[_T]]:
+        shape = super().__next__()
+        return DrawShape(owner=self, component=shape)
+
+    # region Overrides
+    def group(self, shapes: XShapes) -> GroupShape:
+        """
+        Groups shapes.
+
+        Args:
+            shapes (ShapeCollection): Shapes to group.
+
+        Returns:
+            GroupShape: Grouped shapes.
+        """
+        group = super().group(shapes)
+        return GroupShape(component=group)
+
+    # endregion Overrides
 
     def get_master_page(self) -> DrawPage[_T]:
         """
@@ -120,6 +140,17 @@ class DrawPage(
     def width(self, value: UnitT | float) -> None:
         self.component.Width = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
 
+    @property
+    def height(self) -> UnitMM:
+        """
+        Gets the height of the draw page.
+        """
+        return UnitMM.from_mm100(self.component.Height)
+
+    @height.setter
+    def height(self, value: UnitT | float) -> None:
+        self.component.Height = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
+
     # region    borders
     @property
     def border_left(self) -> UnitMM:
@@ -167,3 +198,8 @@ class DrawPage(
 
     # endregion borders
     # endregion Properties
+
+
+from .shapes.draw_shape import DrawShape
+from .shape_collection import ShapeCollection
+from ooodev.draw.shapes import GroupShape

@@ -10,6 +10,8 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import lo as mLo
 from ooodev.utils.type_var import PathOrStr
+from ooodev.adapter.frame.storable2_partial import Storable2Partial
+from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from .draw_pages import DrawPages
@@ -25,8 +27,10 @@ class DrawDoc(
     DocumentEventEvents,
     ModifyEvents,
     PrintJobEvents,
+    Storable2Partial,
     QiPartial,
     PropPartial,
+    GuiPartial,
     StylePartial,
 ):
     def __init__(self, doc: XComponent) -> None:
@@ -36,8 +40,10 @@ class DrawDoc(
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         # ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
+        Storable2Partial.__init__(self, component=doc, interface=None)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
         self._pages = None
 

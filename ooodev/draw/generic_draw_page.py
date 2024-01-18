@@ -8,7 +8,6 @@ from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
 from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -24,7 +23,6 @@ class GenericDrawPage(
     DrawPagePartial[_T],
     Generic[_T],
     DrawPageComp,
-    IndexAccessPartial,
     Shapes2Partial,
     Shapes3Partial,
     QiPartial,
@@ -38,7 +36,6 @@ class GenericDrawPage(
         self.__owner = owner
         DrawPagePartial.__init__(self, owner=self, component=component)
         DrawPageComp.__init__(self, component)
-        IndexAccessPartial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)

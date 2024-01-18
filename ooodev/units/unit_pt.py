@@ -238,6 +238,42 @@ class UnitPT(BaseFloatValue):
         """
         return UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.PX)
 
+    def get_value_inch(self) -> float:
+        """
+        Gets instance value in ``in`` (inch) units.
+
+        Returns:
+            float: Value in ``in`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.IN)
+
+    def get_value_inch100(self) -> int:
+        """
+        Gets instance value in ``1/100th inch`` units.
+
+        Returns:
+            int: Value in ``1/100th inch`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.IN100))
+
+    def get_value_inch10(self) -> int:
+        """
+        Gets instance value in ``1/10th inch`` units.
+
+        Returns:
+            int: Value in ``1/10th inch`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.IN10))
+
+    def get_value_inch1000(self) -> int:
+        """
+        Gets instance value in ``1/1000th inch`` units.
+
+        Returns:
+            int: Value in ``1/100th inch`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.IN1000))
+
     @classmethod
     def from_pt(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
         """

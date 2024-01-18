@@ -47,11 +47,10 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.data_type.size import Size
 from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.draw import draw_page as mDrawPage
-from ooodev.draw import draw_pages as mDrawPages
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -84,6 +83,7 @@ class WriteDoc(
     VetoableChangeImplement,
     QiPartial,
     PropPartial,
+    GuiPartial,
     StylePartial,
 ):
     """A class to represent a Write document."""
@@ -105,6 +105,7 @@ class WriteDoc(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
         self._draw_page = None
         self._draw_pages = None

@@ -224,7 +224,7 @@ class UnitInch100(BaseFloatValue):
         Gets instance value in ``1/1000th inch`` units.
 
         Returns:
-            int: Value in ``1/100th inch`` units.
+            int: Value in ``1/1000th inch`` units.
         """
         return round(UnitConvert.convert(num=self.value, frm=UnitLength.IN100, to=UnitLength.IN1000))
 
