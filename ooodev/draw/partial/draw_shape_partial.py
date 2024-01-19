@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 import uno
 
 from ooodev.office import draw as mDraw
-from ooodev.proto.component_proto import ComponentT
 
 
 if TYPE_CHECKING:

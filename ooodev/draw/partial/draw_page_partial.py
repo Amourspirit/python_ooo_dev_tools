@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from ooodev.units import UnitT
     from ooodev.utils.data_type.size import Size
     from ooodev.utils.kind.drawing_slide_show_kind import DrawingSlideShowKind
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -45,9 +46,13 @@ class DrawPagePartial(Generic[_T]):
 
     # Draw page does implement XDrawPage, but it show in the API of DrawPage Service.
 
-    def __init__(self, owner: _T, component: XDrawPage) -> None:
+    def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
         self.__owner = owner
         self.__component = component
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
 
     def add_bullet(self, bulls_txt: XText, level: int, text: str) -> None:
         """
@@ -988,7 +993,7 @@ class DrawPagePartial(Generic[_T]):
         """
         if not self.__owner:
             raise mEx.DrawPageError("DrawPage owner is None")
-        if not mLo.Lo.is_uno_interfaces(self.__owner, "com.sun.star.drawing.XDrawPage"):
+        if not self.__lo_inst.is_uno_interfaces(self.__owner, "com.sun.star.drawing.XDrawPage"):
             raise mEx.DrawPageError("DrawPage component is not XDrawPage")
         mDraw.Draw.goto_page(doc=self.__owner, page=self.component)  # type: ignore
 
@@ -1039,7 +1044,7 @@ class DrawPagePartial(Generic[_T]):
         """
         if not self.__owner:
             raise mEx.DrawPageError("Owner is None")
-        if not mLo.Lo.is_uno_interfaces(self.__owner, XDrawPage):
+        if not self.__lo_inst.is_uno_interfaces(self.__owner, XDrawPage):
             raise mEx.DrawPageError("Owner component is not XDrawPage")
         mDraw.Draw.remove_master_page(doc=self.__owner, slide=self.__component)  # type: ignore
 

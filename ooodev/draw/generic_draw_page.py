@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
 
-from ooodev.adapter.container.index_access_partial import IndexAccessPartial
+from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
-from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from .partial.draw_page_partial import DrawPagePartial
 
@@ -32,13 +32,17 @@ class GenericDrawPage(
 
     # Draw page does implement XDrawPage, but it show in the API of DrawPage Service.
 
-    def __init__(self, owner: _T, component: XDrawPage) -> None:
+    def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         self.__owner = owner
-        DrawPagePartial.__init__(self, owner=self, component=component)
+        DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self._lo_inst)
         DrawPageComp.__init__(self, component)
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)
 
     def __len__(self) -> int:

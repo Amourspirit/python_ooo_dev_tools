@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class Shadow(ShapeShadow):
     """
-    Frame Vertical Alignment
+    Draw Shape Shadow
 
     .. seealso::
 

@@ -24,7 +24,11 @@ Submodules
    ooodev.adapter.drawing.generic_draw_page_comp
    ooodev.adapter.drawing.generic_drawing_document_comp
    ooodev.adapter.drawing.generic_shape
+   ooodev.adapter.drawing.graphic_export_filter_comp
+   ooodev.adapter.drawing.graphic_export_filter_implement
+   ooodev.adapter.drawing.graphic_export_filter_partial
    ooodev.adapter.drawing.graphic_object_shape_comp
+   ooodev.adapter.drawing.group_shape_comp
    ooodev.adapter.drawing.line_properties_comp
    ooodev.adapter.drawing.line_shape_comp
    ooodev.adapter.drawing.master_page_comp
@@ -38,10 +42,13 @@ Submodules
    ooodev.adapter.drawing.poly_polygon_shape_comp
    ooodev.adapter.drawing.rectangle_shape_comp
    ooodev.adapter.drawing.shadow_properties_comp
+   ooodev.adapter.drawing.shape_collection_comp
    ooodev.adapter.drawing.shape_comp
    ooodev.adapter.drawing.shape_descriptor_partial
+   ooodev.adapter.drawing.shape_group_partial
    ooodev.adapter.drawing.shape_grouper_partial
    ooodev.adapter.drawing.shape_partial
+   ooodev.adapter.drawing.shape_partial_props
    ooodev.adapter.drawing.shapes2_partial
    ooodev.adapter.drawing.shapes3_partial
    ooodev.adapter.drawing.shapes_partial

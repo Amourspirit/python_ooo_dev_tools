@@ -4,17 +4,18 @@ import uno
 from com.sun.star.drawing import XDrawPage
 
 
-from ooodev.adapter.presentation.draw_page_comp import DrawPageComp
 from ooodev.adapter.document.link_target_comp import LinkTargetComp
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
+from ooodev.adapter.presentation.draw_page_comp import DrawPageComp
+from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.exceptions import ex as mEx
-from ooodev.format.inner.style_partial import StylePartial
 from .partial.draw_page_partial import DrawPagePartial
 
 
@@ -36,15 +37,19 @@ class ImpressPage(
 
     # Draw page does implement XDrawPage, but it show in the API of DrawPage Service.
 
-    def __init__(self, owner: _T, component: XDrawPage) -> None:
-        self.__owner = owner
-        DrawPagePartial.__init__(self, owner=self, component=component)
+    def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
+        DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self._lo_inst)
         DrawPageComp.__init__(self, component)
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         LinkTargetComp.__init__(self, component)
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
-        PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)
 
     def get_master_page(self) -> ImpressPage[_T]:
@@ -58,7 +63,7 @@ class ImpressPage(
             ImpressPage: Master Page.
         """
         page = mDraw.Draw.get_master_page(self.component)  # type: ignore
-        return ImpressPage(self.__owner, page)
+        return ImpressPage(owner=self._owner, component=page, lo_inst=self._lo_inst)
 
     def get_notes_page(self) -> ImpressPage[_T]:
         """
@@ -77,7 +82,7 @@ class ImpressPage(
             :py:meth:`~.draw.Draw.get_notes_page_by_index`
         """
         page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
-        return ImpressPage(self.__owner, page)
+        return ImpressPage(owner=self._owner, component=page, lo_inst=self._lo_inst)
 
     def remove_master_page(self) -> None:
         """
@@ -89,11 +94,11 @@ class ImpressPage(
         Returns:
             None:
         """
-        if self.__owner is None:
+        if self._owner is None:
             raise mEx.DrawPageError("Owner is None")
-        if not mLo.Lo.is_uno_interfaces(self.__owner, XDrawPage):
+        if not self._lo_inst.is_uno_interfaces(self._owner, XDrawPage):
             raise mEx.DrawPageError("Owner component is not XDrawPage")
-        mDraw.Draw.remove_master_page(doc=self.__owner, slide=self.__component)  # type: ignore
+        mDraw.Draw.remove_master_page(doc=self._owner, slide=self.__component)  # type: ignore
 
     def set_master_footer(self, text: str) -> None:
         """
@@ -162,6 +167,6 @@ class ImpressPage(
     @property
     def owner(self) -> _T:
         """Component Owner"""
-        return self.__owner
+        return self._owner
 
     # endregion Properties

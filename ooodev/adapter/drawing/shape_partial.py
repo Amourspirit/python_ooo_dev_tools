@@ -47,7 +47,7 @@ class ShapePartial:
     # region XShape
     def get_position(self) -> Point:
         """
-        Gets the position of the shape.
+        Gets the position of the shape in ``100th mm`` units.
 
         Returns:
             Point: The position of the shape.
@@ -56,7 +56,7 @@ class ShapePartial:
 
     def set_position(self, position: Point) -> None:
         """
-        Sets the position of the shape.
+        Sets the position of the shape in ``100th mm`` units.
 
         Args:
             position (Point): The position of the shape.
@@ -65,7 +65,7 @@ class ShapePartial:
 
     def get_size(self) -> Size:
         """
-        Gets the size of the shape.
+        Gets the size of the shape in ``100th mm`` units.
 
         Returns:
             Size: The size of the shape.
@@ -74,7 +74,7 @@ class ShapePartial:
 
     def set_size(self, size: Size) -> None:
         """
-        Sets the size of the shape.
+        Sets the size of the shape in ``100th mm`` units.
 
         Args:
             size (Size): The size of the shape.

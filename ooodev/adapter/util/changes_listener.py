@@ -49,13 +49,13 @@ class ChangesListener(AdapterBase, XChangesListener):
 
     def changesOccurred(self, event: ChangesEvent) -> None:
         """
-        Is invoked invoked when a batch of changes occurred.
+        Is invoked when a batch of changes occurred.
         """
         self._trigger_event("changesOccurred", event)
 
     def disposing(self, event: EventObject) -> None:
         """
-        Gets called when the broadcaster is about to be disposed.
+        Gets invoked when the broadcaster is about to be disposed.
 
         All listeners and all other objects, which reference the broadcaster
         should release the reference to the source. No method should be invoked

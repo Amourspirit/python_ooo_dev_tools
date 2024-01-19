@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, TypeVar, Generic, overload, Tuple
 import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
+
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
@@ -29,21 +30,29 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
     from com.sun.star.graphic import XGraphic
     from ooo.dyn.drawing.line_style import LineStyle
-    from ooodev.utils.type_var import PathOrStr
-    from ooodev.utils.data_type.size import Size
-    from ooodev.utils import color as mColor
-    from ooodev.units import UnitT
-    from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.proto.size_obj import SizeObj
+    from ooodev.units import UnitT
+    from ooodev.utils import color as mColor
     from ooodev.utils.data_type.intensity import Intensity
+    from ooodev.utils.data_type.size import Size
+    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
+    from ooodev.utils.type_var import PathOrStr
 
 
 class ShapeBase(
     Generic[_T],
 ):
-    def __init__(self, owner: _T, component: XShape) -> None:
+    def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
         self.__owner = owner
         self.__component = component
+
+    def get_lo_inst(self) -> LoInst:
+        return self.__lo_inst
 
     def get_shape_text_cursor(self) -> ShapeTextCursor[_T]:
         """
@@ -52,7 +61,8 @@ class ShapeBase(
         Returns:
             ShapeTextCursor: Cursor.
         """
-        xtext = mLo.Lo.qi(XText, self.__component, True)
+        lo = self.get_lo_inst()
+        xtext = lo.qi(XText, self.__component, True)
         return ShapeTextCursor(owner=self.__owner, component=xtext.createTextCursor())
 
     def get_glue_points(self) -> Tuple[GluePoint2, ...]:
@@ -190,7 +200,8 @@ class ShapeBase(
         """
         if self.owner is None:
             raise mEx.ShapeError("Owner is None. Owner must be set before calling this method.")
-        if mLo.Lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
+        lo = self.get_lo_inst()
+        if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
             raise mEx.ShapeError(
                 "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
             )
@@ -209,7 +220,8 @@ class ShapeBase(
         """
         if self.owner is None:
             raise mEx.ShapeError("Owner is None. Owner must be set before calling this method.")
-        if mLo.Lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
+        lo = self.get_lo_inst()
+        if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
             raise mEx.ShapeError(
                 "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
             )

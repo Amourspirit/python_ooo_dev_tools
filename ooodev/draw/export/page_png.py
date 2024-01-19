@@ -1,26 +1,24 @@
 from __future__ import annotations
-from typing import Any, Callable, TYPE_CHECKING
-from pathlib import Path
+from typing import Any, cast, Callable, TYPE_CHECKING
 import uno
-from com.sun.star.frame import XStorable
 
-
-from ooodev.units import UnitInch
-from ooodev.draw import DrawPage
-from ooodev.utils.type_var import PathOrStr  # , EventCallback
-from ooodev.utils import file_io as mFile
-from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.adapter.drawing.graphic_export_filter_implement import GraphicExportFilterImplement
+from ooodev.adapter.frame.storable_partial import StorablePartial
 from ooodev.draw import DrawNamedEvent
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.utils import info as mInfo
+from ooodev.draw import DrawPage
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
-from ooodev.adapter.frame.storable_partial import StorablePartial
+from ooodev.units import UnitInch
+from ooodev.utils import file_io as mFile
+from ooodev.utils import props as mProps
+from ooodev.utils.type_var import PathOrStr  # , EventCallback
 
 if TYPE_CHECKING:
     from ooodev.draw.filter.export_png import ExportPngT
+    from com.sun.star.lang import XComponent
 else:
     ExportPngT = Any
 
@@ -32,6 +30,7 @@ class PagePng(EventsPartial):
         EventsPartial.__init__(self)
         self._owner = owner
         self._doc = owner.owner
+        self._filter_name = "draw_png_Export"
 
     def export(self, fnm: PathOrStr, resolution: int = 96) -> None:
         """
@@ -44,8 +43,8 @@ class PagePng(EventsPartial):
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.write_named_event.WriteNamedEvent.EXPORTING_PAGE_PNG` :eventref:`src-docs-event-cancel-export`
-                - :py:attr:`~.events.write_named_event.WriteNamedEvent.EXPORTED_PAGE_PNG` :eventref:`src-docs-event-export`
+                - :py:attr:`~.events.write_named_event.DrawNamedEvent.EXPORTING_PAGE_PNG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~.events.write_named_event.DrawNamedEvent.EXPORTED_PAGE_PNG` :eventref:`src-docs-event-export`
 
         Returns:
             None:
@@ -53,15 +52,23 @@ class PagePng(EventsPartial):
         Note:
             On exporting event is :ref:`cancel_event_args_export`.
             On exported event is :ref:`event_args_export`.
-            Args ``event_data`` is a :py:class:`~ooodev.write.filter.export_png.ExportPngT` dictionary.
+            Args ``event_data`` is a :py:class:`~ooodev.draw.filter.export_png.ExportPngT` dictionary.
 
-            If ``fnm`` is not specified, the image file name is created based on the document name and page number
-            and written to the same folder as the document.
+            Image width or height past ``4096`` pixels seem to not render the correct size when transparency is set to true (default). For a ``8.5 in x 11 in`` document this is a resolution around ``423`` DPI.
+            It seems when transparency is set to false, the image size is correct for larger images.
+            Unlike exporting ``png``, exporting ``jpg`` does not seem to have a limit on the image size.
+
+            Page margins are ignored. Any shape that is outside the page margins will not be included in the image.
         """
         # https://github.com/LibreOffice/core/blob/89e7c04ba48dab824e9f291d7db38dac6ffd6b19/svtools/source/filter/exportdialog.cxx#L783 # case FORMAT_PNG :
         # https://ask.libreoffice.org/t/export-as-png-with-macro/74337/11
         # https://ask.libreoffice.org/t/how-to-export-cell-range-to-images/57828/2
         # raises uno.com.sun.star.io.IOException if image file exists and Overwrite is False
+        self._export(fnm, resolution)
+
+    def _export(self, fnm: PathOrStr, resolution: int) -> None:
+        if not fnm:
+            raise ValueError("fnm is required")
 
         if not isinstance(self._doc, StorablePartial):
             raise NotImplementedError(f"StorablePartial is not implemented in: {type(self._doc).__name__}")
@@ -83,12 +90,9 @@ class PagePng(EventsPartial):
             "logical_height": height,
         }
 
-        if not fnm:
-            raise ValueError("fnm is required")
-
         cargs = CancelEventArgsExport(source=self, event_data=event_data, fnm=fnm, overwrite=True)
         cargs.set("image_type", "png")
-        cargs.set("filter_name", "writer_png_Export")
+        cargs.set("filter_name", self._filter_name)
 
         self.trigger_event(DrawNamedEvent.EXPORTING_PAGE_PNG, cargs)
         if cargs.cancel and cargs.handled is False:
@@ -117,18 +121,21 @@ class PagePng(EventsPartial):
             filter_data.append(make_prop(name="LogicalHeight", value=logical_height))
             filter_data.append(make_prop(name="LogicalWidth", value=logical_width))
 
+        url = mFile.FileIO.fnm_to_url(fnm=fnm)
+
         args = mProps.Props.make_props(
-            FilterName="writer_png_Export",
+            FilterName=self._filter_name,
+            MediaType="image/png",
+            URL=url,
             FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", tuple(filter_data)),  # type: ignore
             Overwrite=cargs.overwrite,
         )
-        url = mFile.FileIO.fnm_to_url(fnm=fnm)
 
-        # - Group the shapes into a single shape.
-        # - Create a new document.
-        # - Copy the shape to the new document.
-        # - Export the new document.
-        self._doc.store_to_url(url, *args)  # save PNG
+        graphic_filter = GraphicExportFilterImplement()
+        graphic_filter.set_source_document(cast("XComponent", self._owner.component))
+        graphic_filter.filter(*args)
+
+        # self._doc.store_to_url(url, *args)  # save PNG
 
         eargs = EventArgsExport.from_args(cargs)
         eargs.set("url", url)

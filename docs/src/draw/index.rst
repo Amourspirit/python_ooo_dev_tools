@@ -8,5 +8,7 @@ draw
     :glob:
 
     *
+    export/index
+    filter/index
     partial/index
     shapes/index

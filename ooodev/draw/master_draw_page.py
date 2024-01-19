@@ -12,6 +12,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.office import draw as mDraw
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from .partial.draw_page_partial import DrawPagePartial
 
 if TYPE_CHECKING:
@@ -34,15 +35,19 @@ class MasterDrawPage(
 
     # Draw page does implement XDrawPage, but it show in the API of DrawPage Service.
 
-    def __init__(self, owner: _T, component: XDrawPage) -> None:
-        self.__owner = owner
-        DrawPagePartial.__init__(self, owner=self, component=component)
+    def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
+        DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self._lo_inst)
         MasterPageComp.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
-        PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)
 
     def get_master_page(self) -> MasterDrawPage[_T]:
@@ -56,7 +61,7 @@ class MasterDrawPage(
             MasterDrawPage: Master Page.
         """
         page = mDraw.Draw.get_master_page(self.component)  # type: ignore
-        return MasterDrawPage(self.__owner, page)
+        return MasterDrawPage(owner=self._owner, component=page, lo_inst=self._lo_inst)
 
     def get_notes_page(self) -> MasterDrawPage[_T]:
         """
@@ -75,7 +80,7 @@ class MasterDrawPage(
             :py:meth:`~.draw.Draw.get_notes_page_by_index`
         """
         page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
-        return MasterDrawPage(self.__owner, page)
+        return MasterDrawPage(owner=self._owner, component=page, lo_inst=self._lo_inst)
 
     def set_master_footer(self, text: str) -> None:
         """
@@ -97,6 +102,6 @@ class MasterDrawPage(
     @property
     def owner(self) -> _T:
         """Component Owner"""
-        return self.__owner
+        return self._owner
 
     # endregion Properties

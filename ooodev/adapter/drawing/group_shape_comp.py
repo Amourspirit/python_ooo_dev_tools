@@ -36,6 +36,7 @@ class GroupShapeComp(ShapeComp, ShapeGroupPartial, ShapesPartial):
     @property
     def component(self) -> GroupShape:
         """GroupShape Component"""
-        return cast("GroupShape", super(ShapeComp, self).component)  # type: ignore
+        return cast("GroupShape", super().component)
+        # return cast("GroupShape", super(ShapeComp, self).component)  # type: ignore
 
     # endregion Properties

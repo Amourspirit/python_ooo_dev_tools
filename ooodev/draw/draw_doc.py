@@ -1,24 +1,28 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, overload
 import uno
+from com.sun.star.util import XCloseable
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.drawing.drawing_document_comp import DrawingDocumentComp
+from ooodev.adapter.frame.storable2_partial import Storable2Partial
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import lo as mLo
-from ooodev.utils.type_var import PathOrStr
-from ooodev.adapter.frame.storable2_partial import Storable2Partial
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.adapter.util.close_events import CloseEvents
+from ooodev.utils.type_var import PathOrStr
 from .draw_pages import DrawPages
 from .partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
+    from com.sun.star.frame import XComponentLoader
 
 
 class DrawDoc(
@@ -27,23 +31,30 @@ class DrawDoc(
     DocumentEventEvents,
     ModifyEvents,
     PrintJobEvents,
+    CloseEvents,
     Storable2Partial,
     QiPartial,
     PropPartial,
     GuiPartial,
     StylePartial,
 ):
-    def __init__(self, doc: XComponent) -> None:
-        DrawDocPartial.__init__(self, owner=self, component=doc)
+    def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+
+        DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
         DrawingDocumentComp.__init__(self, doc)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         # ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
+        CloseEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
         Storable2Partial.__init__(self, component=doc, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
-        PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
-        GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
         self._pages = None
 
@@ -62,6 +73,11 @@ class DrawDoc(
     def _on_print_job_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
         # will only ever fire once
         self.component.addPrintJobListener(self.events_listener_print_job)
+        event.remove_callback = True
+
+    def _on_close_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
+        # will only ever fire once
+        self.component.addCloseListener(self.events_listener_close)  # type: ignore
         event.remove_callback = True
 
     # endregion Lazy Listeners
@@ -180,9 +196,21 @@ class DrawDoc(
 
         .. versionadded:: 0.20.2
         """
-        return mLo.Lo.save_doc(self.component, fnm, password, format)  # type: ignore
+        return self._lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
 
     # endregion save_doc
+
+    def close(self, deliver_ownership=True) -> None:
+        """
+        Try to close the Document.
+
+        Nobody can guarantee real closing of called object - because it can disagree with that if any still running processes can't be canceled yet.
+        It's not allowed to block this call till internal operations will be finished here.
+
+        See Also:
+            See LibreOffice API: `XCloseable.close() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XCloseable.html#af3d34677f1707b1904f8e07be4408592>`__
+        """
+        self.qi(XCloseable, True).close(deliver_ownership)
 
     # region Properties
 
@@ -195,5 +223,13 @@ class DrawDoc(
         if self._pages is None:
             self._pages = DrawPages(owner=self, slides=self.component.getDrawPages())
         return cast("DrawPages[DrawDoc]", self._pages)
+
+    @property
+    def lo_inst(self) -> LoInst:
+        """
+        Returns:
+            LoInst: LibreOffice instance.
+        """
+        return self._lo_inst
 
     # endregion Properties

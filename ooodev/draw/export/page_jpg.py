@@ -1,24 +1,24 @@
 from __future__ import annotations
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, cast, Callable, TYPE_CHECKING
 import uno
-from com.sun.star.lang import XComponent
 
-from ooodev.units import UnitInch
-from ooodev.draw import DrawPage
-from ooodev.utils.type_var import PathOrStr  # , EventCallback
-from ooodev.utils import file_io as mFile
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.draw import DrawNamedEvent
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
-from ooodev.events.args.event_args_export import EventArgsExport
-from ooodev.draw import ShapeCollection
 from ooodev.adapter.drawing.graphic_export_filter_implement import GraphicExportFilterImplement
 from ooodev.adapter.frame.storable_partial import StorablePartial
+from ooodev.draw import DrawNamedEvent
+from ooodev.draw import DrawPage
+from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
+from ooodev.events.args.event_args_export import EventArgsExport
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.exceptions import ex as mEx
+from ooodev.proto.component_proto import ComponentT
+from ooodev.units import UnitInch
+from ooodev.utils import file_io as mFile
+from ooodev.utils import props as mProps
+from ooodev.utils.type_var import PathOrStr  # , EventCallback
 
 if TYPE_CHECKING:
     from ooodev.draw.filter.export_jpg import ExportJpgT
+    from com.sun.star.lang import XComponent
 else:
     ExportJpgT = Any
 
@@ -26,18 +26,17 @@ else:
 class PageJpg(EventsPartial):
     """Class for exporting current Draw page as a jpg image."""
 
-    def __init__(self, draw_page: DrawPage, shapes_only: bool = False):
+    def __init__(self, owner: DrawPage[ComponentT]):
         EventsPartial.__init__(self)
-        self._draw_page = draw_page
-        self._shapes_only = shapes_only
+        self._owner = owner
+        self._doc = owner.owner
         self._filter_name = "draw_jpg_Export"
-        self._shapes: ShapeCollection | None = None
 
-    def _get_shapes(self) -> ShapeCollection:
-        comp = ShapeCollection(self)
-        for shape in self._draw_page:
-            comp.add(shape.component)
-        return comp
+    # def _get_shapes(self) -> ShapeCollection:
+    #     comp = ShapeCollection(self)
+    #     for shape in self._draw_page:
+    #         comp.add(shape.component)
+    #     return comp
 
     def export(self, fnm: PathOrStr, resolution: int = 96) -> None:
         """
@@ -61,29 +60,37 @@ class PageJpg(EventsPartial):
             On exported event is :ref:`event_args_export`.
             Args ``event_data`` is a :py:class:`~ooodev.write.filter.export_jpg.ExportJpgT` dictionary.
 
-            If ``fnm`` is not specified, the image file name is created based on the document name and page number
-            and written to the same folder as the document.
+            Unlike exporting png, exporting jpg does not seem to have a limit on the image size.
+
+            Page margins are ignored. Any shape that is outside the page margins will not be included in the image.
         """
-        # raises uno.com.sun.star.io.IOException if image file exists and Overwrite is False
         if not fnm:
             raise ValueError("fnm is required")
+        if not isinstance(self._doc, StorablePartial):
+            raise NotImplementedError(f"StorablePartial is not implemented in: {type(self._doc).__name__}")
+
+        width = self._owner.component.Width
+        height = self._owner.component.Height
+        width_in = UnitInch.from_mm100(width)
+        height_in = UnitInch.from_mm100(height)
+        dpi_x = round(resolution * width_in.value)
+        dpi_y = round(resolution * height_in.value)
 
         # if not isinstance(self._doc, StorablePartial):
 
-        if self._shapes_only:
-            self._shapes = self._get_shapes()
-            width = self._shapes.get_width()
-            height = self._shapes.get_height()
-            width_in = UnitInch(width.get_value_inch())
-            height_in = UnitInch(height.get_value_inch())
-            logical_width = width.get_value_mm100()
-            logical_height = height.get_value_mm100()
-        else:
-            width_in = UnitInch(self._draw_page.width.get_value_inch())
-            height_in = UnitInch(self._draw_page.height.get_value_inch())
-            logical_width = self._draw_page.component.Width
-            logical_height = self._draw_page.component.Height
-
+        # if self._shapes_only:
+        #     self._shapes = self._get_shapes()
+        #     width = self._shapes.get_width()
+        #     height = self._shapes.get_height()
+        #     width_in = UnitInch(width.get_value_inch())
+        #     height_in = UnitInch(height.get_value_inch())
+        #     logical_width = width.get_value_mm100()
+        #     logical_height = height.get_value_mm100()
+        # else:
+        width = self._owner.component.Width
+        height = self._owner.component.Height
+        width_in = UnitInch.from_mm100(width)
+        height_in = UnitInch.from_mm100(height)
         dpi_x = round(resolution * width_in.value)
         dpi_y = round(resolution * height_in.value)
 
@@ -92,14 +99,13 @@ class PageJpg(EventsPartial):
             "quality": 75,
             "pixel_width": dpi_x,
             "pixel_height": dpi_y,
-            "logical_width": logical_width,
-            "logical_height": logical_height,
+            "logical_width": width,
+            "logical_height": height,
         }
 
         cargs = CancelEventArgsExport(source=self, event_data=event_data, fnm=fnm, overwrite=True)
         cargs.set("image_type", "jpg")
         cargs.set("filter_name", self._filter_name)
-        cargs.set("shapes_only", self._shapes_only)
 
         self.trigger_event(DrawNamedEvent.EXPORTING_PAGE_JPG, cargs)
         if cargs.cancel and cargs.handled is False:
@@ -131,34 +137,38 @@ class PageJpg(EventsPartial):
 
         args = mProps.Props.make_props(
             FilterName=self._filter_name,
+            MediaType="image/png",
+            URL=url,
             FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", tuple(filter_data)),  # type: ignore
             Overwrite=cargs.overwrite,
-            URL=url,
         )
+        graphic_filter = GraphicExportFilterImplement()
+        graphic_filter.set_source_document(cast("XComponent", self._owner.component))
+        graphic_filter.filter(*args)
 
-        if self._shapes_only:
-            self._export_shapes(args)
-        else:
-            self._export_doc(args)
+        # if self._shapes_only:
+        #     self._export_shapes(args)
+        # else:
+        #     self._export_doc(args)
 
         eargs = EventArgsExport.from_args(cargs)
         eargs.set("url", url)
         self.trigger_event(DrawNamedEvent.EXPORTED_PAGE_JPG, eargs)
         self._shapes = None
 
-    def _export_doc(self, args: tuple) -> None:
-        graphic_filter = GraphicExportFilterImplement()
-        graphic_filter.set_source_document(self._draw_page.qi(XComponent, True))
-        graphic_filter.filter(*args)
+    # def _export_doc(self, args: tuple) -> None:
+    #     graphic_filter = GraphicExportFilterImplement()
+    #     graphic_filter.set_source_document(self._draw_page.qi(XComponent, True))
+    #     graphic_filter.filter(*args)
 
-    def _export_shapes(self, args: tuple) -> None:
-        graphic_filter = GraphicExportFilterImplement()
-        if self._shapes is None:
-            shapes = self._get_shapes()
-        else:
-            shapes = self._shapes
-        graphic_filter.set_source_document(shapes.qi(XComponent, True))
-        graphic_filter.filter(*args)
+    # def _export_shapes(self, args: tuple) -> None:
+    #     graphic_filter = GraphicExportFilterImplement()
+    #     if self._shapes is None:
+    #         shapes = self._get_shapes()
+    #     else:
+    #         shapes = self._shapes
+    #     graphic_filter.set_source_document(shapes.qi(XComponent, True))
+    #     graphic_filter.filter(*args)
 
     # region Events
     def subscribe_event_exporting(self, callback: Callable[[Any, CancelEventArgsExport[ExportJpgT]], None]) -> None:

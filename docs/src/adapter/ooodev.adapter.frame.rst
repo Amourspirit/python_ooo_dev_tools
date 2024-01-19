@@ -10,6 +10,8 @@ Submodules
    ooodev.adapter.frame.controller_comp
    ooodev.adapter.frame.controller_partial
    ooodev.adapter.frame.dispatch_provider_partial
+   ooodev.adapter.frame.storable2_partial
+   ooodev.adapter.frame.storable_partial
    ooodev.adapter.frame.terminate_events
    ooodev.adapter.frame.terminate_listener
 

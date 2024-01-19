@@ -1,10 +1,18 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+import uno
+from com.sun.star.view import XSelectionSupplier
+
 from ooodev.adapter.component_base import ComponentBase
+from ooodev.utils import info as mInfo
+from ooodev.utils import gui as mGui
+from ooodev.utils import lo as mLo
+from ooodev.utils.partial.gui_partial import GuiPartial
 from .shapes_partial import ShapesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ShapeCollection  # service
+    from com.sun.star.frame import XController
 
 
 class ShapeCollectionComp(
@@ -35,6 +43,30 @@ class ShapeCollectionComp(
         return ("com.sun.star.drawing.ShapeCollection",)
 
     # endregion Overrides
+
+    # region Methods
+    def select_all(self, obj: Any) -> None:
+        """
+        Selects all shapes in the collection.
+
+        Args:
+            obj (Any): The object to select shapes from.
+                Can be ``XController`` or ``XModel``  or ``DrawDoc``, ``ImpressDoc`` ( or any object that implements ``GuiPartial``)
+
+        Returns:
+            None:
+        """
+        if mLo.Lo.is_uno_interfaces(obj, "com.sun.star.frame.XController"):
+            controller = cast("XController", obj)
+        elif mInfo.Info.is_instance(obj, GuiPartial):
+            controller = obj.get_current_controller()
+        else:
+            controller = mGui.GUI.get_current_controller(obj)
+        select_supp = mLo.Lo.qi(XSelectionSupplier, controller, True)
+        select_supp.select(self.component)
+
+    # endregion Methods
+
     # region Properties
     @property
     def component(self) -> ShapeCollection:
