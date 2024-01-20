@@ -14,6 +14,7 @@ from ooodev.units import UnitInch
 from ooodev.utils import file_io as mFile
 from ooodev.utils import props as mProps
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
+from .export_base import ExportBase
 
 if TYPE_CHECKING:
     from ooodev.draw.filter.export_png import ExportPngT
@@ -22,10 +23,11 @@ else:
     ExportPngT = Any
 
 
-class PagePng(EventsPartial):
+class PagePng(ExportBase, EventsPartial):
     """Class for exporting current Writer page as a png image."""
 
     def __init__(self, owner: DrawPage[ComponentT]):
+        ExportBase.__init__(self)
         EventsPartial.__init__(self)
         self._owner = owner
         self._doc = owner.owner
@@ -74,10 +76,7 @@ class PagePng(EventsPartial):
 
         width = self._owner.component.Width
         height = self._owner.component.Height
-        width_in = UnitInch.from_mm100(width)
-        height_in = UnitInch.from_mm100(height)
-        dpi_x = round(resolution * width_in.value)
-        dpi_y = round(resolution * height_in.value)
+        dpi_x, dpi_y = self._get_dpi_width_height(width, height, resolution)
 
         event_data: ExportPngT = {
             "compression": 6,
@@ -85,8 +84,8 @@ class PagePng(EventsPartial):
             "pixel_height": dpi_y,
             "interlaced": False,
             "translucent": True,
-            "logical_width": width,
-            "logical_height": height,
+            "logical_width": dpi_x,
+            "logical_height": dpi_y,
         }
 
         cargs = CancelEventArgsExport(source=self, event_data=event_data, fnm=fnm, overwrite=True)

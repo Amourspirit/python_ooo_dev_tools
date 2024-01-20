@@ -4,7 +4,6 @@ from typing import Any, Callable, TYPE_CHECKING
 from ooodev.draw import DrawNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
-from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.type_var import PathOrStr
 from ooodev.events.lo_events import Events
 

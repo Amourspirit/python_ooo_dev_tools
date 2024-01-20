@@ -10,10 +10,10 @@ from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
-from ooodev.units import UnitInch
 from ooodev.utils import file_io as mFile
 from ooodev.utils import props as mProps
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
+from .export_base import ExportBase
 
 if TYPE_CHECKING:
     from ooodev.draw.filter.export_jpg import ExportJpgT
@@ -22,10 +22,11 @@ else:
     ExportJpgT = Any
 
 
-class PageJpg(EventsPartial):
+class PageJpg(ExportBase, EventsPartial):
     """Class for exporting current Draw page as a jpg image."""
 
     def __init__(self, owner: DrawPage[ComponentT]):
+        ExportBase.__init__(self)
         EventsPartial.__init__(self)
         self._owner = owner
         self._doc = owner.owner
@@ -70,36 +71,15 @@ class PageJpg(EventsPartial):
 
         width = self._owner.component.Width
         height = self._owner.component.Height
-        width_in = UnitInch.from_mm100(width)
-        height_in = UnitInch.from_mm100(height)
-        dpi_x = round(resolution * width_in.value)
-        dpi_y = round(resolution * height_in.value)
-
-        # if not isinstance(self._doc, StorablePartial):
-
-        # if self._shapes_only:
-        #     self._shapes = self._get_shapes()
-        #     width = self._shapes.get_width()
-        #     height = self._shapes.get_height()
-        #     width_in = UnitInch(width.get_value_inch())
-        #     height_in = UnitInch(height.get_value_inch())
-        #     logical_width = width.get_value_mm100()
-        #     logical_height = height.get_value_mm100()
-        # else:
-        width = self._owner.component.Width
-        height = self._owner.component.Height
-        width_in = UnitInch.from_mm100(width)
-        height_in = UnitInch.from_mm100(height)
-        dpi_x = round(resolution * width_in.value)
-        dpi_y = round(resolution * height_in.value)
+        dpi_x, dpi_y = self._get_dpi_width_height(width, height, resolution)
 
         event_data: ExportJpgT = {
             "color_mode": True,
             "quality": 75,
             "pixel_width": dpi_x,
             "pixel_height": dpi_y,
-            "logical_width": width,
-            "logical_height": height,
+            "logical_width": dpi_x,
+            "logical_height": dpi_y,
         }
 
         cargs = CancelEventArgsExport(source=self, event_data=event_data, fnm=fnm, overwrite=True)
