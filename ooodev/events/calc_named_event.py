@@ -113,5 +113,20 @@ class CalcNamedEvent:
     CELLS_HIGH_LIGHTED = "calc_cells_high_lighted"
     """Cells Highlighted see :py:meth:`Calc.highlight_range() <.office.calc.Calc.highlight_range>`"""
 
-    RANGE_EXPORTING_IMAGE = "range_exporting_image"
-    RANGE_EXPORTED_IMAGE = "range_exported_image"
+    EXPORTING_RANGE_PNG = "calc_exporting_range_png"
+    """
+    Exporting a Range to image format of PNG.
+    """
+    EXPORTED_RANGE_PNG = "calc_exported_range_png"
+    """
+    Exported a Range to image format of PNG.
+    """
+
+    EXPORTING_RANGE_JPG = "calc_exporting_range_jpg"
+    """
+    Exporting a Range to image format of JPG.
+    """
+    EXPORTED_RANGE_JPG = "calc_exported_range_jpg"
+    """
+    Exported a Range to image format of JPG.
+    """

@@ -1,42 +1,40 @@
 from __future__ import annotations
 from typing import Any, cast, Callable, TYPE_CHECKING
 import uno
+from com.sun.star.frame import XStorable
 
-from ooodev.adapter.drawing.graphic_export_filter_implement import GraphicExportFilterImplement
-from ooodev.draw import DrawNamedEvent
-from ooodev.draw import DrawPage
+from ooodev.calc import CalcNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import file_io as mFile
 from ooodev.utils import props as mProps
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils import lo as mLo
+from ooodev.calc.calc_cell_range import CalcCellRange
+
 from .export_base import ExportBase
 
 if TYPE_CHECKING:
-    from ooodev.draw.filter.export_jpg import ExportJpgT
-    from com.sun.star.lang import XComponent
+    from ooodev.calc.filter.export_jpg import ExportJpgT
 else:
     ExportJpgT = Any
 
 
-class PageJpg(ExportBase, EventsPartial):
-    """Class for exporting current Draw page as a jpg image."""
+class RangeJpg(ExportBase, EventsPartial):
+    """Class for exporting cell range as a jpg image."""
 
-    def __init__(self, owner: DrawPage[ComponentT]):
+    def __init__(self, cell_range: CalcCellRange, lo_inst: LoInst | None = None):
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         ExportBase.__init__(self)
         EventsPartial.__init__(self)
-        self._owner = owner
-        self._doc = owner.owner
-        self._filter_name = "draw_jpg_Export"
-
-    # def _get_shapes(self) -> ShapeCollection:
-    #     comp = ShapeCollection(self)
-    #     for shape in self._draw_page:
-    #         comp.add(shape.component)
-    #     return comp
+        self._cell_range = cell_range
+        self._filter_name = "calc_jpg_Export"
 
     def export(self, fnm: PathOrStr, resolution: int = 96) -> None:
         """
@@ -46,11 +44,15 @@ class PageJpg(ExportBase, EventsPartial):
             fnm (PathOrStr, optional): Image file name.
             resolution (int, optional): Resolution in dpi. Defaults to 96.
 
+        Raises:
+            ValueError: If ``fnm`` is empty.
+            CancelEventError: If ``EXPORTING_RANGE_JPG`` event is canceled.
+
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTING_PAGE_JPG` :eventref:`src-docs-event-cancel-export`
-                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTED_PAGE_JPG` :eventref:`src-docs-event-export`
+                - :py:attr:`~ooodev.events.calc_named_event.CalcNamedEvent.EXPORTING_RANGE_JPG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~ooodev.events.calc_named_event.CalcNamedEvent.EXPORTED_RANGE_JPG` :eventref:`src-docs-event-export`
 
         Returns:
             None:
@@ -58,20 +60,15 @@ class PageJpg(ExportBase, EventsPartial):
         Note:
             On exporting event is :ref:`cancel_event_args_export`.
             On exported event is :ref:`event_args_export`.
-            Args ``event_data`` is a :py:class:`~ooodev.draw.filter.export_jpg.ExportJpgT` dictionary.
-
-            Unlike exporting png, exporting jpg does not seem to have a limit on the image size.
-
-            Page margins are ignored. Any shape that is outside the page margins will not be included in the image.
+            Args ``event_data`` is a :py:class:`~ooodev.calc.filter.export_jpg.ExportJpgT` dictionary.
         """
         if not fnm:
             raise ValueError("fnm is required")
         # if not isinstance(self._doc, StorablePartial):
         #     raise NotImplementedError(f"StorablePartial is not implemented in: {type(self._doc).__name__}")
 
-        width = self._owner.component.Width
-        height = self._owner.component.Height
-        dpi_x, dpi_y = self._get_dpi_width_height(width, height, resolution)
+        sz = self._cell_range.size
+        dpi_x, dpi_y = self._get_dpi_width_height(sz.width.get_value_mm100(), sz.height.get_value_mm100(), resolution)
 
         event_data: ExportJpgT = {
             "color_mode": True,
@@ -86,7 +83,7 @@ class PageJpg(ExportBase, EventsPartial):
         cargs.set("image_type", "jpg")
         cargs.set("filter_name", self._filter_name)
 
-        self.trigger_event(DrawNamedEvent.EXPORTING_PAGE_JPG, cargs)
+        self.trigger_event(CalcNamedEvent.EXPORTING_RANGE_JPG, cargs)
         if cargs.cancel and cargs.handled is False:
             raise mEx.CancelEventError(cargs)
 
@@ -116,38 +113,26 @@ class PageJpg(ExportBase, EventsPartial):
 
         args = mProps.Props.make_props(
             FilterName=self._filter_name,
-            MediaType="image/jpeg",
-            URL=url,
             FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", tuple(filter_data)),  # type: ignore
             Overwrite=cargs.overwrite,
+            SelectionOnly=True,
         )
-        graphic_filter = GraphicExportFilterImplement()
-        graphic_filter.set_source_document(cast("XComponent", self._owner.component))
-        graphic_filter.filter(*args)
 
-        # if self._shapes_only:
-        #     self._export_shapes(args)
-        # else:
-        #     self._export_doc(args)
+        self._export_as_img(url, args)
 
         eargs = EventArgsExport.from_args(cargs)
         eargs.set("url", url)
-        self.trigger_event(DrawNamedEvent.EXPORTED_PAGE_JPG, eargs)
-        self._shapes = None
+        self.trigger_event(CalcNamedEvent.EXPORTED_RANGE_JPG, eargs)
 
-    # def _export_doc(self, args: tuple) -> None:
-    #     graphic_filter = GraphicExportFilterImplement()
-    #     graphic_filter.set_source_document(self._draw_page.qi(XComponent, True))
-    #     graphic_filter.filter(*args)
+    def _export_as_img(self, url: str, args: tuple) -> None:
+        # capture the current selection.
+        current_sel = self._cell_range.calc_sheet.get_selected()
+        self._cell_range.select()
 
-    # def _export_shapes(self, args: tuple) -> None:
-    #     graphic_filter = GraphicExportFilterImplement()
-    #     if self._shapes is None:
-    #         shapes = self._get_shapes()
-    #     else:
-    #         shapes = self._shapes
-    #     graphic_filter.set_source_document(shapes.qi(XComponent, True))
-    #     graphic_filter.filter(*args)
+        storable = self._cell_range.calc_sheet.calc_doc.qi(XStorable, True)
+        storable.storeToURL(url, args)  # save PNG
+        # restore previous selection.
+        current_sel.select()
 
     # region Events
     def subscribe_event_exporting(self, callback: Callable[[Any, CancelEventArgsExport[ExportJpgT]], None]) -> None:
@@ -160,7 +145,7 @@ class PageJpg(ExportBase, EventsPartial):
         Returns:
             None:
         """
-        self.subscribe_event(DrawNamedEvent.EXPORTING_PAGE_JPG, callback)
+        self.subscribe_event(CalcNamedEvent.EXPORTING_RANGE_JPG, callback)
 
     def subscribe_event_exported(self, callback: Callable[[Any, EventArgsExport[ExportJpgT]], None]) -> None:
         """
@@ -172,7 +157,7 @@ class PageJpg(ExportBase, EventsPartial):
         Returns:
             None:
         """
-        self.subscribe_event(DrawNamedEvent.EXPORTED_PAGE_JPG, callback)
+        self.subscribe_event(CalcNamedEvent.EXPORTED_RANGE_JPG, callback)
 
     def unsubscribe_event_exporting(self, callback: Callable[[Any, CancelEventArgsExport[ExportJpgT]], None]) -> None:
         """
@@ -184,7 +169,7 @@ class PageJpg(ExportBase, EventsPartial):
         Returns:
             None:
         """
-        self.unsubscribe_event(DrawNamedEvent.EXPORTING_PAGE_JPG, callback)
+        self.unsubscribe_event(CalcNamedEvent.EXPORTING_RANGE_JPG, callback)
 
     def unsubscribe_event_exported(self, callback: Callable[[Any, EventArgsExport[ExportJpgT]], None]) -> None:
         """
@@ -196,6 +181,6 @@ class PageJpg(ExportBase, EventsPartial):
         Returns:
             None:
         """
-        self.unsubscribe_event(DrawNamedEvent.EXPORTED_PAGE_JPG, callback)
+        self.unsubscribe_event(CalcNamedEvent.EXPORTED_RANGE_JPG, callback)
 
     # endregion Events

@@ -4,7 +4,7 @@ from typing import TypedDict
 
 class ExportPngT(TypedDict):
     """
-    Draw Image Export Data for Png.
+    Calc Image Export Data for Png.
     """
 
     pixel_width: int

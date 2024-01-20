@@ -4,7 +4,7 @@ from typing import TypedDict
 
 class ExportJpgT(TypedDict):
     """
-    Draw Image Export Data for Jpg.
+    Calc Image Export Data for Jpg.
     """
 
     color_mode: bool
