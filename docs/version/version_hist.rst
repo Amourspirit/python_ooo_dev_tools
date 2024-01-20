@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.21.0
+==============
+
+``DrawDoc`` and all of the related classes now can use a seperate instance of ``Lo`` to connect to LibreOffice.
+In short this means it is now possible have mulitiple instanes of Draw Doucment open at the same time.
+
+``DrawPage`` can now export the page as a ``png`` or ``jpg`` image using the ``export_page_png()`` and ``export_page_jpg()`` methods.
+See ``tests/test_draw/test_draw_ns/test_draw_page_export_img.py`` for examples.
+
+All Shapes in the ``ooodev.draw.shapes`` namespace now can export the shape as a ``png`` or ``jpg`` image using the ``export_shape_png()`` and ``export_shape_jpg()`` methods.
+
+
 Version 0.20.4
 ==============
 

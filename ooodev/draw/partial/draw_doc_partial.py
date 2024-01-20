@@ -5,7 +5,6 @@ import uno
 from com.sun.star.frame import XModel
 
 from ooodev.adapter.container.name_container_comp import NameContainerComp
-from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import draw_pages as mDrawPages
 from ooodev.office import draw as mDraw
 from ooodev.utils import gui as mGUI

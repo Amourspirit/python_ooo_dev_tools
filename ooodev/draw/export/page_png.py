@@ -3,7 +3,6 @@ from typing import Any, cast, Callable, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.drawing.graphic_export_filter_implement import GraphicExportFilterImplement
-from ooodev.adapter.frame.storable_partial import StorablePartial
 from ooodev.draw import DrawNamedEvent
 from ooodev.draw import DrawPage
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
@@ -34,7 +33,7 @@ class PagePng(EventsPartial):
 
     def export(self, fnm: PathOrStr, resolution: int = 96) -> None:
         """
-        Exports doc pages as png images.
+        Exports page as png image.
 
         Args:
             fnm (PathOrStr, optional): Image file name.
@@ -43,8 +42,8 @@ class PagePng(EventsPartial):
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~.events.write_named_event.DrawNamedEvent.EXPORTING_PAGE_PNG` :eventref:`src-docs-event-cancel-export`
-                - :py:attr:`~.events.write_named_event.DrawNamedEvent.EXPORTED_PAGE_PNG` :eventref:`src-docs-event-export`
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTING_PAGE_PNG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTED_PAGE_PNG` :eventref:`src-docs-event-export`
 
         Returns:
             None:
@@ -70,8 +69,8 @@ class PagePng(EventsPartial):
         if not fnm:
             raise ValueError("fnm is required")
 
-        if not isinstance(self._doc, StorablePartial):
-            raise NotImplementedError(f"StorablePartial is not implemented in: {type(self._doc).__name__}")
+        # if not isinstance(self._doc, StorablePartial):
+        #     raise NotImplementedError(f"StorablePartial is not implemented in: {type(self._doc).__name__}")
 
         width = self._owner.component.Width
         height = self._owner.component.Height

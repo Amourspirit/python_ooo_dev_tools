@@ -12,21 +12,21 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
-from .shape_export_jpg_base import ShapeExportJpgBase
+from .shape_export_png_base import ShapeExportPngBase
 
 if TYPE_CHECKING:
-    from ooodev.draw.filter.export_jpg import ExportJpgT
+    from ooodev.draw.filter.export_png import ExportPngT
 else:
-    ExportJpgT = Any
+    ExportPngT = Any
 
 
-class ShapeJpg(ShapeExportJpgBase):
+class ShapePng(ShapeExportPngBase):
     """Class for exporting current Draw page as a jpg image."""
 
     def __init__(self, shape: Any):
-        ShapeExportJpgBase.__init__(self)
+        ShapeExportPngBase.__init__(self)
         self._component = mLo.Lo.qi(XComponent, shape, True)
-        self._filter_name = "draw_jpg_Export"
+        self._filter_name = "draw_png_Export"
 
     def export(self, fnm: PathOrStr, resolution: int = 96) -> None:
         """
@@ -39,8 +39,8 @@ class ShapeJpg(ShapeExportJpgBase):
         :events:
             .. cssclass:: lo_event
 
-                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTING_SHAPE_JPG` :eventref:`src-docs-event-cancel-export`
-                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTED_SHAPE_JPG` :eventref:`src-docs-event-export`
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTING_SHAPE_PNG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTED_SHAPE_PNG` :eventref:`src-docs-event-export`
 
         Returns:
             None:
@@ -48,7 +48,7 @@ class ShapeJpg(ShapeExportJpgBase):
         Note:
             On exporting event is :ref:`cancel_event_args_export`.
             On exported event is :ref:`event_args_export`.
-            Args ``event_data`` is a :py:class:`~ooodev.draw.filter.export_jpg.ExportJpgT` dictionary.
+            Args ``event_data`` is a :py:class:`~ooodev.draw.filter.export_png.ExportPngT` dictionary.
 
             If ``fnm`` is not specified, the image file name is created based on the document name and page number
             and written to the same folder as the document.
@@ -70,17 +70,18 @@ class ShapeJpg(ShapeExportJpgBase):
         sz = shape.getSize()
         dpi_x, dpi_y = self._get_dpi_width_height(sz.Width, sz.Height, resolution)
 
-        event_data: ExportJpgT = {
-            "color_mode": True,
-            "quality": 75,
+        event_data: ExportPngT = {
+            "compression": 6,
             "pixel_width": dpi_x,
             "pixel_height": dpi_y,
+            "interlaced": False,
+            "translucent": True,
             "logical_width": dpi_x,
             "logical_height": dpi_y,
         }
 
         cargs = CancelEventArgsExport(source=self, event_data=event_data, fnm=fnm, overwrite=True)
-        cargs.set("image_type", "jpg")
+        cargs.set("image_type", "png")
         cargs.set("filter_name", self._filter_name)
 
         self._trigger_event_exporting(cargs)
@@ -89,7 +90,8 @@ class ShapeJpg(ShapeExportJpgBase):
 
         make_prop = mProps.Props.make_prop_value
         filter_data = [
-            make_prop(name="ColorMode", value=int(not cargs.event_data["color_mode"])),
+            make_prop(name="Interlaced", value=int(cargs.event_data["interlaced"])),
+            make_prop(name="Translucent", value=int(cargs.event_data["translucent"])),
         ]
         pixel_width = cargs.event_data["pixel_width"]
         pixel_height = cargs.event_data["pixel_height"]
@@ -97,10 +99,10 @@ class ShapeJpg(ShapeExportJpgBase):
             filter_data.append(make_prop(name="PixelWidth", value=pixel_width))
             filter_data.append(make_prop(name="PixelHeight", value=pixel_height))
 
-        # quality 1..100 default 75
-        quality = cargs.event_data["quality"]
-        if quality > 0 and quality < 101:
-            filter_data.append(make_prop(name="Quality", value=quality))
+        # compression 1..9 default 6
+        compression = cargs.event_data["compression"]
+        if compression > 0 and compression < 10:
+            filter_data.append(make_prop(name="Compression", value=compression))
 
         logical_height = cargs.event_data["logical_height"]
         logical_width = cargs.event_data["logical_width"]
@@ -108,13 +110,10 @@ class ShapeJpg(ShapeExportJpgBase):
             filter_data.append(make_prop(name="LogicalHeight", value=logical_height))
             filter_data.append(make_prop(name="LogicalWidth", value=logical_width))
 
-        # filter_data.append(make_prop(name="ExportMode", value=1))
-        # filter_data.append(make_prop(name="Resolution", value=resolution))
-
         url = mFile.FileIO.fnm_to_url(fnm=fnm)
         args = mProps.Props.make_props(
             FilterName=self._filter_name,
-            MediaType="image/jpeg",
+            MediaType="image/png",
             URL=url,
             FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", tuple(filter_data)),  # type: ignore
             Overwrite=cargs.overwrite,

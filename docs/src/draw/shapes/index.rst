@@ -8,3 +8,4 @@ shapes
     :glob:
 
     *
+    partial/index

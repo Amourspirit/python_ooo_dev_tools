@@ -108,7 +108,7 @@ class DrawPagePartial(Generic[_T]):
         result = mDraw.Draw.add_connector(
             slide=self.component, shape1=shape1, shape2=shape2, start_conn=start_conn, end_conn=end_conn  # type: ignore
         )
-        return ConnectorShape(self.__owner, result)
+        return ConnectorShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def add_dispatch_shape(
         self,
@@ -143,7 +143,7 @@ class DrawPagePartial(Generic[_T]):
         result = mDraw.Draw.add_dispatch_shape(
             slide=self.component, shape_dispatch=shape_dispatch, x=x, y=y, width=width, height=height, fn=fn  # type: ignore
         )
-        return DrawShape(self.__owner, result)
+        return DrawShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def add_pres_shape(
         self,
@@ -172,7 +172,7 @@ class DrawPagePartial(Generic[_T]):
         result = mDraw.Draw.add_pres_shape(
             slide=self.component, shape_type=shape_type, x=x, y=y, width=width, height=height  # type: ignore
         )
-        return DrawShape(self.__owner, result)
+        return DrawShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def add_shape(
         self,
@@ -210,7 +210,7 @@ class DrawPagePartial(Generic[_T]):
             Now does not set size and/or position unless the values are greater than ``0``.
         """
         result = mDraw.Draw.add_shape(slide=self.component, shape_type=shape_type, x=x, y=y, width=width, height=height)  # type: ignore
-        return DrawShape(self.__owner, result)
+        return DrawShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def add_slide_number(self) -> DrawShape[_T]:
         """
@@ -226,7 +226,7 @@ class DrawPagePartial(Generic[_T]):
             DrawShape: Slide number shape.
         """
         result = mDraw.Draw.add_slide_number(slide=self.component)  # type: ignore
-        return DrawShape(self.__owner, result)
+        return DrawShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def blank_slide(self) -> None:
         """
@@ -261,7 +261,7 @@ class DrawPagePartial(Generic[_T]):
             DrawText: Text Object
         """
         result = mDraw.Draw.bullets_slide(self.component, title)  # type: ignore
-        return mDrawText.DrawText(self.__owner, result)
+        return mDrawText.DrawText(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def copy_shape(self, old_shape: XShape) -> DrawShape[_T]:
         """
@@ -277,7 +277,7 @@ class DrawPagePartial(Generic[_T]):
             DrawShape: Newly Copied shape.
         """
         result = mDraw.Draw.copy_shape(self.component, old_shape)  # type: ignore
-        return DrawShape(self.__owner, result)
+        return DrawShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def copy_shape_contents(self, old_shape: XShape) -> DrawShape[_T]:
         """
@@ -293,7 +293,7 @@ class DrawPagePartial(Generic[_T]):
             DrawShape: New shape with contents of old shape copied.
         """
         result = mDraw.Draw.copy_shape_contents(self.component, old_shape)  # type: ignore
-        return DrawShape(self.__owner, result)
+        return DrawShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def draw_bezier_open(self, pts: Sequence[Point], flags: Sequence[PolygonFlags]) -> OpenBezierShape[_T]:
         """
@@ -311,7 +311,7 @@ class DrawPagePartial(Generic[_T]):
             OpenBezierShape: Bezier Shape.
         """
         shape = mDraw.Draw.draw_bezier(slide=self.component, pts=pts, flags=flags, is_open=True)  # type: ignore
-        return OpenBezierShape(self.__owner, shape)
+        return OpenBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_bezier_closed(self, pts: Sequence[Point], flags: Sequence[PolygonFlags]) -> ClosedBezierShape[_T]:
         """
@@ -329,7 +329,7 @@ class DrawPagePartial(Generic[_T]):
             ClosedBezierShape: Bezier Shape.
         """
         shape = mDraw.Draw.draw_bezier(slide=self.component, pts=pts, flags=flags, is_open=False)  # type: ignore
-        return ClosedBezierShape(self.__owner, shape)
+        return ClosedBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_circle(self, x: int | UnitT, y: int | UnitT, radius: int | UnitT) -> EllipseShape[_T]:
         """
@@ -347,7 +347,7 @@ class DrawPagePartial(Generic[_T]):
             EllipseShape: Circle Shape.
         """
         shape = mDraw.Draw.draw_circle(slide=self.component, x=x, y=y, radius=radius)  # type: ignore
-        return EllipseShape(self.__owner, shape)
+        return EllipseShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_ellipse(
         self, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
@@ -368,7 +368,7 @@ class DrawPagePartial(Generic[_T]):
             EllipseShape: Ellipse Shape.
         """
         shape = mDraw.Draw.draw_ellipse(slide=self.component, x=x, y=y, width=width, height=height)  # type: ignore
-        return EllipseShape(self.__owner, shape)
+        return EllipseShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_formula(
         self, formula: str, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
@@ -400,7 +400,7 @@ class DrawPagePartial(Generic[_T]):
         shape = mDraw.Draw.draw_formula(
             slide=self.component, formula=formula, x=x, y=y, width=width, height=height  # type: ignore
         )
-        return OLE2Shape(self, shape)
+        return OLE2Shape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     # region draw_image()
     @overload
@@ -468,7 +468,7 @@ class DrawPagePartial(Generic[_T]):
             GraphicObjectShape: Shape
         """
         shape = mDraw.Draw.draw_image(self.component, *args, **kwargs)  # type: ignore
-        return GraphicObjectShape(self.__owner, shape)
+        return GraphicObjectShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     # endregion draw_image()
 
@@ -492,7 +492,7 @@ class DrawPagePartial(Generic[_T]):
         shape = mDraw.Draw.draw_image_offset(slide=self.component, fnm=fnm, xoffset=xoffset, yoffset=yoffset)  # type: ignore
         if shape is None:
             return None
-        return GraphicObjectShape(self.__owner, shape)
+        return GraphicObjectShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_line(self, x1: int | UnitT, y1: int | UnitT, x2: int | UnitT, y2: int | UnitT) -> LineShape[_T]:
         """
@@ -512,7 +512,7 @@ class DrawPagePartial(Generic[_T]):
             LineShape: Line Shape.
         """
         shape = mDraw.Draw.draw_line(slide=self.component, x1=x1, y1=y1, x2=x2, y2=y2)  # type: ignore
-        return LineShape(self.__owner, shape)
+        return LineShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_lines(self, xs: Sequence[Union[int, UnitT]], ys: Sequence[Union[int, UnitT]]) -> PolyLineShape[_T]:
         """
@@ -533,7 +533,7 @@ class DrawPagePartial(Generic[_T]):
             The number of points must be the same for both ``xs`` and ``ys``.
         """
         shape = mDraw.Draw.draw_lines(slide=self.component, xs=xs, ys=ys)  # type: ignore
-        return PolyLineShape(self.__owner, shape)
+        return PolyLineShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_media(
         self, fnm: PathOrStr, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
@@ -566,7 +566,7 @@ class DrawPagePartial(Generic[_T]):
         # however it can be found in examples.
         # https://ask.libreoffice.org/t/how-to-add-video-to-impress-with-python/33050/2
         shape = mDraw.Draw.draw_media(slide=self.component, fnm=fnm, x=x, y=y, width=width, height=height)  # type: ignore
-        return DrawShape(self.__owner, shape)
+        return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_polar_line(self, x: int | UnitT, y: int | UnitT, degrees: int, distance: int | UnitT) -> LineShape[_T]:
         """
@@ -586,7 +586,7 @@ class DrawPagePartial(Generic[_T]):
             LineShape: Polar Line Shape.
         """
         shape = mDraw.Draw.draw_polar_line(slide=self.component, x=x, y=y, degrees=degrees, distance=distance)  # type: ignore
-        return LineShape(self.__owner, shape)
+        return LineShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     # region draw_polygon()
     @overload
@@ -641,7 +641,7 @@ class DrawPagePartial(Generic[_T]):
             PolyPolygonShape: Polygon Shape.
         """
         shape = mDraw.Draw.draw_polygon(slide=self.component, x=x, y=y, sides=sides, radius=radius)  # type: ignore
-        return PolyPolygonShape(self.__owner, shape)
+        return PolyPolygonShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     # endregion draw_polygon()
 
@@ -671,7 +671,7 @@ class DrawPagePartial(Generic[_T]):
             Now does not set size and/or position unless the values are greater than ``0``.
         """
         shape = mDraw.Draw.draw_rectangle(slide=self.component, x=x, y=y, width=width, height=height)  # type: ignore
-        return RectangleShape(self.__owner, shape)
+        return RectangleShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def draw_text(
         self,
@@ -710,7 +710,7 @@ class DrawPagePartial(Generic[_T]):
         shape = mDraw.Draw.draw_text(
             slide=self.component, msg=msg, x=x, y=y, width=width, height=height, font_size=font_size  # type: ignore
         )
-        return TextShape(self.__owner, shape)
+        return TextShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def find_biggest_zorder(self) -> int:
         """
@@ -739,7 +739,7 @@ class DrawPagePartial(Generic[_T]):
             DrawShape: Shape.
         """
         shape = mDraw.Draw.find_shape_by_name(self.component, shape_name)  # type: ignore
-        return DrawShape(self.__owner, shape)
+        return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def find_shape_by_type(self, shape_type: DrawingNameSpaceKind | str) -> DrawShape[_T]:
         """
@@ -756,7 +756,7 @@ class DrawPagePartial(Generic[_T]):
             DrawShape: Shape
         """
         shape = mDraw.Draw.find_shape_by_type(self.component, shape_type)  # type: ignore
-        return DrawShape(self.__owner, shape)
+        return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def find_top_shape(self) -> DrawShape[_T]:
         """
@@ -770,7 +770,7 @@ class DrawPagePartial(Generic[_T]):
             DrawShape: Top most shape.
         """
         shape = mDraw.Draw.find_top_shape(self.component)  # type: ignore
-        return DrawShape(self.__owner, shape)
+        return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def get_animation_node(self) -> XAnimationNode:
         """
@@ -821,7 +821,7 @@ class DrawPagePartial(Generic[_T]):
             OLE2Shape: Chart Shape.
         """
         shape = mDraw.Draw.get_chart_shape(slide=self.component, x=x, y=y, width=width, height=height)  # type: ignore
-        return OLE2Shape(self.__owner, shape)
+        return OLE2Shape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def get_fill_color(self) -> mColor.Color:
         """
@@ -918,7 +918,7 @@ class DrawPagePartial(Generic[_T]):
             :py:meth:`~.draw.Draw.get_shapes`
         """
         shapes = mDraw.Draw.get_ordered_shapes(slide=self.component)  # type: ignore
-        return [DrawShape(self.__owner, shape) for shape in shapes]
+        return [DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst) for shape in shapes]
 
     def get_shape_text(self) -> str:
         """
@@ -943,7 +943,7 @@ class DrawPagePartial(Generic[_T]):
             :py:meth:`~.draw.Draw.get_ordered_shapes`
         """
         shapes = mDraw.Draw.get_shapes(slide=self.component)  # type: ignore
-        return [DrawShape(self.__owner, shape) for shape in shapes]
+        return [DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst) for shape in shapes]
 
     def get_size_mm(self) -> Size:
         """

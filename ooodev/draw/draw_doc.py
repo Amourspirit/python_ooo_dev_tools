@@ -22,7 +22,6 @@ from .partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
-    from com.sun.star.frame import XComponentLoader
 
 
 class DrawDoc(

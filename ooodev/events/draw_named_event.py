@@ -30,3 +30,21 @@ class DrawNamedEvent:
     """
     Exported a Draw Page to image format of JPG.
     """
+
+    EXPORTING_SHAPE_PNG = "draw_exporting_page_png"
+    """
+    Exporting a Shape to image format of PNG.
+    """
+    EXPORTED_SHAPE_PNG = "draw_exported_page_png"
+    """
+    Exported a Shape to image format of PNG.
+    """
+
+    EXPORTING_SHAPE_JPG = "draw_exporting_page_jpg"
+    """
+    Exporting a Shape to image format of JPG.
+    """
+    EXPORTED_SHAPE_JPG = "draw_exported_page_jpg"
+    """
+    Exported a Shape to image format of JPG.
+    """

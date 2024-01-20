@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, TypeVar, Generic, overload, Tuple
+from typing import cast, TYPE_CHECKING, TypeVar, Generic, overload, Tuple
 import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
@@ -15,6 +15,9 @@ from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
+from ooodev.events.partial.events_partial import EventsPartial
+from .partial.export_jpg_partial import ExportJpgPartial
+from .partial.export_png_partial import ExportPngPartial
 from .shape_text_cursor import ShapeTextCursor
 
 
@@ -38,9 +41,13 @@ if TYPE_CHECKING:
     from ooodev.utils.inst.lo.lo_inst import LoInst
     from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.utils.type_var import PathOrStr
+    from ooodev.events.lo_events import Events
 
 
 class ShapeBase(
+    EventsPartial,
+    ExportJpgPartial,
+    ExportPngPartial,
     Generic[_T],
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
@@ -48,6 +55,10 @@ class ShapeBase(
             self.__lo_inst = mLo.Lo.current_lo
         else:
             self.__lo_inst = lo_inst
+        EventsPartial.__init__(self)
+        events = cast("Events", self._EventsPartial__events)  # type: ignore
+        ExportJpgPartial.__init__(self, component=component, events=events)
+        ExportPngPartial.__init__(self, component=component, events=events)
         self.__owner = owner
         self.__component = component
 

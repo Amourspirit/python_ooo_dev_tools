@@ -115,6 +115,32 @@ class DrawPage(
 
     # region Export
     def export_page_jpg(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
+        """
+        Exports page as jpg image.
+
+        Args:
+            fnm (PathOrStr, optional): Image file name.
+            resolution (int, optional): Resolution in dpi. Defaults to 96.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTING_PAGE_JPG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTED_PAGE_JPG` :eventref:`src-docs-event-export`
+
+        Returns:
+            None:
+
+        Note:
+            On exporting event is :ref:`cancel_event_args_export`.
+            On exported event is :ref:`event_args_export`.
+            Args ``event_data`` is a :py:class:`~ooodev.write.filter.export_jpg.ExportJpgT` dictionary.
+
+            Unlike exporting png, exporting jpg does not seem to have a limit on the image size.
+
+            Page margins are ignored. Any shape that is outside the page margins will not be included in the image.
+        """
+
         def on_exporting(source: Any, args: Any) -> None:
             self.trigger_event(DrawNamedEvent.EXPORTING_PAGE_JPG, args)
 
@@ -130,6 +156,34 @@ class DrawPage(
         exporter.export(fnm=fnm, resolution=resolution)
 
     def export_page_png(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
+        """
+        Exports page as png image.
+
+        Args:
+            fnm (PathOrStr, optional): Image file name.
+            resolution (int, optional): Resolution in dpi. Defaults to 96.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTING_PAGE_PNG` :eventref:`src-docs-event-cancel-export`
+                - :py:attr:`~ooodev.events.draw_named_event.DrawNamedEvent.EXPORTED_PAGE_PNG` :eventref:`src-docs-event-export`
+
+        Returns:
+            None:
+
+        Note:
+            On exporting event is :ref:`cancel_event_args_export`.
+            On exported event is :ref:`event_args_export`.
+            Args ``event_data`` is a :py:class:`~ooodev.draw.filter.export_png.ExportPngT` dictionary.
+
+            Image width or height past ``4096`` pixels seem to not render the correct size when transparency is set to true (default). For a ``8.5 in x 11 in`` document this is a resolution around ``423`` DPI.
+            It seems when transparency is set to false, the image size is correct for larger images.
+            Unlike exporting ``png``, exporting ``jpg`` does not seem to have a limit on the image size.
+
+            Page margins are ignored. Any shape that is outside the page margins will not be included in the image.
+        """
+
         def on_exporting(source: Any, args: Any) -> None:
             self.trigger_event(DrawNamedEvent.EXPORTING_PAGE_PNG, args)
 
