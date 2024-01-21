@@ -10,11 +10,12 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.utils.inst.lo.lo_inst import LoInst
 from .partial.draw_doc_partial import DrawDocPartial
 from . import impress_page as mImpressPage
 from . import master_draw_page as mMasterDrawPage
@@ -37,6 +38,7 @@ class ImpressDoc(
     QiPartial,
     PropPartial,
     GuiPartial,
+    ServicePartial,
     StylePartial,
 ):
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
@@ -53,6 +55,7 @@ class ImpressDoc(
         QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
         self._pages = None
 

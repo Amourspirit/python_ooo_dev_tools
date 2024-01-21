@@ -5,9 +5,7 @@ import uno
 
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
-from com.sun.star.frame import XStorable
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
-from ooo.dyn.beans.property_state import PropertyState  # enum
 from ooodev.units import UnitMM
 
 
@@ -29,20 +27,17 @@ else:
 
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
 from ooodev.calc import CalcNamedEvent
-from ooodev.events.args.cancel_event_args_generic import CancelEventArgsGeneric
-from ooodev.events.args.event_args_generic import EventArgsGeneric
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import file_io as mFile
 from ooodev.utils import lo as mLo
-from ooodev.utils import props as mProps
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.inst.lo.lo_inst import LoInst
 from . import calc_cell as mCalcCell
 
 
@@ -372,7 +367,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
             value (Any): Value to set.
         """
         cell_obj = self.range_obj.start
-        cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj)
+        cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
         cell.set_val(value=value)
 
     def select(self) -> None:
@@ -552,8 +547,8 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
         See Also:
 
             - `Export Calc Sheet Range as Image Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_export_calc_image>`__
-            - :py:meth:`~ooodev.calc.calc_cell_range.CalcCellRange.export_jpg`
-            - :py:meth:`~ooodev.calc.calc_cell_range.CalcCellRange.export_png`
+            - :py:meth:`~ooodev.calc.CalcCellRange.export_jpg`
+            - :py:meth:`~ooodev.calc.CalcCellRange.export_png`
 
         .. versionadded:: 0.20.3
         """
@@ -610,6 +605,8 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
                 rng.subscribe_event(CalcNamedEvent.EXPORTED_RANGE_JPG, on_exported)
                 pth = Path("./export_range.jpg")
                 rng.export_jpg(pth)
+
+        .. versionadded:: 0.21.0
         """
         from ooodev.calc.export.range_jpg import RangeJpg
 
@@ -672,6 +669,8 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
                 rng.subscribe_event(CalcNamedEvent.EXPORTED_RANGE_JPG, on_exported)
                 pth = Path("./export_range.png")
                 rng.export_png(pth)
+
+        .. versionadded:: 0.21.0
         """
         from ooodev.calc.export.range_png import RangePng
 
@@ -701,8 +700,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
 
     @property
     def size(self) -> GenericUnitSize[UnitMM, float]:
-        """Gets the size of the shape in ``UnitMM`` Values."""
-        # com.sun.star.sheet.SheetCellRange
+        """Gets the size of the cell range in ``UnitMM`` Values."""
         if not self.support_service("com.sun.star.sheet.SheetCellRange"):
             raise mEx.ServiceNotSupported("com.sun.star.sheet.SheetCellRange")
         comp = cast("SheetCellRange", self.component)

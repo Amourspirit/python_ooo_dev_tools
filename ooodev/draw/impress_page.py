@@ -16,6 +16,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from .partial.draw_page_partial import DrawPagePartial
 
 
@@ -31,6 +32,7 @@ class ImpressPage(
     LinkTargetComp,
     QiPartial,
     PropPartial,
+    ServicePartial,
     StylePartial,
 ):
     """Represents a draw page."""
@@ -50,6 +52,7 @@ class ImpressPage(
         LinkTargetComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)
 
     def get_master_page(self) -> ImpressPage[_T]:

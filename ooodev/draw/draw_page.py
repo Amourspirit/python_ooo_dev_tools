@@ -41,7 +41,7 @@ class DrawPage(
             self._lo_inst = mLo.Lo.current_lo
         else:
             self._lo_inst = lo_inst
-        GenericDrawPage.__init__(self, owner=owner, component=component)
+        GenericDrawPage.__init__(self, owner=owner, component=component, lo_inst=self._lo_inst)
         self.__owner = owner
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

@@ -13,12 +13,13 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from .draw_text_cursor import DrawTextCursor
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawText(Generic[_T], TextComp, QiPartial, StylePartial):
+class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial):
     """
     Represents text content.
 
@@ -42,6 +43,7 @@ class DrawText(Generic[_T], TextComp, QiPartial, StylePartial):
         TextComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
+        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
 
     def add_bullet(self, level: int, text: str) -> None:
         """

@@ -9,6 +9,7 @@ from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from .draw_form import DrawForm
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     from .draw_page import DrawPage
 
 
-class DrawForms(FormsComp, QiPartial):
+class DrawForms(FormsComp, QiPartial, ServicePartial):
     """
     Class for managing Draw Forms.
 
@@ -63,6 +64,7 @@ class DrawForms(FormsComp, QiPartial):
         self.__owner = owner
         FormsComp.__init__(self, forms)  # type: ignore
         QiPartial.__init__(self, component=forms, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=forms, lo_inst=self._lo_inst)
 
     def __next__(self) -> DrawForm:
         return DrawForm(owner=self, component=super().__next__(), lo_inst=self._lo_inst)

@@ -16,6 +16,7 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -27,6 +28,7 @@ class DrawTextCursor(
     TextCursorComp,
     PropertyChangeImplement,
     VetoableChangeImplement,
+    ServicePartial,
     PropPartial,
     QiPartial,
     StylePartial,
@@ -56,6 +58,7 @@ class DrawTextCursor(
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
         PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)

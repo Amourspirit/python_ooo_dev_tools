@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
-
+from .partial.draw_page_partial import DrawPagePartial
 from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
@@ -11,7 +11,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
-from .partial.draw_page_partial import DrawPagePartial
+from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -25,6 +25,7 @@ class GenericDrawPage(
     DrawPageComp,
     Shapes2Partial,
     Shapes3Partial,
+    ServicePartial,
     QiPartial,
     StylePartial,
 ):
@@ -42,6 +43,7 @@ class GenericDrawPage(
         DrawPageComp.__init__(self, component)
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
+        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)
 

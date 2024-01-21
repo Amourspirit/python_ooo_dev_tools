@@ -12,6 +12,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 
 from ooodev.proto.component_proto import ComponentT
 
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
+class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial):
     """
     Class for managing Draw Pages.
     """
@@ -45,6 +46,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
         # The API does not show that DrawPages implements XNameAccess, but it does.
         NameAccessPartial.__init__(self, component=slides, interface=None)  # type: ignore
         QiPartial.__init__(self, component=slides, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=slides, lo_inst=self._lo_inst)
         self._current_index = 0
 
     def __getitem__(self, _itm: int | str) -> mDrawPage.DrawPage[_T]:

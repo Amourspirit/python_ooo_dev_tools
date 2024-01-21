@@ -4,6 +4,7 @@ import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
 
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
@@ -15,7 +16,7 @@ from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
-from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from .partial.export_jpg_partial import ExportJpgPartial
 from .partial.export_png_partial import ExportPngPartial
 from .shape_text_cursor import ShapeTextCursor
@@ -48,6 +49,7 @@ class ShapeBase(
     EventsPartial,
     ExportJpgPartial,
     ExportPngPartial,
+    ServicePartial,
     Generic[_T],
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
@@ -59,6 +61,7 @@ class ShapeBase(
         events = cast("Events", self._EventsPartial__events)  # type: ignore
         ExportJpgPartial.__init__(self, component=component, events=events)
         ExportPngPartial.__init__(self, component=component, events=events)
+        ServicePartial.__init__(self, component=component, lo_inst=self.__lo_inst)
         self.__owner = owner
         self.__component = component
 

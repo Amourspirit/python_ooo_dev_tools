@@ -13,6 +13,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.office import draw as mDraw
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.service_partial import ServicePartial
 from .partial.draw_page_partial import DrawPagePartial
 
 if TYPE_CHECKING:
@@ -27,6 +28,7 @@ class MasterDrawPage(
     MasterPageComp,
     PropertyChangeImplement,
     VetoableChangeImplement,
+    ServicePartial,
     QiPartial,
     PropPartial,
     StylePartial,
@@ -46,6 +48,7 @@ class MasterDrawPage(
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)

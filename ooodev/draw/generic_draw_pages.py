@@ -12,6 +12,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 
 from ooodev.proto.component_proto import ComponentT
 
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial):
+class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
     """
     Class for managing Generic Draw Pages.
     """

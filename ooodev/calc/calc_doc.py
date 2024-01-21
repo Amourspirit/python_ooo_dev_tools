@@ -39,27 +39,34 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import PathOrStr
 
 
-class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, StylePartial):
+class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, ServicePartial, StylePartial):
     """Defines a Calc Document"""
 
-    def __init__(self, doc: XSpreadsheetDocument) -> None:
+    def __init__(self, doc: XSpreadsheetDocument, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             doc (XSpreadsheetDocument): UNO object the supports ``com.sun.star.sheet.SpreadsheetDocument`` service.
         """
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
-        QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
-        PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
-        GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
         self._sheets = None
         self._draw_pages = None
@@ -419,7 +426,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Style
             if idx > sheets_len:
                 idx = sheets_len
         sheet = mCalc.Calc.insert_sheet(doc=self.component, name=name, idx=idx)
-        return mCalcSheet.CalcSheet(owner=self, sheet=sheet)
+        return mCalcSheet.CalcSheet(owner=self, sheet=sheet, lo_inst=self._lo_inst)
 
     # endregion insert_sheet
 
@@ -653,7 +660,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Style
             mCalcSheetView: CalcSheetView
         """
         view = mCalc.Calc.get_view(self.component)
-        return mCalcSheetView.CalcSheetView(self, view)
+        return mCalcSheetView.CalcSheetView(owner=self, view=view, lo_inst=self._lo_inst)
 
     # region set_active_sheet()
     @overload
@@ -885,7 +892,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Style
         .. versionadded:: 0.17.11
         """
         if self._sheets is None:
-            self._sheets = mCalcSheets.CalcSheets(owner=self, sheets=self.component.getSheets())
+            self._sheets = mCalcSheets.CalcSheets(owner=self, sheets=self.component.getSheets(), lo_inst=self._lo_inst)
         return self._sheets
 
     @property
@@ -899,7 +906,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Style
         if self._draw_pages is None:
             supp = self.qi(XDrawPagesSupplier, True)
             draw_pages = supp.getDrawPages()
-            self._draw_pages = SpreadsheetDrawPages(self, draw_pages)
+            self._draw_pages = SpreadsheetDrawPages(owner=self, slides=draw_pages, lo_inst=self._lo_inst)
         return self._draw_pages  # type: ignore
 
     @property
@@ -911,7 +918,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Style
             CalcSheetView: Current Controller
         """
         if self._current_controller is None:
-            self._current_controller = mCalcSheetView.CalcSheetView(self, self.component.getCurrentController())  # type: ignore
+            self._current_controller = mCalcSheetView.CalcSheetView(owner=self, view=self.component.getCurrentController(), lo_inst=self._lo_inst)  # type: ignore
         return self._current_controller
 
     # endregion Properties
