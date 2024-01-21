@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, TypeVar, Generic, overload, Tuple
+from typing import cast, TYPE_CHECKING, TypeVar, Generic, overload, Tuple
 import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
+
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
@@ -14,6 +16,9 @@ from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
+from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.export_jpg_partial import ExportJpgPartial
+from .partial.export_png_partial import ExportPngPartial
 from .shape_text_cursor import ShapeTextCursor
 
 
@@ -29,21 +34,39 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
     from com.sun.star.graphic import XGraphic
     from ooo.dyn.drawing.line_style import LineStyle
-    from ooodev.utils.type_var import PathOrStr
-    from ooodev.utils.data_type.size import Size
-    from ooodev.utils import color as mColor
-    from ooodev.units import UnitT
-    from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.proto.size_obj import SizeObj
+    from ooodev.units import UnitT
+    from ooodev.utils import color as mColor
     from ooodev.utils.data_type.intensity import Intensity
+    from ooodev.utils.data_type.size import Size
+    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
+    from ooodev.utils.type_var import PathOrStr
+    from ooodev.events.lo_events import Events
 
 
 class ShapeBase(
+    EventsPartial,
+    ExportJpgPartial,
+    ExportPngPartial,
+    ServicePartial,
     Generic[_T],
 ):
-    def __init__(self, owner: _T, component: XShape) -> None:
+    def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
+        EventsPartial.__init__(self)
+        events = cast("Events", self._EventsPartial__events)  # type: ignore
+        ExportJpgPartial.__init__(self, component=component, events=events)
+        ExportPngPartial.__init__(self, component=component, events=events)
+        ServicePartial.__init__(self, component=component, lo_inst=self.__lo_inst)
         self.__owner = owner
         self.__component = component
+
+    def get_lo_inst(self) -> LoInst:
+        return self.__lo_inst
 
     def get_shape_text_cursor(self) -> ShapeTextCursor[_T]:
         """
@@ -52,7 +75,8 @@ class ShapeBase(
         Returns:
             ShapeTextCursor: Cursor.
         """
-        xtext = mLo.Lo.qi(XText, self.__component, True)
+        lo = self.get_lo_inst()
+        xtext = lo.qi(XText, self.__component, True)
         return ShapeTextCursor(owner=self.__owner, component=xtext.createTextCursor())
 
     def get_glue_points(self) -> Tuple[GluePoint2, ...]:
@@ -190,7 +214,8 @@ class ShapeBase(
         """
         if self.owner is None:
             raise mEx.ShapeError("Owner is None. Owner must be set before calling this method.")
-        if mLo.Lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
+        lo = self.get_lo_inst()
+        if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
             raise mEx.ShapeError(
                 "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
             )
@@ -209,7 +234,8 @@ class ShapeBase(
         """
         if self.owner is None:
             raise mEx.ShapeError("Owner is None. Owner must be set before calling this method.")
-        if mLo.Lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
+        lo = self.get_lo_inst()
+        if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
             raise mEx.ShapeError(
                 "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
             )

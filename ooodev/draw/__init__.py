@@ -4,6 +4,7 @@ from ooo.dyn.drawing.polygon_flags import PolygonFlags as PolygonFlags
 from ooo.dyn.presentation.animation_speed import AnimationSpeed as AnimationSpeed
 from ooo.dyn.presentation.fade_effect import FadeEffect as FadeEffect
 
+from ooodev.events.draw_named_event import DrawNamedEvent as DrawNamedEvent
 from ooodev.office.draw import Draw as Draw
 from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.image_offset import ImageOffset as ImageOffset
@@ -35,6 +36,7 @@ from .generic_draw_pages import GenericDrawPages as GenericDrawPages
 from .impress_doc import ImpressDoc as ImpressDoc
 from .impress_page import ImpressPage as ImpressPage
 from .master_draw_page import MasterDrawPage as MasterDrawPage
+from .shape_collection import ShapeCollection as ShapeCollection
 
 __all__ = [
     "DrawDoc",
@@ -49,4 +51,5 @@ __all__ = [
     "ImpressDoc",
     "ImpressPage",
     "MasterDrawPage",
+    "ShapeCollection",
 ]

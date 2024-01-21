@@ -11,31 +11,39 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from .draw_text_cursor import DrawTextCursor
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawText(Generic[_T], TextComp, QiPartial, StylePartial):
+class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial):
     """
     Represents text content.
 
     Contains Enumeration Access.
     """
 
-    def __init__(self, owner: _T, component: XText) -> None:
+    def __init__(self, owner: _T, component: XText, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             owner (_T): Owner of this component.
             component (XText): UNO object that supports ``com.sun.star.text.Text`` service.
+            lo_inst (LoInst, optional): Lo instance. Defaults to None.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         TextComp.__init__(self, component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
+        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
 
     def add_bullet(self, level: int, text: str) -> None:
         """
@@ -62,12 +70,12 @@ class DrawText(Generic[_T], TextComp, QiPartial, StylePartial):
         Returns:
             DrawTextCursor[_T]: Cursor for this text.
         """
-        return DrawTextCursor(self.owner, self.component.createTextCursor())
+        return DrawTextCursor(owner=self.owner, component=self.component.createTextCursor(), lo_inst=self._lo_inst)
 
     # region Properties
     @property
     def owner(self) -> _T:
         """Owner of this component."""
-        return self.__owner
+        return self._owner
 
     # endregion Properties

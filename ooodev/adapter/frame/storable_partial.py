@@ -1,0 +1,103 @@
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
+import uno
+
+from com.sun.star.frame import XStorable
+
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import lo as mLo
+from ooodev.utils.type_var import UnoInterface
+
+if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
+
+
+class StorablePartial:
+    """
+    Partial class for XStorable.
+    """
+
+    def __init__(self, component: XStorable, interface: UnoInterface | None = XStorable) -> None:
+        """
+        Constructor
+
+        Args:
+            component (XStorable): UNO Component that implements ``com.sun.star.frame.XStorable`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XStorable``.
+        """
+        self.__interface = interface
+        self.__validate(component)
+        self.__component = component
+
+    def __validate(self, component: Any) -> None:
+        """
+        Validates the component.
+
+        Args:
+            component (Any): The component to be validated.
+        """
+        if self.__interface is None:
+            return
+        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
+            raise mEx.MissingInterfaceError(self.__interface)
+
+    # region XStorable
+    def get_location(self) -> str:
+        """
+        After XStorable.storeAsURL() it returns the URL the object was stored to.
+        """
+        return self.__component.getLocation()
+
+    def has_location(self) -> bool:
+        """
+        The object may know the location because it was loaded from there, or because it is stored there.
+        """
+        return self.__component.hasLocation()
+
+    def is_readonly(self) -> bool:
+        """
+        It is not possible to call XStorable.store() successfully when the data store is read-only.
+        """
+        return self.__component.isReadonly()
+
+    def store(self) -> None:
+        """
+        Stores the data to the URL from which it was loaded.
+        Only objects which know their locations can be stored.
+
+        Raises:
+            com.sun.star.io.IOException: ``IOException``
+        """
+        self.__component.store()
+
+    def store_as_url(self, url: str, *args: PropertyValue) -> None:
+        """
+        Stores the object's persistent data to a URL and makes this URL the new location of the object.
+        This is the normal behavior for UI ``save-as`` feature.
+        The change of the location makes it necessary to store the document in a format that the object can load. For this reason the implementation of XStorable.storeAsURL() will throw an exception if a pure export filter is used, it will accept only combined import/export filters. For such filters the method XStorable.storeToURL() must be used that does not change the location of the object.
+
+        Args:
+            url (str): The URL to be stored.
+            *args (PropertyValue): Additional parameters for storing process.
+
+        Raises:
+            com.sun.star.io.IOException: ``IOException``
+        """
+        self.__component.storeAsURL(url, args)
+
+    def store_to_url(self, url: str, *args: PropertyValue) -> None:
+        """
+        Stores the object's persistent data to a URL and continues to be a representation of the old URL.
+        This is the normal behavior for UI export feature.
+        This method accepts all kinds of export filters, not only combined import/export filters because it implements an exporting capability, not a persistence capability.
+
+        Args:
+            url (str): The URL to be stored.
+            *args (PropertyValue): Additional parameters for storing process.
+
+        Raises:
+            com.sun.star.io.IOException: ``IOException``
+        """
+        self.__component.storeToURL(url, args)
+
+    # endregion XStorable

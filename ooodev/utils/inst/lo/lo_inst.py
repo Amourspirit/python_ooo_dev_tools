@@ -65,6 +65,7 @@ from ooodev.utils import table_helper as mThelper
 from ooodev.utils.inst.lo.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
 from ooodev.utils.inst.lo.options import Options as LoOptions
 from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
+from .lo_loader import LoLoader
 
 
 if TYPE_CHECKING:
@@ -104,6 +105,7 @@ class LoInst:
             opt (LoOptions, optional): Options
             events (EventObserver, optional): Event observer
         """
+        self._is_default = False
         # self._events = Events(self)
         self._xcc: XComponentContext | None = None
         self._doc: XComponent | None = None
@@ -116,6 +118,7 @@ class LoInst:
         self._lo_inst: ConnectBase | None = None
         self._loader = None
         self._disposed = True
+        self._lo_loader: LoLoader | None = None
 
         self._opt = LoOptions() if opt is None else opt
         self._events = Events() if events is None else events
@@ -124,29 +127,14 @@ class LoInst:
 
     # region Events
     def _set_lo_events(self) -> None:
-        def _on_lo_del_cache_attrs(source: object, event: EventArgs) -> None:
-            self.on_lo_del_cache_attrs(source, event)
-
-        def _on_lo_loading(source: Any, event: CancelEventArgs) -> None:
-            self.on_lo_loading(source, event)
-
-        def _on_lo_loaded(source: Any, event: EventObject) -> None:
-            self.on_lo_loaded(source, event)
-
-        def _on_lo_disposed(source: Any, event: EventObject) -> None:
-            self.on_lo_disposed(source, event)
-
-        def _on_lo_disposing_bridge(src: EventListener, event: EventObject) -> None:
-            self.on_lo_disposing_bridge(src, event)
-
-        self._fn_on_lo_del_cache_attrs = _on_lo_del_cache_attrs
-        self._fn_on_lo_loading = _on_lo_loading
-        self._fn_on_lo_loaded = _on_lo_loaded
-        self._fn_on_lo_disposed = _on_lo_disposed
-        self._fn_on_lo_disposing_bridge = _on_lo_disposing_bridge
+        self._fn_on_lo_del_cache_attrs = self.on_lo_del_cache_attrs
+        self._fn_on_lo_loading = self.on_lo_loading
+        self._fn_on_lo_loaded = self.on_lo_loaded
+        self._fn_on_lo_disposed = self.on_lo_disposed
+        self._fn_on_lo_disposing_bridge = self.on_lo_disposing_bridge
 
         self._event_listener = EventListener()
-        self._event_listener.on("disposing", _on_lo_disposing_bridge)
+        self._event_listener.on("disposing", self._fn_on_lo_disposing_bridge)
 
         self._events.on(LoNamedEvent.RESET, self._fn_on_lo_del_cache_attrs)
         self._events.on(LoNamedEvent.OFFICE_LOADING, self._fn_on_lo_loading)
@@ -470,6 +458,9 @@ class LoInst:
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
 
+        if self._is_default:
+            raise mEx.LoadingError("Cannot set loader for default instance")
+
         cargs = CancelEventArgs(self.load_office.__qualname__)
 
         cargs.event_data = {
@@ -484,68 +475,35 @@ class LoInst:
             raise mEx.CancelEventError(cargs)
 
         b_connector = cargs.event_data["connector"]
+        lo_loader = LoLoader(connector=b_connector, cache_obj=cache_obj, opt=opt)
+        return self.load_from_lo_loader(lo_loader)
 
-        if opt:
-            self._opt = opt
+    def load_from_lo_loader(self, loader: LoLoader) -> XComponentLoader:
+        """
+        Loads Office from a LoLoader instance
 
-        self.print("Loading Office...")
-        if b_connector is None:
-            try:
-                self._lo_inst = LoDirectStart()
-                self._lo_inst.connect()
-            except Exception as e:
-                self.print(
-                    "Office context could not be created. A connector must be supplied if not running as a macro"
-                )
-                self.print(f"    {e}")
-                raise mEx.ConnectionError(
-                    "Office context could not be created. A connector must be supplied if not running as a macro"
-                ) from e
-        elif isinstance(b_connector, connectors.ConnectPipe):
-            try:
-                self._lo_inst = LoPipeStart(connector=b_connector, cache_obj=cache_obj)
-                self._lo_inst.connect()
-            except Exception as e:
-                self.print("Office context could not be created")
-                self.print(f"    {e}")
-                raise mEx.ConnectionError("Office context could not be created") from e
-        elif isinstance(b_connector, connectors.ConnectSocket):
-            try:
-                self._lo_inst = LoSocketStart(connector=b_connector, cache_obj=cache_obj)
-                self._lo_inst.connect()
-            except Exception as e:
-                self.print("Office context could not be created")
-                self.print(f"    {e}")
-                raise mEx.ConnectionError("Office context could not be created") from e
-        elif isinstance(b_connector, ConnectBase):
-            self._lo_inst = b_connector
-            if not self._lo_inst.has_connection:
-                try:
-                    self._lo_inst.connect()
-                except Exception as e:
-                    raise mEx.ConnectionError("Office context could not be created") from e
-        else:
-            self.print("Invalid Connector type. Fatal Error.")
-            raise mEx.NotSupportedError("Invalid Connector type. Fatal Error.")
+        Args:
+            loader (LoLoader): LoLoader instance
+
+        Returns:
+            XComponentLoader: component loader
+        """
+        self._lo_loader = loader
+        self._lo_inst = self._lo_loader.lo_inst
+        self._opt = self._lo_loader.options
         self._disposed = False
         self._xcc = self._lo_inst.ctx
         self._mc_factory = self._xcc.getServiceManager()
         if self._mc_factory is None:
-            self.print("Office Service Manager is unavailable")
             raise mEx.LoadingError("Office Service Manager is unavailable")
         self._xdesktop = self.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if self._xdesktop is None:
             # OPTIMIZE: Perhaps system exit is not the best what to handle no desktop service
-            self.print("Could not create a desktop service")
             raise mEx.LoadingError("Could not create a desktop service")
         self._loader = self.qi(XComponentLoader, self._xdesktop)
         if self._loader is None:
-            self.print("Unable to access XComponentLoader")
             raise mEx.LoadingError("Unable to access XComponentLoader")
-
-        self._events.trigger(LoNamedEvent.OFFICE_LOADED, eargs)
         return self._loader
-        # return cls.xdesktop
 
     # endregion Start Office
 
@@ -645,6 +603,8 @@ class LoInst:
 
         .. versionadded:: 0.9.8
         """
+        if self._is_default:
+            raise mEx.LoadingError("Cannot set loader for default instance")
         cargs = CancelEventArgs(self.open_doc.__qualname__)
         cargs.event_data = component
         self._events.trigger(LoNamedEvent.COMPONENT_LOADING, cargs)
@@ -1822,6 +1782,26 @@ class LoInst:
     @property
     def events(self) -> EventObserver:
         return self._events
+
+    @property
+    def lo_loader(self) -> LoLoader:
+        """Get/Sets the loader for this instance"""
+        if self._lo_loader is None:
+            raise mEx.LoadingError("Office not loaded")
+        return self._lo_loader
+
+    @lo_loader.setter
+    def lo_loader(self, value: LoLoader) -> None:
+        if self._is_default:
+            raise mEx.LoadingError("Cannot set loader for default instance")
+        if value is self._lo_loader:
+            return
+        _ = self.load_from_lo_loader(value)
+
+    @property
+    def is_default(self) -> bool:
+        """Gets if the current instance is the default Lo instance."""
+        return self._is_default
 
 
 __all__ = ("LoInst",)

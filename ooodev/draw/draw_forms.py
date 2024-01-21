@@ -7,7 +7,9 @@ from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from .draw_form import DrawForm
 
 if TYPE_CHECKING:
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
     from .draw_page import DrawPage
 
 
-class DrawForms(FormsComp, QiPartial):
+class DrawForms(FormsComp, QiPartial, ServicePartial):
     """
     Class for managing Draw Forms.
 
@@ -47,7 +49,7 @@ class DrawForms(FormsComp, QiPartial):
     .. versionadded:: 0.18.3
     """
 
-    def __init__(self, owner: DrawPage, forms: XForms) -> None:
+    def __init__(self, owner: DrawPage, forms: XForms, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -55,12 +57,17 @@ class DrawForms(FormsComp, QiPartial):
             owner (DrawPage): Owner Component
             forms (XForms): Forms instance.
         """
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         self.__owner = owner
         FormsComp.__init__(self, forms)  # type: ignore
-        QiPartial.__init__(self, component=forms, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=forms, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=forms, lo_inst=self._lo_inst)
 
     def __next__(self) -> DrawForm:
-        return DrawForm(owner=self, component=super().__next__())
+        return DrawForm(owner=self, component=super().__next__(), lo_inst=self._lo_inst)
 
     def __getitem__(self, index: str | int) -> DrawForm:
         if isinstance(index, int):
@@ -158,14 +165,14 @@ class DrawForms(FormsComp, QiPartial):
         arg1 = all_args[0]
         if isinstance(arg1, int):
             idx = self._get_index(arg1, allow_greater=True)
-            frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            frm = self._lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             frm.Name = self._create_name("Form")  # type: ignore
             self.insert_by_index(idx, frm)
             return self.get_by_index(idx)
         elif isinstance(arg1, str):
             if self.has_by_name(arg1):
                 raise mEx.NameClashError(f"Name '{arg1}' already exists")
-            frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            frm = self._lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             self.insert_by_name(arg1, frm)
             return self.get_by_name(arg1)
         else:
@@ -188,7 +195,7 @@ class DrawForms(FormsComp, QiPartial):
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return DrawForm(owner=self, component=result)
+        return DrawForm(owner=self, component=result, lo_inst=self._lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -210,7 +217,7 @@ class DrawForms(FormsComp, QiPartial):
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return DrawForm(owner=self, component=result)
+        return DrawForm(owner=self, component=result, lo_inst=self._lo_inst)
 
     # endregion XNameAccess overrides
 

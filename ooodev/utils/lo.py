@@ -159,7 +159,7 @@ class Lo(metaclass=StaticProperty):
     ConnectSocket = connectors.ConnectSocket
     """Alias of connectors.ConnectSocket"""
 
-    _lo_inst: lo_inst.LoInst = None  # type: ignore
+    _lo_inst = cast(lo_inst.LoInst, None)
 
     # region    qi()
 
@@ -560,7 +560,10 @@ class Lo(metaclass=StaticProperty):
         cls._lo_inst = lo_inst.LoInst(opt=opt, events=_Events())
 
         try:
-            return cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
+            result = cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
+            # set the instance as default so the connection cannot be accidentally closed or overridden.
+            cls._lo_inst._is_default = True
+            return result
         except Exception:
             raise SystemExit(1)  # pylint: disable=W0707
 
@@ -1862,6 +1865,23 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.get_flat_filter_name(doc_type=doc_type)
 
     # endregion XML
+
+    @classmethod
+    def create_lo_instance(cls, opt: LoOptions | None = None) -> lo_inst.LoInst:
+        """
+        Creates a new Lo instance.
+
+        Args:
+            opt (LoOptions, optional): Options for Lo instance. Defaults to current options.
+
+        Returns:
+            LoInst: Lo instance
+        """
+        if opt is None:
+            opt = cls._lo_inst.options
+        inst = lo_inst.LoInst(opt=opt)
+        _ = inst.load_from_lo_loader(cls._lo_inst.lo_loader)
+        return inst
 
     @classproperty
     def null_date(cls) -> datetime:

@@ -12,6 +12,8 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.draw.partial.draw_page_partial import DrawPagePartial
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.service_partial import ServicePartial
 from .calc_forms import CalcForms
 
 if TYPE_CHECKING:
@@ -27,6 +29,7 @@ class SpreadsheetDrawPage(
     IndexAccessPartial,
     Shapes2Partial,
     Shapes3Partial,
+    ServicePartial,
     QiPartial,
     StylePartial,
 ):
@@ -34,14 +37,19 @@ class SpreadsheetDrawPage(
 
     # Draw page does implement XDrawPage, but it show in the API of DrawPage Service.
 
-    def __init__(self, owner: _T, component: XDrawPage) -> None:
-        self.__owner = owner
+    def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         DrawPagePartial.__init__(self, owner=self, component=component)
         SpreadsheetDrawPageComp.__init__(self, component)
         IndexAccessPartial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
+        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)
         self._forms = None
 
@@ -52,7 +60,7 @@ class SpreadsheetDrawPage(
     @property
     def owner(self) -> _T:
         """Component Owner"""
-        return self.__owner
+        return self._owner
 
     @property
     def name(self) -> str:
@@ -76,7 +84,7 @@ class SpreadsheetDrawPage(
         Gets the forms of the draw page.
         """
         if self._forms is None:
-            self._forms = CalcForms(owner=self, forms=self.component.getForms())  # type: ignore
+            self._forms = CalcForms(owner=self, forms=self.component.getForms(), lo_inst=self._lo_inst)  # type: ignore
         return self._forms
 
     # endregion Properties

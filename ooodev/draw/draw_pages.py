@@ -9,36 +9,44 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import draw_page as mDrawPage
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 
 from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
+class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial):
     """
     Class for managing Draw Pages.
     """
 
-    def __init__(self, owner: _T, slides: XDrawPages) -> None:
+    def __init__(self, owner: _T, slides: XDrawPages, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
-            owner (DrawDoc): Owner Document
-            sheet (XDrawPages): Document Pages.
+            owner (_T): Owner Document
+            slides (XDrawPages): Document Pages.
+            lo_inst (LoInst, optional): Lo instance. Defaults to None.
         """
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         self.__owner = owner
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
         NameAccessPartial.__init__(self, component=slides, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=slides, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=slides, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=slides, lo_inst=self._lo_inst)
         self._current_index = 0
 
     def __getitem__(self, _itm: int | str) -> mDrawPage.DrawPage[_T]:
@@ -114,7 +122,9 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
             idx = len(self) + idx
             if idx < 0:
                 raise IndexError("list index out of range")
-        return mDrawPage.DrawPage(self.owner, self.component.insertNewByIndex(idx))
+        return mDrawPage.DrawPage(
+            owner=self.owner, component=self.component.insertNewByIndex(idx), lo_inst=self._lo_inst
+        )
 
     def delete_slide(self, idx: int) -> bool:
         """
@@ -159,7 +169,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
             raise mEx.MissingNameError(f"Unable to find slide with name '{name}'")
 
         result = super().get_by_name(name)
-        return mDrawPage.DrawPage(owner=self.owner, component=result)
+        return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
 
     # endregion XNameAccess overrides
 
@@ -187,7 +197,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
             raise IndexError(f"Index out of range: '{idx}'")
 
         result = super().get_by_index(idx)
-        return mDrawPage.DrawPage(owner=self.owner, component=result)
+        return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -212,7 +222,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial):
             if idx < 0:
                 raise IndexError("Index out of range")
         result = super().insert_new_by_index(idx)
-        return mDrawPage.DrawPage(owner=self.owner, component=result)
+        return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
 
     # endregion XDrawPages overrides
 

@@ -7,10 +7,11 @@ from ooodev.adapter.table.table_column_comp import TableColumnComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM100
-from ooodev.utils import lo as mLo
 from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
-
+from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
@@ -23,10 +24,10 @@ if TYPE_CHECKING:
     from .calc_sheet import CalcSheet
 
 
-class CalcTableCol(TableColumnComp, QiPartial, StylePartial):
+class CalcTableCol(TableColumnComp, QiPartial, ServicePartial, StylePartial):
     """Represents a calc table column."""
 
-    def __init__(self, owner: CalcSheet, col_obj: TableColumn | int) -> None:
+    def __init__(self, owner: CalcSheet, col_obj: TableColumn | int, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -34,15 +35,20 @@ class CalcTableCol(TableColumnComp, QiPartial, StylePartial):
             owner (CalcSheet): Sheet that owns this cell range.
             col_obj (Any): Range object.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         if mInfo.Info.is_instance(col_obj, int):
             comp = mCalc.Calc.get_col_range(sheet=self.calc_sheet.component, idx=col_obj)
-            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=comp)
+            self._range_obj = mCalc.Calc.get_range_obj(cell_range=comp)
         else:
-            self.__range_obj = mCalc.Calc.get_range_obj(cell_range=cast("XCellRange", col_obj))
+            self._range_obj = mCalc.Calc.get_range_obj(cell_range=cast("XCellRange", col_obj))
             comp = col_obj
         TableColumnComp.__init__(self, comp)  # type: ignore
-        QiPartial.__init__(self, component=comp, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=comp, lo_inst=self._lo_inst)  # type: ignore
+        ServicePartial.__init__(self, component=comp, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=comp)
         # self.__doc = doc
 
@@ -125,12 +131,12 @@ class CalcTableCol(TableColumnComp, QiPartial, StylePartial):
     @property
     def calc_sheet(self) -> CalcSheet:
         """Sheet that owns this cell."""
-        return self.__owner
+        return self._owner
 
     @property
     def range_obj(self) -> RangeObj:
         """Range object."""
-        return self.__range_obj
+        return self._range_obj
 
     @property
     def width(self) -> UnitMM100:

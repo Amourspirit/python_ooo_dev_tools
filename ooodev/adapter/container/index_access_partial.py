@@ -25,6 +25,19 @@ class IndexAccessPartial(ElementAccessPartial):
         """
         ElementAccessPartial.__init__(self, component, interface)
         self.__component = component
+        self.__current_index = -1
+
+    def __iter__(self):
+        self.__current_index = -1
+        return self
+
+    def __next__(self):
+        self.__current_index += 1
+        if self.__current_index >= self.__component.getCount():
+            self.__current_index = -1
+            raise StopIteration
+        # don't use self.get_by_index() here, it may be overridden in child class
+        return self.__component.getByIndex(self.__current_index)
 
     def __len__(self) -> int:
         """.. versionadded:: 0.20.2"""

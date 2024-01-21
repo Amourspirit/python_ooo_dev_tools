@@ -4,9 +4,6 @@ from ooodev.adapter.component_base import ComponentBase
 from .shape_partial import ShapePartial
 from .shape_descriptor_partial import ShapeDescriptorPartial
 
-# from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-# from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-
 if TYPE_CHECKING:
     from com.sun.star.drawing import Shape  # service
 
@@ -32,9 +29,6 @@ class ShapeComp(
         ComponentBase.__init__(self, component)
         ShapePartial.__init__(self, component=component, interface=None)
         ShapeDescriptorPartial.__init__(self, component=component, interface=None)
-        # generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        # PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        # VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

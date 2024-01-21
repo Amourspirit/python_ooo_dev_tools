@@ -10,8 +10,11 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import PathOrStr
 from .partial.draw_doc_partial import DrawDocPartial
 from . import impress_page as mImpressPage
@@ -34,17 +37,25 @@ class ImpressDoc(
     PrintJobEvents,
     QiPartial,
     PropPartial,
+    GuiPartial,
+    ServicePartial,
     StylePartial,
 ):
-    def __init__(self, doc: XComponent) -> None:
-        DrawDocPartial.__init__(self, owner=self, component=doc)
+    def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
         PresentationDocumentComp.__init__(self, doc)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
-        QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
-        PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
         self._pages = None
 
@@ -78,7 +89,7 @@ class ImpressDoc(
             mImpressPage: The slide that was inserted at the end of the document.
         """
         result = mDraw.Draw.add_slide(doc=self.component)
-        return mImpressPage.ImpressPage(self, result)
+        return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self._lo_inst)
 
     def duplicate(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
@@ -94,7 +105,7 @@ class ImpressDoc(
             ImpressPage: Duplicated slide.
         """
         page = mDraw.Draw.duplicate(self.component, idx)
-        return mImpressPage.ImpressPage(self, page)
+        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self._lo_inst)
 
     # region get_slide()
     @overload
@@ -164,11 +175,11 @@ class ImpressDoc(
         """
         if not kwargs:
             result = mDraw.Draw.get_slide(doc=self.component)
-            return mImpressPage.ImpressPage(self, result)
+            return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self._lo_inst)
         if "slides" not in kwargs:
             kwargs["doc"] = self.component
         result = mDraw.Draw.get_slide(**kwargs)
-        return mImpressPage.ImpressPage(self, result)
+        return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self._lo_inst)
 
     # endregion get_slide()
 
@@ -180,7 +191,7 @@ class ImpressDoc(
             List[ImpressPage[_T]]: List of pages
         """
         slides = mDraw.Draw.get_slides_list(self.component)
-        return [mImpressPage.ImpressPage(self, slide) for slide in slides]
+        return [mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self._lo_inst) for slide in slides]
 
     def get_viewed_page(self) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
@@ -193,7 +204,7 @@ class ImpressDoc(
             ImpressPage: Draw Page
         """
         page = mDraw.Draw.get_viewed_page(self.component)
-        return mImpressPage.ImpressPage(self, page)
+        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self._lo_inst)
 
     def get_handout_master_page(self) -> mMasterDrawPage.MasterDrawPage[ImpressDoc]:
         """
@@ -207,7 +218,7 @@ class ImpressDoc(
             MasterDrawPage: Impress Page
         """
         page = mDraw.Draw.get_handout_master_page(self.component)
-        return mMasterDrawPage.MasterDrawPage(self, page)
+        return mMasterDrawPage.MasterDrawPage(owner=self, component=page, lo_inst=self._lo_inst)
 
     def get_notes_page_by_index(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
@@ -228,7 +239,7 @@ class ImpressDoc(
             :py:meth:`~.draw.Draw.get_notes_page`
         """
         page = mDraw.Draw.get_notes_page_by_index(self.component, idx)
-        return mImpressPage.ImpressPage(self, page)
+        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self._lo_inst)
 
     def get_show(self) -> XPresentation2:
         """
@@ -277,7 +288,7 @@ class ImpressDoc(
             DrawPage: New slide that was inserted.
         """
         slide = mDraw.Draw.insert_slide(doc=self.component, idx=idx)
-        return mImpressPage.ImpressPage(self, slide)
+        return mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self._lo_inst)
 
     def remove_master_page(self, slide: XDrawPage) -> None:
         """
@@ -371,7 +382,7 @@ class ImpressDoc(
 
         .. versionadded:: 0.20.2
         """
-        return mLo.Lo.save_doc(self.component, fnm, password, format)  # type: ignore
+        return self._lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
 
     # endregion save_doc
 
@@ -383,7 +394,7 @@ class ImpressDoc(
             Any: Draw Pages.
         """
         if self._pages is None:
-            self._pages = DrawPages(owner=self, slides=self.component.getDrawPages())
+            self._pages = DrawPages(owner=self, slides=self.component.getDrawPages(), lo_inst=self._lo_inst)
         return cast("DrawPages[ImpressDoc]", self._pages)
 
     # endregion Properties

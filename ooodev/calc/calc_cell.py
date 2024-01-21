@@ -21,13 +21,19 @@ from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
 
 
-class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
-    def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj) -> None:
+class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServicePartial):
+    def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         self.__owner = owner
         self.__cell_obj = mCellObj.CellObj.from_cell(cell)
         # don't use owner.get_cell() here because it will be recursive.
@@ -36,6 +42,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
         QiPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=sheet_cell)
+        ServicePartial.__init__(self, component=sheet_cell, lo_inst=self._lo_inst)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
@@ -128,7 +135,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
         if self.is_first_column():
             raise mEx.CellError(f"Cell {self.__cell_obj} is in the first column of the sheet.")
         cell_obj = self.__cell_obj.left
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj)
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
 
     def get_cell_right(self) -> CalcCell:
         """
@@ -141,7 +148,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
             CalcCell: Cell to the right of this cell.
         """
         cell_obj = self.__cell_obj.right
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj)
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
 
     def get_cell_up(self) -> CalcCell:
         """
@@ -153,7 +160,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
         if self.is_first_row():
             raise mEx.CellError(f"Cell {self.__cell_obj} is in the first row of the sheet.")
         cell_obj = self.__cell_obj.up
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj)
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
 
     def get_cell_down(self) -> CalcCell:
         """
@@ -163,7 +170,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial):
             CalcCell: Cell below this cell.
         """
         cell_obj = self.__cell_obj.down
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj)
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
 
     # endregion Other Cells
 

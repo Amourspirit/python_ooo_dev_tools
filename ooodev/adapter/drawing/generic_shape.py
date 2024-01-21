@@ -22,7 +22,7 @@ class GenericShapeComp(
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: Any) -> None:
+    def __init__(self, component: T) -> None:
         """
         Constructor
 
@@ -30,9 +30,9 @@ class GenericShapeComp(
             component (Any): UNO component that implements ``com.sun.star.drawing.ClosedBezierShape`` service.
         """
         ComponentBase.__init__(self, component)
-        ShapePartial.__init__(self, component=component, interface=None)
-        ShapeDescriptorPartial.__init__(self, component=component, interface=None)
-        TextPartial.__init__(self, component, interface=None)
+        ShapePartial.__init__(self, component=component, interface=None)  # type: ignore
+        ShapeDescriptorPartial.__init__(self, component=component, interface=None)  # type: ignore
+        TextPartial.__init__(self, component, interface=None)  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

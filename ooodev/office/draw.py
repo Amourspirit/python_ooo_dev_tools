@@ -68,6 +68,7 @@ from ooo.dyn.container.no_such_element_exception import NoSuchElementException
 from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 
+from ooodev.utils.inst.lo import lo_inst as mLoInst
 from ..cfg.config import Config  # singleton class.
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.draw_named_event import DrawNamedEvent
@@ -263,8 +264,13 @@ class Draw:
     def create_draw_doc(loader: XComponentLoader) -> XComponent:
         ...
 
+    @overload
     @staticmethod
-    def create_draw_doc(loader: XComponentLoader | None = None) -> XComponent:
+    def create_draw_doc(lo_inst: mLoInst.LoInst) -> XComponent:
+        ...
+
+    @staticmethod
+    def create_draw_doc(*args, **kwargs) -> XComponent:
         """
         Creates a new Draw document.
 
@@ -274,10 +280,19 @@ class Draw:
         Returns:
             XComponent: Component representing document
         """
-        if loader is None:
+        # 0 or 1 args
+        arguments = list(args)
+        arguments.extend(kwargs.values())
+        count = len(arguments)
+        if count == 0:
             return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
-        else:
-            return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW, loader=loader)
+        if count == 1:
+            arg = arguments[0]
+            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
+                return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW, loader=arg)
+            if isinstance(arg, mLoInst.LoInst):
+                return arg.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
+        raise TypeError("create_draw_doc() got an unexpected argument")
 
     # endregion create_draw_doc()
 
@@ -2787,7 +2802,7 @@ class Draw:
 
         Returns:
             XShape: Formula Shape.
-        
+
         Note:
             If ``x`` or ``y`` is negative or ``0`` then the shape position will not be set.
             If ``width`` or ``height`` is negative or ``0`` then the shape size will not be set.

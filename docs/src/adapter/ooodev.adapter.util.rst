@@ -10,6 +10,8 @@ Submodules
    ooodev.adapter.util.changes_events
    ooodev.adapter.util.changes_listener
    ooodev.adapter.util.cloneable_partial
+   ooodev.adapter.util.close_events
+   ooodev.adapter.util.close_listener
    ooodev.adapter.util.modify_events
    ooodev.adapter.util.modify_listener
    ooodev.adapter.util.refresh_events

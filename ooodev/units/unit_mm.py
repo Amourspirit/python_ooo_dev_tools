@@ -197,7 +197,7 @@ class UnitMM(BaseFloatValue):
         Gets instance value converted to ``cm`` units.
 
         Returns:
-            int: Value in ``cm`` units.
+            float: Value in ``cm`` units.
         """
         return UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=UnitLength.CM)
 
@@ -215,7 +215,7 @@ class UnitMM(BaseFloatValue):
         Gets instance value converted to Size in ``mm`` units.
 
         Returns:
-            int: Value in ``mm`` units.
+            float: Value in ``mm`` units.
         """
         return self.value
 
@@ -224,7 +224,7 @@ class UnitMM(BaseFloatValue):
         Gets instance value converted to Size in ``pt`` (points) units.
 
         Returns:
-            int: Value in ``pt`` units.
+            float: Value in ``pt`` units.
         """
         return UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=UnitLength.PT)
 
@@ -233,9 +233,45 @@ class UnitMM(BaseFloatValue):
         Gets instance value in ``px`` (pixel) units.
 
         Returns:
-            int: Value in ``px`` units.
+            float: Value in ``px`` units.
         """
         return UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=UnitLength.PX)
+
+    def get_value_inch(self) -> float:
+        """
+        Gets instance value in ``in`` (inch) units.
+
+        Returns:
+            float: Value in ``in`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=UnitLength.IN)
+
+    def get_value_inch100(self) -> int:
+        """
+        Gets instance value in ``1/100th inch`` units.
+
+        Returns:
+            int: Value in ``1/100th inch`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=UnitLength.IN100))
+
+    def get_value_inch10(self) -> int:
+        """
+        Gets instance value in ``1/10th inch`` units.
+
+        Returns:
+            int: Value in ``1/10th inch`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=UnitLength.IN10))
+
+    def get_value_inch1000(self) -> int:
+        """
+        Gets instance value in ``1/1000th inch`` units.
+
+        Returns:
+            int: Value in ``1/100th inch`` units.
+        """
+        return round(UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=UnitLength.IN1000))
 
     @classmethod
     def from_mm(cls: Type[_TUnitMM], value: float) -> _TUnitMM:

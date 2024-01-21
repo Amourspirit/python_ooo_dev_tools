@@ -2,6 +2,24 @@
 Version History
 ***************
 
+Version 0.21.0
+==============
+
+``DrawDoc`` and all of the related classes now can use a seperate instance of ``Lo`` to connect to LibreOffice.
+In short this means it is now possible have mulitiple instanes of Draw Doucment open at the same time.
+
+``DrawPage`` can now export the page as a ``png`` or ``jpg`` image using the ``export_page_png()`` and ``export_page_jpg()`` methods.
+See ``tests/test_draw/test_draw_ns/test_draw_page_export_img.py`` for examples.
+
+All Shapes in the ``ooodev.draw.shapes`` namespace now can export the shape as a ``png`` or ``jpg`` image using the ``export_shape_png()`` and ``export_shape_jpg()`` methods.
+
+Calc Range can now export the range as a ``png`` or ``jpg`` image using the ``export_range_png()`` and ``export_range_jpg()`` methods that can alos set the image resolution.
+
+Breaking Changes
+----------------
+
+``ooodev.events.event_data.img_export_t.ImgExportT`` has been removed. No longer needed now that ``CalcCellRange.export_png()`` and ``CalcCellRange.export_jpg()`` have been implemented.
+
 Version 0.20.4
 ==============
 

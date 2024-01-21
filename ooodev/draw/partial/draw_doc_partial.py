@@ -5,11 +5,11 @@ import uno
 from com.sun.star.frame import XModel
 
 from ooodev.adapter.container.name_container_comp import NameContainerComp
-from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import draw_pages as mDrawPages
 from ooodev.office import draw as mDraw
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.kind.zoom_kind import ZoomKind
@@ -36,9 +36,13 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class DrawDocPartial(Generic[_T]):
-    def __init__(self, owner: _T, component: XComponent) -> None:
+    def __init__(self, owner: _T, component: XComponent, lo_inst: LoInst | None = None) -> None:
         self.__owner = owner
         self.__component = component
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
 
     def add_slide(self) -> mDrawPage.DrawPage[_T]:
         """
@@ -111,7 +115,7 @@ class DrawDocPartial(Generic[_T]):
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
 
-        result = mLo.Lo.close(closeable=self.component, deliver_ownership=deliver_ownership)  # type: ignore
+        result = self.__lo_inst.close(closeable=self.component, deliver_ownership=deliver_ownership)  # type: ignore
         return result
 
     def combine_shape(self, shapes: XShapes, combine_op: ShapeCombKind) -> mDrawShape.DrawShape[_T]:
@@ -196,7 +200,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             XController: Controller.
         """
-        model = mLo.Lo.qi(XModel, self.__component, True)
+        model = self.__lo_inst.qi(XModel, self.__component, True)
         return model.getCurrentController()
 
     def get_handout_master_page(self) -> mDrawPage.DrawPage[_T]:

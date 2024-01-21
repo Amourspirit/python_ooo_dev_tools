@@ -5,9 +5,11 @@ import uno
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextCursor
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
@@ -25,6 +27,7 @@ class ShapeTextCursor(
     Generic[_T],
     TextCursorPartial,
     TextCursorComp,
+    ShapePartialProps,
     PropertyChangeImplement,
     VetoableChangeImplement,
     PropPartial,
@@ -37,7 +40,7 @@ class ShapeTextCursor(
     This class implements ``__len__()`` method, which returns the number of characters in the range.
     """
 
-    def __init__(self, owner: _T, component: XTextCursor) -> None:
+    def __init__(self, owner: _T, component: XTextCursor, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -45,14 +48,19 @@ class ShapeTextCursor(
             owner (T): Owner of this component.
             component (XTextCursor): A UNO object that supports ``com.sun.star.text.TextCursor`` service.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         TextCursorPartial.__init__(self, owner=owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
+        ShapePartialProps.__init__(self, component=component)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
 
     def __len__(self) -> int:
@@ -62,6 +70,6 @@ class ShapeTextCursor(
     @property
     def owner(self) -> _T:
         """Owner of this component."""
-        return self.__owner
+        return self._owner
 
     # endregion Properties

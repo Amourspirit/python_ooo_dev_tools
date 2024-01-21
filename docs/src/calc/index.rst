@@ -8,4 +8,6 @@ calc
     :glob:
 
     *
+    export/index
+    filter/index
     partial/index

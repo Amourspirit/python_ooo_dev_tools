@@ -19,17 +19,24 @@ from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 
 
-class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial):
-    def __init__(self, owner: CalcSheet, cursor: XSheetCellCursor) -> None:
-        self.__owner = owner
+class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, ServicePartial):
+    def __init__(self, owner: CalcSheet, cursor: XSheetCellCursor, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         SheetCellCursorComp.__init__(self, cursor)  # type: ignore
-        QiPartial.__init__(self, component=cursor, lo_inst=mLo.Lo.current_lo)  # type: ignore
-        PropPartial.__init__(self, component=cursor, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=cursor, lo_inst=self._lo_inst)  # type: ignore
+        PropPartial.__init__(self, component=cursor, lo_inst=self._lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cursor)
+        ServicePartial.__init__(self, component=cursor, lo_inst=self._lo_inst)
 
     def find_used_cursor(self) -> mCalcCellRange.CalcCellRange:
         """
@@ -42,7 +49,7 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial):
             CalcCellRange: Cell range
         """
         found = mCalc.Calc.find_used_cursor(self.component)
-        return mCalcCellRange.CalcCellRange(self.calc_sheet, found)
+        return mCalcCellRange.CalcCellRange(owner=self.calc_sheet, rng=found, lo_inst=self._lo_inst)
 
     def get_calc_cell_range(self) -> mCalcCellRange.CalcCellRange:
         """
@@ -52,7 +59,7 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial):
             CalcCellRange: Cell range
         """
         cell_range = mLo.Lo.qi(XCellRange, self.component)
-        return mCalcCellRange.CalcCellRange(self.calc_sheet, cell_range)
+        return mCalcCellRange.CalcCellRange(owner=self.calc_sheet, rng=cell_range, lo_inst=self._lo_inst)
 
     # region get_cell_by_position()
     @overload
@@ -148,7 +155,7 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial):
         """
         cell_obj = mCalc.Calc.get_cell_obj(*args, **kwargs)
         # x_cell = self.component.getCellByPosition(cell_obj.col_obj.index, cell_obj.row_obj.index)
-        return mCalcCell.CalcCell(self.calc_sheet, cell_obj)
+        return mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
 
     # endregion get_cell_by_position()
 
@@ -266,6 +273,6 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial):
     @property
     def calc_sheet(self) -> CalcSheet:
         """Sheet that owns this cell."""
-        return self.__owner
+        return self._owner
 
     # endregion Properties
