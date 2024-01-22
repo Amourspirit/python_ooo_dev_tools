@@ -9,6 +9,7 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import draw_page as mDrawPage
 from ooodev.exceptions import ex as mEx
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -52,10 +53,6 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
     def __getitem__(self, _itm: int | str) -> mDrawPage.DrawPage[_T]:
         if isinstance(_itm, str):
             return self.get_by_name(_itm)
-        if _itm < 0:
-            _itm = len(self) + _itm
-            if _itm < 0:
-                raise IndexError("list index out of range")
         return self.get_by_index(idx=_itm)
 
     def __len__(self) -> int:
@@ -118,12 +115,9 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
         Returns:
             DrawPage: New slide that was inserted.
         """
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
+        index = mGenUtil.Util.get_index(idx, len(self), True)
         return mDrawPage.DrawPage(
-            owner=self.owner, component=self.component.insertNewByIndex(idx), lo_inst=self._lo_inst
+            owner=self.owner, component=self.component.insertNewByIndex(index), lo_inst=self._lo_inst
         )
 
     def delete_slide(self, idx: int) -> bool:
@@ -137,13 +131,10 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
         Returns:
             bool: ``True`` on success; Otherwise, ``False``
         """
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
+        index = mGenUtil.Util.get_index(idx, len(self))
         with contextlib.suppress(Exception):
             # get the slide as UNO object and remove it
-            result = super().get_by_index(idx)
+            result = super().get_by_index(index)
             if result is None:
                 return False
             self.remove(result)
@@ -189,14 +180,8 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
         Returns:
             DrawPage[DrawDoc]: The drawpage with the specified index.
         """
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("Index out of range")
-        if idx >= len(self):
-            raise IndexError(f"Index out of range: '{idx}'")
-
-        result = super().get_by_index(idx)
+        index = mGenUtil.Util.get_index(idx, len(self))
+        result = super().get_by_index(index)
         return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
 
     # endregion XIndexAccess overrides

@@ -2,28 +2,29 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
-
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
 from ooodev.adapter.sheet.spreadsheet_draw_page_comp import SpreadsheetDrawPageComp
+from ooodev.draw.partial.draw_page_partial import DrawPagePartial
+from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.draw.partial.draw_page_partial import DrawPagePartial
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from .calc_forms import CalcForms
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
+    from ooodev.draw.shapes.shape_base import ShapeBase
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
 class SpreadsheetDrawPage(
-    DrawPagePartial[_T],
+    DrawPagePartial["SpreadsheetDrawPage[_T]"],
     Generic[_T],
     SpreadsheetDrawPageComp,
     IndexAccessPartial,
@@ -32,6 +33,7 @@ class SpreadsheetDrawPage(
     ServicePartial,
     QiPartial,
     StylePartial,
+    ShapeFactoryPartial["SpreadsheetDrawPage[_T]"],
 ):
     """Represents a draw page."""
 
@@ -51,10 +53,19 @@ class SpreadsheetDrawPage(
         ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=component)
+        ShapeFactoryPartial.__init__(self, owner=self, lo_inst=self._lo_inst)
         self._forms = None
 
     def __len__(self) -> int:
         return self.get_count()
+
+    def __getitem__(self, index: int) -> ShapeBase[SpreadsheetDrawPage[_T]]:
+        shape = self.component.getByIndex(index)  # type: ignore
+        return self.shape_factory(shape)
+
+    def __next__(self) -> ShapeBase[SpreadsheetDrawPage[_T]]:
+        shape = super().__next__()
+        return self.shape_factory(shape)
 
     # region Properties
     @property

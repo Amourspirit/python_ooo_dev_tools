@@ -546,7 +546,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
 
         See Also:
 
-            - `Export Calc Sheet Range as Image Example <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_export_calc_image>`__
+            - Live LibreOffice Example `Export Calc Sheet Range as Image <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_export_calc_image>`__
             - :py:meth:`~ooodev.calc.CalcCellRange.export_jpg`
             - :py:meth:`~ooodev.calc.CalcCellRange.export_png`
 
@@ -605,6 +605,9 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
                 rng.subscribe_event(CalcNamedEvent.EXPORTED_RANGE_JPG, on_exported)
                 pth = Path("./export_range.jpg")
                 rng.export_jpg(pth)
+
+        See Also:
+            Live LibreOffice Example `Export Calc Sheet Range as Image <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_export_calc_image>`__
 
         .. versionadded:: 0.21.0
         """
@@ -669,6 +672,9 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
                 rng.subscribe_event(CalcNamedEvent.EXPORTED_RANGE_JPG, on_exported)
                 pth = Path("./export_range.png")
                 rng.export_png(pth)
+
+        See Also:
+            Live LibreOffice Example `Export Calc Sheet Range as Image <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_export_calc_image>`__
 
         .. versionadded:: 0.21.0
         """

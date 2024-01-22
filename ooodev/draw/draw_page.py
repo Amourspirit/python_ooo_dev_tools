@@ -20,19 +20,28 @@ from .draw_forms import DrawForms
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
     from ooodev.units import UnitT
+    from ooodev.draw.shapes.shape_base import ShapeBase
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
 class DrawPage(
-    GenericDrawPage,
+    GenericDrawPage["DrawPage[_T]"],
     Generic[_T],
     PropertyChangeImplement,
     VetoableChangeImplement,
     EventsPartial,
     PropPartial,
 ):
-    """Represents a draw page."""
+    """
+    Represents a draw page.
+
+    Supports index access and iteration.
+
+    .. code-block:: python
+
+        shape = doc.slides[0][0] # get a ooodev.draw.shapes.ShapeBase object
+    """
 
     # Draw page does implement XDrawPage, but it show in the API of DrawPage Service.
 
@@ -53,9 +62,9 @@ class DrawPage(
     def __len__(self) -> int:
         return self.component.getCount()
 
-    def __next__(self) -> DrawShape[DrawPage[_T]]:
+    def __next__(self) -> ShapeBase[DrawPage[_T]]:
         shape = super().__next__()
-        return DrawShape(owner=self, component=shape, lo_inst=self._lo_inst)
+        return self.shape_factory(shape)
 
     # region Overrides
     def group(self, shapes: XShapes) -> GroupShape:

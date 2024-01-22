@@ -9,6 +9,7 @@ from ooodev.utils import info as mInfo
 from ooodev.exceptions import ex as mEx
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.format.writer.style import FamilyNamesKind
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from .write_style_family import WriteStyleFamily
 
 if TYPE_CHECKING:
@@ -26,18 +27,23 @@ class WriteStyleFamilies(
     Contains Enumeration Access.
     """
 
-    def __init__(self, owner: WriteDoc, component: Any) -> None:
+    def __init__(self, owner: WriteDoc, component: Any, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             owner (T): Owner of this component.
             component (Any): UNO object that supports ``com.sun.star.text.Paragraph`` service.
+            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         self.__owner = owner
         StyleFamiliesComp.__init__(self, component)
         IndexAccessPartial.__init__(self, component=self.component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         # self.__doc = doc
 
     def get_names(self) -> List[str]:
@@ -72,7 +78,7 @@ class WriteStyleFamilies(
         """
         try:
             result = self.get_by_name(str(name))
-            return WriteStyleFamily(owner=self.owner, component=result)
+            return WriteStyleFamily(owner=self.owner, component=result, lo_inst=self._lo_inst)
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style family: {name}") from e
 

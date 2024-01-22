@@ -7,6 +7,7 @@ from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from .write_form import WriteForm
 
@@ -47,20 +48,25 @@ class WriteForms(FormsComp, QiPartial):
     .. versionadded:: 0.18.3
     """
 
-    def __init__(self, owner: WriteDrawPage, forms: XForms) -> None:
+    def __init__(self, owner: WriteDrawPage, forms: XForms, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             owner (WriteDrawPage): Owner Component
             forms (XForms): Forms instance.
+            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         FormsComp.__init__(self, forms)  # type: ignore
-        QiPartial.__init__(self, component=forms, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=forms, lo_inst=self._lo_inst)
 
     def __next__(self) -> WriteForm:
-        return WriteForm(owner=self, component=super().__next__())
+        return WriteForm(owner=self, component=super().__next__(), lo_inst=self._lo_inst)
 
     def __getitem__(self, index: str | int) -> WriteForm:
         if isinstance(index, int):
@@ -188,7 +194,7 @@ class WriteForms(FormsComp, QiPartial):
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return WriteForm(owner=self, component=result)
+        return WriteForm(owner=self, component=result, lo_inst=self._lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -210,7 +216,7 @@ class WriteForms(FormsComp, QiPartial):
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return WriteForm(owner=self, component=result)
+        return WriteForm(owner=self, component=result, lo_inst=self._lo_inst)
 
     # endregion XNameAccess overrides
 
@@ -221,6 +227,6 @@ class WriteForms(FormsComp, QiPartial):
         Returns:
             WriteDrawPage: Writer Draw Page
         """
-        return self.__owner
+        return self._owner
 
     # endregion Properties

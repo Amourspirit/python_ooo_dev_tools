@@ -12,6 +12,7 @@ from ooodev.adapter.text.text_comp import TextComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from . import write_paragraphs as mWriteParagraphs
 from . import write_text_tables as mWriteTextTables
@@ -26,27 +27,32 @@ class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartia
     Contains Enumeration Access.
     """
 
-    def __init__(self, owner: T, component: XText) -> None:
+    def __init__(self, owner: T, component: XText, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             owner (T): Owner of this component.
             component (XText): UNO object that supports ``com.sun.star.text.Text`` service.
+            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         TextComp.__init__(self, component)  # type: ignore
         RelativeTextContentInsertPartial.__init__(self, component=component, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
 
     def get_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[T]:
         """Returns the paragraphs of this text."""
-        return mWriteParagraphs.WriteParagraphs(owner=self.owner, component=self.component)
+        return mWriteParagraphs.WriteParagraphs(owner=self.owner, component=self.component, lo_inst=self._lo_inst)
 
     def get_text_tables(self) -> mWriteTextTables.WriteTextTables[T]:
         """Returns the text tables of this text."""
-        return mWriteTextTables.WriteTextTables(owner=self.owner, component=self.component)
+        return mWriteTextTables.WriteTextTables(owner=self.owner, component=self.component, lo_inst=self._lo_inst)
 
     @overload
     def insert_text_content(self, content: XTextContent, absorb: bool) -> None:
@@ -110,6 +116,6 @@ class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartia
     @property
     def owner(self) -> T:
         """Owner of this component."""
-        return self.__owner
+        return self._owner
 
     # endregion Properties

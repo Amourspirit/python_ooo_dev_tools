@@ -269,6 +269,7 @@ class Util:
             count (int): Number of elements.
             allow_greater (bool, optional): If True and index is greater then the count
                 then the index becomes the next index if element is appended. Defaults to False.
+                Only affect the ``-1`` index.
 
         Raises:
             ValueError: If ``count`` is less than ``0``.
@@ -276,6 +277,13 @@ class Util:
 
         Returns:
             int: Index value.
+
+        Note:
+            ``-1`` is the last index in the sequence. Unless ``allow_greater`` is ``True`` then ``-1`` last index ``+ 1``.
+            Only the ``-1`` is treated differently when ``allow_greater`` is ``True``.
+
+            ``-2`` is the second to last index in the sequence. ``10`` items and ``idx=-2`` then index ``8`` is returned.
+            ``-3`` is the third to last index in the sequence. ``10`` items and ``idx=-3`` then index ``7`` is returned.
 
         .. versionadded:: 0.20.2
         """
@@ -296,7 +304,7 @@ class Util:
 
         index = idx
         if index < 0:
-            index = count + index - 1
+            index = count + index
             if index < 0:
                 raise IndexError("list index out of range")
         if index >= count:

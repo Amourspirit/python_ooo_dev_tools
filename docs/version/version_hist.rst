@@ -2,6 +2,25 @@
 Version History
 ***************
 
+Version 0.21.1
+==============
+
+Added LO Instance to Writer Classes. This will allow for better support of multiple Writer documents.
+
+Implement a shape factory, ``ooodev.draw.shapes.partial.shape_factory_partial.ShapeFactoryPartial``.
+Now various Draw pages can return know shapes as objects such as ``ooodev.draw.shapes.Rectangle`` and ``ooodev.draw.shapes.Ellipse``.
+
+.. code-block:: python
+
+    # doc is a DrawDoc instance in this case
+    # The first shape added to the first slide of the document is a rectangle
+    >>> shape = doc.slides[0][0]
+    >>> shape.get_shape_type()
+    "com.sun.star.drawing.RectangleShape"
+    >>> shape
+    <ooodev.draw.shapes.rectangle_shape.RectangleShape object at 0x7f9f87133ac0>
+
+
 Version 0.21.0
 ==============
 

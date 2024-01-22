@@ -2,13 +2,15 @@ from __future__ import annotations
 from typing import Any, List, TypeVar, TYPE_CHECKING
 import uno
 
-from ooodev.adapter.style.style_family_comp import StyleFamilyComp
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 from ooodev.adapter.container.name_container_partial import NameContainerPartial
+from ooodev.adapter.style.style_family_comp import StyleFamilyComp
+from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
-from ooodev.exceptions import ex as mEx
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+
 from .write_style import WriteStyle
 
 if TYPE_CHECKING:
@@ -29,19 +31,24 @@ class WriteStyleFamily(
     Contains Enumeration Access.
     """
 
-    def __init__(self, owner: WriteDoc, component: Any) -> None:
+    def __init__(self, owner: WriteDoc, component: Any, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             owner (WriteDoc): Owner of this component.
             component (Any): UNO object that supports ``com.sun.star.text.Paragraph`` service.
+            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
         self.__owner = owner
         StyleFamilyComp.__init__(self, component)
         IndexAccessPartial.__init__(self, component=self.component)  # type: ignore
         NameContainerPartial.__init__(self, component=self.component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         # self.__doc = doc
 
     def get_names(self) -> List[str]:
@@ -77,7 +84,7 @@ class WriteStyleFamily(
         # sourcery skip: raise-specific-error
         try:
             style = self.get_by_name(name)
-            return WriteStyle(self.owner, style)
+            return WriteStyle(owner=self.owner, component=style, lo_inst=self._lo_inst)
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style '{name}'") from e
 

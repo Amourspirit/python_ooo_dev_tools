@@ -12,6 +12,7 @@ from ooodev.office import draw as mDraw
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.gui_partial import GuiPartial
+from ooodev.utils.partial.lo_open_doc import LoOpenPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
@@ -40,6 +41,7 @@ class ImpressDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
+    LoOpenPartial,
 ):
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -57,6 +59,7 @@ class ImpressDoc(
         GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
+        LoOpenPartial.__init__(self, lo_inst=self._lo_inst)
         self._pages = None
 
     # region Lazy Listeners

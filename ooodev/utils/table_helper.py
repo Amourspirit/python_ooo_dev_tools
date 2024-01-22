@@ -420,7 +420,7 @@ class TableHelper:
         Returns:
             Tuple[Any]: Tuple containing same elements of ``iter_obj``
         """
-        return tuple(iter_obj) if gUtil.Util.is_iterable(iter_obj) else (iter_obj,)
+        return tuple(iter_obj) if gUtil.Util.is_iterable(iter_obj) else (iter_obj,) # type: ignore
 
     @classmethod
     def to_2d_list(cls, seq_obj: Sequence[Any]) -> List[List[Any]]:
@@ -455,7 +455,7 @@ class TableHelper:
     @classmethod
     def to_2d_tuple(cls, seq_obj: Sequence[Any]) -> Tuple[Tuple[Any, ...], ...]:
         """
-        Converts a sequence of sequence to a list.
+        Converts a sequence of sequence to a tuple of tuple.
 
         Converts 1-Dimensional or 2-Dimensional array such as a List or List of list's into a Tuple of Tuple.
 

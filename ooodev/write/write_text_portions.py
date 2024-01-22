@@ -8,6 +8,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from . import write_text_portion as mWriteTextPortion
 
 T = TypeVar("T", bound="ComponentT")
@@ -20,17 +21,22 @@ class WriteTextPortions(Generic[T], EnumerationAccessPartial, QiPartial):
     Contains Enumeration Access.
     """
 
-    def __init__(self, owner: T, component: XEnumerationAccess) -> None:
+    def __init__(self, owner: T, component: XEnumerationAccess, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             owner (T): Owner of this component.
             component (XText): UNO object that supports ``com.sun.star.text.TextPortion`` service.
+            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         EnumerationAccessPartial.__init__(self, component=component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
 
     # region Overrides
     def _is_next_element_valid(self, element: Any) -> bool:
@@ -56,6 +62,6 @@ class WriteTextPortions(Generic[T], EnumerationAccessPartial, QiPartial):
     @property
     def owner(self) -> T:
         """Owner of this component."""
-        return self.__owner
+        return self._owner
 
     # endregion Properties
