@@ -8,6 +8,7 @@ draw
     :glob:
 
     *
+    const/index
     export/index
     filter/index
     partial/index

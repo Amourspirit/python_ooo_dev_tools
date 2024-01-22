@@ -1,7 +1,6 @@
-Class ExportPngT
-================
+export_png module
+=================
 
-.. autoclass:: ooodev.write.filter.export_png.ExportPngT
+.. automodule:: ooodev.write.filter.export_png
     :members:
     :undoc-members:
-    :inherited-members:

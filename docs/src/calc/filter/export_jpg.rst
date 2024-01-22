@@ -1,7 +1,6 @@
-Class ExportJpgT
-================
+export_jpg module
+=================
 
-.. autoclass:: ooodev.calc.filter.export_jpg.ExportJpgT
+.. automodule:: ooodev.calc.filter.export_jpg
     :members:
     :undoc-members:
-    :inherited-members:

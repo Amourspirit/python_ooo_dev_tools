@@ -60,6 +60,9 @@ class PagePng(ExportBase, EventsPartial):
             Unlike exporting ``png``, exporting ``jpg`` does not seem to have a limit on the image size.
 
             Page margins are ignored. Any shape that is outside the page margins will not be included in the image.
+
+            When page is exported as png, such as an impress slide, any images on the will not be exported if filter ``translucent=True``.
+            For this reason, the default value for ``translucent`` is ``False``.
         """
         # https://github.com/LibreOffice/core/blob/89e7c04ba48dab824e9f291d7db38dac6ffd6b19/svtools/source/filter/exportdialog.cxx#L783 # case FORMAT_PNG :
         # https://ask.libreoffice.org/t/export-as-png-with-macro/74337/11
@@ -83,7 +86,7 @@ class PagePng(ExportBase, EventsPartial):
             "pixel_width": dpi_x,
             "pixel_height": dpi_y,
             "interlaced": False,
-            "translucent": True,
+            "translucent": False,
             "logical_width": dpi_x,
             "logical_height": dpi_y,
         }

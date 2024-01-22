@@ -1119,13 +1119,14 @@ class DrawPagePartial(Generic[_T]):
             raise mEx.DrawPageError("Owner component is not XDrawPage")
         mDraw.Draw.remove_master_page(doc=self.__owner, slide=self.__component)  # type: ignore
 
-    def save_page(self, fnm: PathOrStr, mime_type: str) -> None:
+    def save_page(self, fnm: PathOrStr, mime_type: str, filter_data: dict | None = None) -> None:
         """
         Saves a Draw page to file.
 
         Args:
             fnm (PathOrStr): Path to save page as
             mime_type (str): Mime Type of page to save as such as ``image/jpeg`` or ``image/png``.
+            filter_data (dict, optional): Filter data. Defaults to ``None``.
 
         Raises:
             DrawError: If error occurs.
@@ -1134,9 +1135,15 @@ class DrawPagePartial(Generic[_T]):
             None:
 
         See Also:
-            :py:meth:`ooodev.utils.images_lo.ImagesLo.change_to_mime`.
+            - :ref:`ooodev.draw.filter.export_png`
+            - :ref:`ooodev.draw.filter.export_jpg`
+            - :py:meth:`ooodev.utils.images_lo.ImagesLo.change_to_mime`.
+            - :py:meth:`ooodev.utils.images_lo.ImagesLo.get_dpi_width_height`.
+
+        .. versionchanged:: 0.21.3
+            Added `filter_data` parameter.
         """
-        mDraw.Draw.save_page(self.__component, fnm, mime_type)
+        mDraw.Draw.save_page(self.__component, fnm, mime_type, filter_data)
 
     def set_name(self, name: str) -> None:
         """

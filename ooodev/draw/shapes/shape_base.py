@@ -3,6 +3,7 @@ from typing import cast, TYPE_CHECKING, TypeVar, Generic, overload, Tuple
 import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
+from com.sun.star.drawing import XShape
 
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
@@ -10,6 +11,7 @@ from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.units import Angle
 from ooodev.units import UnitMM
+from ooodev.utils import gen_util as gUtil
 from ooodev.utils import lo as mLo
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
@@ -31,7 +33,6 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameContainer
     from com.sun.star.drawing import GluePoint2
     from com.sun.star.drawing import HomogenMatrix3
-    from com.sun.star.drawing import XShape
     from com.sun.star.graphic import XGraphic
     from ooo.dyn.drawing.line_style import LineStyle
     from ooodev.proto.size_obj import SizeObj
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
     from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.utils.type_var import PathOrStr
     from ooodev.events.lo_events import Events
+    from com.sun.star.drawing import Shape  # Service
 
 
 class ShapeBase(
@@ -64,9 +66,50 @@ class ShapeBase(
         ServicePartial.__init__(self, component=component, lo_inst=self.__lo_inst)
         self.__owner = owner
         self.__component = component
+        self._apply_shape_name()
+
+    def _clone(self) -> XShape:
+        """
+        Clones the shape.
+
+        Does not apply to all shapes, just known shapes.
+        """
+        try:
+            page = self.__owner.component
+        except AttributeError:
+            raise mEx.NotSupportedError("Owner must be a draw page")
+
+        old_shape = self.__component
+        pt = old_shape.getPosition()
+        sz = old_shape.getSize()
+        shape = self.__lo_inst.create_instance_msf(XShape, old_shape.getShapeType(), raise_err=True)
+        shape.setPosition(pt)
+        shape.setSize(sz)
+        try:
+            page.add(shape)
+        except Exception:
+            raise mEx.NotSupportedError("Owner must be a draw page")
+        return shape
+
+    def _generate_shape_name(self) -> str:
+        shape = self.__component
+        # Get the shape name from the shape type.
+
+        shape_type = shape.getShapeType()
+        # only get that laster part of the name after the last dot.
+        shape_name = shape_type.rsplit(".")[-1]
+        return f"{shape_name}_{gUtil.Util.generate_random_string(10)}"
+
+    def _apply_shape_name(self, keep_existing: bool = True) -> None:
+        shape = cast("Shape", self.__component)
+        if not shape.Name or not keep_existing:
+            shape.Name = self._generate_shape_name()
 
     def get_lo_inst(self) -> LoInst:
         return self.__lo_inst
+
+    def get_owner(self) -> _T:
+        return self.__owner
 
     def get_shape_text_cursor(self) -> ShapeTextCursor[_T]:
         """

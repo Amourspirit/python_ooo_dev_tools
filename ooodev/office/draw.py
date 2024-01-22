@@ -340,7 +340,7 @@ class Draw:
         return str(p)
 
     @staticmethod
-    def save_page(page: XDrawPage, fnm: PathOrStr, mime_type: str) -> None:
+    def save_page(page: XDrawPage, fnm: PathOrStr, mime_type: str, filter_data: dict | None = None) -> None:
         """
         Saves a Draw page to file.
 
@@ -348,6 +348,7 @@ class Draw:
             page (XDrawPage): Page to save
             fnm (PathOrStr): Path to save page as
             mime_type (str): Mime Type of page to save as such as ``image/jpeg`` or ``image/png``.
+            filter_data (dict, optional): Filter data. Defaults to ``None``.
 
         Raises:
             DrawError: If error occurs.
@@ -356,7 +357,13 @@ class Draw:
             None:
 
         See Also:
-            :py:meth:`ooodev.utils.images_lo.ImagesLo.change_to_mime`.
+            - :ref:`ooodev.draw.filter.export_png`
+            - :ref:`ooodev.draw.filter.export_jpg`
+            - :py:meth:`ooodev.utils.images_lo.ImagesLo.change_to_mime`.
+            - :py:meth:`ooodev.utils.images_lo.ImagesLo.get_dpi_width_height`.
+
+        .. versionchanged:: 0.21.3
+            Added `filter_data` parameter.
         """
         try:
             save_file_url = mFileIO.FileIO.fnm_to_url(fnm)
@@ -372,8 +379,17 @@ class Draw:
             # link exporter to the document
             gef.setSourceDocument(doc)
 
-            # export the page by converting to the specified mime type
-            props = mProps.Props.make_props(MediaType=mime_type, URL=save_file_url)
+            if filter_data is None:
+                # export the page by converting to the specified mime type
+                props = mProps.Props.make_props(MediaType=mime_type, URL=save_file_url)
+            else:
+                # set the filter data
+                filter_props = mProps.Props.make_props(**filter_data)
+                props = mProps.Props.make_props(
+                    MediaType=mime_type,
+                    URL=save_file_url,
+                    FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", filter_props),  # type: ignore
+                )
 
             gef.filter(props)
             mLo.Lo.print("Export Complete")

@@ -1,21 +1,21 @@
 from __future__ import annotations
-from typing import TypedDict
+from ooodev.draw.filter import export_jpg
 
 
-class ExportJpgT(TypedDict):
+class ExportJpgT(export_jpg.ExportJpgT):
     """
     Calc Image Export Data for Jpg.
+
+    - pixel_width: Pixel Width.
+    - pixel_height: Pixel Height.
+    - logical_width: Logical Width - Usually that same as ``pixel_width``.
+    - logical_height: Logical Height - Usually that same as ``pixel_height``.
+    - quality: Compression value from ``1`` to ``100``. Higher Quality, larger file size. Default is ``75``.
+    - color_mode: Color Mode.
     """
 
-    color_mode: bool
-    """Color Mode"""
-    pixel_width: int
-    """Pixel Width"""
-    pixel_height: int
-    """Pixel Height"""
-    quality: int
-    """Compression value from ``1`` to ``100``. Higher Quality, larger file size. Default is ``75``."""
-    logical_width: int
-    """Logical Width"""
-    logical_height: int
-    """Logical Height"""
+    pass
+
+
+class ExportJpg(export_jpg.ExportJpg):
+    pass

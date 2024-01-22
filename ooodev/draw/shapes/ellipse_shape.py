@@ -46,3 +46,8 @@ class EllipseShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.EllipseShape``."""
         return "com.sun.star.drawing.EllipseShape"
+
+    def clone(self) -> EllipseShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return EllipseShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

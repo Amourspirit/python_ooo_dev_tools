@@ -46,3 +46,8 @@ class PolyLineShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.PolyLineShape``."""
         return "com.sun.star.drawing.PolyLineShape"
+
+    def clone(self) -> PolyLineShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return PolyLineShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

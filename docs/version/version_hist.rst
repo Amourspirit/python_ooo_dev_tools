@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.21.3
+==============
+
+Now shapes in the ``ooodev.draw.shapes`` namespace can cloned using the ``clone()`` method.
+
+Added Create Document methods to ``WriteDoc``, ``DrawDoc``, ``ImpressDoc``.
+
 Version 0.21.1
 ==============
 

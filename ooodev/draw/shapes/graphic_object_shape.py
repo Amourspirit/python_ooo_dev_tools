@@ -31,6 +31,7 @@ class GraphicObjectShape(
     StylePartial,
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
+        self._owner = owner
         ShapeBase.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
         GraphicObjectShapeComp.__init__(self, component)
         ShapePartialProps.__init__(self, component=component)  # type: ignore
@@ -45,3 +46,8 @@ class GraphicObjectShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.GraphicObjectShape``."""
         return "com.sun.star.drawing.GraphicObjectShape"
+
+    def clone(self) -> GraphicObjectShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return GraphicObjectShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

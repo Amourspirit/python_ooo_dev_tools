@@ -1,17 +1,21 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, List, overload, Iterable
 import uno
+from com.sun.star.frame import XComponentLoader
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
+from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -26,7 +30,6 @@ if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.drawing import XDrawPages
-    from com.sun.star.frame import XComponentLoader
     from com.sun.star.lang import XComponent
     from com.sun.star.presentation import XPresentation2
     from com.sun.star.presentation import XSlideShowController
@@ -44,11 +47,25 @@ class ImpressDoc(
     ServicePartial,
     StylePartial,
 ):
+    """Impress Document Class"""
+
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
+        """
+        Constructor.
+
+        Args:
+            doc (XComponent): Impress Document component.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents. Defaults to None.
+
+        Raises:
+            NotSupportedDocumentError: If not an Impress Document.
+        """
         if lo_inst is None:
             self._lo_inst = mLo.Lo.current_lo
         else:
             self._lo_inst = lo_inst
+        if not mInfo.Info.is_doc_type(doc, LoService.IMPRESS):
+            raise mEx.NotSupportedDocumentError("Document is not a Impress document")
         DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
         PresentationDocumentComp.__init__(self, doc)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
@@ -389,6 +406,81 @@ class ImpressDoc(
 
     # endregion save_doc
 
+    # region Create Document
+    @overload
+    @staticmethod
+    def create_doc() -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader) -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Args:
+            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(lo_inst: LoInst) -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Args:
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        ...
+
+    @staticmethod
+    def create_doc(*args, **kwargs) -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Args:
+            loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+            lo_inst (LoInst, optional): Lo instance.
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        doc = None
+        lo_inst = None
+        # 0 or 1 args
+        arguments = list(args)
+        arguments.extend(kwargs.values())
+        count = len(arguments)
+        if count == 0:
+            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS)
+        if count == 1:
+            arg = arguments[0]
+            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS, loader=arg)
+            if isinstance(arg, LoInst):
+                lo_inst = arg
+                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS)
+        if doc is None:
+            raise TypeError("create_doc() got an unexpected argument")
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        return ImpressDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion Create Document
+
     # region Static Open Methods
     # region open_doc()
     @overload
@@ -536,7 +628,6 @@ class ImpressDoc(
             lo_inst (LoInst, Optional): Lo instance.
 
         Raises:
-            Exception: if unable to open document
             CancelEventError: if DOC_OPENING event is canceled.
 
         Returns:
@@ -563,6 +654,7 @@ class ImpressDoc(
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         doc = lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
+
         return ImpressDoc(doc=doc, lo_inst=lo_inst)
 
     # endregion open_doc()
@@ -639,9 +731,6 @@ class ImpressDoc(
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
             lo_inst (LoInst, Optional): Lo instance.
-
-        Raises:
-            Exception: if unable to open document.
 
         Returns:
             ImpressDoc: Document.

@@ -46,3 +46,8 @@ class ConnectorShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.ConnectorShape``."""
         return "com.sun.star.drawing.ConnectorShape"
+
+    def clone(self) -> ConnectorShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return ConnectorShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

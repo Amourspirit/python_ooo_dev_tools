@@ -31,6 +31,7 @@ from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
 from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.event_singleton import _Events
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import gen_util as mGenUtil
@@ -40,6 +41,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -57,11 +59,20 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
 
         Args:
             doc (XSpreadsheetDocument): UNO object the supports ``com.sun.star.sheet.SpreadsheetDocument`` service.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Raises:
+            NotSupportedDocumentError: If not a valid Calc document.
+
+        Returns:
+            None:
         """
         if lo_inst is None:
             self._lo_inst = mLo.Lo.current_lo
         else:
             self._lo_inst = lo_inst
+        if not mInfo.Info.is_doc_type(doc, LoService.CALC):
+            raise mEx.NotSupportedDocumentError("Document is not a Calc document")
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
         QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)

@@ -46,3 +46,8 @@ class RectangleShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.RectangleShape``."""
         return "com.sun.star.drawing.RectangleShape"
+
+    def clone(self) -> RectangleShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return RectangleShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

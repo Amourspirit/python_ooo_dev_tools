@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, overload, Iterable
 import uno
+from com.sun.star.frame import XComponentLoader
 from com.sun.star.util import XCloseable
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
@@ -10,10 +11,13 @@ from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -24,7 +28,6 @@ from .partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
-    from com.sun.star.frame import XComponentLoader
     from com.sun.star.beans import PropertyValue
 
 
@@ -42,11 +45,29 @@ class DrawDoc(
     ServicePartial,
     StylePartial,
 ):
+    """Draw document Class"""
+
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
+        """
+        Constructor.
+
+        Args:
+            doc (XComponent): Writer Document component.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Raises:
+            NotSupportedDocumentError: If not a valid Draw document.
+
+        Returns:
+            None:
+        """
         if lo_inst is None:
             self._lo_inst = mLo.Lo.current_lo
         else:
             self._lo_inst = lo_inst
+
+        if not mInfo.Info.is_doc_type(doc, LoService.DRAW):
+            raise mEx.NotSupportedDocumentError("Document is not a Draw document")
 
         DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
         DrawingDocumentComp.__init__(self, doc)
@@ -217,6 +238,81 @@ class DrawDoc(
         """
         self.qi(XCloseable, True).close(deliver_ownership)
 
+    # region Create Document
+    @overload
+    @staticmethod
+    def create_doc() -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader) -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(lo_inst: LoInst) -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        ...
+
+    @staticmethod
+    def create_doc(*args, **kwargs) -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+            lo_inst (LoInst, optional): Lo instance.
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        doc = None
+        lo_inst = None
+        # 0 or 1 args
+        arguments = list(args)
+        arguments.extend(kwargs.values())
+        count = len(arguments)
+        if count == 0:
+            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
+        if count == 1:
+            arg = arguments[0]
+            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW, loader=arg)
+            if isinstance(arg, LoInst):
+                lo_inst = arg
+                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
+        if doc is None:
+            raise TypeError("create_doc() got an unexpected argument")
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        return DrawDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion Create Document
+
     # region Static Open Methods
     # region open_doc()
     @overload
@@ -362,7 +458,6 @@ class DrawDoc(
             lo_inst (LoInst, Optional): Lo instance.
 
         Raises:
-            Exception: if unable to open document
             CancelEventError: if DOC_OPENING event is canceled.
 
         Returns:
@@ -562,6 +657,9 @@ class DrawDoc(
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
             lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document.
 
         Returns:
             DrawDoc: Document

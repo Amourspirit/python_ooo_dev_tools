@@ -44,6 +44,7 @@ from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from ooo.dyn.beans.the_introspection import theIntrospection
 from ooo.dyn.lang.locale import Locale  # struct
 
+from ooodev.utils.inst.lo.service import Service as LoService
 from . import date_time_util as mDate
 from . import file_io as mFileIO
 from . import lo as mLo
@@ -871,22 +872,21 @@ class Info(metaclass=StaticProperty):
             return mLo.Lo.Service.UNKNOWN
 
     @staticmethod
-    def is_doc_type(obj: Any, doc_type: mLo.Lo.Service) -> bool:
+    def is_doc_type(obj: Any, doc_type: LoService | str) -> bool:
         """
         Gets if doc is a particular doc type.
 
         Args:
             obj (object): office document
-            doc_type (Lo.Service): doc type
+            doc_type (Service, str): Doc type or service name such as ``com.sun.star.text.TextDocument``.
 
         Returns:
             bool: True if obj matches; Otherwise, False
         """
-        try:
+        with contextlib.suppress(Exception):
             si = mLo.Lo.qi(XServiceInfo, obj)
             return False if si is None else si.supportsService(str(doc_type))
-        except Exception:
-            return False
+        return False
 
     @staticmethod
     def get_implementation_name(obj: Any) -> str:

@@ -16,13 +16,13 @@ if TYPE_CHECKING:
 
 from ooo.dyn.awt.size import Size as UnoSize
 
-
-from ..utils import lo as mLo
-from ..utils import file_io as mFileIO
-from ..utils import props as mProps
-from ..utils import info as mInfo
-from ..utils.data_type.size import Size
 from ..exceptions import ex as mEx
+from ..units.unit_convert import UnitConvert, UnitLength
+from ..utils import file_io as mFileIO
+from ..utils import info as mInfo
+from ..utils import lo as mLo
+from ..utils import props as mProps
+from ..utils.data_type.size import Size
 from ..utils.type_var import PathOrStr
 
 # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
@@ -450,3 +450,25 @@ class ImagesLo:
         return img_len * scale
 
     # endregion Image Calculations
+
+    @staticmethod
+    def get_dpi_width_height(width: int, height: int, resolution: int) -> tuple[int, int]:
+        """
+        Gets the DPI of the image.
+
+        Args:
+            width (int): Width in ``1/100 mm``.
+            height (int): Height in ``1/100 mm``.
+            resolution (int): Resolution in dpi.
+
+        Returns:
+            tuple[int, int]: Width and Height that represents number of pixels to create the resolution.
+
+        .. versionadded:: 0.21.3
+        """
+        width_in = UnitConvert.convert(width, frm=UnitLength.MM100, to=UnitLength.IN)
+        height_in = UnitConvert.convert(height, frm=UnitLength.MM100, to=UnitLength.IN)
+
+        dpi_width = round(resolution * width_in)
+        dpi_height = round(resolution * height_in)
+        return dpi_width, dpi_height

@@ -46,3 +46,8 @@ class LineShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.LineShape``."""
         return "com.sun.star.drawing.LineShape"
+
+    def clone(self) -> LineShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return LineShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())
