@@ -386,7 +386,6 @@ class Draw:
                 # set the filter data
                 filter_props = mProps.Props.make_props(**filter_data)
                 props = mProps.Props.make_props(
-                    # FilterName="draw_jpg_Export",
                     MediaType=mime_type,
                     URL=save_file_url,
                     FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", filter_props),  # type: ignore
