@@ -1,29 +1,31 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, overload
+from typing import Any, cast, TYPE_CHECKING, overload, Iterable
 import uno
 from com.sun.star.util import XCloseable
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.drawing.drawing_document_comp import DrawingDocumentComp
 from ooodev.adapter.frame.storable2_partial import Storable2Partial
+from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.adapter.util.close_events import CloseEvents
-from ooodev.utils.type_var import PathOrStr
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.partial.lo_open_doc import LoOpenPartial
+from ooodev.utils.type_var import PathOrStr
 from .draw_pages import DrawPages
 from .partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
+    from com.sun.star.frame import XComponentLoader
+    from com.sun.star.beans import PropertyValue
 
 
 class DrawDoc(
@@ -39,7 +41,6 @@ class DrawDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
-    LoOpenPartial,
 ):
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -60,7 +61,6 @@ class DrawDoc(
         GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
         ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        LoOpenPartial.__init__(self, lo_inst=self._lo_inst)
         self._pages = None
 
     # region Lazy Listeners
@@ -217,8 +217,371 @@ class DrawDoc(
         """
         self.qi(XCloseable, True).close(deliver_ownership)
 
-    # region Properties
+    # region Static Open Methods
+    # region open_doc()
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr) -> DrawDoc:
+        """
+        Open a office document
 
+        Args:
+            fnm (PathOrStr): path of document to open
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, lo_inst: LoInst | None) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, *, lo_inst: LoInst) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue]) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            props (Iterable[PropertyValue]): Properties passed to component loader
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue], lo_inst: LoInst) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue], lo_inst: LoInst) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @staticmethod
+    def open_doc(
+        fnm: PathOrStr,
+        loader: XComponentLoader | None = None,
+        props: Iterable[PropertyValue] | None = None,
+        lo_inst: LoInst | None = None,
+    ) -> DrawDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader, optional): Component Loader
+            props (Iterable[PropertyValue], optional): Properties passed to component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document
+            CancelEventError: if DOC_OPENING event is canceled.
+
+        Returns:
+            DrawDoc: Document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing all method parameters.
+
+        See Also:
+            - :py:meth:`~Lo.open_doc`
+            - :py:meth:`load_office`
+            - :ref:`ch02_open_doc`
+
+        Note:
+            If connection it office is a remote server then File URL must be used,
+            such as ``file:///home/user/fancy.odt``
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        doc = lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
+        return DrawDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion open_doc()
+
+    # region open_readonly_doc()
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr) -> DrawDoc:
+        """
+        Open a office document as read-only
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, *, lo_inst: LoInst) -> DrawDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: Document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader) -> DrawDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+
+        Returns:
+            DrawDoc: Document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> DrawDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: Document.
+        """
+        ...
+
+    @staticmethod
+    def open_readonly_doc(
+        fnm: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> DrawDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document.
+
+        Returns:
+            DrawDoc: Document.
+
+        See Also:
+            - :ref:`ch02_open_doc`
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.open_readonly_doc(fnm=fnm)
+        else:
+            doc = lo_inst.open_readonly_doc(fnm=fnm, loader=loader)
+        return DrawDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion open_readonly_doc()
+
+    # region open_flat_doc()
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType) -> DrawDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, *, lo_inst: LoInst) -> DrawDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> DrawDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader, lo_inst: LoInst) -> DrawDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            DrawDoc: Document
+        """
+        ...
+
+    @staticmethod
+    def open_flat_doc(
+        fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> DrawDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            DrawDoc: Document
+
+        See Also:
+            - :py:meth:`~Lo.open_flat_doc`
+            - :ref:`ch02_open_doc`
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type)
+        else:
+            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type, loader=loader)
+        return DrawDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion open_flat_doc()
+    # endregion Static Open Methods
+
+    # region Properties
     @property
     def slides(self) -> DrawPages[DrawDoc]:
         """
