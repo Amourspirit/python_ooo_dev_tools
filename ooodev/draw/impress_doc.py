@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, List, overload
+from typing import Any, cast, TYPE_CHECKING, List, overload, Iterable
 import uno
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
@@ -10,9 +10,9 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.gui_partial import GuiPartial
-from ooodev.utils.partial.lo_open_doc import LoOpenPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
@@ -23,9 +23,11 @@ from . import master_draw_page as mMasterDrawPage
 from .draw_pages import DrawPages
 
 if TYPE_CHECKING:
-    from com.sun.star.lang import XComponent
+    from com.sun.star.beans import PropertyValue
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.drawing import XDrawPages
+    from com.sun.star.frame import XComponentLoader
+    from com.sun.star.lang import XComponent
     from com.sun.star.presentation import XPresentation2
     from com.sun.star.presentation import XSlideShowController
 
@@ -41,7 +43,6 @@ class ImpressDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
-    LoOpenPartial,
 ):
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -59,7 +60,6 @@ class ImpressDoc(
         GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
-        LoOpenPartial.__init__(self, lo_inst=self._lo_inst)
         self._pages = None
 
     # region Lazy Listeners
@@ -388,6 +388,372 @@ class ImpressDoc(
         return self._lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
 
     # endregion save_doc
+
+    # region Static Open Methods
+    # region open_doc()
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, lo_inst: LoInst | None) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, *, lo_inst: LoInst) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue]) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            props (Iterable[PropertyValue]): Properties passed to component loader
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue], lo_inst: LoInst) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(
+        fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue], lo_inst: LoInst
+    ) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @staticmethod
+    def open_doc(
+        fnm: PathOrStr,
+        loader: XComponentLoader | None = None,
+        props: Iterable[PropertyValue] | None = None,
+        lo_inst: LoInst | None = None,
+    ) -> ImpressDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader, optional): Component Loader
+            props (Iterable[PropertyValue], optional): Properties passed to component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document
+            CancelEventError: if DOC_OPENING event is canceled.
+
+        Returns:
+            ImpressDoc: Document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing all method parameters.
+
+        See Also:
+            - :py:meth:`~Lo.open_doc`
+            - :py:meth:`load_office`
+            - :ref:`ch02_open_doc`
+
+        Note:
+            If connection it office is a remote server then File URL must be used,
+            such as ``file:///home/user/fancy.odt``
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        doc = lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
+        return ImpressDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion open_doc()
+
+    # region open_readonly_doc()
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr) -> ImpressDoc:
+        """
+        Open a office document as read-only
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, *, lo_inst: LoInst) -> ImpressDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: Document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader) -> ImpressDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+
+        Returns:
+            ImpressDoc: Document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> ImpressDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: Document.
+        """
+        ...
+
+    @staticmethod
+    def open_readonly_doc(
+        fnm: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> ImpressDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document.
+
+        Returns:
+            ImpressDoc: Document.
+
+        See Also:
+            - :ref:`ch02_open_doc`
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.open_readonly_doc(fnm=fnm)
+        else:
+            doc = lo_inst.open_readonly_doc(fnm=fnm, loader=loader)
+        return ImpressDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion open_readonly_doc()
+
+    # region open_flat_doc()
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType) -> ImpressDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, *, lo_inst: LoInst) -> ImpressDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> ImpressDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader, lo_inst: LoInst) -> ImpressDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            ImpressDoc: Document
+        """
+        ...
+
+    @staticmethod
+    def open_flat_doc(
+        fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> ImpressDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            ImpressDoc: Document
+
+        See Also:
+            - :py:meth:`~Lo.open_flat_doc`
+            - :ref:`ch02_open_doc`
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type)
+        else:
+            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type, loader=loader)
+        return ImpressDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion open_flat_doc()
+    # endregion Static Open Methods
 
     # region Properties
     @property
