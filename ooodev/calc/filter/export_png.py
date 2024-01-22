@@ -8,11 +8,11 @@ class ExportPngT(export_png.ExportPngT):
 
     - pixel_width: Pixel Width.
     - pixel_height: Pixel Height.
-    - compression: Compression value from 1 to 9. Higher compression, smaller file size. Default is 6.
-    - interlaced: Interlaced.
-    - translucent: Translucent.
     - logical_width: Logical Width - Usually that same as ``pixel_width``.
     - logical_height: Logical Height - Usually that same as ``pixel_height``.
+    - compression: Compression value from 1 to 9. Higher compression, smaller file size. Default is 6.
+    - translucent: Translucent.
+    - interlaced: Interlaced.
     """
 
     pass

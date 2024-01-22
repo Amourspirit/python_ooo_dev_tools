@@ -8,11 +8,14 @@ from ooodev.adapter.presentation.presentation_document_comp import PresentationD
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
+from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -44,11 +47,25 @@ class ImpressDoc(
     ServicePartial,
     StylePartial,
 ):
+    """Impress Document Class"""
+
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
+        """
+        Constructor.
+
+        Args:
+            doc (XComponent): Impress Document component.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents. Defaults to None.
+
+        Raises:
+            NotSupportedDocumentError: If not an Impress Document.
+        """
         if lo_inst is None:
             self._lo_inst = mLo.Lo.current_lo
         else:
             self._lo_inst = lo_inst
+        if not mInfo.Info.is_doc_type(doc, LoService.IMPRESS):
+            raise mEx.NotSupportedDocumentError("Document is not a Impress document")
         DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
         PresentationDocumentComp.__init__(self, doc)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
@@ -611,7 +628,6 @@ class ImpressDoc(
             lo_inst (LoInst, Optional): Lo instance.
 
         Raises:
-            Exception: if unable to open document
             CancelEventError: if DOC_OPENING event is canceled.
 
         Returns:
@@ -638,6 +654,7 @@ class ImpressDoc(
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         doc = lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
+
         return ImpressDoc(doc=doc, lo_inst=lo_inst)
 
     # endregion open_doc()
@@ -714,9 +731,6 @@ class ImpressDoc(
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
             lo_inst (LoInst, Optional): Lo instance.
-
-        Raises:
-            Exception: if unable to open document.
 
         Returns:
             ImpressDoc: Document.

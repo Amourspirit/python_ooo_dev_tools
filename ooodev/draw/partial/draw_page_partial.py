@@ -1135,7 +1135,10 @@ class DrawPagePartial(Generic[_T]):
             None:
 
         See Also:
-            :py:meth:`ooodev.utils.images_lo.ImagesLo.change_to_mime`.
+            - :ref:`ooodev.draw.filter.export_png`
+            - :ref:`ooodev.draw.filter.export_jpg`
+            - :py:meth:`ooodev.utils.images_lo.ImagesLo.change_to_mime`.
+            - :py:meth:`ooodev.utils.images_lo.ImagesLo.get_dpi_width_height`.
 
         .. versionchanged:: 0.21.3
             Added `filter_data` parameter.

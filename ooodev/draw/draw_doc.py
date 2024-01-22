@@ -11,10 +11,13 @@ from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -42,11 +45,29 @@ class DrawDoc(
     ServicePartial,
     StylePartial,
 ):
+    """Draw document Class"""
+
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
+        """
+        Constructor.
+
+        Args:
+            doc (XComponent): Writer Document component.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Raises:
+            NotSupportedDocumentError: If not a valid Draw document.
+
+        Returns:
+            None:
+        """
         if lo_inst is None:
             self._lo_inst = mLo.Lo.current_lo
         else:
             self._lo_inst = lo_inst
+
+        if not mInfo.Info.is_doc_type(doc, LoService.DRAW):
+            raise mEx.NotSupportedDocumentError("Document is not a Draw document")
 
         DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
         DrawingDocumentComp.__init__(self, doc)
@@ -437,7 +458,6 @@ class DrawDoc(
             lo_inst (LoInst, Optional): Lo instance.
 
         Raises:
-            Exception: if unable to open document
             CancelEventError: if DOC_OPENING event is canceled.
 
         Returns:
@@ -637,6 +657,9 @@ class DrawDoc(
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
             lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document.
 
         Returns:
             DrawDoc: Document

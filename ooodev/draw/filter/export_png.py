@@ -8,20 +8,20 @@ class ExportPngT(TypedDict):
 
     - pixel_width: Pixel Width.
     - pixel_height: Pixel Height.
-    - compression: Compression value from 1 to 9. Higher compression, smaller file size. Default is 6.
-    - interlaced: Interlaced.
-    - translucent: Translucent.
     - logical_width: Logical Width - Usually that same as ``pixel_width``.
     - logical_height: Logical Height - Usually that same as ``pixel_height``.
+    - compression: Compression value from 1 to 9. Higher compression, smaller file size. Default is 6.
+    - translucent: Translucent.
+    - interlaced: Interlaced.
     """
 
     pixel_width: int
     pixel_height: int
-    compression: int
-    interlaced: bool
-    translucent: bool
     logical_width: int
     logical_height: int
+    compression: int
+    translucent: bool
+    interlaced: bool
 
 
 class ExportPng(dict):
@@ -29,11 +29,11 @@ class ExportPng(dict):
         self,
         pixel_width: int,
         pixel_height: int,
-        compression: int,
-        interlaced: bool,
-        translucent: bool,
-        logical_width: int,
-        logical_height: int,
+        logical_width: int = -1,
+        logical_height: int = -1,
+        compression: int = 6,
+        translucent: bool = False,
+        interlaced: bool = False,
     ):
         """
         Constructor
@@ -41,12 +41,18 @@ class ExportPng(dict):
         Args:
             pixel_width (int): Pixel Width.
             pixel_height (int): Pixel Height.
-            compression (int): Compression value from 1 to 9. Higher compression, smaller file size. Default is 6.
-            interlaced (bool): Interlaced.
-            translucent (bool): Translucent.
-            logical_width (int): Logical Width - Usually that same as ``pixel_width``.
-            logical_height (int): Logical Height - Usually that same as ``pixel_height``.
+            logical_width (int, optional): Logical Width - Usually that same as ``pixel_width``. Defaults to Pixel Width.
+            logical_height (int, optional): Logical Height - Usually that same as ``pixel_height``. Defaults to Pixel Height.
+            compression (int, optional): Compression value from 1 to 9. Higher compression, smaller file size. Default is ``6``.
+            translucent (bool): Translucent. Defaults to ``False``.
+            interlaced (bool): Interlaced. Defaults to ``False``.
         """
+        if logical_width < 0:
+            logical_width = pixel_width
+        if logical_height < 0:
+            logical_height = pixel_height
+        if compression < 1 or compression > 9:
+            compression = 6
         super().__init__(
             pixel_width=pixel_width,
             pixel_height=pixel_height,
