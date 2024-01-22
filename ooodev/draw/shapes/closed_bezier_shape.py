@@ -9,6 +9,7 @@ from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.exceptions import ex as mEx
 from ..partial.draw_shape_partial import DrawShapePartial
 from .shape_base import ShapeBase, _T
 
@@ -46,3 +47,8 @@ class ClosedBezierShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.ClosedBezierShape``."""
         return "com.sun.star.drawing.ClosedBezierShape"
+
+    def clone(self) -> ClosedBezierShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return ClosedBezierShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

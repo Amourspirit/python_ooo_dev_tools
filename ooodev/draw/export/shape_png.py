@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any
 import uno
 from com.sun.star.lang import XComponent
 from com.sun.star.drawing import XShape
@@ -12,12 +12,8 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
+from ooodev.draw.filter.export_png import ExportPng
 from .shape_export_png_base import ShapeExportPngBase
-
-if TYPE_CHECKING:
-    from ooodev.draw.filter.export_png import ExportPngT
-else:
-    ExportPngT = Any
 
 
 class ShapePng(ShapeExportPngBase):
@@ -68,17 +64,17 @@ class ShapePng(ShapeExportPngBase):
 
         shape = mLo.Lo.qi(XShape, self._component, True)
         sz = shape.getSize()
-        dpi_x, dpi_y = self._get_dpi_width_height(sz.Width, sz.Height, resolution)
+        pixel_width, pixel_width = self._get_dpi_width_height(sz.Width, sz.Height, resolution)
 
-        event_data: ExportPngT = {
-            "compression": 6,
-            "pixel_width": dpi_x,
-            "pixel_height": dpi_y,
-            "interlaced": False,
-            "translucent": True,
-            "logical_width": dpi_x,
-            "logical_height": dpi_y,
-        }
+        event_data = ExportPng(
+            pixel_width=pixel_width,
+            pixel_height=pixel_width,
+            compression=6,
+            interlaced=False,
+            translucent=True,
+            logical_width=pixel_width,
+            logical_height=pixel_width,
+        )
 
         cargs = CancelEventArgsExport(source=self, event_data=event_data, fnm=fnm, overwrite=True)
         cargs.set("image_type", "png")

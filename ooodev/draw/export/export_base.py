@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ooodev.units import UnitInch
+from ooodev.utils import images_lo as mImage
 
 
 class ExportBase:
@@ -17,9 +17,4 @@ class ExportBase:
         Returns:
             tuple[int, int]: x and y DPI.
         """
-        width_in = UnitInch.from_mm100(width)
-        height_in = UnitInch.from_mm100(height)
-
-        dpi_width = round(resolution * width_in.value)
-        dpi_height = round(resolution * height_in.value)
-        return dpi_width, dpi_height
+        return mImage.ImagesLo.get_dpi_width_height(width=width, height=height, resolution=resolution)

@@ -55,6 +55,9 @@ class ExportPngPartial:
 
             If ``fnm`` is not specified, the image file name is created based on the document name and page number
             and written to the same folder as the document.
+
+            When page is exported as png, such as an impress slide, any images on the will not be exported if filter ``translucent=True``.
+            For this reason, the default value for ``translucent`` is ``False``.
         """
         from ooodev.draw.export.shape_png import ShapePng
 

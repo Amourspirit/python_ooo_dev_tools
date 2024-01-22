@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, overload, Iterable
 import uno
+from com.sun.star.frame import XComponentLoader
 from com.sun.star.util import XCloseable
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
@@ -24,7 +25,6 @@ from .partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
-    from com.sun.star.frame import XComponentLoader
     from com.sun.star.beans import PropertyValue
 
 
@@ -216,6 +216,81 @@ class DrawDoc(
             See LibreOffice API: `XCloseable.close() <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1util_1_1XCloseable.html#af3d34677f1707b1904f8e07be4408592>`__
         """
         self.qi(XCloseable, True).close(deliver_ownership)
+
+    # region Create Document
+    @overload
+    @staticmethod
+    def create_doc() -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader) -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(lo_inst: LoInst) -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        ...
+
+    @staticmethod
+    def create_doc(*args, **kwargs) -> DrawDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+            lo_inst (LoInst, optional): Lo instance.
+
+        Returns:
+            DrawDoc: DrawDoc representing document
+        """
+        doc = None
+        lo_inst = None
+        # 0 or 1 args
+        arguments = list(args)
+        arguments.extend(kwargs.values())
+        count = len(arguments)
+        if count == 0:
+            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
+        if count == 1:
+            arg = arguments[0]
+            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW, loader=arg)
+            if isinstance(arg, LoInst):
+                lo_inst = arg
+                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
+        if doc is None:
+            raise TypeError("create_doc() got an unexpected argument")
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        return DrawDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion Create Document
 
     # region Static Open Methods
     # region open_doc()

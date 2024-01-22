@@ -27,7 +27,6 @@ from com.sun.star.linguistic2 import XLinguServiceManager
 from com.sun.star.linguistic2 import XProofreader
 from com.sun.star.linguistic2 import XSearchableDictionaryList
 from com.sun.star.linguistic2 import XSpellChecker
-from com.sun.star.style import NumberingType  # const
 from com.sun.star.style import XStyle
 from com.sun.star.table import BorderLine  # struct
 from com.sun.star.text import HoriOrientation

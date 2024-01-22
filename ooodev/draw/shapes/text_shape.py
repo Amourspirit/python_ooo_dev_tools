@@ -47,3 +47,8 @@ class TextShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.TextShape``."""
         return "com.sun.star.drawing.TextShape"
+
+    def clone(self) -> TextShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return TextShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

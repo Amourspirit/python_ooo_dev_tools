@@ -46,3 +46,8 @@ class OLE2Shape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.OLE2Shape``."""
         return "com.sun.star.drawing.OLE2Shape"
+
+    def clone(self) -> OLE2Shape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return OLE2Shape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

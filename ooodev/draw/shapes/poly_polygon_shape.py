@@ -31,7 +31,7 @@ class PolyPolygonShape(
     StylePartial,
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
-        self.__owner = owner
+        self._owner = owner
         ShapeBase.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
         PolyPolygonShapeComp.__init__(self, component)
         ShapePartialProps.__init__(self, component=component)  # type: ignore
@@ -46,3 +46,8 @@ class PolyPolygonShape(
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.PolyPolygonShape``."""
         return "com.sun.star.drawing.PolyPolygonShape"
+
+    def clone(self) -> PolyPolygonShape[_T]:
+        """Clones the shape."""
+        shape = self._clone()
+        return PolyPolygonShape[_T](owner=self._owner, component=shape, lo_inst=self.get_lo_inst())

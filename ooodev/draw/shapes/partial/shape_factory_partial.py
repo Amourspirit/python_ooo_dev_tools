@@ -2,9 +2,6 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Generic, TypeVar
 import uno
 
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils import lo as mLo
-from ooodev.proto.component_proto import ComponentT
 from ooodev.draw.shapes import ClosedBezierShape
 from ooodev.draw.shapes import ConnectorShape
 from ooodev.draw.shapes import DrawShape
@@ -18,6 +15,10 @@ from ooodev.draw.shapes import PolyPolygonShape
 from ooodev.draw.shapes import RectangleShape
 from ooodev.draw.shapes import ShapeBase
 from ooodev.draw.shapes import TextShape
+from ooodev.draw.shapes.const import KNOWN_SHAPES
+from ooodev.proto.component_proto import ComponentT
+from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -84,3 +85,16 @@ class ShapeFactoryPartial(Generic[_T]):
             return TextShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
         return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
+
+    def is_know_shape(self, shape: XShape) -> bool:
+        """
+        Checks if a shape is known by this factory.
+
+        Args:
+            shape (XShape): UNO object of a shape.
+
+        Returns:
+            bool: ``True`` if shape is known; Otherwise, ``False``.
+        """
+        shape_type = shape.getShapeType()
+        return shape_type in KNOWN_SHAPES

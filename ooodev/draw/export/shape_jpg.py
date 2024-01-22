@@ -12,6 +12,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
+from ooodev.draw.filter.export_jpg import ExportJpg
 from .shape_export_jpg_base import ShapeExportJpgBase
 
 if TYPE_CHECKING:
@@ -68,16 +69,16 @@ class ShapeJpg(ShapeExportJpgBase):
 
         shape = mLo.Lo.qi(XShape, self._component, True)
         sz = shape.getSize()
-        dpi_x, dpi_y = self._get_dpi_width_height(sz.Width, sz.Height, resolution)
+        pixel_width, pixel_height = self._get_dpi_width_height(sz.Width, sz.Height, resolution)
 
-        event_data: ExportJpgT = {
-            "color_mode": True,
-            "quality": 75,
-            "pixel_width": dpi_x,
-            "pixel_height": dpi_y,
-            "logical_width": dpi_x,
-            "logical_height": dpi_y,
-        }
+        event_data = ExportJpg(
+            color_mode=True,
+            quality=75,
+            pixel_width=pixel_width,
+            pixel_height=pixel_height,
+            logical_width=pixel_width,
+            logical_height=pixel_height,
+        )
 
         cargs = CancelEventArgsExport(source=self, event_data=event_data, fnm=fnm, overwrite=True)
         cargs.set("image_type", "jpg")

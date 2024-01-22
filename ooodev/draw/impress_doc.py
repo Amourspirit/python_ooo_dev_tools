@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, List, overload, Iterable
 import uno
+from com.sun.star.frame import XComponentLoader
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
@@ -26,7 +27,6 @@ if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.drawing import XDrawPages
-    from com.sun.star.frame import XComponentLoader
     from com.sun.star.lang import XComponent
     from com.sun.star.presentation import XPresentation2
     from com.sun.star.presentation import XSlideShowController
@@ -388,6 +388,81 @@ class ImpressDoc(
         return self._lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
 
     # endregion save_doc
+
+    # region Create Document
+    @overload
+    @staticmethod
+    def create_doc() -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader) -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Args:
+            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(lo_inst: LoInst) -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Args:
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        ...
+
+    @staticmethod
+    def create_doc(*args, **kwargs) -> ImpressDoc:
+        """
+        Creates a new Impress document.
+
+        Args:
+            loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+            lo_inst (LoInst, optional): Lo instance.
+
+        Returns:
+            ImpressDoc: ImpressDoc representing document
+        """
+        doc = None
+        lo_inst = None
+        # 0 or 1 args
+        arguments = list(args)
+        arguments.extend(kwargs.values())
+        count = len(arguments)
+        if count == 0:
+            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS)
+        if count == 1:
+            arg = arguments[0]
+            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS, loader=arg)
+            if isinstance(arg, LoInst):
+                lo_inst = arg
+                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS)
+        if doc is None:
+            raise TypeError("create_doc() got an unexpected argument")
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        return ImpressDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion Create Document
 
     # region Static Open Methods
     # region open_doc()

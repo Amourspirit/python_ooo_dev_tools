@@ -3,6 +3,7 @@ from typing import Any, List, Iterable, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
+from com.sun.star.frame import XComponentLoader
 from com.sun.star.frame import XModel
 from com.sun.star.style import XStyle
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
@@ -10,7 +11,6 @@ from ooo.dyn.text.page_number_type import PageNumberType
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
-    from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XController
     from com.sun.star.graphic import XGraphic
     from com.sun.star.text import XText
@@ -33,6 +33,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.events.event_singleton import _Events
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
@@ -88,6 +89,7 @@ class WriteDoc(
     QiPartial,
     PropPartial,
     GuiPartial,
+    EventsPartial,
     StylePartial,
 ):
     """A class to represent a Write document."""
@@ -115,6 +117,7 @@ class WriteDoc(
         QiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
+        EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
         self._draw_page = None
         self._draw_pages = None
@@ -218,6 +221,81 @@ class WriteDoc(
 
     # endregion get_cursor()
 
+    # region Create Document
+    @overload
+    @staticmethod
+    def create_doc() -> WriteDoc:
+        """
+        Creates a new Draw document.
+
+        Returns:
+            WriteDoc: WriteDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader) -> WriteDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+
+        Returns:
+            WriteDoc: WriteDoc representing document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(lo_inst: LoInst) -> WriteDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            WriteDoc: WriteDoc representing document
+        """
+        ...
+
+    @staticmethod
+    def create_doc(*args, **kwargs) -> WriteDoc:
+        """
+        Creates a new Draw document.
+
+        Args:
+            loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+            lo_inst (LoInst, optional): Lo instance.
+
+        Returns:
+            WriteDoc: WriteDoc representing document
+        """
+        doc = None
+        lo_inst = None
+        # 0 or 1 args
+        arguments = list(args)
+        arguments.extend(kwargs.values())
+        count = len(arguments)
+        if count == 0:
+            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
+        if count == 1:
+            arg = arguments[0]
+            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=arg)
+            if isinstance(arg, LoInst):
+                lo_inst = arg
+                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
+        if doc is None:
+            raise TypeError("create_doc() got an unexpected argument")
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
+
+    # endregion Create Document
+
     def close_doc(self) -> bool:
         """
         Closes text document
@@ -240,11 +318,11 @@ class WriteDoc(
 
         cargs = CancelEventArgs(self.close_doc.__qualname__)
         cargs.event_data = {"text_doc": self.component}
-        _Events().trigger(WriteNamedEvent.DOC_CLOSING, cargs)
+        self.trigger_event(WriteNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
             return False
         result = mLo.Lo.close(self.component)  # type: ignore
-        _Events().trigger(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
+        self.trigger_event(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
         return result
 
     def compare_cursor_ends(self, c1: XTextRange, c2: XTextRange) -> mSelection.Selection.CompareEnum:
