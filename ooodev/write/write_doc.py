@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, Iterable, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
@@ -9,6 +9,8 @@ from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 
 if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
+    from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XController
     from com.sun.star.graphic import XGraphic
     from com.sun.star.text import XText
@@ -46,13 +48,13 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.data_type.size import Size
+from ooodev.utils.inst.lo.doc_type import DocType
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.gui_partial import GuiPartial
-from ooodev.utils.partial.lo_open_doc import LoOpenPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.utils.inst.lo.lo_inst import LoInst
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -87,7 +89,6 @@ class WriteDoc(
     PropPartial,
     GuiPartial,
     StylePartial,
-    LoOpenPartial,
 ):
     """A class to represent a Write document."""
 
@@ -115,7 +116,6 @@ class WriteDoc(
         PropPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         GuiPartial.__init__(self, component=doc, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=doc)
-        LoOpenPartial.__init__(self, lo_inst=self._lo_inst)
         self._draw_page = None
         self._draw_pages = None
 
@@ -1022,6 +1022,372 @@ class WriteDoc(
             value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default ``100``.
         """
         mGUI.GUI.zoom_value(value=value)
+
+    # region Static Open Methods
+    # region open_doc()
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, lo_inst: LoInst | None) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, *, lo_inst: LoInst) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue]) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            props (Iterable[PropertyValue]): Properties passed to component loader
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue], lo_inst: LoInst) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(
+        fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue], lo_inst: LoInst
+    ) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader): Component Loader
+            props (Iterable[PropertyValue]): Properties passed to component loader
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @staticmethod
+    def open_doc(
+        fnm: PathOrStr,
+        loader: XComponentLoader | None = None,
+        props: Iterable[PropertyValue] | None = None,
+        lo_inst: LoInst | None = None,
+    ) -> WriteDoc:
+        """
+        Open a office document
+
+        Args:
+            fnm (PathOrStr): path of document to open
+            loader (XComponentLoader, optional): Component Loader
+            props (Iterable[PropertyValue], optional): Properties passed to component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document
+            CancelEventError: if DOC_OPENING event is canceled.
+
+        Returns:
+            WriteDoc: Document
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing all method parameters.
+
+        See Also:
+            - :py:meth:`~Lo.open_doc`
+            - :py:meth:`load_office`
+            - :ref:`ch02_open_doc`
+
+        Note:
+            If connection it office is a remote server then File URL must be used,
+            such as ``file:///home/user/fancy.odt``
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        doc = lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
+        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
+
+    # endregion open_doc()
+
+    # region open_readonly_doc()
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr) -> WriteDoc:
+        """
+        Open a office document as read-only
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, *, lo_inst: LoInst) -> WriteDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            WriteDoc: Document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader) -> WriteDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+
+        Returns:
+            WriteDoc: Document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> WriteDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst): Lo instance.
+
+        Returns:
+            WriteDoc: Document.
+        """
+        ...
+
+    @staticmethod
+    def open_readonly_doc(
+        fnm: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> WriteDoc:
+        """
+        Open a office document as read-only.
+
+        Args:
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Raises:
+            Exception: if unable to open document.
+
+        Returns:
+            WriteDoc: Document.
+
+        See Also:
+            - :ref:`ch02_open_doc`
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.open_readonly_doc(fnm=fnm)
+        else:
+            doc = lo_inst.open_readonly_doc(fnm=fnm, loader=loader)
+        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
+
+    # endregion open_readonly_doc()
+
+    # region open_flat_doc()
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType) -> WriteDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, *, lo_inst: LoInst) -> WriteDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> WriteDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader, lo_inst: LoInst) -> WriteDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            WriteDoc: Document
+        """
+        ...
+
+    @staticmethod
+    def open_flat_doc(
+        fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> WriteDoc:
+        """
+        Opens a flat document
+
+        Args:
+            fnm (PathOrStr): path of XML document
+            doc_type (DocType): Type of document to open
+            loader (XComponentLoader, optional): Component loader
+            lo_inst (LoInst, Optional): Lo instance.
+
+        Returns:
+            WriteDoc: Document
+
+        See Also:
+            - :py:meth:`~Lo.open_flat_doc`
+            - :ref:`ch02_open_doc`
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type)
+        else:
+            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type, loader=loader)
+        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
+
+    # endregion open_flat_doc()
+    # endregion Static Open Methods
 
     # region Properties
     @property
