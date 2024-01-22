@@ -42,3 +42,7 @@ class EllipseShape(
         QiPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         PropPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         StylePartial.__init__(self, component=component)
+
+    def get_shape_type(self) -> str:
+        """Returns the shape type of ``com.sun.star.drawing.EllipseShape``."""
+        return "com.sun.star.drawing.EllipseShape"

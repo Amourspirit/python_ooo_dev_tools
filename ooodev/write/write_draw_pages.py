@@ -10,6 +10,7 @@ from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from .write_draw_page import WriteDrawPage
 
 
@@ -23,18 +24,23 @@ class WriteDrawPages(DrawPagesComp, QiPartial):
     Class for managing Writer Draw Pages.
     """
 
-    def __init__(self, owner: WriteDoc, slides: XDrawPages) -> None:
+    def __init__(self, owner: WriteDoc, slides: XDrawPages, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
-            owner (DrawDoc): Owner Document
-            sheet (XDrawPages): Document Pages.
+            owner (WriteDoc): Owner Document
+            slides (XDrawPages): Document Pages.
+            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
-        QiPartial.__init__(self, component=slides, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=slides, lo_inst=self._lo_inst)
         self._current_index = 0
 
     def __getitem__(self, idx: int) -> WriteDrawPage[WriteDoc]:
@@ -92,7 +98,7 @@ class WriteDrawPages(DrawPagesComp, QiPartial):
             WriteDrawPage: New slide that was inserted.
         """
         idx = self._get_index(idx=idx, allow_greater=True)
-        return WriteDrawPage(self.owner, self.component.insertNewByIndex(idx))
+        return WriteDrawPage(owner=self.owner, component=self.component.insertNewByIndex(idx), lo_inst=self._lo_inst)
 
     def delete_page(self, idx: int) -> bool:
         """
@@ -136,7 +142,7 @@ class WriteDrawPages(DrawPagesComp, QiPartial):
             raise IndexError(f"Index out of range: '{idx}'")
 
         result = super().get_by_index(idx)
-        return WriteDrawPage(owner=self.owner, component=result)
+        return WriteDrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -155,7 +161,7 @@ class WriteDrawPages(DrawPagesComp, QiPartial):
         """
         idx = self._get_index(idx=idx, allow_greater=True)
         result = super().insert_new_by_index(idx)
-        return WriteDrawPage(owner=self.owner, component=result)
+        return WriteDrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
 
     # endregion XDrawPages overrides
 
@@ -166,6 +172,6 @@ class WriteDrawPages(DrawPagesComp, QiPartial):
         Returns:
             _T: Draw or Impress document.
         """
-        return self.__owner
+        return self._owner
 
     # endregion Properties

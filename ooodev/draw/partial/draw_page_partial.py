@@ -295,7 +295,42 @@ class DrawPagePartial(Generic[_T]):
         result = mDraw.Draw.copy_shape_contents(self.component, old_shape)  # type: ignore
         return DrawShape(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
+    # region Draw Bezier
+    @overload
     def draw_bezier_open(self, pts: Sequence[Point], flags: Sequence[PolygonFlags]) -> OpenBezierShape[_T]:
+        """
+        Draws a bezier curve.
+
+        Args:
+            pts (Sequence[Point]): Points
+            flags (Sequence[PolygonFlags]): Flags
+
+        Returns:
+            OpenBezierShape: Bezier Shape.
+        """
+        ...
+
+    @overload
+    def draw_bezier_open(
+        self, pts: Sequence[Sequence[Point]], flags: Sequence[Sequence[PolygonFlags]]
+    ) -> OpenBezierShape[_T]:
+        """
+        Draws a bezier curve.
+
+        Args:
+            pts (Sequence[Sequence[Point]]): Points
+            flags (Sequence[Sequence[PolygonFlags]]): Flags
+
+        Returns:
+            OpenBezierShape: Bezier Shape.
+        """
+        ...
+
+    def draw_bezier_open(
+        self,
+        pts: Sequence[Point] | Sequence[Sequence[Point]],
+        flags: Sequence[PolygonFlags] | Sequence[Sequence[PolygonFlags]],
+    ) -> OpenBezierShape[_T]:
         """
         Draws a bezier curve.
 
@@ -313,7 +348,41 @@ class DrawPagePartial(Generic[_T]):
         shape = mDraw.Draw.draw_bezier(slide=self.component, pts=pts, flags=flags, is_open=True)  # type: ignore
         return OpenBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
+    @overload
     def draw_bezier_closed(self, pts: Sequence[Point], flags: Sequence[PolygonFlags]) -> ClosedBezierShape[_T]:
+        """
+        Draws a bezier curve.
+
+        Args:
+            pts (Sequence[Point]): Points
+            flags (Sequence[PolygonFlags]): Flags
+
+        Returns:
+            ClosedBezierShape: Bezier Shape.
+        """
+        ...
+
+    @overload
+    def draw_bezier_closed(
+        self, pts: Sequence[Sequence[Point]], flags: Sequence[Sequence[PolygonFlags]]
+    ) -> ClosedBezierShape[_T]:
+        """
+        Draws a bezier curve.
+
+        Args:
+            pts (Sequence[Sequence[Point]]): Points
+            flags (Sequence[Sequence[PolygonFlags]]): Flags
+
+        Returns:
+            ClosedBezierShape: Bezier Shape.
+        """
+        ...
+
+    def draw_bezier_closed(
+        self,
+        pts: Sequence[Point] | Sequence[Sequence[Point]],
+        flags: Sequence[PolygonFlags] | Sequence[Sequence[PolygonFlags]],
+    ) -> ClosedBezierShape[_T]:
         """
         Draws a bezier curve.
 
@@ -330,6 +399,8 @@ class DrawPagePartial(Generic[_T]):
         """
         shape = mDraw.Draw.draw_bezier(slide=self.component, pts=pts, flags=flags, is_open=False)  # type: ignore
         return ClosedBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
+
+    # endregion Draw Bezier
 
     def draw_circle(self, x: int | UnitT, y: int | UnitT, radius: int | UnitT) -> EllipseShape[_T]:
         """

@@ -18,6 +18,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.utils.type_var import PathOrStr
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.lo_open_doc import LoOpenPartial
 from .draw_pages import DrawPages
 from .partial.draw_doc_partial import DrawDocPartial
 
@@ -38,6 +39,7 @@ class DrawDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
+    LoOpenPartial,
 ):
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -58,6 +60,7 @@ class DrawDoc(
         GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
         StylePartial.__init__(self, component=doc)
         ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        LoOpenPartial.__init__(self, lo_inst=self._lo_inst)
         self._pages = None
 
     # region Lazy Listeners

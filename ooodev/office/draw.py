@@ -68,7 +68,6 @@ from ooo.dyn.container.no_such_element_exception import NoSuchElementException
 from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 
-from ooodev.utils.inst.lo import lo_inst as mLoInst
 from ..cfg.config import Config  # singleton class.
 from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.draw_named_event import DrawNamedEvent
@@ -84,11 +83,13 @@ from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
 from ..utils import lo as mLo
 from ..utils import props as mProps
+from ..utils import table_helper as mTableHelper
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
 from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
 from ..utils.data_type.size import Size
 from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
+from ..utils.inst.lo import lo_inst as mLoInst
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
 from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
@@ -103,7 +104,6 @@ from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
 from ..utils.kind.presentation_layout_kind import PresentationLayoutKind as PresentationLayoutKind
 from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
 from ..utils.type_var import PathOrStr
-
 
 if TYPE_CHECKING:
     from ..proto.dispatch_shape import DispatchShape
@@ -2404,7 +2404,11 @@ class Draw:
 
     @classmethod
     def draw_bezier(
-        cls, slide: XDrawPage, pts: Sequence[Point], flags: Sequence[PolygonFlags], is_open: bool
+        cls,
+        slide: XDrawPage,
+        pts: Sequence[Point] | Sequence[Sequence[Point]],
+        flags: Sequence[PolygonFlags] | Sequence[Sequence[PolygonFlags]],
+        is_open: bool,
     ) -> XShape:
         """
         Draws a bezier curve.
@@ -2422,19 +2426,33 @@ class Draw:
         Returns:
             XShape: Bezier Shape.
         """
+        if len(pts) == 0:
+            raise mEx.ShapeError("No points were provided")
         if len(pts) != len(flags):
             raise IndexError("pts and flags must be the same length")
 
         try:
+            point0 = pts[0]
+            # find out if the first point is indeed a point or if it is a sequence of points,
+            coords = PolyPolygonBezierCoords()
+            if mInfo.Info.is_struct(point0):
+                coords.Coordinates = (pts,)  # type: ignore
+                coords.Flags = (flags,)  # type: ignore
+            else:
+                # assume that we have sequences of sequences of points and flags.
+
+                coords.Coordinates = mTableHelper.TableHelper.to_2d_tuple(pts)  # type: ignore
+                coords.Flags = mTableHelper.TableHelper.to_2d_tuple(flags)  # type: ignore
+            # type: ignore
+
             bezier_type = "OpenBezierShape" if is_open else "ClosedBezierShape"
             bezier_poly = cls.add_shape(slide=slide, shape_type=bezier_type, x=0, y=0, width=0, height=0)
             # create space for one bezier shape
-            coords = PolyPolygonBezierCoords()
-            coords.Coordinates = (pts,)  # type: ignore
-            coords.Flags = (flags,)  # type: ignore
 
             mProps.Props.set(bezier_poly, PolyPolygonBezier=coords)
             return bezier_poly
+        except IndexError:
+            raise
         except mEx.ShapeError:
             raise
         except Exception as e:

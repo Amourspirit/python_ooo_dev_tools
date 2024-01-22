@@ -12,6 +12,7 @@ from ooodev.adapter.text.text_range_comp import TextRangeComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 
@@ -23,27 +24,32 @@ class WriteTextRange(
 ):
     """Represents writer TextRange."""
 
-    def __init__(self, owner: T, component: XTextRange) -> None:
+    def __init__(self, owner: T, component: XTextRange, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             owner (T): Owner of this component.
             component (XTextRange): UNO object that supports ``com.sun.star.text.TextRange`` service.
+            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        self.__owner = owner
+        if lo_inst is None:
+            self._lo_inst = mLo.Lo.current_lo
+        else:
+            self._lo_inst = lo_inst
+        self._owner = owner
         TextRangeComp.__init__(self, component)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        QiPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
-        PropPartial.__init__(self, component=component, lo_inst=mLo.Lo.current_lo)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
 
     # region Properties
     @property
     def owner(self) -> T:
         """Owner of this component."""
-        return self.__owner
+        return self._owner
 
     # endregion Properties

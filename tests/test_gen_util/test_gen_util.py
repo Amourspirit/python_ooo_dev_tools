@@ -138,12 +138,15 @@ def test_to_single_space_default(s: str, expected: str) -> None:
         (2, 0, False, 0),
         (3, -1, False, 2),
         (23, -1, False, 22),
-        (23, -2, False, 20),
+        (23, -2, False, 21),
         (3, 1, False, 1),
-        (10, -5, False, 4),
-        (100, -3, False, 96),
+        (10, -5, False, 5),
+        (10, -2, False, 8),
+        (10, -2, True, 8),
+        (100, -3, False, 97),
         (3, 5, True, 3),
         (23, -1, True, 23),
+        (23, -2, True, 21),
         (23, 23, True, 23),
         (23, 25, True, 23),
         (3, 0, True, 0),
@@ -156,6 +159,19 @@ def test_to_single_space_default(s: str, expected: str) -> None:
     ),
 )
 def test_get_index(count: int, idx: int, allow_greater: bool, result: int) -> None:
+    # count = 23, index is 22 idx = -2, allow_greater = False, result = 20
+
+    # - 1 is last index, when count is 23 then last index is 22
+    # - 2 is second last index, when count is 23 then second last index is 21
+    # - 3 is third last index, when count is 23 then third last index is 20
+    # - 4 is fourth last index, when count is 23 then fourth last index is 19
+
+    # -1 is last index, when count is 10 then last index is 9
+    # -2 is second last index, when count is 10 then second last index is 8
+    # -3 is third last index, when count is 10 then third last index is 7
+    # -4 is fourth last index, when count is 10 then fourth last index is 6
+    # -5 is fifth last index, when count is 10 then fifth last index is 5
+    # This means the math is count - abs(idx)
     index = gen_util.Util.get_index(idx=idx, count=count, allow_greater=allow_greater)
     assert result == index
 

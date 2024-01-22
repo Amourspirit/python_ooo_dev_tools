@@ -641,6 +641,10 @@ class ShapeBase(
         """
         mDraw.Draw.set_zorder(shape=self.__component, order=order)
 
+    def get_shape_type(self) -> str:
+        """Get the shape type. This is usually a service name and is manually set by the class."""
+        raise NotImplementedError
+
     # region Properties
 
     @property
@@ -659,5 +663,10 @@ class ShapeBase(
         """Gets the Position of the shape in ``UnitMM`` Values."""
         ps = self.__component.getPosition()
         return GenericUnitPoint(UnitMM.from_mm100(ps.X), UnitMM.from_mm100(ps.Y))
+
+    @property
+    def shape_type(self) -> str:
+        """Gets the shape type."""
+        return self.__component.ShapeType  # type: ignore
 
     # endregion Properties
