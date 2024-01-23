@@ -19,6 +19,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.proto.style_obj import StyleT
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ooodev.utils.kind.language_kind import LanguageKind as LanguageKind
@@ -65,6 +66,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import Form
     from com.sun.star.lang import XComponent
     from ooodev.units import UnitT
+    from ooodev.utils.inst.lo.lo_inst import LoInst
     from ooodev.utils.type_var import PathOrStr
 
 
@@ -76,7 +78,9 @@ class FormPartial:
     Method for adding controls and other form elements to a form.
     """
 
-    def __init__(self, owner: ComponentT, draw_page: XDrawPage, component: Form) -> None:
+    def __init__(
+        self, owner: ComponentT, draw_page: XDrawPage, component: Form, lo_inst: LoInst | None = None
+    ) -> None:
         """
         Constructor
 
@@ -85,14 +89,19 @@ class FormPartial:
             draw_page (XDrawPage): Draw Page
             component (Form): Form component
         """
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
         assert mInfo.Info.support_service(
             component, "com.sun.star.form.component.Form"
         ), "component must support com.sun.star.form.component.Form service"
         self.__owner = owner
         self.__component = component
         self.__draw_page = draw_page
-        forms = mLo.Lo.qi(XForms, component.getParent(), True)
-        self.__doc = cast("XComponent", mLo.Lo.qi(XChild, forms, True).getParent())
+        with LoContext(self.__lo_inst):
+            forms = mLo.Lo.qi(XForms, component.getParent(), True)
+            self.__doc = cast("XComponent", mLo.Lo.qi(XChild, forms, True).getParent())
 
     # region Insert Control Methods
 
@@ -128,19 +137,21 @@ class FormPartial:
         Returns:
             FormCtlButton: Button Control
         """
-        return mForms.Forms.insert_control_button(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            label=label,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            result = mForms.Forms.insert_control_button(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                label=label,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return result
 
     def insert_control_check_box(
         self,
@@ -176,22 +187,24 @@ class FormPartial:
         Returns:
             FormCtlCheckBox: Checkbox Control
         """
-        return mForms.Forms.insert_control_check_box(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            label=label,
-            tri_state=tri_state,
-            state=state,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            result = mForms.Forms.insert_control_check_box(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                label=label,
+                tri_state=tri_state,
+                state=state,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return result
 
     def insert_control_combo_box(
         self,
@@ -231,23 +244,25 @@ class FormPartial:
         Returns:
             FormCtlComboBox: ComboBox Control
         """
-        return mForms.Forms.insert_control_combo_box(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            entries=entries,
-            max_text_len=max_text_len,
-            drop_down=drop_down,
-            read_only=read_only,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            result = mForms.Forms.insert_control_combo_box(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                entries=entries,
+                max_text_len=max_text_len,
+                drop_down=drop_down,
+                read_only=read_only,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return result
 
     def insert_control_currency_field(
         self,
@@ -287,24 +302,26 @@ class FormPartial:
         Returns:
             FormCtlCurrencyField: Currency Field Control
         """
-        return mForms.Forms.insert_control_currency_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            spin_button=spin_button,
-            increment=increment,
-            accuracy=accuracy,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            result = mForms.Forms.insert_control_currency_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                spin_button=spin_button,
+                increment=increment,
+                accuracy=accuracy,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return result
 
     def insert_control_date_field(
         self,
@@ -343,23 +360,25 @@ class FormPartial:
         Returns:
             FormCtlDateField: Date Field Control
         """
-        return mForms.Forms.insert_control_date_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_date=min_date,
-            max_date=max_date,
-            drop_down=drop_down,
-            date_format=date_format,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_date_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_date=min_date,
+                max_date=max_date,
+                drop_down=drop_down,
+                date_format=date_format,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_file(
         self,
@@ -387,18 +406,20 @@ class FormPartial:
         Returns:
             FormCtlFile: File Control
         """
-        return mForms.Forms.insert_control_file(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_file(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_formatted_field(
         self,
@@ -434,22 +455,24 @@ class FormPartial:
         Returns:
             FormCtlFormattedField: Currency Field Control
         """
-        return mForms.Forms.insert_control_formatted_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            spin_button=spin_button,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_formatted_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                spin_button=spin_button,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_group_box(
         self,
@@ -479,19 +502,21 @@ class FormPartial:
         Returns:
             FormCtlGroupBox: Groupbox Control
         """
-        return mForms.Forms.insert_control_group_box(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            label=label,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_group_box(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                label=label,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_grid(
         self,
@@ -521,19 +546,21 @@ class FormPartial:
         Returns:
             FormCtlGrid: Grid Control
         """
-        return mForms.Forms.insert_control_grid(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            label=label,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_grid(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                label=label,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_hidden(
         self,
@@ -559,17 +586,19 @@ class FormPartial:
         Returns:
             FormCtlHidden: Hidden Control
         """
-        return mForms.Forms.insert_control_hidden(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_hidden(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+            )
+        return results
 
     def insert_control_image_button(
         self,
@@ -604,20 +633,22 @@ class FormPartial:
         Returns:
             FormCtlImageButton: Image Button Control
         """
-        return mForms.Forms.insert_control_image_button(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            image_url=image_url,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_image_button(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                image_url=image_url,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_label(
         self,
@@ -647,19 +678,21 @@ class FormPartial:
         Returns:
             FormCtlFixedText: Label Control
         """
-        return mForms.Forms.insert_control_label(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            label=label,
-            height=height,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_label(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                label=label,
+                height=height,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_list_box(
         self,
@@ -699,24 +732,26 @@ class FormPartial:
         Returns:
             FormCtlListBox: ListBox Control
         """
-        return mForms.Forms.insert_control_list_box(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            entries=entries,
-            drop_down=drop_down,
-            read_only=read_only,
-            line_count=line_count,
-            multi_select=multi_select,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_list_box(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                entries=entries,
+                drop_down=drop_down,
+                read_only=read_only,
+                line_count=line_count,
+                multi_select=multi_select,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_navigation_toolbar(
         self,
@@ -744,18 +779,20 @@ class FormPartial:
         Returns:
             FormCtlNavigationToolBar: Navigation Toolbar Control
         """
-        return mForms.Forms.insert_control_navigation_toolbar(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_navigation_toolbar(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_numeric_field(
         self,
@@ -795,24 +832,26 @@ class FormPartial:
         Returns:
             FormCtlNumericField: Numeric Field Control
         """
-        return mForms.Forms.insert_control_numeric_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            spin_button=spin_button,
-            increment=increment,
-            accuracy=accuracy,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_numeric_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                spin_button=spin_button,
+                increment=increment,
+                accuracy=accuracy,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_pattern_field(
         self,
@@ -846,21 +885,23 @@ class FormPartial:
         Returns:
             FormCtlPatternField: Pattern Field Control
         """
-        return mForms.Forms.insert_control_pattern_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            edit_mask=edit_mask,
-            literal_mask=literal_mask,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_pattern_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                edit_mask=edit_mask,
+                literal_mask=literal_mask,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_radio_button(
         self,
@@ -898,22 +939,24 @@ class FormPartial:
         Returns:
             FormCtlRadioButton: Radio Button Control.
         """
-        return mForms.Forms.insert_control_radio_button(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            label=label,
-            state=state,
-            multiline=multiline,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_radio_button(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                label=label,
+                state=state,
+                multiline=multiline,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_rich_text(
         self,
@@ -943,19 +986,21 @@ class FormPartial:
         Returns:
             FormCtlRichText: Rich Text Control.
         """
-        return mForms.Forms.insert_control_rich_text(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_rich_text(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_scroll_bar(
         self,
@@ -992,22 +1037,24 @@ class FormPartial:
         Returns:
             FormCtlScrollBar: Scrollbar Control.
         """
-        return mForms.Forms.insert_control_scroll_bar(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            orientation=orientation,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_scroll_bar(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                orientation=orientation,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_spin_button(
         self,
@@ -1045,23 +1092,25 @@ class FormPartial:
         Returns:
             FormCtlSpinButton: Spin Button Control,
         """
-        return mForms.Forms.insert_control_spin_button(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            value=value,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            increment=increment,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            rersults = mForms.Forms.insert_control_spin_button(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                value=value,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                increment=increment,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return rersults
 
     def insert_control_submit_button(
         self,
@@ -1089,18 +1138,20 @@ class FormPartial:
         Returns:
             FormCtlSubmitButton: Submit Button Control
         """
-        return mForms.Forms.insert_control_submit_button(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_submit_button(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_text_field(
         self,
@@ -1134,21 +1185,23 @@ class FormPartial:
         Returns:
             FormCtlTextField: Text Field Control.
         """
-        return mForms.Forms.insert_control_text_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            text=text,
-            height=height,
-            echo_char=echo_char,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_text_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                text=text,
+                height=height,
+                echo_char=echo_char,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_control_time_field(
         self,
@@ -1189,24 +1242,26 @@ class FormPartial:
         Returns:
             FormCtlTimeField: Time Field Control.
         """
-        return mForms.Forms.insert_control_time_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            time_value=time_value,
-            min_time=min_time,
-            max_time=max_time,
-            time_format=time_format,
-            spin_button=spin_button,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_control_time_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                time_value=time_value,
+                min_time=min_time,
+                max_time=max_time,
+                time_format=time_format,
+                spin_button=spin_button,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_check_box(
         self,
@@ -1241,21 +1296,23 @@ class FormPartial:
         Returns:
             FormCtlDbCheckBox: Database Checkbox Control.
         """
-        return mForms.Forms.insert_db_control_check_box(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            tri_state=tri_state,
-            state=state,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_check_box(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                tri_state=tri_state,
+                state=state,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_combo_box(
         self,
@@ -1295,23 +1352,25 @@ class FormPartial:
         Returns:
             FormCtlDbComboBox: Database ComboBox Control.
         """
-        return mForms.Forms.insert_db_control_combo_box(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            entries=entries,
-            height=height,
-            max_text_len=max_text_len,
-            drop_down=drop_down,
-            read_only=read_only,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_combo_box(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                entries=entries,
+                height=height,
+                max_text_len=max_text_len,
+                drop_down=drop_down,
+                read_only=read_only,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_currency_field(
         self,
@@ -1351,24 +1410,26 @@ class FormPartial:
         Returns:
             FormCtlDbCurrencyField: Database Currency Field Control.
         """
-        return mForms.Forms.insert_db_control_currency_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            spin_button=spin_button,
-            increment=increment,
-            accuracy=accuracy,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_currency_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                spin_button=spin_button,
+                increment=increment,
+                accuracy=accuracy,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_date_field(
         self,
@@ -1407,23 +1468,25 @@ class FormPartial:
         Returns:
             FormCtlDbDateField: Database Date Field Control.
         """
-        return mForms.Forms.insert_db_control_date_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_date=min_date,
-            max_date=max_date,
-            drop_down=drop_down,
-            date_format=date_format,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_date_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_date=min_date,
+                max_date=max_date,
+                drop_down=drop_down,
+                date_format=date_format,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_formatted_field(
         self,
@@ -1459,22 +1522,24 @@ class FormPartial:
         Returns:
             FormCtlDbFormattedField: Database Currency Field Control.
         """
-        return mForms.Forms.insert_db_control_formatted_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            spin_button=spin_button,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_formatted_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                spin_button=spin_button,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_list_box(
         self,
@@ -1514,24 +1579,26 @@ class FormPartial:
         Returns:
             FormCtlDbListBox: Database ListBox Control.
         """
-        return mForms.Forms.insert_db_control_list_box(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            entries=entries,
-            height=height,
-            drop_down=drop_down,
-            read_only=read_only,
-            line_count=line_count,
-            multi_select=multi_select,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_list_box(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                entries=entries,
+                height=height,
+                drop_down=drop_down,
+                read_only=read_only,
+                line_count=line_count,
+                multi_select=multi_select,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_numeric_field(
         self,
@@ -1571,24 +1638,26 @@ class FormPartial:
         Returns:
             FormCtlDbNumericField: Database Numeric Field Control.
         """
-        return mForms.Forms.insert_db_control_numeric_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            min_value=min_value,
-            max_value=max_value,
-            spin_button=spin_button,
-            increment=increment,
-            accuracy=accuracy,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_numeric_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                spin_button=spin_button,
+                increment=increment,
+                accuracy=accuracy,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_pattern_field(
         self,
@@ -1622,21 +1691,23 @@ class FormPartial:
         Returns:
             FormCtlDbPatternField: Database Pattern Field Control.
         """
-        return mForms.Forms.insert_db_control_pattern_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            edit_mask=edit_mask,
-            literal_mask=literal_mask,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_pattern_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                edit_mask=edit_mask,
+                literal_mask=literal_mask,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_radio_button(
         self,
@@ -1672,21 +1743,23 @@ class FormPartial:
         Returns:
             FormCtlDbRadioButton: Database Radio Button Control.
         """
-        return mForms.Forms.insert_db_control_radio_button(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            state=state,
-            multiline=multiline,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_radio_button(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                state=state,
+                multiline=multiline,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_text_field(
         self,
@@ -1720,21 +1793,23 @@ class FormPartial:
         Returns:
             FormCtlDbTextField: Database Text Field Control.
         """
-        return mForms.Forms.insert_db_control_text_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            text=text,
-            height=height,
-            echo_char=echo_char,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_text_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                text=text,
+                height=height,
+                echo_char=echo_char,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     def insert_db_control_time_field(
         self,
@@ -1775,24 +1850,26 @@ class FormPartial:
         Returns:
             FormCtlTimeField: Database Time Field Control.
         """
-        return mForms.Forms.insert_db_control_time_field(
-            doc=self.__doc,
-            draw_page=self.__draw_page,
-            x=x,
-            y=y,
-            width=width,
-            height=height,
-            time_value=time_value,
-            min_time=min_time,
-            max_time=max_time,
-            time_format=time_format,
-            spin_button=spin_button,
-            border=border,
-            anchor_type=anchor_type,
-            name=name,
-            parent_form=self.__component,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.insert_db_control_time_field(
+                doc=self.__doc,
+                draw_page=self.__draw_page,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                time_value=time_value,
+                min_time=min_time,
+                max_time=max_time,
+                time_format=time_format,
+                spin_button=spin_button,
+                border=border,
+                anchor_type=anchor_type,
+                name=name,
+                parent_form=self.__component,
+                styles=styles,
+            )
+        return results
 
     # endregion Insert Control Methods
 
@@ -1808,7 +1885,8 @@ class FormPartial:
         Returns:
             None:
         """
-        mForms.Forms.bind_form_to_sql(self.__component, src_name, cmd)
+        with LoContext(self.__lo_inst):
+            mForms.Forms.bind_form_to_sql(self.__component, src_name, cmd)
 
     def bind_form_to_table(self, src_name: str, tbl_name: str) -> None:
         """
@@ -1821,7 +1899,8 @@ class FormPartial:
         Returns:
             None:
         """
-        mForms.Forms.bind_form_to_table(self.__component, src_name, tbl_name)
+        with LoContext(self.__lo_inst):
+            mForms.Forms.bind_form_to_table(self.__component, src_name, tbl_name)
 
     def get_control(self, ctl_model: XControlModel) -> XControl:
         """
@@ -1836,7 +1915,9 @@ class FormPartial:
         Returns:
             XControl: Control
         """
-        return mForms.Forms.get_control(self.__doc, ctl_model)
+        with LoContext(self.__lo_inst):
+            results = mForms.Forms.get_control(self.__doc, ctl_model)
+        return results
 
     def get_control_model(self, ctl_name: str) -> XControlModel:
         """
@@ -1852,7 +1933,8 @@ class FormPartial:
             XControlModel | None: Control Model if found; Otherwise, None
         """
         if self.__component.hasByName(ctl_name):
-            result = mForms.Forms.get_control_model(self.__doc, ctl_name)
+            with LoContext(self.__lo_inst):
+                result = mForms.Forms.get_control_model(self.__doc, ctl_name)
             if result is None:
                 raise mEx.MissingNameError(f"Control '{ctl_name}' not found")
             return result

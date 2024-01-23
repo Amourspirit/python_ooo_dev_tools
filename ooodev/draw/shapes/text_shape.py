@@ -39,7 +39,7 @@ class TextShape(
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        DrawShapePartial.__init__(self, component=component)
+        DrawShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         QiPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         PropPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         StylePartial.__init__(self, component=component)

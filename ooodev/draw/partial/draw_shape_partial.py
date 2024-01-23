@@ -3,14 +3,20 @@ from typing import TYPE_CHECKING
 import uno
 
 from ooodev.office import draw as mDraw
-
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils import lo as mLo
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
 
 
 class DrawShapePartial:
-    def __init__(self, component: XShape) -> None:
+    def __init__(self, component: XShape, lo_inst: LoInst | None = None) -> None:
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
         self.__component = component
 
     def add_text(self, msg: str, font_size: int = 0, **props) -> None:
@@ -28,4 +34,5 @@ class DrawShapePartial:
         Returns:
             None:
         """
-        mDraw.Draw.add_text(self.__component, msg, font_size, **props)
+        with LoContext(self.__lo_inst):
+            mDraw.Draw.add_text(self.__component, msg, font_size, **props)

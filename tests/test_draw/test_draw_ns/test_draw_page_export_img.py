@@ -8,6 +8,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 from ooodev.draw import Draw, DrawDoc
+from ooodev.draw import ImpressDoc
 from ooodev.format.draw.direct.shadow import Shadow, ShadowLocationKind
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
@@ -182,6 +183,23 @@ def test_slide_save_png(loader, tmp_path_fn) -> None:
         mime = ImagesLo.change_to_mime("png")
         img_path = Path(tmp_path_fn, f"draw_image_{resolution}.png")
         slide.save_page(fnm=img_path, mime_type=mime, filter_data=dt.to_filter_dict())
+        assert img_path.exists()
+    finally:
+        doc.close_doc()
+
+
+def test_impress_export_page_img(loader, copy_fix_presentation, tmp_path_fn):
+    test_doc = copy_fix_presentation("algs.odp")
+
+    doc = ImpressDoc.open_doc(fnm=test_doc, loader=loader)
+    try:
+        slide = doc.slides[0]
+        img_path = Path(tmp_path_fn, "impress_image.png")
+        slide.export_page_png(fnm=img_path, resolution=100)
+        assert img_path.exists()
+
+        img_path = Path(tmp_path_fn, "impress_image.jpg")
+        slide.export_page_jpg(fnm=img_path, resolution=100)
         assert img_path.exists()
     finally:
         doc.close_doc()

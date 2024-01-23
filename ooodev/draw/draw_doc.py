@@ -21,6 +21,7 @@ from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import PathOrStr
 from .draw_pages import DrawPages
@@ -44,6 +45,7 @@ class DrawDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
+    LoInstPropsPartial,
 ):
     """Draw document Class"""
 
@@ -69,6 +71,7 @@ class DrawDoc(
         if not mInfo.Info.is_doc_type(doc, LoService.DRAW):
             raise mEx.NotSupportedDocumentError("Document is not a Draw document")
 
+        LoInstPropsPartial.__init__(self, lo_inst=self._lo_inst)
         DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
         DrawingDocumentComp.__init__(self, doc)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
@@ -219,8 +222,6 @@ class DrawDoc(
 
         See Also:
             :ref:`ch02_save_doc`
-
-        .. versionadded:: 0.20.2
         """
         return self._lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
 
@@ -312,6 +313,96 @@ class DrawDoc(
         return DrawDoc(doc=doc, lo_inst=lo_inst)
 
     # endregion Create Document
+
+    # region create_doc_from_template()
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr) -> DrawDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+
+        Returns:
+            DrawDoc: Document as DrawDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, *, lo_inst: LoInst) -> DrawDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
+
+        Returns:
+            DrawDoc: Document as DrawDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> DrawDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader): Component Loader.
+
+        Returns:
+            DrawDoc: Document as DrawDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> DrawDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
+
+        Returns:
+            DrawDoc: Document as DrawDoc instance.
+        """
+        ...
+
+    @staticmethod
+    def create_doc_from_template(
+        template_path: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> DrawDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader, optional): Component Loader.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
+
+        Raises:
+            Exception: If unable to create document.
+
+        Returns:
+            DrawDoc: Document as DrawDoc instance.
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.create_doc_from_template(template_path=template_path)
+        else:
+            doc = lo_inst.create_doc_from_template(template_path=template_path, loader=loader)
+        return DrawDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion create_doc_from_template()
 
     # region Static Open Methods
     # region open_doc()
@@ -511,7 +602,7 @@ class DrawDoc(
 
         Args:
             fnm (PathOrStr): path of document to open.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             DrawDoc: Document.
@@ -542,7 +633,7 @@ class DrawDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             DrawDoc: Document.
@@ -559,7 +650,7 @@ class DrawDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Raises:
             Exception: if unable to open document.
@@ -605,7 +696,7 @@ class DrawDoc(
         Args:
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             DrawDoc: Document
@@ -638,7 +729,7 @@ class DrawDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             DrawDoc: Document
@@ -656,7 +747,7 @@ class DrawDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Raises:
             Exception: if unable to open document.

@@ -13,6 +13,8 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.context.lo_context import LoContext
 
 from ooodev.proto.component_proto import ComponentT
 
@@ -22,7 +24,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
+class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial, LoInstPropsPartial):
     """
     Class for managing Generic Draw Pages.
     """
@@ -37,14 +39,14 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
             lo_inst (LoInst, optional): Lo instance. Defaults to None.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
+            _lo_inst = mLo.Lo.current_lo
         else:
-            self._lo_inst = lo_inst
+            _lo_inst = lo_inst
         self.__owner = owner
-        self.__owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=_lo_inst)
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
-        QiPartial.__init__(self, component=slides, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         self._current_index = 0
 
     def __getitem__(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
@@ -65,30 +67,15 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
         return self[self._current_index - 1]
 
     def __delitem__(self, _item: int | mGenericDrawPage.GenericDrawPage[_T] | XDrawPage) -> None:
-        # Delete slide by index, name, or object
-        # Usage:
-        # del doc.slides[-1]
-        # assert len(doc.slides) == 8
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide.get_name()]
-        # assert len(doc.slides) == 7
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide]
-        # assert len(doc.slides) == 6
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide.component] # type: ignore
-        # assert len(doc.slides) == 5
-        if mInfo.Info.is_instance(_item, int):
-            self.delete_page(_item)
-        elif mInfo.Info.is_instance(_item, mGenericDrawPage.GenericDrawPage):
-            super().remove(_item.component)
-        elif mInfo.Info.is_instance(_item, XDrawPage):
-            super().remove(_item)
-        else:
-            raise TypeError(f"Unsupported type: {type(_item)}")
+        with LoContext(self.lo_inst):
+            if mInfo.Info.is_instance(_item, int):
+                self.delete_page(_item)
+            elif mInfo.Info.is_instance(_item, mGenericDrawPage.GenericDrawPage):
+                super().remove(_item.component)
+            elif mInfo.Info.is_instance(_item, XDrawPage):
+                super().remove(_item)
+            else:
+                raise TypeError(f"Unsupported type: {type(_item)}")
 
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:
         """
@@ -122,7 +109,7 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
         """
         idx = self._get_index(idx=idx, allow_greater=True)
         return mGenericDrawPage.GenericDrawPage(
-            owner=self.owner, component=self.component.insertNewByIndex(idx), lo_inst=self._lo_inst
+            owner=self.owner, component=self.component.insertNewByIndex(idx), lo_inst=self.lo_inst
         )
 
     def delete_page(self, idx: int) -> bool:
@@ -167,7 +154,7 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
             raise IndexError(f"Index out of range: '{idx}'")
 
         result = super().get_by_index(idx)
-        return mGenericDrawPage.GenericDrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
+        return mGenericDrawPage.GenericDrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -186,7 +173,7 @@ class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
         """
         idx = self._get_index(idx=idx, allow_greater=True)
         result = super().insert_new_by_index(idx)
-        return mGenericDrawPage.GenericDrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
+        return mGenericDrawPage.GenericDrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XDrawPages overrides
 

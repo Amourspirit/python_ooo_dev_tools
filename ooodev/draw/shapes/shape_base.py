@@ -13,12 +13,15 @@ from ooodev.units import Angle
 from ooodev.units import UnitMM
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+
 from .partial.export_jpg_partial import ExportJpgPartial
 from .partial.export_png_partial import ExportPngPartial
 from .shape_text_cursor import ShapeTextCursor
@@ -52,18 +55,19 @@ class ShapeBase(
     ExportJpgPartial,
     ExportPngPartial,
     ServicePartial,
+    LoInstPropsPartial,
     Generic[_T],
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self.__lo_inst = mLo.Lo.current_lo
-        else:
-            self.__lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EventsPartial.__init__(self)
         events = cast("Events", self._EventsPartial__events)  # type: ignore
         ExportJpgPartial.__init__(self, component=component, events=events)
         ExportPngPartial.__init__(self, component=component, events=events)
-        ServicePartial.__init__(self, component=component, lo_inst=self.__lo_inst)
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self.__owner = owner
         self.__component = component
         self._apply_shape_name()
@@ -82,7 +86,7 @@ class ShapeBase(
         old_shape = self.__component
         pt = old_shape.getPosition()
         sz = old_shape.getSize()
-        shape = self.__lo_inst.create_instance_msf(XShape, old_shape.getShapeType(), raise_err=True)
+        shape = self.lo_inst.create_instance_msf(XShape, old_shape.getShapeType(), raise_err=True)
         shape.setPosition(pt)
         shape.setSize(sz)
         try:
@@ -106,7 +110,7 @@ class ShapeBase(
             shape.Name = self._generate_shape_name()
 
     def get_lo_inst(self) -> LoInst:
-        return self.__lo_inst
+        return self.lo_inst
 
     def get_owner(self) -> _T:
         return self.__owner
@@ -135,7 +139,9 @@ class ShapeBase(
         Note:
             If a glue point can not be accessed then it is ignored.
         """
-        return mDraw.Draw.get_glue_points(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_glue_points(self.__component)
+        return result
 
     def get_position_mm(self) -> Point:
         """
@@ -147,7 +153,9 @@ class ShapeBase(
         Returns:
             Point: Position as Point in mm units
         """
-        return mDraw.Draw.get_position(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_position(self.__component)
+        return result
 
     def get_rotation(self) -> Angle:
         """
@@ -162,7 +170,9 @@ class ShapeBase(
         Returns:
             Angle: Rotation angle.
         """
-        return mDraw.Draw.get_rotation(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_rotation(self.__component)
+        return result
 
     def get_shape_text(self) -> str:
         """
@@ -174,7 +184,9 @@ class ShapeBase(
         Returns:
             str: Shape text
         """
-        return mDraw.Draw.get_shape_text(shape=self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_shape_text(shape=self.__component)
+        return result
 
     def get_size_mm(self) -> Size:
         """
@@ -186,7 +198,9 @@ class ShapeBase(
         Returns:
             ~ooodev.utils.data_type.size.Size: Size in mm units
         """
-        return mDraw.Draw.get_size(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_size(self.__component)
+        return result
 
     def get_text_properties(self) -> XPropertySet:
         """
@@ -198,7 +212,9 @@ class ShapeBase(
         Returns:
             XPropertySet: Property Set
         """
-        return mDraw.Draw.get_text_properties(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_text_properties(self.__component)
+        return result
 
     def get_transformation(self) -> HomogenMatrix3:
         """
@@ -212,7 +228,9 @@ class ShapeBase(
         Returns:
             HomogenMatrix3: Matrix
         """
-        return mDraw.Draw.get_transformation(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_transformation(self.__component)
+        return result
 
     def get_zorder(self) -> int:
         """
@@ -224,7 +242,9 @@ class ShapeBase(
         Returns:
             int: Z-Order
         """
-        return mDraw.Draw.get_zorder(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_zorder(self.__component)
+        return result
 
     def is_group(self) -> bool:
         """
@@ -233,7 +253,9 @@ class ShapeBase(
         Returns:
             bool: ``True`` if shape is a group; Otherwise; ``False``.
         """
-        return mDraw.Draw.is_group(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.is_group(self.__component)
+        return result
 
     def is_image(self) -> bool:
         """
@@ -242,7 +264,9 @@ class ShapeBase(
         Returns:
             bool: ``True`` if shape is image; Otherwise, ``False``.
         """
-        return mDraw.Draw.is_image(self.__component)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.is_image(self.__component)
+        return result
 
     def move_to_bottom(self) -> None:
         """
@@ -257,12 +281,12 @@ class ShapeBase(
         """
         if self.owner is None:
             raise mEx.ShapeError("Owner is None. Owner must be set before calling this method.")
-        lo = self.get_lo_inst()
-        if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
-            raise mEx.ShapeError(
-                "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
-            )
-        mDraw.Draw.move_to_bottom(slide=self.owner.component, shape=self.__component)
+        with LoContext(self.lo_inst) as lo:
+            if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
+                raise mEx.ShapeError(
+                    "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
+                )
+            mDraw.Draw.move_to_bottom(slide=self.owner.component, shape=self.__component)
 
     def move_to_top(self) -> None:
         """
@@ -277,12 +301,12 @@ class ShapeBase(
         """
         if self.owner is None:
             raise mEx.ShapeError("Owner is None. Owner must be set before calling this method.")
-        lo = self.get_lo_inst()
-        if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
-            raise mEx.ShapeError(
-                "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
-            )
-        mDraw.Draw.move_to_top(slide=self.owner.component, shape=self.__component)
+        with LoContext(self.lo_inst) as lo:
+            if lo.is_uno_interfaces(self.owner.component, XDrawPage) is False:
+                raise mEx.ShapeError(
+                    "Owner component is not a  is not a slide (XDrawPage). Owner must be a slide before calling this method."
+                )
+            mDraw.Draw.move_to_top(slide=self.owner.component, shape=self.__component)
 
     def set_angle(self, angle: Angle | int) -> None:
         """
@@ -297,7 +321,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_angle(shape=self.__component, angle=angle)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_angle(shape=self.__component, angle=angle)
 
     def set_bitmap_color(self, name: DrawingBitmapKind | str) -> None:
         """
@@ -320,7 +345,8 @@ class ShapeBase(
             The Easiest way to get the colors is to open Draw and see what bitmap color names are available
             on your system.
         """
-        mDraw.Draw.set_bitmap_color(shape=self.__component, name=name)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_bitmap_color(shape=self.__component, name=name)
 
     def set_bitmap_file_color(self, fnm: PathOrStr) -> None:
         """
@@ -335,7 +361,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_bitmap_file_color(shape=self.__component, fnm=fnm)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_bitmap_file_color(shape=self.__component, fnm=fnm)
 
     def set_dashed_line(self, is_dashed: bool) -> None:
         """
@@ -350,7 +377,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_dashed_line(shape=self.__component, is_dashed=is_dashed)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_dashed_line(shape=self.__component, is_dashed=is_dashed)
 
     # region set_gradient_color()
     @overload
@@ -424,7 +452,8 @@ class ShapeBase(
         See Also:
             :py:meth:`~.Draw.set_gradient_properties`
         """
-        return mDraw.Draw.set_gradient_color(self.__component, *args, **kwargs)
+        with LoContext(self.lo_inst):
+            return mDraw.Draw.set_gradient_color(self.__component, *args, **kwargs)
 
     # endregion set_gradient_color()
 
@@ -441,7 +470,8 @@ class ShapeBase(
         See Also:
             :py:meth:`~.Draw.set_gradient_color`
         """
-        mDraw.Draw.set_gradient_properties(shape=self.__component, grad=grad)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_gradient_properties(shape=self.__component, grad=grad)
 
     def set_hatch_color(self, name: DrawingHatchingKind | str) -> None:
         """
@@ -464,7 +494,8 @@ class ShapeBase(
             The Easiest way to get the colors is to open Draw and see what gradient color names are available
             on your system.
         """
-        mDraw.Draw.set_hatch_color(shape=self.__component, name=name)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_hatch_color(shape=self.__component, name=name)
 
     def set_image(self, fnm: PathOrStr) -> None:
         """
@@ -494,7 +525,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_image_graphic(shape=self.__component, graphic=graphic)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_image_graphic(shape=self.__component, graphic=graphic)
 
     def set_line_style(self, style: LineStyle) -> None:
         """
@@ -509,7 +541,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_line_style(shape=self.__component, style=style)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_line_style(shape=self.__component, style=style)
 
     # region set_position()
 
@@ -555,7 +588,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_position(self.__component, *args, **kwargs)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_position(self.__component, *args, **kwargs)
 
     # endregion set_position()
     def set_props(self, **props) -> None:
@@ -577,7 +611,8 @@ class ShapeBase(
 
                 set_props(Loop=True, MediaURL=FileIO.fnm_to_url(fnm))
         """
-        mDraw.Draw.set_shape_props(self.__component, **props)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_shape_props(self.__component, **props)
 
     def set_rotation(self, angle: Angle | int) -> None:
         """
@@ -592,7 +627,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_rotation(shape=self.__component, angle=angle)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_rotation(shape=self.__component, angle=angle)
 
     # region set_size()
     @overload
@@ -618,7 +654,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_size(self.__component, *args, **kwargs)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_size(self.__component, *args, **kwargs)
 
     # endregion set_size()
 
@@ -636,7 +673,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_style(shape=self.__component, graphic_styles=graphic_styles, style_name=style_name)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_style(shape=self.__component, graphic_styles=graphic_styles, style_name=style_name)
 
     def set_transparency(self, level: Intensity | int) -> None:
         """
@@ -652,7 +690,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_transparency(shape=self.__component, level=level)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_transparency(shape=self.__component, level=level)
 
     def set_visible(self, is_visible: bool) -> None:
         """
@@ -667,7 +706,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_visible(shape=self.__component, is_visible=is_visible)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_visible(shape=self.__component, is_visible=is_visible)
 
     def set_zorder(self, order: int) -> None:
         """
@@ -682,7 +722,8 @@ class ShapeBase(
         Returns:
             None:
         """
-        mDraw.Draw.set_zorder(shape=self.__component, order=order)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_zorder(shape=self.__component, order=order)
 
     def get_shape_type(self) -> str:
         """Get the shape type. This is usually a service name and is manually set by the class."""

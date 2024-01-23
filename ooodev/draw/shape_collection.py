@@ -12,6 +12,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from ooodev.draw import DrawPage
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Grouping,_Combining_and_Binding
 
 
-class ShapeCollection(ShapeCollectionComp, QiPartial):
+class ShapeCollection(ShapeCollectionComp, QiPartial, LoInstPropsPartial):
     """Represents a shape collection."""
 
     def __init__(self, owner: DrawPage[ComponentT], collection: Any = None, lo_inst: LoInst | None = None) -> None:
@@ -32,16 +33,15 @@ class ShapeCollection(ShapeCollectionComp, QiPartial):
             collection (Any, optional): The collection of shapes. If ``None``, a new empty collection will be created.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         if collection is None:
-            collection = self._lo_inst.create_instance_mcf(
+            collection = self.lo_inst.create_instance_mcf(
                 XShapes, "com.sun.star.drawing.ShapeCollection", raise_err=True
             )
         # ShapeCollectionComp will validate the collection
         ShapeCollectionComp.__init__(self, collection)
-        QiPartial.__init__(self, component=self.component, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
 
         self._owner = owner
 
@@ -96,24 +96,24 @@ class ShapeCollection(ShapeCollectionComp, QiPartial):
         try:
             sel_supp = (
                 doc.get_selection_supplier()
-            )  # self._lo_inst.qi(XSelectionSupplier, mGui.GUI.get_current_controller(doc), True)
+            )  # self.lo_inst.qi(XSelectionSupplier, mGui.GUI.get_current_controller(doc), True)
             sel_supp.select(self.qi(XShapes, True))
 
             if combine_op == ShapeCombKind.INTERSECT:
-                self._lo_inst.dispatch_cmd("Intersect")
+                self.lo_inst.dispatch_cmd("Intersect")
             elif combine_op == ShapeCombKind.SUBTRACT:
-                self._lo_inst.dispatch_cmd("Substract")  # misspelt!
+                self.lo_inst.dispatch_cmd("Substract")  # misspelt!
             elif combine_op == ShapeCombKind.COMBINE:
-                self._lo_inst.dispatch_cmd("Combine")
+                self.lo_inst.dispatch_cmd("Combine")
             else:
-                self._lo_inst.dispatch_cmd("Merge")
+                self.lo_inst.dispatch_cmd("Merge")
 
-            self._lo_inst.delay(500)  # give time for dispatches to arrive and be processed
+            self.lo_inst.delay(500)  # give time for dispatches to arrive and be processed
 
             # extract the new single shape from the modified selection
-            xs = self._lo_inst.qi(XShapes, sel_supp.getSelection(), True)
-            shape = self._lo_inst.qi(XShape, xs.getByIndex(0), True)
-            return DrawShape(owner=self.owner, component=shape, lo_inst=self._lo_inst)  # type: ignore
+            xs = self.lo_inst.qi(XShapes, sel_supp.getSelection(), True)
+            shape = self.lo_inst.qi(XShape, xs.getByIndex(0), True)
+            return DrawShape(owner=self.owner, component=shape, lo_inst=self.lo_inst)  # type: ignore
         except Exception as e:
             raise mEx.ShapeError("Unable to combine shapes") from e
 
@@ -121,7 +121,7 @@ class ShapeCollection(ShapeCollectionComp, QiPartial):
         """Returns the height of the collection."""
         height = 0
         for itm in self:
-            shape = self._lo_inst.qi(XShape, itm)
+            shape = self.lo_inst.qi(XShape, itm)
             if shape is None:
                 continue
             pos = shape.getPosition()
@@ -137,7 +137,7 @@ class ShapeCollection(ShapeCollectionComp, QiPartial):
         """Returns the width of the collection."""
         width = 0
         for itm in self:
-            shape = self._lo_inst.qi(XShape, itm)
+            shape = self.lo_inst.qi(XShape, itm)
             if shape is None:
                 continue
             pos = shape.getPosition()

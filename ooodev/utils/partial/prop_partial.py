@@ -3,6 +3,7 @@ from typing import Any, overload
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils import props as mProps
 from ooodev.utils import gen_util as gUtil
+from ooodev.utils.context.lo_context import LoContext
 
 
 class PropPartial:
@@ -29,7 +30,9 @@ class PropPartial:
         Returns:
             Any: Property value or default.
         """
-        return mProps.Props.get(obj=self.__component, name=name, default=default)
+        with LoContext(self.__lo_inst):
+            result = mProps.Props.get(obj=self.__component, name=name, default=default)
+        return result
 
     def set_property(self, **kwargs: Any) -> None:
         """
@@ -38,4 +41,5 @@ class PropPartial:
         Args:
             **kwargs: Variable length Key value pairs used to set properties.
         """
-        mProps.Props.set(self.__component, **kwargs)
+        with LoContext(self.__lo_inst):
+            mProps.Props.set(self.__component, **kwargs)

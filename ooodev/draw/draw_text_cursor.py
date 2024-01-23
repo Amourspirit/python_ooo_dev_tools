@@ -13,7 +13,9 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
@@ -32,6 +34,7 @@ class DrawTextCursor(
     PropPartial,
     QiPartial,
     StylePartial,
+    LoInstPropsPartial,
 ):
     """
     Represents a text cursor.
@@ -49,23 +52,24 @@ class DrawTextCursor(
             lo_inst (LoInst, optional): Lo instance. Defaults to None.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self.__owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextCursorPartial.__init__(self, owner=owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         # self.__doc = doc
 
     def __len__(self) -> int:
-        return mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)
+        return result
 
     # region Properties
     @property

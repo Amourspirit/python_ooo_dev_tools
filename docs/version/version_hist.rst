@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.21.4
+==============
+
+Added ``ooodev.draw.ImpressPages`` class. Handles working with Impress pages via ``ooodev.Draw.ImpressDoc``.
+
 Version 0.21.3
 ==============
 

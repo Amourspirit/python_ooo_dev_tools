@@ -33,7 +33,7 @@ class WriteForm(DataFormComp, QiPartial, FormPartial):
         DataFormComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
         draw_page = owner.owner.component
-        FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component)  # type: ignore
+        FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component, lo_inst=self._lo_inst)  # type: ignore
 
     # region Properties
     @property

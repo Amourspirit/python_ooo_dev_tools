@@ -264,7 +264,7 @@ class WriteDoc(
         Creates a new Draw document.
 
         Args:
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: WriteDoc representing document
@@ -278,7 +278,7 @@ class WriteDoc(
 
         Args:
             loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
-            lo_inst (LoInst, optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: WriteDoc representing document
@@ -305,6 +305,96 @@ class WriteDoc(
         return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
 
     # endregion Create Document
+
+    # region create_doc_from_template()
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, *, lo_inst: LoInst) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader): Component Loader.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @staticmethod
+    def create_doc_from_template(
+        template_path: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader, optional): Component Loader.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
+
+        Raises:
+            Exception: If unable to create document.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.create_doc_from_template(template_path=template_path)
+        else:
+            doc = lo_inst.create_doc_from_template(template_path=template_path, loader=loader)
+        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
+
+    # endregion create_doc_from_template()
 
     def close_doc(self) -> bool:
         """
@@ -1135,7 +1225,7 @@ class WriteDoc(
 
         Args:
             fnm (PathOrStr): path of document to open
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1166,7 +1256,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1197,7 +1287,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1214,7 +1304,7 @@ class WriteDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
 
         Returns:
@@ -1234,7 +1324,7 @@ class WriteDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1255,7 +1345,7 @@ class WriteDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader, optional): Component Loader
             props (Iterable[PropertyValue], optional): Properties passed to component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Raises:
             Exception: if unable to open document
@@ -1312,7 +1402,7 @@ class WriteDoc(
 
         Args:
             fnm (PathOrStr): path of document to open.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document.
@@ -1343,7 +1433,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document.
@@ -1360,7 +1450,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Raises:
             Exception: if unable to open document.
@@ -1406,7 +1496,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1439,7 +1529,7 @@ class WriteDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1457,7 +1547,7 @@ class WriteDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document

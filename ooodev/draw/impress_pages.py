@@ -7,7 +7,7 @@ from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
-from ooodev.draw import draw_page as mDrawPage
+from ooodev.draw import impress_page as mImpressPage
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import gen_util as mGenUtil
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial, LoInstPropsPartial):
+class ImpressPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial, LoInstPropsPartial):
     """
     Class for managing Draw Pages.
     """
@@ -50,7 +50,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
         ServicePartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         self._current_index = 0
 
-    def __getitem__(self, _itm: int | str) -> mDrawPage.DrawPage[_T]:
+    def __getitem__(self, _itm: int | str) -> mImpressPage.ImpressPage[_T]:
         if isinstance(_itm, str):
             return self.get_by_name(_itm)
         return self.get_by_index(idx=_itm)
@@ -62,30 +62,14 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
         self._current_index = 0
         return self
 
-    def __next__(self) -> mDrawPage.DrawPage[_T]:
+    def __next__(self) -> mImpressPage.ImpressPage[_T]:
         if self._current_index >= len(self):
             self._current_index = 0
             raise StopIteration
         self._current_index += 1
         return self[self._current_index - 1]
 
-    def __delitem__(self, _item: int | str | mDrawPage.DrawPage[_T] | XDrawPage) -> None:
-        # Delete slide by index, name, or object
-        # Usage:
-        # del doc.slides[-1]
-        # assert len(doc.slides) == 8
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide.get_name()]
-        # assert len(doc.slides) == 7
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide]
-        # assert len(doc.slides) == 6
-
-        # last_slide = doc.slides[-1]
-        # del doc.slides[last_slide.component] # type: ignore
-        # assert len(doc.slides) == 5
+    def __delitem__(self, _item: int | str | mImpressPage.ImpressPage[_T] | XDrawPage) -> None:
         with LoContext(self.lo_inst):
             if mInfo.Info.is_instance(_item, int):
                 self.delete_slide(_item)
@@ -94,14 +78,14 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
                 if slide is None:
                     raise mEx.MissingNameError(f"Unable to find slide with name '{_item}'")
                 super().remove(slide)
-            elif mInfo.Info.is_instance(_item, mDrawPage.DrawPage):
+            elif mInfo.Info.is_instance(_item, mImpressPage.ImpressPage):
                 super().remove(_item.component)
             elif mInfo.Info.is_instance(_item, XDrawPage):
                 super().remove(_item)
             else:
                 raise TypeError(f"Unsupported type: {type(_item)}")
 
-    def insert_slide(self, idx: int) -> mDrawPage.DrawPage[_T]:
+    def insert_slide(self, idx: int) -> mImpressPage.ImpressPage[_T]:
         """
         Inserts a slide at the given position in the document
 
@@ -114,10 +98,10 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
             DrawPageError: If any other error occurs.
 
         Returns:
-            DrawPage: New slide that was inserted.
+            ImpressPage: New slide that was inserted.
         """
         index = mGenUtil.Util.get_index(idx, len(self), True)
-        return mDrawPage.DrawPage(
+        return mImpressPage.ImpressPage(
             owner=self.owner, component=self.component.insertNewByIndex(index), lo_inst=self.lo_inst
         )
 
@@ -144,7 +128,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
 
     # region XNameAccess overrides
 
-    def get_by_name(self, name: str) -> mDrawPage.DrawPage[_T]:
+    def get_by_name(self, name: str) -> mImpressPage.ImpressPage[_T]:
         """
         Gets the element with the specified name.
 
@@ -155,19 +139,19 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
             MissingNameError: If unable to find slide with name.
 
         Returns:
-            DrawPage[DrawDoc]: The drawpage with the specified name.
+            ImpressPage[_T]: The drawpage with the specified name.
         """
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find slide with name '{name}'")
 
         result = super().get_by_name(name)
-        return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
+        return mImpressPage.ImpressPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XNameAccess overrides
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> mDrawPage.DrawPage[_T]:
+    def get_by_index(self, idx: int) -> mImpressPage.ImpressPage[_T]:
         """
         Gets the element with the specified index.
 
@@ -179,16 +163,16 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
             IndexError: If unable to find slide with index.
 
         Returns:
-            DrawPage[DrawDoc]: The drawpage with the specified index.
+            ImpressPage[_T]: The drawpage with the specified index.
         """
         index = mGenUtil.Util.get_index(idx, len(self))
         result = super().get_by_index(index)
-        return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
+        return mImpressPage.ImpressPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides
 
     # region XDrawPages overrides
-    def insert_new_by_index(self, idx: int) -> mDrawPage.DrawPage[_T]:
+    def insert_new_by_index(self, idx: int) -> mImpressPage.ImpressPage[_T]:
         """
         Creates and inserts a new DrawPage or MasterPage into this container.
 
@@ -198,17 +182,11 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
                 For example, ``-1`` will insert at the end of the document.
 
         Returns:
-            DrawPage: The new page.
+            ImpressPage[_T]: The new page.
         """
-        if idx >= len(self):
-            # if index is greater than the number of slides, then insert at the end
-            idx = -1
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("Index out of range")
-        result = super().insert_new_by_index(idx)
-        return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
+        index = mGenUtil.Util.get_index(idx, len(self), True)
+        result = super().insert_new_by_index(index)
+        return mImpressPage.ImpressPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XDrawPages overrides
 
@@ -217,7 +195,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
     def owner(self) -> _T:
         """
         Returns:
-            _T: Draw or Impress document.
+            _T: Usually Impress document.
         """
         return self.__owner
 

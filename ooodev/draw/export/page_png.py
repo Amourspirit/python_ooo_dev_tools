@@ -155,7 +155,7 @@ class PagePng(ExportBase, EventsPartial):
         """
         self.subscribe_event(DrawNamedEvent.EXPORTING_PAGE_PNG, callback)
 
-    def subscribe_event_exported(self, callback: Callable[[Any, CancelEventArgsExport[ExportPngT]], None]) -> None:
+    def subscribe_event_exported(self, callback: Callable[[Any, EventArgsExport[ExportPngT]], None]) -> None:
         """
         Add an event listener to current instance that is triggered on export complete.
 
@@ -179,7 +179,7 @@ class PagePng(ExportBase, EventsPartial):
         """
         self.unsubscribe_event(DrawNamedEvent.EXPORTING_PAGE_PNG, callback)
 
-    def unsubscribe_event_exported(self, callback: Callable[[Any, CancelEventArgsExport[ExportPngT]], None]) -> None:
+    def unsubscribe_event_exported(self, callback: Callable[[Any, EventArgsExport[ExportPngT]], None]) -> None:
         """
         Remove an event listener from current instance.
 
