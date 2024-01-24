@@ -14,13 +14,14 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from . import write_paragraphs as mWriteParagraphs
 from . import write_text_tables as mWriteTextTables
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartial, StylePartial):
+class WriteText(Generic[T], LoInstPropsPartial, TextComp, RelativeTextContentInsertPartial, QiPartial, StylePartial):
     """
     Represents writer text content.
 
@@ -37,22 +38,21 @@ class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartia
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextComp.__init__(self, component)  # type: ignore
         RelativeTextContentInsertPartial.__init__(self, component=component, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
 
     def get_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[T]:
         """Returns the paragraphs of this text."""
-        return mWriteParagraphs.WriteParagraphs(owner=self.owner, component=self.component, lo_inst=self._lo_inst)
+        return mWriteParagraphs.WriteParagraphs(owner=self.owner, component=self.component, lo_inst=self.lo_inst)
 
     def get_text_tables(self) -> mWriteTextTables.WriteTextTables[T]:
         """Returns the text tables of this text."""
-        return mWriteTextTables.WriteTextTables(owner=self.owner, component=self.component, lo_inst=self._lo_inst)
+        return mWriteTextTables.WriteTextTables(owner=self.owner, component=self.component, lo_inst=self.lo_inst)
 
     @overload
     def insert_text_content(self, content: XTextContent, absorb: bool) -> None:
@@ -107,7 +107,7 @@ class WriteText(Generic[T], TextComp, RelativeTextContentInsertPartial, QiPartia
             None:
         """
         if rng is None:
-            rng = mLo.Lo.qi(XTextRange, self.owner.component)
+            rng = self.lo_inst.qi(XTextRange, self.owner.component)
             if rng is None:
                 raise TypeError("owner must be XTextRange when rng is None")
         TextComp.insert_text_content(self, rng, content, absorb)

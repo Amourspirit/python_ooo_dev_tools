@@ -8,13 +8,15 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from . import write_text_portion as mWriteTextPortion
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextPortions(Generic[T], EnumerationAccessPartial, QiPartial):
+class WriteTextPortions(Generic[T], LoInstPropsPartial, EnumerationAccessPartial, QiPartial):
     """
     Represents writer Text Portions.
 
@@ -31,12 +33,12 @@ class WriteTextPortions(Generic[T], EnumerationAccessPartial, QiPartial):
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EnumerationAccessPartial.__init__(self, component=component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
 
     # region Overrides
     def _is_next_element_valid(self, element: Any) -> bool:
@@ -50,7 +52,9 @@ class WriteTextPortions(Generic[T], EnumerationAccessPartial, QiPartial):
         Returns:
             bool: True if element supports service com.sun.star.text.TextPortion.
         """
-        return mInfo.Info.support_service(element, "com.sun.star.text.TextPortion")
+        with LoContext(self.lo_inst):
+            result = mInfo.Info.support_service(element, "com.sun.star.text.TextPortion")
+        return result
 
     def __next__(self) -> mWriteTextPortion.WriteTextPortion[T]:
         result = super().__next__()

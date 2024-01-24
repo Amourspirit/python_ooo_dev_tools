@@ -7,13 +7,14 @@ from ooodev.form.partial.form_partial import FormPartial
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
     from .write_forms import WriteForms
 
 
-class WriteForm(DataFormComp, QiPartial, FormPartial):
+class WriteForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial):
     """Writer Form"""
 
     def __init__(self, owner: WriteForms, component: Form, lo_inst: LoInst | None = None) -> None:
@@ -26,14 +27,13 @@ class WriteForm(DataFormComp, QiPartial, FormPartial):
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         self._owner = owner
         DataFormComp.__init__(self, component)
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         draw_page = owner.owner.component
-        FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component, lo_inst=self._lo_inst)  # type: ignore
+        FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component, lo_inst=self.lo_inst)  # type: ignore
 
     # region Properties
     @property

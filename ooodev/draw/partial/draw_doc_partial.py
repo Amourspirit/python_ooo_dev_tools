@@ -615,7 +615,8 @@ class DrawDocPartial(Generic[_T]):
             ZoomKind.PAGE_WIDTH,
             ZoomKind.PAGE_WIDTH_EXACT,
         ):
-            mGUI.GUI.zoom(view=type)
+            with LoContext(self.__lo_inst):
+                mGUI.GUI.zoom(view=type)
         elif type == ZoomKind.ZOOM_200_PERCENT:
             zoom_val(200)
         elif type == ZoomKind.ZOOM_150_PERCENT:

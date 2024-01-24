@@ -9,11 +9,12 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextPortion(Generic[T], TextPortionComp, QiPartial, PropPartial, StylePartial):
+class WriteTextPortion(Generic[T], LoInstPropsPartial, TextPortionComp, QiPartial, PropPartial, StylePartial):
     """
     Represents writer paragraph content.
 
@@ -30,13 +31,12 @@ class WriteTextPortion(Generic[T], TextPortionComp, QiPartial, PropPartial, Styl
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextPortionComp.__init__(self, component)
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
-        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         # self.__doc = doc
 

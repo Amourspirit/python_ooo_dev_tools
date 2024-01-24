@@ -15,13 +15,14 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.gui_partial import GuiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import PathOrStr
 from .draw_pages import DrawPages
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
 
 class DrawDoc(
     DrawDocPartial["DrawDoc"],
+    LoInstPropsPartial,
     DrawingDocumentComp,
     DocumentEventEvents,
     ModifyEvents,
@@ -45,7 +47,6 @@ class DrawDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
-    LoInstPropsPartial,
 ):
     """Draw document Class"""
 
@@ -64,15 +65,13 @@ class DrawDoc(
             None:
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
 
         if not mInfo.Info.is_doc_type(doc, LoService.DRAW):
             raise mEx.NotSupportedDocumentError("Document is not a Draw document")
 
-        LoInstPropsPartial.__init__(self, lo_inst=self._lo_inst)
-        DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self.lo_inst)
         DrawingDocumentComp.__init__(self, doc)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
@@ -80,11 +79,11 @@ class DrawDoc(
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
         CloseEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
         Storable2Partial.__init__(self, component=doc, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=doc)
-        ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         self._pages = None
 
     # region Lazy Listeners
@@ -223,7 +222,7 @@ class DrawDoc(
         See Also:
             :ref:`ch02_save_doc`
         """
-        return self._lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
+        return self.lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
 
     # endregion save_doc
 
@@ -303,9 +302,10 @@ class DrawDoc(
             arg = arguments[0]
             if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
                 doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW, loader=arg)
-            if isinstance(arg, LoInst):
+            elif isinstance(arg, LoInst):
                 lo_inst = arg
-                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
+                with LoContext(arg):
+                    doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
         if doc is None:
             raise TypeError("create_doc() got an unexpected argument")
         if lo_inst is None:
@@ -780,13 +780,5 @@ class DrawDoc(
         if self._pages is None:
             self._pages = DrawPages(owner=self, slides=self.component.getDrawPages())
         return cast("DrawPages[DrawDoc]", self._pages)
-
-    @property
-    def lo_inst(self) -> LoInst:
-        """
-        Returns:
-            LoInst: LibreOffice instance.
-        """
-        return self._lo_inst
 
     # endregion Properties

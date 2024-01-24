@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Sequence, overload, TYPE_CHECKING, TypeVar
+from typing import Sequence, overload, TYPE_CHECKING
 import uno
 
 if TYPE_CHECKING:
@@ -13,8 +13,11 @@ if TYPE_CHECKING:
 from ooodev.adapter.drawing.graphic_object_shape_comp import GraphicObjectShapeComp
 from ooodev.office import write as mWrite
 from ooodev.proto.component_proto import ComponentT
+from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.color import Color, CommonColor
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.inst.lo.lo_inst import LoInst
 
 from .. import write_text_content as mWriteTextContent
 from .. import write_text_frame as mWriteTextFrame
@@ -28,7 +31,7 @@ class TextCursorPartial:
     This class implements ``__len__()`` method, which returns the number of characters in the range.
     """
 
-    def __init__(self, owner: ComponentT, component: XTextCursor) -> None:
+    def __init__(self, owner: ComponentT, component: XTextCursor, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -36,6 +39,10 @@ class TextCursorPartial:
             owner (WriteDoc): Doc that owns this component.
             component (XTextCursor): A UNO object that supports ``com.sun.star.text.TextCursor`` service.
         """
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
         self.__owner = owner
         self.__component = component
 
@@ -58,7 +65,9 @@ class TextCursorPartial:
         Note:
             Event args ``event_data`` is a dictionary containing ``name`` and ``cursor``.
         """
-        return mWrite.Write.add_bookmark(self.__component, name)
+        with LoContext(self.__lo_inst):
+            result = mWrite.Write.add_bookmark(self.__component, name)
+        return result
 
     # region add_formula()
     @overload
@@ -118,12 +127,13 @@ class TextCursorPartial:
         Note:
             Event args ``event_data`` is a dictionary containing ``formula`` and ``cursor``.
         """
-        if styles:
-            return mWriteTextContent.WriteTextContent(
-                self, mWrite.Write.add_formula(self.__component, formula, styles)
-            )
-        else:
-            return mWriteTextContent.WriteTextContent(self, mWrite.Write.add_formula(self.__component, formula))
+        with LoContext(self.__lo_inst):
+            if styles:
+                result = mWrite.Write.add_formula(self.__component, formula, styles)
+            else:
+                result = mWrite.Write.add_formula(self.__component, formula)
+
+        return mWriteTextContent.WriteTextContent(self, result)
 
     # endregion add_formula()
 
@@ -151,7 +161,9 @@ class TextCursorPartial:
         Note:
             Event args ``event_data`` is a dictionary containing ``label``, ``url_str`` and ``cursor``.
         """
-        return mWrite.Write.add_hyperlink(self.__component, label, url_str)
+        with LoContext(self.__lo_inst):
+            result = mWrite.Write.add_hyperlink(self.__component, label, url_str)
+        return result
 
     # region add_image_link
     @overload
@@ -268,14 +280,15 @@ class TextCursorPartial:
         """
         if styles is None:
             styles = ()
-        result = mWrite.Write.add_image_link(
-            doc=self.__owner.component,
-            cursor=self.__component,
-            fnm=fnm,
-            width=width,
-            height=height,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            result = mWrite.Write.add_image_link(
+                doc=self.__owner.component,
+                cursor=self.__component,
+                fnm=fnm,
+                width=width,
+                height=height,
+                styles=styles,
+            )
         return mWriteTextContent.WriteTextContent(self, result)
 
     # endregion add_image_link
@@ -339,7 +352,8 @@ class TextCursorPartial:
         Note:
             Event args ``event_data`` is a dictionary containing ``doc``, ``cursor``, ``fnm``, ``width`` and ``height``.
         """
-        result = mWrite.Write.add_image_shape(cursor=self.__component, fnm=fnm, width=width, height=height)
+        with LoContext(self.__lo_inst):
+            result = mWrite.Write.add_image_shape(cursor=self.__component, fnm=fnm, width=width, height=height)
         return GraphicObjectShapeComp(result)
 
     # endregion add_image_shape()
@@ -356,7 +370,8 @@ class TextCursorPartial:
             MissingInterfaceError: If unable to obtain XShape interface
             Exception: If unable to add Line divider
         """
-        mWrite.Write.add_line_divider(self.__component, line_width)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.add_line_divider(self.__component, line_width)
 
     def add_table(
         self,
@@ -415,16 +430,17 @@ class TextCursorPartial:
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.writer.direct.table </src/format/ooodev.format.writer.direct.table>` subpackages.
         """
-        result = mWrite.Write.add_table(
-            cursor=self.__component,
-            table_data=table_data,
-            header_bg_color=header_bg_color,
-            header_fg_color=header_fg_color,
-            tbl_bg_color=tbl_bg_color,
-            tbl_fg_color=tbl_fg_color,
-            first_row_header=first_row_header,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            result = mWrite.Write.add_table(
+                cursor=self.__component,
+                table_data=table_data,
+                header_bg_color=header_bg_color,
+                header_fg_color=header_fg_color,
+                tbl_bg_color=tbl_bg_color,
+                tbl_fg_color=tbl_fg_color,
+                first_row_header=first_row_header,
+                styles=styles,
+            )
         return mWriteTextTable.WriteTextTable(self, result)
 
     def add_text_frame(
@@ -476,17 +492,18 @@ class TextCursorPartial:
             - :py:class:`~.utils.color.CommonColor`
             - :py:class:`~.utils.color.StandardColor`
         """
-        result = mWrite.Write.add_text_frame(
-            cursor=self.__component,
-            text=text,
-            ypos=ypos,
-            width=width,
-            height=height,
-            page_num=page_num,
-            border_color=border_color,
-            background_color=background_color,
-            styles=styles,
-        )
+        with LoContext(self.__lo_inst):
+            result = mWrite.Write.add_text_frame(
+                cursor=self.__component,
+                text=text,
+                ypos=ypos,
+                width=width,
+                height=height,
+                page_num=page_num,
+                border_color=border_color,
+                background_color=background_color,
+                styles=styles,
+            )
         return mWriteTextFrame.WriteTextFrame(self, result)
 
     # region append()
@@ -572,7 +589,8 @@ class TextCursorPartial:
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
         """
-        mWrite.Write.append(self.__component, *args, **kwargs)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.append(self.__component, *args, **kwargs)
 
     # endregion append()
 
@@ -583,7 +601,8 @@ class TextCursorPartial:
         Raises:
             MissingInterfaceError: If required interface cannot be obtained.
         """
-        mWrite.Write.append_date_time(self.__component)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.append_date_time(self.__component)
 
     # region append_line()
     @overload
@@ -638,10 +657,11 @@ class TextCursorPartial:
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
         """
-        if styles:
-            mWrite.Write.append_line(self.__component, text, styles)
-        else:
-            mWrite.Write.append_line(self.__component, text)
+        with LoContext(self.__lo_inst):
+            if styles:
+                mWrite.Write.append_line(self.__component, text, styles)
+            else:
+                mWrite.Write.append_line(self.__component, text)
 
     # endregion append_line()
 
@@ -707,10 +727,11 @@ class TextCursorPartial:
             - :doc:`ooodev.format.writer.direct.char </src/format/ooodev.format.writer.direct.char>`
             - :doc:`ooodev.format.writer.direct.para </src/format/ooodev.format.writer.direct.para>`
         """
-        if styles:
-            mWrite.Write.append_para(self.__component, text, styles)
-        else:
-            mWrite.Write.append_para(self.__component, text)
+        with LoContext(self.__lo_inst):
+            if styles:
+                mWrite.Write.append_para(self.__component, text, styles)
+            else:
+                mWrite.Write.append_para(self.__component, text)
 
     # endregion append_para()
 
@@ -719,19 +740,22 @@ class TextCursorPartial:
         Inserts a column break
 
         """
-        mWrite.Write.column_break(self.__component)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.column_break(self.__component)
 
     def end_line(self) -> None:
         """
         Inserts a line break
         """
-        mWrite.Write.end_line(self.__component)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.end_line(self.__component)
 
     def end_paragraph(self) -> None:
         """
         Inserts a paragraph break
         """
-        mWrite.Write.end_paragraph(self.__component)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.end_paragraph(self.__component)
 
     def get_all_text(self) -> str:
         """
@@ -763,7 +787,9 @@ class TextCursorPartial:
 
             It would be better to use cursors from relative positions in bigger documents.
         """
-        return mSelection.Selection.get_position(self.__component)
+        with LoContext(self.__lo_inst):
+            result =  mSelection.Selection.get_position(self.__component)
+        return result
 
     def insert_para(self, para: str, para_style: str) -> None:
         """
@@ -773,13 +799,15 @@ class TextCursorPartial:
             para (str): Paragraph text
             para_style (str): Style such as 'Heading 1'
         """
-        mWrite.Write.insert_para(self.__component, para, para_style)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.insert_para(self.__component, para, para_style)
 
     def page_break(self) -> None:
         """
         Inserts a page break
         """
-        mWrite.Write.page_break(self.__component)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.page_break(self.__component)
 
     # region style()
     @overload
@@ -834,7 +862,8 @@ class TextCursorPartial:
             Unlike :py:meth:`~.Write.style_left` this method does not restore any style properties after style is applied.
         """
         kwargs["cursor"] = self.__component
-        mWrite.Write.style(**kwargs)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.style(**kwargs)
 
     # endregion style()
 
@@ -904,7 +933,8 @@ class TextCursorPartial:
             This is done so applied style properties are reset before next text is appended.
             This is not the case for :py:meth:`~.Write.style` method.
         """
-        mWrite.Write.style_left(self.__component, *args, **kwargs)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.style_left(self.__component, *args, **kwargs)
 
     # endregion style_left()
     def style_left_bold(self, pos: int) -> None:
@@ -914,7 +944,8 @@ class TextCursorPartial:
         Args:
             pos (int): Number of positions to go left
         """
-        mWrite.Write.style_left_bold(self.__component, pos)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.style_left_bold(self.__component, pos)
 
     def style_left_code(self, pos: int) -> None:
         """
@@ -930,7 +961,8 @@ class TextCursorPartial:
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_mono_name`
         """
-        mWrite.Write.style_left_code(self.__component, pos)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.style_left_code(self.__component, pos)
 
     def style_left_color(self, pos: int, color: Color) -> None:
         """
@@ -946,7 +978,8 @@ class TextCursorPartial:
         See Also:
             :py:class:`~.utils.color.CommonColor`
         """
-        mWrite.Write.style_left_color(self.__component, pos, color)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.style_left_color(self.__component, pos, color)
 
     def style_left_italic(self, pos: int) -> None:
         """
@@ -955,4 +988,5 @@ class TextCursorPartial:
         Args:
             pos (int): Number of positions to go left
         """
-        mWrite.Write.style_left_italic(self.__component, pos)
+        with LoContext(self.__lo_inst):
+            mWrite.Write.style_left_italic(self.__component, pos)

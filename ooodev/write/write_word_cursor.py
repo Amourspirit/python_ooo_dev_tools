@@ -24,10 +24,7 @@ class WriteWordCursor(WriteTextCursor, WordCursorPartial, StylePartial):
             component (XWordCursor): A UNO object that supports ``com.sun.star.text.TextViewCursor`` service.
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
-        WriteTextCursor.__init__(self, owner=owner, component=component, lo_inst=self._lo_inst)
+
+        WriteTextCursor.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
         WordCursorPartial.__init__(self, component, None)  # type: ignore
         StylePartial.__init__(self, component=component)

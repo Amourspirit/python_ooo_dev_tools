@@ -8,12 +8,13 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from . import write_text_table as mWriteTextTable
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextTables(Generic[T], TextComp, QiPartial):
+class WriteTextTables(Generic[T], LoInstPropsPartial, TextComp, QiPartial):
     """
     Represents writer text tables.
 
@@ -30,12 +31,11 @@ class WriteTextTables(Generic[T], TextComp, QiPartial):
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextComp.__init__(self, component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
 
     # region Overrides
     def _is_next_element_valid(self, element: Any) -> bool:
@@ -53,7 +53,7 @@ class WriteTextTables(Generic[T], TextComp, QiPartial):
 
     def __next__(self) -> mWriteTextTable.WriteTextTable[T]:
         result = super().__next__()
-        return mWriteTextTable.WriteTextTable(owner=self.owner, component=result, lo_inst=self._lo_inst)
+        return mWriteTextTable.WriteTextTable(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion Overrides
 
