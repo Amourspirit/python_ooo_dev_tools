@@ -14,12 +14,14 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.context.lo_context import LoContext
 from .draw_text_cursor import DrawTextCursor
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial):
+class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial, LoInstPropsPartial):
     """
     Represents text content.
 
@@ -36,14 +38,13 @@ class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial):
             lo_inst (LoInst, optional): Lo instance. Defaults to None.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextComp.__init__(self, component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
-        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
 
     def add_bullet(self, level: int, text: str) -> None:
         """
@@ -61,7 +62,8 @@ class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial):
         Returns:
             None:
         """
-        mDraw.Draw.add_bullet(self.component, level, text)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.add_bullet(self.component, level, text)
 
     def get_cursor(self) -> DrawTextCursor[_T]:
         """
@@ -70,7 +72,7 @@ class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial):
         Returns:
             DrawTextCursor[_T]: Cursor for this text.
         """
-        return DrawTextCursor(owner=self.owner, component=self.component.createTextCursor(), lo_inst=self._lo_inst)
+        return DrawTextCursor(owner=self.owner, component=self.component.createTextCursor(), lo_inst=self.lo_inst)
 
     # region Properties
     @property

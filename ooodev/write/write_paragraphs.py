@@ -6,14 +6,16 @@ from ooodev.adapter.text.text_comp import TextComp
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from . import write_paragraph as mWriteParagraph
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteParagraphs(Generic[T], TextComp, QiPartial):
+class WriteParagraphs(Generic[T], LoInstPropsPartial, TextComp, QiPartial):
     """
     Represents writer paragraphs.
 
@@ -30,12 +32,11 @@ class WriteParagraphs(Generic[T], TextComp, QiPartial):
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextComp.__init__(self, component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
 
     # region Overrides
     def _is_next_element_valid(self, element: Any) -> bool:
@@ -49,11 +50,13 @@ class WriteParagraphs(Generic[T], TextComp, QiPartial):
         Returns:
             bool: True if element supports service com.sun.star.text.Paragraph.
         """
-        return mInfo.Info.support_service(element, "com.sun.star.text.Paragraph")
+        with LoContext(self.lo_inst):
+            result = mInfo.Info.support_service(element, "com.sun.star.text.Paragraph")
+        return result
 
     def __next__(self) -> mWriteParagraph.WriteParagraph[T]:
         result = super().__next__()
-        return mWriteParagraph.WriteParagraph(owner=self.owner, component=result, lo_inst=self._lo_inst)
+        return mWriteParagraph.WriteParagraph(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion Overrides
 

@@ -1,7 +1,7 @@
-.. _class_draw_draw_pages:
+.. _class_draw_impress_pages:
 
-Class DrawPages
-===============
+Class ImpressPages
+==================
 
 .. contents:: Table of Contents
     :local:
@@ -11,7 +11,7 @@ Class DrawPages
 Introduction
 ------------
 
-The DrawPages class represents the collection of pages in a document.
+The ImpressPages class represents the collection of pages in a document.
 
 This class contains several python magic methods to make it behave like a collection.
 
@@ -22,7 +22,7 @@ To get the number of pages in a draw document, use the built in ``len()`` method
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> len(doc.slides)
     1
 
@@ -36,51 +36,51 @@ Get by page index.
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> doc.slides[0]
-    <ooodev.draw.DrawPage object at 0x7f7f0c0b2b90>
+    <ooodev.draw.ImpressPage object at 0x7f7f0c0b2b90>
 
 Or by page name.
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> doc.slides["page1"]
-    <ooodev.draw.DrawPage object at 0x7f7f0c0b2b90>
+    <ooodev.draw.ImpressPage object at 0x7f7f0c0b2b90>
 
 To get the last page in a draw document, use the built in ``[-1]`` method:
 
 .. code-block:: python
 
-    >>> doc = DrawDoc(Draw.create_draw_doc(loader))
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> doc.slides[-1]
-    <ooodev.draw.DrawPage object at 0x7f7f0c0b2b90>
+    <ooodev.draw.ImpressPage object at 0x7f7f0c0b2b90>
 
 Deleting a page
 ^^^^^^^^^^^^^^^
 
-There are several ways to delete a page from a draw document.
+There are several ways to delete a page from an Impress document.
 The simplest is to use the ``del`` method:
 
 Delete by page index.
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> del doc.slides[0]
 
 Or by page name.
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> del doc.slides["page1"]
 
-Or by ``DrawPage`` object.
+Or by ``ImpressPage`` object.
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> slide = doc.slides[0]
     >>> del doc.slides[slide]
 
@@ -88,7 +88,7 @@ or by ``XDrawPage`` object.
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> slide = doc.slides[0]
     >>> del doc.slides[slide.component]
 
@@ -99,15 +99,15 @@ To iterate over the pages in a draw document, use the built in ``for`` loop:
 
 .. code-block:: python
 
-    >>> doc = DrawDoc.open_doc("test.odg")
+    >>> doc = ImpressDoc.open_doc("test.odp")
     >>> for slide in doc.slides:
     ...     print(slide)
-    <ooodev.draw.DrawPage object at 0x7f7f0c0b2b90>
+    <ooodev.draw.ImpressPage object at 0x7f7f0c0b2b90>
 
 Class Declaration
 -----------------
 
-.. autoclass:: ooodev.draw.DrawPages
+.. autoclass:: ooodev.draw.ImpressPages
     :members:
     :undoc-members:
     :show-inheritance:

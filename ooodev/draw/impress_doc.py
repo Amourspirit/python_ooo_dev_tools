@@ -13,10 +13,12 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.gui_partial import GuiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
@@ -24,7 +26,7 @@ from ooodev.utils.type_var import PathOrStr
 from .partial.draw_doc_partial import DrawDocPartial
 from . import impress_page as mImpressPage
 from . import master_draw_page as mMasterDrawPage
-from .draw_pages import DrawPages
+from .impress_pages import ImpressPages
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -46,6 +48,7 @@ class ImpressDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
+    LoInstPropsPartial,
 ):
     """Impress Document Class"""
 
@@ -60,22 +63,21 @@ class ImpressDoc(
         Raises:
             NotSupportedDocumentError: If not an Impress Document.
         """
-        if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
         if not mInfo.Info.is_doc_type(doc, LoService.IMPRESS):
             raise mEx.NotSupportedDocumentError("Document is not a Impress document")
-        DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self._lo_inst)
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self.lo_inst)
         PresentationDocumentComp.__init__(self, doc)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         PrintJobEvents.__init__(self, trigger_args=generic_args, cb=self._on_print_job_add_remove)
-        QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=doc)
         self._pages = None
 
@@ -97,6 +99,20 @@ class ImpressDoc(
         event.remove_callback = True
 
     # endregion Lazy Listeners
+
+    # region DrawDocPartial Overrides
+
+    def get_slides(self) -> ImpressPages[ImpressDoc]:
+        """
+        Gets the impress pages of a document.
+
+        Returns:
+            ImpressPages[ImpressDoc]: Impress Pages.
+        """
+        return self.slides
+
+    # endregion DrawDocPartial Overrides
+
     def add_slide(self) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
         Add a slide to the end of the document.
@@ -108,8 +124,9 @@ class ImpressDoc(
         Returns:
             mImpressPage: The slide that was inserted at the end of the document.
         """
-        result = mDraw.Draw.add_slide(doc=self.component)
-        return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.add_slide(doc=self.component)
+        return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self.lo_inst)
 
     def duplicate(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
@@ -124,8 +141,9 @@ class ImpressDoc(
         Returns:
             ImpressPage: Duplicated slide.
         """
-        page = mDraw.Draw.duplicate(self.component, idx)
-        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            page = mDraw.Draw.duplicate(self.component, idx)
+        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     # region get_slide()
     @overload
@@ -194,12 +212,14 @@ class ImpressDoc(
             ImpressPage: Slide as Draw Page.
         """
         if not kwargs:
-            result = mDraw.Draw.get_slide(doc=self.component)
-            return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self._lo_inst)
+            with LoContext(self.lo_inst):
+                result = mDraw.Draw.get_slide(doc=self.component)
+            return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self.lo_inst)
         if "slides" not in kwargs:
             kwargs["doc"] = self.component
-        result = mDraw.Draw.get_slide(**kwargs)
-        return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_slide(**kwargs)
+        return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self.lo_inst)
 
     # endregion get_slide()
 
@@ -210,8 +230,9 @@ class ImpressDoc(
         Returns:
             List[ImpressPage[_T]]: List of pages
         """
-        slides = mDraw.Draw.get_slides_list(self.component)
-        return [mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self._lo_inst) for slide in slides]
+        with LoContext(self.lo_inst):
+            slides = mDraw.Draw.get_slides_list(self.component)
+        return [mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self.lo_inst) for slide in slides]
 
     def get_viewed_page(self) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
@@ -223,8 +244,9 @@ class ImpressDoc(
         Returns:
             ImpressPage: Draw Page
         """
-        page = mDraw.Draw.get_viewed_page(self.component)
-        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            page = mDraw.Draw.get_viewed_page(self.component)
+        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     def get_handout_master_page(self) -> mMasterDrawPage.MasterDrawPage[ImpressDoc]:
         """
@@ -237,8 +259,9 @@ class ImpressDoc(
         Returns:
             MasterDrawPage: Impress Page
         """
-        page = mDraw.Draw.get_handout_master_page(self.component)
-        return mMasterDrawPage.MasterDrawPage(owner=self, component=page, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            page = mDraw.Draw.get_handout_master_page(self.component)
+        return mMasterDrawPage.MasterDrawPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     def get_notes_page_by_index(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
@@ -258,8 +281,9 @@ class ImpressDoc(
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page`
         """
-        page = mDraw.Draw.get_notes_page_by_index(self.component, idx)
-        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            page = mDraw.Draw.get_notes_page_by_index(self.component, idx)
+        return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     def get_show(self) -> XPresentation2:
         """
@@ -291,7 +315,9 @@ class ImpressDoc(
             For this reason this method will wait up to five seconds.
         """
         show = self.get_show()
-        return mDraw.Draw.get_show_controller(show)
+        with LoContext(self.lo_inst):
+            result = mDraw.Draw.get_show_controller(show)
+        return result
 
     def insert_slide(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
         """
@@ -307,8 +333,9 @@ class ImpressDoc(
         Returns:
             DrawPage: New slide that was inserted.
         """
-        slide = mDraw.Draw.insert_slide(doc=self.component, idx=idx)
-        return mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            slide = mDraw.Draw.insert_slide(doc=self.component, idx=idx)
+        return mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self.lo_inst)
 
     def remove_master_page(self, slide: XDrawPage) -> None:
         """
@@ -323,7 +350,8 @@ class ImpressDoc(
         Returns:
             None:
         """
-        mDraw.Draw.remove_master_page(doc=self.component, slide=slide)
+        with LoContext(self.lo_inst):
+            mDraw.Draw.remove_master_page(doc=self.component, slide=slide)
 
     # region save_doc
 
@@ -399,10 +427,8 @@ class ImpressDoc(
 
         See Also:
             :ref:`ch02_save_doc`
-
-        .. versionadded:: 0.20.2
         """
-        return self._lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
+        return self.lo_inst.save_doc(self.component, fnm, password, format)  # type: ignore
 
     # endregion save_doc
 
@@ -471,8 +497,8 @@ class ImpressDoc(
             if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
                 doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS, loader=arg)
             if isinstance(arg, LoInst):
-                lo_inst = arg
-                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS)
+                with LoContext(arg) as lo_inst:
+                    doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS)
         if doc is None:
             raise TypeError("create_doc() got an unexpected argument")
         if lo_inst is None:
@@ -480,6 +506,97 @@ class ImpressDoc(
         return ImpressDoc(doc=doc, lo_inst=lo_inst)
 
     # endregion Create Document
+
+    # region create_doc_from_template()
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr) -> ImpressDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+
+        Returns:
+            ImpressDoc: Document as ImpressDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, *, lo_inst: LoInst) -> ImpressDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
+
+        Returns:
+            ImpressDoc: Document as ImpressDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> ImpressDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader, optional): Component Loader.
+
+        Returns:
+            ImpressDoc: Document as ImpressDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> ImpressDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader, optional): Component Loader.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
+
+        Returns:
+            ImpressDoc: Document as ImpressDoc instance.
+        """
+        ...
+
+    @staticmethod
+    def create_doc_from_template(
+        template_path: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> ImpressDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader, optional): Component Loader.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
+
+        Raises:
+            Exception: If unable to create document.
+
+        Returns:
+            ImpressDoc: Document as ImpressDoc instance.
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        with LoContext(lo_inst) as inst:
+            if loader is None:
+                doc = inst.create_doc_from_template(template_path=template_path)
+            else:
+                doc = inst.create_doc_from_template(template_path=template_path, loader=loader)
+        return ImpressDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion create_doc_from_template()
 
     # region Static Open Methods
     # region open_doc()
@@ -653,7 +770,8 @@ class ImpressDoc(
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        doc = lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
+        with LoContext(lo_inst) as inst:
+            doc = inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
 
         return ImpressDoc(doc=doc, lo_inst=lo_inst)
 
@@ -682,7 +800,7 @@ class ImpressDoc(
 
         Args:
             fnm (PathOrStr): path of document to open.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             ImpressDoc: Document.
@@ -713,7 +831,7 @@ class ImpressDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             ImpressDoc: Document.
@@ -730,7 +848,7 @@ class ImpressDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Returns:
             ImpressDoc: Document.
@@ -740,10 +858,11 @@ class ImpressDoc(
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        if loader is None:
-            doc = lo_inst.open_readonly_doc(fnm=fnm)
-        else:
-            doc = lo_inst.open_readonly_doc(fnm=fnm, loader=loader)
+        with LoContext(lo_inst) as inst:
+            if loader is None:
+                doc = inst.open_readonly_doc(fnm=fnm)
+            else:
+                doc = inst.open_readonly_doc(fnm=fnm, loader=loader)
         return ImpressDoc(doc=doc, lo_inst=lo_inst)
 
     # endregion open_readonly_doc()
@@ -773,7 +892,7 @@ class ImpressDoc(
         Args:
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             ImpressDoc: Document
@@ -806,7 +925,7 @@ class ImpressDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             ImpressDoc: Document
@@ -824,7 +943,7 @@ class ImpressDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Returns:
             ImpressDoc: Document
@@ -835,10 +954,11 @@ class ImpressDoc(
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        if loader is None:
-            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type)
-        else:
-            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type, loader=loader)
+        with LoContext(lo_inst) as inst:
+            if loader is None:
+                doc = inst.open_flat_doc(fnm=fnm, doc_type=doc_type)
+            else:
+                doc = inst.open_flat_doc(fnm=fnm, doc_type=doc_type, loader=loader)
         return ImpressDoc(doc=doc, lo_inst=lo_inst)
 
     # endregion open_flat_doc()
@@ -846,13 +966,13 @@ class ImpressDoc(
 
     # region Properties
     @property
-    def slides(self) -> DrawPages[ImpressDoc]:
+    def slides(self) -> ImpressPages[ImpressDoc]:
         """
         Returns:
             Any: Draw Pages.
         """
         if self._pages is None:
-            self._pages = DrawPages(owner=self, slides=self.component.getDrawPages(), lo_inst=self._lo_inst)
-        return cast("DrawPages[ImpressDoc]", self._pages)
+            self._pages = ImpressPages(owner=self, slides=self.component.getDrawPages(), lo_inst=self.lo_inst)
+        return cast("ImpressPages[ImpressDoc]", self._pages)
 
     # endregion Properties

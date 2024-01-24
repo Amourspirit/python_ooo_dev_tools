@@ -7,7 +7,9 @@ from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from .write_form import WriteForm
 
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
     from .write_draw_page import WriteDrawPage
 
 
-class WriteForms(FormsComp, QiPartial):
+class WriteForms(LoInstPropsPartial, FormsComp, QiPartial):
     """
     Class for managing Writer Forms.
 
@@ -58,15 +60,14 @@ class WriteForms(FormsComp, QiPartial):
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         FormsComp.__init__(self, forms)  # type: ignore
-        QiPartial.__init__(self, component=forms, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
 
     def __next__(self) -> WriteForm:
-        return WriteForm(owner=self, component=super().__next__(), lo_inst=self._lo_inst)
+        return WriteForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
 
     def __getitem__(self, index: str | int) -> WriteForm:
         if isinstance(index, int):
@@ -164,14 +165,16 @@ class WriteForms(FormsComp, QiPartial):
         arg1 = all_args[0]
         if isinstance(arg1, int):
             idx = self._get_index(arg1, allow_greater=True)
-            frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            with LoContext(self.lo_inst):
+                frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             frm.Name = self._create_name("Form")  # type: ignore
             self.insert_by_index(idx, frm)
             return self.get_by_index(idx)
         elif isinstance(arg1, str):
             if self.has_by_name(arg1):
                 raise mEx.NameClashError(f"Name '{arg1}' already exists")
-            frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            with LoContext(self.lo_inst):
+                frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             self.insert_by_name(arg1, frm)
             return self.get_by_name(arg1)
         else:
@@ -194,7 +197,7 @@ class WriteForms(FormsComp, QiPartial):
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return WriteForm(owner=self, component=result, lo_inst=self._lo_inst)
+        return WriteForm(owner=self, component=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -216,7 +219,7 @@ class WriteForms(FormsComp, QiPartial):
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return WriteForm(owner=self, component=result, lo_inst=self._lo_inst)
+        return WriteForm(owner=self, component=result, lo_inst=self.lo_inst)
 
     # endregion XNameAccess overrides
 

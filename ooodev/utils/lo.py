@@ -904,11 +904,11 @@ class Lo(metaclass=StaticProperty):
         cls, template_path: PathOrStr, loader: Optional[XComponentLoader] = None
     ) -> XComponent:
         """
-        Create a document form a template
+        Create a document from a template.
 
         Args:
-            template_path (PathOrStr): path to template file
-            loader (XComponentLoader): Component Loader
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader): Component Loader.
 
         Raises:
             Exception: If unable to create document.
@@ -1405,7 +1405,7 @@ class Lo(metaclass=StaticProperty):
                 - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
 
         Note:
-           Event args ``event_data`` is a dictionary containing all method parameters.
+            Event args ``event_data`` is a dictionary containing all method parameters.
         """
         return cls._lo_inst.script_initialize(sc=sc)
 

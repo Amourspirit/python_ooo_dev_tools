@@ -10,6 +10,7 @@ from com.sun.star.frame import XDispatchProviderInterception
 
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils import gui as mGui
+from ooodev.utils.context.lo_context import LoContext
 
 
 class GuiPartial:
@@ -70,19 +71,22 @@ class GuiPartial:
         """
         Activates document window.
         """
-        mGui.GUI.activate(self.__component)
+        with LoContext(self.__lo_inst):
+            mGui.GUI.activate(self.__component)
 
     def maximize(self) -> None:
         """
         Maximizes document window.
         """
-        mGui.GUI.maximize(self.__component)
+        with LoContext(self.__lo_inst):
+            mGui.GUI.maximize(self.__component)
 
     def minimize(self) -> None:
         """
         Minimizes document window.
         """
-        mGui.GUI.minimize(self.__component)
+        with LoContext(self.__lo_inst):
+            mGui.GUI.minimize(self.__component)
 
     def add_item_to_toolbar(self, toolbar_name: str, item_name: str, im_fnm: str) -> None:
         """
@@ -93,28 +97,33 @@ class GuiPartial:
             item_name (str): item name.
             im_fnm (str): image file path.
         """
-        mGui.GUI.add_item_to_toolbar(self.__component, toolbar_name, item_name, im_fnm)
+        with LoContext(self.__lo_inst):
+            mGui.GUI.add_item_to_toolbar(self.__component, toolbar_name, item_name, im_fnm)
 
     def show_menu_bar(self) -> None:
         """
         Shows the main menu bar.
         """
-        mGui.GUI.show_menu_bar(self.__component)
+        with LoContext(self.__lo_inst):
+            mGui.GUI.show_menu_bar(self.__component)
 
     def hide_menu_bar(self) -> None:
         """
         Hides the main menu bar.
         """
-        mGui.GUI.hide_menu_bar(self.__component)
+        with LoContext(self.__lo_inst):
+            mGui.GUI.hide_menu_bar(self.__component)
 
     def hide_all_menu_bars(self) -> None:
         """
         Make all the toolbars invisible.
         """
-        mGui.GUI.show_none(self.__component)
+        with LoContext(self.__lo_inst):
+            mGui.GUI.show_none(self.__component)
 
     def toggle_menu_bar(self) -> None:
         """
         Toggles the main menu bar.
         """
-        mGui.GUI.toggle_menu_bar()
+        with LoContext(self.__lo_inst):
+            mGui.GUI.toggle_menu_bar()

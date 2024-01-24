@@ -47,15 +47,13 @@ class DrawPage(
 
     def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
-        GenericDrawPage.__init__(self, owner=owner, component=component, lo_inst=self._lo_inst)
+            lo_inst = mLo.Lo.current_lo
+        GenericDrawPage.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
         self.__owner = owner
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
         self._forms = None
 
@@ -79,13 +77,13 @@ class DrawPage(
         """
         self.get_shapes
         group = super().group(shapes)
-        return GroupShape(component=group, lo_inst=self._lo_inst)
+        return GroupShape(component=group, lo_inst=self.lo_inst)
 
     # endregion Overrides
 
     def get_shapes_collection(self) -> ShapeCollection:
         shapes = mDraw.Draw.get_shapes(slide=self.component)  # type: ignore
-        collection = ShapeCollection(owner=self, lo_inst=self._lo_inst)
+        collection = ShapeCollection(owner=self, lo_inst=self.lo_inst)
         for shape in shapes:
             collection.add(shape)
         return collection
@@ -101,7 +99,7 @@ class DrawPage(
             DrawPage: Master Page.
         """
         page = mDraw.Draw.get_master_page(self.component)  # type: ignore
-        return DrawPage(owner=self.__owner, component=page, lo_inst=self._lo_inst)
+        return DrawPage(owner=self.__owner, component=page, lo_inst=self.lo_inst)
 
     def get_notes_page(self) -> DrawPage[_T]:
         """
@@ -120,7 +118,7 @@ class DrawPage(
             :py:meth:`~.draw.Draw.get_notes_page_by_index`
         """
         page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
-        return DrawPage(owner=self.__owner, component=page, lo_inst=self._lo_inst)
+        return DrawPage(owner=self.__owner, component=page, lo_inst=self.lo_inst)
 
     # region Export
     def export_page_jpg(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
@@ -314,6 +312,5 @@ class DrawPage(
     # endregion Properties
 
 
-from .shapes.draw_shape import DrawShape
 from .shape_collection import ShapeCollection
 from ooodev.draw.shapes import GroupShape

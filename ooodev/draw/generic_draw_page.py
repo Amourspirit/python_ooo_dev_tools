@@ -14,6 +14,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -32,6 +33,7 @@ class GenericDrawPage(
     QiPartial,
     StylePartial,
     ShapeFactoryPartial[_T],
+    LoInstPropsPartial,
 ):
     """
     Represents a draw page.
@@ -47,18 +49,18 @@ class GenericDrawPage(
 
     def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self.__lo_inst = mLo.Lo.current_lo
-        else:
-            self.__lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+
         self.__owner = owner
-        DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self.__lo_inst)
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self.lo_inst)
         DrawPageComp.__init__(self, component)
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
-        ServicePartial.__init__(self, component=component, lo_inst=self.__lo_inst)
-        QiPartial.__init__(self, component=component, lo_inst=self.__lo_inst)
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
-        ShapeFactoryPartial.__init__(self, owner=self.__owner, lo_inst=self.__lo_inst)
+        ShapeFactoryPartial.__init__(self, owner=self.__owner, lo_inst=self.lo_inst)
 
     def __len__(self) -> int:
         return self.get_count()

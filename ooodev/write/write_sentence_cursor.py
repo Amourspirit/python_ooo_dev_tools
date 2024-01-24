@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic
+from typing import Any
 import uno
 
 from com.sun.star.text import XSentenceCursor
@@ -23,10 +23,6 @@ class WriteSentenceCursor(WriteTextCursor, SentenceCursorPartial, StylePartial):
             component (XSentenceCursor): A UNO object that supports ``com.sun.star.text.XSentenceCursor`` interface.
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
-        WriteTextCursor.__init__(self, owner=owner, component=component, lo_inst=self._lo_inst)
+        WriteTextCursor.__init__(self, owner=owner, component=component, lo_inst=self.lo_inst)
         SentenceCursorPartial.__init__(self, component, None)  # type: ignore
         StylePartial.__init__(self, component=component)

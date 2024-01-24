@@ -35,6 +35,7 @@ from .generic_draw_page import GenericDrawPage as GenericDrawPage
 from .generic_draw_pages import GenericDrawPages as GenericDrawPages
 from .impress_doc import ImpressDoc as ImpressDoc
 from .impress_page import ImpressPage as ImpressPage
+from .impress_pages import ImpressPages as ImpressPages
 from .master_draw_page import MasterDrawPage as MasterDrawPage
 from .shape_collection import ShapeCollection as ShapeCollection
 
@@ -50,6 +51,7 @@ __all__ = [
     "GenericDrawPages",
     "ImpressDoc",
     "ImpressPage",
+    "ImpressPages",
     "MasterDrawPage",
     "ShapeCollection",
 ]

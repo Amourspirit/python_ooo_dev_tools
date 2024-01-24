@@ -6,13 +6,15 @@ import uno
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.drawing.master_page_comp import MasterPageComp
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.office import draw as mDraw
-from ooodev.format.inner.style_partial import StylePartial
-from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.service_partial import ServicePartial
 from .partial.draw_page_partial import DrawPagePartial
 
@@ -32,6 +34,7 @@ class MasterDrawPage(
     QiPartial,
     PropPartial,
     StylePartial,
+    LoInstPropsPartial,
 ):
     """Represents a draw page."""
 
@@ -39,18 +42,17 @@ class MasterDrawPage(
 
     def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
-        DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self._lo_inst)
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self.lo_inst)
         MasterPageComp.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
 
     def get_master_page(self) -> MasterDrawPage[_T]:
@@ -63,8 +65,9 @@ class MasterDrawPage(
         Returns:
             MasterDrawPage: Master Page.
         """
-        page = mDraw.Draw.get_master_page(self.component)  # type: ignore
-        return MasterDrawPage(owner=self._owner, component=page, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            page = mDraw.Draw.get_master_page(self.component)  # type: ignore
+        return MasterDrawPage(owner=self._owner, component=page, lo_inst=self.lo_inst)
 
     def get_notes_page(self) -> MasterDrawPage[_T]:
         """
@@ -82,8 +85,9 @@ class MasterDrawPage(
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page_by_index`
         """
-        page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
-        return MasterDrawPage(owner=self._owner, component=page, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
+        return MasterDrawPage(owner=self._owner, component=page, lo_inst=self.lo_inst)
 
     def set_master_footer(self, text: str) -> None:
         """
@@ -99,7 +103,8 @@ class MasterDrawPage(
         Returns:
             None:
         """
-        mDraw.Draw.set_master_footer(self.component, text)  # type: ignore
+        with LoContext(self.lo_inst):
+            mDraw.Draw.set_master_footer(self.component, text)  # type: ignore
 
     # region Properties
     @property

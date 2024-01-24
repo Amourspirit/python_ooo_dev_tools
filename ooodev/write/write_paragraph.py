@@ -14,6 +14,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from . import write_text_portions as mWriteTextPortions
 
 if TYPE_CHECKING:
@@ -24,6 +25,7 @@ T = TypeVar("T", bound="ComponentT")
 
 class WriteParagraph(
     Generic[T],
+    LoInstPropsPartial,
     TextContentComp,
     ParagraphComp,
     PropertyChangeImplement,
@@ -49,24 +51,23 @@ class WriteParagraph(
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextContentComp.__init__(self, component)
         ParagraphComp.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
         TextRangePartial.__init__(self, component=self.component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
-        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
 
     def get_text_portions(self) -> mWriteTextPortions.WriteTextPortions[T]:
         """Returns the text portions of this paragraph."""
         return mWriteTextPortions.WriteTextPortions(
-            owner=self.owner, component=cast("XEnumerationAccess", self.component), lo_inst=self._lo_inst
+            owner=self.owner, component=cast("XEnumerationAccess", self.component), lo_inst=self.lo_inst
         )
 
     # region Properties

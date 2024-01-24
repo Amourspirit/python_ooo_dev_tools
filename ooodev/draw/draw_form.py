@@ -8,26 +8,26 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
     from .draw_forms import DrawForms
 
 
-class DrawForm(DataFormComp, QiPartial, FormPartial, ServicePartial):
+class DrawForm(DataFormComp, QiPartial, FormPartial, ServicePartial, LoInstPropsPartial):
     """Draw Form class"""
 
     def __init__(self, owner: DrawForms, component: Form, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DataFormComp.__init__(self, component)
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         draw_page = owner.owner.component
-        FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component)  # type: ignore
-        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component, lo_inst=self.lo_inst)  # type: ignore
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
 
     # region Properties
     @property

@@ -47,12 +47,14 @@ from ooodev.utils import gui as mGUI
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.size import Size
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.gui_partial import GuiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
@@ -79,6 +81,7 @@ from .write_draw_pages import WriteDrawPages
 
 
 class WriteDoc(
+    LoInstPropsPartial,
     TextDocumentComp,
     DocumentEventEvents,
     ModifyEvents,
@@ -109,12 +112,12 @@ class WriteDoc(
             None:
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
 
         if not mInfo.Info.is_doc_type(doc, LoService.WRITER):
             raise mEx.NotSupportedDocumentError("Document is not a Writer document")
+
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
 
         TextDocumentComp.__init__(self, doc)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
@@ -124,9 +127,9 @@ class WriteDoc(
         RefreshEvents.__init__(self, trigger_args=generic_args, cb=self._on_refresh_add_remove)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
         self._draw_page = None
@@ -221,13 +224,13 @@ class WriteDoc(
         """Returns the cursor of the document."""
         if not kwargs:
             return mWriteTextCursor.WriteTextCursor(
-                owner=self, component=self.component.getText().createTextCursor(), lo_inst=self._lo_inst
+                owner=self, component=self.component.getText().createTextCursor(), lo_inst=self.lo_inst
             )
         if "text_doc" in kwargs:
             kwargs["text_doc"] = self.component
-        return mWriteTextCursor.WriteTextCursor(
-            owner=self, component=mWrite.Write.get_cursor(**kwargs), lo_inst=self._lo_inst
-        )
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_cursor(**kwargs)
+        return mWriteTextCursor.WriteTextCursor(owner=self, component=result, lo_inst=self.lo_inst)
 
     # endregion get_cursor()
 
@@ -264,7 +267,7 @@ class WriteDoc(
         Creates a new Draw document.
 
         Args:
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: WriteDoc representing document
@@ -278,7 +281,7 @@ class WriteDoc(
 
         Args:
             loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
-            lo_inst (LoInst, optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: WriteDoc representing document
@@ -296,8 +299,8 @@ class WriteDoc(
             if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
                 doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=arg)
             if isinstance(arg, LoInst):
-                lo_inst = arg
-                doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
+                with LoContext(arg) as lo_inst:
+                    doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
         if doc is None:
             raise TypeError("create_doc() got an unexpected argument")
         if lo_inst is None:
@@ -305,6 +308,96 @@ class WriteDoc(
         return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
 
     # endregion Create Document
+
+    # region create_doc_from_template()
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, *, lo_inst: LoInst) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader): Component Loader.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        ...
+
+    @staticmethod
+    def create_doc_from_template(
+        template_path: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
+    ) -> WriteDoc:
+        """
+        Create a document from a template.
+
+        Args:
+            template_path (PathOrStr): path to template file.
+            loader (XComponentLoader, optional): Component Loader.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
+
+        Raises:
+            Exception: If unable to create document.
+
+        Returns:
+            WriteDoc: Document as WriteDoc instance.
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if loader is None:
+            doc = lo_inst.create_doc_from_template(template_path=template_path)
+        else:
+            doc = lo_inst.create_doc_from_template(template_path=template_path, loader=loader)
+        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
+
+    # endregion create_doc_from_template()
 
     def close_doc(self) -> bool:
         """
@@ -331,7 +424,8 @@ class WriteDoc(
         self.trigger_event(WriteNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
             return False
-        result = mLo.Lo.close(self.component)  # type: ignore
+        with LoContext(self.lo_inst):
+            result = mLo.Lo.close(self.component)  # type: ignore
         self.trigger_event(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
         return result
 
@@ -352,7 +446,9 @@ class WriteDoc(
             :py:attr:`.CompareEnum.EQUAL` if ``c1`` end position is equal to ``c2`` end position.
             :py:attr:`.CompareEnum.AFTER` if ``c1`` end position is after ``c2`` end position.
         """
-        return mSelection.Selection.compare_cursor_ends(c1, c2)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.compare_cursor_ends(c1, c2)
+        return result
 
     def create_style_char(
         self, style_name: str, styles: Sequence[StyleT] | None = None
@@ -370,8 +466,9 @@ class WriteDoc(
         """
         if styles is None:
             styles = ()
-        result = mWrite.Write.create_style_char(self.component, style_name, styles)
-        return mWriteCharacterStyle.WriteCharacterStyle(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.create_style_char(self.component, style_name, styles)
+        return mWriteCharacterStyle.WriteCharacterStyle(owner=self, component=result, lo_inst=self.lo_inst)
 
     def create_style_para(
         self, style_name: str, styles: Sequence[StyleT] | None = None
@@ -388,8 +485,9 @@ class WriteDoc(
         """
         if styles is None:
             styles = ()
-        result = mWrite.Write.create_style_para(self.component, style_name, styles)
-        return mWriteParagraphStyle.WriteParagraphStyle(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.create_style_para(self.component, style_name, styles)
+        return mWriteParagraphStyle.WriteParagraphStyle(owner=self, component=result, lo_inst=self.lo_inst)
 
     def find_bookmark(self, bm_name: str) -> mWriteTextContent.WriteTextContent[WriteDoc] | None:
         """
@@ -401,10 +499,11 @@ class WriteDoc(
         Returns:
             WriteTextContent | None: Bookmark if found; Otherwise, None
         """
-        result = mWrite.Write.find_bookmark(self.component, bm_name)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.find_bookmark(self.component, bm_name)
         if result is None:
             return None
-        return mWriteTextContent.WriteTextContent(owner=self, component=result, lo_inst=self._lo_inst)
+        return mWriteTextContent.WriteTextContent(owner=self, component=result, lo_inst=self.lo_inst)
 
     def get_view_cursor(self) -> mWriteTextViewCursor.WriteTextViewCursor[WriteDoc]:
         """
@@ -421,8 +520,9 @@ class WriteDoc(
         See Also:
             `LibreOffice API XTextViewCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XTextViewCursor.html>`_
         """
-        cursor = mSelection.Selection.get_view_cursor(self.component)
-        return mWriteTextViewCursor.WriteTextViewCursor(owner=self, component=cursor, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            cursor = mSelection.Selection.get_view_cursor(self.component)
+        return mWriteTextViewCursor.WriteTextViewCursor(owner=self, component=cursor, lo_inst=self.lo_inst)
 
     def get_doc_path(self) -> str:
         """
@@ -450,7 +550,9 @@ class WriteDoc(
 
         .. versionadded:: 0.9.7
         """
-        return mLo.Lo.create_instance_msf(XPropertySet, "com.sun.star.text.DocumentSettings", raise_err=True)
+        with LoContext(self.lo_inst):
+            result = mLo.Lo.create_instance_msf(XPropertySet, "com.sun.star.text.DocumentSettings", raise_err=True)
+        return result
 
     def get_graphic_links(self) -> NameAccessComp | None:
         """
@@ -465,7 +567,8 @@ class WriteDoc(
         Returns:
             NameAccessComp | None: Graphic Links on success, Otherwise, None
         """
-        result = mWrite.Write.get_graphic_links(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_graphic_links(self.component)
         if result is None:
             return None
         return NameAccessComp(result)
@@ -481,8 +584,9 @@ class WriteDoc(
             WriteTextCursor: a new instance of a TextCursor which is located at the specified
             TextRange to travel in the given text context.
         """
-        result = mSelection.Selection.get_left_cursor(rng, self.component)
-        return mWriteTextCursor.WriteTextCursor(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.get_left_cursor(rng, self.component)
+        return mWriteTextCursor.WriteTextCursor(owner=self, component=result, lo_inst=self.lo_inst)
 
     def get_num_of_pages(self) -> int:
         """
@@ -491,7 +595,9 @@ class WriteDoc(
         Returns:
             int: page count
         """
-        return mWrite.Write.get_num_of_pages(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_num_of_pages(self.component)
+        return result
 
     def get_page_count_field(self, numbering_type: NumberingTypeEnum = NumberingTypeEnum.ARABIC) -> PageCountComp:
         """
@@ -500,7 +606,9 @@ class WriteDoc(
         Returns:
             PageCountComp: Page Count Field
         """
-        return PageCountComp(mWrite.Write.get_page_count(numbering_type=numbering_type))
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_page_count(numbering_type=numbering_type)
+        return PageCountComp(result)
 
     def get_page_number_field(
         self,
@@ -517,7 +625,9 @@ class WriteDoc(
         Returns:
             PageNumberComp: Page Number Field
         """
-        return PageNumberComp(mWrite.Write.get_page_number(numbering_type=numbering_type, sub_type=sub_type))
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_page_number(numbering_type=numbering_type, sub_type=sub_type)
+        return PageNumberComp(result)
 
     def get_page_size(self) -> Size:
         """
@@ -530,7 +640,9 @@ class WriteDoc(
         Returns:
             ~ooodev.utils.data_type.size.Size: Page Size in ``1/100 mm`` units.
         """
-        return mWrite.Write.get_page_size(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_page_size(self.component)
+        return result
 
     def get_page_text_size(self) -> Size:
         """
@@ -543,7 +655,9 @@ class WriteDoc(
         Returns:
             ~ooodev.utils.data_type.size.Size: Page text Size in ``1/100 mm`` units.
         """
-        return mWrite.Write.get_page_text_size(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_page_text_size(self.component)
+        return result
 
     def get_page_text_width(self) -> int:
         """
@@ -552,7 +666,9 @@ class WriteDoc(
         Returns:
             int: Page Width in ``1/100 mm`` units on success; Otherwise 0
         """
-        return mWrite.Write.get_page_text_width(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_page_text_width(self.component)
+        return result
 
     def get_selected(self) -> mWriteTextRange.WriteTextRange[WriteDoc] | None:
         """
@@ -570,10 +686,11 @@ class WriteDoc(
         Note:
             Writer must be visible for this method or ``None`` is returned.
         """
-        result = mSelection.Selection.get_selected_text_range(self.component)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.get_selected_text_range(self.component)
         if result is None:
             return None
-        return mWriteTextRange.WriteTextRange(owner=self, component=result, lo_inst=self._lo_inst)
+        return mWriteTextRange.WriteTextRange(owner=self, component=result, lo_inst=self.lo_inst)
 
     def get_selected_str(self) -> str:
         """
@@ -585,7 +702,9 @@ class WriteDoc(
         Note:
             Writer must be visible for this method or empty string is returned.
         """
-        return mSelection.Selection.get_selected_text_str(self.component)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.get_selected_text_str(self.component)
+        return result
 
     def get_draw_page(self) -> WriteDrawPage[WriteDoc]:
         """
@@ -615,8 +734,9 @@ class WriteDoc(
         Returns:
             WriteParagraphCursor: Paragraph cursor
         """
-        result = mSelection.Selection.get_paragraph_cursor(self.component)
-        return mWriteParagraphCursorCursor.WriteParagraphCursor(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.get_paragraph_cursor(self.component)
+        return mWriteParagraphCursorCursor.WriteParagraphCursor(owner=self, component=result, lo_inst=self.lo_inst)
 
     def get_right_cursor(self, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """
@@ -629,8 +749,9 @@ class WriteDoc(
             WriteTextCursor: a new instance of a TextCursor which is located at the specified
             TextRange to travel in the given text context.
         """
-        result = mSelection.Selection.get_right_cursor(rng, self.component)
-        return mWriteTextCursor.WriteTextCursor(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.get_right_cursor(rng, self.component)
+        return mWriteTextCursor.WriteTextCursor(owner=self, component=result, lo_inst=self.lo_inst)
 
     def get_style_names(
         self, family_style_name: str | FamilyNamesKind = FamilyNamesKind.PARAGRAPH_STYLES
@@ -648,7 +769,9 @@ class WriteDoc(
             List[str]: List of style names
         """
         try:
-            return mInfo.Info.get_style_names(self.component, str(family_style_name))
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_names(self.component, str(family_style_name))
+            return result
         except Exception as e:
             raise mEx.StyleError("Unable to get style names") from e
 
@@ -664,8 +787,9 @@ class WriteDoc(
         """
         # there are no styles for cell by default in a writer document.
         try:
-            result = mInfo.Info.get_style_families(self.component)
-            return mWriteStyleFamilies.WriteStyleFamilies(owner=self, component=result, lo_inst=self._lo_inst)
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_families(self.component)
+            return mWriteStyleFamilies.WriteStyleFamilies(owner=self, component=result, lo_inst=self.lo_inst)
         except Exception as e:
             raise mEx.StyleError("Unable to get style families") from e
 
@@ -684,9 +808,10 @@ class WriteDoc(
         """
         # there are no styles for cell by default in a writer document.
         try:
-            result = mInfo.Info.get_style_props(self.component, "CellStyles", str(name))
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_props(self.component, "CellStyles", str(name))
             return mWriteCellStyle.WriteCellStyle(
-                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self._lo_inst
+                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self.lo_inst
             )
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style: {name}") from e
@@ -707,9 +832,10 @@ class WriteDoc(
             WriteCharacterStyle: Style
         """
         try:
-            result = mInfo.Info.get_style_props(self.component, "CharacterStyles", str(name))
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_props(self.component, "CharacterStyles", str(name))
             return mWriteCharacterStyle.WriteCharacterStyle(
-                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self._lo_inst
+                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self.lo_inst
             )
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style: {name}") from e
@@ -728,8 +854,9 @@ class WriteDoc(
             WriteStyle: Style
         """
         try:
-            result = mInfo.Info.get_style_props(self.component, "FrameStyles", str(name))
-            return mWriteStyle.WriteStyle(owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self._lo_inst)
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_props(self.component, "FrameStyles", str(name))
+            return mWriteStyle.WriteStyle(owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self.lo_inst)
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style: {name}") from e
 
@@ -749,9 +876,10 @@ class WriteDoc(
             WriteNumberingStyle: Style
         """
         try:
-            result = mInfo.Info.get_style_props(self.component, "NumberingStyles", str(name))
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_props(self.component, "NumberingStyles", str(name))
             return mWriteNumberingStyle.WriteNumberingStyle(
-                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self._lo_inst
+                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self.lo_inst
             )
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style: {name}") from e
@@ -772,9 +900,10 @@ class WriteDoc(
             WriteParagraphStyle: Style
         """
         try:
-            result = mInfo.Info.get_style_props(self.component, "ParagraphStyles", str(name))
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_props(self.component, "ParagraphStyles", str(name))
             return mWriteParagraphStyle.WriteParagraphStyle(
-                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self._lo_inst
+                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self.lo_inst
             )
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style: {name}") from e
@@ -793,9 +922,10 @@ class WriteDoc(
             WritePageStyle: Style
         """
         try:
-            result = mInfo.Info.get_style_props(self.component, "PageStyles", str(name))
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_props(self.component, "PageStyles", str(name))
             return mWritePageStyle.WritePageStyle(
-                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self._lo_inst
+                owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self.lo_inst
             )
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style: {name}") from e
@@ -814,8 +944,9 @@ class WriteDoc(
             WriteStyle: Style
         """
         try:
-            result = mInfo.Info.get_style_props(self.component, "TableStyles", str(name))
-            return mWriteStyle.WriteStyle(owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self._lo_inst)
+            with LoContext(self.lo_inst):
+                result = mInfo.Info.get_style_props(self.component, "TableStyles", str(name))
+            return mWriteStyle.WriteStyle(owner=self, component=mLo.Lo.qi(XStyle, result, True), lo_inst=self.lo_inst)
         except Exception as e:
             raise mEx.StyleError(f"Unable to get style: {name}") from e
 
@@ -826,7 +957,7 @@ class WriteDoc(
         Returns:
             WriteText: Text.
         """
-        return mWriteText.WriteText(owner=self, component=self.component.getText(), lo_inst=self._lo_inst)
+        return mWriteText.WriteText(owner=self, component=self.component.getText(), lo_inst=self.lo_inst)
 
     def get_text_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[WriteDoc]:
         """
@@ -835,7 +966,7 @@ class WriteDoc(
         Returns:
             WriteText: Text.
         """
-        return mWriteParagraphs.WriteParagraphs(owner=self, component=self.component.getText(), lo_inst=self._lo_inst)
+        return mWriteParagraphs.WriteParagraphs(owner=self, component=self.component.getText(), lo_inst=self.lo_inst)
 
     def get_text_frames(self) -> NameAccessComp | None:
         """
@@ -850,7 +981,8 @@ class WriteDoc(
         Returns:
             NameAccessComp | None: Text Frames on success, Otherwise, None
         """
-        result = mWrite.Write.get_text_frames(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_text_frames(self.component)
         if result is None:
             return None
         return NameAccessComp(result)
@@ -865,8 +997,9 @@ class WriteDoc(
         Returns:
             WriteSentenceCursor: Sentence Cursor.
         """
-        result = mSelection.Selection.get_sentence_cursor(self.component)
-        return mWriteSentenceCursor.WriteSentenceCursor(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.get_sentence_cursor(self.component)
+        return mWriteSentenceCursor.WriteSentenceCursor(owner=self, component=result, lo_inst=self.lo_inst)
 
     def get_text_graphics(self) -> List[XGraphic]:
         """
@@ -882,7 +1015,9 @@ class WriteDoc(
             If there is error getting a graphic link then it is ignored
             and not added to the return value.
         """
-        return mWrite.Write.get_text_graphics(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.get_text_graphics(self.component)
+        return result
 
     def get_word_cursor(self) -> mWriteWordCursor.WriteWordCursor:
         """
@@ -895,8 +1030,9 @@ class WriteDoc(
         Returns:
             WriteWordCursor: Word Cursor.
         """
-        result = mSelection.Selection.get_word_cursor(self.component)
-        return mWriteWordCursor.WriteWordCursor(owner=self, component=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.get_word_cursor(self.component)
+        return mWriteWordCursor.WriteWordCursor(owner=self, component=result, lo_inst=self.lo_inst)
 
     def is_anything_selected(self) -> bool:
         """
@@ -910,7 +1046,9 @@ class WriteDoc(
         Note:
             Writer must be visible for this method or ``False`` is always returned.
         """
-        return mSelection.Selection.is_anything_selected(self.component)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.is_anything_selected(self.component)
+        return result
 
     def select_next_word(self) -> bool:
         """
@@ -932,7 +1070,9 @@ class WriteDoc(
         Note:
             Event args ``event_data`` is a dictionary containing ``text_doc``.
         """
-        return mSelection.Selection.select_next_word(self.component)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.select_next_word(self.component)
+        return result
 
     def save_doc(self, fnm: PathOrStr) -> bool:
         """
@@ -956,7 +1096,9 @@ class WriteDoc(
         Attention:
             :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
         """
-        return mWrite.Write.save_doc(self.component, fnm)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.save_doc(self.component, fnm)
+        return result
 
     def set_a4_page_format(
         self,
@@ -973,7 +1115,9 @@ class WriteDoc(
         Attention:
             :py:meth:`~.write.Write.set_page_format` method is called along with any of its events.
         """
-        return mWrite.Write.set_a4_page_format(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.set_a4_page_format(self.component)
+        return result
 
     def set_footer(self, text: str, styles: Sequence[StyleT] | None = None) -> None:
         """
@@ -995,7 +1139,8 @@ class WriteDoc(
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_general_name`
         """
-        mWrite.Write.set_footer(self.component, text, styles)
+        with LoContext(self.lo_inst):
+            mWrite.Write.set_footer(self.component, text, styles)
 
     def set_header(self, text: str, styles: Sequence[StyleT] | None = None) -> None:
         """
@@ -1017,7 +1162,8 @@ class WriteDoc(
         Note:
             The font applied is determined by :py:meth:`.Info.get_font_general_name`
         """
-        mWrite.Write.set_header(self.component, text, styles)
+        with LoContext(self.lo_inst):
+            mWrite.Write.set_header(self.component, text, styles)
 
     def set_page_format(self, paper_format: PaperFormat) -> bool:
         """
@@ -1044,7 +1190,8 @@ class WriteDoc(
         See Also:
             - :py:meth:`~.write_doc.WriteDoc.set_a4_page_format`
         """
-        return mWrite.Write.set_page_format(self.component, paper_format)
+        with LoContext(self.lo_inst):
+            return mWrite.Write.set_page_format(self.component, paper_format)
 
     def set_page_numbers(self) -> PageNumberComp:
         """
@@ -1058,7 +1205,8 @@ class WriteDoc(
         Returns:
             PageNumberComp: Page Number Field
         """
-        result = mWrite.Write.set_page_numbers(self.component)
+        with LoContext(self.lo_inst):
+            result = mWrite.Write.set_page_numbers(self.component)
         return PageNumberComp(result)
 
     def set_visible(self, visible: bool = True) -> None:
@@ -1071,7 +1219,8 @@ class WriteDoc(
         Returns:
             None:
         """
-        mGUI.GUI.set_visible(doc=self.component, visible=visible)
+        with LoContext(self.lo_inst):
+            mGUI.GUI.set_visible(doc=self.component, visible=visible)
 
     def zoom(self, type: ZoomKind = ZoomKind.ENTIRE_PAGE) -> None:
         """
@@ -1082,7 +1231,8 @@ class WriteDoc(
         """
 
         def zoom_val(value: int) -> None:
-            mGUI.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
+            with LoContext(self.lo_inst):
+                mGUI.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
 
         if type in (
             ZoomKind.ENTIRE_PAGE,
@@ -1090,7 +1240,8 @@ class WriteDoc(
             ZoomKind.PAGE_WIDTH,
             ZoomKind.PAGE_WIDTH_EXACT,
         ):
-            mGUI.GUI.zoom(view=type)
+            with LoContext(self.lo_inst):
+                mGUI.GUI.zoom(view=type)
         elif type == ZoomKind.ZOOM_200_PERCENT:
             zoom_val(200)
         elif type == ZoomKind.ZOOM_150_PERCENT:
@@ -1109,7 +1260,8 @@ class WriteDoc(
         Args:
             value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default ``100``.
         """
-        mGUI.GUI.zoom_value(value=value)
+        with LoContext(self.lo_inst):
+            mGUI.GUI.zoom_value(value=value)
 
     # region Static Open Methods
     # region open_doc()
@@ -1135,7 +1287,7 @@ class WriteDoc(
 
         Args:
             fnm (PathOrStr): path of document to open
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1166,7 +1318,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1197,7 +1349,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1214,7 +1366,7 @@ class WriteDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
 
         Returns:
@@ -1234,7 +1386,7 @@ class WriteDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1255,7 +1407,7 @@ class WriteDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader, optional): Component Loader
             props (Iterable[PropertyValue], optional): Properties passed to component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Raises:
             Exception: if unable to open document
@@ -1312,7 +1464,7 @@ class WriteDoc(
 
         Args:
             fnm (PathOrStr): path of document to open.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document.
@@ -1343,7 +1495,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document.
@@ -1360,7 +1512,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of document to open.
             loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Raises:
             Exception: if unable to open document.
@@ -1406,7 +1558,7 @@ class WriteDoc(
         Args:
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1439,7 +1591,7 @@ class WriteDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1457,7 +1609,7 @@ class WriteDoc(
             fnm (PathOrStr): path of XML document
             doc_type (DocType): Type of document to open
             loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
 
         Returns:
             WriteDoc: Document
@@ -1487,8 +1639,9 @@ class WriteDoc(
             GenericDrawPage: Draw Page
         """
         if self._draw_page is None:
-            draw_page = mWrite.Write.get_draw_page(self.component)
-            self._draw_page = WriteDrawPage(owner=self, component=draw_page, lo_inst=self._lo_inst)
+            with LoContext(self.lo_inst):
+                draw_page = mWrite.Write.get_draw_page(self.component)
+            self._draw_page = WriteDrawPage(owner=self, component=draw_page, lo_inst=self.lo_inst)
         return self._draw_page  # type: ignore
 
     @property
@@ -1500,8 +1653,9 @@ class WriteDoc(
             GenericDrawPages: Draw Pages
         """
         if self._draw_pages is None:
-            draw_pages = mWrite.Write.get_draw_pages(self.component)
-            self._draw_pages = WriteDrawPages(owner=self, slides=draw_pages, lo_inst=self._lo_inst)
+            with LoContext(self.lo_inst):
+                draw_pages = mWrite.Write.get_draw_pages(self.component)
+            self._draw_pages = WriteDrawPages(owner=self, slides=draw_pages, lo_inst=self.lo_inst)
         return self._draw_pages  # type: ignore
 
     # endregion Properties

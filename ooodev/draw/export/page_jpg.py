@@ -11,7 +11,9 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import file_io as mFile
+from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
 from .export_base import ExportBase
 
@@ -22,7 +24,7 @@ else:
     ExportJpgT = Any
 
 
-class PageJpg(ExportBase, EventsPartial):
+class PageJpg(LoInstPropsPartial, ExportBase, EventsPartial):
     """Class for exporting current Draw page as a jpg image."""
 
     def __init__(self, owner: DrawPage[ComponentT]):
@@ -31,6 +33,13 @@ class PageJpg(ExportBase, EventsPartial):
         self._owner = owner
         self._doc = owner.owner
         self._filter_name = "draw_jpg_Export"
+        if isinstance(self._owner, LoInstPropsPartial):
+            lo_inst = self._owner.lo_inst
+        elif isinstance(self._doc, LoInstPropsPartial):
+            lo_inst = self._doc.lo_inst
+        else:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
 
     # def _get_shapes(self) -> ShapeCollection:
     #     comp = ShapeCollection(self)
@@ -121,33 +130,13 @@ class PageJpg(ExportBase, EventsPartial):
             FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", tuple(filter_data)),  # type: ignore
             Overwrite=cargs.overwrite,
         )
-        graphic_filter = GraphicExportFilterImplement()
+        graphic_filter = GraphicExportFilterImplement(lo_inst=self.lo_inst)
         graphic_filter.set_source_document(cast("XComponent", self._owner.component))
         graphic_filter.filter(*args)
-
-        # if self._shapes_only:
-        #     self._export_shapes(args)
-        # else:
-        #     self._export_doc(args)
 
         eargs = EventArgsExport.from_args(cargs)
         eargs.set("url", url)
         self.trigger_event(DrawNamedEvent.EXPORTED_PAGE_JPG, eargs)
-        self._shapes = None
-
-    # def _export_doc(self, args: tuple) -> None:
-    #     graphic_filter = GraphicExportFilterImplement()
-    #     graphic_filter.set_source_document(self._draw_page.qi(XComponent, True))
-    #     graphic_filter.filter(*args)
-
-    # def _export_shapes(self, args: tuple) -> None:
-    #     graphic_filter = GraphicExportFilterImplement()
-    #     if self._shapes is None:
-    #         shapes = self._get_shapes()
-    #     else:
-    #         shapes = self._shapes
-    #     graphic_filter.set_source_document(shapes.qi(XComponent, True))
-    #     graphic_filter.filter(*args)
 
     # region Events
     def subscribe_event_exporting(self, callback: Callable[[Any, CancelEventArgsExport[ExportJpgT]], None]) -> None:

@@ -2,11 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING, TypeVar, Generic
 import uno
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextDocument
-    from com.sun.star.text import XTextCursor
-    from ooodev.utils.inst.lo.lo_inst import LoInst
-
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
@@ -18,7 +14,12 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
+if TYPE_CHECKING:
+    from com.sun.star.text import XTextDocument
+    from com.sun.star.text import XTextCursor
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -33,6 +34,7 @@ class ShapeTextCursor(
     PropPartial,
     QiPartial,
     StylePartial,
+    LoInstPropsPartial,
 ):
     """
     Represents a text cursor.
@@ -49,22 +51,24 @@ class ShapeTextCursor(
             component (XTextCursor): A UNO object that supports ``com.sun.star.text.TextCursor`` service.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextCursorPartial.__init__(self, owner=owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
         ShapePartialProps.__init__(self, component=component)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
 
     def __len__(self) -> int:
-        return mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)
+        with LoContext(self.lo_inst):
+            result = mSelection.Selection.range_len(cast("XTextDocument", self.owner.component), self.component)
+        return result
 
     # region Properties
     @property
