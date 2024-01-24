@@ -160,6 +160,8 @@ class Lo(metaclass=StaticProperty):
     """Alias of connectors.ConnectSocket"""
 
     _lo_inst = cast(lo_inst.LoInst, None)
+    # Locked is used with LoContext to lock the then _lo_inst.
+    _locked: bool = False
 
     # region    qi()
 
