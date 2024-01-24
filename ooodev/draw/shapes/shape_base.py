@@ -65,8 +65,8 @@ class ShapeBase(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EventsPartial.__init__(self)
         events = cast("Events", self._EventsPartial__events)  # type: ignore
-        ExportJpgPartial.__init__(self, component=component, events=events)
-        ExportPngPartial.__init__(self, component=component, events=events)
+        ExportJpgPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
+        ExportPngPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self.__owner = owner
         self.__component = component

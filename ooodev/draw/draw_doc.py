@@ -778,7 +778,7 @@ class DrawDoc(
             Any: Draw Pages.
         """
         if self._pages is None:
-            self._pages = DrawPages(owner=self, slides=self.component.getDrawPages())
+            self._pages = DrawPages(owner=self, slides=self.component.getDrawPages(), lo_inst=self.lo_inst)
         return cast("DrawPages[DrawDoc]", self._pages)
 
     # endregion Properties

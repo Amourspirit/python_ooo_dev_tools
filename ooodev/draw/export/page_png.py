@@ -10,9 +10,10 @@ from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
-from ooodev.units import UnitInch
 from ooodev.utils import file_io as mFile
+from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
 from .export_base import ExportBase
 
@@ -23,7 +24,7 @@ else:
     ExportPngT = Any
 
 
-class PagePng(ExportBase, EventsPartial):
+class PagePng(LoInstPropsPartial, ExportBase, EventsPartial):
     """Class for exporting current Writer page as a png image."""
 
     def __init__(self, owner: DrawPage[ComponentT]):
@@ -32,6 +33,13 @@ class PagePng(ExportBase, EventsPartial):
         self._owner = owner
         self._doc = owner.owner
         self._filter_name = "draw_png_Export"
+        if isinstance(self._owner, LoInstPropsPartial):
+            lo_inst = self._owner.lo_inst
+        elif isinstance(self._doc, LoInstPropsPartial):
+            lo_inst = self._doc.lo_inst
+        else:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
 
     def export(self, fnm: PathOrStr, resolution: int = 96) -> None:
         """
@@ -68,9 +76,7 @@ class PagePng(ExportBase, EventsPartial):
         # https://ask.libreoffice.org/t/export-as-png-with-macro/74337/11
         # https://ask.libreoffice.org/t/how-to-export-cell-range-to-images/57828/2
         # raises uno.com.sun.star.io.IOException if image file exists and Overwrite is False
-        self._export(fnm, resolution)
 
-    def _export(self, fnm: PathOrStr, resolution: int) -> None:
         if not fnm:
             raise ValueError("fnm is required")
 
@@ -132,7 +138,7 @@ class PagePng(ExportBase, EventsPartial):
             Overwrite=cargs.overwrite,
         )
 
-        graphic_filter = GraphicExportFilterImplement()
+        graphic_filter = GraphicExportFilterImplement(lo_inst=self.lo_inst)
         graphic_filter.set_source_document(cast("XComponent", self._owner.component))
         graphic_filter.filter(*args)
 

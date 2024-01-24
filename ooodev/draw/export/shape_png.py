@@ -5,22 +5,30 @@ from com.sun.star.lang import XComponent
 from com.sun.star.drawing import XShape
 
 from ooodev.adapter.drawing.graphic_export_filter_implement import GraphicExportFilterImplement
-from ooodev.utils.type_var import PathOrStr
-from ooodev.utils import file_io as mFile
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
-from ooodev.utils import props as mProps
+from ooodev.draw.filter.export_png import ExportPng
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
-from ooodev.draw.filter.export_png import ExportPng
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import file_io as mFile
+from ooodev.utils import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.type_var import PathOrStr
 from .shape_export_png_base import ShapeExportPngBase
 
 
 class ShapePng(ShapeExportPngBase):
     """Class for exporting current Draw page as a jpg image."""
 
-    def __init__(self, shape: Any):
-        ShapeExportPngBase.__init__(self)
+    def __init__(self, shape: Any, lo_inst: LoInst | None = None):
+        """
+        Constructor
+
+        Args:
+            shape (Any): Shape to export as image.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+        """
+        ShapeExportPngBase.__init__(self, lo_inst=lo_inst)
         self._component = mLo.Lo.qi(XComponent, shape, True)
         self._filter_name = "draw_png_Export"
 
@@ -114,7 +122,7 @@ class ShapePng(ShapeExportPngBase):
             FilterData=uno.Any("[]com.sun.star.beans.PropertyValue", tuple(filter_data)),  # type: ignore
             Overwrite=cargs.overwrite,
         )
-        graphic_filter = GraphicExportFilterImplement()
+        graphic_filter = GraphicExportFilterImplement(lo_inst=self.lo_inst)
         graphic_filter.set_source_document(self._component)
         graphic_filter.filter(*args)
 

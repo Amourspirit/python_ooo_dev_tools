@@ -2,10 +2,32 @@
 Version History
 ***************
 
-Version 0.21.4
+Version 0.22.0
 ==============
 
 Added ``ooodev.draw.ImpressPages`` class. Handles working with Impress pages via ``ooodev.Draw.ImpressDoc``.
+
+Add a Content manager, ``ooodev.utils.context.lo_context.Locontext``. This class can be used to manage the context of a LibreOffice instance.
+Now it is possible to have multiple LibreOffice document running at the same time. Implemented for ``ooodev.draw.ImpressDoc`` and ``ooodev.draw.DrawDoc``
+and ``ooodev.write.WriteDoc`` so far.
+
+Example of create two Draw documents at the same time.
+
+.. code-block:: python
+
+    from ooodev.draw import DrawDoc
+    from ooodev.utils.lo import Lo
+
+    # create first doc normally
+    doc_first = DrawDoc.create_doc()
+    doc.set_visible()
+
+    # for a second doc create a new LoInst to open an new document with.
+    lo_inst = Lo.create_lo_instance()
+    # create a new DrawDoc and pass it the new instance context.
+    second_doc = DrawDoc.create_doc(lo_inst=lo_inst)
+    second_doc.set_visible()
+
 
 Version 0.21.3
 ==============

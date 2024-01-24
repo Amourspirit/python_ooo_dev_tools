@@ -14,6 +14,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from ooodev.write.filter.export_jpg import ExportJpgT
@@ -21,12 +22,13 @@ else:
     ExportJpgT = Any
 
 
-class PageJpg(EventsPartial):
+class PageJpg(LoInstPropsPartial, EventsPartial):
     """Class for exporting current Writer page as a jpg image."""
 
     def __init__(self, doc: WriteDoc):
-        EventsPartial.__init__(self)
         self._doc = doc
+        LoInstPropsPartial.__init__(self, lo_inst=self._doc.lo_inst)
+        EventsPartial.__init__(self)
 
     def export(self, fnm: PathOrStr = "", resolution: int = 96) -> None:
         """
