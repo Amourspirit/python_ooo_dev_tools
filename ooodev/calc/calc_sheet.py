@@ -36,9 +36,11 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
 from ooodev.utils import props as mProps
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
@@ -52,7 +54,13 @@ from .partial import sheet_cell_partial as mSheetCellPartial
 
 
 class CalcSheet(
-    SpreadsheetComp, mSheetCellPartial.SheetCellPartial, QiPartial, PropPartial, ServicePartial, StylePartial
+    LoInstPropsPartial,
+    SpreadsheetComp,
+    mSheetCellPartial.SheetCellPartial,
+    QiPartial,
+    PropPartial,
+    ServicePartial,
+    StylePartial,
 ):
     """Class for managing Calc Sheet"""
 
@@ -65,16 +73,15 @@ class CalcSheet(
             sheet (XSpreadsheet): Sheet instance.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SpreadsheetComp.__init__(self, sheet)  # type: ignore
-        QiPartial.__init__(self, component=sheet, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=sheet, lo_inst=self._lo_inst)
-        ServicePartial.__init__(self, component=sheet, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
+        ServicePartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet)
-        mSheetCellPartial.SheetCellPartial.__init__(self, owner=self)
+        mSheetCellPartial.SheetCellPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._draw_page = None
 
     # region get_address()
@@ -505,7 +512,7 @@ class CalcSheet(
             if "sheet" not in kwargs:
                 kwargs["sheet"] = self.component
         range_obj = mCalc.Calc.get_range_obj(**kwargs)
-        return mCalcCellRange.CalcCellRange(owner=self, rng=range_obj, lo_inst=self._lo_inst)
+        return mCalcCellRange.CalcCellRange(owner=self, rng=range_obj, lo_inst=self.lo_inst)
 
     # endregion get_range()
 
@@ -523,7 +530,7 @@ class CalcSheet(
             CalcTableCol: Cell range
         """
         result = mCalc.Calc.get_col_range(self.component, idx)
-        return mCalcTableCol.CalcTableCol(owner=self, col_obj=result, lo_inst=self._lo_inst)  # type: ignore
+        return mCalcTableCol.CalcTableCol(owner=self, col_obj=result, lo_inst=self.lo_inst)  # type: ignore
 
     # region get_row()
     @overload
@@ -645,7 +652,7 @@ class CalcSheet(
             CalcCellRange: Cell range
         """
         result = mCalc.Calc.get_row_range(self.component, idx)
-        return mCalcTableRow.CalcTableRow(owner=self, row_obj=result, lo_inst=self._lo_inst)  # type: ignore
+        return mCalcTableRow.CalcTableRow(owner=self, row_obj=result, lo_inst=self.lo_inst)  # type: ignore
 
     def get_row_used_first_index(self) -> int:
         """
@@ -675,7 +682,8 @@ class CalcSheet(
         Returns:
             CalcCell: Selected cell
         """
-        addr = mCalc.Calc.get_selected_cell_addr(self.calc_doc.component)
+        with LoContext(self.lo_inst):
+            addr = mCalc.Calc.get_selected_cell_addr(self.calc_doc.component)
         return self.get_cell(addr=addr)
 
     def get_selected(self) -> mCalcCellRange.CalcCellRange:
@@ -686,7 +694,7 @@ class CalcSheet(
             CalcCellRange: Selected cell range
         """
         range_obj = self.get_selected_range()
-        return mCalcCellRange.CalcCellRange(owner=self, rng=range_obj, lo_inst=self._lo_inst)
+        return mCalcCellRange.CalcCellRange(owner=self, rng=range_obj, lo_inst=self.lo_inst)
 
     def get_selected_addr(self) -> CellRangeAddress:
         """
@@ -1096,7 +1104,7 @@ class CalcSheet(
         result = self.select_cells_range(range_val)
         if result is None:
             return None
-        return mCalcCellRange.CalcCellRange(owner=self, rng=result, lo_inst=self._lo_inst)
+        return mCalcCellRange.CalcCellRange(owner=self, rng=result, lo_inst=self.lo_inst)
 
     def set_sheet_name(self, name: str) -> bool:
         """
@@ -1780,7 +1788,7 @@ class CalcSheet(
         result = mCalc.Calc.set_row_height(sheet=self.component, height=height, idx=idx)
         if result is None:
             return None
-        return mCalcTableRow.CalcTableRow(owner=self, row_obj=result, lo_inst=self._lo_inst)  # type: ignore
+        return mCalcTableRow.CalcTableRow(owner=self, row_obj=result, lo_inst=self.lo_inst)  # type: ignore
 
     # region set_value()
     @overload
@@ -1946,7 +1954,8 @@ class CalcSheet(
         See Also:
             :ref:`ch23_splitting_panes`
         """
-        mCalc.Calc.split_window(doc=self.calc_doc.component, cell_name=cell_name)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.split_window(doc=self.calc_doc.component, cell_name=cell_name)
 
     # region unmerge_cells()
     @overload
@@ -2093,7 +2102,7 @@ class CalcSheet(
             frame = self.calc_doc.get_controller().getFrame()
             s = str(obj)
             props = mProps.Props.make_props(ToPoint=str(obj))
-            mLo.Lo.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
+            self.lo_inst.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
             return mCellObj.CellObj.from_cell(cell_val=s)
 
         kargs_len = len(kwargs)
@@ -2198,7 +2207,7 @@ class CalcSheet(
         Returns:
             None:
         """
-        self._lo_inst.dispatch_cmd(cmd="Calculate")
+        self.lo_inst.dispatch_cmd(cmd="Calculate")
 
     def extract_col(self, vals: Table, col_idx: int) -> List[Any]:
         """
@@ -2681,7 +2690,7 @@ class CalcSheet(
         found = mCalc.Calc.find_all(srch=srch, sd=sd)
         if not found:
             return None
-        return [mCalcCellRange.CalcCellRange(owner=self, rng=x, lo_inst=self._lo_inst) for x in found]
+        return [mCalcCellRange.CalcCellRange(owner=self, rng=x, lo_inst=self.lo_inst) for x in found]
 
     # region find_function()
     @overload
@@ -2721,7 +2730,9 @@ class CalcSheet(
         Returns:
             Tuple[PropertyValue, ...] | None: Function properties as tuple on success; Otherwise, None
         """
-        return mCalc.Calc.find_function(*args, **kwargs)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.find_function(*args, **kwargs)
+        return result
 
     # endregion find_function()
 
@@ -2809,7 +2820,7 @@ class CalcSheet(
             - :ref:`ch20_finding_with_cursors`
         """
         found = mCalc.Calc.find_used_range(self.component, *args, **kwargs)
-        return mCalcCellRange.CalcCellRange(owner=self, rng=found, lo_inst=self._lo_inst)
+        return mCalcCellRange.CalcCellRange(owner=self, rng=found, lo_inst=self.lo_inst)
 
     # endregion find_used()
 
@@ -3057,7 +3068,7 @@ class CalcSheet(
 
         .. versionadded:: 0.10.0
         """
-        pro = mLo.Lo.qi(XProtectable, self.component, True)
+        pro = self.qi(XProtectable, True)
         return pro.isProtected()
 
     # region merge_cells()
@@ -3272,7 +3283,7 @@ class CalcSheet(
             _type_: _description_
         """
         cursor = self.component.createCursor()
-        return mCalcCellCursor.CalcCellCursor(owner=self, cursor=cursor, lo_inst=self._lo_inst)
+        return mCalcCellCursor.CalcCellCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
 
     # region create_cursor_by_range()
     @overload
@@ -3400,7 +3411,7 @@ class CalcSheet(
         cell_range = mCalc.Calc.get_cell_range(**kwargs)
         sheet_cell_range = mLo.Lo.qi(XSheetCellRange, cell_range, True)
         cursor = self.component.createCursorByRange(sheet_cell_range)
-        return mCalcCellCursor.CalcCellCursor(owner=self, cursor=cursor, lo_inst=self._lo_inst)
+        return mCalcCellCursor.CalcCellCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
 
     # endregion create_cursor_by_range()
     @overload
@@ -3675,7 +3686,7 @@ class CalcSheet(
         if self._draw_page is None:
             supp = self.qi(XDrawPageSupplier, True)
             draw_page = supp.getDrawPage()
-            self._draw_page = SpreadsheetDrawPage(owner=self, component=draw_page, lo_inst=self._lo_inst)
+            self._draw_page = SpreadsheetDrawPage(owner=self, component=draw_page, lo_inst=self.lo_inst)
         return self._draw_page  # type: ignore
 
     # endregion Properties

@@ -28,7 +28,7 @@ os.environ["ooouno_ignore_runtime"] = "True"
 # -- Project information -----------------------------------------------------
 
 project = "OOO Development Tools"
-copyright = "2022, :Barry-Thomas-Paul: Moss"
+copyright = "2022-2024, :Barry-Thomas-Paul: Moss"
 author = ":Barry-Thomas-Paul: Moss"
 
 odevgui_win_url = "https://ooo-dev-tools-gui-win.readthedocs.io/en/latest/"
@@ -248,6 +248,10 @@ rst_prolog_lst = [
     ".. role:: eventref(ref)",
     "",
     ".. |app_name| replace:: OOO Development Tools",
+    "",
+    ".. |lo_safe| replace:: Method is Lo Instance Safe.",
+    "",
+    ".. |lo_unsafe| replace:: Method **NOT** is Lo Instance Safe.",
     "",
     ".. |app_name_bold| replace:: **OOO Development Tools**",
     "",

@@ -3,17 +3,19 @@ from typing import cast, overload, TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.sheet import XSpreadsheet
 
+from ooodev.adapter.container.element_index_partial import ElementIndexPartial
+from ooodev.adapter.container.name_replace_partial import NameReplacePartial
 from ooodev.adapter.sheet.cell_range_access_partial import CellRangeAccessPartial
 from ooodev.adapter.sheet.spreadsheets_comp import SpreadsheetsComp
-from ooodev.adapter.container.name_replace_partial import NameReplacePartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import calc as mCalc
-from ooodev.utils import lo as mLo
-from ooodev.utils import info as mInfo
 from ooodev.utils import gen_util as mGenUtil
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.adapter.container.element_index_partial import ElementIndexPartial
+from ooodev.utils import info as mInfo
+from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from . import calc_sheet as mCalcSheet
 
@@ -23,7 +25,13 @@ if TYPE_CHECKING:
 
 
 class CalcSheets(
-    SpreadsheetsComp, CellRangeAccessPartial, NameReplacePartial, QiPartial, ServicePartial, ElementIndexPartial
+    LoInstPropsPartial,
+    SpreadsheetsComp,
+    CellRangeAccessPartial,
+    NameReplacePartial,
+    QiPartial,
+    ServicePartial,
+    ElementIndexPartial,
 ):
     """
     Class for managing Calc Sheets.
@@ -69,19 +77,18 @@ class CalcSheets(
             sheet (XSpreadsheet): Sheet instance.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SpreadsheetsComp.__init__(self, sheets)  # type: ignore
         CellRangeAccessPartial.__init__(self, component=sheets, interface=None)  # type: ignore
         NameReplacePartial.__init__(self, component=sheets, interface=None)  # type: ignore
-        QiPartial.__init__(self, component=sheets, lo_inst=self._lo_inst)
-        ServicePartial.__init__(self, component=sheets, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=sheets, lo_inst=self.lo_inst)
+        ServicePartial.__init__(self, component=sheets, lo_inst=self.lo_inst)
         ElementIndexPartial.__init__(self, component=self)  # type: ignore
 
     def __next__(self) -> mCalcSheet.CalcSheet:
-        return mCalcSheet.CalcSheet(owner=self._owner, sheet=super().__next__(), lo_inst=self._lo_inst)
+        return mCalcSheet.CalcSheet(owner=self._owner, sheet=super().__next__(), lo_inst=self.lo_inst)
 
     def __getitem__(self, index: str | int) -> mCalcSheet.CalcSheet:
         if isinstance(index, int):
@@ -181,7 +188,7 @@ class CalcSheets(
             raise IndexError(f"Index out of range: '{idx}'")
 
         result = super().get_by_index(idx)
-        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result, lo_inst=self._lo_inst)
+        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -203,7 +210,7 @@ class CalcSheets(
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result, lo_inst=self._lo_inst)
+        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result, lo_inst=self.lo_inst)
 
     # endregion XNameAccess overrides
 
@@ -214,8 +221,9 @@ class CalcSheets(
         Returns:
             CalcSheet | None: Active Sheet if found; Otherwise, None
         """
-        result = mCalc.Calc.get_active_sheet(self.calc_doc.component)
-        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_active_sheet(self.calc_doc.component)
+        return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result, lo_inst=self.lo_inst)
 
     # region    get_sheet()
     @overload
@@ -296,7 +304,7 @@ class CalcSheets(
         arg1 = args_values[0]
         if arg_len == 1:
             if mInfo.Info.is_instance(arg1, XSpreadsheet):
-                return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=arg1, lo_inst=self._lo_inst)
+                return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=arg1, lo_inst=self.lo_inst)
             if isinstance(arg1, int):
                 return self.get_by_index(arg1)
             return self.get_by_name(cast(str, arg1))

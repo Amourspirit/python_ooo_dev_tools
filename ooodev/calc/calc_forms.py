@@ -8,6 +8,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from .calc_form import CalcForm
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from .spreadsheet_draw_page import SpreadsheetDrawPage
 
 
-class CalcForms(FormsComp, ServicePartial, QiPartial):
+class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial):
     """
     Class for managing Calc Forms.
 
@@ -58,16 +59,15 @@ class CalcForms(FormsComp, ServicePartial, QiPartial):
             forms (XForms): Forms instance.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         FormsComp.__init__(self, forms)  # type: ignore
-        ServicePartial.__init__(self, component=forms, lo_inst=self._lo_inst)
-        QiPartial.__init__(self, component=forms, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=forms, lo_inst=self.lo_inst)
+        QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
 
     def __next__(self) -> CalcForm:
-        return CalcForm(owner=self, component=super().__next__(), lo_inst=self._lo_inst)
+        return CalcForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
 
     def __getitem__(self, index: str | int) -> CalcForm:
         if isinstance(index, int):
@@ -165,14 +165,14 @@ class CalcForms(FormsComp, ServicePartial, QiPartial):
         arg1 = all_args[0]
         if isinstance(arg1, int):
             idx = self._get_index(arg1, allow_greater=True)
-            frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            frm = self.lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             frm.Name = self._create_name("Form")  # type: ignore
             self.insert_by_index(idx, frm)
             return self.get_by_index(idx)
         elif isinstance(arg1, str):
             if self.has_by_name(arg1):
                 raise mEx.NameClashError(f"Name '{arg1}' already exists")
-            frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            frm = self.lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             self.insert_by_name(arg1, frm)
             return self.get_by_name(arg1)
         else:
@@ -195,7 +195,7 @@ class CalcForms(FormsComp, ServicePartial, QiPartial):
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return CalcForm(owner=self, component=result, lo_inst=self._lo_inst)
+        return CalcForm(owner=self, component=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -217,7 +217,7 @@ class CalcForms(FormsComp, ServicePartial, QiPartial):
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return CalcForm(owner=self, component=result, lo_inst=self._lo_inst)
+        return CalcForm(owner=self, component=result, lo_inst=self.lo_inst)
 
     # endregion XNameAccess overrides
 

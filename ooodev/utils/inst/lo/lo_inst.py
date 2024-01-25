@@ -191,6 +191,8 @@ class LoInst:
         """
         Generic method that get an interface instance from  an object.
 
+        |lo_safe|
+
         Args:
             atype (T): Interface type to query obj for. Any Uno class that starts with 'X' such as XInterface
             obj (object): Object that implements interface.
@@ -219,24 +221,36 @@ class LoInst:
 
     def get_context(self) -> XComponentContext:
         """
-        Gets current LO Component Context
+        Gets current LO Component Context.
+
+        |lo_unsafe|
         """
         return self._xcc  # type: ignore
 
     def get_desktop(self) -> XDesktop:
         """
-        Gets current LO Desktop
+        Gets current LO Desktop.
+
+        |lo_unsafe|
         """
         if self._opt.dynamic:
             return self.xscript_context.getDesktop()
         return self._xdesktop  # type: ignore
 
     def get_component_factory(self) -> XMultiComponentFactory:
-        """Gets current multi component factory"""
+        """
+        Gets current multi component factory.
+
+        |lo_unsafe|
+        """
         return self._mc_factory  # type: ignore
 
     def get_service_factory(self) -> XMultiServiceFactory:
-        """Gets current multi service factory"""
+        """
+        Gets current multi service factory.
+
+        |lo_unsafe|
+        """
         # return cls._bridge_component
         return self._ms_factory  # type: ignore
 
@@ -252,6 +266,8 @@ class LoInst:
         In most instances the internal document is the same as the xscript context document.
 
         By Default the dynamic option is set to ``False``.
+
+        |lo_unsafe|
 
         Raises:
             NoneError: If the document is ``None``.
@@ -403,6 +419,8 @@ class LoInst:
         If running from inside of office e.g. in a macro, then ``Lo.XSCRIPTCONTEXT`` is used.
         ``using_pipes`` is ignored with running inside office.
 
+        |lo_unsafe|
+
         Args:
             connector (connectors.ConnectPipe, connectors.ConnectSocket, ConnectBase, None): Connection information. Ignore for macros.
             cache_obj (Cache, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
@@ -480,7 +498,9 @@ class LoInst:
 
     def load_from_lo_loader(self, loader: LoLoader) -> XComponentLoader:
         """
-        Loads Office from a LoLoader instance
+        Loads Office from a LoLoader instance.
+
+        |lo_unsafe|
 
         Args:
             loader (LoLoader): LoLoader instance

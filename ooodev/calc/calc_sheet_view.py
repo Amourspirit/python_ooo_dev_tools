@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, overload, TYPE_CHECKING, Union
+from typing import Any, overload, TYPE_CHECKING
 import uno
 
 
@@ -9,6 +9,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
@@ -25,20 +26,25 @@ if TYPE_CHECKING:
 
 
 class CalcSheetView(
-    SpreadsheetViewComp, SpreadsheetViewSettingsComp, QiPartial, PropPartial, StylePartial, ServicePartial
+    LoInstPropsPartial,
+    SpreadsheetViewComp,
+    SpreadsheetViewSettingsComp,
+    QiPartial,
+    PropPartial,
+    StylePartial,
+    ServicePartial,
 ):
     def __init__(self, owner: CalcDoc, view: XSpreadsheetView, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SpreadsheetViewComp.__init__(self, view)  # type: ignore
         SpreadsheetViewSettingsComp.__init__(self, view)  # type: ignore
-        QiPartial.__init__(self, component=view, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=view, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=view, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=view, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=view)
-        ServicePartial.__init__(self, component=view, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=view, lo_inst=self.lo_inst)
 
     @overload
     def select(self, selection: mCalcCellRange.CalcCellRange) -> bool:
@@ -112,12 +118,6 @@ class CalcSheetView(
         return self.component.getSelection()
 
     # region Properties
-    # if TYPE_CHECKING:
-
-    #     @property
-    #     def component(self) -> Union[SpreadsheetView, SpreadsheetViewSettings]:
-    #         """Spreadsheet View Component"""
-    #         return super().component  # type: ignore
 
     @property
     def calc_doc(self) -> CalcDoc:

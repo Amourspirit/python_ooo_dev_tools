@@ -12,6 +12,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from .spreadsheet_draw_page import SpreadsheetDrawPage
 
 from ooodev.proto.component_proto import ComponentT
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial):
+class SpreadsheetDrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, QiPartial, ServicePartial):
     """
     Class for managing Spreadsheet Draw Pages.
     """
@@ -36,14 +37,13 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial
             sheet (XDrawPages): Document Pages.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DrawPagesComp.__init__(self, slides)  # type: ignore
-        ServicePartial.__init__(self, component=slides, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         # The API does not show that DrawPages implements XNameAccess, but it does.
-        QiPartial.__init__(self, component=slides, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         self._current_index = 0
 
     def __getitem__(self, idx: int) -> SpreadsheetDrawPage[_T]:
@@ -101,7 +101,7 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial
             SpreadsheetDrawPage: New slide that was inserted.
         """
         idx = self._get_index(idx=idx, allow_greater=True)
-        return SpreadsheetDrawPage(self.owner, self.component.insertNewByIndex(idx), lo_inst=self._lo_inst)
+        return SpreadsheetDrawPage(self.owner, self.component.insertNewByIndex(idx), lo_inst=self.lo_inst)
 
     def delete_page(self, idx: int) -> bool:
         """
@@ -145,7 +145,7 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial
             raise IndexError(f"Index out of range: '{idx}'")
 
         result = super().get_by_index(idx)
-        return SpreadsheetDrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
+        return SpreadsheetDrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -164,7 +164,7 @@ class SpreadsheetDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial
         """
         idx = self._get_index(idx=idx, allow_greater=True)
         result = super().insert_new_by_index(idx)
-        return SpreadsheetDrawPage(owner=self.owner, component=result, lo_inst=self._lo_inst)
+        return SpreadsheetDrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XDrawPages overrides
 

@@ -126,7 +126,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_fonts() -> Tuple[FontDescriptor, ...]:
         """
-        Gets fonts
+        Gets fonts.
+
+        |lo_unsafe|
 
         Returns:
             Tuple[FontDescriptor, ...]: Font Descriptors
@@ -141,7 +143,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_font_names(cls) -> List[str]:
         """
-        Gets font names
+        Gets font names.
+
+        |lo_unsafe|
 
         Returns:
             List[str]: Font names
@@ -160,6 +164,8 @@ class Info(metaclass=StaticProperty):
 
         This method is useful for obtaining a font descriptor for a specific font name and style,
         which can be used for various purposes such as setting the font of text in a document or application.
+
+        |lo_unsafe|
 
         Args:
             name (str): Font Name
@@ -184,7 +190,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_font_mono_name() -> str:
         """
-        Gets a general font such as ``Courier New`` (windows) or ``Liberation Mono``
+        Gets a general font such as ``Courier New`` (windows) or ``Liberation Mono``.
+
+        |lo_safe|
 
         Returns:
             str: Font Name
@@ -201,7 +209,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_font_general_name() -> str:
         """
-        Gets a general font such as ``Times New Roman`` (windows) or ``Liberation Serif``
+        Gets a general font such as ``Times New Roman`` (windows) or ``Liberation Serif``.
+
+        |lo_safe|
 
         Returns:
             str: Font Name
@@ -218,7 +228,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_reg_mods_path(cls) -> str:
         """
-        Get registered modifications path
+        Get registered modifications path.
+
+        |lo_unsafe|
 
         Returns:
             str: registered modifications path
@@ -272,7 +284,9 @@ class Info(metaclass=StaticProperty):
         idx: int = 0,
     ) -> str:
         """
-        Gets value from ``registrymodifications.xcu``
+        Gets value from ``registrymodifications.xcu``.
+
+        |lo_safe|
 
         Args:
             item (str): item name
@@ -351,7 +365,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_config(cls, node_str: str) -> Any:
         """
-        Get config
+        Get config.
+
+        |lo_unsafe|
 
         Args:
             node_str (str): node string
@@ -368,7 +384,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_config(cls, node_str: str, node_path: str) -> Any:
         """
-        Get config
+        Get config.
+
+        |lo_unsafe|
 
         Args:
             node_str (str): node string
@@ -385,7 +403,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_config(cls, node_str: str, node_path: Optional[str] = None) -> Any:
         """
-        Get config
+        Get config.
+
+        |lo_unsafe|
 
         Args:
             node_str (str): node string
@@ -423,11 +443,13 @@ class Info(metaclass=StaticProperty):
 
     @classmethod
     def _get_config1(cls, node_str: str, node_path: str):
+        """LO UN-Safe Method"""
         props = cls.get_config_props(node_path)
         return mProps.Props.get(props, node_str)
 
     @classmethod
     def _get_config2(cls, node_str: str) -> Any:
+        """LO UN-Safe Method"""
         for node_path in cls.NODE_PATHS:
             with contextlib.suppress(mEx.PropertyNotFoundError):
                 return cls._get_config1(node_str=node_str, node_path=node_path)
@@ -436,7 +458,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_config_props(node_path: str) -> XPropertySet:
         """
-        Get config properties
+        Get config properties.
+
+        |lo_unsafe|
 
         Args:
             node_path (str): nod path
@@ -463,6 +487,8 @@ class Info(metaclass=StaticProperty):
     def get_paths(setting: str | InfoPathsKind) -> str:
         """
         Gets access to LO's predefined paths.
+
+        |lo_unsafe|
 
         Args:
             setting (str | InfoPathsKind): property value
@@ -512,7 +538,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_dirs(cls, setting: str) -> List[Path]:
         """
-        Gets dirs paths from settings
+        Gets dirs paths from settings.
+
+        |lo_unsafe|
 
         Args:
             setting (str): setting
@@ -546,7 +574,9 @@ class Info(metaclass=StaticProperty):
     def get_office_dir(cls) -> str:
         """
         Gets file path to the office dir.
-        e.g. ``"C:\\Program Files (x86)\\LibreOffice 7"``
+        e.g. ``"C:\\Program Files (x86)\\LibreOffice 7"``.
+
+        |lo_unsafe|
 
         Raises:
             ValueError: if unable to obtain office path.
@@ -580,6 +610,8 @@ class Info(metaclass=StaticProperty):
         """
         Gets the Current LibreOffice Theme.
 
+        |lo_unsafe|
+
         Returns:
             str: LibreOffice Theme Name such as ``LibreOffice Dark``
 
@@ -604,6 +636,8 @@ class Info(metaclass=StaticProperty):
         """
         Get the first directory that contain the Gallery database and multimedia files.
 
+        |lo_unsafe|
+
         Raises:
             ValueError if unable to obtain gallery dir.
 
@@ -624,7 +658,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def create_configuration_view(cls, path: str) -> XHierarchicalPropertySet:
         """
-        Create Configuration View
+        Create Configuration View.
+
+        |lo_unsafe|
 
         Args:
             path (str): path
@@ -656,7 +692,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def set_config_props(node_path: str) -> XPropertySet:
         """
-        Get config properties
+        Get config properties.
+
+        |lo_unsafe|
 
         Args:
             node_path (str): Node path of properties
@@ -685,7 +723,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def set_config(cls, node_path: str, node_str: str, val: object) -> bool:
         """
-        Sets config
+        Sets config.
+
+        |lo_unsafe|
 
         Args:
             node_path (str): node path
@@ -712,7 +752,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_name(fnm: PathOrStr) -> str:
         """
-        Gets the file's name from the supplied string minus the extension
+        Gets the file's name from the supplied string minus the extension.
+
+        |lo_safe|
 
         Args:
             fnm (PathOrStr): File path
@@ -737,7 +779,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_ext(fnm: PathOrStr) -> str | None:
         """
-        Gets file extension without the ``.``
+        Gets file extension without the ``.``.
+
+        |lo_safe|
 
         Args:
             fnm (PathOrStr): file path
@@ -754,7 +798,9 @@ class Info(metaclass=StaticProperty):
     def get_unique_fnm(fnm: PathOrStr) -> str:
         """
         If a file called fnm already exists, then a number
-        is added to the name so the filename is unique
+        is added to the name so the filename is unique.
+
+        |lo_safe|
 
         Args:
             fnm (str): file path
@@ -775,7 +821,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_doc_type(fnm: PathOrStr) -> str:
         """
-        Gets doc type from file path
+        Gets doc type from file path.
+
+        |lo_unsafe|
 
         Args:
             fnm (PathOrStr): File Path
@@ -807,7 +855,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def report_doc_type(cls, doc: Any) -> mLo.Lo.DocType:
         """
-        Prints doc type to console and return doc type
+        Prints doc type to console and return doc type.
+
+        |lo_safe|
 
         Args:
             doc (object): office document
@@ -841,7 +891,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def doc_type_service(cls, doc: Any) -> mLo.Lo.Service:
         """
-        Prints service type to console and return service type
+        Prints service type to console and return service type.
+
+        |lo_safe|
 
         Args:
             doc (Any): office document
@@ -876,6 +928,8 @@ class Info(metaclass=StaticProperty):
         """
         Gets if doc is a particular doc type.
 
+        |lo_safe|
+
         Args:
             obj (object): office document
             doc_type (Service, str): Doc type or service name such as ``com.sun.star.text.TextDocument``.
@@ -891,7 +945,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_implementation_name(obj: Any) -> str:
         """
-        Gets implementation name such as ``com.sun.star.comp.deployment.PackageInformationProvider``
+        Gets implementation name such as ``com.sun.star.comp.deployment.PackageInformationProvider``.
+
+        |lo_safe|
 
         Args:
             obj (object): uno object that implements XServiceInfo
@@ -911,7 +967,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_identifier(obj: Any) -> str:
         """
-        Gets identifier name such as ``com.sun.star.text.TextDocument``
+        Gets identifier name such as ``com.sun.star.text.TextDocument``.
+
+        |lo_safe|
 
         Args:
             obj (object): uno object that implements XModule
@@ -931,7 +989,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_mime_type(fnm: PathOrStr) -> str:
         """
-        Get mime type for a file path
+        Get mime type for a file path.
+
+        |lo_safe|
 
         Args:
             fnm (PathOrStr): file path
@@ -952,7 +1012,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def mime_doc_type(mime_type: str) -> mLo.Lo.DocType:
         """
-        Gets document type from mime type
+        Gets document type from mime type.
+
+        |lo_safe|
 
         Args:
             mime_type (str): mime type
@@ -983,7 +1045,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def is_image_mime(mime_type: str) -> bool:
         """
-        Gets if mime-type is a known image type
+        Gets if mime-type is a known image type.
+
+        |lo_safe|
 
         Args:
             mime_type (str): mime type e.g. ``application/x-openoffice-bitmap``
@@ -1002,7 +1066,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_service_names(cls) -> List[str]:
         """
-        Gets service names
+        Gets service names.
+
+        |lo_unsafe|
 
         Returns:
             List[str]: List of service names.
@@ -1013,10 +1079,12 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_service_names(cls, service_name: str) -> List[str]:
         """
-        Gets service names
+        Gets service names.
+
+        |lo_unsafe|
 
         Args:
-            service_name (str): service name
+            service_name (str): service name.
 
         Returns:
             List[str]: List of service names.
@@ -1026,13 +1094,15 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_service_names(cls, service_name: Optional[str] = None) -> List[str]:
         """
-        Gets service names
+        Gets service names.
+
+        |lo_unsafe|
 
         Args:
-            service_name (str): service name
+            service_name (str): service name.
 
         Raises:
-            Exception: If error occurs
+            Exception: If error occurs.
 
         Returns:
             List[str]: List of service names.
@@ -1043,6 +1113,7 @@ class Info(metaclass=StaticProperty):
 
     @staticmethod
     def _get_service_names1() -> List[str]:
+        """LO UN-safe method"""
         mc_factory = mLo.Lo.get_component_factory()
         if mc_factory is None:
             return []
@@ -1050,6 +1121,7 @@ class Info(metaclass=StaticProperty):
 
     @staticmethod
     def _get_service_names2(service_name: str) -> List[str]:
+        """LO Un-safe method"""
         names: List[str] = []
         try:
             enum_access = mLo.Lo.qi(XContentEnumerationAccess, mLo.Lo.get_component_factory(), True)
@@ -1070,7 +1142,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_services(obj: Any) -> List[str]:
         """
-        Gets service names
+        Gets service names.
+
+        |lo_safe|
 
         Args:
             obj (object): obj that implements XServiceInfo
@@ -1092,7 +1166,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def show_services(cls, obj_name: str, obj: Any) -> None:
         """
-        Prints services to console
+        Prints services to console.
+
+        |lo_safe|
 
         Args:
             obj_name (str): service name
@@ -1110,6 +1186,8 @@ class Info(metaclass=StaticProperty):
     def support_service(obj: Any, *service: str) -> bool:
         """
         Gets if ``obj`` supports a service.
+
+        |lo_safe|
 
         Args:
             obj (object): Object to check for supported service
@@ -1136,10 +1214,12 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_available_services(obj: Any) -> List[str]:
         """
-        Gets available services for obj
+        Gets available services for obj.
+
+        |lo_safe|
 
         Args:
-            obj (object): obj that implements XMultiServiceFactory interface
+            obj (object): obj that implements ``XMultiServiceFactory`` interface
 
         Raises:
             Exception: If unable to get services
@@ -1162,16 +1242,18 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_interface_types(target: object) -> Tuple[object, ...]:
         """
-        Get interface types
+        Get interface types.
+
+        |lo_safe|
 
         Args:
-            target (object): object that implements XTypeProvider interface
+            target (object): object that implements XTypeProvider interface.
 
         Raises:
-            Exception: If unable to get services
+            Exception: If unable to get services.
 
         Returns:
-            Tuple[object, ...]: Tuple of interfaces
+            Tuple[object, ...]: Tuple of interfaces.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1186,13 +1268,15 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_interfaces(cls, target: object) -> List[str]:
         """
-        Gets interfaces
+        Gets interfaces.
+
+        |lo_safe|
 
         Args:
-            target: (object): object that implements XTypeProvider
+            target: (object): object that implements XTypeProvider.
 
         Returns:
-            List[str]: List of interfaces
+            List[str]: List of interfaces.
         """
         ...
 
@@ -1200,10 +1284,12 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_interfaces(cls, type_provider: XTypeProvider) -> List[str]:
         """
-        Gets interfaces
+        Gets interfaces.
+
+        |lo_safe|
 
         Args:
-            type_provider (XTypeProvider): type provider
+            type_provider (XTypeProvider): type provider.
 
         Returns:
             List[str]: List of interfaces
@@ -1213,17 +1299,19 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_interfaces(cls, *args, **kwargs) -> List[str]:
         """
-        Gets interfaces
+        Gets interfaces.
+
+        |lo_safe|
 
         Args:
-            target: (object): object that implements XTypeProvider
-            type_provider (XTypeProvider): type provider
+            target: (object): object that implements ``XTypeProvider``.
+            type_provider (XTypeProvider): type provider.
 
         Raises:
-            Exception: If unable to get interfaces
+            Exception: If unable to get interfaces.
 
         Returns:
-            List[str]: List of interfaces
+            List[str]: List of interfaces.
         """
         # sourcery skip: raise-specific-error
         ordered_keys = (1,)
@@ -1276,13 +1364,15 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def is_interface_obj(cls, obj: Any) -> bool:
         """
-        Gets is an object contains interfaces
+        Gets is an object contains interfaces.
+
+        |lo_safe|
 
         Args:
-            obj (Any): Object to check
+            obj (Any): Object to check.
 
         Returns:
-            bool: True if obj contains interface; Otherwise, False
+            bool: ``True`` if obj contains interface; Otherwise, ``False``.
         """
         result = False
         if obj is None:
@@ -1295,13 +1385,15 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def is_struct(obj: Any) -> bool:
         """
-        Gets if an object is a UNO Struct
+        Gets if an object is a UNO Struct.
+
+        |lo_safe|
 
         Args:
-            obj (Any): Object to check
+            obj (Any): Object to check.
 
         Returns:
-            bool: True if obj is Struct; Otherwise, False
+            bool: ``True`` if obj is Struct; Otherwise, ``False``
         """
         if obj is None:
             return False
@@ -1316,6 +1408,8 @@ class Info(metaclass=StaticProperty):
     def is_same(cls, obj1: Any, obj2: Any) -> bool:
         """
         Determines if two Uno object are the same.
+
+        |lo_safe|
 
         Args:
             obj1 (Any): First Uno object
@@ -1344,7 +1438,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def show_container_names(print_name: str, nc: XNameContainer):
         """
-        Prints Name Container elements to console
+        Prints Name Container elements to console.
+
+        |lo_safe|
 
         Args:
             print_name (str): Name to display. Can be empty string.
@@ -1362,7 +1458,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def show_interfaces(cls, obj_name: str, obj: Any) -> None:
         """
-        prints interfaces in obj to console
+        Prints interfaces in obj to console.
+
+        |lo_safe|
 
         Args:
             obj_name (str): Name of object for printing
@@ -1380,6 +1478,8 @@ class Info(metaclass=StaticProperty):
     def show_conversion_values(value: Any, frm: mConvert.UnitLength) -> None:
         """
         Prints values of conversions to terminal.
+
+        |lo_safe|
 
         Args:
             value (Any): Any numeric value
@@ -1412,6 +1512,8 @@ class Info(metaclass=StaticProperty):
         """
         Get Methods of an object such as a doc.
 
+        |lo_safe|
+
         Args:
             obj (object): Object to get methods of.
             property_concept (PropertyConceptEnum | None, optional): Type of method to get. Defaults to PropertyConceptEnum.ALL.
@@ -1439,10 +1541,12 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_methods(interface_name: str) -> List[str]:
         """
-        Get Interface Methods
+        Get Interface Methods.
+
+        |lo_unsafe|
 
         Args:
-            interface_name (str): name of interface
+            interface_name (str): name of interface.
 
         Returns:
             List[str]: List of methods
@@ -1485,10 +1589,12 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def show_methods(cls, interface_name: str) -> None:
         """
-        Prints methods to console for an interface
+        Prints methods to console for an interface.
+
+        |lo_unsafe|
 
         Args:
-            interface_name (str): name of interface
+            interface_name (str): name of interface.
         """
         methods = cls.get_methods(interface_name=interface_name)
         if len(methods) == 0:
@@ -1502,6 +1608,8 @@ class Info(metaclass=StaticProperty):
     def show_methods_obj(cls, obj: Any, property_concept: PropertyConceptEnum | None = None) -> None:
         """
         Prints method to console for an object such as a doc.
+
+        |lo_safe|
 
         Args:
             obj (object): Object to get methods of.
@@ -1519,17 +1627,19 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_style_families(doc: Any) -> XNameAccess:
         """
-        Gets a list of style family names
+        Gets a list of style family names.
+
+        |lo_safe|
 
         Args:
-            doc (Any): office document
+            doc (Any): office document.
 
         Raises:
-            MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface
-            Exception: If unable to get style Families
+            MissingInterfaceError: If Doc does not implement XStyleFamiliesSupplier interface.
+            Exception: If unable to get style Families.
 
         Returns:
-            XNameAccess: Style Families
+            XNameAccess: Style Families.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1545,7 +1655,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_style_family_names(cls, doc: Any) -> List[str]:
         """
-        Gets a sorted list of style family names
+        Gets a sorted list of style family names.
+
+        |lo_safe|
 
         Args:
             doc (Any): office document
@@ -1567,7 +1679,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_style_container(cls, doc: Any, family_style_name: str) -> XNameContainer:
         """
-        Gets style container of document for a family of styles
+        Gets style container of document for a family of styles.
+
+        |lo_safe|
 
         Args:
             doc (Any): office document
@@ -1585,17 +1699,19 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_style_names(cls, doc: Any, family_style_name: str) -> List[str]:
         """
-        Gets a list of style names
+        Gets a list of style names.
+
+        |lo_safe|
 
         Args:
-            doc (Any): office document
-            family_style_name (str): name of family style
+            doc (Any): office document.
+            family_style_name (str): name of family style.
 
         Raises:
-            Exception: If unable to access Style names
+            Exception: If unable to access Style names.
 
         Returns:
-            List[str]: List of style names
+            List[str]: List of style names.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1608,18 +1724,20 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_style_props(cls, doc: Any, family_style_name: str, prop_set_nm: str) -> XPropertySet:
         """
-        Get style properties for a family of styles
+        Get style properties for a family of styles.
+
+        |lo_safe|
 
         Args:
-            doc (Any): office document
-            family_style_name (str): name of family style
-            prop_set_nm (str): property set name
+            doc (Any): office document.
+            family_style_name (str): name of family style.
+            prop_set_nm (str): property set name.
 
         Raises:
             MissingInterfaceError: if a required interface cannot be obtained.
 
         Returns:
-            XPropertySet: Property set
+            XPropertySet: Property set.
         """
         style_container = cls.get_style_container(doc, family_style_name)
         return mLo.Lo.qi(XPropertySet, style_container.getByName(prop_set_nm), True)
@@ -1627,32 +1745,36 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_page_style_props(cls, doc: Any) -> XPropertySet:
         """
-        Gets style properties for page styles
+        Gets style properties for page styles.
+
+        |lo_safe|
 
         Args:
-            doc (Any): office docs
+            doc (Any): office docs.
 
         Raises:
             MissingInterfaceError: if a required interface cannot be obtained.
 
         Returns:
-            XPropertySet: property set
+            XPropertySet: property set.
         """
         return cls.get_style_props(doc, "PageStyles", "Standard")
 
     @classmethod
     def get_paragraph_style_props(cls, doc: Any) -> XPropertySet:
         """
-        Gets style properties for paragraph styles
+        Gets style properties for paragraph styles.
+
+        |lo_safe|
 
         Args:
-            doc (Any): office docs
+            doc (Any): office docs.
 
         Raises:
             MissingInterfaceError: if a required interface cannot be obtained.
 
         Returns:
-            XPropertySet: property set
+            XPropertySet: property set.
         """
         return cls.get_style_props(doc, "ParagraphStyles", "Standard")
 
@@ -1661,7 +1783,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def print_doc_properties(cls, doc: Any) -> None:
         """
-        Prints document properties to console
+        Prints document properties to console.
+
+        |lo_safe|
 
         Args:
             doc (Any): office document
@@ -1680,7 +1804,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def print_doc_props(cls, dps: XDocumentProperties) -> None:
         """
-        Prints doc properties to console
+        Prints doc properties to console.
+
+        |lo_safe|
 
         Args:
             dps (XDocumentProperties): document properties.
@@ -1742,16 +1868,18 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def set_doc_props(doc: Any, subject: str, title: str, author: str) -> None:
         """
-        Set document properties for subject, title, author
+        Set document properties for subject, title, author.
+
+        |lo_safe|
 
         Args:
-            doc (Any): office document
-            subject (str): subject
-            title (str): title
-            author (str): author
+            doc (Any): office document.
+            subject (str): subject.
+            title (str): title.
+            author (str): author.
 
         Raises:
-            PropertiesError: If unable to set properties
+            PropertiesError: If unable to set properties.
         """
         try:
             dp_supplier = mLo.Lo.qi(XDocumentPropertiesSupplier, doc, True)
@@ -1765,19 +1893,21 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_user_defined_props(doc: Any) -> XPropertyContainer:
         """
-        Gets user defined properties
+        Gets user defined properties.
+
+        |lo_safe|
 
         Args:
-            doc (Any): office document
+            doc (Any): office document.
 
         Raises:
-            PropertiesError: if unable to access properties
+            PropertiesError: if unable to access properties.
 
         Returns:
-            XPropertyContainer: Property container
+            XPropertyContainer: Property container.
 
         See Also:
-            - :ref:`help_common_modules_info_get_user_defined_props`
+            - :ref:`help_common_modules_info_get_user_defined_props`.
         """
         try:
             dp_supplier = mLo.Lo.qi(XDocumentPropertiesSupplier, doc, True)
@@ -1791,13 +1921,15 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_pip() -> XPackageInformationProvider:
         """
-        Gets Package Information Provider
+        Gets Package Information Provider.
+
+        |lo_unsafe|
 
         Raises:
-            MissingInterfaceError: if unable to obtain XPackageInformationProvider interface
+            MissingInterfaceError: if unable to obtain XPackageInformationProvider interface.
 
         Returns:
-            XPackageInformationProvider: Package Information Provider
+            XPackageInformationProvider: Package Information Provider.
         """
         ctx = mLo.Lo.get_context()
         return mLo.Lo.qi(
@@ -1810,7 +1942,9 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def list_extensions(cls) -> None:
         """
-        Prints extensions to console
+        Prints extensions to console.
+
+        |lo_unsafe|
         """
         try:
             pip = cls.get_pip()
@@ -1830,11 +1964,13 @@ class Info(metaclass=StaticProperty):
         """
         Gets info for an installed extension in LibreOffice.
 
+        |lo_unsafe|
+
         Args:
-            id (str): Extension id
+            id (str): Extension id.
 
         Returns:
-            Tuple[str, ...]: Extension info
+            Tuple[str, ...]: Extension info.
         """
         try:
             pip = cls.get_pip()
@@ -1853,13 +1989,15 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def get_extension_loc(cls, id: str) -> str | None:
         """
-        Gets location for an installed extension in LibreOffice
+        Gets location for an installed extension in LibreOffice.
+
+        |lo_unsafe|
 
         Args:
-            id (str): Extension id
+            id (str): Extension id.
 
         Returns:
-            str | None: Extension location on success; Otherwise, None
+            str | None: Extension location on success; Otherwise, None.
         """
         try:
             pip = cls.get_pip()
@@ -1871,10 +2009,12 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_filter_names() -> Tuple[str, ...]:
         """
-        Gets filter names
+        Gets filter names.
+
+        |lo_unsafe|
 
         Returns:
-            Tuple[str, ...]: Filter names
+            Tuple[str, ...]: Filter names.
         """
         na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
@@ -1885,13 +2025,15 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def get_filter_props(filter_nm: str) -> List[PropertyValue]:
         """
-        Gets filter properties
+        Gets filter properties.
+
+        |lo_unsafe|
 
         Args:
-            filter_nm (str): Filter Name
+            filter_nm (str): Filter Name.
 
         Returns:
-            List[PropertyValue]: List of PropertyValue
+            List[PropertyValue]: List of PropertyValue.
         """
         na = mLo.Lo.create_instance_mcf(XNameAccess, "com.sun.star.document.FilterFactory")
         if na is None:
@@ -1906,182 +2048,210 @@ class Info(metaclass=StaticProperty):
     @classmethod
     def is_import(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.IMPORT`` flag set
+        Gets if filter flags has ``Filter.IMPORT`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.IMPORT) == cls.Filter.IMPORT
 
     @classmethod
     def is_export(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.EXPORT`` flag set
+        Gets if filter flags has ``Filter.EXPORT`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.EXPORT) == cls.Filter.EXPORT
 
     @classmethod
     def is_template(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.TEMPLATE`` flag set
+        Gets if filter flags has ``Filter.TEMPLATE`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.TEMPLATE) == cls.Filter.TEMPLATE
 
     @classmethod
     def is_internal(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.INTERNAL`` flag set
+        Gets if filter flags has ``Filter.INTERNAL`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.INTERNAL) == cls.Filter.INTERNAL
 
     @classmethod
     def is_template_path(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.TEMPLATEPATH`` flag set
+        Gets if filter flags has ``Filter.TEMPLATEPATH`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.TEMPLATEPATH) == cls.Filter.TEMPLATEPATH
 
     @classmethod
     def is_own(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.OWN`` flag set
+        Gets if filter flags has ``Filter.OWN`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.OWN) == cls.Filter.OWN
 
     @classmethod
     def is_alien(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.ALIEN`` flag set
+        Gets if filter flags has ``Filter.ALIEN`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.ALIEN) == cls.Filter.ALIEN
 
     @classmethod
     def is_default(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.DEFAULT`` flag set
+        Gets if filter flags has ``Filter.DEFAULT`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.DEFAULT) == cls.Filter.DEFAULT
 
     @classmethod
     def is_support_selection(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.SUPPORTSSELECTION`` flag set
+        Gets if filter flags has ``Filter.SUPPORTSSELECTION`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.SUPPORTSSELECTION) == cls.Filter.SUPPORTSSELECTION
 
     @classmethod
     def is_not_in_file_dialog(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.NOTINFILEDIALOG`` flag set
+        Gets if filter flags has ``Filter.NOTINFILEDIALOG`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: `True` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.NOTINFILEDIALOG) == cls.Filter.NOTINFILEDIALOG
 
     @classmethod
     def is_not_in_chooser(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.NOTINCHOOSER`` flag set
+        Gets if filter flags has ``Filter.NOTINCHOOSER`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.NOTINCHOOSER) == cls.Filter.NOTINCHOOSER
 
     @classmethod
     def is_read_only(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.READONLY`` flag set
+        Gets if filter flags has ``Filter.READONLY`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.READONLY) == cls.Filter.READONLY
 
     @classmethod
     def is_third_party_filter(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.THIRDPARTYFILTER`` flag set
+        Gets if filter flags has ``Filter.THIRDPARTYFILTER`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, ``False``.
         """
         return (filter_flags & cls.Filter.THIRDPARTYFILTER) == cls.Filter.THIRDPARTYFILTER
 
     @classmethod
     def is_preferred(cls, filter_flags: Info.Filter) -> bool:
         """
-        Gets if filter flags has ``Filter.PREFERRED`` flag set
+        Gets if filter flags has ``Filter.PREFERRED`` flag set.
+
+        |lo_safe|
 
         Args:
-            filter_flags (Filter): Flags
+            filter_flags (Filter): Flags.
 
         Returns:
-            bool: True if flag is set; Otherwise, False
+            bool: ``True`` if flag is set; Otherwise, `False`.
         """
         return (filter_flags & cls.Filter.PREFERRED) == cls.Filter.PREFERRED
 
@@ -2090,12 +2260,14 @@ class Info(metaclass=StaticProperty):
         """
         Gets if an object is a Uno Struct of matching type.
 
+        |lo_safe|
+
         Args:
-            obj (Any): Object to test if is struct
-            type_name (str): Type string such as 'com.sun.star.table.CellRangeAddress'
+            obj (Any): Object to test if is struct.
+            type_name (str): Type string such as ``com.sun.star.table.CellRangeAddress``.
 
         Returns:
-            bool: True if 'obj' is struct and 'obj' matches 'type_name'; Otherwise, False
+            bool: ``True`` if ``obj`` is struct and ``obj`` matches ``type_name``; Otherwise, ``False``.
         """
         if obj is None:
             return False
@@ -2105,6 +2277,8 @@ class Info(metaclass=StaticProperty):
     def is_type_interface(obj: Any, type_name: str) -> bool:
         """
         Gets if an object is a Uno interface of matching type.
+
+        |lo_safe|
 
         Args:
             obj (object): Object to test if is interface
@@ -2130,6 +2304,8 @@ class Info(metaclass=StaticProperty):
         """
         Gets if an object is a UNO enum of matching type.
 
+        |lo_safe|
+
         Args:
             obj (Any): Object to test if is uno enum
             type_name (str): Type string such as ``com.sun.star.sheet.GeneralFunction``
@@ -2144,7 +2320,9 @@ class Info(metaclass=StaticProperty):
     @staticmethod
     def is_uno(obj: Any) -> bool:
         """
-        Gets if an object is a UNO object
+        Gets if an object is a UNO object.
+
+        |lo_safe|
 
         Args:
             obj (object): Object to check
@@ -2168,6 +2346,8 @@ class Info(metaclass=StaticProperty):
 
         UNO object error when used with ``isinstance``.
         This method will return ``False`` if ``obj`` is a UNO object.
+
+        |lo_safe|
 
         Args:
             obj (Any): Any object. If UNO object then comparison is done by ``Lo.is_uno_interfaces()``;
@@ -2243,6 +2423,8 @@ class Info(metaclass=StaticProperty):
         """
         Gets if an multiple inheritance enum, such as a ``str, Enum`` is of expected type.
 
+        |lo_safe|
+
         Args:
             alt_type (str): Alternative Type, In the case of a ``str, Enum`` this would be ``str``
             enum_type (Type[Enum]): Expected Enum Type
@@ -2285,6 +2467,8 @@ class Info(metaclass=StaticProperty):
         """
         Gets type name such as ``com.sun.star.table.TableSortField`` from uno object.
 
+        |lo_safe|
+
         Args:
             obj (Any): Uno object
 
@@ -2303,6 +2487,8 @@ class Info(metaclass=StaticProperty):
     def parse_language_code(cls, lang_code: str) -> Locale:
         """
         Parses a language code into a ``Locale`` object.
+
+        |lo_safe|
 
         Args:
             lang_code (str): Language code such as ``"en-US"``
@@ -2337,10 +2523,12 @@ class Info(metaclass=StaticProperty):
         return Locale(lang, country.upper(), variant)
 
     @classmethod
-    @deprecated("Use get_toolbar_resource")
+    @deprecated("Use parse_language_code")
     def parse_languange_code(cls, lang_code: str) -> Locale:
         """
         Parses a language code into a ``Locale`` object.
+
+        |lo_safe|
 
         Args:
             lang_code (str): Language code such as ``"en-US"``
@@ -2351,7 +2539,7 @@ class Info(metaclass=StaticProperty):
         Raises:
             ValueError: If ``lang_code`` is not valid.
 
-        # .. deprecated:: 0.9.4
+        .. deprecated:: 0.9.4
             Use :py:meth:`~.info.Info.parse_language_code` instead.
         """
         return cls.parse_language_code(lang_code=lang_code)
@@ -2359,7 +2547,9 @@ class Info(metaclass=StaticProperty):
     @classproperty
     def language(cls) -> str:
         """
-        Gets the Current Language of the LibreOffice Instance
+        Gets the Current Language of the LibreOffice Instance.
+
+        |lo_unsafe|
 
         Returns:
             str: Language string such as 'en-US'
@@ -2386,6 +2576,8 @@ class Info(metaclass=StaticProperty):
         """
         Gets the Current Language ``Locale`` of the LibreOffice Instance.
 
+        |lo_safe|
+
         Returns:
             Locale: ``Locale`` object.
 
@@ -2401,7 +2593,9 @@ class Info(metaclass=StaticProperty):
     @classproperty
     def version(cls) -> str:
         """
-        Gets the running LibreOffice version
+        Gets the running LibreOffice version.
+
+        |lo_unsafe|
 
         Returns:
             str: version as string such as ``"7.3.4.2"``
@@ -2422,7 +2616,9 @@ class Info(metaclass=StaticProperty):
     @classproperty
     def version_info(cls) -> Tuple[int, ...]:
         """
-        Gets the running LibreOffice version
+        Gets the running LibreOffice version.
+
+        |lo_unsafe|
 
         Returns:
             tuple: version as tuple such as ``(7, 3, 4, 2)``

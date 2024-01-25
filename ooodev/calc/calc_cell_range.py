@@ -33,15 +33,19 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import file_io as mFile
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from . import calc_cell as mCalcCell
 
 
-class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, EventsPartial, ServicePartial):
+class CalcCellRange(
+    LoInstPropsPartial, SheetCellRangeComp, QiPartial, PropPartial, StylePartial, EventsPartial, ServicePartial
+):
     """Represents a calc cell range."""
 
     def __init__(self, owner: CalcSheet, rng: Any, lo_inst: LoInst | None = None) -> None:
@@ -53,22 +57,23 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
             rng (Any): Range object.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
-        if self._lo_inst.is_uno_interfaces(rng, XCellRange):
-            self._range_obj = mCalc.Calc.get_range_obj(cell_range=rng)
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if self.lo_inst.is_uno_interfaces(rng, XCellRange):
+            with LoContext(self.lo_inst):
+                self._range_obj = mCalc.Calc.get_range_obj(cell_range=rng)
             cell_range = rng
         else:
-            self._range_obj = mCalc.Calc.get_range_obj(rng)
-            cell_range = mCalc.Calc.get_cell_range(sheet=self.calc_sheet.component, range_obj=self._range_obj)
+            with LoContext(self.lo_inst):
+                self._range_obj = mCalc.Calc.get_range_obj(rng)
+                cell_range = mCalc.Calc.get_cell_range(sheet=self.calc_sheet.component, range_obj=self._range_obj)
         SheetCellRangeComp.__init__(self, cell_range)  # type: ignore
-        QiPartial.__init__(self, component=cell_range, lo_inst=self._lo_inst)  # type: ignore
-        PropPartial.__init__(self, component=cell_range, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
+        PropPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cell_range)
         EventsPartial.__init__(self)
-        ServicePartial.__init__(self, component=cell_range, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)
 
     def change_style(self, style_name: str) -> bool:
         """
@@ -111,10 +116,12 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
             Events arg ``event_data`` is a dictionary containing ``cell_flags``.
         """
         if cell_flags is None:
-            return mCalc.Calc.clear_cells(sheet=self.calc_sheet.component, range_val=self._range_obj)
-        return mCalc.Calc.clear_cells(
-            sheet=self.calc_sheet.component, range_val=self._range_obj, cell_flags=cell_flags
-        )
+            result = mCalc.Calc.clear_cells(sheet=self.calc_sheet.component, range_val=self._range_obj)
+        else:
+            result = mCalc.Calc.clear_cells(
+                sheet=self.calc_sheet.component, range_val=self._range_obj, cell_flags=cell_flags
+            )
+        return result
 
     def delete_cells(self, is_shift_left: bool) -> bool:
         """
@@ -367,7 +374,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
             value (Any): Value to set.
         """
         cell_obj = self.range_obj.start
-        cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
+        cell = mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
         cell.set_val(value=value)
 
     def select(self) -> None:
@@ -619,7 +626,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
         def on_exported(source: Any, args: Any) -> None:
             self.trigger_event(CalcNamedEvent.EXPORTED_RANGE_JPG, args)
 
-        exporter = RangeJpg(cell_range=self, lo_inst=self._lo_inst)
+        exporter = RangeJpg(cell_range=self, lo_inst=self.lo_inst)
         exporter.subscribe_event_exporting(on_exporting)
         exporter.subscribe_event_exported(on_exported)
         exporter.export(fnm=fnm, resolution=resolution)
@@ -686,7 +693,7 @@ class CalcCellRange(SheetCellRangeComp, QiPartial, PropPartial, StylePartial, Ev
         def on_exported(source: Any, args: Any) -> None:
             self.trigger_event(CalcNamedEvent.EXPORTED_RANGE_PNG, args)
 
-        exporter = RangePng(cell_range=self, lo_inst=self._lo_inst)
+        exporter = RangePng(cell_range=self, lo_inst=self.lo_inst)
         exporter.subscribe_event_exporting(on_exporting)
         exporter.subscribe_event_exported(on_exported)
         exporter.export(fnm=fnm, resolution=resolution)

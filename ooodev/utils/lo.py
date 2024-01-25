@@ -171,6 +171,8 @@ class Lo(metaclass=StaticProperty):
         """
         Generic method that get an interface instance from  an object.
 
+        |lo_safe|
+
         Args:
             atype (T): Interface type such as XInterface
             obj (object): Object that implements interface.
@@ -185,6 +187,8 @@ class Lo(metaclass=StaticProperty):
     def qi(cls, atype: Type[T], obj: Any, raise_err: Literal[True]) -> T:  # pylint: disable=invalid-name
         """
         Generic method that get an interface instance from  an object.
+
+        |lo_safe|
 
         Args:
             atype (T): Interface type such as XInterface
@@ -205,6 +209,8 @@ class Lo(metaclass=StaticProperty):
         """
         Generic method that get an interface instance from  an object.
 
+        |lo_safe|
+
         Args:
             atype (T): Interface type such as XInterface
             obj (object): Object that implements interface.
@@ -223,6 +229,8 @@ class Lo(metaclass=StaticProperty):
     def qi(cls, atype: Type[T], obj: XTypeProvider, raise_err: bool = False) -> T | None:
         """
         Generic method that get an interface instance from  an object.
+
+        |lo_safe|
 
         Args:
             atype (T): Interface type to query obj for. Any Uno class that starts with 'X' such as XInterface
@@ -257,25 +265,37 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_context(cls) -> XComponentContext:
         """
-        Gets current LO Component Context
+        Gets current LO Component Context.
+
+        |lo_unsafe|
         """
         return cls._lo_inst.get_context()
 
     @classmethod
     def get_desktop(cls) -> XDesktop:
         """
-        Gets current LO Desktop
+        Gets current LO Desktop.
+
+        |lo_unsafe|
         """
         return cls._lo_inst.get_desktop()
 
     @classmethod
     def get_component_factory(cls) -> XMultiComponentFactory:
-        """Gets current multi component factory"""
+        """
+        Gets current multi component factory.
+
+        |lo_unsafe|
+        """
         return cls._lo_inst.get_component_factory()
 
     @classmethod
     def get_service_factory(cls) -> XMultiServiceFactory:
-        """Gets current multi service factory"""
+        """
+        Gets current multi service factory.
+
+        |lo_unsafe|
+        """
         # return cls._bridge_component
         return cls._lo_inst.get_service_factory()
 
@@ -292,6 +312,8 @@ class Lo(metaclass=StaticProperty):
         In most instances the internal document is the same as the xscript context document.
 
         By Default the dynamic option is set to ``False``.
+
+        |lo_unsafe|
 
         Raises:
             NoneError: If the document is ``None``.
@@ -345,6 +367,8 @@ class Lo(metaclass=StaticProperty):
         optionally passes arguments to that instance.
 
         The interface specified by ``atype`` is returned from created instance.
+
+        |lo_unsafe|
 
         Args:
             atype (Type[T]): Type of interface to return from created service.
@@ -425,6 +449,8 @@ class Lo(metaclass=StaticProperty):
 
         The interface specified by ``atype`` is returned from created instance.
 
+        |lo_unsafe|
+
         Args:
             atype (Type[T]): Type of interface to return from created instance.
                 Any Uno class that starts with ``X`` such as ``XInterface``
@@ -464,7 +490,9 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def get_parent(a_component: XChild) -> XInterface:
         """
-        Retrieves the parent of the given object
+        Retrieves the parent of the given object.
+
+        |lo_safe|
 
         Args:
             a_component (XChild): component to get parent of.
@@ -498,6 +526,8 @@ class Lo(metaclass=StaticProperty):
             cache_obj (Cache, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
                 Ignore for macros. Defaults to None.
             opt (Options, optional): Extra Load options.
+
+        |lo_unsafe|
 
         Returns:
             XComponentLoader: component loader
@@ -577,6 +607,8 @@ class Lo(metaclass=StaticProperty):
         """
         Closes the office connection.
 
+        |lo_unsafe|
+
         Returns:
             bool: True if office is closed; Otherwise, False
 
@@ -592,6 +624,8 @@ class Lo(metaclass=StaticProperty):
     def kill_office(cls) -> None:
         """
         Kills the office connection.
+
+        |lo_unsafe|
 
         Returns:
             None:
@@ -625,7 +659,9 @@ class Lo(metaclass=StaticProperty):
         cls, fnm: PathOrStr, doc_type: Lo.DocType, loader: Optional[XComponentLoader] = None
     ) -> XComponent:
         """
-        Opens a flat document
+        Opens a flat document.
+
+        |lo_unsafe|
 
         Args:
             fnm (PathOrStr): path of XML document
@@ -678,19 +714,21 @@ class Lo(metaclass=StaticProperty):
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
         """
-        Open a office document
+        Open a office document.
+
+        |lo_unsafe|
 
         Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
-            props (Iterable[PropertyValue]): Properties passed to component loader
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
+            props (Iterable[PropertyValue]): Properties passed to component loader.
 
         Raises:
-            Exception: if unable to open document
+            Exception: if unable to open document.
             CancelEventError: if DOC_OPENING event is canceled.
 
         Returns:
-            XComponent: Document
+            XComponent: Document.
 
         :events:
             .. cssclass:: lo_event
@@ -739,17 +777,19 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def open_readonly_doc(cls, fnm: PathOrStr, loader: Optional[XComponentLoader] = None) -> XComponent:
         """
-        Open a office document as read-only
+        Open a office document as read-only.
+
+        |lo_unsafe|
 
         Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
+            fnm (PathOrStr): path of document to open.
+            loader (XComponentLoader): Component Loader.
 
         Raises:
-            Exception: if unable to open document
+            Exception: if unable to open document.
 
         Returns:
-            XComponent: Document
+            XComponent: Document.
 
         See Also:
             - :py:meth:`~Lo.open_doc`
@@ -770,7 +810,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def ext_to_doc_type(cls, ext: str) -> LoDocTypeStr:
         """
-        Gets document type from extension
+        Gets document type from extension.
+
+        |lo_safe|
 
         Args:
             ext (str): extension used for lookup
@@ -787,6 +829,8 @@ class Lo(metaclass=StaticProperty):
     def doc_type_str(cls, doc_type_val: LoDocType) -> LoDocTypeStr:
         """
         Converts a doc type into a :py:class:`~Lo.DocTypeStr` representation.
+
+        |lo_safe|
 
         Args:
             doc_type_val (DocType): Doc type as int
@@ -825,12 +869,14 @@ class Lo(metaclass=StaticProperty):
         props: Optional[Iterable[PropertyValue]] = None,
     ) -> XComponent:
         """
-        Creates a document
+        Creates a document.
+
+        |lo_unsafe|
 
         Args:
-            doc_type (DocTypeStr): Document type
-            loader (XComponentLoader): Component Loader
-            props (Iterable[PropertyValue]): Property values
+            doc_type (DocTypeStr): Document type.
+            loader (XComponentLoader): Component Loader.
+            props (Iterable[PropertyValue]): Property values.
 
         Raises:
             Exception: If unable to create document.
@@ -868,11 +914,13 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def create_macro_doc(cls, doc_type: Lo.DocTypeStr, loader: Optional[XComponentLoader] = None) -> XComponent:
         """
-        Create a document that allows executing of macros
+        Create a document that allows executing of macros.
+
+        |lo_unsafe|
 
         Args:
-            doc_type (DocTypeStr): Document type
-            loader (XComponentLoader): Component Loader
+            doc_type (DocTypeStr): Document type.
+            loader (XComponentLoader): Component Loader.
 
         Returns:
             XComponent: document as component.
@@ -908,6 +956,8 @@ class Lo(metaclass=StaticProperty):
         """
         Create a document from a template.
 
+        |lo_unsafe|
+
         Args:
             template_path (PathOrStr): path to template file.
             loader (XComponentLoader): Component Loader.
@@ -930,6 +980,8 @@ class Lo(metaclass=StaticProperty):
     def save(cls, doc: object) -> bool:
         """
         Save as document.
+
+        |lo_safe|
 
         Args:
             doc (object): Office document.
@@ -960,12 +1012,14 @@ class Lo(metaclass=StaticProperty):
         """
         Save document.
 
+        |lo_safe|
+
         Args:
             doc (object): Office document.
             fnm (PathOrStr): file path to save as.
 
         Returns:
-            bool: False if ``DOC_SAVING`` event is canceled; Otherwise, True
+            bool: ``False`` if ``DOC_SAVING`` event is canceled; Otherwise, ``True``
         """
         ...
 
@@ -974,6 +1028,8 @@ class Lo(metaclass=StaticProperty):
     def save_doc(cls, doc: object, fnm: PathOrStr, password: str) -> bool:
         """
         Save document.
+
+        |lo_safe|
 
         Args:
             doc (object): Office document.
@@ -992,14 +1048,16 @@ class Lo(metaclass=StaticProperty):
         """
         Save document.
 
+        |lo_safe|
+
         Args:
-            doc (object): Office document
-            fnm (PathOrStr): file path to save as
+            doc (object): Office document.
+            fnm (PathOrStr): file path to save as.
             password (str): Password to save document with.
             format (str): document format such as 'odt' or 'xml'.
 
         Returns:
-            bool: False if ``DOC_SAVING`` event is canceled; Otherwise, True
+            bool: ``False`` if ``DOC_SAVING`` event is canceled; Otherwise, ``True``.
         """
         ...
 
@@ -1009,14 +1067,16 @@ class Lo(metaclass=StaticProperty):
         """
         Save document.
 
+        |lo_safe|
+
         Args:
             doc (object): Office document.
-            fnm (PathOrStr): file path to save as
+            fnm (PathOrStr): file path to save as.
             password (str, optional): password to save document with.
             format (str, optional): document format such as 'odt' or 'xml'.
 
         Raises:
-            MissingInterfaceError: If doc does not implement XStorable interface
+            MissingInterfaceError: If doc does not implement XStorable interface.
 
         Returns:
             bool: ``False`` if ``DOC_SAVING`` event is canceled; Otherwise, ``True``
@@ -1046,7 +1106,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr) -> bool:
         """
-        Stores/Saves a document
+        Stores/Saves a document.
+
+        |lo_safe|
 
         Args:
             store (XStorable): instance that implements XStorable interface.
@@ -1062,7 +1124,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def store_doc(cls, store: XStorable, doc_type: DocType, fnm: PathOrStr, password: str) -> bool:
         """
-        Stores/Saves a document
+        Stores/Saves a document.
+
+        |lo_safe|
 
         Args:
             store (XStorable): instance that implements XStorable interface.
@@ -1078,7 +1142,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def store_doc(cls, store: XStorable, doc_type: Lo.DocType, fnm: PathOrStr, password: Optional[str] = None) -> bool:
         """
-        Stores/Saves a document
+        Stores/Saves a document.
+
+        |lo_safe|
 
         Args:
             store (XStorable): instance that implements XStorable interface.
@@ -1116,6 +1182,8 @@ class Lo(metaclass=StaticProperty):
         The formats were chosen based on the fact that they
         are being used to save (or export) a document.
 
+        |lo_safe|
+
         Args:
             ext (str): document extension
 
@@ -1133,6 +1201,8 @@ class Lo(metaclass=StaticProperty):
         The formats were chosen based on the fact that they
         are being used to save (or export) a document.
 
+        |lo_safe|
+
         Args:
             ext (str): document extension
             doc_type (DocType): Type of document.
@@ -1149,6 +1219,8 @@ class Lo(metaclass=StaticProperty):
         Convert the extension string into a suitable office format string.
         The formats were chosen based on the fact that they
         are being used to save (or export) a document.
+
+        |lo_safe|
 
         Args:
             ext (str): document extension
@@ -1177,6 +1249,8 @@ class Lo(metaclass=StaticProperty):
         """
         Store document as format.
 
+        |lo_safe|
+
         Args:
             store (XStorable): instance that implements XStorable interface.
             fnm (PathOrStr): Path to save document as.
@@ -1198,6 +1272,8 @@ class Lo(metaclass=StaticProperty):
         """
         Store document as format.
 
+        |lo_safe|
+
         Args:
             store (XStorable): instance that implements XStorable interface.
             fnm (PathOrStr): Path to save document as.
@@ -1216,6 +1292,8 @@ class Lo(metaclass=StaticProperty):
     def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str | None = None) -> bool:
         """
         Store document as format.
+
+        |lo_safe|
 
         Args:
             store (XStorable): instance that implements XStorable interface.
@@ -1255,6 +1333,8 @@ class Lo(metaclass=StaticProperty):
         """
         Closes a document.
 
+        |lo_safe|
+
         Args:
             closeable (XCloseable): Object that implements XCloseable interface.
 
@@ -1268,6 +1348,8 @@ class Lo(metaclass=StaticProperty):
     def close(cls, closeable: XCloseable, deliver_ownership: bool) -> bool:
         """
         Closes a document.
+
+        |lo_safe|
 
         Args:
             closeable (XCloseable): Object that implements XCloseable interface.
@@ -1283,6 +1365,8 @@ class Lo(metaclass=StaticProperty):
     def close(cls, closeable: XCloseable, deliver_ownership=False) -> bool:
         """
         Closes a document.
+
+        |lo_safe|
 
         Args:
             closeable (XCloseable): Object that implements XCloseable interface.
@@ -1321,6 +1405,8 @@ class Lo(metaclass=StaticProperty):
         """
         Closes document.
 
+        |lo_safe|
+
         Args:
             doc (XCloseable): Close-able document
             deliver_ownership (bool): If ``True`` delegates the ownership of this closing object to
@@ -1352,7 +1438,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def addon_initialize(cls, addon_xcc: XComponentContext) -> XComponent:
         """
-        Initialize and ad-don
+        Initialize and ad-don.
+
+        |lo_unsafe|
 
         Args:
             addon_xcc (XComponentContext): Add-on component context
@@ -1384,7 +1472,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def script_initialize(cls, sc: XScriptContext) -> XComponent:  # pylint: disable=invalid-name
         """
-        Initialize script
+        Initialize script.
+
+        |lo_unsafe|
 
         Args:
             sc (XScriptContext): Script context
@@ -1438,11 +1528,13 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] | None = None, frame: XFrame | None = None) -> Any:
         """
-        Dispatches a LibreOffice command
+        Dispatches a LibreOffice command.
+
+        |lo_unsafe|
 
         Args:
             cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
-            props (PropertyValue, optional): properties for dispatch
+            props (PropertyValue, optional): properties for dispatch.
             frame (XFrame, optional): Frame to dispatch to.
 
         Raises:
@@ -1477,29 +1569,33 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def make_uno_cmd(item_name: str) -> str:
         """
-        Make a uno command that can be used with :py:meth:`~Lo.extract_item_name`
+        Make a uno command that can be used with :py:meth:`~Lo.extract_item_name`.
+
+        |lo_safe|
 
         Args:
-            item_name (str): command item name
+            item_name (str): command item name.
 
         Returns:
-            str: uno command string
+            str: uno command string.
         """
         return f"vnd.sun.star.script:Foo/Foo.{item_name}?language=Java&location=share"
 
     @classmethod
     def extract_item_name(cls, uno_cmd: str) -> str:
         """
-        Extract a uno command from a string that was created with :py:meth:`~Lo.make_uno_cmd`
+        Extract a uno command from a string that was created with :py:meth:`~Lo.make_uno_cmd`.
+
+        |lo_safe|
 
         Args:
-            uno_cmd (str): uno command
+            uno_cmd (str): uno command.
 
         Raises:
-            ValueError: If unable to extract command
+            ValueError: If unable to extract command.
 
         Returns:
-            str: uno command
+            str: uno command.
         """
         return cls._lo_inst.extract_item_name(uno_cmd)
 
@@ -1510,6 +1606,8 @@ class Lo(metaclass=StaticProperty):
         """
         Inspects object using ``org.openoffice.InstanceInspector`` inspector.
 
+        |lo_unsafe|
+
         Args:
             obj (object): object to inspect.
         """
@@ -1518,7 +1616,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def mri_inspect(cls, obj: object) -> None:
         """
-        call MRI's inspect() to inspect obj.
+        Call MRI's inspect() to inspect obj.
+
+        |lo_unsafe|
 
         Args:
             obj (object): obj to inspect
@@ -1541,6 +1641,8 @@ class Lo(metaclass=StaticProperty):
         """
         Delay execution for a given number of milliseconds.
 
+        |lo_safe|
+
         Args:
             ms (int): Number of milliseconds to delay
         """
@@ -1555,7 +1657,9 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def is_none_or_empty(s: str) -> bool:  # pylint: disable=invalid-name
         """
-        Gets is a string is None or Empty
+        Gets is a string is None or Empty.
+
+        |lo_safe|
 
         Args:
             s (str): String to check.
@@ -1571,6 +1675,8 @@ class Lo(metaclass=StaticProperty):
     def wait_enter() -> None:
         """
         Console displays Press Enter to continue...
+
+        |lo_safe|
         """
         input("Press Enter to continue...")
 
@@ -1578,6 +1684,8 @@ class Lo(metaclass=StaticProperty):
     def is_url(cls, fnm: PathOrStr) -> bool:
         """
         Gets if a string is a URL format.
+
+        |lo_safe|
 
         Args:
             fnm (PathOrStr): string to check.
@@ -1592,10 +1700,12 @@ class Lo(metaclass=StaticProperty):
     @staticmethod
     def capitalize(s: str) -> str:  # pylint: disable=invalid-name
         """
-        Capitalizes a string
+        Capitalizes a string.
+
+        |lo_safe|
 
         Args:
-            s (str): String to capitalize
+            s (str): String to capitalize.
 
         Returns:
             str: string capitalized.
@@ -1606,6 +1716,8 @@ class Lo(metaclass=StaticProperty):
     def parse_int(s: str) -> int:  # pylint: disable=invalid-name
         """
         Converts string into int.
+
+        |lo_safe|
 
         Args:
             s (str): string to parse
@@ -1634,7 +1746,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def print_names(cls, names: Sequence[str], num_per_line: int = 4) -> None:
         """
-        Prints names to console
+        Prints names to console.
+
+        |lo_safe|
 
         Args:
             names (Iterable[str]): names to print
@@ -1674,7 +1788,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def print_table(cls, name: str, table: Table, format_opt: FormatterTable | None = None) -> None:
         """
-        Prints a 2-Dimensional table to console
+        Prints a 2-Dimensional table to console.
+
+        |lo_safe|
 
         Args:
             name (str): Name of table
@@ -1701,42 +1817,48 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_container_names(cls, con: XIndexAccess) -> List[str] | None:
         """
-        Gets container names
+        Gets container names.
+
+        |lo_safe|
 
         Args:
-            con (XIndexAccess): container
+            con (XIndexAccess): container.
 
         Returns:
-            List[str] | None: Container name is found; Otherwise, None
+            List[str] | None: Container name is found; Otherwise, ``None``.
         """
         return cls._lo_inst.get_container_names(con)
 
     @classmethod
     def find_container_props(cls, con: XIndexAccess, nm: str) -> XPropertySet | None:  # pylint: disable=invalid-name
         """
-        Find as Property Set in a container
+        Find as Property Set in a container.
+
+        |lo_safe|
 
         Args:
-            con (XIndexAccess): Container to search
-            nm (str): Name of property to search for
+            con (XIndexAccess): Container to search.
+            nm (str): Name of property to search for.
 
         Raises:
-            TypeError: if con is None
+            TypeError: if con is None.
 
         Returns:
-            XPropertySet | None: Found property set; Otherwise, None
+            XPropertySet | None: Found property set; Otherwise, ``None``.
         """
         return cls._lo_inst.find_container_props(con=con, nm=nm)
 
     @classmethod
     def is_uno_interfaces(cls, component: Any, *args: str | UnoInterface) -> bool:
         """
-        Gets if an object contains interface(s)
+        Gets if an object contains interface(s).
+
+        |lo_safe|
 
         Args:
-            component (Any): object to check for supplied interfaces
+            component (Any): object to check for supplied interfaces.
             args (str | UnoInterface): one or more strings such as 'com.sun.star.uno.XInterface'
-                or Any uno interface that Starts with X such has XEnumTypeDescription
+                or Any uno interface that Starts with X such has ``XEnumTypeDescription``.
 
         Returns:
             bool: True if component contains all supplied interfaces; Otherwise, False
@@ -1746,7 +1868,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_frame(cls) -> XFrame:
         """
-        Gets XFrame for current LibreOffice instance
+        Gets XFrame for current LibreOffice instance.
+
+        |lo_unsafe|
 
         Returns:
             XFrame: frame
@@ -1756,7 +1880,9 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def get_model(cls) -> XModel:
         """
-        Gets XModel
+        Gets XModel.
+
+        |lo_unsafe|
 
         Returns:
             XModel: Gets model for current LibreOffice instance
@@ -1772,6 +1898,8 @@ class Lo(metaclass=StaticProperty):
         may be nested and even overlapping, but they must be in pairs.
         While there is at least one lock remaining, some notifications for
         display updates are not broadcast.
+
+        |lo_unsafe|
 
         Raises:
             MissingInterfaceError: If unable to obtain XModel interface.
@@ -1801,6 +1929,8 @@ class Lo(metaclass=StaticProperty):
         While there is at least one lock remaining, some notifications for
         display updates are not broadcast.
 
+        |lo_unsafe|
+
         Raises:
             MissingInterfaceError: If unable to obtain XModel interface.
 
@@ -1826,8 +1956,10 @@ class Lo(metaclass=StaticProperty):
         While there is at least one lock remaining, some notifications for display
         updates are not broadcast to the controllers.
 
+        |lo_unsafe|
+
         Returns:
-            bool: True if any lock exist; Otherwise, False
+            bool: ``True`` if any lock exist; Otherwise, ``False``.
 
         See Also:
             :py:class:`.Lo.ControllerLock`
@@ -1838,6 +1970,8 @@ class Lo(metaclass=StaticProperty):
     def print(cls, *args, **kwargs) -> None:
         """
         Utility function that passes to actual print.
+
+        |lo_safe|
 
         If :py:attr:`GblNamedEvent.PRINTING <.events.gbl_named_event.GblNamedEvent.PRINTING>`
         event is canceled the this method will not print.
@@ -1855,6 +1989,8 @@ class Lo(metaclass=StaticProperty):
     def get_flat_filter_name(cls, doc_type: LoDocTypeStr) -> str:
         """
         Gets the Flat XML filter name for the doc type.
+
+        |lo_safe|
 
         Args:
             doc_type (DocTypeStr): Document type.
@@ -1888,10 +2024,12 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def null_date(cls) -> datetime:
         """
-        Gets Value of Null Date in UTC
+        Gets Value of Null Date in UTC.
+
+        |lo_safe|
 
         Returns:
-            datetime: Null Date on success; Otherwise, None
+            datetime: Null Date on success; Otherwise, ``None``
 
         Note:
             If Lo has no document to determine date from then a
@@ -1902,7 +2040,9 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def is_loaded(cls) -> bool:
         """
-        Gets office is currently loaded
+        Gets office is currently loaded.
+
+        |lo_safe|
 
         Returns:
             bool: True if load_office has been called; Otherwise, False
@@ -1912,7 +2052,9 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def is_macro_mode(cls) -> bool:
         """
-        Gets if currently running scripts inside of LO (macro) or standalone
+        Gets if currently running scripts inside of LO (macro) or standalone.
+
+        |lo_unsafe|
 
         Returns:
             bool: True if running as a macro; Otherwise, False
@@ -1924,7 +2066,11 @@ class Lo(metaclass=StaticProperty):
 
     @classproperty
     def star_desktop(cls) -> XDesktop:
-        """Get current desktop"""
+        """
+        Get current desktop.
+
+        |lo_unsafe|
+        """
         return cls._lo_inst.star_desktop
 
     StarDesktop, stardesktop = star_desktop, star_desktop
@@ -1940,6 +2086,8 @@ class Lo(metaclass=StaticProperty):
         This property will always return the current internal component document.
 
         In most cases the :py:attr:`this_component` property should be used instead of this property.
+
+        |lo_unsafe|
 
         Returns:
             XComponent | None: Component or None if not loaded.
@@ -1966,6 +2114,8 @@ class Lo(metaclass=StaticProperty):
         In most cases this property should be used instead of :py:attr:`lo_component`.
         Also in most cases this property will return the same component :py:attr:`lo_component`.
 
+        |lo_unsafe|
+
         Returns:
             XComponent | None: Component or None if not loaded.
         """
@@ -1979,7 +2129,9 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def xscript_context(cls) -> XScriptContext:
         """
-        a substitute to `XSCRIPTCONTEXT` (Libre|Open)Office built-in
+        A substitute to LibreOffice Builtin `XSCRIPTCONTEXT`
+
+        |lo_unsafe|
 
         Returns:
             XScriptContext: XScriptContext instance
@@ -1991,10 +2143,12 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def bridge(cls) -> XComponent:
         """
-        Gets connection bridge component
+        Gets connection bridge component.
+
+        |lo_unsafe|
 
         Returns:
-            XComponent: bridge component
+            XComponent: bridge component.
         """
         return cls._lo_inst.bridge  # type: ignore
 
@@ -2003,15 +2157,19 @@ class Lo(metaclass=StaticProperty):
         """
         Gets the current ``XComponentLoader`` instance.
 
+        |lo_unsafe|
+
         Returns:
-            XComponentLoader: Component Loader
+            XComponentLoader: Component Loader.
         """
         return cls._lo_inst.loader_current
 
     @classproperty
     def bridge_connector(cls) -> ConnectBase:
         """
-        Get the current Bride connection
+        Get the current Bride connection.
+
+        |lo_unsafe|
 
         Returns:
             LoBridgeCommon: If not in macro mode; Otherwise, ``ConnectBase``
@@ -2023,6 +2181,8 @@ class Lo(metaclass=StaticProperty):
         """
         Gets the current options.
 
+        |lo_unsafe|
+
         Returns:
             LoOptions: Options
         """
@@ -2032,7 +2192,9 @@ class Lo(metaclass=StaticProperty):
     @classproperty
     def current_lo(cls) -> lo_inst.LoInst:
         """
-        Get the current Lo instance
+        Get the current Lo instance.
+
+        |lo_unsafe|
 
         Returns:
             LoInst: Lo Instance
