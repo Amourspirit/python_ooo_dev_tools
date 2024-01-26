@@ -15,7 +15,7 @@ from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from .draw_text_cursor import DrawTextCursor
+from ooodev.draw import draw_text_cursor
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -63,14 +63,16 @@ class DrawText(Generic[_T], LoInstPropsPartial, TextComp, QiPartial, StylePartia
         """
         mDraw.Draw.add_bullet(self.component, level, text)
 
-    def get_cursor(self) -> DrawTextCursor[_T]:
+    def get_cursor(self) -> draw_text_cursor.DrawTextCursor[_T]:
         """
         Get the cursor for this text.
 
         Returns:
             DrawTextCursor[_T]: Cursor for this text.
         """
-        return DrawTextCursor(owner=self.owner, component=self.component.createTextCursor(), lo_inst=self.lo_inst)
+        return draw_text_cursor.DrawTextCursor(
+            owner=self.owner, component=self.component.createTextCursor(), lo_inst=self.lo_inst
+        )
 
     # region Properties
     @property

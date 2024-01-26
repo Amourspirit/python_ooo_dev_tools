@@ -19,11 +19,6 @@ from ooodev.utils.color import Color, CommonColor
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
 
-from .. import write_text_content as mWriteTextContent
-from .. import write_text_frame as mWriteTextFrame
-from .. import write_text_table as mWriteTextTable
-
-
 _T = TypeVar("_T", bound="ComponentT")
 
 
@@ -987,3 +982,10 @@ class TextCursorPartial(Generic[_T]):
         """
         with LoContext(self.__lo_inst):
             mWrite.Write.style_left_italic(self.__component, pos)
+
+
+# avoid circular imports
+
+from .. import write_text_content as mWriteTextContent
+from .. import write_text_table as mWriteTextTable
+from .. import write_text_frame as mWriteTextFrame

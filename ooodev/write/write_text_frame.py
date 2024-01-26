@@ -1,24 +1,37 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, TypeVar, Generic
+from typing import Any, TYPE_CHECKING, TypeVar, Generic
 import uno
+from com.sun.star.drawing import XShape
 
+from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
+from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.text.text_frame_comp import TextFrameComp
+from ooodev.draw.partial.draw_shape_partial import DrawShapePartial
+from ooodev.draw.shapes.shape_base import ShapeBase
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.proto.component_proto import ComponentT
+from ooodev.utils import lo as mLo
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextFrame
 
-from ooodev.adapter.text.text_frame_comp import TextFrameComp
-from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
-from ooodev.utils import lo as mLo
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextFrame(Generic[T], LoInstPropsPartial, TextFrameComp, QiPartial, PropPartial, StylePartial):
+class WriteTextFrame(
+    ShapeBase,
+    Generic[T],
+    TextFrameComp,
+    PropertyChangeImplement,
+    VetoableChangeImplement,
+    DrawShapePartial,
+    QiPartial,
+    PropPartial,
+    StylePartial,
+):
     """Represents writer text content."""
 
     def __init__(self, owner: T, component: XTextFrame, lo_inst: LoInst | None = None) -> None:
@@ -33,11 +46,25 @@ class WriteTextFrame(Generic[T], LoInstPropsPartial, TextFrameComp, QiPartial, P
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         self.__owner = owner
-        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        # in this case QiPartial needs to be before ShapeBase.
+        QiPartial.__init__(self, component=component, lo_inst=lo_inst)  # type: ignore
+        ShapeBase.__init__(self, owner=self.__owner, component=component, lo_inst=lo_inst)  # type: ignore
         TextFrameComp.__init__(self, component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        DrawShapePartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
+
+    # region Overrides
+    def _ComponentBase__get_is_supported(self, component: Any) -> bool:
+        if component is None:
+            return False
+        shape = self.qi(XShape)
+        return shape is not None
+
+    # endregion Overrides
 
     # region Properties
     @property

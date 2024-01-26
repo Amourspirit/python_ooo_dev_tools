@@ -251,7 +251,7 @@ rst_prolog_lst = [
     "",
     ".. |lo_safe| replace:: Method is Lo Instance Safe for use with multiple documents.",
     "",
-    ".. |lo_unsafe| replace:: Method **NOT** is Lo Instance Safe. Use LoInst when using with multiple document instances.",
+    ".. |lo_unsafe| replace:: Method **NOT** is Lo Instance Safe. Use :ref:`ooodev.utils.context.lo_context.LoContext` when using with multiple document instances.",
     "",
     ".. |app_name_bold| replace:: **OOO Development Tools**",
     "",

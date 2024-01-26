@@ -30,7 +30,7 @@ class TextFrameComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        NamedPartial.__init__(self, component=self.component)
+        NamedPartial.__init__(self, component=self.component, interface=None)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

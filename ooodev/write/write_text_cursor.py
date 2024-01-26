@@ -23,7 +23,7 @@ from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from .partial.text_cursor_partial import TextCursorPartial
+from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from .write_text import WriteText
 
 

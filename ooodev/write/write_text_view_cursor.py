@@ -26,7 +26,7 @@ from ooodev.utils.type_var import PathOrStr
 from ooodev.write import write_doc as mWriteDoc
 from ooodev.write import WriteNamedEvent
 
-from .partial.text_cursor_partial import TextCursorPartial
+from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 
 T = TypeVar("T", bound="ComponentT")
 
