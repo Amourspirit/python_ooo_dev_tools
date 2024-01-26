@@ -73,32 +73,80 @@ class Lo(metaclass=StaticProperty):
 
         In the following example ControllerLock is called using ``with``.
 
-        All code inside the ``with Lo.ControllerLock() as x_doc`` block is written to **Writer**
+        All code inside the ``with Lo.ControllerLock() as x_doc`` block is written
         with controller locked. This means the ui will not update until the block is done.
         A soon as the block is processed the controller is unlocked and the ui is updated.
 
         Can be useful for large writes in document. Will give a speed improvement.
 
+        When using ``ControllerLock`` in multi document mode the lo_inst must be passed.
+
         Example:
 
-            .. code::
+            Single-document Mode example.
+
+            .. code-block:: python
+
+                doc1  = WriteDoc.create_doc()
 
                 with Lo.ControllerLock() as x_doc:
-                    cursor = Write.get_cursor(x_doc)
-                    Write.append(cursor=cursor, text="Some examples of simple text ")
+                    cursor = doc1.get_cursor()
+                    cursor.append(text="Some examples of simple text ")
                     # do a bunch or work.
                     ...
+
+            Multi-document Mode example.
+
+            .. code-block:: python
+
+                lo_inst = Lo.create_lo_instance()
+
+                doc2  = WriteDoc.create_doc(lo_inst=lo_inst)
+
+                with Lo.ControllerLock(lo_inst=doc.lo_inst) as x_doc:
+                    cursor = doc2.get_cursor()
+                    cursor.append("Some examples of simple text ")
+                    # do a bunch or work.
+                    ...
+
+
+            If :ref:`ooodev.utils.context.lo_context.LoContext` is used it is not necessary to pass ``lo_inst``
+            in multi-document mode.
+
+            .. code-block:: python
+
+                from ooodev.utils.context.lo_context import LoContext
+                lo_inst = Lo.create_lo_instance()
+
+                doc2  = WriteDoc.create_doc(lo_inst=lo_inst)
+
+                with LoContext(lo_inst=doc.lo_inst):
+                    with Lo.ControllerLock() as x_doc:
+                        cursor = doc2.get_cursor()
+                        cursor.append("Some examples of simple text ")
+                        # do a bunch or work.
+                        ...
         """
 
-        def __init__(self):
-            self.component = Lo.lo_component
-            Lo.lock_controllers()
+        def __init__(self, lo_inst: lo_inst.LoInst | None = None):
+            """
+            ControllerLock constructor.
+
+            Args:
+                lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``Lo.current_lo``.
+            """
+            if lo_inst is None:
+                lo_inst = Lo.current_lo
+            self._lo_inst = lo_inst
+            self.component = self._lo_inst.lo_component
+            assert self.component is not None, "component is None"
+            self._lo_inst.lock_controllers()
 
         def __enter__(self) -> XComponent:
             return cast(XComponent, self.component)
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            Lo.unlock_controllers()
+            self._lo_inst.unlock_controllers()
 
     class Loader:
         """
