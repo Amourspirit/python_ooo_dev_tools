@@ -32,9 +32,9 @@ T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextViewCursor(
-    Generic[T],
     LoInstPropsPartial,
-    TextCursorPartial,
+    TextCursorPartial[T],
+    Generic[T],
     TextViewCursorComp,
     LineCursorPartial,
     PropertyChangeImplement,

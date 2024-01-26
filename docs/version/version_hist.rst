@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.22.1
+==============
+
+Added ``ooodev.write.WriteDoc.text_frames`` property. This property returns a ``ooodev.write.WriteTextFrames`` class for working with text frames.
+
+Marked many methods in ``ooodev.office`` class as safe for mulit document usage or not. When no the ``LoContext`` manager can be used.
+
+Better support for multi documents. Now classes ``ooodev.draw``, ``ooodev.calc`` and ``ooodev.write`` can be used with multiple documents at the same time.
+
 Version 0.22.0
 ==============
 

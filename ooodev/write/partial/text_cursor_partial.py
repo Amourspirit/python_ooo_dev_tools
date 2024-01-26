@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Sequence, overload, TYPE_CHECKING
+from typing import Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
 if TYPE_CHECKING:
@@ -24,19 +24,22 @@ from .. import write_text_frame as mWriteTextFrame
 from .. import write_text_table as mWriteTextTable
 
 
-class TextCursorPartial:
+_T = TypeVar("_T", bound="ComponentT")
+
+
+class TextCursorPartial(Generic[_T]):
     """
     Represents a writer text cursor.
 
     This class implements ``__len__()`` method, which returns the number of characters in the range.
     """
 
-    def __init__(self, owner: ComponentT, component: XTextCursor, lo_inst: LoInst | None = None) -> None:
+    def __init__(self, owner: _T, component: XTextCursor, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
-            owner (WriteDoc): Doc that owns this component.
+            owner (_T): Object that owns this component.
             component (XTextCursor): A UNO object that supports ``com.sun.star.text.TextCursor`` service.
         """
         if lo_inst is None:
@@ -71,7 +74,7 @@ class TextCursorPartial:
 
     # region add_formula()
     @overload
-    def add_formula(self, formula: str) -> mWriteTextContent.WriteTextContent:
+    def add_formula(self, formula: str) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Adds a formula
 
@@ -84,7 +87,7 @@ class TextCursorPartial:
         ...
 
     @overload
-    def add_formula(self, formula: str, styles: Sequence[StyleT]) -> mWriteTextContent.WriteTextContent:
+    def add_formula(self, formula: str, styles: Sequence[StyleT]) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Adds a formula
 
@@ -97,7 +100,9 @@ class TextCursorPartial:
         """
         ...
 
-    def add_formula(self, formula: str, styles: Sequence[StyleT] | None = None) -> mWriteTextContent.WriteTextContent:
+    def add_formula(
+        self, formula: str, styles: Sequence[StyleT] | None = None
+    ) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Adds a formula
 
@@ -133,7 +138,7 @@ class TextCursorPartial:
             else:
                 result = mWrite.Write.add_formula(self.__component, formula)
 
-        return mWriteTextContent.WriteTextContent(self, result)
+        return mWriteTextContent.WriteTextContent(self.__owner, result)
 
     # endregion add_formula()
 
@@ -167,7 +172,7 @@ class TextCursorPartial:
 
     # region add_image_link
     @overload
-    def add_image_link(self, fnm: PathOrStr) -> mWriteTextContent.WriteTextContent:
+    def add_image_link(self, fnm: PathOrStr) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Add Image Link.
 
@@ -183,7 +188,7 @@ class TextCursorPartial:
     @overload
     def add_image_link(
         self, fnm: PathOrStr, *, width: int | UnitT, height: int | UnitT
-    ) -> mWriteTextContent.WriteTextContent:
+    ) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Add Image Link.
 
@@ -202,7 +207,7 @@ class TextCursorPartial:
         fnm: PathOrStr,
         *,
         styles: Sequence[StyleT],
-    ) -> mWriteTextContent.WriteTextContent:
+    ) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Add Image Link.
 
@@ -223,7 +228,7 @@ class TextCursorPartial:
         width: int | UnitT,
         height: int | UnitT,
         styles: Sequence[StyleT],
-    ) -> mWriteTextContent.WriteTextContent:
+    ) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Add Image Link.
 
@@ -245,7 +250,7 @@ class TextCursorPartial:
         width: int | UnitT = 0,
         height: int | UnitT = 0,
         styles: Sequence[StyleT] | None = None,
-    ) -> mWriteTextContent.WriteTextContent:
+    ) -> mWriteTextContent.WriteTextContent[_T]:
         """
         Add Image Link
 
@@ -289,7 +294,7 @@ class TextCursorPartial:
                 height=height,
                 styles=styles,
             )
-        return mWriteTextContent.WriteTextContent(self, result)
+        return mWriteTextContent.WriteTextContent(self.__owner, result)
 
     # endregion add_image_link
 
@@ -382,7 +387,7 @@ class TextCursorPartial:
         tbl_fg_color: Color | None = CommonColor.BLACK,
         first_row_header: bool = True,
         styles: Sequence[StyleT] | None = None,
-    ) -> mWriteTextTable.WriteTextTable:
+    ) -> mWriteTextTable.WriteTextTable[_T]:
         """
         Adds a table.
 
@@ -441,7 +446,7 @@ class TextCursorPartial:
                 first_row_header=first_row_header,
                 styles=styles,
             )
-        return mWriteTextTable.WriteTextTable(self, result)
+        return mWriteTextTable.WriteTextTable(self.__owner, result)
 
     def add_text_frame(
         self,
@@ -454,7 +459,7 @@ class TextCursorPartial:
         border_color: Color | None = None,
         background_color: Color | None = None,
         styles: Sequence[StyleT] | None = None,
-    ) -> mWriteTextFrame.WriteTextFrame:
+    ) -> mWriteTextFrame.WriteTextFrame[_T]:
         """
         Adds a text frame.
 
@@ -504,7 +509,7 @@ class TextCursorPartial:
                 background_color=background_color,
                 styles=styles,
             )
-        return mWriteTextFrame.WriteTextFrame(self, result)
+        return mWriteTextFrame.WriteTextFrame(self.__owner, result)
 
     # region append()
     @overload

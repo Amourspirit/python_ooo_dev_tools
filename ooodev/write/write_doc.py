@@ -6,6 +6,7 @@ from com.sun.star.beans import XPropertySet
 from com.sun.star.frame import XComponentLoader
 from com.sun.star.frame import XModel
 from com.sun.star.style import XStyle
+from com.sun.star.text import XTextFramesSupplier
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 
@@ -78,6 +79,7 @@ from .style import write_style as mWriteStyle
 from .style import write_style_families as mWriteStyleFamilies
 from .write_draw_page import WriteDrawPage
 from .write_draw_pages import WriteDrawPages
+from .write_text_frames import WriteTextFrames
 
 
 class WriteDoc(
@@ -134,6 +136,7 @@ class WriteDoc(
         StylePartial.__init__(self, component=doc)
         self._draw_page = None
         self._draw_pages = None
+        self._text_frames = None
 
     # region Lazy Listeners
 
@@ -171,7 +174,7 @@ class WriteDoc(
 
     # region get_cursor()
     @overload
-    def get_cursor(self) -> mWriteTextCursor.WriteTextCursor:
+    def get_cursor(self) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """
         Gets text cursor from the current document.
 
@@ -181,7 +184,7 @@ class WriteDoc(
         ...
 
     @overload
-    def get_cursor(self, *, cursor_obj: Any) -> mWriteTextCursor.WriteTextCursor:
+    def get_cursor(self, *, cursor_obj: Any) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """
         Gets text cursor
 
@@ -194,7 +197,7 @@ class WriteDoc(
         ...
 
     @overload
-    def get_cursor(self, *, rng: XTextRange, txt: XText) -> mWriteTextCursor.WriteTextCursor:
+    def get_cursor(self, *, rng: XTextRange, txt: XText) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """
         Gets text cursor
 
@@ -208,7 +211,7 @@ class WriteDoc(
         ...
 
     @overload
-    def get_cursor(self, *, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor:
+    def get_cursor(self, *, rng: XTextRange) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """
         Gets text cursor
 
@@ -220,7 +223,7 @@ class WriteDoc(
         """
         ...
 
-    def get_cursor(self, **kwargs) -> mWriteTextCursor.WriteTextCursor:
+    def get_cursor(self, **kwargs) -> mWriteTextCursor.WriteTextCursor[WriteDoc]:
         """Returns the cursor of the document."""
         if not kwargs:
             return mWriteTextCursor.WriteTextCursor(
@@ -939,23 +942,21 @@ class WriteDoc(
         """
         return mWriteParagraphs.WriteParagraphs(owner=self, component=self.component.getText(), lo_inst=self.lo_inst)
 
-    def get_text_frames(self) -> NameAccessComp | None:
+    def get_text_frames(self) -> WriteTextFrames:
         """
         Gets document Text Frames.
 
         Args:
-            doc (XComponent): Document
-
-        Raises:
-            MissingInterfaceError: if doc does not implement ``XTextFramesSupplier`` interface
+            doc (XComponent): Document.
 
         Returns:
-            NameAccessComp | None: Text Frames on success, Otherwise, None
+            WriteTextFrames: Document Text Frames
         """
-        result = mWrite.Write.get_text_frames(self.component)
-        if result is None:
-            return None
-        return NameAccessComp(result)
+        # result = mWrite.Write.get_text_frames(self.component)
+        # if result is None:
+        #     return None
+        # return NameAccessComp(result)
+        return self.text_frames
 
     def get_sentence_cursor(self) -> mWriteSentenceCursor.WriteSentenceCursor:
         """
@@ -1609,5 +1610,19 @@ class WriteDoc(
             draw_pages = mWrite.Write.get_draw_pages(self.component)
             self._draw_pages = WriteDrawPages(owner=self, slides=draw_pages, lo_inst=self.lo_inst)
         return self._draw_pages  # type: ignore
+
+    @property
+    def text_frames(self) -> WriteTextFrames:
+        """
+        Gets text frames.
+
+        Returns:
+            WriteTextFrames: Text Frames
+        """
+        if self._text_frames is None:
+            supplier = self.qi(XTextFramesSupplier, True)
+            name_access = supplier.getTextFrames()
+            self._text_frames = WriteTextFrames(owner=self, frames=name_access, lo_inst=self.lo_inst)
+        return self._text_frames
 
     # endregion Properties

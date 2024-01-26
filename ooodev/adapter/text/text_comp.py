@@ -8,7 +8,6 @@ from ooodev.adapter.container.enumeration_access_partial import EnumerationAcces
 from .text_partial import TextPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.container import XEnumerationAccess
     from com.sun.star.text import Text
 
 
@@ -24,7 +23,7 @@ class TextComp(ComponentBase, EnumerationAccessPartial, TextPartial):
         Constructor
 
         Args:
-            component (Any): UNO TextContent Component that supports ``com.sun.star.text.Text`` service.
+            component (Any): UNO Component that supports ``com.sun.star.text.Text`` service.
         """
 
         ComponentBase.__init__(self, component)
@@ -45,7 +44,7 @@ class TextComp(ComponentBase, EnumerationAccessPartial, TextPartial):
     # region Properties
     @property
     def component(self) -> Text:
-        """Sheet Cell Cursor Component"""
+        """Text Component"""
         return cast("Text", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties
