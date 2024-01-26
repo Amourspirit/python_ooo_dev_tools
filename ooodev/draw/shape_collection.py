@@ -54,9 +54,6 @@ class ShapeCollection(LoInstPropsPartial, ShapeCollectionComp, QiPartial):
 
         Returns:
             GroupShape: Grouped shape.
-
-        Note:
-            Grouping is done using Dispatch Command.
         """
         if len(self) < 2:
             raise mEx.ShapeError(f"At least two shapes are required to group. Currently has {len(self)} shapes.")

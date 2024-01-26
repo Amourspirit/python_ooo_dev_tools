@@ -2556,6 +2556,7 @@ class Info(metaclass=StaticProperty):
         """
 
         try:
+            # this value is not expected to change in multi document mode.
             return cls._language
         except AttributeError:
             # sourcery skip: use-or-for-fallback
@@ -2576,7 +2577,7 @@ class Info(metaclass=StaticProperty):
         """
         Gets the Current Language ``Locale`` of the LibreOffice Instance.
 
-        |lo_safe|
+        |lo_unsafe|
 
         Returns:
             Locale: ``Locale`` object.
@@ -2585,6 +2586,7 @@ class Info(metaclass=StaticProperty):
         """
 
         try:
+            # this value is not expected to change in multi document mode.
             return cls._language_locale
         except AttributeError:
             cls._language_locale = cls.parse_language_code(cls.language)

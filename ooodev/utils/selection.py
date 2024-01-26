@@ -27,8 +27,6 @@ from com.sun.star.view import XSelectionSupplier
 
 from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
 from ooo.dyn.i18n.boundary import Boundary  # struct
-from ooo.dyn.lang.locale import Locale  # struct
-
 
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
@@ -67,6 +65,8 @@ class Selection(metaclass=StaticProperty):
         Determine if anything is selected.
 
         If Write document is not visible this method returns false.
+
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -108,11 +108,45 @@ class Selection(metaclass=StaticProperty):
     @overload
     @classmethod
     def get_text_doc(cls) -> XTextDocument:
+        """
+        Gets a writer document.
+
+        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+
+        |lo_unsafe|
+
+        Args:
+            doc (XComponent): Component to get writer document from.
+
+        Raises:
+            TypeError: doc is None.
+            MissingInterfaceError: If doc does not implement XTextDocument interface.
+
+        Returns:
+            XTextDocument: Writer document.
+        """
         ...
 
     @overload
     @classmethod
     def get_text_doc(cls, doc: XComponent) -> XTextDocument:
+        """
+        Gets a writer document.
+
+        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Component to get writer document from.
+
+        Raises:
+            TypeError: doc is None.
+            MissingInterfaceError: If doc does not implement XTextDocument interface.
+
+        Returns:
+            XTextDocument: Writer document.
+        """
         ...
 
     @classmethod
@@ -140,13 +174,14 @@ class Selection(metaclass=StaticProperty):
         .. versionchanged:: 0.9.0
             Added overload ``get_text_doc()``
         """
+        text_doc = None
         if doc is None:
-            doc = mLo.Lo.this_component
-        if doc is None:
-            # most likely headless mode and options dynamic set to True
-            doc = mLo.Lo.lo_component
+            with contextlib.suppress(AttributeError):
+                text_doc = mLo.Lo.qi(XTextDocument, mLo.Lo.xscript_context.getDocument())
+        if text_doc is None:
+            # most likely in headless mode with dynamic options set to True
+            text_doc = mLo.Lo.qi(XTextDocument, mLo.Lo.lo_component, True)
 
-        text_doc = mLo.Lo.qi(XTextDocument, doc, True)
         _Events().trigger(WriteNamedEvent.DOC_TEXT, EventArgs(Selection.get_text_doc.__qualname__))
         return text_doc
 
@@ -155,10 +190,12 @@ class Selection(metaclass=StaticProperty):
     @staticmethod
     def get_selected_text_range(text_doc: XTextDocument) -> XTextRange | None:
         """
-        Gets the text range for current selection
+        Gets the text range for current selection.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
             MissingInterfaceError: If unable to obtain required interface.
@@ -182,10 +219,12 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_selected_text_str(cls, text_doc: XTextDocument) -> str:
         """
-        Gets the first selection text for Document
+        Gets the first selection text for Document.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Returns:
             str: Selected text or empty string.
@@ -199,7 +238,9 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def compare_cursor_ends(cls, c1: XTextRange, c2: XTextRange) -> Selection.CompareEnum:
         """
-        Compares two cursors ranges end positions
+        Compares two cursors ranges end positions.
+
+        |lo_unsafe|
 
         Args:
             c1 (XTextRange): first cursor range
@@ -231,6 +272,8 @@ class Selection(metaclass=StaticProperty):
     def range_len(cls, text_doc: XTextDocument, o_sel: XTextCursor) -> int:
         """
         Gets the distance between range start and range end.
+
+        |lo_unsafe|
 
         Args:
             o_sel (XTextCursor): first cursor range
@@ -264,7 +307,9 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_text_cursor_props(cls, text_doc: XTextDocument) -> XPropertySet:
         """
-        Gets properties for document cursor
+        Gets properties for document cursor.
+        
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -284,6 +329,8 @@ class Selection(metaclass=StaticProperty):
     def get_cursor() -> XTextCursor:
         """
         Gets text cursor from the current document.
+        
+        |lo_unsafe|
 
         Returns:
             XTextCursor: Cursor
@@ -294,13 +341,15 @@ class Selection(metaclass=StaticProperty):
     @staticmethod
     def get_cursor(cursor_obj: DocOrCursor) -> XTextCursor:
         """
-        Gets text cursor
+        Gets text cursor.
+        
+        |lo_safe|
 
         Args:
-            cursor_obj (DocOrCursor): Text Document or Text Cursor
+            cursor_obj (DocOrCursor): Text Document or Text Cursor.
 
         Returns:
-            XTextCursor: Cursor
+            XTextCursor: Cursor.
         """
         ...
 
@@ -308,14 +357,16 @@ class Selection(metaclass=StaticProperty):
     @staticmethod
     def get_cursor(rng: XTextRange, txt: XText) -> XTextCursor:
         """
-        Gets text cursor
+        Gets text cursor.
+        
+        |lo_safe|
 
         Args:
-            rng (XTextRange): Text Range Instance
-            txt (XText): Text Instance
+            rng (XTextRange): Text Range Instance.
+            txt (XText): Text Instance.
 
         Returns:
-            XTextCursor: Cursor
+            XTextCursor: Cursor.
         """
         ...
 
@@ -323,32 +374,34 @@ class Selection(metaclass=StaticProperty):
     @staticmethod
     def get_cursor(rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
         """
-        Gets text cursor
+        Gets text cursor.
+        
+        |lo_safe|
 
         Args:
-            rng (XTextRange): Text Range instance
-            text_doc (XTextDocument): Text Document instance
+            rng (XTextRange): Text Range instance.
+            text_doc (XTextDocument): Text Document instance.
 
         Returns:
-            XTextCursor: Cursor
+            XTextCursor: Cursor.
         """
         ...
 
     @staticmethod
     def get_cursor(*args, **kwargs) -> XTextCursor | None:
         """
-        Gets text cursor
-
+        Gets text cursor.
+        
         Args:
-            cursor_obj (DocOrCursor): Text Document or Text View Cursor
-            rng (XTextRange): Text Range Instance
-            text_doc (XTextDocument): Text Document instance
+            cursor_obj (DocOrCursor): Text Document or Text View Cursor.
+            rng (XTextRange): Text Range Instance.
+            text_doc (XTextDocument): Text Document instance.
 
         Raises:
-            CursorError: If Unable to get cursor
+            CursorError: If Unable to get cursor.
 
         Returns:
-            XTextCursor | None: Cursor or ``None`` if unable to get cursor
+            XTextCursor | None: Cursor or ``None`` if unable to get cursor.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -402,6 +455,7 @@ class Selection(metaclass=StaticProperty):
 
     @staticmethod
     def _get_cursor_txt(rng: XTextRange, txt: XText) -> XTextCursor:
+        """Lo Safe Method."""
         # sourcery skip: raise-specific-error
         try:
             cursor = txt.createTextCursorByRange(rng)
@@ -413,6 +467,7 @@ class Selection(metaclass=StaticProperty):
 
     @staticmethod
     def _get_cursor_obj(cursor_obj: DocOrCursor) -> XTextCursor | None:
+        """Lo Safe Method."""
         # sourcery skip: raise-specific-error
         try:
             # https://wiki.openoffice.org/wiki/Writer/API/Text_cursor
@@ -443,6 +498,8 @@ class Selection(metaclass=StaticProperty):
     def get_word_cursor(cls, cursor_obj: DocOrCursor) -> XWordCursor:
         """
         Gets document word cursor.
+        
+        |lo_safe|
 
         Args:
             cursor_obj (DocOrCursor): Text Document or Text Cursor.
@@ -466,6 +523,8 @@ class Selection(metaclass=StaticProperty):
     def get_sentence_cursor(cls, cursor_obj: DocOrCursor) -> XSentenceCursor:
         """
         Gets document sentence cursor.
+        
+        |lo_safe|
 
         Args:
             cursor_obj (DocOrCursor): Text Document or Text Cursor.
@@ -491,16 +550,18 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_paragraph_cursor(cls, cursor_obj: DocOrCursor) -> XParagraphCursor:
         """
-        Gets document paragraph cursor
+        Gets document paragraph cursor.
+        
+        |lo_safe|
 
         Args:
-            cursor_obj (DocOrCursor): Text Document or Text Cursor
+            cursor_obj (DocOrCursor): Text Document or Text Cursor.
 
         Raises:
-            ParagraphCursorError: If Unable to get cursor
+            ParagraphCursorError: If Unable to get cursor.
 
         Returns:
-            XParagraphCursor: Paragraph cursor
+            XParagraphCursor: Paragraph cursor.
         """
         try:
             if mLo.Lo.qi(XTextDocument, cursor_obj) is None:
@@ -514,10 +575,12 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_left_cursor(cls, o_sel: XTextRange, o_text: DocOrText) -> XTextCursor:
         """
-        Creates a new TextCursor with position left that can travel right
+        Creates a new TextCursor with position left that can travel right.
+
+        |lo_unsafe|
 
         Args:
-            o_sel (XTextRange): Text Range
+            o_sel (XTextRange): Text Range.
             o_text (DocOrText): Text document or text.
 
         Returns:
@@ -538,7 +601,9 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_right_cursor(cls, o_sel: XTextRange, o_text: DocOrText) -> XTextCursor:
         """
-        Creates a new TextCursor with position right that can travel left
+        Creates a new TextCursor with position right that can travel left.
+
+        |lo_unsafe|
 
         Args:
             o_sel (XTextRange): Text Range
@@ -561,6 +626,8 @@ class Selection(metaclass=StaticProperty):
     def get_position(cls, cursor: XTextCursor) -> int:
         """
         Gets position of the cursor.
+        
+        |lo_unsafe|
 
         Args:
             cursor (XTextCursor): Text Cursor.
@@ -582,20 +649,20 @@ class Selection(metaclass=StaticProperty):
         #         i_max = i_max + jump
         jmp_amt = 25
 
-        def get_high(l: XTextCursor, r: XTextCursor, jump=jmp_amt, total=0) -> int:
+        def get_high(lft: XTextCursor, rgt: XTextCursor, jump=jmp_amt, total=0) -> int:
             # OPTIMIZE: get_position.get_high()
             # The idea of this function is to cut down on the number if iterations
             # needed to get the range from cursors left and right positions.
             # Most likely there is an even more efficient way to do this.
             if jump <= 0:
                 return 0
-            if cls.compare_cursor_ends(l, r) == cls.CompareEnum.BEFORE:
+            if cls.compare_cursor_ends(lft, rgt) == cls.CompareEnum.BEFORE:
                 j = jump + jmp_amt
-                l.goRight(j, False)
-                return get_high(l, r, j, jump)
+                lft.goRight(j, False)
+                return get_high(lft, rgt, j, jump)
             else:
-                l.gotoStart(False)
-                l.goRight(total, False)
+                lft.gotoStart(False)
+                lft.goRight(total, False)
                 return total
             # else:
             #     return jump, True
@@ -639,16 +706,18 @@ class Selection(metaclass=StaticProperty):
     @classmethod
     def get_text_view_cursor_prop_set(cls, text_doc: XTextDocument) -> XPropertySet:
         """
-        Gets properties for document view cursor
+        Gets properties for document view cursor.
+        
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
             MissingInterfaceError: If unable to obtain XPropertySet interface from cursor.
 
         Returns:
-            XPropertySet: Properties
+            XPropertySet: Properties.
         """
         xview_cursor = cls.get_view_cursor(text_doc)
         return mLo.Lo.qi(XPropertySet, xview_cursor, True)
@@ -659,6 +728,8 @@ class Selection(metaclass=StaticProperty):
         Gets document view cursor.
 
         Describes a cursor in a text document's view.
+        
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -695,22 +766,25 @@ class Selection(metaclass=StaticProperty):
         """
         Gets text range for comparison operations
 
+        |lo_unsafe|
+
         Returns:
             XTextRangeCompare: Text Range Compare instance
         """
         # Note: This class is inherited so is important the attribute be assigned directly
         # to Selection and not to cls
         try:
-            return Selection._text_range_compare  # type: ignore
+            if mLo.Lo.current_lo.is_default:
+                return Selection._text_range_compare  # type: ignore
+            else:
+                # When in multi document mode do use cached attribute.
+                doc = cls.get_text_doc()
+                text = doc.getText()
+                return mLo.Lo.qi(XTextRangeCompare, text.getText(), True)
         except AttributeError:
-            doc = None
-            with contextlib.suppress(AttributeError):
-                doc = mLo.Lo.xscript_context.getDocument()
-            if doc is None:
-                # most likely in headless mode with dynamic options set to True
-                doc = mLo.Lo.lo_component
-            text = doc.getText()  # type: ignore
-            Selection._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text)
+            doc = cls.get_text_doc()
+            text = doc.getText()
+            Selection._text_range_compare = mLo.Lo.qi(XTextRangeCompare, text.getText(), True)
         return Selection._text_range_compare  # type: ignore
 
     @staticmethod
@@ -718,19 +792,21 @@ class Selection(metaclass=StaticProperty):
         """
         Get the number of word in ooo way.
 
-        This method takes into account the current Locale
+        This method takes into account the current Locale.
+
+        |lo_unsafe|
 
         Args:
-            text (str): string to count the word of
+            text (str): string to count the word of.
             word_type (WordTypeEnum, optional): type of words to count. Default ``WordTypeEnum.WORD_COUNT``
-                Import  line ``from ooodev.utils.selection import WordTypeEnum``
+                Import  line ``from ooodev.utils.selection import WordTypeEnum``.
             locale_lang (str, optional): Language such as 'en-US' used to process word boundaries. Defaults to LO's current language.
 
         Raises:
-            CreateInstanceMsfError: If unable to create ``i18n.BreakIterator service``
+            CreateInstanceMsfError: If unable to create ``i18n.BreakIterator service``.
 
         Returns:
-            int: The number of words
+            int: The number of words.
         """
         if word_type is None:
             word_type = WordTypeEnum.WORD_COUNT
@@ -760,6 +836,8 @@ class Selection(metaclass=StaticProperty):
     def select_next_word(cls, text_doc: XTextDocument) -> bool:
         """
         Select the word right from the current cursor position.
+
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -813,7 +891,9 @@ class Selection(metaclass=StaticProperty):
     @classproperty
     def active_doc(cls) -> XTextDocument:
         """
-        Gets current active document
+        Gets current active document.
+        
+        |lo_unsafe|
 
         Returns:
             XTextDocument: Text Document
