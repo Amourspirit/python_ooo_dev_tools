@@ -589,8 +589,7 @@ class TextCursorPartial:
         See Also:
             `API ControlCharacter <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1text_1_1ControlCharacter.html>`_
         """
-        with LoContext(self.__lo_inst):
-            mWrite.Write.append(self.__component, *args, **kwargs)
+        mWrite.Write.append(self.__component, *args, **kwargs)
 
     # endregion append()
 
@@ -657,11 +656,10 @@ class TextCursorPartial:
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-event`
         """
-        with LoContext(self.__lo_inst):
-            if styles:
-                mWrite.Write.append_line(self.__component, text, styles)
-            else:
-                mWrite.Write.append_line(self.__component, text)
+        if styles:
+            mWrite.Write.append_line(self.__component, text, styles)
+        else:
+            mWrite.Write.append_line(self.__component, text)
 
     # endregion append_line()
 
@@ -727,11 +725,10 @@ class TextCursorPartial:
             - :doc:`ooodev.format.writer.direct.char </src/format/ooodev.format.writer.direct.char>`
             - :doc:`ooodev.format.writer.direct.para </src/format/ooodev.format.writer.direct.para>`
         """
-        with LoContext(self.__lo_inst):
-            if styles:
-                mWrite.Write.append_para(self.__component, text, styles)
-            else:
-                mWrite.Write.append_para(self.__component, text)
+        if styles:
+            mWrite.Write.append_para(self.__component, text, styles)
+        else:
+            mWrite.Write.append_para(self.__component, text)
 
     # endregion append_para()
 
@@ -740,22 +737,19 @@ class TextCursorPartial:
         Inserts a column break
 
         """
-        with LoContext(self.__lo_inst):
-            mWrite.Write.column_break(self.__component)
+        mWrite.Write.column_break(self.__component)
 
     def end_line(self) -> None:
         """
         Inserts a line break
         """
-        with LoContext(self.__lo_inst):
-            mWrite.Write.end_line(self.__component)
+        mWrite.Write.end_line(self.__component)
 
     def end_paragraph(self) -> None:
         """
         Inserts a paragraph break
         """
-        with LoContext(self.__lo_inst):
-            mWrite.Write.end_paragraph(self.__component)
+        mWrite.Write.end_paragraph(self.__component)
 
     def get_all_text(self) -> str:
         """
@@ -788,7 +782,7 @@ class TextCursorPartial:
             It would be better to use cursors from relative positions in bigger documents.
         """
         with LoContext(self.__lo_inst):
-            result =  mSelection.Selection.get_position(self.__component)
+            result = mSelection.Selection.get_position(self.__component)
         return result
 
     def insert_para(self, para: str, para_style: str) -> None:
@@ -799,15 +793,13 @@ class TextCursorPartial:
             para (str): Paragraph text
             para_style (str): Style such as 'Heading 1'
         """
-        with LoContext(self.__lo_inst):
-            mWrite.Write.insert_para(self.__component, para, para_style)
+        mWrite.Write.insert_para(self.__component, para, para_style)
 
     def page_break(self) -> None:
         """
         Inserts a page break
         """
-        with LoContext(self.__lo_inst):
-            mWrite.Write.page_break(self.__component)
+        mWrite.Write.page_break(self.__component)
 
     # region style()
     @overload

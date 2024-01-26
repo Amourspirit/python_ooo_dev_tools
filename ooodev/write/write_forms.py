@@ -7,7 +7,6 @@ from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -165,16 +164,14 @@ class WriteForms(LoInstPropsPartial, FormsComp, QiPartial):
         arg1 = all_args[0]
         if isinstance(arg1, int):
             idx = self._get_index(arg1, allow_greater=True)
-            with LoContext(self.lo_inst):
-                frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            frm = self.lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             frm.Name = self._create_name("Form")  # type: ignore
             self.insert_by_index(idx, frm)
             return self.get_by_index(idx)
         elif isinstance(arg1, str):
             if self.has_by_name(arg1):
                 raise mEx.NameClashError(f"Name '{arg1}' already exists")
-            with LoContext(self.lo_inst):
-                frm = mLo.Lo.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
+            frm = self.lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True)
             self.insert_by_name(arg1, frm)
             return self.get_by_name(arg1)
         else:

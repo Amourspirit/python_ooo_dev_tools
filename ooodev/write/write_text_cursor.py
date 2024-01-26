@@ -164,8 +164,7 @@ class WriteTextCursor(
 
                 doc.style_prev_paragraph(prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
         """
-        with LoContext(self.lo_inst):
-            mWrite.Write.style_prev_paragraph(self.component, *args, **kwargs)
+        mWrite.Write.style_prev_paragraph(self.component, *args, **kwargs)
 
     # endregion style_prev_paragraph()
 

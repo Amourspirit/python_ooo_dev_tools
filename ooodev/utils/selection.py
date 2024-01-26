@@ -28,18 +28,16 @@ from com.sun.star.view import XSelectionSupplier
 from ooo.dyn.i18n.word_type import WordTypeEnum as WordTypeEnum
 from ooo.dyn.i18n.boundary import Boundary  # struct
 
+from ..events.args.cancel_event_args import CancelEventArgs
+from ..events.args.event_args import EventArgs
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
-from ..utils import lo as mLo
-from ..utils import info as mInfo
-
-from ..meta.static_meta import StaticProperty, classproperty
-from ..utils.type_var import DocOrText, DocOrCursor
-from ..exceptions import ex as mEx
-from ..events.event_singleton import _Events
-from ..events.args.event_args import EventArgs
-from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.write_named_event import WriteNamedEvent
+from ..exceptions import ex as mEx
+from ..meta.static_meta import StaticProperty, classproperty
+from ..utils import info as mInfo
+from ..utils import lo as mLo
+from ..utils.type_var import DocOrText, DocOrCursor
 
 
 # if not _DOCS_BUILDING and not _ON_RTD:
@@ -308,7 +306,7 @@ class Selection(metaclass=StaticProperty):
     def get_text_cursor_props(cls, text_doc: XTextDocument) -> XPropertySet:
         """
         Gets properties for document cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -329,7 +327,7 @@ class Selection(metaclass=StaticProperty):
     def get_cursor() -> XTextCursor:
         """
         Gets text cursor from the current document.
-        
+
         |lo_unsafe|
 
         Returns:
@@ -342,7 +340,7 @@ class Selection(metaclass=StaticProperty):
     def get_cursor(cursor_obj: DocOrCursor) -> XTextCursor:
         """
         Gets text cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -358,7 +356,7 @@ class Selection(metaclass=StaticProperty):
     def get_cursor(rng: XTextRange, txt: XText) -> XTextCursor:
         """
         Gets text cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -375,7 +373,7 @@ class Selection(metaclass=StaticProperty):
     def get_cursor(rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
         """
         Gets text cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -391,7 +389,7 @@ class Selection(metaclass=StaticProperty):
     def get_cursor(*args, **kwargs) -> XTextCursor | None:
         """
         Gets text cursor.
-        
+
         Args:
             cursor_obj (DocOrCursor): Text Document or Text View Cursor.
             rng (XTextRange): Text Range Instance.
@@ -498,7 +496,7 @@ class Selection(metaclass=StaticProperty):
     def get_word_cursor(cls, cursor_obj: DocOrCursor) -> XWordCursor:
         """
         Gets document word cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -523,7 +521,7 @@ class Selection(metaclass=StaticProperty):
     def get_sentence_cursor(cls, cursor_obj: DocOrCursor) -> XSentenceCursor:
         """
         Gets document sentence cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -551,7 +549,7 @@ class Selection(metaclass=StaticProperty):
     def get_paragraph_cursor(cls, cursor_obj: DocOrCursor) -> XParagraphCursor:
         """
         Gets document paragraph cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -626,7 +624,7 @@ class Selection(metaclass=StaticProperty):
     def get_position(cls, cursor: XTextCursor) -> int:
         """
         Gets position of the cursor.
-        
+
         |lo_unsafe|
 
         Args:
@@ -707,7 +705,7 @@ class Selection(metaclass=StaticProperty):
     def get_text_view_cursor_prop_set(cls, text_doc: XTextDocument) -> XPropertySet:
         """
         Gets properties for document view cursor.
-        
+
         |lo_safe|
 
         Args:
@@ -728,7 +726,7 @@ class Selection(metaclass=StaticProperty):
         Gets document view cursor.
 
         Describes a cursor in a text document's view.
-        
+
         |lo_safe|
 
         Args:
@@ -892,7 +890,7 @@ class Selection(metaclass=StaticProperty):
     def active_doc(cls) -> XTextDocument:
         """
         Gets current active document.
-        
+
         |lo_unsafe|
 
         Returns:
