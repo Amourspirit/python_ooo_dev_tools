@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 import uno
 
 from ooodev.office import draw as mDraw
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils import lo as mLo
 
@@ -34,5 +33,4 @@ class DrawShapePartial:
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.add_text(self.__component, msg, font_size, **props)
+        mDraw.Draw.add_text(self.__component, msg, font_size, **props)

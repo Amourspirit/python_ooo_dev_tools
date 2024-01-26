@@ -10,7 +10,6 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -27,6 +26,7 @@ _T = TypeVar("_T", bound="ComponentT")
 class MasterDrawPage(
     DrawPagePartial[_T],
     Generic[_T],
+    LoInstPropsPartial,
     MasterPageComp,
     PropertyChangeImplement,
     VetoableChangeImplement,
@@ -34,7 +34,6 @@ class MasterDrawPage(
     QiPartial,
     PropPartial,
     StylePartial,
-    LoInstPropsPartial,
 ):
     """Represents a draw page."""
 
@@ -65,8 +64,7 @@ class MasterDrawPage(
         Returns:
             MasterDrawPage: Master Page.
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.get_master_page(self.component)  # type: ignore
+        page = mDraw.Draw.get_master_page(self.component)  # type: ignore
         return MasterDrawPage(owner=self._owner, component=page, lo_inst=self.lo_inst)
 
     def get_notes_page(self) -> MasterDrawPage[_T]:
@@ -85,8 +83,7 @@ class MasterDrawPage(
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page_by_index`
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
+        page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
         return MasterDrawPage(owner=self._owner, component=page, lo_inst=self.lo_inst)
 
     def set_master_footer(self, text: str) -> None:
@@ -103,8 +100,7 @@ class MasterDrawPage(
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mDraw.Draw.set_master_footer(self.component, text)  # type: ignore
+        mDraw.Draw.set_master_footer(self.component, text)  # type: ignore
 
     # region Properties
     @property

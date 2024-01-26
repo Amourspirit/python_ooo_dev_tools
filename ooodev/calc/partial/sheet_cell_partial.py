@@ -7,7 +7,9 @@ from com.sun.star.table import XCellRange
 
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
+from ooodev.utils.inst.lo.lo_inst import LoInst
 
 from .. import calc_cell as mCalcCell
 from .. import calc_sheet as mCalcSheet
@@ -17,8 +19,12 @@ if TYPE_CHECKING:
 
 
 class SheetCellPartial:
-    def __init__(self, owner: mCalcSheet.CalcSheet) -> None:
+    def __init__(self, owner: mCalcSheet.CalcSheet, lo_inst: LoInst | None = None) -> None:
         self.__owner = owner
+        if lo_inst is None:
+            self.__lo_inst = mLo.Lo.current_lo
+        else:
+            self.__lo_inst = lo_inst
 
     def __getitem__(self, _val: Any) -> mCalcCell.CalcCell:
         # print(f"Getting item at index {index}")
@@ -190,20 +196,24 @@ class SheetCellPartial:
             # def get_cell(self, addr: CellAddress)
             # def get_cell(self, cell_name: str)
             # def get_cell(self, cell_obj: CellObj)
-            if mLo.Lo.is_uno_interfaces(arg1, XCell):
+            if self.__lo_inst.is_uno_interfaces(arg1, XCell):
                 x_cell = arg1
-            elif mLo.Lo.is_uno_interfaces(arg1, XCellRange):
-                x_cell = mCalc.Calc.get_cell(cell_range=arg1)
+            elif self.__lo_inst.is_uno_interfaces(arg1, XCellRange):
+                with LoContext(self.__lo_inst):
+                    x_cell = mCalc.Calc.get_cell(cell_range=arg1)
             else:
-                x_cell = mCalc.Calc.get_cell(self.__owner.component, arg1)
+                with LoContext(self.__lo_inst):
+                    x_cell = mCalc.Calc.get_cell(self.__owner.component, arg1)
         elif count == 2:
             # def get_cell(self, col: int, row: int)
-            x_cell = mCalc.Calc._get_cell_sheet_col_row(sheet=self.__owner.component, col=kargs[1], row=kargs[2])
+            with LoContext(self.__lo_inst):
+                x_cell = mCalc.Calc._get_cell_sheet_col_row(sheet=self.__owner.component, col=kargs[1], row=kargs[2])
         else:
             # def get_cell(self, cell_range: XCellRange, col: int, row: int)
-            x_cell = mCalc.Calc._get_cell_cell_rng(cell_range=kargs[1], col=kargs[2], row=kargs[3])
-
-        cell_obj = mCalc.Calc.get_cell_obj(cell=x_cell)
+            with LoContext(self.__lo_inst):
+                x_cell = mCalc.Calc._get_cell_cell_rng(cell_range=kargs[1], col=kargs[2], row=kargs[3])
+        with LoContext(self.__lo_inst):
+            cell_obj = mCalc.Calc.get_cell_obj(cell=x_cell)
         return mCalcCell.CalcCell(owner=self.__owner, cell=cell_obj)
 
     # endregion get_cell()

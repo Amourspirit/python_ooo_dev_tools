@@ -26,6 +26,7 @@ _T = TypeVar("_T", bound="ComponentT")
 class GenericDrawPage(
     DrawPagePartial[_T],
     Generic[_T],
+    LoInstPropsPartial,
     DrawPageComp,
     Shapes2Partial,
     Shapes3Partial,
@@ -33,7 +34,6 @@ class GenericDrawPage(
     QiPartial,
     StylePartial,
     ShapeFactoryPartial[_T],
-    LoInstPropsPartial,
 ):
     """
     Represents a draw page.

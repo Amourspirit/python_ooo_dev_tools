@@ -56,6 +56,8 @@ class Props:
         """
         Makes a Uno Property Value and assigns name and value if present.
 
+        |lo_safe|
+
         Args:
             name (Optional[str], optional): Property name
             value (Optional[Any], optional): Property value
@@ -78,9 +80,11 @@ class Props:
         cls, cmd: str, item_name: str
     ) -> Tuple[PropertyValue, PropertyValue, PropertyValue, PropertyValue, PropertyValue]:
         """
-        Properties for a toolbar item using a name and an image
+        Properties for a toolbar item using a name and an image.
 
         problem: image does not appear next to text on toolbar
+
+        |lo_safe|
 
         Args:
             cmd (str): Value of CommandURL
@@ -101,7 +105,9 @@ class Props:
     @classmethod
     def make_props(cls, **kwargs) -> Tuple[PropertyValue, ...]:
         """
-        Make Properties
+        Make Properties.
+
+        |lo_safe|
 
         Keyword Args:
             kwargs (Dict[str, Any]): Each key, value pair is assigned to a PropertyValue.
@@ -134,6 +140,8 @@ class Props:
     def any(*elements: object) -> Any:  # type: ignore
         """
         Gets a uno.Any object for elements.
+
+        |lo_safe|
 
         The first element determines the type for the uno.Any object.
 
@@ -176,6 +184,8 @@ class Props:
         """
         Sets property value for the first property that has matching name.
 
+        |lo_safe|
+
         Args:
             props (Iterable[PropertyValue]): Property Values
             name (str): Property name
@@ -199,7 +209,9 @@ class Props:
     @staticmethod
     def get_xproperty_set(obj: object) -> XPropertySet:
         """
-        Gets Property Set
+        Gets Property Set.
+
+        |lo_safe|
 
         Args:
             obj (object): object that implements ``XPropertySet``
@@ -215,7 +227,9 @@ class Props:
     @staticmethod
     def get_xproperty_set_fast(obj: object) -> XFastPropertySet:
         """
-        Gets Fast Property Set
+        Gets Fast Property Set.
+
+        |lo_safe|
 
         Args:
             obj (object): object that implements ``XFastPropertySet``
@@ -248,6 +262,8 @@ class Props:
     def get_xproperty_fast_value(cls, *args, **kwargs) -> Any:
         """
         Gets a fast property value via ``XFastPropertySet``
+
+        |lo_safe|
 
         Arguments:
             handle (int): handle of the property.
@@ -288,7 +304,9 @@ class Props:
     @classmethod
     def get_property_set_info(cls, obj: object) -> XPropertySetInfo:
         """
-        Gets property set info
+        Gets property set info.
+
+        |lo_safe|
 
         Args:
             obj (object): Object that implements ``XPropertySet``.
@@ -313,6 +331,8 @@ class Props:
         """
         Gets a property by name.
 
+        |lo_safe|
+
         Property instances do not contain a value.
 
         Args:
@@ -334,11 +354,13 @@ class Props:
     @classmethod
     def has_property(cls, obj: object, name: str) -> bool:
         """
-        Gets is an object contains a Property
+        Gets is an object contains a Property.
+
+        |lo_safe|
 
         Args:
-            obj (object): object that implements ``XPropertySet``
-            name (str): _description_
+            obj (object): object that implements ``XPropertySet``.
+            name (str): Property Name.
 
         Returns:
             bool: ``True`` if object contains property with name; Otherwise, ``False``.
@@ -352,6 +374,8 @@ class Props:
     def get_prop(props: Iterable[PropertyValue], name: str) -> object | None:
         """
         Gets property value for property that matches name.
+
+        |lo_safe|
 
         Args:
             props (Iterable[PropertyValue]): Properties to search
@@ -386,6 +410,8 @@ class Props:
     def set_property(cls, *args, **kwargs) -> None:
         """
         Sets the value of the property with the specified name.
+
+        |lo_safe|
 
         Args:
             obj (object): object that implements XPropertySet interface
@@ -635,7 +661,7 @@ class Props:
                 has_error = True
                 errs.append(Exception(f'Could not set property "{name}"', e))
             if not has_error and cargs:
-                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
+                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))  # type: ignore
         if errs:
             raise mEx.MultiError(errs)
 
@@ -669,7 +695,7 @@ class Props:
                 has_error = True
                 errs.append(Exception(f'Could not set property "{itm}"', e))
             if not has_error and cargs:
-                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
+                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))  # type: ignore
         if errs:
             raise mEx.MultiError(errs)
 
@@ -677,6 +703,7 @@ class Props:
 
     @staticmethod
     def _set_by_attribute(obj: object, name: str, value: Any) -> bool:
+        """Lo Safe Method"""
         # there is a bug in LibreOffice that in some cases getting XPropertySet
         # returns the interface but it is missing setPropertyValue and or getPropertySetInfo
         # this is the case with XChartDocument.getPageBackground() and XChartDocument.getFirstDiagram().getWall()
@@ -700,6 +727,7 @@ class Props:
 
     @staticmethod
     def _get_by_attribute(obj: object, name: str) -> Tuple[bool, Any]:
+        """LO Safe Method"""
         # there is a bug in LibreOffice that in some cases getting XPropertySet
         # returns the interface but it is missing setPropertyValue and or getPropertySetInfo
         # this is the case with XChartDocument.getPageBackground() and XChartDocument.getFirstDiagram().getWall()
@@ -721,6 +749,8 @@ class Props:
     def set(cls, obj: Any, **kwargs) -> None:
         """
         Set one or more properties.
+
+        |lo_safe|
 
         Args:
             obj (Any): object to set properties for. Must support ``XPropertySet``
@@ -811,7 +841,7 @@ class Props:
                 if (error_args.handled or error_args.cancel) and errs:
                     _ = errs.pop()
             else:
-                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))
+                _Events().trigger(PropsNamedEvent.PROP_SET, KeyValArgs.from_args(cargs))  # type: ignore
         if errs:
             raise mEx.MultiError(errs)
 
@@ -913,6 +943,8 @@ class Props:
         """
         Gets a property value from an object.
 
+        |lo_safe|
+
         Args:
             obj (object): Object to get property from.
             name (str): Property Name.
@@ -927,6 +959,8 @@ class Props:
     def get(cls, obj: Any, name: str, default: Any) -> Any:
         """
         Gets a property value from an object.
+
+        |lo_safe|
 
         Args:
             obj (object): Object to get property from.
@@ -943,6 +977,8 @@ class Props:
         """
         Gets a property value from an object.
         ``obj`` must support ``XPropertySet`` interface.
+
+        |lo_safe|
 
         Args:
             obj (object): Object to get property from.
@@ -1134,7 +1170,9 @@ class Props:
     @staticmethod
     def get_value(name: str, props: Iterable[PropertyValue]) -> object:
         """
-        Get a property value from properties
+        Get a property value from properties.
+
+        |lo_safe|
 
         Args:
             name (str): property name
@@ -1218,18 +1256,20 @@ class Props:
     @classmethod
     def prop_value_to_string(cls, val: object) -> str:
         """
-        Gets property values a a string
+        Gets property values a a string.
+
+        |lo_safe|
 
         Args:
             val (object): Values such as a iterable of iterable or
                 object that implements XPropertySet or
-                a string
+                a string.
 
         Returns:
-            str: A string representing properties
+            str: A string representing properties.
 
         Example:
-             .. code-block:: python
+            .. code-block:: python
 
                 >>> from ooodev.office.calc import Calc
                 >>> from ooodev.utils.props import Props
@@ -1344,7 +1384,9 @@ class Props:
     @classmethod
     def show_obj_props(cls, prop_kind: str, obj: object) -> None:
         """
-        Prints properties for an object to the console
+        Prints properties for an object to the console.
+
+        |lo_safe|
 
         Args:
             prop_kind (str): The kind of properties that is displayed in console
@@ -1361,7 +1403,9 @@ class Props:
     @classmethod
     def show_props(cls, title: str, props: Sequence[PropertyValue]) -> None:
         """
-        Prints properties to console
+        Prints properties to console.
+
+        |lo_safe|
 
         Args:
             title (str): Title to use that is displayed in console
@@ -1373,7 +1417,9 @@ class Props:
     @classmethod
     def show_props(cls, prop_kind: str, props_set: XPropertySet) -> None:
         """
-        Prints properties to console
+        Prints properties to console.
+
+        |lo_safe|
 
         Args:
             prop_kind (str): The kind of properties that is displayed in console
@@ -1384,7 +1430,9 @@ class Props:
     @classmethod
     def show_props(cls, *args, **kwargs) -> None:
         """
-        Prints properties to console
+        Prints properties to console.
+
+        |lo_safe|
 
         Args:
             title (str): Title to use that is displayed in console
@@ -1433,6 +1481,7 @@ class Props:
 
     @classmethod
     def _show_props_str_props(cls, title: str, props: Sequence[PropertyValue]) -> None:
+        """LO Safe Method"""
         print(f'Properties for "{title}"":')
         if props is None:
             print("  none found")
@@ -1443,6 +1492,7 @@ class Props:
 
     @classmethod
     def _show_props_str_xproperty_set(cls, prop_kind: str, props_set: XPropertySet) -> None:
+        """LO Safe Method"""
         props = cls.props_set_to_tuple(props_set)
         if props is None:
             print(f"No. {prop_kind} properties found")

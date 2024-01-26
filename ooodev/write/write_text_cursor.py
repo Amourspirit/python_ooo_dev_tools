@@ -31,9 +31,9 @@ T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextCursor(
-    Generic[T],
     LoInstPropsPartial,
-    TextCursorPartial,
+    TextCursorPartial[T],
+    Generic[T],
     TextCursorComp,
     ParagraphCursorPartial,
     SentenceCursorPartial,
@@ -63,7 +63,7 @@ class WriteTextCursor(
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
-        TextCursorPartial.__init__(self, owner=owner, component=component)
+        TextCursorPartial.__init__(self, owner=self._owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
         ParagraphCursorPartial.__init__(self, component, None)  # type: ignore
         SentenceCursorPartial.__init__(self, component, None)  # type: ignore
@@ -164,8 +164,7 @@ class WriteTextCursor(
 
                 doc.style_prev_paragraph(prop_val=ParagraphAdjust.CENTER, prop_name="ParaAdjust")
         """
-        with LoContext(self.lo_inst):
-            mWrite.Write.style_prev_paragraph(self.component, *args, **kwargs)
+        mWrite.Write.style_prev_paragraph(self.component, *args, **kwargs)
 
     # endregion style_prev_paragraph()
 

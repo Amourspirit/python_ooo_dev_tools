@@ -10,7 +10,6 @@ from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, Typ
 
 from . import gen_util as gUtil
 from .type_var import DictTable, Table
-import string
 
 T = TypeVar("T")
 
@@ -420,7 +419,7 @@ class TableHelper:
         Returns:
             Tuple[Any]: Tuple containing same elements of ``iter_obj``
         """
-        return tuple(iter_obj) if gUtil.Util.is_iterable(iter_obj) else (iter_obj,) # type: ignore
+        return tuple(iter_obj) if gUtil.Util.is_iterable(iter_obj) else (iter_obj,)  # type: ignore
 
     @classmethod
     def to_2d_list(cls, seq_obj: Sequence[Any]) -> List[List[Any]]:

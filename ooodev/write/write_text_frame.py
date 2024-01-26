@@ -45,4 +45,13 @@ class WriteTextFrame(Generic[T], LoInstPropsPartial, TextFrameComp, QiPartial, P
         """Owner of this component."""
         return self.__owner
 
+    @property
+    def name(self) -> str:
+        """Gets/Sets the name of this text frame."""
+        return self.component.Name  # type: ignore
+
+    @name.setter
+    def name(self, value: str) -> None:
+        self.component.Name = value  # type: ignore
+
     # endregion Properties

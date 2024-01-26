@@ -25,8 +25,9 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class DrawTextCursor(
+    LoInstPropsPartial,
+    TextCursorPartial[_T],
     Generic[_T],
-    TextCursorPartial,
     TextCursorComp,
     PropertyChangeImplement,
     VetoableChangeImplement,
@@ -34,7 +35,6 @@ class DrawTextCursor(
     PropPartial,
     QiPartial,
     StylePartial,
-    LoInstPropsPartial,
 ):
     """
     Represents a text cursor.

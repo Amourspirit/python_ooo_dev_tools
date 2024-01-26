@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from .draw_forms import DrawForms
 
 
-class DrawForm(DataFormComp, QiPartial, FormPartial, ServicePartial, LoInstPropsPartial):
+class DrawForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, ServicePartial):
     """Draw Form class"""
 
     def __init__(self, owner: DrawForms, component: Form, lo_inst: LoInst | None = None) -> None:

@@ -215,7 +215,9 @@ class Calc:
     @classmethod
     def open_doc(cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None) -> XSpreadsheetDocument:
         """
-        Opens or creates a spreadsheet document
+        Opens or creates a spreadsheet document.
+
+        |lo_unsafe|
 
         Args:
             fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
@@ -257,7 +259,9 @@ class Calc:
     @staticmethod
     def save_doc(doc: XSpreadsheetDocument, fnm: PathOrStr) -> bool:
         """
-        Saves text document
+        Saves text document.
+
+        |lo_safe|
 
         Args:
             text_doc (XSpreadsheetDocument): Text Document
@@ -298,9 +302,11 @@ class Calc:
     @staticmethod
     def get_ss_doc(doc: XComponent) -> XSpreadsheetDocument:
         """
-        Gets a spreadsheet document
+        Gets a spreadsheet document.
 
         When using this method in a macro the :py:attr:`Lo.this_component <.utils.lo.Lo.this_component>` value should be passed as ``doc`` arg.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Component to get spreadsheet from
@@ -348,17 +354,19 @@ class Calc:
     @staticmethod
     def create_doc(loader: XComponentLoader | None = None) -> XSpreadsheetDocument:
         """
-        Creates a new spreadsheet document
+        Creates a new spreadsheet document.
+
+        |lo_unsafe|
 
         Args:
-            loader (XComponentLoader): Component Loader
+            loader (XComponentLoader): Component Loader.
 
         Raises:
-            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface
-            CancelEventError: If DOC_CREATING event is canceled
+            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface.
+            CancelEventError: If DOC_CREATING event is canceled.
 
         Returns:
-            XSpreadsheetDocument: Spreadsheet document
+            XSpreadsheetDocument: Spreadsheet document.
 
         :events:
             .. cssclass:: lo_event
@@ -370,7 +378,7 @@ class Calc:
             :py:meth:`~Calc.get_ss_doc`
 
         Note:
-            Event args ``event_data`` is a dictionary containing ``loader``
+            Event args ``event_data`` is a dictionary containing ``loader``.
         """
         cargs = CancelEventArgs(Calc.create_doc.__qualname__)
         cargs.event_data = {"loader": loader}
@@ -395,6 +403,8 @@ class Calc:
         """
         Gets the current document.
 
+        |lo_unsafe|
+
         Raises:
             NoneError: If no current document
 
@@ -416,7 +426,7 @@ class Calc:
     # region    get_sheet()
     @staticmethod
     def _get_sheet_index(doc: XSpreadsheetDocument, index: int) -> XSpreadsheet:
-        """return the spreadsheet with the specified index (0-based)"""
+        """LO Safe Method. Return the spreadsheet with the specified index (0-based)"""
         # sourcery skip: raise-specific-error
         cargs = SheetCancelArgs(Calc.get_sheet.__qualname__)
         cargs.index = index
@@ -439,7 +449,7 @@ class Calc:
 
     @staticmethod
     def _get_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
-        """return the spreadsheet with the specified index (0-based)"""
+        """Lo Safe Method. Return the spreadsheet with the specified index (0-based)"""
         # sourcery skip: raise-specific-error
         cargs = SheetCancelArgs(Calc.get_sheet.__qualname__)
         cargs.name = sheet_name
@@ -490,16 +500,18 @@ class Calc:
     @classmethod
     def get_sheet(cls, *args, **kwargs) -> XSpreadsheet:
         """
-        Gets a sheet of spreadsheet document
+        Gets a sheet of spreadsheet document.
+
+        |lo_safe|
 
         Args:
-            doc (XSpreadsheetDocument, optional): Spreadsheet document
-            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``
-            sheet_name (str, optional): Name of spreadsheet
+            doc (XSpreadsheetDocument, optional): Spreadsheet document.
+            idx (int, optional): Zero based index of spreadsheet. Defaults to ``0``.
+            sheet_name (str, optional): Name of spreadsheet.
 
         Raises:
-            Exception: If spreadsheet is not found
-            CancelEventError: If SHEET_GETTING event is canceled
+            Exception: If spreadsheet is not found.
+            CancelEventError: If SHEET_GETTING event is canceled.
 
         Returns:
             XSpreadsheet: Spreadsheet at index.
@@ -578,6 +590,8 @@ class Calc:
         """
         Inserts a spreadsheet into document.
 
+        |lo_safe|
+
         Args:
             doc (XSpreadsheetDocument): Spreadsheet document
             name (str): Name of sheet to insert
@@ -619,6 +633,7 @@ class Calc:
 
     @staticmethod
     def _remove_sheet_name(doc: XSpreadsheetDocument, sheet_name: str) -> bool:
+        """LO Safe Method"""
         cargs = SheetCancelArgs(Calc.remove_sheet.__qualname__)
         # cargs.source = Calc.remove_sheet
         cargs.doc = doc
@@ -643,6 +658,7 @@ class Calc:
 
     @classmethod
     def _remove_sheet_index(cls, doc: XSpreadsheetDocument, index: int) -> bool:
+        """Lo safe method"""
         cargs = SheetCancelArgs(Calc.remove_sheet.__qualname__)
         cargs.doc = doc
         cargs.index = index
@@ -682,15 +698,17 @@ class Calc:
     @classmethod
     def remove_sheet(cls, *args, **kwargs) -> bool:
         """
-        Removes a sheet from document
+        Removes a sheet from document.
+
+        |lo_safe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet document
-            sheet_name (str): Name of sheet to remove
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            sheet_name (str): Name of sheet to remove.
             idx (int): Zero based index of sheet to remove.
 
         Returns:
-            bool: True of sheet was removed; Otherwise, False
+            bool: ``True`` of sheet was removed; Otherwise, ``False``.
 
         :events:
             .. cssclass:: lo_event
@@ -743,15 +761,17 @@ class Calc:
     @staticmethod
     def move_sheet(doc: XSpreadsheetDocument, name: str, idx: int) -> bool:
         """
-        Moves a sheet in a spreadsheet document
+        Moves a sheet in a spreadsheet document.
+
+        |lo_safe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet document.
-            name (str): Name of sheet to move
+            name (str): Name of sheet to move.
             idx (int): The zero based index to move sheet into.
 
         Returns:
-            bool: True on success; Otherwise, False
+            bool: ``True`` on success; Otherwise, ``False``.
 
         :events:
             .. cssclass:: lo_event
@@ -784,11 +804,33 @@ class Calc:
     @overload
     @classmethod
     def get_sheet_names(cls) -> Tuple[str, ...]:
+        """
+        Gets names of all existing spreadsheets in the spreadsheet document.
+
+        |lo_unsafe|
+
+        Args:
+            doc (XSpreadsheetDocument, optional): Document to get sheets names of.
+
+        Returns:
+            Tuple[str, ...]: Tuple of sheet names.
+        """
         ...
 
     @overload
     @classmethod
     def get_sheet_names(cls, doc: XSpreadsheetDocument) -> Tuple[str, ...]:
+        """
+        Gets names of all existing spreadsheets in the spreadsheet document.
+
+        |lo_safe|
+
+        Args:
+            doc (XSpreadsheetDocument, optional): Document to get sheets names of.
+
+        Returns:
+            Tuple[str, ...]: Tuple of sheet names.
+        """
         ...
 
     @classmethod
@@ -797,7 +839,7 @@ class Calc:
         Gets names of all existing spreadsheets in the spreadsheet document.
 
         Args:
-            doc (XSpreadsheetDocument, optional): Document to get sheets names of
+            doc (XSpreadsheetDocument, optional): Document to get sheets names of.
 
         Returns:
             Tuple[str, ...]: Tuple of sheet names.
@@ -816,11 +858,30 @@ class Calc:
     @overload
     @classmethod
     def get_sheets(cls) -> XSpreadsheets:
+        """
+        Gets all existing spreadsheets in the spreadsheet document.
+
+        |lo_unsafe|
+
+        Returns:
+            XSpreadsheets: document sheets
+        """
         ...
 
     @overload
     @classmethod
     def get_sheets(cls, doc: XSpreadsheetDocument) -> XSpreadsheets:
+        """
+        Gets all existing spreadsheets in the spreadsheet document.
+
+        |lo_safe|
+
+        Args:
+            doc (XSpreadsheetDocument, optional): Document to get sheets of.
+
+        Returns:
+            XSpreadsheets: document sheets
+        """
         ...
 
     @classmethod
@@ -829,7 +890,7 @@ class Calc:
         Gets all existing spreadsheets in the spreadsheet document.
 
         Args:
-            doc (XSpreadsheetDocument, optional): Document to get sheets of
+            doc (XSpreadsheetDocument, optional): Document to get sheets of.
 
         Returns:
             XSpreadsheets: document sheets
@@ -840,16 +901,46 @@ class Calc:
 
     # endregion get_sheets()
 
+    # region get_sheet_index()
+    @overload
+    @classmethod
+    def get_sheet_index(cls) -> int:
+        """
+        Gets index if sheet.
+
+        |lo_unsafe|
+
+        Returns:
+            int: Sheet Index.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def get_sheet_index(cls, sheet: XSpreadsheet) -> int:
+        """
+        Gets index if sheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spread sheet. Defaults to active sheet.
+
+        Returns:
+            int: Sheet Index.
+        """
+        ...
+
     @classmethod
     def get_sheet_index(cls, sheet: XSpreadsheet | None = None) -> int:
         """
-        Gets index if sheet
+        Gets index if sheet.
 
         Args:
-            sheet (XSpreadsheet | None, optional): Spread sheet. Defaults to active sheet.
+            sheet (XSpreadsheet, optional): Spread sheet. Defaults to active sheet.
 
         Returns:
-            int: Sheet Index
+            int: Sheet Index.
         """
         if sheet is None:
             sheet = cls.get_active_sheet()
@@ -857,41 +948,121 @@ class Calc:
         ca = ra.getRangeAddress()
         return ca.Sheet
 
+    # endregion get_sheet_index()
+
     # region get_sheet_name()
     @overload
     @classmethod
     def get_sheet_name(cls) -> str:
+        """
+        Gets the name of a sheet.
+
+        |lo_unsafe|
+
+        Returns:
+            str: Name of sheet
+        """
         ...
 
     @overload
     @classmethod
     def get_sheet_name(cls, safe_quote: bool) -> str:
+        """
+        Gets the name of a sheet.
+
+        |lo_unsafe|
+
+        Args:
+            safe_quote (bool, optional): If True, returns quoted (in single quotes) sheet name if the sheet name is not alphanumeric.
+                Defaults to True.
+
+        Returns:
+            str: Name of sheet
+        """
         ...
 
     @overload
     @classmethod
     def get_sheet_name(cls, idx: int) -> str:
+        """
+        Gets the name of a sheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet, optional): Spreadsheet
+            idx (int, optional): Index of Spreadsheet
+            safe_quote (bool, optional): If True, returns quoted (in single quotes) sheet name if the sheet name is not alphanumeric.
+                Defaults to True.
+
+        Returns:
+            str: Name of sheet
+        """
         ...
 
     @overload
     @classmethod
     def get_sheet_name(cls, idx: int, safe_quote: bool) -> str:
+        """
+        Gets the name of a sheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet, optional): Spreadsheet
+            idx (int, optional): Index of Spreadsheet
+            safe_quote (bool, optional): If True, returns quoted (in single quotes) sheet name if the sheet name is not alphanumeric.
+                Defaults to True.
+
+        Returns:
+            str: Name of sheet
+        """
         ...
 
     @overload
     @classmethod
     def get_sheet_name(cls, sheet: XSpreadsheet) -> str:
+        """
+        Gets the name of a sheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet, optional): Spreadsheet
+            idx (int, optional): Index of Spreadsheet
+            safe_quote (bool, optional): If True, returns quoted (in single quotes) sheet name if the sheet name is not alphanumeric.
+                Defaults to True.
+
+        Returns:
+            str: Name of sheet
+        """
         ...
 
     @overload
     @classmethod
     def get_sheet_name(cls, sheet: XSpreadsheet, safe_quote: bool) -> str:
+        """
+        Gets the name of a sheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet, optional): Spreadsheet
+            idx (int, optional): Index of Spreadsheet
+            safe_quote (bool, optional): If True, returns quoted (in single quotes) sheet name if the sheet name is not alphanumeric.
+                Defaults to True.
+
+        Returns:
+            str: Name of sheet
+        """
         ...
 
     @classmethod
     def get_sheet_name(cls, *args, **kwargs) -> str:
         """
-        Gets the name of a sheet
+        Gets the name of a sheet.
+
+        |lo_unsafe|
 
         Args:
             sheet (XSpreadsheet, optional): Spreadsheet
@@ -971,11 +1142,35 @@ class Calc:
     @overload
     @classmethod
     def set_sheet_name(cls, name: str) -> bool:
+        """
+        Sets the name of a spreadsheet.
+
+        |lo_unsafe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet to set name of.
+            name (str): New name for spreadsheet.
+
+        Returns:
+            bool: ``True`` on success; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def set_sheet_name(cls, sheet: XSpreadsheet, name: str) -> bool:
+        """
+        Sets the name of a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet to set name of.
+            name (str): New name for spreadsheet.
+
+        Returns:
+            bool: ``True`` on success; Otherwise, ``False``.
+        """
         ...
 
     @classmethod
@@ -984,11 +1179,11 @@ class Calc:
         Sets the name of a spreadsheet.
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet to set name of
+            sheet (XSpreadsheet): Spreadsheet to set name of.
             name (str): New name for spreadsheet.
 
         Returns:
-            bool: True on success; Otherwise, False
+            bool: ``True`` on success; Otherwise, ``False``.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -1036,7 +1231,9 @@ class Calc:
     @staticmethod
     def protect_sheet(sheet: XSpreadsheet, password: str) -> bool:
         """
-        Protects a Spreadsheet
+        Protects a Spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Sheet to protect.
@@ -1067,6 +1264,8 @@ class Calc:
 
         If incorrect password is provided, this method will return ``False``.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Sheet to unprotect.
             password (str): Password to unprotect sheet with.
@@ -1092,7 +1291,9 @@ class Calc:
     @staticmethod
     def is_sheet_protected(sheet: XSpreadsheet) -> bool:
         """
-        Gets whether a sheet is protected
+        Gets whether a sheet is protected.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Sheet to check
@@ -1128,7 +1329,9 @@ class Calc:
     @classmethod
     def get_controller(cls, doc: XSpreadsheetDocument | None = None) -> XController:
         """
-        Provides access to the controller which currently controls this model
+        Provides access to the controller which currently controls this model.
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument, optional): Spreadsheet Document
@@ -1149,7 +1352,9 @@ class Calc:
     @classmethod
     def zoom_value(cls, doc: XSpreadsheetDocument, value: int) -> None:
         """
-        Sets the zoom level of the Spreadsheet Document
+        Sets the zoom level of the Spreadsheet Document.
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
@@ -1164,6 +1369,8 @@ class Calc:
     def zoom(cls, doc: XSpreadsheetDocument, type: ZoomKind) -> None:
         """
         Zooms spreadsheet document to a specific view.
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
@@ -1206,18 +1413,22 @@ class Calc:
         of the ``com.sun.star.frame.Controller`` service and represents a table editing view
         for a spreadsheet document.
 
+        |lo_unsafe|
+
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
+            doc (XSpreadsheetDocument): Spreadsheet Document.
 
         Returns:
-            XSpreadsheetView: XSpreadsheetView
+            XSpreadsheetView: ``XSpreadsheetView``.
         """
         return mLo.Lo.qi(XSpreadsheetView, cls.get_controller(doc), True)
 
     @classmethod
     def set_active_sheet(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> None:
         """
-        Sets the active sheet
+        Sets the active sheet.
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
@@ -1258,10 +1469,12 @@ class Calc:
     @classmethod
     def get_active_sheet(cls, doc: XSpreadsheetDocument | None = None) -> XSpreadsheet:
         """
-        Gets the active sheet
+        Gets the active sheet.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument, optional): Spreadsheet Document
+            doc (XSpreadsheetDocument, optional): Spreadsheet Document.
 
         Returns:
             XSpreadsheet: Active Sheet.
@@ -1276,12 +1489,14 @@ class Calc:
     @classmethod
     def freeze(cls, doc: XSpreadsheetDocument, num_cols: int, num_rows: int) -> None:
         """
-        Freezes spreadsheet columns and rows
+        Freezes spreadsheet columns and rows.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            num_cols (int): Number of columns to freeze
-            num_rows (int): Number of rows to freeze
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            num_cols (int): Number of columns to freeze.
+            num_rows (int): Number of rows to freeze.
 
         Returns:
             None:
@@ -1304,10 +1519,12 @@ class Calc:
     @classmethod
     def unfreeze(cls, doc: XSpreadsheetDocument) -> None:
         """
-        UN-Freezes spreadsheet columns and/or rows
+        UN-Freezes spreadsheet columns and/or rows.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
+            doc (XSpreadsheetDocument): Spreadsheet Document.
 
         Returns:
             None:
@@ -1329,11 +1546,13 @@ class Calc:
     @classmethod
     def freeze_cols(cls, doc: XSpreadsheetDocument, num_cols: int) -> None:
         """
-        Freezes spreadsheet columns
+        Freezes spreadsheet columns.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            num_cols (int): Number of columns to freeze
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            num_cols (int): Number of columns to freeze.
 
         Returns:
             None:
@@ -1350,11 +1569,13 @@ class Calc:
     @classmethod
     def freeze_rows(cls, doc: XSpreadsheetDocument, num_rows: int) -> None:
         """
-        Freezes spreadsheet rows
+        Freezes spreadsheet rows.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            num_rows (int): Number of rows to freeze
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            num_rows (int): Number of rows to freeze.
 
         Returns:
             None:
@@ -1392,7 +1613,9 @@ class Calc:
     @classmethod
     def goto_cell(cls, *args, **kwargs) -> None:
         """
-        Go to a cell
+        Go to a cell.
+
+        |lo_unsafe|
 
         Args:
             cell_name (str): Cell Name such as 'B4'
@@ -1445,11 +1668,13 @@ class Calc:
     @classmethod
     def split_window(cls, doc: XSpreadsheetDocument, cell_name: str) -> None:
         """
-        Splits window
+        Splits window.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            cell_name (str): Cell to preform split on. e.g. 'C4'
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            cell_name (str): Cell to preform split on. e.g. ``C4``.
 
         Returns:
             None:
@@ -1467,25 +1692,49 @@ class Calc:
     @overload
     @classmethod
     def get_selected_addr(cls, doc: XSpreadsheetDocument) -> CellRangeAddress:
+        """
+        Gets select cell range addresses.
+
+        |lo_safe|
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+
+        Returns:
+            CellRangeAddress: Cell range addresses.
+        """
         ...
 
     @overload
     @classmethod
     def get_selected_addr(cls, model: XModel) -> CellRangeAddress:
+        """
+        Gets select cell range addresses.
+
+        |lo_safe|
+
+        Args:
+            model (XModel): model used to access sheet.
+
+        Returns:
+            CellRangeAddress: Cell range addresses.
+        """
         ...
 
     @classmethod
     def get_selected_addr(cls, *args, **kwargs) -> CellRangeAddress:
         """
-        Gets select cell range addresses
+        Gets select cell range addresses.
+
+        |lo_safe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            model (XModel): model used to access sheet
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            model (XModel): model used to access sheet.
 
         Raises:
-            Exception: if unable to get document model
-            MissingInterfaceError: if unable to get interface XCellRangeAddressable
+            Exception: if unable to get document model.
+            MissingInterfaceError: if unable to get interface ``XCellRangeAddressable``.
 
         Returns:
             CellRangeAddress: Cell range addresses.
@@ -1547,7 +1796,9 @@ class Calc:
     @classmethod
     def get_selected_range(cls, *args, **kwargs) -> mRngObj.RangeObj:
         """
-        Gets select cell range
+        Gets select cell range.
+
+        |lo_safe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
@@ -1577,6 +1828,8 @@ class Calc:
     def get_selected_cell_addr(cls, doc: XSpreadsheetDocument) -> CellAddress:
         """
         Gets the cell address of current selected cell of the active sheet.
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet document
@@ -1621,6 +1874,8 @@ class Calc:
         """
         Gets the cell address of current selected cell of the active sheet.
 
+        |lo_unsafe|
+
         Args:
             doc (XSpreadsheetDocument, Optional): Spreadsheet document
 
@@ -1651,6 +1906,21 @@ class Calc:
     @overload
     @classmethod
     def set_selected_addr(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> CellRangeAddress | None:
+        """
+        Selects cells in a Spreadsheet.
+
+        If ``range_name`` is omitted then deselection is preformed.
+
+        |lo_unsafe|
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            sheet (XSpreadsheet): Spreadsheet.
+            range_val (str | RangeObj): Range name.
+
+        Returns:
+            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``
+        """
         ...
 
     @overload
@@ -1658,6 +1928,21 @@ class Calc:
     def set_selected_addr(
         cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_val: str | mRngObj.RangeObj
     ) -> CellRangeAddress | None:
+        """
+        Selects cells in a Spreadsheet.
+
+        If ``range_name`` is omitted then deselection is preformed.
+
+        |lo_safe|
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            sheet (XSpreadsheet): Spreadsheet.
+            range_val (str | RangeObj): Range name.
+
+        Returns:
+            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``
+        """
         ...
 
     @classmethod
@@ -1731,16 +2016,59 @@ class Calc:
     def set_selected_range(
         cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_val: mRngObj.RangeObj
     ) -> mRngObj.RangeObj:
+        """
+        Selects cells in a Spreadsheet.
+
+        If ``range_name`` is omitted then deselection is preformed.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_val (str): Range name such as ``A1:G3`` or ``RangeObj``.
+
+        Returns:
+            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def set_selected_range(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet, range_val: str) -> mRngObj.RangeObj:
+        """
+        Selects cells in a Spreadsheet.
+
+        If ``range_name`` is omitted then deselection is preformed.
+
+        |lo_safe|
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            sheet (XSpreadsheet): Spreadsheet.
+            range_val (str): Range name such as ``A1:G3`` or ``RangeObj``.
+
+        Returns:
+            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def set_selected_range(cls, doc: XSpreadsheetDocument, sheet: XSpreadsheet) -> mRngObj.RangeObj:
+        """
+        Selects cells in a Spreadsheet.
+
+        If ``range_name`` is omitted then deselection is preformed.
+
+        |lo_safe|
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            sheet (XSpreadsheet): Spreadsheet.
+
+        Returns:
+            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``.
+        """
         ...
 
     @classmethod
@@ -1752,13 +2080,15 @@ class Calc:
 
         If ``range_name`` is omitted then deselection is preformed.
 
+        |lo_safe|
+
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet document
-            sheet (XSpreadsheet): Spreadsheet
-            range_val (str): Range name such as ``A1:G3`` or ``RangeObj``
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            sheet (XSpreadsheet): Spreadsheet.
+            range_val (str): Range name such as ``A1:G3`` or ``RangeObj``.
 
         Returns:
-            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``
+            CellRangeAddress | None: Cell range address of the current selection if successful, otherwise ``None``.
 
         See Also:
             - :py:meth:`~.Calc.get_selected_range`
@@ -1781,16 +2111,18 @@ class Calc:
     @classmethod
     def get_view_panes(cls, doc: XSpreadsheetDocument) -> List[XViewPane] | None:
         """
-        represents a pane in a view of a spreadsheet document.
+        Represents a pane in a view of a spreadsheet document.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
+            doc (XSpreadsheetDocument): Spreadsheet Document.
 
         Raises:
-            MissingInterfaceError: if unable access the view pane container
+            MissingInterfaceError: if unable access the view pane container.
 
         Returns:
-            List[XViewPane] | None: List of XViewPane on success; Otherwise, None
+            List[XViewPane] | None: List of XViewPane on success; Otherwise, None.
 
         Note:
             The com.sun.star.sheet.XViewPane interface's getFirstVisibleColumn(), getFirstVisibleRow(),
@@ -1803,9 +2135,7 @@ class Calc:
         See Also:
             :ref:`ch23_view_states_top_pane`
         """
-        con = mLo.Lo.qi(XIndexAccess, cls.get_controller(doc))
-        if con is None:
-            raise mEx.MissingInterfaceError(XIndexAccess, "Could not access the view pane container")
+        con = mLo.Lo.qi(XIndexAccess, cls.get_controller(doc), True)
 
         panes = []
         for i in range(con.getCount()):
@@ -1822,7 +2152,9 @@ class Calc:
     def get_view_data(cls, doc: XSpreadsheetDocument) -> str:
         """
         Gets a set of data that can be used to restore the current view status at
-        later time by using :py:meth:`~Calc.set_view_data`
+        later time by using :py:meth:`~Calc.set_view_data`.
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
@@ -1839,6 +2171,8 @@ class Calc:
         Restores the view status using the data gotten from a previous call to
         ``get_view_data()``
 
+        |lo_unsafe|
+
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
             view_data (str): Data to restore.
@@ -1853,13 +2187,15 @@ class Calc:
         The states are returned as an array of ViewState objects.
 
         The view data string has the format
-        ``100/60/0;0;tw:879;0/4998/0/1/0/218/2/0/0/4988/4998``
+        ``100/60/0;0;tw:879;0/4998/0/1/0/218/2/0/0/4988/4998``.
 
         The view state info starts after the third ``;``, the fourth entry.
         The view state for each sheet is separated by ``;``
 
         Based on a post by user Hanya to:
         `openoffice forum <https://forum.openoffice.org/en/forum/viewtopic.php?f=45&t=29195&p=133202&hilit=getViewData#p133202>`_
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument): Spreadsheet Document
@@ -1884,6 +2220,8 @@ class Calc:
     def set_view_states(cls, doc: XSpreadsheetDocument, states: Sequence[mViewState.ViewState]) -> None:
         """
         Updates the sheet state part of the view data, which starts as the fourth entry in the view data string.
+
+        |lo_unsafe|
 
         Args:
             doc (XSpreadsheetDocument): spreadsheet document
@@ -1918,7 +2256,9 @@ class Calc:
     @staticmethod
     def insert_row(sheet: XSpreadsheet, idx: int, count: int = 1) -> bool:
         """
-        Inserts a row in spreadsheet
+        Inserts a row in spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -1954,6 +2294,8 @@ class Calc:
     def delete_row(sheet: XSpreadsheet, idx: int, count: int = 1) -> bool:
         """
         Deletes a row from spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
@@ -1991,6 +2333,8 @@ class Calc:
         """
         Inserts a column in a spreadsheet.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet.
             idx (int): Zero base index of column to insert.
@@ -2026,6 +2370,8 @@ class Calc:
         """
         Delete a column from a spreadsheet.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet.
             idx (int): Zero base of index of column to delete.
@@ -2059,6 +2405,7 @@ class Calc:
     # region insert_cells()
     @classmethod
     def _insert_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> bool:
+        """LO Safe Method."""
         cargs = CellCancelArgs(Calc.insert_cells.__qualname__)
         cargs.sheet = sheet
         cargs.cells = cell_range
@@ -2078,21 +2425,73 @@ class Calc:
     @overload
     @classmethod
     def insert_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range to insert.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def insert_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cr_addr (CellRangeAddress): Cell range Address.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def insert_cells(cls, sheet: XSpreadsheet, range_name: str, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range Name such as ``A1:D5``.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def insert_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, is_shift_right: bool) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
         ...
 
     @overload
@@ -2100,6 +2499,22 @@ class Calc:
     def insert_cells(
         cls, sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int, is_shift_right: bool
     ) -> bool:
+        """
+        Inserts Cells into a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            is_shift_right (bool): If True then cell are inserted to the right; Otherwise, inserted down.
+
+        Returns:
+            bool: ``True`` if cells are inserted; Otherwise, ``False``.
+        """
         ...
 
     @classmethod
@@ -2107,11 +2522,13 @@ class Calc:
         """
         Inserts Cells into a spreadsheet.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet.
             cell_range (XCellRange): Cell range to insert.
             cr_addr (CellRangeAddress): Cell range Address.
-            range_name (str): Range Name such as 'A1:D5'.
+            range_name (str): Range Name such as ``A1:D5``.
             range_obj (RangeObj): Range Object.
             col_start (int): Start Column.
             row_start (int): Start Row.
@@ -2166,6 +2583,7 @@ class Calc:
 
     @classmethod
     def _delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_left: bool) -> bool:
+        """LO Safe Method."""
         cargs = CellCancelArgs(Calc.delete_cells.__qualname__)
         cargs.sheet = sheet
         cargs.cells = cell_range
@@ -2185,21 +2603,74 @@ class Calc:
     @overload
     @classmethod
     def delete_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, is_shift_left: bool) -> bool:
+        """
+        Deletes cells in a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range to delete.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def delete_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, is_shift_left: bool) -> bool:
+        """
+        Deletes cells in a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cr_addr (CellRangeAddress): Cell range Address.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def delete_cells(cls, sheet: XSpreadsheet, range_name: str, is_shift_left: bool) -> bool:
+        """
+        Deletes cells in a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range to delete.
+            range_name (str): Range Name such as ``A1:D5``.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def delete_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, is_shift_left: bool) -> bool:
+        """
+        Deletes cells in a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
         ...
 
     @overload
@@ -2207,18 +2678,36 @@ class Calc:
     def delete_cells(
         cls, sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int, is_shift_left: bool
     ) -> bool:
+        """
+        Deletes cells in a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            is_shift_left (bool): If ``True`` then cell are shifted left; Otherwise, cells are shifted up.
+
+        Returns:
+            bool: ``True`` if cells are deleted; Otherwise, ``False``.
+        """
         ...
 
     @classmethod
     def delete_cells(cls, *args, **kwargs) -> bool:
         """
-        Deletes cells in a spreadsheet
+        Deletes cells in a spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
             cell_range (XCellRange): Cell range to delete.
             cr_addr (CellRangeAddress): Cell range Address.
-            range_name (str): Range Name such as 'A1:D5'.
+            range_name (str): Range Name such as ``A1:D5``.
             range_obj (RangeObj): Range Object.
             col_start (int): Start Column.
             row_start (int): Start Row.
@@ -2274,41 +2763,153 @@ class Calc:
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        If cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, cell_range: XCellRange, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, range_name: str) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        If cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range name such as ``A1:G3``.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, range_name: str, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range name such as ``A1:G3``.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, range_val: mRngObj.RangeObj) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        If cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_val (RangeObj): Range object.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, range_val: mRngObj.RangeObj, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_val (RangeObj): Range object.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        If cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cr_addr (CellRangeAddress): Cell Range Address.
+
+        Raises:
+            MissingInterfaceError: If XSheetOperation interface cannot be obtained.
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def clear_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, cell_flags: CellFlagsEnum) -> bool:
+        """
+        Clears the specified contents of the cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cr_addr (CellRangeAddress): Cell Range Address.
+            cell_flags (CellFlagsEnum): Flags that determine what to clear.
+
+        Raises:
+            MissingInterfaceError: If XSheetOperation interface cannot be obtained.
+        Returns:
+            bool: ``True`` if cells are cleared; Otherwise, ``False``.
+        """
         ...
 
     @classmethod
@@ -2318,6 +2919,8 @@ class Calc:
 
         If ``cell_flags`` is not specified then
         cell range of types ``VALUE``, ``DATETIME`` and ``STRING`` are cleared.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
@@ -2411,6 +3014,7 @@ class Calc:
     # region    set_val()
     @staticmethod
     def _set_val_by_cell(value: Any, cell: XCell, styles: Sequence[StyleT] | None = None) -> None:
+        """LO Safe Method"""
         if isinstance(value, (float, int)):
             cell.setValue(float(value))
         elif isinstance(value, str):
@@ -2434,6 +3038,7 @@ class Calc:
     def _set_val_by_cell_name(
         cls, value: object, sheet: XSpreadsheet, cell_name: str, styles: Sequence[StyleT] | None = None
     ) -> None:
+        """LO Safe Method"""
         pos = cls.get_cell_position(cell_name)
         cls._set_val_by_col_row(value=value, sheet=sheet, col=pos.X, row=pos.Y, styles=styles)
 
@@ -2441,32 +3046,98 @@ class Calc:
     def _set_val_by_col_row(
         cls, value: object, sheet: XSpreadsheet, col: int, row: int, styles: Sequence[StyleT] | None = None
     ) -> None:
+        """LO Safe Method"""
         cell = cls.get_cell(sheet=sheet, col=col, row=row)
         cls._set_val_by_cell(value=value, cell=cell, styles=styles)
 
     @overload
     @classmethod
     def set_val(cls, value: object, cell: XCell) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            cell (XCell): Cell to assign value.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, cell: XCell, *, styles: Sequence[StyleT]) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            cell (XCell): Cell to assign value.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, sheet: XSpreadsheet, cell_name: str) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to set value of such as ``B4``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, sheet: XSpreadsheet, cell_name: str, *, styles: Sequence[StyleT]) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to set value of such as ``B4``.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -2474,28 +3145,73 @@ class Calc:
     def set_val(
         cls, value: object, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleT]
     ) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, sheet: XSpreadsheet, col: int, row: int) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell column as zero-based integer.
+            row (int): Cell row as zero-based integer.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_val(cls, value: object, sheet: XSpreadsheet, col: int, row: int, *, styles: Sequence[StyleT]) -> None:
+        """
+        Sets the value of a cell.
+
+        |lo_safe|
+
+        Args:
+            value (object): Value for cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell column as zero-based integer.
+            row (int): Cell row as zero-based integer.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def set_val(cls, *args, **kwargs) -> None:
         """
-        Sets the value of a cell
+        Sets the value of a cell.
+
+        |lo_safe|
 
         Args:
             value (object): Value for cell.
             cell (XCell): Cell to assign value.
             sheet (XSpreadsheet): Spreadsheet.
-            cell_name (str): Name of cell to set value of such as 'B4'.
+            cell_name (str): Name of cell to set value of such as ``B4``.
             cell_obj (CellObj): Cell Object.
             col (int): Cell column as zero-based integer.
             row (int): Cell row as zero-based integer.
@@ -2563,7 +3279,9 @@ class Calc:
     @staticmethod
     def convert_to_float(val: Any) -> float:
         """
-        Converts value to float
+        Converts value to float.
+
+        |lo_safe|
 
         Args:
             val (Any): Value to convert
@@ -2585,7 +3303,9 @@ class Calc:
     @staticmethod
     def get_type_enum(cell: XCell) -> Calc.CellTypeEnum:
         """
-        Gets enum representing the Type
+        Gets enum representing the Type.
+
+        |lo_safe|
 
         Args:
             cell (XCell): Cell to get type of
@@ -2608,7 +3328,9 @@ class Calc:
     @classmethod
     def get_type_string(cls, cell: XCell) -> str:
         """
-        Gets String representing the Type
+        Gets String representing the Type.
+
+        |lo_safe|
 
         Args:
             cell (XCell): Cell to get type of
@@ -2623,6 +3345,7 @@ class Calc:
 
     @classmethod
     def _get_val_by_cell(cls, cell: XCell) -> object | None:
+        """LO Safe Method."""
         t = cell.getType()
         if t == CellContentType.EMPTY:
             return None
@@ -2635,16 +3358,19 @@ class Calc:
 
     @classmethod
     def _get_val_by_col_row(cls, sheet: XSpreadsheet, col: int, row: int) -> object | None:
+        """LO Safe Method"""
         xcell = cls.get_cell(sheet=sheet, col=col, row=row)
         return cls._get_val_by_cell(cell=xcell)
 
     @classmethod
     def _get_val_by_cell_name(cls, sheet: XSpreadsheet, cell_name: str) -> object | None:
+        """Lo Safe Method"""
         pos = cls.get_cell_position(cell_name)
         return cls._get_val_by_col_row(sheet=sheet, col=pos.X, row=pos.Y)
 
     @classmethod
     def _get_val_by_cell_addr(cls, sheet: XSpreadsheet, addr: CellAddress) -> object | None:
+        """LO Safe Method."""
         if addr is None:
             return None
         return cls._get_val_by_col_row(sheet=sheet, col=addr.Column, row=addr.Row)
@@ -2652,26 +3378,86 @@ class Calc:
     @overload
     @classmethod
     def get_val(cls, cell: XCell) -> Any:
+        """
+        Gets cell value.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): cell to get value of.
+
+        Returns:
+            Any: Cell value cell has a value; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_val(cls, sheet: XSpreadsheet, addr: CellAddress) -> Any:
+        """
+        Gets cell value.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Address of cell.
+
+        Returns:
+            Any: Cell value cell has a value; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_val(cls, sheet: XSpreadsheet, cell_name: str) -> Any:
+        """
+        Gets cell value.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell such as ``B4``.
+
+        Returns:
+            Any: Cell value cell has a value; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_val(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> Any:
+        """
+        Gets cell value.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            Any: Cell value cell has a value; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_val(cls, sheet: XSpreadsheet, col: int, row: int) -> Any:
+        """
+        Gets cell value.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell zero-based column.
+            row (int): Cell zero-base row.
+
+        Returns:
+            Any: Cell value cell has a value; Otherwise, ``None``.
+        """
         ...
 
     @classmethod
@@ -2679,11 +3465,13 @@ class Calc:
         """
         Gets cell value.
 
+        |lo_safe|
+
         Args:
             cell (XCell): cell to get value of.
             sheet (XSpreadsheet): Spreadsheet.
             addr (CellAddress): Address of cell.
-            cell_name (str): Name of cell such as 'B4'.
+            cell_name (str): Name of cell such as ``B4``.
             cell_obj (CellObj): Cell Object.
             col (int): Cell zero-based column.
             row (int): Cell zero-base row.
@@ -2732,7 +3520,7 @@ class Calc:
             # can only be: get_val(cell: XCell)
             return None if count != 1 else cls._get_val_by_cell(cell=kargs[1])
         if count == 2:
-            if isinstance(kargs[2], (str, mCellObj.CellObj)):
+            if mInfo.Info.is_instance(kargs[2], (str, mCellObj.CellObj)):
                 #   get_val(sheet: XSpreadsheet, cell_name: str)
                 return cls._get_val_by_cell_name(sheet=kargs[1], cell_name=str(kargs[2]))
 
@@ -2752,26 +3540,86 @@ class Calc:
     @overload
     @classmethod
     def get_num(cls, cell: XCell) -> float:
+        """
+        Get cell value a float.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Cell to get value of.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then ``0.0`` is returned.
+        """
         ...
 
     @overload
     @classmethod
     def get_num(cls, sheet: XSpreadsheet, cell_name: str) -> float:
+        """
+        Get cell value a float.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell name such as ``B4``.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then ``0.0`` is returned.
+        """
         ...
 
     @overload
     @classmethod
     def get_num(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> float:
+        """
+        Get cell value a float.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then ``0.0`` is returned.
+        """
         ...
 
     @overload
     @classmethod
     def get_num(cls, sheet: XSpreadsheet, addr: CellAddress) -> float:
+        """
+        Get cell value a float.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then ``0.0`` is returned.
+        """
         ...
 
     @overload
     @classmethod
     def get_num(cls, sheet: XSpreadsheet, col: int, row: int) -> float:
+        """
+        Get cell value a float.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell zero-base column number.
+            row (int): Cell zero-base row number.
+
+        Returns:
+            float: Cell value as float. If cell value cannot be converted then ``0.0`` is returned.
+        """
         ...
 
     @classmethod
@@ -2779,17 +3627,19 @@ class Calc:
         """
         Get cell value a float.
 
+        |lo_safe|
+
         Args:
             cell (XCell): Cell to get value of.
             sheet (XSpreadsheet): Spreadsheet.
-            cell_name (str): Cell name such as 'B4'.
+            cell_name (str): Cell name such as ``B4``.
             cell_obj (CellObj): Cell Object.
             addr (CellAddress): Cell Address.
             col (int): Cell zero-base column number.
             row (int): Cell zero-base row number.
 
         Returns:
-            float: Cell value as float. If cell value cannot be converted then 0.0 is returned.
+            float: Cell value as float. If cell value cannot be converted then ``0.0`` is returned.
         """
         ordered_keys = (1, 2, 3)
         kargs_len = len(kwargs)
@@ -2843,26 +3693,86 @@ class Calc:
     @overload
     @classmethod
     def get_string(cls, cell: XCell) -> str:
+        """
+        Gets the value of a cell as a string.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Cell to get value of.
+
+        Returns:
+            str: Cell value as string.
+        """
         ...
 
     @overload
     @classmethod
     def get_string(cls, sheet: XSpreadsheet, cell_name: str) -> str:
+        """
+        Gets the value of a cell as a string.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to get the value of such as ``B4``.
+
+        Returns:
+            str: Cell value as string.
+        """
         ...
 
     @overload
     @classmethod
     def get_string(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> str:
+        """
+        Gets the value of a cell as a string.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            str: Cell value as string.
+        """
         ...
 
     @overload
     @classmethod
     def get_string(cls, sheet: XSpreadsheet, addr: CellAddress) -> str:
+        """
+        Gets the value of a cell as a string.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell address.
+
+        Returns:
+            str: Cell value as string.
+        """
         ...
 
     @overload
     @classmethod
     def get_string(cls, sheet: XSpreadsheet, col: int, row: int) -> str:
+        """
+        Gets the value of a cell as a string.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell zero-based column number.
+            row (int): Cell zero-based row number.
+
+        Returns:
+            str: Cell value as string.
+        """
         ...
 
     @classmethod
@@ -2870,13 +3780,16 @@ class Calc:
         """
         Gets the value of a cell as a string.
 
+        |lo_safe|
+
         Args:
-            cell (XCell): Cell to get value of
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cell to get the value of such as 'B4'
-            addr (CellAddress): Cell address
-            col (int): Cell zero-based column number
-            row (int): Cell zero-based row number
+            cell (XCell): Cell to get value of.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to get the value of such as ``B4``.
+            addr (CellAddress): Cell address.
+            cell_obj (CellObj): Cell Object.
+            col (int): Cell zero-based column number.
+            row (int): Cell zero-based row number.
 
         Returns:
             str: Cell value as string.
@@ -2943,6 +3856,7 @@ class Calc:
     def _set_array_doc_addr(
         cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress, styles: Sequence[StyleT] | None = None
     ) -> None:
+        """Lo Safe Method."""
         v_len = len(values)
         if v_len == 0:
             mLo.Lo.print("Values has not data")
@@ -2961,26 +3875,91 @@ class Calc:
     @overload
     @classmethod
     def set_array(cls, values: Table, cell_range: XCellRange) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            cell_range (XCellRange): Range in spreadsheet to insert data.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array(cls, values: Table, cell_range: XCellRange, *, styles: Sequence[StyleT]) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            cell_range (XCellRange): Range in spreadsheet to insert data.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array(cls, values: Table, sheet: XSpreadsheet, name: str) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            name (str): Range name such as 'A1:D4' or cell name such as ``B4``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array(cls, values: Table, sheet: XSpreadsheet, name: str, *, styles: Sequence[StyleT]) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            name (str): Range name such as 'A1:D4' or cell name such as ``B4``.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array(cls, values: Table, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -2988,11 +3967,38 @@ class Calc:
     def set_array(
         cls, values: Table, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, *, styles: Sequence[StyleT]
     ) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array(cls, values: Table, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -3000,11 +4006,38 @@ class Calc:
     def set_array(
         cls, values: Table, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleT]
     ) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array(cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            addr (CellAddress): Address to insert data.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -3012,6 +4045,20 @@ class Calc:
     def set_array(
         cls, values: Table, doc: XSpreadsheetDocument, addr: CellAddress, *, styles: Sequence[StyleT]
     ) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            addr (CellAddress): Address to insert data.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -3025,6 +4072,22 @@ class Calc:
         col_end: int,
         row_end: int,
     ) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            col_start (int): Zero-base Start Column.
+            row_start (int): Zero-base Start Row.
+            col_end (int): Zero-base End Column.
+            row_end (int): Zero-base End Row.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -3040,18 +4103,37 @@ class Calc:
         *,
         styles: Sequence[StyleT],
     ) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            sheet (XSpreadsheet): Spreadsheet.
+            col_start (int): Zero-base Start Column.
+            row_start (int): Zero-base Start Row.
+            col_end (int): Zero-base End Column.
+            row_end (int): Zero-base End Row.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def set_array(cls, *args, **kwargs) -> None:
         """
-        Inserts array of data into spreadsheet
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
 
         Args:
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             cell_range (XCellRange): Range in spreadsheet to insert data.
             sheet (XSpreadsheet): Spreadsheet.
-            name (str): Range name such as 'A1:D4' or cell name such as 'B4'.
+            name (str): Range name such as 'A1:D4' or cell name such as ``B4``.
             range_obj (RangeObj): Range Object.
             cell_obj (CellObj): Cell Object.
             doc (XSpreadsheetDocument): Spreadsheet Document.
@@ -3170,7 +4252,9 @@ class Calc:
         styles: Sequence[StyleT] | None = None,
     ) -> None:
         """
-        Inserts array of data into spreadsheet
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -3194,16 +4278,54 @@ class Calc:
     @overload
     @classmethod
     def set_array_range(cls, sheet: XSpreadsheet, range_name: str, values: Table) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range to insert data such as ``A1:E12``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array_range(cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleT]) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range to insert data such as ``A1:E12``.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array_range(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, values: Table) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -3211,16 +4333,32 @@ class Calc:
     def set_array_range(
         cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, values: Table, *, styles: Sequence[StyleT]
     ) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def set_array_range(cls, *args, **kwargs) -> None:
         """
-        Inserts array of data into spreadsheet
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
-            range_name (str): Range to insert data such as 'A1:E12'.
+            range_name (str): Range to insert data such as ``A1:E12``.
             range_obj (RangeObj): Range Object.
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
@@ -3268,17 +4406,44 @@ class Calc:
     @overload
     @staticmethod
     def set_cell_range_array(cell_range: XCellRange, values: Table) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @staticmethod
     def set_cell_range_array(cell_range: XCellRange, values: Table, styles: Sequence[StyleT]) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @staticmethod
     def set_cell_range_array(cell_range: XCellRange, values: Table, styles: Sequence[StyleT] | None = None) -> None:
         """
-        Inserts array of data into spreadsheet
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
 
         Args:
             cell_range (XCellRange): Cell Range
@@ -3331,7 +4496,9 @@ class Calc:
         styles: Sequence[StyleT] | None = None,
     ) -> None:
         """
-        Inserts array of data into spreadsheet
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -3357,16 +4524,56 @@ class Calc:
     @overload
     @classmethod
     def set_array_cell(cls, sheet: XSpreadsheet, range_name: str, values: Table) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range to insert data such as ``A1:E12``.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array_cell(cls, sheet: XSpreadsheet, range_name: str, values: Table, *, styles: Sequence[StyleT]) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range to insert data such as ``A1:E12``.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_array_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Range Object.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -3374,19 +4581,38 @@ class Calc:
     def set_array_cell(
         cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, values: Table, *, styles: Sequence[StyleT]
     ) -> None:
+        """
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Range Object.
+            values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def set_array_cell(cls, *args, **kwargs) -> None:
         """
-        Inserts array of data into spreadsheet
+        Inserts array of data into spreadsheet.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet,
-            range_name (str): Range to insert data such as 'A1:E12',
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range to insert data such as ``A1:E12``.
             cell_obj (CellObj): Range Object,
             values (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
 
         See Also:
             - :ref:`help_calc_format_style_cell`
@@ -3433,27 +4659,76 @@ class Calc:
     @overload
     @classmethod
     def get_array(cls, cell_range: XCellRange) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell range to get data from.
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     @overload
     @classmethod
     def get_array(cls, sheet: XSpreadsheet, range_name: str) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range of data to get such as "A1:E16"
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     @overload
     @classmethod
     def get_array(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_obj (RangeObj): Range object
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     @overload
     @classmethod
     def get_array(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> TupleArray:
+        """
+        Gets Array of data from a spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            cell_obj (CellObj): Cell Object
+
+        Returns:
+            TupleArray: Resulting data array.
+        """
         ...
 
     @classmethod
     def get_array(cls, *args, **kwargs) -> TupleArray:
         """
         Gets Array of data from a spreadsheet.
+
+        |lo_safe|
 
         Args:
             cell_range (XCellRange): Cell range to get data from.
@@ -3526,7 +4801,9 @@ class Calc:
     @staticmethod
     def print_array(vals: Table, format_opt: FormatterTable | None = None) -> None:
         """
-        Prints a 2-Dimensional array to console
+        Prints a 2-Dimensional array to console.
+
+        |lo_safe|
 
         Args:
             vals (Table): A 2-Dimensional array of value such as a list of list or tuple of tuples.
@@ -3570,21 +4847,68 @@ class Calc:
     @overload
     @classmethod
     def get_float_array(cls, cell_range: XCellRange) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell range to get data from.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
         ...
 
     @overload
     @classmethod
     def get_float_array(cls, sheet: XSpreadsheet, range_name: str) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet to get the float values from.
+            range_name (str): Range to get array of floats from such as ``A1:E18``.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
         ...
 
     @overload
     @classmethod
     def get_float_array(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet to get the float values from.
+            range_obj (RangeObj): Range object.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
         ...
 
     @overload
     @classmethod
     def get_float_array(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> FloatTable:
+        """
+        Gets a 2-Dimensional List of floats.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet to get the float values from.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            FloatTable: 2-Dimensional List of floats.
+        """
         ...
 
     @classmethod
@@ -3592,10 +4916,12 @@ class Calc:
         """
         Gets a 2-Dimensional List of floats.
 
+        |lo_safe|
+
         Args:
             cell_range (XCellRange): Cell range to get data from.
             sheet (XSpreadsheet): Spreadsheet to get the float values from.
-            range_name (str): Range to get array of floats from such as 'A1:E18'.
+            range_name (str): Range to get array of floats from such as ``A1:E18``.
             range_obj (RangeObj): Range object.
             cell_obj (CellObj): Cell Object.
 
@@ -3612,10 +4938,12 @@ class Calc:
 
     @classmethod
     def _convert_to_floats_1d(cls, vals: Sequence[object]) -> FloatList:
+        """LO Safe Method."""
         return [cls.convert_to_float(val) for val in vals]
 
     @classmethod
     def _convert_to_floats_2d(cls, vals: Sequence[Sequence[object]]) -> FloatTable:
+        """LO Safe Method."""
         row_len = len(vals)
         if row_len == 0:
             return []
@@ -3630,7 +4958,9 @@ class Calc:
     @classmethod
     def convert_to_floats(cls, vals: Column) -> FloatList:
         """
-        Converts a 1-Dimensional array into List of float
+        Converts a 1-Dimensional array into List of float.
+
+        |lo_safe|
 
         Args:
             vals (Column): Sequence to convert to floats.
@@ -3644,7 +4974,9 @@ class Calc:
     @classmethod
     def convert_to_floats(cls, vals: Row) -> FloatList:
         """
-        Converts a 1-Dimensional array into List of float
+        Converts a 1-Dimensional array into List of float.
+
+        |lo_safe|
 
         Args:
             vals (Row): Sequence to convert to floats.
@@ -3658,7 +4990,9 @@ class Calc:
     @classmethod
     def convert_to_floats(cls, vals: Table) -> FloatTable:
         """
-        Converts a 2-Dimensional array into List of float
+        Converts a 2-Dimensional array into List of float.
+
+        |lo_safe|
 
         Args:
             vals (Table): 2-Dimensional list to convert to floats
@@ -3671,7 +5005,9 @@ class Calc:
     @classmethod
     def convert_to_floats(cls, vals: Row | Table) -> FloatList | FloatTable:
         """
-        Converts a 1d or 2d array into List of float
+        Converts a 1d or 2d array into List of float.
+
+        |lo_safe|
 
         Args:
             vals (Row | Table): List or 2-Dimensional list to convert to floats.
@@ -3700,16 +5036,56 @@ class Calc:
     @overload
     @classmethod
     def set_col(cls, sheet: XSpreadsheet, values: Column, cell_name: str) -> None:
+        """
+        Inserts a column of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Column): Column Data.
+            cell_name (str): Name of Cell to begin the insert such as ``A1``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_col(cls, sheet: XSpreadsheet, values: Column, cell_obj: mCellObj.CellObj) -> None:
+        """
+        Inserts a column of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Column): Column Data.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_col(cls, sheet: XSpreadsheet, values: Column, col_start: int, row_start: int) -> None:
+        """
+        Inserts a column of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Column): Column Data.
+            col_start (int): Zero-base column index.
+            row_start (int): Zero-base row index.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
@@ -3717,13 +5093,18 @@ class Calc:
         """
         Inserts a column of data into spreadsheet.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet.
             values (Column): Column Data.
-            cell_name (str): Name of Cell to begin the insert such as 'A1'.
+            cell_name (str): Name of Cell to begin the insert such as ``A1``.
             cell_obj (CellObj): Cell Object.
             col_start (int): Zero-base column index.
             row_start (int): Zero-base row index.
+
+        Returns:
+            None:
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -3778,33 +5159,78 @@ class Calc:
     @overload
     @classmethod
     def set_row(cls, sheet: XSpreadsheet, values: Row, cell_name: str) -> None:
+        """
+        Inserts a row of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Row): Row Data.
+            cell_name (str): Name of Cell to begin the insert such as ``A1``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_row(cls, sheet: XSpreadsheet, values: Row, cell_obj: mCellObj.CellObj) -> None:
-        ...
-
-    @overload
-    @classmethod
-    def set_row(cls, sheet: XSpreadsheet, values: Row, col_start: int, row_start: int) -> None:
-        ...
-
-    @classmethod
-    def set_row(cls, *args, **kwargs) -> None:
         """
-        Inserts a row of data into spreadsheet
+        Inserts a row of data into spreadsheet.
 
-        Raises:
-            MissingInterfaceError: if unable to obtain interface
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
             values (Row): Row Data.
             cell_obj (CellObj): Cell Object.
-            cell_name (str): Name of Cell to begin the insert such as 'A1'.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @overload
+    @classmethod
+    def set_row(cls, sheet: XSpreadsheet, values: Row, col_start: int, row_start: int) -> None:
+        """
+        Inserts a row of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Row): Row Data.
             col_start (int): Zero-base column index.
             row_start (int): Zero-base row index.
+
+        Returns:
+            None:
+        """
+        ...
+
+    @classmethod
+    def set_row(cls, *args, **kwargs) -> None:
+        """
+        Inserts a row of data into spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            values (Row): Row Data.
+            cell_obj (CellObj): Cell Object.
+            cell_name (str): Name of Cell to begin the insert such as ``A1``.
+            col_start (int): Zero-base column index.
+            row_start (int): Zero-base row index.
+
+        Raises:
+            MissingInterfaceError: if unable to obtain interface.
+
+        Returns:
+            None:
         """
         ordered_keys = (1, 2, 3, 4)
         kargs_len = len(kwargs)
@@ -3864,43 +5290,104 @@ class Calc:
     @overload
     @classmethod
     def get_row(cls, cell_range: XCellRange) -> Row:
+        """
+        Gets a row of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell range to get column data from.
+
+        Returns:
+            Row: 1-Dimensional List of values on success; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_row(cls, sheet: XSpreadsheet, row_idx: int) -> Row:
+        """
+        Gets a row of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            row_idx (int): Zero base row index such as `0` for row ``1``
+
+        Returns:
+            Row: 1-Dimensional List of values on success; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_row(cls, sheet: XSpreadsheet, range_name: str) -> Row:
+        """
+        Gets a row of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range such as ``A1:A12``.
+
+        Returns:
+            Row: 1-Dimensional List of values on success; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_row(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> Row:
+        """
+        Gets a row of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            Row: 1-Dimensional List of values on success; Otherwise, ``None``.
+        """
         ...
 
     @overload
     @classmethod
     def get_row(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> Row:
+        """
+        Gets a row of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            Row: 1-Dimensional List of values on success; Otherwise, ``None``.
+        """
         ...
 
     @classmethod
     def get_row(cls, *args, **kwargs) -> Row:
         """
-        Gets a row of data from spreadsheet
+        Gets a row of data from spreadsheet.
+
+        |lo_safe|
 
         Args:
             cell_range (XCellRange): Cell range to get column data from.
-            row_idx (int): Zero base row index such as `0` for row `1`
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range such as 'A1:A12'
-            cell_obj (CellObj): Cell Object
-            range_obj (RangeObj): Range Object
+            row_idx (int): Zero base row index such as `0` for row ``1``
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range such as ``A1:A12``.
+            cell_obj (CellObj): Cell Object.
+            range_obj (RangeObj): Range Object.
 
         Returns:
-            Row: 1-Dimensional List of values on success; Otherwise, None
+            Row: 1-Dimensional List of values on success; Otherwise, ``None``.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -3968,11 +5455,13 @@ class Calc:
     @staticmethod
     def extract_row(vals: Table, row_idx: int) -> Row:
         """
-        Extracts a row from a table
+        Extracts a row from a table.
+
+        |lo_safe|
 
         Args:
-            vals (Table): Table of data
-            row_idx (int): Row index to extract
+            vals (Table): Table of data.
+            row_idx (int): Row index to extract.
 
         Raises:
             IndexError: If row_idx is out of range.
@@ -3990,37 +5479,110 @@ class Calc:
     @overload
     @classmethod
     def get_col(cls, cell_range: XCellRange) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell range to get column data from.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
         ...
 
     @overload
     @classmethod
     def get_col(cls, sheet: XSpreadsheet, col_name: str) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col_name (str): column name such as ``A``.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
         ...
 
     @overload
     @classmethod
     def get_col(cls, sheet: XSpreadsheet, col_idx: int) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col_idx (int): Zero base column index such as `0` for column ``A``.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
         ...
 
     @overload
     @classmethod
     def get_col(cls, sheet: XSpreadsheet, range_name: str) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range such as ``A1:A12``.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
         ...
 
     @overload
     @classmethod
     def get_col(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
         ...
 
     @overload
     @classmethod
     def get_col(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> List[Any]:
+        """
+        Gets a column of data from spreadsheet.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            List[Any]: 1-Dimensional List.
+        """
         ...
 
     @classmethod
     def get_col(cls, *args, **kwargs) -> List[Any]:
         """
         Gets a column of data from spreadsheet.
+
+        |lo_safe|
 
         Args:
             cell_range (XCellRange): Cell range to get column data from.
@@ -4104,11 +5666,13 @@ class Calc:
     @staticmethod
     def extract_col(vals: Table, col_idx: int) -> List[Any]:
         """
-        Extract column data and returns as a list
+        Extract column data and returns as a list.
+
+        |lo_safe|
 
         Args:
-            vals (Table): 2-d table of data
-            col_idx (int): column index to extract
+            vals (Table): 2-d table of data.
+            col_idx (int): column index to extract.
 
         Returns:
             List[Any]: Column data if found; Otherwise, empty list.
@@ -4130,6 +5694,8 @@ class Calc:
         """
         Gets the index of the column of the left edge of the used sheet range.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet
 
@@ -4145,8 +5711,10 @@ class Calc:
         """
         Gets the index of the column of the right edge of the used sheet range.
 
+        |lo_safe|
+
         Args:
-            sheet (XSpreadsheet): Spreadsheet
+            sheet (XSpreadsheet): Spreadsheet.
 
         Returns:
             int: Zero based index of last column used on the sheet.
@@ -4160,8 +5728,10 @@ class Calc:
         """
         Gets the index of the row of the top edge of the used sheet range.
 
+        |lo_safe|
+
         Args:
-            sheet (XSpreadsheet): Spreadsheet
+            sheet (XSpreadsheet): Spreadsheet.
 
         Returns:
             int: Zero based index of first row used on the sheet.
@@ -4175,8 +5745,10 @@ class Calc:
         """
         Gets the index of the row of the bottom edge of the used sheet range.
 
+        |lo_safe|
+
         Args:
-            sheet (XSpreadsheet): Spreadsheet
+            sheet (XSpreadsheet): Spreadsheet.
 
         Returns:
             int: Zero based index of last row used on the sheet.
@@ -4192,7 +5764,9 @@ class Calc:
     @classmethod
     def set_date(cls, sheet: XSpreadsheet, cell_name: str | mCellObj.CellObj, day: int, month: int, year: int) -> None:
         """
-        Writes a date with standard date format into a spreadsheet
+        Writes a date with standard date format into a spreadsheet.
+
+        |lo_unsafe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
@@ -4225,16 +5799,18 @@ class Calc:
         """
         Adds an annotation to a cell and makes the annotation visible.
 
+        |lo_unsafe|
+
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cell to add annotation such as 'A1'
-            msg (str): Annotation Text
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to add annotation such as ``A1``.
+            msg (str): Annotation Text.
 
         Raises:
-            MissingInterfaceError: If interface is missing
+            MissingInterfaceError: If interface is missing.
 
         Returns:
-            XSheetAnnotation: Cell annotation that was added
+            XSheetAnnotation: Cell annotation that was added.
         """
         ...
 
@@ -4242,19 +5818,21 @@ class Calc:
     @classmethod
     def add_annotation(cls, sheet: XSpreadsheet, cell_name: str, msg: str, is_visible: bool) -> XSheetAnnotation:
         """
-        Adds an annotation to a cell
+        Adds an annotation to a cell.
+
+        |lo_unsafe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cell to add annotation such as 'A1'
-            msg (str): Annotation Text
-            set_visible (bool): Determines if the annotation is set visible
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to add annotation such as ``A1``.
+            msg (str): Annotation Text.
+            set_visible (bool): Determines if the annotation is set visible.
 
         Raises:
-            MissingInterfaceError: If interface is missing
+            MissingInterfaceError: If interface is missing.
 
         Returns:
-            XSheetAnnotation: Cell annotation that was added
+            XSheetAnnotation: Cell annotation that was added.
         """
         ...
 
@@ -4263,17 +5841,19 @@ class Calc:
         """
         Adds an annotation to a cell and makes the annotation visible.
 
+        |lo_unsafe|
+
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_name (str): Name of cell to add annotation such as 'A1'
-            msg (str): Annotation Text
-            set_visible (bool): Determines if the annotation is set visible
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Name of cell to add annotation such as ``A1``.
+            msg (str): Annotation Text.
+            set_visible (bool): Determines if the annotation is set visible.
 
         Raises:
-            MissingInterfaceError: If interface is missing
+            MissingInterfaceError: If interface is missing.
 
         Returns:
-            XSheetAnnotation: Cell annotation that was added
+            XSheetAnnotation: Cell annotation that was added.
         """
         # add the annotation
         addr = cls.get_cell_address(sheet=sheet, cell_name=cell_name)
@@ -4293,7 +5873,9 @@ class Calc:
     @classmethod
     def get_annotation(cls, sheet: XSpreadsheet, cell_name: str | mCellObj.CellObj) -> XSheetAnnotation:
         """
-        Gets an annotation of a cell
+        Gets an annotation of a cell.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -4317,6 +5899,8 @@ class Calc:
         """
         Gets text of an annotation for a cell.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet
             cell_name (str | CellObj): Cell name
@@ -4337,74 +5921,164 @@ class Calc:
     # region    get_cell()
     @classmethod
     def _get_cell_sheet_col_row(cls, sheet: XSpreadsheet, col: int, row: int) -> XCell:
+        """LO Safe Method"""
         return sheet.getCellByPosition(col, row)
 
     @classmethod
     def _get_cell_sheet_addr(cls, sheet: XSpreadsheet, addr: CellAddress) -> XCell:
+        """LO Safe Method"""
         # not using Sheet value in addr
         return cls._get_cell_sheet_col_row(sheet=sheet, col=addr.Column, row=addr.Row)
 
     @classmethod
     def _get_cell_sheet_cell(cls, sheet: XSpreadsheet, cell_name: str) -> XCell:
+        """LO Safe Method"""
         cell_range = sheet.getCellRangeByName(cell_name)
         return cls._get_cell_cell_rng(cell_range=cell_range, col=0, row=0)
 
     @classmethod
     def _get_cell_cell_rng(cls, cell_range: XCellRange, col: int, row: int) -> XCell:
+        """LO Safe Method"""
         return cell_range.getCellByPosition(col, row)
 
     @overload
     @classmethod
     def get_cell(cls, cell: XCell) -> XCell:
+        """
+        Gets a cell.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            XCell: cell.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, sheet: XSpreadsheet, addr: CellAddress) -> XCell:
+        """
+        Gets a cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            XCell: cell.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, sheet: XSpreadsheet, cell_name: str) -> XCell:
+        """
+        Gets a cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell Name such as ``A1``.
+
+        Returns:
+            XCell: cell.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> XCell:
+        """
+        Gets a cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj: (CellObj): Cell object.
+
+        Returns:
+            XCell: cell.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, sheet: XSpreadsheet, col: int, row: int) -> XCell:
+        """
+        Gets a cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell column.
+            row (int): cell row.
+
+        Returns:
+            XCell: cell.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, cell_range: XCellRange) -> XCell:
+        """
+        Gets a cell.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            XCell: cell.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell(cls, cell_range: XCellRange, col: int, row: int) -> XCell:
+        """
+        Gets a cell.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            col (int): Cell column.
+            row (int): cell row.
+
+        Returns:
+            XCell: cell.
+        """
         ...
 
     @classmethod
     def get_cell(cls, *args, **kwargs) -> XCell:
         """
-        Gets a cell
+        Gets a cell.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Cell Address
-            cell_name (str): Cell Name such as 'A1'
-            cell_obj: (CellObj): Cell object
-            cell_range (XCellRange): Cell Range
-            col (int): Cell column
-            row (int): cell row
-            cell (XCell): Cell
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+            cell_name (str): Cell Name such as ``A1``.
+            cell_obj: (CellObj): Cell object.
+            cell_range (XCellRange): Cell Range.
+            col (int): Cell column.
+            row (int): cell row.
+            cell (XCell): Cell.
 
         Returns:
-            XCell: cell
+            XCell: cell.
 
         Note:
             if ``cell`` is passed, it is returned verbatim.
@@ -4483,7 +6157,9 @@ class Calc:
     @staticmethod
     def is_cell_range_name(s: str) -> bool:
         """
-        Gets if is a cell name or a cell range
+        Gets if is a cell name or a cell range.
+
+        |lo_safe|
 
         Args:
             s (str): cell name such as 'A1' or range name such as 'B3:E7'
@@ -4496,7 +6172,9 @@ class Calc:
     @staticmethod
     def is_single_cell_range(cr_addr: CellRangeAddress) -> bool:
         """
-        Gets if a cell address is a single cell or a range
+        Gets if a cell address is a single cell or a range.
+
+        |lo_safe|
 
         Args:
             cr_addr (CellRangeAddress): cell range address
@@ -4509,7 +6187,9 @@ class Calc:
     @staticmethod
     def is_single_column_range(cr_addr: CellRangeAddress) -> bool:
         """
-        Gets if a cell address is a single column or multi-column
+        Gets if a cell address is a single column or multi-column.
+
+        |lo_safe|
 
         Args:
             cr_addr (CellRangeAddress): cell range address
@@ -4527,7 +6207,9 @@ class Calc:
     @staticmethod
     def is_single_row_range(cr_addr: CellRangeAddress) -> bool:
         """
-        Gets if a cell address is a single row or multi-row
+        Gets if a cell address is a single row or multi-row.
+
+        |lo_safe|
 
         Args:
             cr_addr (CellRangeAddress): cell range address
@@ -4545,6 +6227,7 @@ class Calc:
     # region    get_cell_range()
     @classmethod
     def _get_cell_range_addr(cls, sheet: XSpreadsheet, addr: CellRangeAddress) -> XCellRange:
+        """LO Safe Method"""
         return cls._get_cell_range_col_row(
             sheet=sheet,
             start_col=addr.StartColumn,
@@ -4555,6 +6238,7 @@ class Calc:
 
     @staticmethod
     def _get_cell_range_rng_name(sheet: XSpreadsheet, range_name: str) -> XCellRange:
+        """LO Safe Method"""
         cell_range = sheet.getCellRangeByName(range_name)
         if cell_range is None:
             raise Exception(f"Could not access cell range: {range_name}")
@@ -4564,6 +6248,7 @@ class Calc:
     def _get_cell_range_col_row(
         sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> XCellRange:
+        """LO Safe Method"""
         if start_col > end_col:
             # swap
             start_col, end_col = end_col, start_col
@@ -4581,26 +6266,85 @@ class Calc:
     @overload
     @classmethod
     def get_cell_range(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
+        """
+        Gets a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+
+        Returns:
+            XCellRange: Cell range
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_range(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> XCellRange:
+        """
+        Gets a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            XCellRange: Cell range
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_range(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> XCellRange:
+        """
+        Gets a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            XCellRange: Cell range
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange:
+        """
+        Gets a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+
+        Returns:
+            XCellRange: Cell range
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_range(cls, cell_range: XCellRange) -> XCellRange:
+        """
+        Gets a cell range.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+
+        Returns:
+            XCellRange: Cell range
+        """
         ...
 
     @overload
@@ -4608,12 +6352,29 @@ class Calc:
     def get_cell_range(
         cls, sheet: XSpreadsheet, col_start: int, row_start: int, col_end: int, row_end: int
     ) -> XCellRange:
+        """
+        Gets a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+
+        Returns:
+            XCellRange: Cell range
+        """
         ...
 
     @classmethod
     def get_cell_range(cls, *args, **kwargs) -> XCellRange:
         """
-        Gets a cell range
+        Gets a cell range.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document.
@@ -4733,36 +6494,85 @@ class Calc:
     @overload
     @classmethod
     def find_used_range(cls, sheet: XSpreadsheet) -> XCellRange:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+
+        Returns:
+            XCellRange: Cell range.
+        """
         ...
 
     @overload
     @classmethod
     def find_used_range(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+
+        Returns:
+            XCellRange: Cell range.
+        """
         ...
 
     @overload
     @classmethod
     def find_used_range(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> XCellRange:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            XCellRange: Cell range.
+        """
         ...
 
     @overload
     @classmethod
     def find_used_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> XCellRange:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+
+        Returns:
+            XCellRange: Cell range.
+        """
         ...
 
     @classmethod
     def find_used_range(cls, *args, **kwargs) -> XCellRange:
         """
-        Find used range
+        Find used range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as 'A1:D5'
-            range_obj (RangeObj): Range Object
-            cr_addr (CellRangeAddress): Cell range Address
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cr_addr (CellRangeAddress): Cell range Address.
 
         Returns:
-            XCellRange: Cell range
+            XCellRange: Cell range.
 
         See Also:
             - :ref:`ch20_finding_with_cursors`
@@ -4815,36 +6625,85 @@ class Calc:
     @overload
     @classmethod
     def find_used_range_obj(cls, sheet: XSpreadsheet) -> mRngObj.RangeObj:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def find_used_range_obj(cls, sheet: XSpreadsheet, range_name: str) -> mRngObj.RangeObj:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def find_used_range_obj(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def find_used_range_obj(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> mRngObj.RangeObj:
+        """
+        Find used range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @classmethod
     def find_used_range_obj(cls, *args, **kwargs) -> mRngObj.RangeObj:
         """
-        Find used range
+        Find used range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet Document
-            range_name (str): Range Name such as 'A1:D5'
-            range_obj (RangeObj): Range Object
-            cr_addr (CellRangeAddress): Cell range Address
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            range_obj (RangeObj): Range Object.
+            cr_addr (CellRangeAddress): Cell range Address.
 
         Returns:
-            RangeObj: Range object
+            RangeObj: Range object.
 
         .. versionadded:: 0.9.0
         """
@@ -4857,7 +6716,9 @@ class Calc:
     @staticmethod
     def find_used_cursor(cursor: XSheetCellCursor) -> XCellRange:
         """
-        Find used cursor
+        Find used cursor.
+
+        |lo_safe|
 
         Args:
             cursor (XSheetCellCursor): Sheet Cursor
@@ -4878,17 +6739,19 @@ class Calc:
     @staticmethod
     def get_col_range(sheet: XSpreadsheet, idx: int) -> XCellRange:
         """
-        Get Column by index
+        Get Column by index.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            idx (int): Zero-based column index
+            sheet (XSpreadsheet): Spreadsheet.
+            idx (int): Zero-based column index.
 
         Raises:
-            MissingInterfaceError: if unable to find interface
+            MissingInterfaceError: if unable to find interface.
 
         Returns:
-            XCellRange: Cell range
+            XCellRange: Cell range.
         """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         if cr_range is None:
@@ -4905,17 +6768,19 @@ class Calc:
     @staticmethod
     def get_row_range(sheet: XSpreadsheet, idx: int) -> XCellRange:
         """
-        Get Row by index
+        Get Row by index.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            idx (int): Zero-based column index
+            sheet (XSpreadsheet): Spreadsheet.
+            idx (int): Zero-based column index.
 
         Raises:
-            MissingInterfaceError: if unable to find interface
+            MissingInterfaceError: if unable to find interface.
 
         Returns:
-            XCellRange: Cell range
+            XCellRange: Cell range.
         """
         cr_range = mLo.Lo.qi(XColumnRowRange, sheet)
         if cr_range is None:
@@ -4933,36 +6798,120 @@ class Calc:
     @overload
     @classmethod
     def get_cell_protection(cls, cell: XCell) -> CellProtection:
+        """
+        Gets cell protection.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_protection(cls, sheet: XSpreadsheet, addr: CellAddress) -> CellProtection:
+        """
+        Gets cell protection.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_protection(cls, sheet: XSpreadsheet, cell_name: str) -> CellProtection:
+        """
+        Gets cell protection.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell Name such as ``A1``.
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_protection(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> CellProtection:
+        """
+        Gets cell protection.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj: (CellObj): Cell object.
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_protection(cls, sheet: XSpreadsheet, col: int, row: int) -> CellProtection:
+        """
+        Gets cell protection.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell column.
+            row (int): cell row.
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_protection(cls, cell_range: XCellRange) -> CellProtection:
+        """
+        Gets cell protection.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_protection(cls, cell_range: XCellRange, col: int, row: int) -> CellProtection:
+        """
+        Gets cell protection.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            col (int): Cell column.
+            row (int): cell row.
+
+        Returns:
+            com.sun.star.util.CellProtection: Cell Protection.
+        """
         ...
 
     @classmethod
@@ -4970,18 +6919,20 @@ class Calc:
         """
         Gets cell protection.
 
+        |lo_safe|
+
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Cell Address
-            cell_name (str): Cell Name such as 'A1'
-            cell_obj: (CellObj): Cell object
-            cell_range (XCellRange): Cell Range
-            col (int): Cell column
-            row (int): cell row
-            cell (XCell): Cell
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+            cell_name (str): Cell Name such as ``A1``.
+            cell_obj: (CellObj): Cell object.
+            cell_range (XCellRange): Cell Range.
+            col (int): Cell column.
+            row (int): cell row.
+            cell (XCell): Cell.
 
         Returns:
-            com.sun.star.util.CellProtection: Cell Protection
+            com.sun.star.util.CellProtection: Cell Protection.
 
         Warning:
             Cell Protection is only valid after the current sheet has been protected.
@@ -5002,42 +6953,138 @@ class Calc:
     @overload
     @classmethod
     def is_cell_protected(cls, cell: XCell) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Sheet Cell.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_cell_protected(cls, sheet: XSpreadsheet, addr: CellAddress) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr: (CellAddress): Cell address.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_cell_protected(cls, sheet: XSpreadsheet, cell_name: str) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name: (str): Cell name.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_cell_protected(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj: (CellObj): Cell object.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_cell_protected(cls, sheet: XSpreadsheet, col: int, row: int) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell column.
+            row (int): cell row.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_cell_protected(cls, cell_range: XCellRange) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_cell_protected(cls, cell_range: XCellRange, col: int, row: int) -> bool:
+        """
+        Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            col (int): Column index.
+            row (int): Row index.
+
+        Returns:
+            bool: ``True`` if protected; Otherwise, ``False``
+        """
         ...
 
     @classmethod
     def is_cell_protected(cls, *args, **kwargs) -> bool:
         """
         Gets whether a cell is protected.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Sheet Cell.
+            sheet (XSpreadsheet): Spreadsheet.
+            addr: (CellAddress): Cell address.
+            cell_name: (str): Cell name.
+            cell_obj: (CellObj): Cell object.
+            col (int): Cell column.
+            row (int): cell row.
+            cell_range (XCellRange): Cell Range.
 
         Returns:
             bool: ``True`` if protected; Otherwise, ``False``
@@ -5064,16 +7111,58 @@ class Calc:
     @overload
     @classmethod
     def get_cell_range_positions(cls, range_obj: mRngObj.RangeObj) -> Tuple[Point, Point]:
+        """
+        Gets Cell range as a tuple of Point, Point.
+
+        - First Point.X is start column index, Point.Y is start row index.
+        - Second Point.X is end column index, Point.Y is end row index.
+
+        |lo_safe|
+
+        Args:
+            range_obj (RangeObj): Range object.
+
+        Returns:
+            Tuple[Point, Point]: Range as tuple. Point values are zero-based indexes.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_range_positions(cls, range_values: mRngValues.RangeValues) -> Tuple[Point, Point]:
+        """
+        Gets Cell range as a tuple of Point, Point.
+
+        - First Point.X is start column index, Point.Y is start row index.
+        - Second Point.X is end column index, Point.Y is end row index.
+
+        |lo_safe|
+
+        Args:
+            range_values (RangeValues): Range values.
+
+        Returns:
+            Tuple[Point, Point]: Range as tuple. Point values are zero-based indexes.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_range_positions(cls, range_name: str) -> Tuple[Point, Point]:
+        """
+        Gets Cell range as a tuple of Point, Point.
+
+        - First Point.X is start column index, Point.Y is start row index.
+        - Second Point.X is end column index, Point.Y is end row index.
+
+        |lo_safe|
+
+        Args:
+            range_name (str): Range name such as ``A1:C8``.
+
+        Returns:
+            Tuple[Point, Point]: Range as tuple. Point values are zero-based indexes.
+        """
         ...
 
     @classmethod
@@ -5084,8 +7173,10 @@ class Calc:
         - First Point.X is start column index, Point.Y is start row index.
         - Second Point.X is end column index, Point.Y is end row index.
 
+        |lo_safe|
+
         Args:
-            range_name (str): Range name such as 'A1:C8'
+            range_name (str): Range name such as ``A1:C8``.
             range_obj (RangeObj): Range object
             range_values (RangeValues): Range values
 
@@ -5128,6 +7219,8 @@ class Calc:
         - ``Point.X`` is column zero-based index.
         - ``Point.Y`` is row zero-based index.
 
+        |lo_safe|
+
         Args:
             cell_name (str | CellObj): Cell name
 
@@ -5147,6 +7240,8 @@ class Calc:
 
         This property contains the absolute position in the whole sheet,
         not the position in the visible area.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -5174,6 +7269,8 @@ class Calc:
         Converts a Column Name into an int.
         Results are zero based so ``a`` converts to ``0``
 
+        |lo_safe|
+
         Args:
             col_str (str):Case insensitive column name such as 'a' or 'AB'
 
@@ -5186,7 +7283,9 @@ class Calc:
     @staticmethod
     def row_string_to_number(row_str: str) -> int:
         """
-        Converts a string containing an int into an int
+        Converts a string containing an int into an int.
+
+        |lo_safe|
 
         Args:
             row_str (str): string to convert
@@ -5208,11 +7307,38 @@ class Calc:
     @overload
     @classmethod
     def get_safe_rng_str(cls, range_name: str) -> str:
+        """
+        Gets safe range string.
+
+        If range name is out of order then correct order is returned.
+
+        |lo_safe|
+
+        Args:
+            range_name (str): range name such as ``A1.B7`` or ``Sheet1.A1.B7``.
+
+        Returns:
+            str: Range name as string with correct column an row order.
+        """
         ...
 
     @overload
     @classmethod
     def get_safe_rng_str(cls, range_name: str, allow_cell_name: bool) -> str:
+        """
+        Gets safe range string.
+
+        If range name is out of order then correct order is returned.
+
+        |lo_safe|
+
+        Args:
+            range_name (str): range name such as ``A1.B7`` or ``Sheet1.A1.B7``.
+            allow_cell_name: Determines if ``range_name`` accepts cell name input.
+
+        Returns:
+            str: Range name as string with correct column an row order.
+        """
         ...
 
     @classmethod
@@ -5222,13 +7348,16 @@ class Calc:
 
         If range name is out of order then correct order is returned.
 
+
         For instance:
 
             - ``A7:B2`` returns ``A2:B7``
             - ``R7:B22`` returns ``B7:R22``
 
+        |lo_safe|
+
         Args:
-            range_name (str): range name such as ``A1.B7`` or ``Sheet1.A1.B7``
+            range_name (str): range name such as ``A1.B7`` or ``Sheet1.A1.B7``.
             allow_cell_name: Determines if ``range_name`` accepts cell name input.
 
         Returns:
@@ -5261,6 +7390,7 @@ class Calc:
 
     @staticmethod
     def _get_cell_address_cell(cell: XCell) -> CellAddress:
+        """LO Safe Method"""
         addr = mLo.Lo.qi(XCellAddressable, cell)
         if addr is None:
             raise mEx.MissingInterfaceError(XCellAddressable)
@@ -5268,6 +7398,7 @@ class Calc:
 
     @classmethod
     def _get_cell_address_sheet(cls, sheet: XSpreadsheet, cell_name: str) -> CellAddress:
+        """LO Safe Method"""
         cell_range = sheet.getCellRangeByName(cell_name)
         start_cell = cls._get_cell_cell_rng(cell_range=cell_range, col=0, row=0)
         return cls._get_cell_address_cell(start_cell)
@@ -5275,32 +7406,94 @@ class Calc:
     @overload
     @classmethod
     def get_cell_address(cls, cell: XCell) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_address(cls, sheet: XSpreadsheet, cell_name: str) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell name such as ``A1``.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_address(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj (CellObj): Cell object.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_address(cls, sheet: XSpreadsheet, addr: CellAddress) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_address(cls, sheet: XSpreadsheet, col: int, row: int) -> CellAddress:
+        """
+        Gets Cell Address.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Zero-base column index.
+            row (int): Zero-base row index.
+
+        Returns:
+            CellAddress: Cell Address.
+        """
         ...
 
     @classmethod
     def get_cell_address(cls, *args, **kwargs) -> CellAddress:
         """
         Gets Cell Address.
+
+        |lo_safe|
 
         Args:
             cell (XCell): Cell.
@@ -5369,26 +7562,63 @@ class Calc:
     # region    get_address()
     @classmethod
     def _get_address_cell(cls, cell_range: XCellRange) -> CellRangeAddress:
+        """LO Safe Method"""
         addr = mLo.Lo.qi(XCellRangeAddressable, cell_range, True)
         return addr.getRangeAddress()  # type: ignore
 
     @classmethod
     def _get_address_sht_rng(cls, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress:
+        """LO Safe Method"""
         return cls._get_address_cell(cls._get_cell_range_rng_name(sheet=sheet, range_name=range_name))
 
     @overload
     @classmethod
     def get_address(cls, cell_range: XCellRange) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
         ...
 
     @overload
     @classmethod
     def get_address(cls, sheet: XSpreadsheet, range_name: str) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range name such as ``A1:D7``.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
         ...
 
     @overload
     @classmethod
     def get_address(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
         ...
 
     @overload
@@ -5396,6 +7626,21 @@ class Calc:
     def get_address(
         cls, sheet: XSpreadsheet, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> CellRangeAddress:
+        """
+        Gets Range Address.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
+
+        Returns:
+            CellRangeAddress: Cell Range Address.
+        """
         ...
 
     @classmethod
@@ -5403,10 +7648,12 @@ class Calc:
         """
         Gets Range Address.
 
+        |lo_safe|
+
         Args:
             cell_range (XCellRange): Cell Range.
             sheet (XSpreadsheet): Spreadsheet.
-            range_name (str): Range name such as 'A1:D7'.
+            range_name (str): Range name such as ``A1:D7``.
             range_obj (RangeObj): Range Object.
             start_col (int): Zero-base start column index.
             start_row (int): Zero-base start row index.
@@ -5489,10 +7736,12 @@ class Calc:
     @classmethod
     def print_cell_address(cls, cell: XCell) -> None:
         """
-        Prints Cell to console such as ``Cell: Sheet1.D3``
+        Prints Cell to console such as ``Cell: Sheet1.D3``.
+
+        |lo_safe|
 
         Args:
-            cell (XCell): cell
+            cell (XCell): cell.
         """
         ...
 
@@ -5500,10 +7749,12 @@ class Calc:
     @classmethod
     def print_cell_address(cls, addr: CellAddress) -> None:
         """
-        Prints Cell to console such as ``Cell: Sheet1.D3``
+        Prints Cell to console such as ``Cell: Sheet1.D3``.
 
-         Args:
-             addr (CellAddress): Cell Address
+        |lo_safe|
+
+        Args:
+            addr (CellAddress): Cell Address.
         """
         ...
 
@@ -5511,6 +7762,8 @@ class Calc:
     def print_cell_address(cls, *args, **kwargs) -> None:
         """
         Prints Cell to console such as ``Cell: Sheet1.D3``
+
+        |lo_safe|
 
         Args:
             cell (XCell): cell
@@ -5562,10 +7815,12 @@ class Calc:
     @classmethod
     def print_address(cls, cell_range: XCellRange) -> None:
         """
-        Prints Cell range to console such as ``'Range: Sheet1.C3:F22``
+        Prints Cell range to console such as ``'Range: Sheet1.C3:F22``.
+
+        |lo_safe|
 
         Args:
-            cell_range (XCellRange): Cell range
+            cell_range (XCellRange): Cell range.
         """
         ...
 
@@ -5573,21 +7828,25 @@ class Calc:
     @classmethod
     def print_address(cls, cr_addr: CellRangeAddress) -> None:
         """
-        Prints Cell range to console such as ``'Range: Sheet1.C3:F22``
+        Prints Cell range to console such as ``'Range: Sheet1.C3:F22``.
+
+        |lo_safe|
 
         Args:
-            cr_addr (CellRangeAddress): Cell Address
+            cr_addr (CellRangeAddress): Cell Address.
         """
         ...
 
     @classmethod
     def print_address(cls, *args, **kwargs) -> None:
         """
-        Prints Cell range to console such as ``Range: Sheet1.C3:F22``
+        Prints Cell range to console such as ``Range: Sheet1.C3:F22``.
+
+        |lo_safe|
 
         Args:
-            cell_range (XCellRange): Cell range
-            cr_addr (CellRangeAddress): Cell Address
+            cell_range (XCellRange): Cell range.
+            cr_addr (CellRangeAddress): Cell Address.
 
         Returns:
             None:
@@ -5638,7 +7897,9 @@ class Calc:
     @classmethod
     def print_addresses(cls, *cr_addrs: CellRangeAddress) -> None:
         """
-        Prints Address for one or more CellRangeAddress
+        Prints Address for one or more CellRangeAddress.
+
+        |lo_safe|
 
         Returns:
             None:
@@ -5656,27 +7917,54 @@ class Calc:
     @overload
     @staticmethod
     def get_cell_series(sheet: XSpreadsheet, range_name: str) -> XCellSeries:
+        """
+        Get cell series for a range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range name such as ``A1:B7``.
+
+        Returns:
+            XCellSeries: Cell series.
+        """
         ...
 
     @overload
     @staticmethod
     def get_cell_series(sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> XCellSeries:
+        """
+        Get cell series for a range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range object.
+
+        Returns:
+            XCellSeries: Cell series.
+        """
         ...
 
     @staticmethod
     def get_cell_series(*args, **kwargs) -> XCellSeries:
         """
-        Get cell series for a range
+        Get cell series for a range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range name such as 'A1:B7'
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range name such as ``A1:B7``.
+            range_obj (RangeObj): Range object.
 
         Raises:
-            MissingInterfaceError: if unable to obtain interface
+            MissingInterfaceError: if unable to obtain interface.
 
         Returns:
-            XCellSeries: Cell series
+            XCellSeries: Cell series.
 
         See Also:
             :ref:`ch24_generating_data`
@@ -5721,14 +8009,16 @@ class Calc:
     @staticmethod
     def is_equal_addresses(addr1: CellAddress, addr2: CellAddress) -> bool:
         """
-        Gets if two instances of CellAddress are equal
+        Gets if two instances of CellAddress are equal.
+
+        |lo_safe|
 
         Args:
-            addr1 (CellAddress): Cell Address
-            addr2 (CellAddress): Cell Address
+            addr1 (CellAddress): Cell Address.
+            addr2 (CellAddress): Cell Address.
 
         Returns:
-            bool: True if equal; Otherwise, False
+            bool: ``True`` if equal; Otherwise, ``False``.
         """
         ...
 
@@ -5736,28 +8026,32 @@ class Calc:
     @staticmethod
     def is_equal_addresses(addr1: CellRangeAddress, addr2: CellRangeAddress) -> bool:
         """
-        Gets if two instances of CellRangeAddress are equal
+        Gets if two instances of CellRangeAddress are equal.
+
+        |lo_safe|
 
         Args:
-            addr1 (CellRangeAddress): Cell Range Address
-            addr2 (CellRangeAddress): Cell Range Address
+            addr1 (CellRangeAddress): Cell Range Address.
+            addr2 (CellRangeAddress): Cell Range Address.
 
         Returns:
-            bool: True if equal; Otherwise, False
+            bool: ``True`` if equal; Otherwise, ``False``.
         """
         ...
 
     @staticmethod
-    def is_equal_addresses(addr1: object, addr2: object) -> bool:
+    def is_equal_addresses(addr1: Any, addr2: Any) -> bool:
         """
-        Gets if two instances of CellRangeAddress are equal
+        Gets if two instances of CellRangeAddress are equal.
+
+        |lo_safe|
 
         Args:
-            addr1 (CellAddress | CellRangeAddress): Cell address or cell range address
-            addr2 (CellAddress | CellRangeAddress): Cell address or cell range address
+            addr1 (CellAddress | CellRangeAddress): Cell address or cell range address.
+            addr2 (CellAddress | CellRangeAddress): Cell address or cell range address.
 
         Returns:
-            bool: True if equal; Otherwise, False
+            bool: ``True`` if equal; Otherwise, ``False``.
         """
         if addr1 is None or addr2 is None:
             return False
@@ -5794,29 +8088,33 @@ class Calc:
     # region    get_range_str()
     @classmethod
     def _get_range_str_cell_rng_sht(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
-        """return as str using the name taken from the sheet works, Sheet1.A1:B2"""
+        """Lo Safe Method. Return as str using the name taken from the sheet works, Sheet1.A1:B2"""
         return cls._get_range_str_cr_addr_sht(cls._get_address_cell(cell_range=cell_range), sheet)
 
     @classmethod
     def _get_range_str_cr_addr_sht(cls, cr_addr: CellRangeAddress, sheet: XSpreadsheet) -> str:
-        """return as str using the name taken from the sheet works, Sheet1.A1:B2"""
+        """LO Safe Method. Return as str using the name taken from the sheet works, Sheet1.A1:B2"""
         return f"{cls.get_sheet_name(sheet=sheet)}.{cls._get_range_str_cr_addr(cr_addr)}"
 
     @classmethod
     def _get_range_str_cell_rng(cls, cell_range: XCellRange) -> str:
-        """return as str, A1:B2"""
+        """Lo Safe Method. Return as str, A1:B2"""
         return cls._get_range_str_cr_addr(cls._get_address_cell(cell_range=cell_range))
 
     @classmethod
     def _get_range_str_cr_addr(cls, cr_addr: CellRangeAddress) -> str:
-        """return as str, A1:B2"""
+        """LO Safe Method. Return as str, A1:B2"""
         result = f"{cls._get_cell_str_col_row(cr_addr.StartColumn, cr_addr.StartRow)}:"
         result += f"{cls._get_cell_str_col_row(cr_addr.EndColumn, cr_addr.EndRow)}"
         return result
 
     @classmethod
     def _get_range_str_col_row(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> str:
-        """return as str, A1:B2"""
+        """
+        LO Safe Method.
+
+        Return as str, A1:B2
+        """
         c_start = col_start
         c_end = col_end
         r_start = row_start
@@ -5832,50 +8130,167 @@ class Calc:
     @overload
     @classmethod
     def get_range_str(cls, cell_range: XCellRange) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        If ``sheet`` is included the format ``Sheet1.A1:B2`` is returned; Otherwise,
+        ``A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, range_obj: mRngObj.RangeObj) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        If ``sheet`` is included the format ``Sheet1.A1:B2`` is returned; Otherwise,
+        ``A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            range_obj (RangeObj): Range Object
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, cr_addr: CellRangeAddress) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        A ``A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, cell_obj: mCellObj.CellObj) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        A ``A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            cell_obj (CellObj): Cell Object
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        A ``Sheet1.A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, cr_addr: CellRangeAddress, sheet: XSpreadsheet) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        A ``Sheet1.A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        A ``A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Zero-based start column index
+            row_start (int): Zero-based start row index
+            col_end (int): Zero-based end column index
+            row_end (int): Zero-based end row index
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @overload
     @classmethod
     def get_range_str(cls, col_start: int, row_start: int, col_end: int, row_end: int, sheet: XSpreadsheet) -> str:
+        """
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
+
+        A ``Sheet1.A1:B2`` format is returned.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Zero-based start column index
+            row_start (int): Zero-based start row index
+            col_end (int): Zero-based end column index
+            row_end (int): Zero-based end row index
+            sheet (XSpreadsheet): Spreadsheet
+
+        Returns:
+            str: range as string
+        """
         ...
 
     @classmethod
     def get_range_str(cls, *args, **kwargs) -> str:
         """
-        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``
+        Gets the range as a string in format of ``A1:B2`` or ``Sheet1.A1:B2``.
 
         If ``sheet`` is included the format ``Sheet1.A1:B2`` is returned; Otherwise,
         ``A1:B2`` format is returned.
+
+        |lo_safe|
 
         Args:
             cell_range (XCellRange): Cell Range
@@ -5990,36 +8405,117 @@ class Calc:
     @overload
     @classmethod
     def get_range_obj(cls, range_name: str) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            range_name (str): Cell range as string.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def get_range_obj(cls, cell_range: XCellRange) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def get_range_obj(cls, cr_addr: CellRangeAddress) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def get_range_obj(cls, range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            range_obj (RangeObj): Range Object. If passed in the same RangeObj is returned.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def get_range_obj(cls, cell_obj: mCellObj.CellObj) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def get_range_obj(cls, cell_range: XCellRange, sheet: XSpreadsheet) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            sheet (XSpreadsheet): Spreadsheet.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
     @classmethod
     def get_range_obj(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @overload
@@ -6027,12 +8523,29 @@ class Calc:
     def get_range_obj(
         cls, col_start: int, row_start: int, col_end: int, row_end: int, sheet: XSpreadsheet
     ) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+            sheet (XSpreadsheet): Spreadsheet.
+
+        Returns:
+            RangeObj: Range object.
+        """
         ...
 
     @classmethod
     def get_range_obj(cls, *args, **kwargs) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
+
+        |lo_safe|
 
         Args:
             range_name (str): Cell range as string.
@@ -6076,38 +8589,96 @@ class Calc:
     @overload
     @classmethod
     def get_range_size(cls, range_obj: mRngObj.RangeObj) -> Size:
+        """
+        Gets range size.
+
+        |lo_safe|
+
+        Args:
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            Size: Size, Width is number of Columns and Height is number of Rows.
+
+        .. versionadded:: 0.8.2
+        """
         ...
 
     @overload
     @classmethod
     def get_range_size(cls, cell_range: XCellRange) -> Size:
+        """
+        Gets range size.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            Size: Size, Width is number of Columns and Height is number of Rows.
+
+        .. versionadded:: 0.8.2
+        """
         ...
 
     @overload
     @classmethod
     def get_range_size(cls, cr_addr: CellRangeAddress) -> Size:
+        """
+        Gets range size.
+
+        |lo_safe|
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address.
+
+        Returns:
+            Size: Size, Width is number of Columns and Height is number of Rows.
+
+        .. versionadded:: 0.8.2
+        """
         ...
 
     @overload
     @classmethod
     def get_range_size(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> Size:
+        """
+        Gets range size.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+
+        Returns:
+            Size: Size, Width is number of Columns and Height is number of Rows.
+
+        .. versionadded:: 0.8.2
+        """
         ...
 
     @classmethod
     def get_range_size(cls, *args, **kwargs) -> Size:
         """
-        Gets range size
+        Gets range size.
+
+        |lo_safe|
 
         Args:
-            cell_range (XCellRange): Cell Range
-            cr_addr (CellRangeAddress): Cell Range Address
-            col_start (int): Zero-based start column index
-            row_start (int): Zero-based start row index
-            col_end (int): Zero-based end column index
-            row_end (int): Zero-based end row index
+            range_obj (RangeObj): Range Object.
+            cell_range (XCellRange): Cell Range.
+            cr_addr (CellRangeAddress): Cell Range Address.
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
 
         Returns:
-            ~ooodev.utils.data_type.size.Size: Size, Width is number of Columns and Height is number of Rows
+            ~ooodev.utils.data_type.size.Size: Size, Width is number of Columns and Height is number of Rows.
 
         .. versionadded:: 0.8.2
         """
@@ -6122,10 +8693,12 @@ class Calc:
     # region    get_cell_str()
     @classmethod
     def _get_cell_str_addr(cls, addr: CellAddress) -> str:
+        """LO Safe Method"""
         return cls._get_cell_str_col_row(col=addr.Column, row=addr.Row)
 
     @classmethod
     def _get_cell_str_col_row(cls, col: int, row: int) -> str:
+        """LO Safe Method"""
         if col < 0 or row < 0:
             mLo.Lo.print("Cell position is negative; using A1")
             return "A1"
@@ -6133,42 +8706,90 @@ class Calc:
 
     @classmethod
     def _get_cell_str_cell(cls, cell: XCell) -> str:
+        """LO Safe Method"""
         return cls._get_cell_str_addr(cls._get_cell_address_cell(cell=cell))
 
     @overload
     @classmethod
     def get_cell_str(cls, cell_obj: mCellObj.CellObj) -> str:
+        """
+        Gets the cell as a string in format of ``A1``.
+
+        |lo_safe|
+
+        Args:
+            cell_obj (CellObj): Cell object.
+
+        Returns:
+            str: Cell as str.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_str(cls, addr: CellAddress) -> str:
+        """
+        Gets the cell as a string in format of ``A1``.
+
+        |lo_safe|
+
+        Args:
+            addr (CellAddress): Cell address.
+
+        Returns:
+            str: Cell as str.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_str(cls, cell: XCell) -> str:
+        """
+        Gets the cell as a string in format of ``A1``.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            str: Cell as str.
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_str(cls, col: int, row: int) -> str:
+        """
+        Gets the cell as a string in format of ``A1``.
+
+        |lo_safe|
+
+        Args:
+            col (int): Zero-based column index.
+            row (int): Zero-based row index.
+
+        Returns:
+            str: Cell as str.
+        """
         ...
 
     @classmethod
     def get_cell_str(cls, *args, **kwargs) -> str:
         """
-        Gets the cell as a string in format of ``A1``
+        Gets the cell as a string in format of ``A1``.
+
+        |lo_safe|
 
         Args:
-            cell_obj (CellObj): Cell object
-            addr (CellAddress): Cell address
-            cell (XCell): Cell
-            col (int): Zero-based column index
-            row (int): Zero-based row index
+            cell_obj (CellObj): Cell object.
+            addr (CellAddress): Cell address.
+            cell (XCell): Cell.
+            col (int): Zero-based column index.
+            row (int): Zero-based row index.
 
         Returns:
-            str: Cell as str
+            str: Cell as str.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -6222,37 +8843,103 @@ class Calc:
     @overload
     @classmethod
     def get_cell_obj(cls) -> mCellObj.CellObj:
+        """
+        Gets the cell as ``CellObj`` instance.
+
+        |lo_unsafe|
+
+        Returns:
+            CellObj: Cell Object
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_obj(cls, cell_name: str) -> mCellObj.CellObj:
+        """
+        Gets the cell as ``CellObj`` instance.
+
+        |lo_safe|
+
+        Args:
+            cell_name (str): Cell name.
+
+        Returns:
+            CellObj: Cell Object
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_obj(cls, addr: CellAddress) -> mCellObj.CellObj:
+        """
+        Gets the cell as ``CellObj`` instance.
+
+        |lo_safe|
+
+        Args:
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            CellObj: Cell Object
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_obj(cls, cell: XCell) -> mCellObj.CellObj:
+        """
+        Gets the cell as ``CellObj`` instance.
+
+        |lo_safe|
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            CellObj: Cell Object
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_obj(cls, cell_obj: mCellObj.CellObj) -> mCellObj.CellObj:
+        """
+        Gets the cell as ``CellObj`` instance.
+
+        |lo_safe|
+
+        Args:
+            cell_obj (CellObj): Cell Object. If passed in the same CellObj is returned.
+
+        Returns:
+            CellObj: Cell Object
+        """
         ...
 
     @overload
     @classmethod
     def get_cell_obj(cls, col: int, row: int) -> mCellObj.CellObj:
+        """
+        Gets the cell as ``CellObj`` instance.
+
+        |lo_safe|
+
+        Args:
+            col (int): Zero-based column index.
+            row (int): Zero-based row index.
+
+        Returns:
+            CellObj: Cell Object
+        """
         ...
 
     @classmethod
     def get_cell_obj(cls, *args, **kwargs) -> mCellObj.CellObj:
         """
         Gets the cell as ``CellObj`` instance.
+
+        |lo_safe|
 
         Args:
             cell_name (str): Cell name.
@@ -6328,6 +9015,8 @@ class Calc:
         """
         Creates a column Name from zero base column number.
 
+        |lo_safe|
+
         Columns are numbered starting at 0 where 0 corresponds to ``A``
         They run as ``A-Z``, ``AA-AZ``, ``BA-BZ``, ..., ``IV``
 
@@ -6347,52 +9036,167 @@ class Calc:
     @overload
     @classmethod
     def merge_cells(cls, cell_range: XCellRange) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, cell_range: XCellRange, center: bool) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            center (bool): Determines if the merge will be a merge and center. Default ``False``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, sheet: XSpreadsheet, range_name: str) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, sheet: XSpreadsheet, range_name: str, center: bool) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            center (bool): Determines if the merge will be a merge and center. Default ``False``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, center: bool) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+            center (bool): Determines if the merge will be a merge and center. Default ``False``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, center: bool) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+            center (bool): Determines if the merge will be a merge and center. Default ``False``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def merge_cells(cls, col_start: int, row_start: int, col_end: int, row_end: int, center: bool) -> None:
+        """
+        Merges a range of cells.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            center (bool): Determines if the merge will be a merge and center. Default ``False``.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def merge_cells(cls, *args, **kwargs) -> None:
         """
-        Merges a range of cells
+        Merges a range of cells.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document.
@@ -6427,7 +9231,7 @@ class Calc:
         if center is None and args_len > 0 and isinstance(lst_args[-1], bool):
             center = lst_args.pop()
 
-        cell_range = Calc.get_cell_range(*lst_args, **kw)
+        cell_range = cls.get_cell_range(*lst_args, **kw)
         x_merge = mLo.Lo.qi(XMergeable, cell_range, True)
         x_merge.merge(True)
         if center:
@@ -6439,32 +9243,95 @@ class Calc:
     @overload
     @classmethod
     def unmerge_cells(cls, cell_range: XCellRange) -> None:
+        """
+        Removes merging from a range of cells.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def unmerge_cells(cls, sheet: XSpreadsheet, range_name: str) -> None:
+        """
+        Removes merging from a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def unmerge_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> None:
+        """
+        Removes merging from a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def unmerge_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> None:
+        """
+        Removes merging from a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def unmerge_cells(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> None:
+        """
+        Removes merging from a range of cells.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def unmerge_cells(cls, *args, **kwargs) -> None:
         """
-        Removes merging from a range of cells
+        Removes merging from a range of cells.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document.
@@ -6486,7 +9353,7 @@ class Calc:
 
         .. versionadded:: 0.8.4
         """
-        cell_range = Calc.get_cell_range(*args, **kwargs)
+        cell_range = cls.get_cell_range(*args, **kwargs)
         x_merge = mLo.Lo.qi(XMergeable, cell_range, True)
         x_merge.merge(False)
         # XMergeable
@@ -6497,32 +9364,95 @@ class Calc:
     @overload
     @classmethod
     def is_merged_cells(cls, cell_range: XCellRange) -> bool:
+        """
+        Gets is a range of cells is merged.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            bool: ``True`` if range is merged; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_merged_cells(cls, sheet: XSpreadsheet, range_name: str) -> bool:
+        """
+        Gets is a range of cells is merged.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+
+        Returns:
+            bool: ``True`` if range is merged; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_merged_cells(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> bool:
+        """
+        Gets is a range of cells is merged.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            bool: ``True`` if range is merged; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_merged_cells(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress) -> bool:
+        """
+        Gets is a range of cells is merged.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+
+        Returns:
+            bool: ``True`` if range is merged; Otherwise, ``False``
+        """
         ...
 
     @overload
     @classmethod
     def is_merged_cells(cls, col_start: int, row_start: int, col_end: int, row_end: int) -> bool:
+        """
+        Gets is a range of cells is merged.
+
+        |lo_safe|
+
+        Args:
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+
+        Returns:
+            bool: ``True`` if range is merged; Otherwise, ``False``
+        """
         ...
 
     @classmethod
     def is_merged_cells(cls, *args, **kwargs) -> bool:
         """
         Gets is a range of cells is merged.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document.
@@ -6544,7 +9474,7 @@ class Calc:
 
         .. versionadded:: 0.8.4
         """
-        cell_range = Calc.get_cell_range(*args, **kwargs)
+        cell_range = cls.get_cell_range(*args, **kwargs)
         x_merge = mLo.Lo.qi(XMergeable, cell_range, True)
         return x_merge.getIsMerged()
 
@@ -6557,15 +9487,16 @@ class Calc:
     @staticmethod
     def find_all(srch: XSearchable, sd: XSearchDescriptor) -> List[XCellRange] | None:
         """
-        Searches spreadsheet and returns a list of Cell Ranges that match search criteria
+        Searches spreadsheet and returns a list of Cell Ranges that match search criteria.
+
+        |lo_safe|
 
         Args:
-            srch (XSearchable): Searchable object
-            sd (XSearchDescriptor): Search description
+            srch (XSearchable): Searchable object.
+            sd (XSearchDescriptor): Search description.
 
         Returns:
-            List[XCellRange] | None: A list of cell ranges on success; Otherwise, None
-
+            List[XCellRange] | None: A list of cell ranges on success; Otherwise, ``None``.
 
         .. collapse:: Example
 
@@ -6618,18 +9549,20 @@ class Calc:
     @staticmethod
     def create_cell_style(doc: XSpreadsheetDocument, style_name: str) -> XStyle:
         """
-        Creates a style
+        Creates a style.
+
+        |lo_unsafe|
 
         Args:
-            doc (XSpreadsheetDocument): Spreadsheet Document
-            style_name (str): Style name
+            doc (XSpreadsheetDocument): Spreadsheet Document.
+            style_name (str): Style name.
 
         Raises:
             Exception: if unable to create style.
-            MissingInterfaceError: if unable to obtain interface
+            MissingInterfaceError: if unable to obtain interface.
 
         Returns:
-            XStyle: Newly created style
+            XStyle: Newly created style.
         """
         comp_doc = mLo.Lo.qi(XComponent, doc, raise_err=True)
         style_families = mInfo.Info.get_style_container(doc=comp_doc, family_style_name="CellStyles")
@@ -6646,16 +9579,55 @@ class Calc:
     @overload
     @classmethod
     def change_style(cls, sheet: XSpreadsheet, style_name: str, cell_range: XCellRange) -> bool:
+        """
+        Changes style of a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            style_name (str): Name of style to apply.
+            cell_range (XCellRange): Cell range to apply style to.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def change_style(cls, sheet: XSpreadsheet, style_name: str, range_name: str) -> bool:
+        """
+        Changes style of a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            style_name (str): Name of style to apply.
+            range_name (str): Range to apply style to such as ``A1:E23``.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
         ...
 
     @overload
     @classmethod
     def change_style(cls, sheet: XSpreadsheet, style_name: str, range_obj: mRngObj.RangeObj) -> bool:
+        """
+        Changes style of a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            style_name (str): Name of style to apply.
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
         ...
 
     @overload
@@ -6663,12 +9635,30 @@ class Calc:
     def change_style(
         cls, sheet: XSpreadsheet, style_name: str, start_col: int, start_row: int, end_col: int, end_row: int
     ) -> bool:
+        """
+        Changes style of a range of cells.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            style_name (str): Name of style to apply.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
+
+        Returns:
+            bool: ``True`` if style has been changed; Otherwise, ``False``.
+        """
         ...
 
     @classmethod
     def change_style(cls, *args, **kwargs) -> bool:
         """
         Changes style of a range of cells.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
@@ -6760,11 +9750,13 @@ class Calc:
     # region    add_border()
     @classmethod
     def _add_border_sht_rng(cls, cargs: CellCancelArgs) -> None:
+        """Lo Safe Method"""
         cargs.event_data["color"] = CommonColor.BLACK
         cls._add_border_sht_rng_color(cargs)  # color black
 
     @classmethod
     def _add_border_sht_rng_color(cls, cargs: CellCancelArgs) -> None:
+        """Lo Safe Method"""
         vals = (
             cls.BorderEnum.LEFT_BORDER
             | cls.BorderEnum.RIGHT_BORDER
@@ -6779,6 +9771,7 @@ class Calc:
         cls,
         cargs: CellCancelArgs,
     ) -> None:
+        """Lo Safe Method"""
         _Events().trigger(CalcNamedEvent.CELLS_BORDER_ADDING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
@@ -6831,14 +9824,16 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
         """
-        Adds borders to a cell range
+        Adds borders to a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
         """
         ...
 
@@ -6846,14 +9841,16 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
         """
-        Adds borders to a cell range
+        Adds borders to a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range Name such as 'A1:F9'
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range Name such as ``A1:F9``.
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
         """
         ...
 
@@ -6861,15 +9858,17 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color) -> XCellRange:
         """
-        Adds borders to a cell range
+        Adds borders to a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-            color (Color): RGB color
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+            color (Color): RGB color.
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
         """
         ...
 
@@ -6877,15 +9876,17 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color) -> XCellRange:
         """
-        Adds borders to a cell range
+        Adds borders to a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range Name such as 'A1:F9'
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range Name such as ``A1:F9``.
             color (Color): RGB color
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
         """
         ...
 
@@ -6895,16 +9896,18 @@ class Calc:
         cls, sheet: XSpreadsheet, cell_range: XCellRange, color: Color, border_vals: BorderEnum
     ) -> XCellRange:
         """
-        Adds borders to a cell range
+        Adds borders to a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-            color (Color): RGB color
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+            color (Color): RGB color.
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
         """
         ...
 
@@ -6912,28 +9915,32 @@ class Calc:
     @classmethod
     def add_border(cls, sheet: XSpreadsheet, range_name: str, color: Color, border_vals: BorderEnum) -> XCellRange:
         """
-        Adds borders to a cell range
+        Adds borders to a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str): Range Name such as 'A1:F9'
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range Name such as ``A1:F9``.
             color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
         """
         ...
 
     @classmethod
     def add_border(cls, *args, **kwargs) -> XCellRange:
         """
-        Adds borders to a cell range
+        Adds borders to a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-            range_name (str): Range Name such as 'A1:F9'
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+            range_name (str): Range Name such as ``A1:F9``.
             color (Color): RGB color
             border_vals (BorderEnum): Determines what borders are applied.
 
@@ -6941,7 +9948,7 @@ class Calc:
             CancelEventError: If CELLS_BORDER_ADDING event is canceled.
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
 
         :events:
             .. cssclass:: lo_event
@@ -7029,6 +10036,7 @@ class Calc:
     # region    remove_border()
     @classmethod
     def _remove_border_sht_rng(cls, cargs: CellCancelArgs) -> None:
+        """LO Safe Method"""
         vals = (
             cls.BorderEnum.LEFT_BORDER
             | cls.BorderEnum.RIGHT_BORDER
@@ -7043,6 +10051,7 @@ class Calc:
         cls,
         cargs: CellCancelArgs,
     ) -> None:
+        """LO Safe Method"""
         _Events().trigger(CalcNamedEvent.CELLS_BORDER_REMOVING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
@@ -7090,49 +10099,127 @@ class Calc:
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange) -> XCellRange:
+        """
+        Removes borders of a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+
+        Returns:
+            XCellRange: Range borders that are affected.
+        """
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, range_name: str) -> XCellRange:
+        """
+        Removes borders of a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range Name such as ``A1:F9``.
+
+        Returns:
+            XCellRange: Range borders that are affected.
+        """
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj) -> XCellRange:
+        """
+        Removes borders of a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_obj (RangeObj): Range Object.
+
+        Returns:
+            XCellRange: Range borders that are affected.
+        """
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, cell_range: XCellRange, border_vals: BorderEnum) -> XCellRange:
+        """
+        Removes borders of a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange: Range borders that are affected.
+        """
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, range_name: str, border_vals: BorderEnum) -> XCellRange:
+        """
+        Removes borders of a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str): Range Name such as ``A1:F9``.
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange: Range borders that are affected.
+        """
         ...
 
     @overload
     @classmethod
     def remove_border(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, border_vals: BorderEnum) -> XCellRange:
+        """
+        Removes borders of a cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            range_obj (RangeObj): Range Object.
+            border_vals (BorderEnum): Determines what borders are applied.
+
+        Returns:
+            XCellRange: Range borders that are affected.
+        """
         ...
 
     @classmethod
     def remove_border(cls, *args, **kwargs) -> XCellRange:
         """
-        Removes borders of a cell range
+        Removes borders of a cell range.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            cell_range (XCellRange): Cell range
-            range_name (str): Range Name such as 'A1:F9'
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_range (XCellRange): Cell range.
+            range_name (str): Range Name such as ``A1:F9``.
+            range_obj (RangeObj): Range Object.
             border_vals (BorderEnum): Determines what borders are applied.
 
         Raises:
-            CancelEventError: If CELLS_BORDER_REMOVING event is canceled
+            CancelEventError: If CELLS_BORDER_REMOVING event is canceled.
 
         Returns:
-            XCellRange: Range borders that are affected
+            XCellRange: Range borders that are affected.
 
         :events:
             .. cssclass:: lo_event
@@ -7208,31 +10295,120 @@ class Calc:
     @overload
     @classmethod
     def highlight_range(cls, sheet: XSpreadsheet, headline: str, cell_range: XCellRange) -> XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            headline (str): Headline.
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            XCell: First cell of range that headline ia applied on.
+        """
         ...
 
     @overload
     @classmethod
     def highlight_range(cls, sheet: XSpreadsheet, headline: str, cell_range: XCellRange, color: Color) -> XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            headline (str): Headline.
+            cell_range (XCellRange): Cell Range.
+            color (~ooodev.utils.color.Color): RGB color.
+
+        Returns:
+            XCell: First cell of range that headline ia applied on.
+        """
         ...
 
     @overload
     @classmethod
     def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_name: str) -> XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            headline (str): Headline.
+            range_name (str): Range Name such as ``A1:F9``.
+
+        Returns:
+            XCell: First cell of range that headline ia applied on.
+        """
         ...
 
     @overload
     @classmethod
     def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_obj: mRngObj.RangeObj) -> XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            headline (str): Headline.
+            range_obj (RangeObj): Range Object
+            color (~ooodev.utils.color.Color): RGB color.
+
+        Returns:
+            XCell: First cell of range that headline ia applied on.
+        """
         ...
 
     @overload
     @classmethod
     def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_name: str, color: Color) -> XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            headline (str): Headline.
+            range_name (str): Range Name such as 'A1:F9'.
+            color (~ooodev.utils.color.Color): RGB color.
+
+        Returns:
+            XCell: First cell of range that headline ia applied on.
+        """
         ...
 
     @overload
     @classmethod
     def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_obj: mRngObj.RangeObj, color: Color) -> XCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            headline (str): Headline.
+            cell_range (XCellRange): Cell Range.
+            range_obj (RangeObj): Range Object
+            color (~ooodev.utils.color.Color): RGB color.
+
+        Returns:
+            XCell: First cell of range that headline ia applied on.
+        """
         ...
 
     @classmethod
@@ -7241,19 +10417,21 @@ class Calc:
         Draw a colored border around the range and write a headline in the
         top-left cell of the range.
 
+        |lo_safe|
+
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            headline (str): Headline
-            cell_range (XCellRange): Cell Range
-            range_name (str): Range Name such as 'A1:F9'
-            range_obj (RangeObj)
-            color (~ooodev.utils.color.Color): RGB color
+            sheet (XSpreadsheet): Spreadsheet.
+            headline (str): Headline.
+            cell_range (XCellRange): Cell Range.
+            range_name (str): Range Name such as 'A1:F9'.
+            range_obj (RangeObj): Range Object
+            color (~ooodev.utils.color.Color): RGB color.
 
         Raises:
-            CancelEventError: If CELLS_HIGH_LIGHTING event is canceled
+            CancelEventError: If CELLS_HIGH_LIGHTING event is canceled.
 
         Returns:
-            XCell: First cell of range that headline ia applied on
+            XCell: First cell of range that headline ia applied on.
 
         :events:
             .. cssclass:: lo_event
@@ -7342,13 +10520,15 @@ class Calc:
         """
         Sets column width. width is in ``mm``, e.g. ``6``
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet
             width (int, UnitT): Width in ``mm`` units or :ref:`proto_unit_obj`.
             idx (int): Index of column.
 
         Raises:
-            CancelEventError: If SHEET_COL_WIDTH_SETTING event is canceled.
+            CancelEventError: If ``SHEET_COL_WIDTH_SETTING`` event is canceled.
 
         Returns:
             XCellRange | None: Column cell range that width is applied on or ``None`` if column width <= 0
@@ -7393,7 +10573,9 @@ class Calc:
         idx: int,
     ) -> XCellRange | None:
         """
-        Sets column width. height is in ``mm``, e.g. 6
+        Sets column width. height is in ``mm``, e.g. ``6``.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -7401,10 +10583,10 @@ class Calc:
             idx (int): Index of Row
 
         Raises:
-            CancelEventError: If SHEET_ROW_HEIGHT_SETTING event is canceled.
+            CancelEventError: If ``SHEET_ROW_HEIGHT_SETTING`` event is canceled.
 
         Returns:
-            XCellRange | None: Row cell range that height is applied on or None if height <= 0
+            XCellRange | None: Row cell range that height is applied on or None if height <= ``0``.
 
         :events:
             .. cssclass:: lo_event
@@ -7449,20 +10631,22 @@ class Calc:
         sheet: XSpreadsheet, range_name: str | mRngObj.RangeObj, vals: Table, name: str, comment: str
     ) -> XScenario:
         """
-        Insert a scenario into sheet
+        Insert a scenario into sheet.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            range_name (str | RangeObj): Range name
-            vals (Table): 2d array of values
-            name (str): Scenario name
-            comment (str): Scenario description
+            sheet (XSpreadsheet): Spreadsheet.
+            range_name (str | RangeObj): Range name.
+            vals (Table): 2d array of values.
+            name (str): Scenario name.
+            comment (str): Scenario description.
 
         Raises:
             MissingInterfaceError: If a required interface is missing.
 
         Returns:
-            XScenario: the newly created scenario
+            XScenario: the newly created scenario.
 
         Note:
             A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
@@ -7496,17 +10680,19 @@ class Calc:
     @staticmethod
     def apply_scenario(sheet: XSpreadsheet, name: str) -> XScenario:
         """
-        Applies scenario
+        Applies scenario.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            name (str): Scenario name to apply
+            sheet (XSpreadsheet): Spreadsheet.
+            name (str): Scenario name to apply.
 
         Raises:
             Exception: If scenario is not able to be applied.
 
         Returns:
-            XScenario: the applied scenario
+            XScenario: the applied scenario.
 
         Note:
             A LibreOffice Calc scenario is a set of cell values that can be used within your calculations.
@@ -7539,6 +10725,8 @@ class Calc:
         """
         Gets pivot tables (formerly known as DataPilot) for a sheet.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet
 
@@ -7558,15 +10746,17 @@ class Calc:
         """
         Get a pivot table (formerly known as DataPilot) from a XDataPilotTables instance.
 
+        |lo_safe|
+
         Args:
-            dp_tables (XDataPilotTables): Instance that contains the table
-            name (str): Name of the table to get
+            dp_tables (XDataPilotTables): Instance that contains the table.
+            name (str): Name of the table to get.
 
         Raises:
             Exception: If table is not found or other error has occurred.
 
         Returns:
-            XDataPilotTable: Table
+            XDataPilotTable: Table.
         """
         try:
             table = dp_tables.getByName(name)
@@ -7584,10 +10774,12 @@ class Calc:
     @classmethod
     def compute_function(cls, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
         """
-        Computes a Calc Function
+        Computes a Calc Function.
+
+        |lo_safe|
 
         Args:
-            fn (GeneralFunction | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'
+            fn (GeneralFunction | str): Function to calculate, GeneralFunction Enum value or String such as 'SUM' or 'MAX'.
             cell_range (XCellRange): Cell range to apply function on.
 
         Returns:
@@ -7611,7 +10803,9 @@ class Calc:
     @staticmethod
     def call_fun(func_name: str, *args: Any) -> Any:
         """
-        Execute a Calc function by its (English) name and based on the given arguments
+        Execute a Calc function by its (English) name and based on the given arguments.
+
+        |lo_unsafe|
 
         Args:
             func_name (str): the English name of the function to execute
@@ -7637,7 +10831,9 @@ class Calc:
     @staticmethod
     def get_function_names() -> List[str] | None:
         """
-        Get a list of all function names
+        Get a list of all function names.
+
+        |lo_unsafe|
 
         Returns:
             List[str] | None: List of function names if found; Otherwise, ``None``
@@ -7667,6 +10863,7 @@ class Calc:
 
     @staticmethod
     def _find_function_by_name(func_nm: str) -> Tuple[PropertyValue, ...] | None:
+        """LO UN-Safe method"""
         if not func_nm:
             raise ValueError("Invalid arg, please supply a function name to find.")
         try:
@@ -7689,6 +10886,7 @@ class Calc:
 
     @staticmethod
     def _find_function_by_idx(idx: int) -> Tuple[PropertyValue] | None:
+        """LO UN-Safe method"""
         # sourcery skip: raise-specific-error
         if idx < 0:
             raise IndexError("Negative index in not allowed.")
@@ -7712,6 +10910,8 @@ class Calc:
         """
         Finds a function.
 
+        |lo_unsafe|
+
         Args:
             func_nm (str): function name.
 
@@ -7726,6 +10926,8 @@ class Calc:
         """
         Finds a function.
 
+        |lo_unsafe|
+
         Args:
             idx (int): Index of function.
 
@@ -7738,6 +10940,8 @@ class Calc:
     def find_function(cls, *args, **kwargs) -> Tuple[PropertyValue, ...] | None:
         """
         Finds a function.
+
+        |lo_unsafe|
 
         Args:
             func_nm (str): function name.
@@ -7783,6 +10987,8 @@ class Calc:
         """
         Prints Function Info to console.
 
+        |lo_unsafe|
+
         Args:
             func_name (str): Function name
 
@@ -7803,7 +11009,9 @@ class Calc:
     @classmethod
     def print_fun_arguments(cls, prop_vals: Sequence[PropertyValue]) -> None:
         """
-        Prints Function Arguments to console
+        Prints Function Arguments to console.
+
+        |lo_safe|
 
         Args:
             prop_vals (Sequence[PropertyValue]): Property values
@@ -7830,7 +11038,9 @@ class Calc:
     @staticmethod
     def get_recent_functions() -> Tuple[int, ...] | None:
         """
-        Gets recent functions
+        Gets recent functions.
+
+        |lo_unsafe|
 
         Returns:
             Tuple[int, ...] | None: Tuple of integers that point to functions
@@ -7857,6 +11067,8 @@ class Calc:
     ) -> float:
         """
         Calculates a value which gives a specified result in a formula.
+
+        |lo_safe|
 
         Args:
             gs (XGoalSeek): Goal seeking value for cell
@@ -7885,6 +11097,8 @@ class Calc:
         """
         Get solvers.
 
+        |lo_unsafe|
+
         Returns:
             None:
 
@@ -7896,7 +11110,9 @@ class Calc:
     @staticmethod
     def list_solvers() -> None:
         """
-        Prints solvers
+        Prints solvers.
+
+        |lo_unsafe|
         """
         print("Services offered by the solver:")
         nms = mInfo.Info.get_service_names(service_name="com.sun.star.sheet.Solver")
@@ -7914,6 +11130,8 @@ class Calc:
         Convert string value to SolverConstraintOperator.
 
         If ``op`` is not valid then SolverConstraintOperator.EQUAL is returned.
+
+        |lo_safe|
 
         Args:
             op (str): Operator such as =, ==, <=, =<, >=, =>
@@ -7935,18 +11153,21 @@ class Calc:
     def _make_constraint_op_str_sht_cell_name(
         cls, num: int | float, op: str, sheet: XSpreadsheet, cell_name: str
     ) -> SolverConstraint:
+        """LO Safe Method"""
         return cls._make_constraint_op_str_addr(
             num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         )
 
     @classmethod
     def _make_constraint_op_str_addr(cls, num: int | float, op: str, addr: CellAddress) -> SolverConstraint:
+        """LO Safe Method"""
         return cls._make_constraint_op_sco_addr(num=num, op=cls.to_constraint_op(op), addr=addr)
 
     @classmethod
     def _make_constraint_op_sco_sht_cell_name(
         cls, num: int | float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
     ) -> SolverConstraint:
+        """LO Safe Method"""
         return cls._make_constraint_op_sco_addr(
             num=num, op=op, addr=cls._get_cell_address_sheet(sheet=sheet, cell_name=cell_name)
         )
@@ -7955,6 +11176,7 @@ class Calc:
     def _make_constraint_op_sco_addr(
         cls, num: int | float, op: SolverConstraintOperator, addr: CellAddress
     ) -> SolverConstraint:
+        """LO Safe Method"""
         sc = SolverConstraint()
         sc.Left = addr
         sc.Operator = op  # type: ignore
@@ -7964,16 +11186,55 @@ class Calc:
     @overload
     @classmethod
     def make_constraint(cls, num: int | float, op: str, addr: CellAddress) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        |lo_safe|
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operation such as ``<=``.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @overload
     @classmethod
     def make_constraint(cls, num: int | float, op: SolverConstraintOperator, addr: CellAddress) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        |lo_safe|
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (SolverConstraintOperator): Operation.
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @overload
     @classmethod
     def make_constraint(cls, num: int | float, op: str, sheet: XSpreadsheet, cell_name: str) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        |lo_safe|
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operation such as ``<=``.
+            cell_name (str): Cell name such as ``A1``.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @overload
@@ -7981,6 +11242,19 @@ class Calc:
     def make_constraint(
         cls, num: int | float, op: str, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj
     ) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        |lo_safe|
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operation such as ``<=``.
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @overload
@@ -7988,6 +11262,20 @@ class Calc:
     def make_constraint(
         cls, num: int | float, op: SolverConstraintOperator, sheet: XSpreadsheet, cell_name: str
     ) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        |lo_safe|
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (SolverConstraintOperator): Operation.
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell name such as ``A1``.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
         ...
 
     @classmethod
@@ -7995,12 +11283,15 @@ class Calc:
         """
         Makes a constraint for a solver model.
 
+        |lo_safe|
+
         Args:
             num (Number): Constraint number such as float or int.
             op (str | SolverConstraintOperator): Operation such as ``<=``.
             addr (CellAddress): Cell Address.
             cell_name (str): Cell name such as ``A1``.
             cell_obj (CellObj): Cell Object.
+            sheet (XSpreadsheet): Spreadsheet.
 
         Returns:
             SolverConstraint: Solver constraint that can be use in a solver model.
@@ -8062,14 +11353,16 @@ class Calc:
     @classmethod
     def solver_report(cls, solver: XSolver) -> None:
         """
-        Prints the result of solver
+        Prints the result of solver.
+
+        |lo_safe|
 
         Args:
             solver (XSolver): Solver to print result of.
         """
         # note: in original java it was getSuccess(), getObjective(), getVariables(), getSolution(),
         # These are typedef properties. The types-unopy typings are correct. Typedef are represented as Class Properties.
-        is_successful = solver.Success
+        # is_successful = solver.Success
         cell_name = cls._get_cell_str_addr(solver.Objective)
         print("Solver result: ")
         print(f"  {cell_name} == {solver.ResultValue:.4f}")
@@ -8088,14 +11381,16 @@ class Calc:
     @staticmethod
     def get_head_foot(props: XPropertySet, content: str) -> XHeaderFooterContent:
         """
-        Gets header footer content
+        Gets header footer content.
+
+        |lo_safe|
 
         Args:
-            props (XPropertySet): Properties
-            content (str): content
+            props (XPropertySet): Properties.
+            content (str): content.
 
         Raises:
-            MissingInterfaceError: If unable to obtain XHeaderFooterContent interface
+            MissingInterfaceError: If unable to obtain ``XHeaderFooterContent`` interface.
 
         Returns:
             XHeaderFooterContent: Header Footer Content
@@ -8108,11 +11403,13 @@ class Calc:
     @staticmethod
     def print_head_foot(title: str, hfc: XHeaderFooterContent) -> None:
         """
-        Prints header, footer to console
+        Prints header, footer to console.
+
+        |lo_safe|
 
         Args:
-            title (str): Title printed to console
-            hfc (XHeaderFooterContent): Content
+            title (str): Title printed to console.
+            hfc (XHeaderFooterContent): Content.
 
         Returns:
             None:
@@ -8131,9 +11428,11 @@ class Calc:
         """
         Get region for Header-Footer-Content.
 
+        |lo_safe|
+
         Args:
-            hfc (XHeaderFooterContent): Content
-            region (HeaderFooter): Region to get
+            hfc (XHeaderFooterContent): Content.
+            region (HeaderFooter): Region to get.
 
         Raises:
             TypeError: If hfc or region is not a valid type.
@@ -8155,12 +11454,14 @@ class Calc:
     @classmethod
     def set_head_foot(cls, hfc: XHeaderFooterContent, region: Calc.HeaderFooter, text: str) -> None:
         """
-        Sets the Header-Footer-Content
+        Sets the Header-Footer-Content.
+
+        |lo_safe|
 
         Args:
-            hfc (XHeaderFooterContent): Content
-            region (HeaderFooter): Region to set
-            text (str): Text to set
+            hfc (XHeaderFooterContent): Content.
+            region (HeaderFooter): Region to set.
+            text (str): Text to set.
 
         Returns:
             None:
@@ -8185,26 +11486,90 @@ class Calc:
     @overload
     @classmethod
     def set_style_range(cls, sheet: XSpreadsheet, range_name: str, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_name (str): Range Name such as ``A1:D5``.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_range(cls, sheet: XSpreadsheet, range_obj: mRngObj.RangeObj, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            range_obj (RangeObj): Range Object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_range(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cell_obj (CellObj): Cell Object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_range(cls, sheet: XSpreadsheet, cr_addr: CellRangeAddress, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            cr_addr (CellRangeAddress): Cell range Address.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_range(cls, cell_range: XCellRange, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell range.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -8219,12 +11584,30 @@ class Calc:
         *,
         styles: Sequence[StyleT],
     ) -> None:
+        """
+        Set style/formatting on cell range.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet Document.
+            col_start (int): Start Column.
+            row_start (int): Start Row.
+            col_end (int): End Column.
+            row_end (int): End Row.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def set_style_range(cls, *args, **kwargs) -> None:
         """
         Set style/formatting on cell range.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet Document.
@@ -8270,46 +11653,127 @@ class Calc:
     @overload
     @classmethod
     def set_style_cell(cls, sheet: XSpreadsheet, addr: CellAddress, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_cell(cls, sheet: XSpreadsheet, cell_name: str, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_name (str): Cell Name such as ``A1``.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_cell(cls, sheet: XSpreadsheet, cell_obj: mCellObj.CellObj, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            cell_obj: (CellObj): Cell object.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_cell(cls, sheet: XSpreadsheet, col: int, row: int, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell.
+
+        |lo_safe|
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet.
+            col (int): Cell column.
+            row (int): cell row.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_cell(cls, cell_range: XCellRange, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_style_cell(cls, cell_range: XCellRange, col: int, row: int, *, styles: Sequence[StyleT]) -> None:
+        """
+        Set style/formatting on cell.
+
+        |lo_safe|
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            col (int): Cell column.
+            row (int): cell row.
+            styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def set_style_cell(cls, *args, **kwargs) -> None:
         """
-        Set style/formatting on cell
+        Set style/formatting on cell.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            addr (CellAddress): Cell Address
-            cell_name (str): Cell Name such as 'A1'
-            cell_obj: (CellObj): Cell object
-            cell_range (XCellRange): Cell Range
-            col (int): Cell column
-            row (int): cell row
+            sheet (XSpreadsheet): Spreadsheet.
+            addr (CellAddress): Cell Address.
+            cell_name (str): Cell Name such as ``A1``.
+            cell_obj: (CellObj): Cell object.
+            cell_range (XCellRange): Cell Range.
+            col (int): Cell column.
+            row (int): cell row.
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
 
         Returns:
@@ -8346,6 +11810,8 @@ class Calc:
         """
         Dispatches recalculate command to the current sheet.
 
+        |lo_unsafe|
+
         Also useful when needing to refresh a chart.
 
         Returns:
@@ -8365,6 +11831,20 @@ class Calc:
     def print_sheet(
         cls, *, printer_name: str, range_name: str, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
     ) -> None:
+        """
+        Print a sheet to the specified printer directly.
+
+        |lo_unsafe|
+
+        Args:
+            printer_name (str): Name of Printer to use such as "Brother MFC-L2750DW series"
+            range_name (str): Range Name such as ``A1:D5``
+            idx (int, optional): Index of sheet to print. If not specified then the active sheet is used.
+            doc (XSpreadsheetDocument, optional): Document to use. If not specified then the active document is used.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -8372,6 +11852,20 @@ class Calc:
     def print_sheet(
         cls, *, printer_name: str, range_obj: mRngObj.RangeObj, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
     ) -> None:
+        """
+        Print a sheet to the specified printer directly.
+
+        |lo_unsafe|
+
+        Args:
+            printer_name (str): Name of Printer to use such as "Brother MFC-L2750DW series"
+            range_obj (RangeObj): Range Object
+            idx (int, optional): Index of sheet to print. If not specified then the active sheet is used.
+            doc (XSpreadsheetDocument, optional): Document to use. If not specified then the active document is used.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -8379,6 +11873,20 @@ class Calc:
     def print_sheet(
         cls, *, printer_name: str, cell_obj: mCellObj.CellObj, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
     ) -> None:
+        """
+        Print a sheet to the specified printer directly.
+
+        |lo_unsafe|
+
+        Args:
+            printer_name (str): Name of Printer to use such as "Brother MFC-L2750DW series"
+            cell_obj (CellObj): Cell Object
+            idx (int, optional): Index of sheet to print. If not specified then the active sheet is used.
+            doc (XSpreadsheetDocument, optional): Document to use. If not specified then the active document is used.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
@@ -8386,17 +11894,46 @@ class Calc:
     def print_sheet(
         cls, *, printer_name: str, cr_addr: CellRangeAddress, idx: Optional[int], doc: Optional[XSpreadsheetDocument]
     ) -> None:
+        """
+        Print a sheet to the specified printer directly.
+
+        |lo_unsafe|
+
+        Args:
+            printer_name (str): Name of Printer to use such as "Brother MFC-L2750DW series"
+            cr_addr (CellRangeAddress): Cell range Address
+            idx (int, optional): Index of sheet to print. If not specified then the active sheet is used.
+            doc (XSpreadsheetDocument, optional): Document to use. If not specified then the active document is used.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def print_sheet(cls, *, printer_name: str, cell_range: XCellRange, doc: Optional[XSpreadsheetDocument]) -> None:
+        """
+        Print a sheet to the specified printer directly.
+
+        |lo_unsafe|
+
+        Args:
+            printer_name (str): Name of Printer to use such as "Brother MFC-L2750DW series"
+            cell_range (XCellRange): Cell Range. If passed in then the same instance is returned.
+            doc (XSpreadsheetDocument, optional): Document to use. If not specified then the active document is used.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def print_sheet(cls, *, printer_name: str, **kwargs) -> None:
         """
         Print a sheet to the specified printer directly.
+
+        |lo_unsafe|
 
         Args:
             printer_name (str): Name of Printer to use such as "Brother MFC-L2750DW series"

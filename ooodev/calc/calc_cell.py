@@ -19,30 +19,31 @@ from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM
 from ooodev.units import UnitT
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
 
 
-class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServicePartial):
+class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StylePartial, ServicePartial):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
-        self.__owner = owner
-        self.__cell_obj = mCellObj.CellObj.from_cell(cell)
+            lo_inst = mLo.Lo.current_lo
+        self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        self._cell_obj = mCellObj.CellObj.from_cell(cell)
         # don't use owner.get_cell() here because it will be recursive.
-        sheet_cell = mCalc.Calc.get_cell(sheet=owner.component, cell_obj=self.__cell_obj)
+        sheet_cell = mCalc.Calc.get_cell(sheet=owner.component, cell_obj=self._cell_obj)
         SheetCellComp.__init__(self, sheet_cell)  # type: ignore
         QiPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
         PropPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
         StylePartial.__init__(self, component=sheet_cell)
-        ServicePartial.__init__(self, component=sheet_cell, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
@@ -51,17 +52,17 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             CalcCellCursor: Cell cursor
         """
-        return self.calc_sheet.create_cursor_by_range(cell_obj=self.__cell_obj)
+        return self.calc_sheet.create_cursor_by_range(cell_obj=self._cell_obj)
 
     # region Cell Properties
 
     def is_first_row(self) -> bool:
         """Determines if this cell is in the first row of the sheet."""
-        return self.__cell_obj.row == 1
+        return self._cell_obj.row == 1
 
     def is_first_column(self) -> bool:
         """Determines if this cell is in the first column of the sheet."""
-        return self.__cell_obj.col == "A"
+        return self._cell_obj.col == "A"
 
     # endregion Cell Properties
     def goto(self) -> None:
@@ -78,7 +79,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
 
         .. versionadded:: 0.20.2
         """
-        _ = self.calc_sheet.goto_cell(cell_obj=self.__cell_obj)
+        _ = self.calc_sheet.goto_cell(cell_obj=self._cell_obj)
 
     def goal_seek(
         self,
@@ -118,7 +119,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             Point: cell name as Point with X as col and Y as row
         """
-        return mCalc.Calc.get_cell_position(cell_name=self.__cell_obj)
+        return mCalc.Calc.get_cell_position(cell_name=self._cell_obj)
 
     # region Other Cells
 
@@ -133,9 +134,9 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
             CalcCell: Cell to the left of this cell.
         """
         if self.is_first_column():
-            raise mEx.CellError(f"Cell {self.__cell_obj} is in the first column of the sheet.")
-        cell_obj = self.__cell_obj.left
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
+            raise mEx.CellError(f"Cell {self._cell_obj} is in the first column of the sheet.")
+        cell_obj = self._cell_obj.left
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
 
     def get_cell_right(self) -> CalcCell:
         """
@@ -147,8 +148,8 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             CalcCell: Cell to the right of this cell.
         """
-        cell_obj = self.__cell_obj.right
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
+        cell_obj = self._cell_obj.right
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
 
     def get_cell_up(self) -> CalcCell:
         """
@@ -158,9 +159,9 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
             CalcCell: Cell above this cell.
         """
         if self.is_first_row():
-            raise mEx.CellError(f"Cell {self.__cell_obj} is in the first row of the sheet.")
-        cell_obj = self.__cell_obj.up
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
+            raise mEx.CellError(f"Cell {self._cell_obj} is in the first row of the sheet.")
+        cell_obj = self._cell_obj.up
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
 
     def get_cell_down(self) -> CalcCell:
         """
@@ -169,8 +170,8 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             CalcCell: Cell below this cell.
         """
-        cell_obj = self.__cell_obj.down
-        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
+        cell_obj = self._cell_obj.down
+        return CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
 
     # endregion Other Cells
 
@@ -190,9 +191,11 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             XSheetAnnotation: Cell annotation that was added
         """
-        return mCalc.Calc.add_annotation(
-            sheet=self.calc_sheet.component, cell_name=str(self.__cell_obj), msg=msg, is_visible=is_visible
-        )
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.add_annotation(
+                sheet=self.calc_sheet.component, cell_name=str(self._cell_obj), msg=msg, is_visible=is_visible
+            )
+        return result
 
     def get_annotation(self) -> XSheetAnnotation:
         """
@@ -201,7 +204,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             XSheetAnnotation: Cell annotation
         """
-        return mCalc.Calc.get_annotation(sheet=self.calc_sheet.component, cell_name=self.__cell_obj)
+        return mCalc.Calc.get_annotation(sheet=self.calc_sheet.component, cell_name=self._cell_obj)
 
     def get_annotation_str(self) -> str:
         """
@@ -210,7 +213,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             str: Cell annotation text
         """
-        return mCalc.Calc.get_annotation_str(sheet=self.calc_sheet.component, cell_name=self.__cell_obj)
+        return mCalc.Calc.get_annotation_str(sheet=self.calc_sheet.component, cell_name=self._cell_obj)
 
     def get_string(self) -> str:
         """
@@ -228,7 +231,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             str: Cell as str
         """
-        return str(self.__cell_obj)
+        return str(self._cell_obj)
 
     def get_type_enum(self) -> mCalc.Calc.CellTypeEnum:
         """
@@ -237,6 +240,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Returns:
             CellTypeEnum: Enum of cell type
         """
+        # does not need context manager
         return mCalc.Calc.get_type_enum(cell=self.component)
 
     def get_type_string(self) -> str:
@@ -277,9 +281,9 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
             styles (Sequence[StyleT], optional): One or more styles to apply to cell range.
         """
         if styles is None:
-            self.calc_sheet.set_array_cell(cell_obj=self.__cell_obj, values=values)
+            self.calc_sheet.set_array_cell(cell_obj=self._cell_obj, values=values)
         else:
-            self.calc_sheet.set_array_cell(cell_obj=self.__cell_obj, values=values, styles=styles)
+            self.calc_sheet.set_array_cell(cell_obj=self._cell_obj, values=values, styles=styles)
 
     # endregion set_array_cell()
     def set_date(self, day: int, month: int, year: int) -> None:
@@ -291,9 +295,10 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
             month (int): Date month part.
             year (int): Date year part.
         """
-        mCalc.Calc.set_date(
-            sheet=self.calc_sheet.component, cell_name=self.__cell_obj, day=day, month=month, year=year
-        )
+        with LoContext(self.lo_inst):
+            mCalc.Calc.set_date(
+                sheet=self.calc_sheet.component, cell_name=self._cell_obj, day=day, month=month, year=year
+            )
 
     # region set_row()
     def set_row(self, values: Row) -> None:
@@ -308,7 +313,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         """
         self.calc_sheet.set_row(
             values=values,
-            cell_obj=self.__cell_obj,
+            cell_obj=self._cell_obj,
         )
 
     # endregion set_row()
@@ -339,7 +344,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         Note:
             Event args ``index`` is set to ``idx`` value, ``event_data`` is set to ``height`` value (``mm100`` units).
         """
-        index = self.__cell_obj.row - 1
+        index = self._cell_obj.row - 1
         self.calc_sheet.set_row_height(height=height, idx=index)
 
     def set_style(self, styles: Sequence[StyleT]) -> None:
@@ -356,7 +361,7 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
             - :ref:`help_calc_format_style_cell`
             - :ref:`help_calc_format_direct_cell`
         """
-        mCalc.Calc.set_style_cell(sheet=self.calc_sheet.component, cell_obj=self.__cell_obj, styles=styles)
+        mCalc.Calc.set_style_cell(sheet=self.calc_sheet.component, cell_obj=self._cell_obj, styles=styles)
 
     def set_val(self, value: Any, styles: Sequence[StyleT] | None = None) -> None:
         """
@@ -371,9 +376,9 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
             None:
         """
         if styles is None:
-            self.calc_sheet.set_val(value=value, cell_obj=self.__cell_obj)
+            self.calc_sheet.set_val(value=value, cell_obj=self._cell_obj)
         else:
-            self.calc_sheet.set_val(value=value, cell_obj=self.__cell_obj, styles=styles)
+            self.calc_sheet.set_val(value=value, cell_obj=self._cell_obj, styles=styles)
 
     def split_window(self) -> None:
         """
@@ -389,18 +394,19 @@ class CalcCell(SheetCellComp, QiPartial, PropPartial, StylePartial, ServiceParti
         See Also:
             :ref:`ch23_splitting_panes`
         """
-        mCalc.Calc.split_window(doc=self.calc_sheet.calc_doc.component, cell_name=str(self.__cell_obj))
+        with LoContext(self.lo_inst):
+            mCalc.Calc.split_window(doc=self.calc_sheet.calc_doc.component, cell_name=str(self._cell_obj))
 
     # region Properties
     @property
     def calc_sheet(self) -> CalcSheet:
         """Sheet that owns this cell."""
-        return self.__owner
+        return self._owner
 
     @property
     def cell_obj(self) -> mCellObj.CellObj:
         """Cell object."""
-        return self.__cell_obj
+        return self._cell_obj
 
     @property
     def position(self) -> GenericUnitPoint[UnitMM, float]:

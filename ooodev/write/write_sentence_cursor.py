@@ -23,6 +23,8 @@ class WriteSentenceCursor(WriteTextCursor, SentenceCursorPartial, StylePartial):
             component (XSentenceCursor): A UNO object that supports ``com.sun.star.text.XSentenceCursor`` interface.
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        WriteTextCursor.__init__(self, owner=owner, component=component, lo_inst=self.lo_inst)
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        WriteTextCursor.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
         SentenceCursorPartial.__init__(self, component, None)  # type: ignore
         StylePartial.__init__(self, component=component)

@@ -22,10 +22,6 @@ else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any
 
-from . import calc_sheet as mCalcSheet
-from . import calc_sheets as mCalcSheets
-from . import calc_sheet_view as mCalcSheetView
-from .spreadsheet_draw_pages import SpreadsheetDrawPages
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
@@ -39,18 +35,26 @@ from ooodev.utils import gui as mGUI
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.gui_partial import GuiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import PathOrStr
+from . import calc_sheet as mCalcSheet
+from . import calc_sheets as mCalcSheets
+from . import calc_sheet_view as mCalcSheetView
+from .spreadsheet_draw_pages import SpreadsheetDrawPages
 
 
-class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, ServicePartial, StylePartial):
+class CalcDoc(
+    LoInstPropsPartial, SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, ServicePartial, StylePartial
+):
     """Defines a Calc Document"""
 
     def __init__(self, doc: XSpreadsheetDocument, lo_inst: LoInst | None = None) -> None:
@@ -68,16 +72,15 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             None:
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         if not mInfo.Info.is_doc_type(doc, LoService.CALC):
             raise mEx.NotSupportedDocumentError("Document is not a Calc document")
         SpreadsheetDocumentComp.__init__(self, doc)  # type: ignore
-        QiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        GuiPartial.__init__(self, component=doc, lo_inst=self._lo_inst)
-        ServicePartial.__init__(self, component=doc, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=doc)
         self._sheets = None
         self._draw_pages = None
@@ -96,7 +99,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Returns:
             XStyle: Newly created style
         """
-        return mCalc.Calc.create_cell_style(doc=self.component, style_name=style_name)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.create_cell_style(doc=self.component, style_name=style_name)
+        return result
 
     def call_fun(self, func_name: str, *args: Any) -> Any:
         """
@@ -113,7 +118,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
                 When the arguments contain arrays, the function is executed as an array function
                 Wrong arguments generate an error
         """
-        return mCalc.Calc.call_fun(func_name, *args)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.call_fun(func_name, *args)
+        return result
 
     def compute_function(self, fn: GeneralFunction | str, cell_range: XCellRange) -> float:
         """
@@ -138,7 +145,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Returns:
             List[str] | None: List of function names if found; Otherwise, ``None``.
         """
-        return mCalc.Calc.get_function_names()
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_function_names()
+        return result
 
     # region find_function()
     @overload
@@ -178,7 +187,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Returns:
             Tuple[PropertyValue, ...] | None: Function properties as tuple on success; Otherwise, ``None``.
         """
-        return mCalc.Calc.find_function(*args, **kwargs)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.find_function(*args, **kwargs)
+        return result
 
     # endregion find_function()
 
@@ -229,7 +240,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Attention:
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
         """
-        mLo.Lo.close_doc(doc=self.component, deliver_ownership=deliver_ownership)
+
+        self.lo_inst.close_doc(doc=self.component, deliver_ownership=deliver_ownership)
 
     # endregion close_doc()
 
@@ -258,6 +270,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Attention:
             :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
         """
+        # this could be self.lo_inst.save_doc(self.component, fnm)
         return mCalc.Calc.save_doc(doc=self.component, fnm=fnm)
 
     def get_selected_addr(self) -> CellRangeAddress:
@@ -277,7 +290,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             - :py:meth:`~.Calc.set_selected_range`
             - :py:meth:`~.Calc.get_selected_cell_addr`
         """
-        return mCalc.Calc.get_selected_addr(doc=self.component)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_selected_addr(doc=self.component)
+        return result
 
     def get_selected_cell_addr(self) -> CellAddress:
         """
@@ -298,7 +313,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             - :py:meth:`~.Calc.get_selected_addr`
             - :py:meth:`~.Calc.set_selected_addr`
         """
-        return mCalc.Calc.get_selected_cell_addr(self.component)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_selected_cell_addr(self.component)
+        return result
 
     def get_selected_range(self) -> mRngObj.RangeObj:
         """
@@ -428,18 +445,26 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTING` :eventref:`src-docs-sheet-event-inserting`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_INSERTED` :eventref:`src-docs-sheet-event-inserted`
         """
-        if idx < 0:
-            # add the + 1 becuase the index is being inserted
-            sheets_len = len(self.sheets)
-            idx = sheets_len + idx + 1
-            if idx < 0:
-                raise IndexError("list index out of range")
-            if idx > sheets_len:
-                idx = sheets_len
-        sheet = mCalc.Calc.insert_sheet(doc=self.component, name=name, idx=idx)
-        return mCalcSheet.CalcSheet(owner=self, sheet=sheet, lo_inst=self._lo_inst)
+        index = self._get_index(idx=idx, allow_greater=True)
+        sheet = mCalc.Calc.insert_sheet(doc=self.component, name=name, idx=index)
+        return mCalcSheet.CalcSheet(owner=self, sheet=sheet, lo_inst=self.lo_inst)
 
     # endregion insert_sheet
+
+    def _get_index(self, idx: int, allow_greater: bool = False) -> int:
+        """
+        Gets the index.
+
+        Args:
+            idx (int): Index of sheet. Can be a negative value to index from the end of the list.
+            allow_greater (bool, optional): If True and index is greater then the number of
+                sheets then the index becomes the next index if sheet were appended. Defaults to False.
+
+        Returns:
+            int: Index value.
+        """
+        count = len(self.sheets)
+        return mGenUtil.Util.get_index(idx, count, allow_greater)
 
     def freeze(self, num_cols: int, num_rows: int) -> None:
         """
@@ -459,7 +484,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             - :py:meth:`~.Calc.freeze_cols`
             - :py:meth:`~.Calc.unfreeze`
         """
-        mCalc.Calc.freeze(doc=self.component, num_cols=num_cols, num_rows=num_rows)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.freeze(doc=self.component, num_cols=num_cols, num_rows=num_rows)
 
     def freeze_cols(self, num_cols: int) -> None:
         """
@@ -478,7 +504,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             - :py:meth:`~.Calc.freeze_rows`
             - :py:meth:`~.Calc.unfreeze`
         """
-        mCalc.Calc.freeze(doc=self.component, num_cols=num_cols, num_rows=0)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.freeze(doc=self.component, num_cols=num_cols, num_rows=0)
 
     def freeze_rows(self, num_rows: int) -> None:
         """
@@ -497,7 +524,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             - :py:meth:`~.Calc.freeze_cols`
             - :py:meth:`~.Calc.unfreeze`
         """
-        mCalc.Calc.freeze(doc=self.component, num_cols=0, num_rows=num_rows)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.freeze(doc=self.component, num_cols=0, num_rows=num_rows)
 
     # region    remove_sheet()
 
@@ -550,10 +578,6 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             If ``idx`` is available then args ``event_data["fn_type"]`` is set to a value ``idx``; Otherwise, set to a value ``name``.
         """
 
-        def get_idx(index: int) -> int:
-            count = len(self.sheets)
-            return mGenUtil.Util.get_index(index, count, False)
-
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
         if count == 0:
@@ -561,7 +585,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         if "sheet_name" in kwargs:
             return mCalc.Calc.remove_sheet(doc=self.component, sheet_name=kwargs["sheet_name"])
         if "idx" in kwargs:
-            idx = get_idx(kwargs["idx"])
+            idx = self._get_index(kwargs["idx"])
             return mCalc.Calc.remove_sheet(doc=self.component, idx=idx)
         if kwargs:
             raise TypeError("remove_sheet() got an unexpected keyword argument")
@@ -569,7 +593,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             raise TypeError("remove_sheet() got an invalid number of arguments")
         arg = args[0]
         if isinstance(arg, int):
-            idx = get_idx(arg)
+            idx = self._get_index(arg)
             return mCalc.Calc.remove_sheet(doc=self.component, idx=idx)
         if isinstance(arg, str):
             return mCalc.Calc.remove_sheet(doc=self.component, sheet_name=arg)
@@ -594,22 +618,22 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVING` :eventref:`src-docs-sheet-event-moving`
                 - :py:attr:`~.events.calc_named_event.CalcNamedEvent.SHEET_MOVED` :eventref:`src-docs-sheet-event-moved`
         """
+        index = self._get_index(idx=idx)
         cargs = SheetCancelArgs(self.move_sheet.__qualname__)
         cargs.doc = self.component
         cargs.name = name
-        cargs.index = idx
+        cargs.index = index
         _Events().trigger(CalcNamedEvent.SHEET_MOVING, cargs)
         if cargs.cancel:
             return False
         name = cargs.name
-        idx = cargs.index
-        sheets = cargs.doc.getSheets()
-        num_sheets = len(sheets.getElementNames())
+        index = cargs.index
+        num_sheets = len(self.sheets)
         result = False
-        if idx < 0 or idx >= num_sheets:
-            mLo.Lo.print(f"Index {idx} is out of range.")
+        if index < 0 or index >= num_sheets:
+            mLo.Lo.print(f"Index {index} is out of range.")
         else:
-            sheets.moveByName(name, idx)
+            self.sheets.component.moveByName(name, index)
             result = True
         if result:
             _Events().trigger(CalcNamedEvent.SHEET_MOVED, SheetArgs.from_args(cargs))
@@ -644,7 +668,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Returns:
             XController | None: Controller for Spreadsheet Document
         """
-        model = mLo.Lo.qi(XModel, self.component, True)
+        model = self.qi(XModel, True)
         return model.getCurrentController()
 
     def get_active_sheet(self) -> mCalcSheet.CalcSheet:
@@ -654,7 +678,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Returns:
             CalcSheet | None: Active Sheet if found; Otherwise, None
         """
-        result = mCalc.Calc.get_active_sheet(self.component)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_active_sheet(self.component)
         return mCalcSheet.CalcSheet(owner=self, sheet=result)
 
     def get_view(self) -> mCalcSheetView.CalcSheetView:
@@ -670,8 +695,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Returns:
             mCalcSheetView: CalcSheetView
         """
-        view = mCalc.Calc.get_view(self.component)
-        return mCalcSheetView.CalcSheetView(owner=self, view=view, lo_inst=self._lo_inst)
+        with LoContext(self.lo_inst):
+            view = mCalc.Calc.get_view(self.component)
+        return mCalcSheetView.CalcSheetView(owner=self, view=view, lo_inst=self.lo_inst)
 
     # region set_active_sheet()
     @overload
@@ -710,10 +736,11 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Note:
             Event arg properties modified on SHEET_ACTIVATING it is reflected in this method.
         """
-        if mInfo.Info.is_instance(sheet, mCalcSheet.CalcSheet):
-            mCalc.Calc.set_active_sheet(self.component, sheet.component)
-        else:
-            mCalc.Calc.set_active_sheet(self.component, sheet)
+        with LoContext(self.lo_inst):
+            if mInfo.Info.is_instance(sheet, mCalcSheet.CalcSheet):
+                mCalc.Calc.set_active_sheet(self.component, sheet.component)
+            else:
+                mCalc.Calc.set_active_sheet(self.component, sheet)
 
     # endregion set_active_sheet()
 
@@ -725,7 +752,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Args:
             view_data (str): Data to restore.
         """
-        mCalc.Calc.set_view_data(self.component, view_data)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.set_view_data(self.component, view_data)
 
     def get_view_data(self) -> str:
         """
@@ -735,7 +763,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Returns:
             str: View Data
         """
-        return mCalc.Calc.get_view_data(self.component)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_view_data(self.component)
+        return result
 
     def get_view_panes(self) -> List[XViewPane] | None:
         """
@@ -761,7 +791,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         See Also:
             :ref:`ch23_view_states_top_pane`
         """
-        return mCalc.Calc.get_view_panes(doc=self.component)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_view_panes(doc=self.component)
+        return result
 
     def get_view_states(self) -> List[mViewState.ViewState] | None:
         """
@@ -783,7 +815,9 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         See Also:
             :ref:`ch23_view_states_top_pane`
         """
-        return mCalc.Calc.get_view_states(doc=self.component)
+        with LoContext(self.lo_inst):
+            result = mCalc.Calc.get_view_states(doc=self.component)
+        return result
 
     def set_view_states(self, states: Sequence[mViewState.ViewState]) -> None:
         """
@@ -798,7 +832,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         See Also:
             :ref:`ch23_view_states_top_pane`
         """
-        mCalc.Calc.set_view_states(doc=self.component, states=states)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.set_view_states(doc=self.component, states=states)
 
     def split_window(self, cell_name: str) -> None:
         """
@@ -814,7 +849,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         See Also:
             :ref:`ch23_splitting_panes`
         """
-        mCalc.Calc.split_window(doc=self.component, cell_name=cell_name)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.split_window(doc=self.component, cell_name=cell_name)
 
     @overload
     def set_visible(self) -> None:
@@ -865,7 +901,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             - :py:meth:`~.Calc.freeze_rows`
             - :py:meth:`~.Calc.freeze_cols`
         """
-        mCalc.Calc.unfreeze(doc=self.component)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.unfreeze(doc=self.component)
 
     def zoom_value(self, value: int = 100) -> None:
         """
@@ -874,7 +911,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Args:
             value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default is ``100``.
         """
-        mCalc.Calc.zoom_value(doc=self.component, value=value)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.zoom_value(doc=self.component, value=value)
 
     def zoom(self, type: ZoomKind = ZoomKind.ZOOM_100_PERCENT) -> None:
         """
@@ -883,7 +921,8 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         Args:
             type (ZoomKind, optional): Type of Zoom to set. Default is ``ZoomKind.ZOOM_100_PERCENT``.
         """
-        mCalc.Calc.zoom(doc=self.component, type=type)
+        with LoContext(self.lo_inst):
+            mCalc.Calc.zoom(doc=self.component, type=type)
 
     # region Properties
 
@@ -903,7 +942,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         .. versionadded:: 0.17.11
         """
         if self._sheets is None:
-            self._sheets = mCalcSheets.CalcSheets(owner=self, sheets=self.component.getSheets(), lo_inst=self._lo_inst)
+            self._sheets = mCalcSheets.CalcSheets(owner=self, sheets=self.component.getSheets(), lo_inst=self.lo_inst)
         return self._sheets
 
     @property
@@ -917,7 +956,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
         if self._draw_pages is None:
             supp = self.qi(XDrawPagesSupplier, True)
             draw_pages = supp.getDrawPages()
-            self._draw_pages = SpreadsheetDrawPages(owner=self, slides=draw_pages, lo_inst=self._lo_inst)
+            self._draw_pages = SpreadsheetDrawPages(owner=self, slides=draw_pages, lo_inst=self.lo_inst)
         return self._draw_pages  # type: ignore
 
     @property
@@ -929,7 +968,7 @@ class CalcDoc(SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, Servi
             CalcSheetView: Current Controller
         """
         if self._current_controller is None:
-            self._current_controller = mCalcSheetView.CalcSheetView(owner=self, view=self.component.getCurrentController(), lo_inst=self._lo_inst)  # type: ignore
+            self._current_controller = mCalcSheetView.CalcSheetView(owner=self, view=self.component.getCurrentController(), lo_inst=self.lo_inst)  # type: ignore
         return self._current_controller
 
     # endregion Properties

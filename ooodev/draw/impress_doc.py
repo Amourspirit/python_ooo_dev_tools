@@ -39,6 +39,7 @@ if TYPE_CHECKING:
 
 class ImpressDoc(
     DrawDocPartial["ImpressDoc"],
+    LoInstPropsPartial,
     PresentationDocumentComp,
     DocumentEventEvents,
     ModifyEvents,
@@ -48,7 +49,6 @@ class ImpressDoc(
     GuiPartial,
     ServicePartial,
     StylePartial,
-    LoInstPropsPartial,
 ):
     """Impress Document Class"""
 
@@ -124,8 +124,7 @@ class ImpressDoc(
         Returns:
             mImpressPage: The slide that was inserted at the end of the document.
         """
-        with LoContext(self.lo_inst):
-            result = mDraw.Draw.add_slide(doc=self.component)
+        result = mDraw.Draw.add_slide(doc=self.component)
         return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self.lo_inst)
 
     def duplicate(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
@@ -141,8 +140,7 @@ class ImpressDoc(
         Returns:
             ImpressPage: Duplicated slide.
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.duplicate(self.component, idx)
+        page = mDraw.Draw.duplicate(self.component, idx)
         return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     # region get_slide()
@@ -212,13 +210,11 @@ class ImpressDoc(
             ImpressPage: Slide as Draw Page.
         """
         if not kwargs:
-            with LoContext(self.lo_inst):
-                result = mDraw.Draw.get_slide(doc=self.component)
+            result = mDraw.Draw.get_slide(doc=self.component)
             return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self.lo_inst)
         if "slides" not in kwargs:
             kwargs["doc"] = self.component
-        with LoContext(self.lo_inst):
-            result = mDraw.Draw.get_slide(**kwargs)
+        result = mDraw.Draw.get_slide(**kwargs)
         return mImpressPage.ImpressPage(owner=self, component=result, lo_inst=self.lo_inst)
 
     # endregion get_slide()
@@ -230,8 +226,7 @@ class ImpressDoc(
         Returns:
             List[ImpressPage[_T]]: List of pages
         """
-        with LoContext(self.lo_inst):
-            slides = mDraw.Draw.get_slides_list(self.component)
+        slides = mDraw.Draw.get_slides_list(self.component)
         return [mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self.lo_inst) for slide in slides]
 
     def get_viewed_page(self) -> mImpressPage.ImpressPage[ImpressDoc]:
@@ -244,8 +239,7 @@ class ImpressDoc(
         Returns:
             ImpressPage: Draw Page
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.get_viewed_page(self.component)
+        page = mDraw.Draw.get_viewed_page(self.component)
         return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     def get_handout_master_page(self) -> mMasterDrawPage.MasterDrawPage[ImpressDoc]:
@@ -259,8 +253,7 @@ class ImpressDoc(
         Returns:
             MasterDrawPage: Impress Page
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.get_handout_master_page(self.component)
+        page = mDraw.Draw.get_handout_master_page(self.component)
         return mMasterDrawPage.MasterDrawPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     def get_notes_page_by_index(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
@@ -281,8 +274,7 @@ class ImpressDoc(
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page`
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.get_notes_page_by_index(self.component, idx)
+        page = mDraw.Draw.get_notes_page_by_index(self.component, idx)
         return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self.lo_inst)
 
     def get_show(self) -> XPresentation2:
@@ -315,8 +307,7 @@ class ImpressDoc(
             For this reason this method will wait up to five seconds.
         """
         show = self.get_show()
-        with LoContext(self.lo_inst):
-            result = mDraw.Draw.get_show_controller(show)
+        result = mDraw.Draw.get_show_controller(show)
         return result
 
     def insert_slide(self, idx: int) -> mImpressPage.ImpressPage[ImpressDoc]:
@@ -333,8 +324,7 @@ class ImpressDoc(
         Returns:
             DrawPage: New slide that was inserted.
         """
-        with LoContext(self.lo_inst):
-            slide = mDraw.Draw.insert_slide(doc=self.component, idx=idx)
+        slide = mDraw.Draw.insert_slide(doc=self.component, idx=idx)
         return mImpressPage.ImpressPage(owner=self, component=slide, lo_inst=self.lo_inst)
 
     def remove_master_page(self, slide: XDrawPage) -> None:
@@ -350,8 +340,7 @@ class ImpressDoc(
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mDraw.Draw.remove_master_page(doc=self.component, slide=slide)
+        mDraw.Draw.remove_master_page(doc=self.component, slide=slide)
 
     # region save_doc
 

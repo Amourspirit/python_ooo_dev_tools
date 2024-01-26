@@ -12,6 +12,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from .calc_forms import CalcForms
@@ -24,6 +25,7 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class SpreadsheetDrawPage(
+    LoInstPropsPartial,
     DrawPagePartial["SpreadsheetDrawPage[_T]"],
     Generic[_T],
     SpreadsheetDrawPageComp,
@@ -41,19 +43,18 @@ class SpreadsheetDrawPage(
 
     def __init__(self, owner: _T, component: XDrawPage, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DrawPagePartial.__init__(self, owner=self, component=component)
         SpreadsheetDrawPageComp.__init__(self, component)
         IndexAccessPartial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
-        ServicePartial.__init__(self, component=component, lo_inst=self._lo_inst)
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
-        ShapeFactoryPartial.__init__(self, owner=self, lo_inst=self._lo_inst)
+        ShapeFactoryPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._forms = None
 
     def __len__(self) -> int:
@@ -95,7 +96,7 @@ class SpreadsheetDrawPage(
         Gets the forms of the draw page.
         """
         if self._forms is None:
-            self._forms = CalcForms(owner=self, forms=self.component.getForms(), lo_inst=self._lo_inst)  # type: ignore
+            self._forms = CalcForms(owner=self, forms=self.component.getForms(), lo_inst=self.lo_inst)  # type: ignore
         return self._forms
 
     # endregion Properties

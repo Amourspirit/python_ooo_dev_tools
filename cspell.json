@@ -127,6 +127,8 @@
         "kargs",
         "kvargs",
         "Lingu",
+        "losafe",
+        "lounsafe",
         "Lucida",
         "lxml",
         "maxdepth",
