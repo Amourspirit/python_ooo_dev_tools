@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class ImpressPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial, LoInstPropsPartial):
+class ImpressPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial):
     """
     Class for managing Draw Pages.
     """

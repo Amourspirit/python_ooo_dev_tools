@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from .draw_page import DrawPage
 
 
-class DrawForms(FormsComp, QiPartial, ServicePartial, LoInstPropsPartial):
+class DrawForms(LoInstPropsPartial, FormsComp, QiPartial, ServicePartial):
     """
     Class for managing Draw Forms.
 
@@ -61,7 +61,7 @@ class DrawForms(FormsComp, QiPartial, ServicePartial, LoInstPropsPartial):
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
 
-        self.__owner = owner
+        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         FormsComp.__init__(self, forms)  # type: ignore
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
@@ -229,6 +229,6 @@ class DrawForms(FormsComp, QiPartial, ServicePartial, LoInstPropsPartial):
         Returns:
             DrawPage: Draw Form
         """
-        return self.__owner
+        return self._owner
 
     # endregion Properties

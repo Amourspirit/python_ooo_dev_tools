@@ -120,7 +120,9 @@ class DateUtil:
     @staticmethod
     def date_time_str(dt: datetime.datetime) -> str:
         """
-        returns a formatted date and time as string
+        Returns a formatted date and time as string.
+
+        |lo_safe|
 
         Args:
             dt (datetime): date time
@@ -133,7 +135,9 @@ class DateUtil:
     @staticmethod
     def uno_dt_to_dt(uno_dt: UnoDateTime) -> datetime.datetime:
         """
-        Converts a uno DateTime struct to a datetime instance
+        Converts a uno DateTime struct to a datetime instance.
+
+        |lo_safe|
 
         Args:
             uno_dt (UnoDateTime): uno Datetime struct
@@ -315,7 +319,9 @@ class DateUtil:
     @classmethod
     def str_date_time(cls, uno_dt: UnoDateTime) -> str:
         """
-        returns a formatted date and time as string
+        Returns a formatted date and time as string.
+
+        |lo_safe|
 
         Args:
             uno_dt (datetime): date time

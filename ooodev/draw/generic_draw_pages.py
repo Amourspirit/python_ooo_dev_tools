@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class GenericDrawPages(Generic[_T], DrawPagesComp, QiPartial, ServicePartial, LoInstPropsPartial):
+class GenericDrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, QiPartial, ServicePartial):
     """
     Class for managing Generic Draw Pages.
     """

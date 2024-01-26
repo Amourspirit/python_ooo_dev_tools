@@ -9,6 +9,7 @@ from ooodev.units import UnitMM100
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
     from .calc_sheet import CalcSheet
 
 
-class CalcTableRow(TableRowComp, QiPartial, ServicePartial, StylePartial):
+class CalcTableRow(LoInstPropsPartial, TableRowComp, QiPartial, ServicePartial, StylePartial):
     """Represents a calc table row."""
 
     def __init__(self, owner: CalcSheet, row_obj: TableRow | int, lo_inst: LoInst | None = None) -> None:
@@ -36,10 +37,9 @@ class CalcTableRow(TableRowComp, QiPartial, ServicePartial, StylePartial):
             TableRow | int (Any): Range object.
         """
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         if mInfo.Info.is_instance(row_obj, int):
             comp = mCalc.Calc.get_row_range(sheet=self.calc_sheet.component, idx=row_obj)
             self._range_obj = mCalc.Calc.get_range_obj(cell_range=comp)
@@ -47,9 +47,9 @@ class CalcTableRow(TableRowComp, QiPartial, ServicePartial, StylePartial):
             self._range_obj = mCalc.Calc.get_range_obj(cell_range=cast("XCellRange", row_obj))
             comp = row_obj
         TableRowComp.__init__(self, comp)  # type: ignore
-        QiPartial.__init__(self, component=comp, lo_inst=elf._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=comp, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=comp)
-        ServicePartial.__init__(self, component=comp, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=comp, lo_inst=self.lo_inst)
 
     #     self.__current_cell = None
 

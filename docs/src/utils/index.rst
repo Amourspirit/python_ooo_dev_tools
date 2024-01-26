@@ -5,6 +5,7 @@ utils
     :titlesonly:
     :glob:
 
+    context/index
     data_type/index
     dispatch/index
     inst/index

@@ -6,7 +6,6 @@ from ooodev.adapter.text.text_comp import TextComp
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -50,9 +49,7 @@ class WriteParagraphs(Generic[T], LoInstPropsPartial, TextComp, QiPartial):
         Returns:
             bool: True if element supports service com.sun.star.text.Paragraph.
         """
-        with LoContext(self.lo_inst):
-            result = mInfo.Info.support_service(element, "com.sun.star.text.Paragraph")
-        return result
+        return mInfo.Info.support_service(element, "com.sun.star.text.Paragraph")
 
     def __next__(self) -> mWriteParagraph.WriteParagraph[T]:
         result = super().__next__()

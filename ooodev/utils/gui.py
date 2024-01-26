@@ -96,10 +96,12 @@ class GUI:
     @classmethod
     def get_toolbar_resource(cls, name: ToolBarNameKind | str) -> str:
         """
-        Get toolbar resource for name
+        Get toolbar resource for name.
+
+        |lo_safe|
 
         Args:
-            name (ToolBarName| str): Name of toolbar resource
+            name (ToolBarName| str): Name of toolbar resource.
 
         Returns:
             str: A formatted resource string such as ``private:resource/toolbar/zoombar``
@@ -110,7 +112,9 @@ class GUI:
     @deprecated("Use get_toolbar_resource")
     def get_toobar_resource(cls, name: ToolBarNameKind | str) -> str:
         """
-        Get toolbar resource for name
+        Get toolbar resource for name.
+
+        |lo_safe|
 
         Args:
             name (ToolBarName| str): Name of toolbar resource
@@ -128,6 +132,8 @@ class GUI:
     def add_item_to_toolbar(cls, doc: XComponent, toolbar_name: str, item_name: str, im_fnm: str) -> None:
         """
         Add a user-defined icon and command to the start of the specified toolbar.
+
+        |lo_unsafe|
 
         Args:
             doc (XComponent): office document.
@@ -180,20 +186,22 @@ class GUI:
     @staticmethod
     def create_floating_frame(title: str, x: int, y: int, width: int, height: int) -> XFrame:
         """
-        Create a floating XFrame at the given position and size
+        Create a floating XFrame at the given position and size.
+
+        |lo_unsafe|
 
         Args:
-            title (str): Floating frame title
-            x (int): Frame x position
-            y (int): Frame y position
-            width (int): Frame width
-            height (int): Frame Height
+            title (str): Floating frame title.
+            x (int): Frame x position.
+            y (int): Frame y position.
+            width (int): Frame width.
+            height (int): Frame Height.
 
         Raises:
             MissingInterfaceError: If required interface can not be obtained.
 
         Returns:
-            XFrame: Floating frame
+            XFrame: Floating frame.
         """
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit")
         if xtoolkit is None:
@@ -237,11 +245,13 @@ class GUI:
     @classmethod
     def show_message_box(cls, title: str, message: str) -> None:
         """
-        Shows a message box
+        Shows a message box.
+
+        |lo_unsafe|
 
         Args:
-            title (str): Messagebox Title
-            message (str): Message to display
+            title (str): Messagebox Title.
+            message (str): Message to display.
 
         Raises:
             MissingInterfaceError: If required interface is not present.
@@ -282,6 +292,8 @@ class GUI:
         ``tkinter`` does not ship with integrated python in LibreOffice. For this reason it may not be possible to display a ``tkinter`` dialog.
         It will depend on how your virtual environment is set up. In most cases this will work on Linux but not on windows.
 
+        |lo_unsafe|
+
         Args:
             title (str): Title of input box
             input_msg (str): Message to display
@@ -316,12 +328,28 @@ class GUI:
     @overload
     @staticmethod
     def get_current_controller(doc: object) -> XController:  # type: ignore
+        """
+        Gets controller from document.
+
+        |lo_safe|
+
+        Args:
+            doc (object): office document
+
+        Raises:
+            MissingInterfaceError: If required interface is not present.
+
+        Returns:
+            XController: controller
+        """
         ...
 
     @staticmethod
     def get_current_controller(*args, **kwargs) -> XController:
         """
-        Gets controller from document
+        Gets controller from document.
+
+        |lo_safe|
 
         Args:
             doc (object): office document
@@ -354,7 +382,9 @@ class GUI:
     @classmethod
     def get_frame(cls, doc: XComponent) -> XFrame:
         """
-        Gets frame from doc
+        Gets frame from doc.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): office document
@@ -368,16 +398,18 @@ class GUI:
     @classmethod
     def get_control_access(cls, doc: XComponent) -> XControlAccess:
         """
-        Get control access from office document
+        Get control access from office document.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
 
         Raises:
             MissingInterfaceError: If doc does not implement XControlAccess interface.
 
         Returns:
-            XControlAccess: control access
+            XControlAccess: control access.
         """
         ca = mLo.Lo.qi(XControlAccess, cls.get_current_controller(doc))
         if ca is None:
@@ -387,16 +419,18 @@ class GUI:
     @staticmethod
     def get_uii(doc: XComponent) -> XUserInputInterception:
         """
-        Gets user input interception
+        Gets user input interception.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
 
         Raises:
             MissingInterfaceError: If doc does not implement XUserInputInterception interface.
 
         Returns:
-            XUserInputInterception: user input interception
+            XUserInputInterception: user input interception.
         """
         result = mLo.Lo.qi(XUserInputInterception, doc)
         if result is None:
@@ -412,7 +446,9 @@ class GUI:
     @classmethod
     def get_selection_supplier(cls, *args, **kwargs) -> XSelectionSupplier:
         """
-        Gets selection supplier
+        Gets selection supplier.
+
+        |lo_safe|
 
         Args:
             doc (object): office document
@@ -450,16 +486,18 @@ class GUI:
     @classmethod
     def get_dpi(cls, doc: XComponent) -> XDispatchProviderInterception:
         """
-        Gets Dispatch provider interception
+        Gets Dispatch provider interception.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
 
         Raises:
             MissingInterfaceError: if XDispatchProviderInterception interface instance is not obtained.
 
         Returns:
-            XDispatchProviderInterception: Dispatch provider interception
+            XDispatchProviderInterception: Dispatch provider interception.
         """
         xframe = cls.get_frame(doc)
         result = mLo.Lo.qi(XDispatchProviderInterception, xframe)
@@ -489,6 +527,18 @@ class GUI:
 
     @classmethod
     def get_window_identity(cls, obj: Any) -> GuiWindowInfo:
+        """
+        Gets Identity Info for window of an object.
+
+        |lo_safe|
+
+        Args:
+            obj (Any): object that implements ``XComponent``.
+
+        Returns:
+            GUI.Window: Window Info.
+
+        """
         win = GuiWindowInfo()
         component = mLo.Lo.qi(XComponent, obj)
         if component is None:
@@ -556,6 +606,8 @@ class GUI:
             win.frame = obj.CurrentController.Frame
             obj (Any): doc like object
 
+        |lo_safe|
+
         Returns:
             str: Active window as string of found; Otherwise, an empty string.
 
@@ -572,7 +624,9 @@ class GUI:
     @classmethod
     def activate(cls, window: str | XComponent) -> None:
         """
-        Activates window
+        Activates window.
+
+        |lo_unsafe|
 
         Args:
             window (str | XComponent): Window name as str or doc as XComponent
@@ -615,10 +669,12 @@ class GUI:
     @classmethod
     def get_window(cls) -> XWindow:
         """
-        Gets window
+        Gets window.
+
+        |lo_unsafe|
 
         Returns:
-            XWindow: window instance
+            XWindow: window instance.
         """
         ...
 
@@ -626,26 +682,30 @@ class GUI:
     @classmethod
     def get_window(cls, doc: XComponent) -> XWindow:
         """
-        Gets window
+        Gets window.
+
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): Office document
+            doc (XComponent): Office document.
 
         Returns:
-            XWindow: window instance
+            XWindow: window instance.
         """
         ...
 
     @classmethod
     def get_window(cls, doc: XComponent | None = None) -> XWindow | None:
         """
-        Gets window
+        Gets window.
+
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): Office document
+            doc (XComponent): Office document.
 
         Returns:
-            XWindow: window instance
+            XWindow: window instance.
         """
         if doc is None:
             desktop = mLo.Lo.get_desktop()
@@ -662,21 +722,63 @@ class GUI:
     @overload
     @classmethod
     def set_visible(cls) -> None:
+        """
+        Set window visibility.
+
+        |lo_unsafe|
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_visible(cls, visible: bool) -> None:
+        """
+        Set window visibility.
+
+        |lo_unsafe|
+
+        Args:
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_visible(cls, visible: bool, doc: Any) -> None:
+        """
+        Set window visibility.
+
+        |lo_safe|
+
+        Args:
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``.
+            doc (Any, optional): office document. If omitted the current document is used form ``Lo.lo_component``.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_visible(cls, *, doc: Any) -> None:
+        """
+        Set window visibility.
+
+        |lo_safe|
+
+        Args:
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
@@ -685,7 +787,7 @@ class GUI:
         Set window visibility.
 
         Args:
-            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``
+            visible (bool, optional): If ``True`` window is set visible; Otherwise, window is set invisible. Default ``True``.
             doc (Any, optional): office document. If omitted the current document is used form ``Lo.lo_component``.
 
         Returns:
@@ -730,12 +832,14 @@ class GUI:
     @classmethod
     def set_size_window(cls, doc: XComponent, width: int, height: int) -> None:
         """
-        Sets window size
+        Sets window size.
+
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): office document
-            width (int): Width of window
-            height (int): Height of window
+            doc (XComponent): office document.
+            width (int): Width of window.
+            height (int): Height of window.
         """
         window = cls.get_window(doc)
         rect = window.getPosSize()
@@ -744,14 +848,16 @@ class GUI:
     @classmethod
     def set_pos_size(cls, doc: XComponent, x: int, y: int, width: int, height: int) -> None:
         """
-        Sets window position and size
+        Sets window position and size.
+
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): office document
-            x (int): Window X position
-            y (int): Window Y Position
-            width (int): Window Width
-            height (int): Window Height
+            doc (XComponent): office document.
+            x (int): Window X position.
+            y (int): Window Y Position.
+            width (int): Window Width.
+            height (int): Window Height.
         """
         window = cls.get_window(doc)
         window.setPosSize(x, y, width, height, PosSize.POSSIZE)
@@ -759,13 +865,15 @@ class GUI:
     @classmethod
     def get_pos_size(cls, doc: XComponent) -> Rectangle:
         """
-        Gets window position and Size
+        Gets window position and Size.
+
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
 
         Returns:
-            Rectangle: Rectangle representing position and size
+            Rectangle: Rectangle representing position and size.
         """
         window = cls.get_window(doc)
         return window.getPosSize()
@@ -773,7 +881,9 @@ class GUI:
     @staticmethod
     def get_top_window() -> XTopWindow:
         """
-        Gets top window
+        Gets top window.
+
+        |lo_unsafe|
 
         Raises:
             MissingInterfaceError: If XExtendedToolkit interface can not be obtained
@@ -793,7 +903,9 @@ class GUI:
     @classmethod
     def get_title_bar(cls) -> str:
         """
-        Gets title bar from top window
+        Gets title bar from top window.
+
+        |lo_unsafe|
 
         Returns:
             str: title bar text if found; Otherwise, Empty string.
@@ -817,10 +929,12 @@ class GUI:
     @staticmethod
     def get_screen_size() -> Rectangle:
         """
-        Get the work area as Rectangle
+        Get the work area as Rectangle.
+
+        |lo_unsafe|
 
         Raises:
-            mEx.MissingInterfaceError: If XToolkit interface can not be obtained
+            mEx.MissingInterfaceError: If XToolkit interface can not be obtained.
 
         Returns:
             Rectangle: Work Area.
@@ -842,7 +956,9 @@ class GUI:
     @staticmethod
     def print_rect(r: Rectangle) -> None:
         """
-        Prints a rectangle to the console
+        Prints a rectangle to the console.
+
+        |lo_safe|
 
         Args:
             r (Rectangle): Rectangle to print
@@ -862,7 +978,9 @@ class GUI:
     @classmethod
     def get_window_handle(cls, doc: XComponent | None = None) -> int | None:
         """
-        Gets handle to a window
+        Gets handle to a window.
+
+        |lo_unsafe|
 
         Args:
             doc (XComponent): document to get window handle for.
@@ -914,10 +1032,12 @@ class GUI:
     @classmethod
     def maximize(cls, odoc: XComponent) -> None:
         """
-        Maximizes Office window
+        Maximizes Office window.
+
+        |lo_unsafe|
 
         Args:
-            odoc (XComponent): Office document
+            odoc (XComponent): Office document.
 
         See Also:
             - :py:meth:`~.gui.GUI.minimize`
@@ -940,7 +1060,9 @@ class GUI:
     @classmethod
     def minimize(cls, odoc: XComponent) -> None:
         """
-        Minimizes Office window
+        Minimizes Office window.
+
+        |lo_unsafe|
 
         Args:
             odoc (XComponent): Office document
@@ -987,6 +1109,8 @@ class GUI:
         """
         Sets document zoom level.
 
+        |lo_unsafe|
+
         Args:
             view (ZoomEnum): Zoom value
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
@@ -1027,6 +1151,8 @@ class GUI:
         """
         Sets document custom zoom.
 
+        |lo_unsafe|
+
         Args:
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
         """
@@ -1037,6 +1163,8 @@ class GUI:
     def zoom_value(cls, value: int, view: ZoomKind) -> None:
         """
         Sets document custom zoom.
+
+        |lo_unsafe|
 
         Args:
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
@@ -1049,6 +1177,8 @@ class GUI:
     def zoom_value(cls, value: int, view: ZoomKind = ZoomEnum.BY_VALUE) -> None:
         """
         Sets document custom zoom.
+
+        |lo_unsafe|
 
         Args:
             value (int): The amount to zoom. :abbreviation:`eg:` 160 zooms 160%
@@ -1063,17 +1193,19 @@ class GUI:
     @staticmethod
     def get_ui_config_manager(doc: XComponent) -> XUIConfigurationManager:
         """
-        Gets ui config manager
+        Gets ui config manager.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
 
         Raises:
-            MissingInterfaceError: If XModel interface can not be obtained
-            MissingInterfaceError: If XUIConfigurationManagerSupplier interface can not be obtained
+            MissingInterfaceError: If XModel interface can not be obtained.
+            MissingInterfaceError: If XUIConfigurationManagerSupplier interface can not be obtained.
 
         Returns:
-            XUIConfigurationManager: ui config manager
+            XUIConfigurationManager: ui config manager.
         """
         xmodel = mLo.Lo.qi(XModel, doc)
         if xmodel is None:
@@ -1088,16 +1220,18 @@ class GUI:
         """
         Gets ui config manager base upon doc type reported by :py:meth:`.Info.doc_type_service`.
 
+        |lo_unsafe|
+
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
 
         Raises:
-            MissingInterfaceError: If XModel interface can not be obtained
-            MissingInterfaceError: If XUIConfigurationManagerSupplier interface can not be obtained
+            MissingInterfaceError: If XModel interface can not be obtained.
+            MissingInterfaceError: If XUIConfigurationManagerSupplier interface can not be obtained.
             Exception: If unable to get XUIConfigurationManager from XUIConfigurationManagerSupplier instance.
 
         Returns:
-            XUIConfigurationManager: ui config manager
+            XUIConfigurationManager: ui config manager.
         """
         # sourcery skip: raise-specific-error
         doc_type = mInfo.Info.doc_type_service(doc)
@@ -1144,10 +1278,12 @@ class GUI:
         """
         Prints ui elements matching ``ui_elem_name`` to console.
 
+        |lo_safe|
+
         Args:
-            ui_elem_name (str): Name of ui element
-            config_man (XUIConfigurationManager): configuration manager
-            doc (XComponent): office document
+            ui_elem_name (str): Name of ui element.
+            config_man (XUIConfigurationManager): configuration manager.
+            doc (XComponent): office document.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -1187,7 +1323,7 @@ class GUI:
         ui_elem_name: str,
         config_man: XUIConfigurationManager,
     ) -> None:
-        """print every command used by the toolbar whose resource name is uiElemName"""
+        """LO Safe Method. Print every command used by the toolbar whose resource name is uiElemName"""
         # see Also: https://wiki.openoffice.org/wiki/Documentation/DevGuide/ProUNO/Properties
         try:
             settings = config_man.getSettings(ui_elem_name, True)
@@ -1206,11 +1342,12 @@ class GUI:
 
     @classmethod
     def _print_ui_cmds2(cls, ui_elem_name: str, doc: XComponent) -> None:
+        """LO Safe Method."""
         config_man = cls.get_ui_config_manager(doc)
         if config_man is None:
             print("Cannot create configuration manager")
             return
-        cls.print_ui_cmds(ui_elem_name, config_man)
+        cls._print_ui_cmds1(ui_elem_name, config_man)
 
     # endregion print_ui_cmds()
 
@@ -1223,13 +1360,12 @@ class GUI:
     @classmethod
     def get_layout_manager(cls) -> XLayoutManager:
         """
-        Gets layout manager
+        Gets layout manager.
 
-        Args:
-            doc (XComponent): office document
+        |lo_unsafe|
 
         Returns:
-            XLayoutManager: Layout manager
+            XLayoutManager: Layout manager.
         """
         ...
 
@@ -1237,16 +1373,18 @@ class GUI:
     @classmethod
     def get_layout_manager(cls, doc: XComponent) -> XLayoutManager:
         """
-        Gets layout manager
+        Gets layout manager.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
 
         Raises:
-            Exception: If unable to get layout manager
+            Exception: If unable to get layout manager.
 
         Returns:
-            XLayoutManager: Layout manager
+            XLayoutManager: Layout manager.
         """
         ...
 
@@ -1290,20 +1428,33 @@ class GUI:
     @overload
     @classmethod
     def show_menu_bar(cls) -> None:
+        """
+        Shows the main menu bar.
+
+        |lo_unsafe|
+        """
         ...
 
     @overload
     @classmethod
     def show_menu_bar(cls, doc: XComponent) -> None:
+        """
+        Shows the main menu bar.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): doc (XComponent): office document.
+        """
         ...
 
     @classmethod
     def show_menu_bar(cls, doc: XComponent | None = None) -> None:
         """
-        Shows the main menu bar
+        Shows the main menu bar.
 
         Args:
-            doc (XComponent): doc (XComponent): office document
+            doc (XComponent): doc (XComponent): office document.
 
         .. versionchanged:: 0.9.0
             Renamed from show_menu_bar to show_menu_bar
@@ -1320,11 +1471,24 @@ class GUI:
     @overload
     @classmethod
     def hide_menu_bar(cls) -> None:
+        """
+        Hides the main menu bar.
+
+        |lo_unsafe|
+        """
         ...
 
     @overload
     @classmethod
     def hide_menu_bar(cls, doc: XComponent) -> None:
+        """
+        Hides the main menu bar.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): doc (XComponent): office document.
+        """
         ...
 
     @classmethod
@@ -1360,6 +1524,8 @@ class GUI:
     def toggle_menu_bar() -> None:
         """
         Toggles the main menu visibility.
+
+        |lo_unsafe|
 
         If the menu is visible then it is hidden.
         If it is hidden then it will be made visible.
@@ -1406,7 +1572,9 @@ class GUI:
     @classmethod
     def print_u_is(cls, *args, **kwargs) -> None:
         """
-        Print to console the resource names of every toolbar used by doc
+        Print to console the resource names of every toolbar used by doc.
+
+        |lo_safe|
 
         Args:
             lm (XLayoutManager): Layout manager
@@ -1443,10 +1611,12 @@ class GUI:
     @staticmethod
     def get_ui_element_type_str(t: int) -> str:
         """
-        Converts constant value to element type string
+        Converts constant value to element type string.
 
         `UIElementType <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1ui_1_1UIElementType.html>`_
         determines the type of a user interface element which is controlled by a layout manager.
+
+        |lo_safe|
 
         Args:
             t (int): UIElementType constant Value from 0 to 8
@@ -1486,10 +1656,12 @@ class GUI:
     @classmethod
     def printAllUICommands(cls, doc: XComponent) -> None:
         """
-        Prints all ui commands to console
+        Prints all ui commands to console.
+
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
         """
         conf_man = cls.get_ui_config_manager_doc(doc)
         if conf_man is None:
@@ -1509,10 +1681,12 @@ class GUI:
     @classmethod
     def show_one(cls, doc: XComponent, show_elem: str) -> None:
         """
-        Leave only the single specified toolbar visible
+        Leave only the single specified toolbar visible.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): office document
+            doc (XComponent): office document.
             show_elem (str): name of element to show only.
         """
         show_elements = [show_elem]
@@ -1521,14 +1695,16 @@ class GUI:
     @classmethod
     def show_only(cls, doc: XComponent, show_elems: List[str]) -> None:
         """
-        Leave only the specified toolbars visible
+        Leave only the specified toolbars visible.
+
+        |lo_safe|
 
         Raises:
-            Exception: if unable to get layout manager from doc
+            Exception: if unable to get layout manager from doc.
 
         Args:
-            doc (XComponent): office document
-            show_elems (Iterable[str]): Elements to show
+            doc (XComponent): office document.
+            show_elems (Iterable[str]): Elements to show.
         """
         lm = cls.get_layout_manager(doc)
         ui_elements = lm.getElements()
@@ -1544,6 +1720,8 @@ class GUI:
         """
         Hide all of ``ui_elms``, except ones in ``show_elms``;
         delete any strings that match in ``show_elms``.
+
+        |lo_safe|
 
         Args:
             lm (XLayoutManager): Layout Manager
@@ -1566,7 +1744,10 @@ class GUI:
     @classmethod
     def show_none(cls, doc: XComponent) -> None:
         """
-        Make all the toolbars invisible
+        Make all the toolbars invisible.
+
+
+        |lo_safe|
 
         Raises:
             Exception: if unable to get layout manager from doc
@@ -1591,7 +1772,9 @@ class GUI:
     @classmethod
     def get_menubar(cls, lm: XLayoutManager) -> XMenuBar:
         """
-        Get menu bar
+        Get menu bar.
+
+        |lo_safe|
 
         Args:
             lm (XLayoutManager): layout manager

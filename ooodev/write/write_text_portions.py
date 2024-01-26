@@ -52,9 +52,7 @@ class WriteTextPortions(Generic[T], LoInstPropsPartial, EnumerationAccessPartial
         Returns:
             bool: True if element supports service com.sun.star.text.TextPortion.
         """
-        with LoContext(self.lo_inst):
-            result = mInfo.Info.support_service(element, "com.sun.star.text.TextPortion")
-        return result
+        return mInfo.Info.support_service(element, "com.sun.star.text.TextPortion")
 
     def __next__(self) -> mWriteTextPortion.WriteTextPortion[T]:
         result = super().__next__()

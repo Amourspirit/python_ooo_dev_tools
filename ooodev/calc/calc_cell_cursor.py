@@ -17,26 +17,27 @@ from ooodev.adapter.sheet.sheet_cell_cursor_comp import SheetCellCursorComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.inst.lo.lo_inst import LoInst
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 
 
-class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, ServicePartial):
+class CalcCellCursor(LoInstPropsPartial, SheetCellCursorComp, QiPartial, PropPartial, StylePartial, ServicePartial):
     def __init__(self, owner: CalcSheet, cursor: XSheetCellCursor, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SheetCellCursorComp.__init__(self, cursor)  # type: ignore
-        QiPartial.__init__(self, component=cursor, lo_inst=self._lo_inst)  # type: ignore
-        PropPartial.__init__(self, component=cursor, lo_inst=self._lo_inst)  # type: ignore
+        QiPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
+        PropPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cursor)
-        ServicePartial.__init__(self, component=cursor, lo_inst=self._lo_inst)
+        ServicePartial.__init__(self, component=cursor, lo_inst=self.lo_inst)
 
     def find_used_cursor(self) -> mCalcCellRange.CalcCellRange:
         """
@@ -49,7 +50,7 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
             CalcCellRange: Cell range
         """
         found = mCalc.Calc.find_used_cursor(self.component)
-        return mCalcCellRange.CalcCellRange(owner=self.calc_sheet, rng=found, lo_inst=self._lo_inst)
+        return mCalcCellRange.CalcCellRange(owner=self.calc_sheet, rng=found, lo_inst=self.lo_inst)
 
     def get_calc_cell_range(self) -> mCalcCellRange.CalcCellRange:
         """
@@ -58,8 +59,8 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
         Returns:
             CalcCellRange: Cell range
         """
-        cell_range = mLo.Lo.qi(XCellRange, self.component)
-        return mCalcCellRange.CalcCellRange(owner=self.calc_sheet, rng=cell_range, lo_inst=self._lo_inst)
+        cell_range = self.qi(XCellRange, True)
+        return mCalcCellRange.CalcCellRange(owner=self.calc_sheet, rng=cell_range, lo_inst=self.lo_inst)
 
     # region get_cell_by_position()
     @overload
@@ -153,9 +154,10 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
         Returns:
             CalcCell: Cell
         """
-        cell_obj = mCalc.Calc.get_cell_obj(*args, **kwargs)
+        with LoContext(self.lo_inst):
+            cell_obj = mCalc.Calc.get_cell_obj(*args, **kwargs)
         # x_cell = self.component.getCellByPosition(cell_obj.col_obj.index, cell_obj.row_obj.index)
-        return mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self._lo_inst)
+        return mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
 
     # endregion get_cell_by_position()
 
@@ -170,7 +172,8 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
             CalcCellCursor: New instance of CalcCellCursor
         """
         self.component.gotoStart()
-        cell = mCalc.Calc.get_cell_obj()
+        with LoContext(self.lo_inst):
+            cell = mCalc.Calc.get_cell_obj()
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     def go_to_next(self) -> CalcCellCursor:
@@ -184,7 +187,8 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
             CalcCellCursor: New instance of CalcCellCursor
         """
         self.component.gotoNext()
-        cell = mCalc.Calc.get_cell_obj()
+        with LoContext(self.lo_inst):
+            cell = mCalc.Calc.get_cell_obj()
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     def go_to_previous(self) -> CalcCellCursor:
@@ -198,7 +202,8 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
             CalcCellCursor: New instance of CalcCellCursor
         """
         self.component.gotoPrevious()
-        cell = mCalc.Calc.get_cell_obj()
+        with LoContext(self.lo_inst):
+            cell = mCalc.Calc.get_cell_obj()
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     def go_to_end(self) -> CalcCellCursor:
@@ -211,7 +216,8 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
             CalcCellCursor: New instance of CalcCellCursor
         """
         self.component.gotoEnd()
-        cell = mCalc.Calc.get_cell_obj()
+        with LoContext(self.lo_inst):
+            cell = mCalc.Calc.get_cell_obj()
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     def go_to_offset(self, col_offset: int, row_offset: int) -> CalcCellCursor:
@@ -224,7 +230,8 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
             CalcCellCursor:  New instance of CalcCellCursor
         """
         self.component.gotoOffset(col_offset, row_offset)
-        cell = mCalc.Calc.get_cell_obj()
+        with LoContext(self.lo_inst):
+            cell = mCalc.Calc.get_cell_obj()
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     def go_to_start_of_used_area(self, expand: bool = False) -> CalcCellCursor:
@@ -242,9 +249,11 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
         """
         self.component.gotoStartOfUsedArea(expand)
         if expand:
-            range_obj = mCalc.Calc.find_used_range_obj(sheet=self.calc_sheet.component)
+            with LoContext(self.lo_inst):
+                range_obj = mCalc.Calc.find_used_range_obj(sheet=self.calc_sheet.component)
             return self.calc_sheet.create_cursor_by_range(range_obj=range_obj)
-        cell = mCalc.Calc.get_cell_obj()
+        with LoContext(self.lo_inst):
+            cell = mCalc.Calc.get_cell_obj()
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     def go_to_end_of_used_area(self, expand: bool = False) -> CalcCellCursor:
@@ -262,9 +271,11 @@ class CalcCellCursor(SheetCellCursorComp, QiPartial, PropPartial, StylePartial, 
         """
         self.component.gotoEndOfUsedArea(expand)
         if expand:
-            range_obj = mCalc.Calc.find_used_range_obj(sheet=self.calc_sheet.component)
+            with LoContext(self.lo_inst):
+                range_obj = mCalc.Calc.find_used_range_obj(sheet=self.calc_sheet.component)
             return self.calc_sheet.create_cursor_by_range(range_obj=range_obj)
-        cell = mCalc.Calc.get_cell_obj()
+        with LoContext(self.lo_inst):
+            cell = mCalc.Calc.get_cell_obj()
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     # endregion Cursor Move Movement

@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial, LoInstPropsPartial):
+class DrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial):
     """
     Class for managing Draw Pages.
     """
@@ -41,7 +41,7 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self.__owner = owner
+        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
@@ -219,6 +219,6 @@ class DrawPages(Generic[_T], DrawPagesComp, NameAccessPartial, QiPartial, Servic
         Returns:
             _T: Draw or Impress document.
         """
-        return self.__owner
+        return self._owner
 
     # endregion Properties

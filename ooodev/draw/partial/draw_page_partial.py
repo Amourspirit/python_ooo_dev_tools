@@ -72,8 +72,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.add_bullet(bulls_txt, level, text)
+        mDraw.Draw.add_bullet(bulls_txt, level, text)
 
     def add_connector(
         self,
@@ -248,8 +247,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.blank_slide(self.component)  # type: ignore
+        mDraw.Draw.blank_slide(self.component)  # type: ignore
 
     def bullets_slide(self, title: str) -> mDrawText.DrawText[_T]:
         """
@@ -268,8 +266,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             DrawText: Text Object
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.bullets_slide(self.component, title)  # type: ignore
+        result = mDraw.Draw.bullets_slide(self.component, title)  # type: ignore
         return mDrawText.DrawText(owner=self.__owner, component=result, lo_inst=self.__lo_inst)
 
     def copy_shape(self, old_shape: XShape) -> DrawShape[_T]:
@@ -814,9 +811,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             int: Z-Order
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.find_biggest_zorder(self.component)  # type: ignore
-        return result
+        return mDraw.Draw.find_biggest_zorder(self.component)  # type: ignore
 
     def find_shape_by_name(self, shape_name: str) -> DrawShape[_T]:
         """
@@ -832,8 +827,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             DrawShape: Shape.
         """
-        with LoContext(self.__lo_inst):
-            shape = mDraw.Draw.find_shape_by_name(self.component, shape_name)  # type: ignore
+        shape = mDraw.Draw.find_shape_by_name(self.component, shape_name)  # type: ignore
         return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def find_shape_by_type(self, shape_type: DrawingNameSpaceKind | str) -> DrawShape[_T]:
@@ -850,8 +844,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             DrawShape: Shape
         """
-        with LoContext(self.__lo_inst):
-            shape = mDraw.Draw.find_shape_by_type(self.component, shape_type)  # type: ignore
+        shape = mDraw.Draw.find_shape_by_type(self.component, shape_type)  # type: ignore
         return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def find_top_shape(self) -> DrawShape[_T]:
@@ -865,8 +858,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             DrawShape: Top most shape.
         """
-        with LoContext(self.__lo_inst):
-            shape = mDraw.Draw.find_top_shape(self.component)  # type: ignore
+        shape = mDraw.Draw.find_top_shape(self.component)  # type: ignore
         return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def get_animation_node(self) -> XAnimationNode:
@@ -882,8 +874,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             XAnimationNode: Animation Node
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_animation_node(self.component)  # type: ignore
+        result = mDraw.Draw.get_animation_node(self.component)  # type: ignore
         return result
 
     def title_only_slide(self, header: str) -> None:
@@ -949,8 +940,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             IndexContainerComp | None: Form Container on success, None otherwise.
         """
-        with LoContext(self.__lo_inst):
-            container = mDraw.Draw.get_form_container(self.component)  # type: ignore
+        container = mDraw.Draw.get_form_container(self.component)  # type: ignore
         if container is None:
             return None
         return IndexContainerComp(container)
@@ -971,9 +961,7 @@ class DrawPagePartial(Generic[_T]):
         Note:
             If a glue point can not be accessed then it is ignored.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_glue_points(self.component)  # type: ignore
-        return result
+        return mDraw.Draw.get_glue_points(self.component)  # type: ignore
 
     def get_line_color(self) -> mColor.Color:
         """
@@ -985,9 +973,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_line_color(self.component)  # type: ignore
-        return result
+        return mDraw.Draw.get_line_color(self.component)  # type: ignore
 
     def get_line_thickness(self) -> int:
         """
@@ -996,9 +982,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             int: Line Thickness on success; Otherwise, ``0``.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_line_thickness(self.component)  # type: ignore
-        return result
+        return mDraw.Draw.get_line_thickness(self.component)  # type: ignore
 
     def get_name(self) -> str:
         """
@@ -1012,9 +996,7 @@ class DrawPagePartial(Generic[_T]):
 
         .. versionadded:: 0.17.13
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_name(slide=self.component)  # type: ignore
-        return result
+        return mDraw.Draw.get_name(slide=self.component)  # type: ignore
 
     def get_ordered_shapes(self) -> List[DrawShape[_T]]:
         """
@@ -1026,8 +1008,7 @@ class DrawPagePartial(Generic[_T]):
         See Also:
             :py:meth:`~.draw.Draw.get_shapes`
         """
-        with LoContext(self.__lo_inst):
-            shapes = mDraw.Draw.get_ordered_shapes(slide=self.component)  # type: ignore
+        shapes = mDraw.Draw.get_ordered_shapes(slide=self.component)  # type: ignore
         return [DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst) for shape in shapes]
 
     def get_shape_text(self) -> str:
@@ -1052,8 +1033,7 @@ class DrawPagePartial(Generic[_T]):
         See Also:
             :py:meth:`~.draw.Draw.get_ordered_shapes`
         """
-        with LoContext(self.__lo_inst):
-            shapes = mDraw.Draw.get_shapes(slide=self.component)  # type: ignore
+        shapes = mDraw.Draw.get_shapes(slide=self.component)  # type: ignore
         return [DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst) for shape in shapes]
 
     def get_size_mm(self) -> Size:
@@ -1066,9 +1046,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             ~ooodev.utils.data_type.size.Size: Size struct.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_slide_size(self.__component)
-        return result
+        return mDraw.Draw.get_slide_size(self.__component)
 
     def get_slide_number(self) -> int:
         """
@@ -1080,9 +1058,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             int: Slide Number.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_slide_number(slide=self.component)  # type: ignore
-        return result
+        return mDraw.Draw.get_slide_number(slide=self.component)  # type: ignore
 
     def get_slide_title(self) -> str | None:
         """
@@ -1094,9 +1070,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             str | None: Slide Title on success; Otherwise, ``None``.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_slide_title(slide=self.component)  # type: ignore
-        return result
+        return mDraw.Draw.get_slide_title(slide=self.component)  # type: ignore
 
     def goto_page(self) -> None:
         """
@@ -1112,8 +1086,7 @@ class DrawPagePartial(Generic[_T]):
             raise mEx.DrawPageError("DrawPage owner is None")
         if not self.__lo_inst.is_uno_interfaces(self.__owner, "com.sun.star.drawing.XDrawPage"):
             raise mEx.DrawPageError("DrawPage component is not XDrawPage")
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.goto_page(doc=self.__owner, page=self.component)  # type: ignore
+        mDraw.Draw.goto_page(doc=self.__owner, page=self.component)  # type: ignore
 
     def move_to_bottom(self, shape: XShape) -> None:
         """
@@ -1129,8 +1102,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.move_to_bottom(slide=self.component, shape=shape)  # type: ignore
+        mDraw.Draw.move_to_bottom(slide=self.component, shape=shape)  # type: ignore
 
     def move_to_top(self, shape: XShape) -> None:
         """
@@ -1146,8 +1118,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.move_to_top(slide=self.component, shape=shape)  # type: ignore
+        mDraw.Draw.move_to_top(slide=self.component, shape=shape)  # type: ignore
 
     def remove_master_page(self) -> None:
         """
@@ -1166,8 +1137,7 @@ class DrawPagePartial(Generic[_T]):
             raise mEx.DrawPageError("Owner is None")
         if not self.__lo_inst.is_uno_interfaces(self.__owner, XDrawPage):
             raise mEx.DrawPageError("Owner component is not XDrawPage")
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.remove_master_page(doc=self.__owner, slide=self.__component)  # type: ignore
+        mDraw.Draw.remove_master_page(doc=self.__owner, slide=self.__component)  # type: ignore
 
     def save_page(self, fnm: PathOrStr, mime_type: str, filter_data: dict | None = None) -> None:
         """
@@ -1209,8 +1179,7 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.set_name(slide=self.component, name=name)  # type: ignore
+        mDraw.Draw.set_name(slide=self.component, name=name)  # type: ignore
 
     def set_transition(
         self,
@@ -1235,10 +1204,9 @@ class DrawPagePartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.set_transition(
-                slide=self.component, fade_effect=fade_effect, speed=speed, change=change, duration=duration  # type: ignore
-            )
+        mDraw.Draw.set_transition(
+            slide=self.component, fade_effect=fade_effect, speed=speed, change=change, duration=duration  # type: ignore
+        )
 
 
 # These import have to be here to avoid circular imports.

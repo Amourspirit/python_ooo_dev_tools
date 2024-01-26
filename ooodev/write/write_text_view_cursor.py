@@ -32,9 +32,9 @@ T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextViewCursor(
-    Generic[T],
     LoInstPropsPartial,
-    TextCursorPartial,
+    TextCursorPartial[T],
+    Generic[T],
     TextViewCursorComp,
     LineCursorPartial,
     PropertyChangeImplement,
@@ -91,9 +91,7 @@ class WriteTextViewCursor(
         Returns:
             int: current page number
         """
-        with LoContext(self.lo_inst):
-            result = mWrite.Write.get_current_page(self.component)  # type: ignore
-        return result
+        return mWrite.Write.get_current_page(self.component)  # type: ignore
 
     get_current_page = get_current_page_num
 

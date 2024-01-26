@@ -126,7 +126,9 @@ class Draw:
         """
         Creates a name.
 
-        Make a unique string by appending a number to the supplied name
+        Make a unique string by appending a number to the supplied name.
+
+        |lo_safe|
 
         Args:
             name (str): Name to prepend.
@@ -140,6 +142,8 @@ class Draw:
     @staticmethod
     def _get_unit_mm_int(value: UnitT | float, min_val: int = -9999) -> int:
         """Gets the value in mm as an int.
+
+        |lo_safe|
 
         Args:
             value (UnitT | float): UnitT or float
@@ -166,12 +170,14 @@ class Draw:
 
     @staticmethod
     def _get_unit_pt(value: UnitT | float) -> float:
+        """Lo Safe Method."""
         with contextlib.suppress(AttributeError):
             return value.get_value_pt()  # type: ignore
         return value  # type: ignore
 
     @staticmethod
     def _get_unit_mm_float(value: UnitT | float) -> float:
+        """Lo Safe Method."""
         with contextlib.suppress(AttributeError):
             result = value.get_value_mm()  # type: ignore
             return round(result)
@@ -181,6 +187,8 @@ class Draw:
     def _get_mm100_obj_from_mm(value: UnitT | float, min_value: int = -9999) -> UnitMM100:
         """
         Gets a UnitMM100 object from mm.
+
+        |lo_safe|
 
         Args:
             value (UnitT | float): Units in mm or UnitT
@@ -206,6 +214,7 @@ class Draw:
 
     @staticmethod
     def _get_pt_obj_from_pt(value: UnitT | float) -> UnitPT:
+        """Lo Safe Method."""
         with contextlib.suppress(AttributeError):
             result = value.get_value_pt()  # type: ignore
             return UnitPT(result)
@@ -215,7 +224,9 @@ class Draw:
     @staticmethod
     def is_shapes_based(doc: XComponent) -> bool:
         """
-        Gets if the document is supports Draw or Impress
+        Gets if the document is supports Draw or Impress.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document
@@ -230,10 +241,12 @@ class Draw:
     @staticmethod
     def is_draw(doc: XComponent) -> bool:
         """
-        Gets if the document is a Draw document
+        Gets if the document is a Draw document.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Returns:
             bool: ``True`` if is Draw document; Otherwise, ``False``.
@@ -243,7 +256,9 @@ class Draw:
     @staticmethod
     def is_impress(doc: XComponent) -> bool:
         """
-        Gets if the document is an Impress document
+        Gets if the document is an Impress document.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document
@@ -257,22 +272,54 @@ class Draw:
     @overload
     @staticmethod
     def create_draw_doc() -> XComponent:
+        """
+        Creates a new Draw document.
+
+        |lo_unsafe|
+
+        Returns:
+            XComponent: Component representing document
+        """
         ...
 
     @overload
     @staticmethod
     def create_draw_doc(loader: XComponentLoader) -> XComponent:
+        """
+        Creates a new Draw document.
+
+        |lo_unsafe|
+
+        Args:
+            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+
+        Returns:
+            XComponent: Component representing document
+        """
         ...
 
     @overload
     @staticmethod
     def create_draw_doc(lo_inst: mLoInst.LoInst) -> XComponent:
+        """
+        Creates a new Draw document.
+
+        |lo_unsafe|
+
+        Args:
+            lo_inst (LoInst): Lo Instance. Usually a new instance generated with :py:meth:`Lo.create_lo_instance() <ooodev.utils.lo.Lo.create_lo_instance>`.
+
+        Returns:
+            XComponent: Component representing document.
+        """
         ...
 
     @staticmethod
     def create_draw_doc(*args, **kwargs) -> XComponent:
         """
         Creates a new Draw document.
+
+        |lo_unsafe|
 
         Args:
             loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
@@ -300,17 +347,54 @@ class Draw:
     @overload
     @staticmethod
     def create_impress_doc() -> XComponent:
+        """
+        Creates a new Impress document.
+
+        |lo_unsafe|
+
+        Returns:
+            XComponent: Component representing document.
+        """
         ...
 
     @overload
     @staticmethod
     def create_impress_doc(loader: XComponentLoader) -> XComponent:
+        """
+        Creates a new Impress document.
+
+        |lo_unsafe|
+
+        Args:
+            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
+
+        Returns:
+            XComponent: Component representing document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_impress_doc(lo_inst: mLoInst.LoInst) -> XComponent:
+        """
+        Creates a new Impress document.
+
+        |lo_unsafe|
+
+        Args:
+            lo_inst (LoInst): Lo Instance. Usually a new instance generated with :py:meth:`Lo.create_lo_instance() <ooodev.utils.lo.Lo.create_lo_instance>`.
+
+        Returns:
+            XComponent: Component representing document.
+        """
         ...
 
     @staticmethod
-    def create_impress_doc(loader: XComponentLoader | None = None) -> XComponent:
+    def create_impress_doc(*args, **kwargs) -> XComponent:
         """
         Creates a new Impress document.
+
+        |lo_unsafe|
 
         Args:
             loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
@@ -318,9 +402,18 @@ class Draw:
         Returns:
             XComponent: Component representing document
         """
-        if loader is None:
+        arguments = list(args)
+        arguments.extend(kwargs.values())
+        count = len(arguments)
+        if count == 0:
             return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS)
-        return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS, loader=loader)
+        if count == 1:
+            arg = arguments[0]
+            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
+                return mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.IMPRESS, loader=arg)
+            if isinstance(arg, mLoInst.LoInst):
+                return arg.create_doc(doc_type=mLo.Lo.DocTypeStr.DRAW)
+        raise TypeError("create_impress_doc() got an unexpected argument")
 
     # endregion create_impress_doc()
 
@@ -329,8 +422,10 @@ class Draw:
         """
         Gets Slide template directory.
 
+        |lo_unsafe|
+
         Returns:
-            str: Path as string
+            str: Path as string.
 
         See Also:
             :py:class:`~.cfg.config.Config`
@@ -343,6 +438,8 @@ class Draw:
     def save_page(page: XDrawPage, fnm: PathOrStr, mime_type: str, filter_data: dict | None = None) -> None:
         """
         Saves a Draw page to file.
+
+        |lo_unsafe|
 
         Args:
             page (XDrawPage): Page to save
@@ -404,6 +501,8 @@ class Draw:
         """
         Gets the draw pages of a document.
 
+        |lo_safe|
+
         Args:
             doc (XComponent): Document.
 
@@ -430,6 +529,8 @@ class Draw:
         """
         Gets the slides count.
 
+        |lo_safe|
+
         Args:
             doc (XComponent): Document.
 
@@ -442,7 +543,9 @@ class Draw:
     @classmethod
     def get_slides_list(cls, doc: XComponent) -> List[XDrawPage]:
         """
-        Gets all the slides as a list of XDrawPage
+        Gets all the slides as a list of XDrawPage.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document
@@ -461,10 +564,12 @@ class Draw:
 
     @classmethod
     def _get_slide_doc(cls, doc: XComponent, idx: int) -> XDrawPage:
+        """Lo Safe Method."""
         return cls._get_slide_slides(cls.get_slides(doc), idx)
 
     @staticmethod
     def _get_slide_slides(slides: XDrawPages, idx: int) -> XDrawPage:
+        """Lo Safe Method."""
         try:
             return mLo.Lo.qi(XDrawPage, slides.getByIndex(idx), True)
         except IndexOutOfBoundsException as e:
@@ -475,35 +580,83 @@ class Draw:
     @overload
     @classmethod
     def get_slide(cls, doc: XComponent) -> XDrawPage:
+        """
+        Gets slide at index ``0``.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+
+        Returns:
+            XDrawPage: Slide as Draw Page.
+        """
         ...
 
     @overload
     @classmethod
     def get_slide(cls, doc: XComponent, idx: int) -> XDrawPage:
+        """
+        Gets slide by page index.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+            idx (int): Index of slide. Default ``0``.
+
+        Returns:
+            XDrawPage: Slide as Draw Page.
+        """
         ...
 
     @overload
     @classmethod
     def get_slide(cls, slides: XDrawPages) -> XDrawPage:
+        """
+        Gets slide at index ``0``.
+
+        |lo_safe|
+
+        Args:
+            slides (XDrawPages): Draw Pages.
+
+        Returns:
+            XDrawPage: Slide as Draw Page.
+        """
         ...
 
     @overload
     @classmethod
     def get_slide(cls, slides: XDrawPages, idx: int) -> XDrawPage:
+        """
+        Gets slide by page index.
+
+        |lo_safe|
+
+        Args:
+            slides (XDrawPages): Draw Pages.
+            idx (int): Index of slide. Default ``0``.
+
+        Returns:
+            XDrawPage: Slide as Draw Page.
+        """
         ...
 
     @classmethod
     def get_slide(cls, *args, **kwargs) -> XDrawPage:
         """
-        Gets slide by page index
+        Gets slide by page index.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            slides (XDrawPages): Draw Pages
-            idx (int): Index of slide. Default ``0``
+            doc (XComponent): Document.
+            slides (XDrawPages): Draw Pages.
+            idx (int): Index of slide. Default ``0``.
 
         Raises:
-            IndexError: If ``idx`` is out of bounds
+            IndexError: If ``idx`` is out of bounds.
             DrawError: If any other error occurs.
 
         Returns:
@@ -548,14 +701,16 @@ class Draw:
     @classmethod
     def find_slide_idx_by_name(cls, doc: XComponent, name: str) -> int:
         """
-        Gets a slides index by its name
+        Gets a slides index by its name.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            name (str): Slide Name
+            doc (XComponent): Document.
+            name (str): Slide Name.
 
         Returns:
-            int: Zero based index if found; Otherwise ``-1``
+            int: Zero based index if found; Otherwise ``-1``.
         """
         slide_name = name.casefold()
         num_slides = cls.get_slides_count(doc)
@@ -570,6 +725,7 @@ class Draw:
 
     @classmethod
     def _get_shapes_doc(cls, doc: XComponent) -> List[XShape]:
+        """LO Safe Method."""
         slides = cls.get_slides_list(doc)
         if not slides:
             return []
@@ -580,6 +736,7 @@ class Draw:
 
     @classmethod
     def _get_shapes_slide(cls, slide: XDrawPage) -> List[XShape]:
+        """LO Safe Method."""
         if slide.getCount() == 0:
             mLo.Lo.print("Slide does not contain any shapes")
             return []
@@ -606,27 +763,52 @@ class Draw:
     @overload
     @classmethod
     def get_shapes(cls, doc: XComponent) -> List[XShape]:
+        """
+        Gets Shapes for drawpage at index ``0``.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+
+        Returns:
+            List[XShape]: List of shapes.
+        """
         ...
 
     @overload
     @classmethod
     def get_shapes(cls, slide: XDrawPage) -> List[XShape]:
+        """
+        Gets Shapes for specified drawpage.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+            slide (XDrawPage): Slide.
+
+        Returns:
+            List[XShape]: List of shapes.
+        """
         ...
 
     @classmethod
     def get_shapes(cls, *args, **kwargs) -> List[XShape]:
         """
-        Gets Shapes
+        Gets Shapes.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            slide (XDrawPage): Slide
+            doc (XComponent): Document.
+            slide (XDrawPage): Slide.
 
         Raises:
             ShapeError: Conditionally if event :py:attr:`.DrawNamedEvent.GET_SHAPES_ERROR` is subscribe to. See Note.
 
         Returns:
-            List[XShape]: List of shapes
+            List[XShape]: List of shapes.
 
         Note:
             By default ``get_shapes`` will ignore shapes that fail to load.
@@ -696,6 +878,7 @@ class Draw:
     # region get_ordered_shapes()
     @classmethod
     def _get_ordered_shapes_doc(cls, doc: XComponent) -> List[XShape]:
+        """Lo Safe Method."""
         # get all the shapes in all the pages of the doc, in z-order per slide
         slides = cls.get_slides_list(doc)
         if not slides:
@@ -707,6 +890,8 @@ class Draw:
 
     @classmethod
     def _get_ordered_shapes_slide(cls, slide: XDrawPage) -> List[XShape]:
+        """Lo Safe Method."""
+
         def sorter(obj: XShape) -> int:
             return cls.get_zorder(obj)
 
@@ -717,21 +902,45 @@ class Draw:
     @overload
     @classmethod
     def get_ordered_shapes(cls, doc: XComponent) -> List[XShape]:
+        """
+        Gets ordered shapes for drawpage at index ``0``.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+
+        Returns:
+            List[XShape]: List of Ordered Shapes.
+        """
         ...
 
     @overload
     @classmethod
     def get_ordered_shapes(cls, slide: XDrawPage) -> List[XShape]:
+        """
+        Gets ordered shapes for specified drawpage.
+
+        |lo_safe|
+
+        Args:
+            slide (XDrawPage): Slide.
+
+        Returns:
+            List[XShape]: List of Ordered Shapes.
+        """
         ...
 
     @classmethod
     def get_ordered_shapes(cls, *args, **kwargs) -> List[XShape]:
         """
-        Gets ordered shapes
+        Gets ordered shapes.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            slide (XDrawPage): Slide
+            doc (XComponent): Document.
+            slide (XDrawPage): Slide.
 
         Returns:
             List[XShape]: List of Ordered Shapes.
@@ -775,10 +984,12 @@ class Draw:
     @classmethod
     def get_shapes_text(cls, doc: XComponent) -> str:
         """
-        Gets the text from inside all the document shapes
+        Gets the text from inside all the document shapes.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Returns:
             str: Shapes text.
@@ -799,8 +1010,10 @@ class Draw:
         """
         Add a slide to the end of the document.
 
+        |lo_safe|
+
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
             DrawPageMissingError: If unable to get pages.
@@ -824,7 +1037,9 @@ class Draw:
     @classmethod
     def insert_slide(cls, doc: XComponent, idx: int) -> XDrawPage:
         """
-        Inserts a slide at the given position in the document
+        Inserts a slide at the given position in the document.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document
@@ -851,11 +1066,13 @@ class Draw:
     @classmethod
     def delete_slide(cls, doc: XComponent, idx: int) -> bool:
         """
-        Deletes a slide
+        Deletes a slide.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            idx (int): Index
+            doc (XComponent): Document.
+            idx (int): Index.
 
         Returns:
             bool: ``True`` on success; Otherwise, ``False``
@@ -874,10 +1091,12 @@ class Draw:
     @classmethod
     def duplicate(cls, doc: XComponent, idx: int) -> XDrawPage:
         """
-        Duplicates a slide
+        Duplicates a slide.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
             idx (int): Index of slide to duplicate.
 
         Raises:
@@ -902,14 +1121,16 @@ class Draw:
         """
         Gets Layer manager for document.
 
+        |lo_safe|
+
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
             DrawError: If error occurs.
 
         Returns:
-            XLayerManager: Layer Manager
+            XLayerManager: Layer Manager.
         """
         try:
             layer_supp = mLo.Lo.qi(XLayerSupplier, doc, True)
@@ -921,15 +1142,17 @@ class Draw:
     @staticmethod
     def get_layer(doc: XComponent, layer_name: DrawingLayerKind | str) -> XLayer:
         """
-        Gets layer from layer name
+        Gets layer from layer name.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            layer_name (str): Layer Name
+            doc (XComponent): Document.
+            layer_name (str): Layer Name.
 
         Raises:
             NameError: If ``layer_name`` does not exist.
-            DrawError: If unable to get layer
+            DrawError: If unable to get layer.
 
         Returns:
             XLayer: Found Layer
@@ -946,11 +1169,13 @@ class Draw:
     @staticmethod
     def add_layer(lm: XLayerManager, layer_name: str) -> XLayer:
         """
-        Adds a layer
+        Adds a layer.
+
+        |lo_safe|
 
         Args:
-            lm (XLayerManager): Layer Manager
-            layer_name (str): Layer Name
+            lm (XLayerManager): Layer Manager.
+            layer_name (str): Layer Name.
 
         Raises:
             DrawError: If error occurs.
@@ -976,6 +1201,7 @@ class Draw:
     # region goto_page()
     @classmethod
     def _goto_page_doc(cls, doc: XComponent, page: XDrawPage) -> None:
+        """Lo Safe Method."""
         try:
             ctl = mGui.GUI.get_current_controller(doc)
             cls._goto_page_ctl(ctl, page)
@@ -986,6 +1212,7 @@ class Draw:
 
     @staticmethod
     def _goto_page_ctl(ctl: XController, page: XDrawPage) -> None:
+        """LO Safe Method."""
         try:
             x_draw_view = mLo.Lo.qi(XDrawView, ctl, True)
             x_draw_view.setCurrentPage(page)
@@ -995,17 +1222,49 @@ class Draw:
     @overload
     @classmethod
     def goto_page(cls, doc: XComponent, page: XDrawPage) -> None:
+        """
+        Go to page.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+            page (XDrawPage): Page.
+
+        Raises:
+            DrawError: If error occurs.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def goto_page(cls, ctl: XController, page: XDrawPage) -> None:
+        """
+        Go to page.
+
+        |lo_safe|
+
+        Args:
+            ctl (XController): Controller.
+            page (XDrawPage): Page.
+
+        Raises:
+            DrawError: If error occurs.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def goto_page(cls, *args, **kwargs) -> None:
         """
         Go to page.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document.
@@ -1057,16 +1316,18 @@ class Draw:
     @staticmethod
     def get_viewed_page(doc: XComponent) -> XDrawPage:
         """
-        Gets viewed page
+        Gets viewed page.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
             DrawPageError: If error occurs.
 
         Returns:
-            XDrawPage: Draw Page
+            XDrawPage: Draw Page.
         """
         try:
             ctl = mGui.GUI.get_current_controller(doc)
@@ -1080,10 +1341,12 @@ class Draw:
     @classmethod
     def _get_slide_number_draw_view(cls, xdraw_view: XDrawView) -> int:
         """
-        Gets Draw view slide number
+        Gets Draw view slide number.
+
+        |lo_safe|
 
         Args:
-            xdraw_view (XDrawView): Draw View
+            xdraw_view (XDrawView): Draw View.
 
         Raises:
             DrawError: If error occurs.
@@ -1102,7 +1365,9 @@ class Draw:
     @staticmethod
     def _get_slide_number_draw_page(slide: XDrawPage) -> int:
         """
-        Gets slide page number
+        Gets slide page number.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1121,17 +1386,41 @@ class Draw:
     @overload
     @classmethod
     def get_slide_number(cls, xdraw_view: XDrawView) -> int:
+        """
+        Gets slide number.
+
+        |lo_safe|
+
+        Args:
+            xdraw_view (XDrawView): Draw View.
+
+        Returns:
+            int: Slide Number.
+        """
         ...
 
     @overload
     @classmethod
     def get_slide_number(cls, slide: XDrawPage) -> int:
+        """
+        Gets slide number.
+
+        |lo_safe|
+
+        Args:
+            slide (XDrawPage): Slide.
+
+        Returns:
+            int: Slide Number.
+        """
         ...
 
     @classmethod
     def get_slide_number(cls, *args, **kwargs) -> int:
         """
         Gets slide number.
+
+        |lo_safe|
 
         Args:
             xdraw_view (XDrawView): Draw View.
@@ -1183,10 +1472,12 @@ class Draw:
     @staticmethod
     def get_master_page_count(doc: XComponent) -> int:
         """
-        Gets master page count
+        Gets master page count.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
             DrawError: If error occurs.
@@ -1204,6 +1495,7 @@ class Draw:
     # region get_master_page()
     @staticmethod
     def _get_master_page_idx(doc: XComponent, idx: int) -> XDrawPage:
+        """Lo Safe Method."""
         try:
             mp_supp = mLo.Lo.qi(XMasterPagesSupplier, doc, True)
             pgs = mp_supp.getMasterPages()
@@ -1215,6 +1507,7 @@ class Draw:
 
     @staticmethod
     def _get_master_page_slide(slide: XDrawPage) -> XDrawPage:
+        """LO Safe Method."""
         try:
             mp_target = mLo.Lo.qi(XMasterPageTarget, slide, True)
             return mp_target.getMasterPage()
@@ -1224,21 +1517,29 @@ class Draw:
     @overload
     @classmethod
     def get_master_page(cls, doc: XComponent, idx: int) -> XDrawPage:
+        """
+        Gets master page.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+            idx (int): Index of page.
+
+        Returns:
+            XDrawPage: Draw page.
+        """
         ...
 
     @overload
     @classmethod
     def get_master_page(cls, slide: XDrawPage) -> XDrawPage:
-        ...
-
-    @classmethod
-    def get_master_page(cls, *args, **kwargs) -> XDrawPage:
         """
-        Gets master page
+        Gets master page.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            idx (int): Index of page
             slide (XDrawPage): Slide to get master page from.
 
         Raises:
@@ -1246,7 +1547,28 @@ class Draw:
             IndexError: if ``idx`` is out of bounds.
 
         Returns:
-            XDrawPage: Draw page if found; Otherwise ``None``
+            XDrawPage: Draw page.
+        """
+        ...
+
+    @classmethod
+    def get_master_page(cls, *args, **kwargs) -> XDrawPage:
+        """
+        Gets master page.
+
+        |lo_safe|
+
+        Args:
+            doc (XComponent): Document.
+            idx (int): Index of page.
+            slide (XDrawPage): Slide to get master page from.
+
+        Raises:
+            DrawPageError: if unable to get master page.
+            IndexError: if ``idx`` is out of bounds.
+
+        Returns:
+            XDrawPage: Draw page.
         """
         ordered_keys = (1, 2)
         kargs_len = len(kwargs)
@@ -1289,6 +1611,8 @@ class Draw:
         """
         Inserts a master page.
 
+        |lo_safe|
+
         Args:
             doc (XComponent): Document.
             idx (int): Index used to insert page.
@@ -1312,14 +1636,16 @@ class Draw:
     @staticmethod
     def remove_master_page(doc: XComponent, slide: XDrawPage) -> None:
         """
-        Removes a master page
+        Removes a master page.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
-            slide (XDrawPage): Draw page to remove
+            doc (XComponent): Document.
+            slide (XDrawPage): Draw page to remove.
 
         Raises:
-            DrawError: If unable to remove master page/
+            DrawError: If unable to remove master page.
 
         Returns:
             None:
@@ -1334,11 +1660,13 @@ class Draw:
     @staticmethod
     def set_master_page(slide: XDrawPage, page: XDrawPage) -> None:
         """
-        Sets master page
+        Sets master page.
+
+        |lo_safe|
 
         Args:
-            slide (XDrawPage): Slide
-            page (XDrawPage): Page to set as master
+            slide (XDrawPage): Slide.
+            page (XDrawPage): Page to set as master.
 
         Raises:
             DrawError: If unable to set master page.
@@ -1356,6 +1684,8 @@ class Draw:
     def get_handout_master_page(doc: XComponent) -> XDrawPage:
         """
         Gets handout master page for an impress document.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Impress Document.
@@ -1379,11 +1709,13 @@ class Draw:
     @staticmethod
     def find_master_page(doc: XComponent, style: str) -> XDrawPage:
         """
-        Finds master page
+        Finds master page.
 
         Args:
-            doc (XComponent): Document
-            style (str): Style of master page
+            doc (XComponent): Document.
+            style (str): Style of master page.
+
+        |lo_safe|
 
         Raises:
             DrawPageMissingError: If unable to match ``style``.
@@ -1413,10 +1745,12 @@ class Draw:
     @classmethod
     def show_shapes_info(cls, slide: XDrawPage) -> None:
         """
-        Prints info for shapes to console
+        Prints info for shapes to console.
+
+        |lo_safe|
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide/
 
         Returns:
             None:
@@ -1430,6 +1764,8 @@ class Draw:
     def get_slide_title(cls, slide: XDrawPage) -> str | None:
         """
         Gets slide title if it exist.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1451,7 +1787,9 @@ class Draw:
     @staticmethod
     def get_slide_size(slide: XDrawPage) -> Size:
         """
-        Gets size of the given slide page (in mm units)
+        Gets size of the given slide page (in mm units).
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1477,6 +1815,8 @@ class Draw:
         """
         Gets the name of a slide.
 
+        |lo_safe|
+
         Args:
             slide (XDrawPage): Slide.
 
@@ -1499,6 +1839,8 @@ class Draw:
         """
         Sets the name of a slide.
 
+        |lo_safe|
+
         Args:
             slide (XDrawPage): Slide.
             name (str): Name.
@@ -1519,17 +1861,50 @@ class Draw:
     @overload
     @classmethod
     def title_slide(cls, slide: XDrawPage, title: str) -> None:
+        """
+        Set a slides title and sub title.
+
+        |lo_safe|
+
+        Args:
+            slide (XDrawPage): Slide.
+            title (str): Title.
+
+        Raises:
+            DrawError: If error setting Slide.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def title_slide(cls, slide: XDrawPage, title: str, sub_title: str) -> None:
+        """
+        Set a slides title and sub title.
+
+        |lo_safe|
+
+        Args:
+            slide (XDrawPage): Slide.
+            title (str): Title.
+            sub_title (str): Sub Title.
+
+        Raises:
+            DrawError: If error setting Slide.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def title_slide(cls, slide: XDrawPage, title: str, sub_title: str = "") -> None:
         """
         Set a slides title and sub title.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide.
@@ -1568,7 +1943,9 @@ class Draw:
         Add text to the slide page by treating it as a bullet page, which
         has two text shapes: one for the title, the other for a sequence of
         bullet points; add the title text but return a reference to the bullet
-        text area
+        text area.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1578,7 +1955,7 @@ class Draw:
             DrawError: If error setting slide.
 
         Returns:
-            XText: Text Object
+            XText: Text Object.
         """
         try:
             mProps.Props.set(slide, Layout=PresentationLayoutKind.TITLE_BULLETS.value)
@@ -1600,6 +1977,8 @@ class Draw:
         Add bullet text to the end of the bullets text area, specifying
         the nesting of the bullet using a numbering level value
         (numbering starts at 0).
+
+        |lo_safe|
 
         Args:
             bulls_txt (XText): Text object
@@ -1627,7 +2006,9 @@ class Draw:
     @classmethod
     def title_only_slide(cls, slide: XDrawPage, header: str) -> None:
         """
-        Creates a slide with only a title
+        Creates a slide with only a title.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1652,13 +2033,15 @@ class Draw:
     @staticmethod
     def blank_slide(slide: XDrawPage) -> None:
         """
-        Inserts a blank slide
+        Inserts a blank slide.
+
+        |lo_safe|
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide.
 
         Raises:
-            DrawError: If error occurs
+            DrawError: If error occurs.
 
         Returns:
             None:
@@ -1674,6 +2057,8 @@ class Draw:
         Gets the notes page of a slide.
 
         Each draw page has a notes page.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1711,6 +2096,8 @@ class Draw:
 
         Each draw page has a notes page.
 
+        |lo_safe|
+
         Args:
             doc (XComponent): Document
             idx (int): Index
@@ -1740,6 +2127,8 @@ class Draw:
         """
         Prints shape info to console.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
 
@@ -1751,6 +2140,7 @@ class Draw:
     # region get_shape_text()
     @classmethod
     def _get_shape_text_shape(cls, shape: XShape) -> str:
+        """Lo Safe Method."""
         try:
             xtext = mLo.Lo.qi(XText, shape, True)
 
@@ -1762,6 +2152,7 @@ class Draw:
 
     @classmethod
     def _get_shape_text_slide(cls, slide: XDrawPage) -> str:
+        """Lo Safe Method."""
         try:
             sb: List[str] = []
             shapes = cls._get_ordered_shapes_slide(slide)
@@ -1787,15 +2178,17 @@ class Draw:
         """
         Gets the text from inside a shape.
 
+        |lo_safe|
+
         Args:
-            shape (XShape): Shape
-            slide (XDrawPage): Slide
+            shape (XShape): Shape.
+            slide (XDrawPage): Slide.
 
         Raises:
             DrawError: If error occurs getting shape text.
 
         Returns:
-            str: Shape text
+            str: Shape text.
         """
         ordered_keys = (1,)
         kargs_len = len(kwargs)
@@ -1834,7 +2227,9 @@ class Draw:
     @classmethod
     def find_shape_by_type(cls, slide: XDrawPage, shape_type: DrawingNameSpaceKind | str) -> XShape:
         """
-        Finds a shape by its type
+        Finds a shape by its type.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1867,6 +2262,8 @@ class Draw:
     def find_shape_by_name(cls, slide: XDrawPage, shape_name: str) -> XShape:
         """
         Finds a shape by its name.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide.
@@ -1901,9 +2298,11 @@ class Draw:
         """
         Copies a shapes contents from old shape into new shape.
 
+        |lo_unsafe|
+
         Args:
-            slide (XDrawPage): Slide
-            old_shape (XShape): Old shape
+            slide (XDrawPage): Slide.
+            old_shape (XShape): Old shape.
 
         Raises:
             ShapeError: If unable to copy shape contents.
@@ -1924,7 +2323,9 @@ class Draw:
     @classmethod
     def copy_shape(cls, slide: XDrawPage, old_shape: XShape) -> XShape:
         """
-        Copies a shape
+        Copies a shape.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide
@@ -1954,6 +2355,8 @@ class Draw:
         """
         Sets the z-order of a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape.
             order (int): Z-Order.
@@ -1972,7 +2375,9 @@ class Draw:
     @staticmethod
     def get_zorder(shape: XShape) -> int:
         """
-        Gets the z-order of a shape
+        Gets the z-order of a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -1992,6 +2397,8 @@ class Draw:
     def move_to_top(cls, slide: XDrawPage, shape: XShape) -> None:
         """
         Moves the z-order of a shape to the top.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -2016,6 +2423,8 @@ class Draw:
         """
         Finds the shape with the largest z-order.
 
+        |lo_safe|
+
         Args:
             slide (XDrawPage): Slide
 
@@ -2036,6 +2445,8 @@ class Draw:
     def find_top_shape(cls, slide: XDrawPage) -> XShape:
         """
         Gets the top most shape of a slide.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -2069,11 +2480,13 @@ class Draw:
     @classmethod
     def move_to_bottom(cls, slide: XDrawPage, shape: XShape) -> None:
         """
-        Moves a shape to the bottom of the z-order
+        Moves a shape to the bottom of the z-order.
+
+        |lo_safe|
 
         Args:
-            slide (XDrawPage): Slide
-            shape (XShape): Shape
+            slide (XDrawPage): Slide.
+            shape (XShape): Shape.
 
         Raises:
             ShapeMissingError: If unable to find shapes for slide.
@@ -2112,7 +2525,9 @@ class Draw:
         height: int | UnitT,
     ) -> XShape:
         """
-        Creates a shape
+        Creates a shape.
+
+        |lo_unsafe|
 
         Args:
             shape_type (DrawingShapeKind | str): Shape type.
@@ -2155,6 +2570,8 @@ class Draw:
     def warns_position(cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT) -> None:
         """
         Warns via console if a ``x`` or ``y`` is not on the page.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -2202,6 +2619,8 @@ class Draw:
         """
         Adds a shape to a slide.
 
+        |lo_unsafe|
+
         Args:
             slide (XDrawPage): Slide
             shape_type (DrawingShapeKind | str): Shape type.
@@ -2246,6 +2665,8 @@ class Draw:
         """
         Gets a rectangle.
 
+        |lo_unsafe|
+
         Args:
             slide (XDrawPage): Slide.
             x (int, UnitT): Shape X position in mm units or UnitT.
@@ -2273,7 +2694,9 @@ class Draw:
     @classmethod
     def draw_circle(cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, radius: int | UnitT) -> XShape:
         """
-        Gets a circle
+        Gets a circle.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide
@@ -2305,7 +2728,9 @@ class Draw:
         cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
     ) -> XShape:
         """
-        Gets an ellipse
+        Gets an ellipse.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide
@@ -2328,6 +2753,20 @@ class Draw:
     @overload
     @classmethod
     def draw_polygon(cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, sides: PolySides | int) -> XShape:
+        """
+        Gets a polygon.
+
+        |lo_unsafe|
+
+        Args:
+            slide (XDrawPage): Slide.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            sides (PolySides | int): Polygon Sides value from ``3`` to ``30``.
+
+        Returns:
+            XShape: Polygon Shape.
+        """
         ...
 
     @overload
@@ -2335,6 +2774,21 @@ class Draw:
     def draw_polygon(
         cls, slide: XDrawPage, x: int | UnitT, y: int | UnitT, sides: PolySides | int, radius: int
     ) -> XShape:
+        """
+        Gets a polygon.
+
+        |lo_unsafe|
+
+        Args:
+            slide (XDrawPage): Slide.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            sides (PolySides | int): Polygon Sides value from ``3`` to ``30``.
+            radius (int, optional): Shape radius in mm units. Defaults to the value of :py:attr:`.Draw.POLY_RADIUS`.
+
+        Returns:
+            XShape: Polygon Shape.
+        """
         ...
 
     @classmethod
@@ -2343,6 +2797,8 @@ class Draw:
     ) -> XShape:
         """
         Gets a polygon.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide.
@@ -2387,7 +2843,9 @@ class Draw:
         cls, x: int | UnitT, y: int | UnitT, radius: int | UnitT, sides: PolySides | int
     ) -> Tuple[Point, ...]:
         """
-        Generates a list of polygon points
+        Generates a list of polygon points.
+
+        |lo_safe|
 
         Args:
             x (int, UnitT): Shape X position in mm units or UnitT.
@@ -2429,10 +2887,12 @@ class Draw:
         """
         Draws a bezier curve.
 
+        |lo_unsafe|
+
         Args:
-            slide (XDrawPage): Slide
-            pts (Sequence[Point]): Points
-            flags (Sequence[PolygonFlags]): Flags
+            slide (XDrawPage): Slide.
+            pts (Sequence[Point]): Points.
+            flags (Sequence[PolygonFlags]): Flags.
             is_open (bool): Determines if an open or closed bezier is drawn.
 
         Raises:
@@ -2477,10 +2937,12 @@ class Draw:
     @classmethod
     def draw_line(cls, slide: XDrawPage, x1: int | UnitT, y1: int | UnitT, x2: int | UnitT, y2: int | UnitT) -> XShape:
         """
-        Draws a line
+        Draws a line.
+
+        |lo_unsafe|
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide.
             x1 (int, UnitT): Line start X position in mm units or UnitT.
             y1 (int, UnitT): Line start Y position mm units or UnitT.
             x2 (int, UnitT): Line end X position mm units or UnitT.
@@ -2518,14 +2980,16 @@ class Draw:
     ) -> XShape:
         """
         Draw a line from ``x``, ``y`` in the direction of degrees, for the specified distance
-        degrees is measured clockwise from x-axis
+        degrees is measured clockwise from x-axis.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide.
             x (int, UnitT): Shape X position in mm units or UnitT.
             y (int, UnitT): Shape Y position in mm units or UnitT.
-            degrees (int): Direction of degrees
-            distance (int, UnitT): Distance of line in mm units or UnitT..
+            degrees (int): Direction of degrees.
+            distance (int, UnitT): Distance of line in mm units or UnitT.
 
         Raises:
             ShapeError: If unable to create Polar Line Shape.
@@ -2548,7 +3012,9 @@ class Draw:
     @classmethod
     def draw_lines(cls, slide: XDrawPage, xs: Sequence[Union[int, UnitT]], ys: Sequence[Union[int, UnitT]]) -> XShape:
         """
-        Draw lines
+        Draw lines.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide
@@ -2597,11 +3063,44 @@ class Draw:
     @overload
     @classmethod
     def draw_text(cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int) -> XShape:
+        """
+        Draws Text.
+
+        |lo_unsafe|
+
+        Args:
+            slide (XDrawPage): Slide.
+            msg (str): Text to draw.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
+
+        Returns:
+            XShape: Shape
+        """
         ...
 
     @overload
     @classmethod
     def draw_text(cls, slide: XDrawPage, msg: str, x: int, y: int, width: int, height: int, font_size: int) -> XShape:
+        """
+        Draws Text.
+
+        |lo_unsafe|
+
+        Args:
+            slide (XDrawPage): Slide.
+            msg (str): Text to draw.
+            x (int, UnitT): Shape X position in mm units or UnitT.
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
+            font_size (float, UnitT, optional): Font size of text in Points or UnitT.
+
+        Returns:
+            XShape: Shape
+        """
         ...
 
     @classmethod
@@ -2617,6 +3116,8 @@ class Draw:
     ) -> XShape:
         """
         Draws Text.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide.
@@ -2656,7 +3157,9 @@ class Draw:
     @classmethod
     def add_text(cls, shape: XShape, msg: str, font_size: float | UnitT = 0, **props) -> None:
         """
-        Add text to a shape
+        Add text to a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -2695,10 +3198,12 @@ class Draw:
         end_conn: GluePointsKind | None = None,
     ) -> XShape:
         """
-        Add connector
+        Add connector.
+
+        |lo_unsafe|
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide.
             shape1 (XShape): First Shape to add connector to.
             shape2 (XShape): Second Shape to add connector to.
             start_conn (GluePointsKind | None, optional): Start connector kind. Defaults to right.
@@ -2748,6 +3253,8 @@ class Draw:
         """
         Gets Glue Points.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape.
 
@@ -2792,6 +3299,8 @@ class Draw:
         """
         Gets a chart shape.
 
+        |lo_unsafe|
+
         Args:
             slide (XDrawPage): Slide.
             x (int, UnitT): Shape X position in mm units or UnitT.
@@ -2821,15 +3330,17 @@ class Draw:
         cls, slide: XDrawPage, formula: str, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT
     ) -> XShape:
         """
-        Draws a formula
+        Draws a formula.
+
+        |lo_unsafe|
 
         Args:
-            slide (XDrawPage): Slide
-            formula (str): Formula as string to draw/
+            slide (XDrawPage): Slide.
+            formula (str): Formula as string to draw.
             x (int, UnitT): Shape X position in mm units or UnitT.
-            y (int, , UnitT): Shape Y position in mm units or UnitT
-            width (int, , UnitT): Shape width in mm units or UnitT
-            height (int, , UnitT): Shape height in mm units or UnitT
+            y (int, , UnitT): Shape Y position in mm units or UnitT.
+            width (int, , UnitT): Shape width in mm units or UnitT.
+            height (int, , UnitT): Shape height in mm units or UnitT.
 
         Raises:
             ShapeError: If error occurs.
@@ -2875,6 +3386,8 @@ class Draw:
         """
         Draws media.
 
+        |lo_unsafe|
+
         Args:
             slide (XDrawPage): Slide.
             fnm (PathOrStr): Path to Media file.
@@ -2917,7 +3430,9 @@ class Draw:
     @staticmethod
     def is_group(shape: XShape) -> bool:
         """
-        Gets if a shape is a Group Shape
+        Gets if a shape is a Group Shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -2935,9 +3450,11 @@ class Draw:
         """
         Combines one or more shapes.
 
+        |lo_unsafe|
+
         Args:
-            doc (XComponent): Document
-            shapes (XShapes): Shapes to combine
+            doc (XComponent): Document.
+            shapes (XShapes): Shapes to combine.
             combine_op (ShapeCompKind): Combine Operation.
 
         Raises:
@@ -2980,7 +3497,9 @@ class Draw:
         **props,
     ) -> XControlShape:
         """
-        Creates a control shape
+        Creates a control shape.
+
+        |lo_unsafe|
 
         Args:
             label (str): Label to apply.
@@ -2988,9 +3507,9 @@ class Draw:
             y (int, UnitT): Shape Y position in mm units or UnitT.
             width (int, UnitT): Shape width in mm units or UnitT.
             height (int, UnitT): Shape height in mm units or UnitT.
-            shape_kind (FormControlKind | str): The kind of control to create
+            shape_kind (FormControlKind | str): The kind of control to create.
             props (Any, optional): Any extra key value options to set on the Model of the control being created
-                such as ``FontHeight=18.0, Name="BLA"``
+                such as ``FontHeight=18.0, Name="BLA"``.
 
         Raises:
             ShapeError: If error occurs.
@@ -3056,15 +3575,17 @@ class Draw:
         fn: DispatchShape,
     ) -> XShape:
         """
-        Adds a shape to a Draw slide via a dispatch command
+        Adds a shape to a Draw slide via a dispatch command.
+
+        |lo_unsafe|
 
         Args:
-            slide (XDrawPage): Slide
-            shape_dispatch (ShapeDispatchKind | str): Dispatch Command
+            slide (XDrawPage): Slide.
+            shape_dispatch (ShapeDispatchKind | str): Dispatch Command.
             x (int, UnitT): Shape X position in mm units or UnitT.
-            y (int, UnitT): Shape Y position in mm units or UnitT
-            width (int, UnitT): Shape width in mm units or UnitT
-            height (int, UnitT): Shape height in mm units or UnitT
+            y (int, UnitT): Shape Y position in mm units or UnitT.
+            width (int, UnitT): Shape width in mm units or UnitT.
+            height (int, UnitT): Shape height in mm units or UnitT.
             fn (DispatchShape): Function that is responsible for running the dispatch command and returning the shape.
 
         Raises:
@@ -3075,7 +3596,8 @@ class Draw:
             XShape: Shape
 
         See Also:
-            :py:protocol:`~.proto.dispatch_shape.DispatchShape`
+            - :py:protocol:`~.proto.dispatch_shape.DispatchShape`
+            - Example - `Impress Make Slides <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/impress/odev_make_slides>`__
         """
         cls.warns_position(slide, x, y)
         try:
@@ -3097,9 +3619,11 @@ class Draw:
         """
         Creates a shape via a dispatch command.
 
+        |lo_unsafe|
+
         Args:
-            slide (XDrawPage): Slide
-            shape_dispatch (ShapeDispatchKind | str): Dispatch Command
+            slide (XDrawPage): Slide.
+            shape_dispatch (ShapeDispatchKind | str): Dispatch Command.
             fn (DispatchShape): Function that is responsible for running the dispatch command and returning the shape.
 
         Raises:
@@ -3108,6 +3632,9 @@ class Draw:
 
         Returns:
             XShape: Shape
+
+        See Also:
+            Example - `Impress Make Slides <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/impress/odev_make_slides>`__
         """
         try:
             shape = fn(slide, str(shape_dispatch))
@@ -3128,6 +3655,8 @@ class Draw:
     def set_master_footer(cls, master: XDrawPage, text: str) -> None:
         """
         Sets master footer text.
+
+        |lo_safe|
 
         Args:
             master (XDrawPage): Master Draw Page.
@@ -3152,10 +3681,12 @@ class Draw:
     @classmethod
     def add_slide_number(cls, slide: XDrawPage) -> XShape:
         """
-        Adds slide number to a slide
+        Adds slide number to a slide.
+
+        |lo_unsafe|
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide.
 
         Raises:
             ShapeError: If error occurs.
@@ -3191,10 +3722,12 @@ class Draw:
         height: int | UnitT,
     ) -> XShape:
         """
-        Creates a shape from the "com.sun.star.presentation" package:
+        Creates a shape from the "com.sun.star.presentation" package.
+
+        |lo_unsafe|
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide.
             shape_type (PresentationKind): Kind of presentation package to create.
             x (int, UnitT): Shape X position in mm units or UnitT.
             y (int, UnitT): Shape Y position in mm units or UnitT.
@@ -3224,16 +3757,18 @@ class Draw:
     @staticmethod
     def get_position(shape: XShape) -> Point:
         """
-        Gets position in mm units
+        Gets position in mm units.
+
+        |lo_safe|
 
         Args:
-            shape (XShape): Shape
+            shape (XShape): Shape.
 
         Raises:
             PointError: If error occurs.
 
         Returns:
-            Point: Position as Point in mm units
+            Point: Position as Point in mm units.
         """
         try:
             pt = shape.getPosition()
@@ -3248,6 +3783,8 @@ class Draw:
     def get_size(shape: XShape) -> Size:
         """
         Gets Size in mm units.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -3270,10 +3807,12 @@ class Draw:
     @staticmethod
     def print_point(pt: Point) -> None:
         """
-        Prints point to console in mm units
+        Prints point to console in mm units.
+
+        |lo_safe|
 
         Args:
-            pt (Point): Point object
+            pt (Point): Point object.
 
         Returns:
             None:
@@ -3283,10 +3822,12 @@ class Draw:
     @staticmethod
     def print_size(sz: SizeObj) -> None:
         """
-        Prints size to console in mm units
+        Prints size to console in mm units.
+
+        |lo_safe|
 
         Args:
-            sz (SizeObj): Size object
+            sz (SizeObj): Size object.
 
         Returns:
             None:
@@ -3296,7 +3837,9 @@ class Draw:
     @classmethod
     def report_pos_size(cls, shape: XShape) -> None:
         """
-        Prints shape information to the console
+        Prints shape information to the console.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -3327,6 +3870,8 @@ class Draw:
         """
         Sets Position of shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
             pt (point): Point that contains x and y positions in mm units.
@@ -3342,6 +3887,8 @@ class Draw:
         """
         Sets Position of shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
             x (int, UnitT): X position in mm units or UnitT.
@@ -3356,6 +3903,8 @@ class Draw:
     def set_position(cls, *args, **kwargs) -> None:
         """
         Sets Position of shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -3428,17 +3977,50 @@ class Draw:
     @overload
     @classmethod
     def set_size(cls, shape: XShape, sz: SizeObj) -> None:
+        """
+        Sets set_size of shape.
+
+        |lo_safe|
+
+        Args:
+            shape (XShape): Shape.
+            sz (~ooodev.utils.data_type.size.Size): Size that contains width and height positions in mm units.
+
+        Raises:
+            ShapeError: If error occurs.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def set_size(cls, shape: XShape, width: int | UnitT, height: int | UnitT) -> None:
+        """
+        Sets set_size of shape.
+
+        |lo_safe|
+
+        Args:
+            shape (XShape): Shape.
+            width (int, UnitT): Width position in mm units or UnitT.
+            height (int, UnitT): Height position in mm units or UnitT.
+
+        Raises:
+            ShapeError: If error occurs.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def set_size(cls, *args, **kwargs) -> None:
         """
         Sets set_size of shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape.
@@ -3512,6 +4094,8 @@ class Draw:
         """
         Set the graphic style for a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape.
             graphic_styles (XNameContainer): Graphic styles.
@@ -3533,6 +4117,8 @@ class Draw:
     def get_text_properties(shape: XShape) -> XPropertySet:
         """
         Gets the properties associated with the text area inside the shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -3558,6 +4144,8 @@ class Draw:
         """
         Gets the line color of a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
 
@@ -3576,7 +4164,9 @@ class Draw:
     @staticmethod
     def set_dashed_line(shape: XShape, is_dashed: bool) -> None:
         """
-        Set a dashed line
+        Set a dashed line.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -3611,6 +4201,8 @@ class Draw:
         """
         Gets line thickness of a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
 
@@ -3629,6 +4221,8 @@ class Draw:
     def get_fill_color(shape: XShape) -> mColor.Color:
         """
         Gets the fill color of a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -3651,6 +4245,8 @@ class Draw:
         Sets the transparency level for the shape.
         Higher level means more transparent.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
             level (Intensity, int): Transparency value. Represents a intensity value from ``0`` to ``100``.
@@ -3672,6 +4268,8 @@ class Draw:
         """
         Sets shapes gradient properties.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape.
             grad (~com.sun.star.awt.Gradient): Gradient properties to set.
@@ -3689,6 +4287,7 @@ class Draw:
 
     @staticmethod
     def _set_gradient_color_name(shape: XShape, name: DrawingGradientKind | str) -> Gradient:
+        """Lo Safe Method"""
         try:
             props = mLo.Lo.qi(XPropertySet, shape, True)
             props.setPropertyValue("FillStyle", FillStyle.GRADIENT)
@@ -3703,6 +4302,7 @@ class Draw:
     def _set_gradient_color_colors(
         cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle
     ) -> Gradient:
+        """Lo Safe Method."""
         try:
             grad = Gradient()
             grad.Style = GradientStyle.LINEAR  # type: ignore
@@ -3730,11 +4330,36 @@ class Draw:
     @overload
     @classmethod
     def set_gradient_color(cls, shape: XShape, name: DrawingGradientKind | str) -> Gradient:
+        """
+        Set the gradient color of the shape.
+
+        |lo_safe|
+
+        Args:
+            shape (XShape): Shape.
+            name (DrawingGradientKind | str): Gradient color name.
+
+        Returns:
+            Gradient: Gradient instance that just had properties set.
+        """
         ...
 
     @overload
     @classmethod
     def set_gradient_color(cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color) -> Gradient:
+        """
+        Set the gradient color of the shape.
+
+        |lo_safe|
+
+        Args:
+            shape (XShape): Shape.
+            start_color (~ooodev.utils.color.Color): Start Color.
+            end_color (~ooodev.utils.color.Color): End Color.
+
+        Returns:
+            Gradient: Gradient instance that just had properties set.
+        """
         ...
 
     @overload
@@ -3742,12 +4367,28 @@ class Draw:
     def set_gradient_color(
         cls, shape: XShape, start_color: mColor.Color, end_color: mColor.Color, angle: Angle | int
     ) -> Gradient:
+        """
+        Set the gradient color of the shape.
+
+        |lo_safe|
+
+        Args:
+            shape (XShape): Shape.
+            start_color (~ooodev.utils.color.Color): Start Color.
+            end_color (~ooodev.utils.color.Color): End Color.
+            angle (Angle, int): Gradient angle.
+
+        Returns:
+            Gradient: Gradient instance that just had properties set.
+        """
         ...
 
     @classmethod
     def set_gradient_color(cls, *args, **kwargs) -> Gradient:
         """
         Set the gradient color of the shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape.
@@ -3822,6 +4463,8 @@ class Draw:
         """
         Set hatching color of a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape.
             name (DrawingHatchingKind, str): Hatching Name.
@@ -3856,6 +4499,8 @@ class Draw:
         """
         Set bitmap color of a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
             name (DrawingBitmapKind, str): Bitmap Name
@@ -3889,6 +4534,8 @@ class Draw:
         """
         Set bitmap color from file.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
             fnm (PathOrStr): path to file.
@@ -3912,6 +4559,8 @@ class Draw:
         """
         Set the line style for a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape.
             style (LineStyle): Line Style.
@@ -3931,6 +4580,8 @@ class Draw:
     def set_visible(cls, shape: XShape, is_visible: bool) -> None:
         """
         Set the line style for a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape.
@@ -3954,10 +4605,12 @@ class Draw:
     @classmethod
     def set_angle(cls, shape: XShape, angle: Angle | int) -> None:
         """
-        Set the line style for a shape
+        Set the line style for a shape.
+
+        |lo_safe|
 
         Args:
-            shape (XShape): Shape
+            shape (XShape): Shape.
             angle (Angle | int): Angle to set.
 
         Raises:
@@ -3975,7 +4628,9 @@ class Draw:
     @staticmethod
     def get_rotation(shape: XShape) -> Angle:
         """
-        Gets the rotation of a shape
+        Gets the rotation of a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -3996,6 +4651,8 @@ class Draw:
     def set_rotation(shape: XShape, angle: Angle | int) -> None:
         """
         Set the rotation of a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape.
@@ -4019,6 +4676,8 @@ class Draw:
         Gets a transformation matrix which seems to represent a clockwise rotation.
 
         Homogeneous matrix has three homogeneous lines
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape
@@ -4044,6 +4703,8 @@ class Draw:
         """
         Prints matrix to console
 
+        |lo_safe|
+
         Args:
             mat (HomogenMatrix3): Matrix
 
@@ -4067,6 +4728,7 @@ class Draw:
     # region draw_image()
     @classmethod
     def _draw_image_path(cls, slide: XDrawPage, fnm: PathOrStr) -> XShape:
+        """LO UN-Safe Method."""
         try:
             slide_size = cls.get_slide_size(slide)
             try:
@@ -4085,6 +4747,7 @@ class Draw:
 
     @classmethod
     def _draw_image_path_x_y(cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int) -> XShape:
+        """LO UN-Safe Method."""
         try:
             try:
                 im_size = mImgLo.ImagesLo.get_size_100mm(fnm)
@@ -4102,6 +4765,7 @@ class Draw:
     def _draw_image_path_x_y_w_h(
         cls, slide: XDrawPage, fnm: PathOrStr, x: int, y: int, width: int, height: int
     ) -> XShape:
+        """LO UN-Safe Method."""
         # units in mm's
         mLo.Lo.print(f'Adding the picture "{fnm}"')
         try:
@@ -4122,6 +4786,8 @@ class Draw:
         """
         Draws an image.
 
+        |lo_unsafe|
+
         Args:
             slide (XDrawPage): Slide.
             fnm (PathOrStr): Path to image.
@@ -4136,6 +4802,8 @@ class Draw:
     def draw_image(cls, slide: XDrawPage, fnm: PathOrStr, x: int | UnitT, y: int | UnitT) -> XShape:
         """
         Draws an image.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide.
@@ -4156,6 +4824,8 @@ class Draw:
         """
         Draws an image.
 
+        |lo_unsafe|
+
         Args:
             slide (XDrawPage): Slide.
             fnm (PathOrStr): Path to image.
@@ -4173,6 +4843,8 @@ class Draw:
     def draw_image(cls, *args, **kwargs) -> XShape:
         """
         Draws an image.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide.
@@ -4236,6 +4908,8 @@ class Draw:
         """
         Sets the image of a shape.
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape.
             fnm (PathOrStr): Path to image.
@@ -4259,6 +4933,8 @@ class Draw:
     def set_image_graphic(shape: XShape, graphic: XGraphic) -> None:
         """
         Sets the image of a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape.
@@ -4285,6 +4961,8 @@ class Draw:
         Insert the specified picture onto the slide page in the doc
         presentation document. Use the supplied (x, y) offsets to locate the
         top-left of the image.
+
+        |lo_unsafe|
 
         Args:
             slide (XDrawPage): Slide
@@ -4322,6 +5000,8 @@ class Draw:
         """
         Gets if a shape is an image (GraphicObjectShape).
 
+        |lo_safe|
+
         Args:
             shape (XShape): Shape
 
@@ -4340,6 +5020,8 @@ class Draw:
         """
         Gets form container.
         The first form in slide is returned if found.
+
+        |lo_safe|
 
         Args:
             slide (XDrawPage): Slide
@@ -4373,6 +5055,8 @@ class Draw:
         """
         Gets Slide show Presentation.
 
+        |lo_safe|
+
         Args:
             doc (XComponent): Document.
 
@@ -4391,10 +5075,12 @@ class Draw:
     @staticmethod
     def get_show_controller(show: XPresentation2) -> XSlideShowController:
         """
-        Gets slide show controller
+        Gets slide show controller.
+
+        |lo_safe|
 
         Args:
-            show (XPresentation2): Slide Show Presentation
+            show (XPresentation2): Slide Show Presentation.
 
         Raises:
             DrawError: If error occurs.
@@ -4430,6 +5116,8 @@ class Draw:
         """
         Wait for until the slide is ended, which occurs when he user exits the slide show.
 
+        |lo_safe|
+
         Args:
             sc (XSlideShowController): Slide Show Controller
 
@@ -4448,6 +5136,8 @@ class Draw:
     def wait_last(sc: XSlideShowController, delay: int) -> None:
         """
         Wait for delay milliseconds when the last slide is shown before returning.
+
+        |lo_safe|
 
         Args:
             sc (XSlideShowController): Slide Show Controller
@@ -4483,6 +5173,8 @@ class Draw:
         """
         Sets the transition for a slide.
 
+        |lo_safe|
+
         Args:
             slide (XDrawPage): Slide
             fade_effect (FadeEffect): Fade Effect
@@ -4512,16 +5204,18 @@ class Draw:
     @staticmethod
     def get_play_list(doc: XComponent) -> XNameContainer:
         """
-        Gets Play list
+        Gets Play list.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
             DrawError: If error occurs.
 
         Returns:
-            XNameContainer: Name Container
+            XNameContainer: Name Container.
         """
         try:
             cp_supp = mLo.Lo.qi(XCustomPresentationSupplier, doc, True)
@@ -4534,6 +5228,8 @@ class Draw:
         """
         Build a named play list container of  slides from doc.
         The name of the play list is ``custom_name``.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document
@@ -4577,16 +5273,18 @@ class Draw:
     @staticmethod
     def get_animation_node(slide: XDrawPage) -> XAnimationNode:
         """
-        Gets Animation Node
+        Gets Animation Node.
+
+        |lo_safe|
 
         Args:
-            slide (XDrawPage): Slide
+            slide (XDrawPage): Slide.
 
         Raises:
             DrawPageError: If error occurs.
 
         Returns:
-            XAnimationNode: Animation Node
+            XAnimationNode: Animation Node.
         """
         try:
             node_supp = mLo.Lo.qi(XAnimationNodeSupplier, slide, True)
@@ -4603,7 +5301,9 @@ class Draw:
     @staticmethod
     def set_shape_props(shape: XShape, **props) -> None:
         """
-        Sets properties on a shape
+        Sets properties on a shape.
+
+        |lo_safe|
 
         Args:
             shape (XShape): Shape object

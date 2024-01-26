@@ -29,7 +29,7 @@ from ooodev.format.writer.direct.frame.wrap import Settings, WrapTextMode
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.lo import Lo
-from ooodev.office.write import Write
+from ooodev.write import WriteDoc
 from ooodev.units.unit_mm import UnitMM
 
 if TYPE_CHECKING:
@@ -42,15 +42,15 @@ def test_write(loader, para_text) -> None:
     # delay = 0 if Lo.bridge_connector.headless else 3_000
     delay = 0
 
-    doc = Write.create_doc()
+    doc = WriteDoc.create_doc()
     if not Lo.bridge_connector.headless:
         GUI.set_visible()
         Lo.delay(500)
         GUI.zoom(GUI.ZoomEnum.ENTIRE_PAGE)
     try:
-        cursor = Write.get_cursor(doc)
+        cursor = doc.get_cursor()
         if not Lo.bridge_connector.headless:
-            Write.append_para(cursor=cursor, text=para_text)
+            cursor.append_para(text=para_text)
 
         style_anchor = Anchor(anchor=AnchorKind.AT_PARAGRAPH)
         amt = 2.0
@@ -72,23 +72,30 @@ def test_write(loader, para_text) -> None:
         )
         style_mode = Settings(mode=WrapTextMode.DYNAMIC)
 
-        frame = Write.add_text_frame(
-            cursor=cursor,
+        assert doc.text_frames is not None
+        assert len(doc.text_frames) == 0
+
+        frame = doc.text_frames.add_text_frame(
             ypos=UnitMM(10.2),
             text=para_text,
             width=UnitMM(60),
             height=UnitMM(40),
             styles=(style_anchor, style_mode, style_padding, style_color, style_border, style_position, style_size),
         )
+        assert len(doc.text_frames) == 1
 
-        frames = Write.get_text_frames(doc)
-        assert frames is not None
-        assert frames.hasElements()
-        assert frames.hasByName("Frame1")
-        frame0 = cast("TextFrame", frame)
-        frame1 = cast("TextFrame", frames.getByName("Frame1"))
+        assert doc.text_frames.has_elements()
+        assert doc.text_frames.has_by_name("Frame1")
+        frame0 = cast("TextFrame", frame.component)
+        frame1 = cast("TextFrame", doc.text_frames.get_by_name("Frame1").component)
         frame1.getName() == frame0.getName()
+
+        for frm in doc.text_frames:
+            assert frm.name == "Frame1"
+
+        frame.name = "Frame one"
+        assert frame.name == "Frame one"
 
         Lo.delay(delay)
     finally:
-        Lo.close_doc(doc)
+        doc.close_doc()

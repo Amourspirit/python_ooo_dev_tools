@@ -27,6 +27,8 @@ class Input:
         """
         Displays an input box and returns the results.
 
+        |lo_unsafe|
+
         Args:
             title (str): Title for the dialog
             msg (str): Message to display such as "Input your Name"

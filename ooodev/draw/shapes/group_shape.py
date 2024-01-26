@@ -13,6 +13,7 @@ from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShapeGroup
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 
 
 class GroupShape(
+    LoInstPropsPartial,
     GroupShapeComp,
     ShapePartialProps,
     QiPartial,
@@ -28,13 +30,12 @@ class GroupShape(
 ):
     def __init__(self, component: XShapeGroup, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         GroupShapeComp.__init__(self, component)
         ShapePartialProps.__init__(self, component=component)  # type: ignore
-        QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)
-        PropPartial.__init__(self, component=component, lo_inst=self._lo_inst)
+        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
 
     @property

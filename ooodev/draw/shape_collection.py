@@ -11,8 +11,8 @@ from ooodev.units import UnitMM
 from ooodev.utils import lo as mLo
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.partial.gui_partial import GuiPartial
-from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.qi_partial import QiPartial
 
 if TYPE_CHECKING:
     from ooodev.draw import DrawPage
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Grouping,_Combining_and_Binding
 
 
-class ShapeCollection(ShapeCollectionComp, QiPartial, LoInstPropsPartial):
+class ShapeCollection(LoInstPropsPartial, ShapeCollectionComp, QiPartial):
     """Represents a shape collection."""
 
     def __init__(self, owner: DrawPage[ComponentT], collection: Any = None, lo_inst: LoInst | None = None) -> None:
@@ -54,9 +54,6 @@ class ShapeCollection(ShapeCollectionComp, QiPartial, LoInstPropsPartial):
 
         Returns:
             GroupShape: Grouped shape.
-
-        Note:
-            Grouping is done using Dispatch Command.
         """
         if len(self) < 2:
             raise mEx.ShapeError(f"At least two shapes are required to group. Currently has {len(self)} shapes.")

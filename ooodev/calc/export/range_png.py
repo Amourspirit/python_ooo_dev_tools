@@ -4,16 +4,17 @@ import uno
 from com.sun.star.frame import XStorable
 
 from ooodev.calc import CalcNamedEvent
+from ooodev.calc.calc_cell_range import CalcCellRange
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import file_io as mFile
-from ooodev.utils import props as mProps
-from ooodev.utils.type_var import PathOrStr  # , EventCallback
-from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils import lo as mLo
-from ooodev.calc.calc_cell_range import CalcCellRange
+from ooodev.utils import props as mProps
+from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.type_var import PathOrStr  # , EventCallback
 
 from .export_base import ExportBase
 
@@ -23,14 +24,13 @@ else:
     ExportJpgT = Any
 
 
-class RangePng(ExportBase, EventsPartial):
+class RangePng(LoInstPropsPartial, ExportBase, EventsPartial):
     """Class for exporting cell range as a png image."""
 
     def __init__(self, cell_range: CalcCellRange, lo_inst: LoInst | None = None):
         if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         ExportBase.__init__(self)
         EventsPartial.__init__(self)
         self._cell_range = cell_range
