@@ -118,6 +118,8 @@ class Write(mSel.Selection):
         """
         Gets text cursor from the current document.
 
+        |lo_unsafe|
+
         Returns:
             XTextCursor: Cursor
         """
@@ -127,7 +129,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_cursor(cursor_obj: DocOrCursor) -> XTextCursor:
         """
-        Gets text cursor
+        Gets text cursor.
+
+        |lo_safe|
 
         Args:
             cursor_obj (DocOrCursor): Text Document or Text Cursor
@@ -141,7 +145,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_cursor(rng: XTextRange, txt: XText) -> XTextCursor:
         """
-        Gets text cursor
+        Gets text cursor.
+
+        |lo_safe|
 
         Args:
             rng (XTextRange): Text Range Instance
@@ -156,7 +162,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_cursor(rng: XTextRange, text_doc: XTextDocument) -> XTextCursor:
         """
-        Gets text cursor
+        Gets text cursor.
+
+        |lo_safe|
 
         Args:
             rng (XTextRange): Text Range instance
@@ -170,7 +178,7 @@ class Write(mSel.Selection):
     @staticmethod
     def get_cursor(*args, **kwargs) -> XTextCursor:
         """
-        Gets text cursor
+        Gets text cursor.
 
         Args:
             cursor_obj (DocOrCursor): Text Document or Text View Cursor
@@ -219,6 +227,8 @@ class Write(mSel.Selection):
     def open_doc(cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None) -> XTextDocument:
         """
         Opens or creates a Text (Writer) document.
+
+        |lo_unsafe|
 
         Args:
             fnm (PathOrStr): Writer file to open. If omitted then a new Writer document is returned.
@@ -279,7 +289,9 @@ class Write(mSel.Selection):
     @staticmethod
     def is_text(doc: XComponent) -> bool:
         """
-        Gets if doc is an actual Writer document
+        Gets if doc is an actual Writer document.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document Component
@@ -294,11 +306,37 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def get_text_doc(cls) -> XTextDocument:
+        """
+        Gets a writer document.
+
+        |lo_unsafe|
+
+        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+
+        Args:
+            doc (XComponent): Component to get writer document from.
+
+        Returns:
+            XTextDocument: Writer document.
+        """
         ...
 
     @overload
     @classmethod
     def get_text_doc(cls, doc: XComponent) -> XTextDocument:
+        """
+        Gets a writer document.
+
+        |lo_safe|
+
+        When using this method in a macro the ``Lo.get_document()`` value should be passed as ``doc`` arg.
+
+        Args:
+            doc (XComponent): Component to get writer document from.
+
+        Returns:
+            XTextDocument: Writer document.
+        """
         ...
 
     @classmethod
@@ -347,13 +385,15 @@ class Write(mSel.Selection):
     @staticmethod
     def create_doc(loader: XComponentLoader | None = None) -> XTextDocument:
         """
-        Creates a new Writer Text Document
+        Creates a new Writer Text Document.
+
+        |lo_unsafe|
 
         Args:
-            loader (XComponentLoader): Component Loader
+            loader (XComponentLoader): Component Loader.
 
         Returns:
-            XTextDocument: Text Document
+            XTextDocument: Text Document.
 
         :events:
             .. cssclass:: lo_event
@@ -395,17 +435,19 @@ class Write(mSel.Selection):
     @staticmethod
     def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader | None = None) -> XTextDocument:
         """
-        Create a new Writer Text Document from a template
+        Create a new Writer Text Document from a template.
+
+        |lo_unsafe|
 
         Args:
-            template_path (PathOrStr): Path to Template
-            loader (XComponentLoader): Component Loader
+            template_path (PathOrStr): Path to Template.
+            loader (XComponentLoader): Component Loader.
 
         Raises:
-            MissingInterfaceError: If Unable to obtain XTextDocument interface
+            MissingInterfaceError: If Unable to obtain XTextDocument interface.
 
         Returns:
-            XTextDocument: Text Document
+            XTextDocument: Text Document.
 
         :events:
             .. cssclass:: lo_event
@@ -458,16 +500,18 @@ class Write(mSel.Selection):
     @classmethod
     def close_doc(cls, text_doc: XTextDocument | None = None) -> bool:
         """
-        Closes text document
+        Closes text document.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
-            MissingInterfaceError: If unable to obtain XCloseable from text_doc
+            MissingInterfaceError: If unable to obtain XCloseable from text_doc.
 
         Returns:
-            bool: False if DOC_CLOSING event is canceled, Other
+            bool: False if DOC_CLOSING event is canceled, Other.
 
         :events:
             .. cssclass:: lo_event
@@ -501,7 +545,9 @@ class Write(mSel.Selection):
     @staticmethod
     def save_doc(text_doc: XTextDocument, fnm: PathOrStr) -> bool:
         """
-        Saves text document
+        Saves text document.
+
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -558,22 +604,24 @@ class Write(mSel.Selection):
         cls, fnm: PathOrStr, template_path: PathOrStr, loader: XComponentLoader | None = None
     ) -> XTextDocument:
         """
-        Open a new text document applying the template as formatting to the flat XML file
+        Open a new text document applying the template as formatting to the flat XML file.
+
+        |lo_unsafe|
 
         Args:
-            fnm (PathOrStr): path to file
-            template_path (PathOrStr): Path to template file (ott)
-            loader (XComponentLoader): Component Loader
+            fnm (PathOrStr): path to file.
+            template_path (PathOrStr): Path to template file (ott).
+            loader (XComponentLoader): Component Loader.
 
         Raises:
-            UnOpenableError: If fnm is not able to be opened
-            ValueError: If template_path is not ott file
-            MissingInterfaceError: If template_path document does not implement XTextDocument interface
-            ValueError: If unable to obtain cursor object
+            UnOpenableError: If fnm is not able to be opened.
+            ValueError: If template_path is not ott file.
+            MissingInterfaceError: If template_path document does not implement ``XTextDocument`` interface.
+            ValueError: If unable to obtain cursor object.
             Exception: Any other errors
 
         Returns:
-            XTextDocument | None: Text Document
+            XTextDocument | None: Text Document.
 
         :events:
             .. cssclass:: lo_event
@@ -643,7 +691,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_doc_settings() -> XPropertySet:
         """
-        Gets Text Document Settings
+        Gets Text Document Settings.
+
+        |lo_unsafe|
 
         Returns:
             XPropertySet: Settings
@@ -661,18 +711,20 @@ class Write(mSel.Selection):
     @classmethod
     def get_page_cursor(cls, view_cursor_obj: XTextDocument | XTextViewCursor) -> XPageCursor:
         """
-        Get Page cursor
+        Get Page cursor.
+
+        |lo_safe|
 
         Makes it possible to perform cursor movements between pages.
 
         Args:
-            text_doc (XTextDocument | XTextViewCursor): Text Document or View Cursor
+            text_doc (XTextDocument | XTextViewCursor): Text Document or View Cursor.
 
         Raises:
-            PageCursorError: If Unable to get cursor
+            PageCursorError: If Unable to get cursor.
 
         Returns:
-            XPageCursor: Page Cursor
+            XPageCursor: Page Cursor.
 
         See Also:
             `LibreOffice API XPageCursor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1text_1_1XPageCursor.html>`_
@@ -688,7 +740,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_current_page(tv_cursor: XTextViewCursor) -> int:
         """
-        Gets the current page
+        Gets the current page.
+
+        |lo_safe|
 
         Args:
             tv_cursor (XTextViewCursor): Text view Cursor
@@ -743,16 +797,14 @@ class Write(mSel.Selection):
         """
         Gets coordinates for cursor in format such as ``"10, 10"``
 
+        |lo_safe|
+
         Args:
             tv_cursor (XTextViewCursor): Text View Cursor
 
         Returns:
             str: coordinates as string
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 0.18.3
         Warning:
             The ``X`` is relative to the document window and not the document page.
             This means when the document window size changes the ``X`` coordinate will change even if the cursor has not moved.
@@ -770,16 +822,18 @@ class Write(mSel.Selection):
     @staticmethod
     def get_num_of_pages(text_doc: XTextDocument) -> int:
         """
-        Gets document page count
+        Gets document page count.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
-            MissingInterfaceError: If text_doc does not implement XModel interface
+            MissingInterfaceError: If text_doc does not implement XModel interface.
 
         Returns:
-            int: page count
+            int: page count.
         """
         model = mLo.Lo.qi(XModel, text_doc, True)
         controller = model.getCurrentController()
@@ -788,7 +842,9 @@ class Write(mSel.Selection):
     @classmethod
     def print_page_size(cls, text_doc: XTextDocument) -> None:
         """
-        Prints Page size to console
+        Prints Page size to console.
+
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -811,11 +867,13 @@ class Write(mSel.Selection):
     # region    append()
     @classmethod
     def _append_text(cls, cursor: XTextCursor, text: str) -> None:
+        """LO Safe Method."""
         cursor.setString(text)
         cursor.gotoEnd(False)
 
     @classmethod
     def _append_text_style(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
+        """LO Safe Method."""
         s_len = len(text)
         if s_len == 0:
             return
@@ -861,12 +919,14 @@ class Write(mSel.Selection):
 
     @classmethod
     def _append_ctl_char(cls, cursor: XTextCursor, ctl_char: int) -> None:
+        """LO Safe Method"""
         xtext = cursor.getText()
         xtext.insertControlCharacter(cursor, ctl_char, False)
         cursor.gotoEnd(False)
 
     @classmethod
     def _append_text_content(cls, cursor: XTextCursor, text_content: XTextContent) -> None:
+        """Lo Safe Method."""
         xtext = cursor.getText()
         xtext.insertTextContent(cursor, text_content, False)
         cursor.gotoEnd(False)
@@ -879,28 +939,67 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def append(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
+        """
+        Append content to cursor.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            text (str): Text to append.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def append(cls, cursor: XTextCursor, ctl_char: ControlCharacterEnum) -> None:
+        """
+        Append content to cursor.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            ctl_char (int): Control Char (like a paragraph break or a hard space).
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def append(cls, cursor: XTextCursor, text_content: XTextContent) -> None:
+        """
+        Append content to cursor.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            text_content (XTextContent): Text content, such as a text table, text frame or text field.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def append(cls, *args, **kwargs) -> None:
         """
-        Append content to cursor
+        Append content to cursor.
+
+        |lo_safe|
 
         Args:
-            cursor (XTextCursor): Text Cursor
-            text (str): Text to append
+            cursor (XTextCursor): Text Cursor.
+            text (str): Text to append.
             styles (Sequence[StyleT]):One or more styles to apply to text.
-            ctl_char (int): Control Char (like a paragraph break or a hard space)
+            ctl_char (int): Control Char (like a paragraph break or a hard space).
             text_content (XTextContent): Text content, such as a text table, text frame or text field.
 
         Returns:
@@ -977,22 +1076,60 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def append_line(cls, cursor: XTextCursor) -> None:
+        """
+        Appends a new Line.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def append_line(cls, cursor: XTextCursor, text: str) -> None:
+        """
+        Appends a new Line.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            text (str, optional): text to append before new line is inserted.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def append_line(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
+        """
+        Appends a new Line.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            text (str, optional): text to append before new line is inserted.
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is omitted then this argument is ignored.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def append_line(cls, cursor: XTextCursor, text: str = "", styles: Sequence[StyleT] | None = None) -> None:
         """
         Appends a new Line.
+
+        |lo_safe|
 
         Args:
             cursor (XTextCursor): Text Cursor.
@@ -1028,10 +1165,12 @@ class Write(mSel.Selection):
     @classmethod
     def append_date_time(cls, cursor: XTextCursor) -> None:
         """
-        Append two DateTime fields, one for the date, one for the time
+        Append two DateTime fields, one for the date, one for the time.
+
+        |lo_unsafe|
 
         Args:
-            cursor (XTextCursor): Text Cursor
+            cursor (XTextCursor): Text Cursor.
 
         Raises:
             MissingInterfaceError: If required interface cannot be obtained.
@@ -1051,16 +1190,52 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def append_para(cls, cursor: XTextCursor) -> None:
+        """
+        Appends text (if present) and then a paragraph break.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def append_para(cls, cursor: XTextCursor, text: str) -> None:
+        """
+        Appends text (if present) and then a paragraph break.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            text (str, optional): Text to append.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def append_para(cls, cursor: XTextCursor, text: str, styles: Sequence[StyleT]) -> None:
+        """
+        Appends text (if present) and then a paragraph break.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            text (str, optional): Text to append.
+            styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
@@ -1068,9 +1243,11 @@ class Write(mSel.Selection):
         """
         Appends text (if present) and then a paragraph break.
 
+        |lo_safe|
+
         Args:
-            cursor (XTextCursor): Text Cursor
-            text (str, optional): Text to append
+            cursor (XTextCursor): Text Cursor.
+            text (str, optional): Text to append.
             styles (Sequence[StyleT]): One or more styles to apply to text. If ``text`` is empty then this argument is ignored.
 
         Returns:
@@ -1182,7 +1359,9 @@ class Write(mSel.Selection):
     @classmethod
     def end_line(cls, cursor: XTextCursor) -> None:
         """
-        Inserts a line break
+        Inserts a line break.
+
+        |lo_safe|
 
         Args:
             cursor (XTextCursor): Text Cursor
@@ -1192,7 +1371,9 @@ class Write(mSel.Selection):
     @classmethod
     def end_paragraph(cls, cursor: XTextCursor) -> None:
         """
-        Inserts a paragraph break
+        Inserts a paragraph break.
+
+        |lo_safe|
 
         Args:
             cursor (XTextCursor): Text Cursor
@@ -1202,7 +1383,9 @@ class Write(mSel.Selection):
     @classmethod
     def page_break(cls, cursor: XTextCursor) -> None:
         """
-        Inserts a page break
+        Inserts a page break.
+
+        |lo_safe|
 
         Args:
             cursor (XTextCursor): Text Cursor
@@ -1213,7 +1396,9 @@ class Write(mSel.Selection):
     @classmethod
     def column_break(cls, cursor: XTextCursor) -> None:
         """
-        Inserts a column break
+        Inserts a column break.
+
+        |lo_safe|
 
         Args:
             cursor (XTextCursor): Text Cursor
@@ -1224,7 +1409,9 @@ class Write(mSel.Selection):
     @classmethod
     def insert_para(cls, cursor: XTextCursor, para: str, para_style: str) -> None:
         """
-        Inserts a paragraph with a style applied
+        Inserts a paragraph with a style applied.
+
+        |lo_safe|
 
         Args:
             cursor (XTextCursor): Text Cursor
@@ -1243,15 +1430,17 @@ class Write(mSel.Selection):
     @staticmethod
     def split_paragraph_into_sentences(paragraph: str) -> List[str]:
         """
-        Alternative method for breaking a paragraph into sentences and return a list
+        Alternative method for breaking a paragraph into sentences and return a list.
 
         ``XSentenceCursor`` occasionally does not divide a paragraph into the correct number of sentences; sometimes two sentences were treated as one.
 
+        |lo_safe|
+
         Args:
-            paragraph (str): input string
+            paragraph (str): input string.
 
         Returns:
-            List[str]: List of string
+            List[str]: List of string.
 
         See Also:
             `split paragraph into sentences with regular expressions <https://pythonicprose.blogspot.com/2009/09/python-split-paragraph-into-sentences.html>`_
@@ -1268,13 +1457,15 @@ class Write(mSel.Selection):
     @staticmethod
     def get_all_text(cursor: XTextCursor) -> str:
         """
-        Gets the text part of the document
+        Gets the text part of the document.
+
+        |lo_safe|
 
         Args:
-            cursor (XTextCursor): Text Cursor
+            cursor (XTextCursor): Text Cursor.
 
         Returns:
-            str: text
+            str: text.
         """
         cursor.gotoStart(False)
         cursor.gotoEnd(True)
@@ -1285,7 +1476,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_enumeration(obj: Any) -> XEnumeration:
         """
-        Gets Enumeration access from obj
+        Gets Enumeration access from obj.
+
+        |lo_safe|
 
         Used to enumerate objects in a container which contains objects.
 
@@ -1293,10 +1486,10 @@ class Write(mSel.Selection):
             obj (Any): object that implements XEnumerationAccess or XTextDocument.
 
         Raises:
-            MissingInterfaceError: if obj does not implement XEnumerationAccess interface
+            MissingInterfaceError: if obj does not implement XEnumerationAccess interface.
 
         Returns:
-            XEnumeration: Enumerator
+            XEnumeration: Enumerator.
         """
         enum_access = mLo.Lo.qi(XEnumerationAccess, obj)
         if enum_access is None:
@@ -1318,9 +1511,11 @@ class Write(mSel.Selection):
         """
         Styles bold from current cursor position left by pos amount.
 
+        |lo_unsafe|
+
         Args:
-            cursor (XTextCursor): Text Cursor
-            pos (int): Number of positions to go left
+            cursor (XTextCursor): Text Cursor.
+            pos (int): Number of positions to go left.
         """
         cls.style_left(cursor, pos, "CharWeight", FontWeight.BOLD)
 
@@ -1329,9 +1524,11 @@ class Write(mSel.Selection):
         """
         Styles italic from current cursor position left by pos amount.
 
+        |lo_unsafe|
+
         Args:
-            cursor (XTextCursor): Text Cursor
-            pos (int): Number of positions to go left
+            cursor (XTextCursor): Text Cursor.
+            pos (int): Number of positions to go left.
         """
         cls.style_left(cursor, pos, "CharPosture", FontSlant.ITALIC)
 
@@ -1340,10 +1537,12 @@ class Write(mSel.Selection):
         """
         Styles color from current cursor position left by pos amount.
 
+        |lo_unsafe|
+
         Args:
-            cursor (XTextCursor): Text Cursor
-            pos (int): Number of positions to go left
-            color (~ooodev.utils.color.Color): RGB color as int to apply
+            cursor (XTextCursor): Text Cursor.
+            pos (int): Number of positions to go left.
+            color (~ooodev.utils.color.Color): RGB color as int to apply.
 
         Returns:
             None:
@@ -1359,9 +1558,11 @@ class Write(mSel.Selection):
         Styles using a Mono font from current cursor position left by pos amount.
         Font Char Height is set to ``10``
 
+        |lo_unsafe|
+
         Args:
-            cursor (XTextCursor): Text Cursor
-            pos (int): Number of positions to go left
+            cursor (XTextCursor): Text Cursor.
+            pos (int): Number of positions to go left.
 
         Returns:
             None:
@@ -1377,6 +1578,7 @@ class Write(mSel.Selection):
     def _style(
         cls, pos: int, distance: int, prop_name: str, prop_val: object, cursor: XTextCursor | None = None
     ) -> None:
+        """If Cursor then Lo Safe Method, otherwise Lo Unsafe Method."""
         cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
         _Events().trigger(WriteNamedEvent.STYLING, cargs)
         if cargs.cancel:
@@ -1388,12 +1590,13 @@ class Write(mSel.Selection):
         cursor.goRight(distance, True)
         mProps.Props.set(cursor, **{prop_name: prop_val})
         cursor.gotoEnd(False)
-        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))
+        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))  # type: ignore
 
     @classmethod
     def _style_style(
         cls, pos: int, distance: int, styles: Sequence[StyleT], cursor: XTextCursor | None = None
     ) -> None:
+        """If Cursor then Lo Safe Method, otherwise Lo Unsafe Method."""
         if cursor is None:
             cursor = cls.get_cursor()
         # cursor.collapseToEnd()
@@ -1423,21 +1626,76 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def style(cls, pos: int, length: int, styles: Sequence[StyleT]) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        |lo_unsafe|
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def style(cls, pos: int, length: int, styles: Sequence[StyleT], cursor: XTextCursor) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        |lo_safe|
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+            cursor (XTextCursor): Text Cursor
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def style(cls, pos: int, length: int, prop_name: str, prop_val: object) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        |lo_unsafe|
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def style(cls, pos: int, length: int, prop_name: str, prop_val: object, cursor: XTextCursor) -> None:
+        """
+        Styles. From position styles right by distance amount.
+
+        Args:
+            pos (int): Position style start.
+            length (int): The distance from ``pos`` to apply style.
+            styles (Sequence[StyleT]):One or more styles to apply to text.
+            prop_name (str): Property Name such as ``CharHeight``
+            prop_val (object): Property Value such as ``10``
+            cursor (XTextCursor): Text Cursor
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
@@ -1516,6 +1774,7 @@ class Write(mSel.Selection):
 
     @classmethod
     def _style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+        """LO UN-safe Method"""
         cargs = KeyValCancelArgs("Write.style", prop_name, prop_val)
         cargs.event_data = {"pos": pos}
         _Events().trigger(WriteNamedEvent.STYLING, cargs)
@@ -1537,10 +1796,11 @@ class Write(mSel.Selection):
             mProps.Props.set(cursor, **{prop_name: old_val})
         else:
             cursor.goRight(0, False)
-        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))
+        _Events().trigger(WriteNamedEvent.STYLED, KeyValArgs.from_args(cargs))  # type: ignore
 
     @classmethod
     def _style_left_style(cls, cursor: XTextCursor, pos: int, styles: Sequence[StyleT]) -> None:
+        """LO UN-safe Method"""
         # store properties about to be changed
 
         if pos == 0:
@@ -1595,11 +1855,38 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def style_left(cls, cursor: XTextCursor, pos: int, styles: Sequence[StyleT]) -> None:
+        """
+        Styles left. From current cursor position to left by pos amount.
+
+        |lo_unsafe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            pos (int): Positions to style left.
+            styles (Sequence[StyleT]): One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def style_left(cls, cursor: XTextCursor, pos: int, prop_name: str, prop_val: object) -> None:
+        """
+        Styles left. From current cursor position to left by pos amount.
+
+        |lo_unsafe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            pos (int): Positions to style left.
+            prop_name (str): Property Name such as ``CharHeight``.
+            prop_val (object): Property Value such as ``10``.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
@@ -1607,15 +1894,14 @@ class Write(mSel.Selection):
         """
         Styles left. From current cursor position to left by pos amount.
 
+        |lo_unsafe|
+
         Args:
             cursor (XTextCursor): Text Cursor
             pos (int): Positions to style left
             styles (Sequence[StyleT]): One or more styles to apply to text.
             prop_name (str): Property Name such as ``CharHeight``
             prop_val (object): Property Value such as ``10``
-
-        Returns:
-            None:
 
         :events:
             If using styles then the following events are triggered for each style.
@@ -1631,6 +1917,9 @@ class Write(mSel.Selection):
 
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLING` :eventref:`src-docs-key-event-cancel`
                 - :py:attr:`~.events.write_named_event.WriteNamedEvent.STYLED` :eventref:`src-docs-key-event`
+
+        Returns:
+            None:
 
         See Also:
             :py:meth:`~.Write.style`
@@ -1693,15 +1982,17 @@ class Write(mSel.Selection):
         toggle: bool = False,
     ) -> None:
         """
-        Dispatches a command and applies it to selection based upon position
+        Dispatches a command and applies it to selection based upon position.
+
+        |lo_unsafe|
 
         Args:
-            vcursor (XTextViewCursor): Text View Cursor
-            pos (int): Positions left to apply dispatch command
-            cmd (str): Dispatch command such as 'DefaultNumbering'
-            props (Iterable[PropertyValue], optional): properties for dispatch
+            vcursor (XTextViewCursor): Text View Cursor.
+            pos (int): Positions left to apply dispatch command.
+            cmd (str): Dispatch command such as 'DefaultNumbering'.
+            props (Iterable[PropertyValue], optional): properties for dispatch.
             frame (XFrame, optional): Frame to dispatch to.
-            toggle (bool, optional): If True then dispatch will be preformed on selection
+            toggle (bool, optional): If True then dispatch will be preformed on selection.
                 and again when deselected. Defaults to False.
 
         Returns:
@@ -1742,6 +2033,7 @@ class Write(mSel.Selection):
     # region    style_prev_paragraph()
     @staticmethod
     def _style_prev_paragraph_prop(cursor: XParagraphCursor, prop_val: object, prop_name: str) -> None:
+        """Lo Safe Method."""
         cargs = KeyValCancelArgs("Write._style_prev_paragraph_prop", prop_name, prop_val)
         _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_PROP_SETTING, cargs)
         if cargs.cancel:
@@ -1757,12 +2049,13 @@ class Write(mSel.Selection):
         # reset
         cursor.gotoNextParagraph(False)
         mProps.Props.set(cursor, **{prop_name: old_val})
-        eargs = KeyValArgs.from_args(cargs)
+        eargs = KeyValArgs.from_args(cargs)  # type: ignore
         _Events().trigger(WriteNamedEvent.STYLED, eargs)
         _Events().trigger(WriteNamedEvent.STYLE_PREV_PARA_PROP_SET, eargs)
 
     @classmethod
     def _style_prev_paragraph_style(cls, cursor: XTextCursor | XParagraphCursor, styles: Sequence[StyleT]) -> None:
+        """Lo Safe Method."""
         if not styles:
             return
         c_styles_args = CancelEventArgs("Write._style_prev_paragraph_style")
@@ -1829,22 +2122,61 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def style_prev_paragraph(cls, cursor: XTextCursor, styles: Sequence[StyleT]) -> None:
+        """
+        Style previous paragraph.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            styles (Sequence[StyleT]): One or more styles to apply to text.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: Any) -> None:
+        """
+        Style previous paragraph.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            prop_val (Any): Property value.
+
+        Returns:
+            None:
+        """
         ...
 
     @overload
     @classmethod
     def style_prev_paragraph(cls, cursor: XTextCursor, prop_val: Any, prop_name: str) -> None:
+        """
+        Style previous paragraph.
+
+        |lo_safe|
+
+        Args:
+            cursor (XTextCursor): Text Cursor.
+            prop_val (Any): Property value.
+            prop_name (str): Property Name. Defaults to ``ParaStyleName``.
+
+        Returns:
+            None:
+        """
         ...
 
     @classmethod
     def style_prev_paragraph(cls, *args, **kwargs) -> None:
         """
         Style previous paragraph.
+
+        |lo_safe|
 
         Args:
             cursor (XTextCursor): Text Cursor.
@@ -1934,13 +2266,15 @@ class Write(mSel.Selection):
         """
         Creates a paragraph style and adds it to document paragraph styles.
 
+        |lo_unsafe|
+
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
             style_name (str): The name of the paragraph style.
             styles (Sequence[StyleT], optional): One or more styles to apply.
 
         Returns:
-            XStyle: Newly created style
+            XStyle: Newly created style.
 
         .. versionadded:: 0.9.2
         """
@@ -1962,6 +2296,8 @@ class Write(mSel.Selection):
     def create_style_char(text_doc: XTextDocument, style_name: str, styles: Sequence[StyleT] | None = None) -> XStyle:
         """
         Creates a character style and adds it to document character styles.
+
+        |lo_unsafe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -1992,6 +2328,8 @@ class Write(mSel.Selection):
         """
         Get the width of the page's text area in ``1/100 mm`` units.
 
+        |lo_safe|
+
         Args:
             text_doc (XTextDocument): Text Document
 
@@ -2017,6 +2355,8 @@ class Write(mSel.Selection):
     def get_page_text_size(text_doc: XTextDocument) -> Size:
         """
         Get page text size in ``1/100 mm`` units.
+
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -2052,6 +2392,8 @@ class Write(mSel.Selection):
         """
         Get page size in ``1/100 mm`` units.
 
+        |lo_safe|
+
         Args:
             text_doc (XTextDocument): Text Document
 
@@ -2075,7 +2417,9 @@ class Write(mSel.Selection):
     @staticmethod
     def set_page_format(text_doc: XTextDocument, paper_format: PaperFormat) -> bool:
         """
-        Set Page Format
+        Set Page Format.
+
+        |lo_safe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -2115,6 +2459,8 @@ class Write(mSel.Selection):
         """
         Set Page Format to A4
 
+        |lo_safe|
+
         Args:
             text_doc (XTextDocument): Text Document
 
@@ -2136,7 +2482,9 @@ class Write(mSel.Selection):
     def set_page_numbers(cls, text_doc: XTextDocument) -> XTextField:
         """
         Modify the footer via the page style for the document.
-        Put page number & count in the center of the footer in Times New Roman, 12pt
+        Put page number & count in the center of the footer in Times New Roman, 12pt.
+
+        |lo_unsafe|
 
         Args:
             text_doc (XTextDocument): Text Document
@@ -2193,7 +2541,9 @@ class Write(mSel.Selection):
         numbering_type: NumberingTypeEnum = NumberingTypeEnum.ARABIC, sub_type: PageNumberType = PageNumberType.CURRENT
     ) -> XTextField:
         """
-        Gets Arabic style number showing current page value
+        Gets Arabic style number showing current page value.
+
+        |lo_unsafe|
 
         Args:
             numbering_type (NumberingTypeEnum, optional): Numbering Type. Defaults to ``NumberingTypeEnum.ARABIC``.
@@ -2212,7 +2562,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_page_count(numbering_type: NumberingTypeEnum = NumberingTypeEnum.ARABIC) -> XTextField:
         """
-        Return Arabic style number showing current page count
+        Return Arabic style number showing current page count/
+
+        |lo_unsafe|
 
         Args:
             numbering_type (NumberingTypeEnum, optional): Numbering Type. Defaults to ``NumberingTypeEnum.ARABIC``.
@@ -2228,6 +2580,7 @@ class Write(mSel.Selection):
     def _set_header_footer(
         text_doc: XTextDocument, text: str, kind: str = "h", styles: Sequence[StyleT] | None = None
     ) -> None:
+        """Lo Safe Method."""
         props = mInfo.Info.get_style_props(doc=text_doc, family_style_name="PageStyles", prop_set_nm="Standard")
         if props is None:
             raise mEx.PropertiesError("Could not access the standard page style container")
@@ -2279,20 +2632,22 @@ class Write(mSel.Selection):
         Put the text on the right hand side in the header in
         a general font of 10pt.
 
+        |lo_safe|
+
         Args:
-            text_doc (XTextDocument): Text Document
-            text (str): Header Text
+            text_doc (XTextDocument): Text Document.
+            text (str): Header Text.
             styles (Sequence[StyleT]): Styles to apply to the text.
 
         Raises:
-            PropertiesError: If unable to access properties
-            Exception: If unable to set header text
+            PropertiesError: If unable to access properties.
+            Exception: If unable to set header text.
 
         See Also:
             :py:meth:`~.write.Write.set_footer`
 
         Note:
-            The font applied is determined by :py:meth:`.Info.get_font_general_name`
+            The font applied is determined by :py:meth:`.Info.get_font_general_name`.
 
         .. versionchanged:: 0.9.2
             Added styles parameter
@@ -2306,20 +2661,22 @@ class Write(mSel.Selection):
         Put the text on the right hand side in the header in
         a general font of 10pt.
 
+        |lo_safe|
+
         Args:
-            text_doc (XTextDocument): Text Document
-            text (str): Header Text
+            text_doc (XTextDocument): Text Document.
+            text (str): Header Text.
             styles (Sequence[StyleT]): Styles to apply to the text.
 
         Raises:
-            PropertiesError: If unable to access properties
-            Exception: If unable to set header text
+            PropertiesError: If unable to access properties.
+            Exception: If unable to set header text.
 
         See Also:
             :py:meth:`~.write.Write.set_header`
 
         Note:
-            The font applied is determined by :py:meth:`.Info.get_font_general_name`
+            The font applied is determined by :py:meth:`.Info.get_font_general_name`.
 
         .. versionadded:: 0.9.2
         """
@@ -2328,16 +2685,18 @@ class Write(mSel.Selection):
     @staticmethod
     def get_draw_page(text_doc: XTextDocument) -> XDrawPage:
         """
-        Gets draw page
+        Gets draw page.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XDrawPageSupplier interface.
 
         Returns:
-            XDrawPage: Draw Page
+            XDrawPage: Draw Page.
         """
         supp_page = mLo.Lo.qi(XDrawPageSupplier, text_doc, True)
         return supp_page.getDrawPage()
@@ -2345,16 +2704,18 @@ class Write(mSel.Selection):
     @staticmethod
     def get_draw_pages(text_doc: XTextDocument) -> XDrawPages:
         """
-        Gets draw pages
+        Gets draw pages.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
             MissingInterfaceError: If text_doc does not implement XDrawPageSupplier interface.
 
         Returns:
-            XDrawPages: Draw Page
+            XDrawPages: Draw Page.
         """
         supp = mLo.Lo.qi(XDrawPagesSupplier, text_doc, True)
         return supp.getDrawPages()
@@ -2367,27 +2728,54 @@ class Write(mSel.Selection):
     @overload
     @classmethod
     def add_formula(cls, cursor: XTextCursor, formula: str) -> XTextContent:
+        """
+        Adds a formula.
+
+        |lo_unsafe|
+
+        Args:
+            cursor (XTextCursor): Cursor.
+            formula (str): formula.
+
+        Returns:
+            XTextContent: Embedded Object.
+        """
         ...
 
     @overload
     @classmethod
     def add_formula(cls, cursor: XTextCursor, formula: str, styles: Sequence[StyleT]) -> XTextContent:
+        """
+        Adds a formula.
+
+        |lo_unsafe|
+
+        Args:
+            cursor (XTextCursor): Cursor.
+            formula (str): formula.
+            styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextEmbeddedObject`` service are applied.
+
+        Returns:
+            XTextContent: Embedded Object.
+        """
         ...
 
     @classmethod
     def add_formula(cls, cursor: XTextCursor, formula: str, styles: Sequence[StyleT] | None = None) -> XTextContent:
         """
-        Adds a formula
+        Adds a formula.
+
+        |lo_unsafe|
 
         Args:
-            cursor (XTextCursor): Cursor
-            formula (str): formula
+            cursor (XTextCursor): Cursor.
+            formula (str): formula.
             styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextEmbeddedObject`` service are applied.
 
         Raises:
-            CreateInstanceMsfError: If unable to create text.TextEmbeddedObject
-            CancelEventError: If event ``WriteNamedEvent.FORMULA_ADDING`` is cancelled
-            Exception: If unable to add formula
+            CreateInstanceMsfError: If unable to create text.TextEmbeddedObject.
+            CancelEventError: If event ``WriteNamedEvent.FORMULA_ADDING`` is cancelled.
+            Exception: If unable to add formula.
 
         Returns:
             XTextContent: Embedded Object.
@@ -2454,19 +2842,21 @@ class Write(mSel.Selection):
     @classmethod
     def add_hyperlink(cls, cursor: XTextCursor, label: str, url_str: str) -> bool:
         """
-        Add a hyperlink
+        Add a hyperlink.
+
+        |lo_unsafe|
 
         Args:
-            cursor (XTextCursor): Text Cursor
-            label (str): Hyperlink label
-            url_str (str): Hyperlink url
+            cursor (XTextCursor): Text Cursor.
+            label (str): Hyperlink label.
+            url_str (str): Hyperlink url.
 
         Raises:
-            CreateInstanceMsfError: If unable to create TextField.URL instance
-            Exception: If unable to create hyperlink
+            CreateInstanceMsfError: If unable to create TextField.URL instance.
+            Exception: If unable to create hyperlink.
 
         Returns:
-            bool: True if hyperlink is added; Otherwise, False
+            bool: ``True`` if hyperlink is added; Otherwise, ``False``.
 
         :events:
             .. cssclass:: lo_event
@@ -2505,14 +2895,16 @@ class Write(mSel.Selection):
     @classmethod
     def add_bookmark(cls, cursor: XTextCursor, name: str) -> bool:
         """
-        Adds bookmark
+        Adds bookmark.
+
+        |lo_unsafe|
 
         Args:
-            cursor (XTextCursor): Text Cursor
-            name (str): Bookmark name
+            cursor (XTextCursor): Text Cursor.
+            name (str): Bookmark name.
 
         Returns:
-            bool: True if bookmark is added; Otherwise, False
+            bool: ``True`` if bookmark is added; Otherwise, ``False``.
 
         :events:
             .. cssclass:: lo_event
@@ -2551,17 +2943,19 @@ class Write(mSel.Selection):
     @staticmethod
     def find_bookmark(text_doc: XTextDocument, bm_name: str) -> XTextContent | None:
         """
-        Finds a bookmark
+        Finds a bookmark.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
-            bm_name (str): Bookmark name
+            text_doc (XTextDocument): Text Document.
+            bm_name (str): Bookmark name.
 
         Raises:
-            MissingInterfaceError: if text_doc does not implement XBookmarksSupplier interface
+            MissingInterfaceError: if text_doc does not implement XBookmarksSupplier interface.
 
         Returns:
-            XTextContent | None: Bookmark if found; Otherwise, None
+            XTextContent | None: Bookmark if found; Otherwise, ``None``.
         """
         supplier = mLo.Lo.qi(XBookmarksSupplier, text_doc, True)
 
@@ -2592,9 +2986,11 @@ class Write(mSel.Selection):
         """
         Adds a text frame.
 
+        |lo_unsafe|
+
         Args:
-            cursor (XTextCursor): Text Cursor
-            text (str, optional): Frame Text
+            cursor (XTextCursor): Text Cursor.
+            text (str, optional): Frame Text.
             ypos (int, UnitT. optional): Frame Y pos in ``1/100th mm`` or :ref:`proto_unit_obj`. Default ``300``.
             width (int, UnitT, optional): Width in ``1/100th mm`` or :ref:`proto_unit_obj`.
             height (int, UnitT, optional): Height in ``1/100th mm`` or :ref:`proto_unit_obj`.
@@ -2604,9 +3000,9 @@ class Write(mSel.Selection):
             styles (Sequence[StyleT]): One or more styles to apply to frame. Only styles that support ``com.sun.star.text.TextFrame`` service are applied.
 
         Raises:
-            CreateInstanceMsfError: If unable to create text.TextFrame
-            CancelEventError: If ``WriteNamedEvent.TEXT_FRAME_ADDING`` event is cancelled
-            Exception: If unable to add text frame
+            CreateInstanceMsfError: If unable to create text.TextFrame.
+            CancelEventError: If ``WriteNamedEvent.TEXT_FRAME_ADDING`` event is cancelled.
+            Exception: If unable to add text frame.
 
         Returns:
             XTextFrame: Text frame that is added to document.
@@ -2750,6 +3146,8 @@ class Write(mSel.Selection):
 
     @classmethod
     def _add_text_frame_via_dispatch(cls, ypos: int, width: int, height: int) -> XTextFrame:
+        """Lo UN-Safe Method."""
+
         # this method is not currently being used.
         # It works so it is left here for possible future use.
         def filter_frame(val: str) -> bool:
@@ -2798,6 +3196,8 @@ class Write(mSel.Selection):
 
         Each row becomes a row of the table. The first row is treated as a header.
 
+        |lo_unsafe|
+
         Args:
             cursor (XTextCursor): Text Cursor.
             table_data (Table): 2D Table with the the first row containing column names.
@@ -2814,10 +3214,10 @@ class Write(mSel.Selection):
                 Only styles that support ``com.sun.star.text.TextTable`` service are applied.
 
         Raises:
-            ValueError: If table_data is empty
-            CreateInstanceMsfError: If unable to create instance of text.TextTable
-            CancelEventError:  If ``WriteNamedEvent.TABLE_ADDING`` event cancelled
-            Exception: If unable to add table
+            ValueError: If table_data is empty.
+            CreateInstanceMsfError: If unable to create instance of text.TextTable.
+            CancelEventError:  If ``WriteNamedEvent.TABLE_ADDING`` event cancelled.
+            Exception: If unable to add table.
 
         Returns:
             XTextTable: Table that is added to document.
@@ -2962,6 +3362,8 @@ class Write(mSel.Selection):
         """
         Add Image Link.
 
+        |lo_unsafe|
+
         Args:
             doc (XTextDocument): Text Document.
             cursor (XTextCursor): Text Cursor.
@@ -2980,6 +3382,8 @@ class Write(mSel.Selection):
     ) -> XTextContent:
         """
         Add Image Link.
+
+        |lo_unsafe|
 
         Args:
             doc (XTextDocument): Text Document.
@@ -3004,6 +3408,8 @@ class Write(mSel.Selection):
     ) -> XTextContent:
         """
         Add Image Link.
+
+        |lo_unsafe|
 
         Args:
             doc (XTextDocument): Text Document.
@@ -3031,6 +3437,8 @@ class Write(mSel.Selection):
         """
         Add Image Link.
 
+        |lo_unsafe|
+
         Args:
             doc (XTextDocument): Text Document.
             cursor (XTextCursor): Text Cursor.
@@ -3057,6 +3465,8 @@ class Write(mSel.Selection):
     ) -> XTextContent:
         """
         Add Image Link.
+
+        |lo_unsafe|
 
         Args:
             doc (XTextDocument): Text Document.
@@ -3161,6 +3571,8 @@ class Write(mSel.Selection):
         """
         Add Image Shape.
 
+        |lo_unsafe|
+
         Args:
             cursor (XTextCursor): Text Cursor.
             fnm (PathOrStr): Image path.
@@ -3175,6 +3587,8 @@ class Write(mSel.Selection):
     def add_image_shape(cls, cursor: XTextCursor, fnm: PathOrStr, width: int | UnitT, height: int | UnitT) -> XShape:
         """
         Add Image Shape.
+
+        |lo_unsafe|
 
         Args:
             cursor (XTextCursor): Text Cursor.
@@ -3193,6 +3607,8 @@ class Write(mSel.Selection):
     ) -> XShape:
         """
         Add Image Shape.
+
+        |lo_unsafe|
 
         Args:
             cursor (XTextCursor): Text Cursor.
@@ -3302,11 +3718,13 @@ class Write(mSel.Selection):
     @classmethod
     def add_line_divider(cls, cursor: XTextCursor, line_width: int) -> None:
         """
-        Adds a line divider
+        Adds a line divider.
+
+        |lo_unsafe|
 
         Args:
-            cursor (XTextCursor): Text Cursor
-            line_width (int): Line width
+            cursor (XTextCursor): Text Cursor.
+            line_width (int): Line width.
 
         Raises:
             CreateInstanceMsfError: If unable to create drawing.LineShape instance
@@ -3345,14 +3763,16 @@ class Write(mSel.Selection):
         """
         Gets text graphics.
 
+        |lo_safe|
+
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
-            Exception: If unable to get text graphics
+            Exception: If unable to get text graphics.
 
         Returns:
-            List[XGraphic]: Text Graphics
+            List[XGraphic]: Text Graphics.
 
         Note:
             If there is error getting a graphic link then it is ignored
@@ -3386,16 +3806,18 @@ class Write(mSel.Selection):
     @staticmethod
     def get_graphic_links(doc: XComponent) -> XNameAccess | None:
         """
-        Gets graphic links
+        Gets graphic links.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Document
+            doc (XComponent): Document.
 
         Raises:
-            MissingInterfaceError: if doc does not implement ``XTextGraphicObjectsSupplier`` interface
+            MissingInterfaceError: if doc does not implement ``XTextGraphicObjectsSupplier`` interface.
 
         Returns:
-            XNameAccess | None: Graphic Links on success, Otherwise, None
+            XNameAccess | None: Graphic Links on success, Otherwise, ``None``.
         """
         ims_supplier = mLo.Lo.qi(XTextGraphicObjectsSupplier, doc, True)
 
@@ -3414,6 +3836,8 @@ class Write(mSel.Selection):
     def get_text_frames(doc: XComponent) -> XNameAccess | None:
         """
         Gets document Text Frames.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Document
@@ -3442,13 +3866,15 @@ class Write(mSel.Selection):
     @staticmethod
     def is_anchored_graphic(graphic: Any) -> bool:
         """
-        Gets if a graphic object is an anchored graphic
+        Gets if a graphic object is an anchored graphic.
+
+        |lo_safe|
 
         Args:
-            graphic (Any): object that implements XServiceInfo
+            graphic (Any): object that implements XServiceInfo.
 
         Returns:
-            bool: True if is anchored graphic; Otherwise, False
+            bool: ``True`` if is anchored graphic; Otherwise, ``False``.
         """
         service_info = mLo.Lo.qi(XServiceInfo, graphic)
         return (
@@ -3460,13 +3886,15 @@ class Write(mSel.Selection):
     @staticmethod
     def get_shapes(text_doc: XTextDocument) -> XDrawPage:
         """
-        Gets shapes
+        Gets shapes.
+
+        |lo_safe|
 
         Args:
-            text_doc (XTextDocument): Text Document
+            text_doc (XTextDocument): Text Document.
 
         Raises:
-            MissingInterfaceError: If text_doc does not implement XDrawPageSupplier interface
+            MissingInterfaceError: If text_doc does not implement ``XDrawPageSupplier`` interface.
 
         Returns:
             XDrawPage: shapes
@@ -3505,11 +3933,13 @@ class Write(mSel.Selection):
     @classmethod
     def print_services_info(cls, lingo_mgr: XLinguServiceManager2, loc: Locale | None = None) -> None:
         """
-        Prints service info to console
+        Prints service info to console.
+
+        |lo_safe|
 
         Args:
-            lingo_mgr (XLinguServiceManager2): Service manager
-            loc (Locale | None, Optional) : Locale. Default ``Locale("en", "US", "")``
+            lingo_mgr (XLinguServiceManager2): Service manager.
+            loc (Locale | None, Optional) : Locale. Default ``Locale("en", "US", "")``.
         """
         if loc is None:
             loc = Locale("en", "US", "")
@@ -3536,12 +3966,14 @@ class Write(mSel.Selection):
     @staticmethod
     def print_avail_service_info(lingo_mgr: XLinguServiceManager2, service: str, loc: Locale) -> None:
         """
-        Prints available service info to console
+        Prints available service info to console.
+
+        |lo_safe|
 
         Args:
-            lingo_mgr (XLinguServiceManager2): Service Manger
-            service (str): Service Name
-            loc (Locale): Locale
+            lingo_mgr (XLinguServiceManager2): Service Manger.
+            service (str): Service Name.
+            loc (Locale): Locale.
         """
         service_names = lingo_mgr.getAvailableServices(f"com.sun.star.linguistic2.{service}", loc)
         print(f"{service} ({len(service_names)}):")
@@ -3551,12 +3983,14 @@ class Write(mSel.Selection):
     @staticmethod
     def print_config_service_info(lingo_mgr: XLinguServiceManager2, service: str, loc: Locale) -> None:
         """
-        Print config service info to console
+        Print config service info to console.
+
+        |lo_safe|
 
         Args:
-            lingo_mgr (XLinguServiceManager2): Service Manager
-            service (str): Service Name
-            loc (Locale): Locale
+            lingo_mgr (XLinguServiceManager2): Service Manager.
+            service (str): Service Name.
+            loc (Locale): Locale.
         """
         service_names = lingo_mgr.getConfiguredServices(f"com.sun.star.linguistic2.{service}", loc)
         print(f"{service} ({len(service_names)}):")
@@ -3566,11 +4000,13 @@ class Write(mSel.Selection):
     @staticmethod
     def print_locales(service: str, loc: Iterable[Locale]) -> None:
         """
-        Print locales to console
+        Print locales to console.
+
+        |lo_safe|
 
         Args:
-            service (str): Service
-            loc (Iterable[Locale]): Locale's
+            service (str): Service.
+            loc (Iterable[Locale]): Locale's.
         """
         countries: List[str] = []
         for l in loc:
@@ -3591,15 +4027,17 @@ class Write(mSel.Selection):
     @staticmethod
     def set_configured_services(lingo_mgr: XLinguServiceManager2, service: str, impl_name: str) -> bool:
         """
-        Set configured Services
+        Set configured Services.
+
+        |lo_safe|
 
         Args:
-            lingo_mgr (XLinguServiceManager2): Service Manager
-            service (str): Service Name
-            impl_name (str): Service implementation name
+            lingo_mgr (XLinguServiceManager2): Service Manager.
+            service (str): Service Name.
+            impl_name (str): Service implementation name.
 
         Returns:
-            bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
+            bool: ``True`` if ``CONFIGURED_SERVICES_SETTING`` event is not canceled; Otherwise, ``False``.
         """
         ...
 
@@ -3607,16 +4045,18 @@ class Write(mSel.Selection):
     @staticmethod
     def set_configured_services(lingo_mgr: XLinguServiceManager2, service: str, impl_name: str, loc: Locale) -> bool:
         """
-        Set configured Services
+        Set configured Services.
+
+        |lo_safe|
 
         Args:
-            lingo_mgr (XLinguServiceManager2): Service Manager
-            service (str): Service Name
-            impl_name (str): Service implementation name
+            lingo_mgr (XLinguServiceManager2): Service Manager.
+            service (str): Service Name.
+            impl_name (str): Service implementation name.
             loc (Locale): Local used to spell words.
 
         Returns:
-            bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
+            bool: ``True`` if ``CONFIGURED_SERVICES_SETTING`` event is not canceled; Otherwise, ``False``.
         """
         ...
 
@@ -3625,7 +4065,9 @@ class Write(mSel.Selection):
         lingo_mgr: XLinguServiceManager2, service: str, impl_name: str, loc: Locale | None = None
     ) -> bool:
         """
-        Set configured Services
+        Set configured Services.
+
+        |lo_safe|
 
         Args:
             lingo_mgr (XLinguServiceManager2): Service Manager
@@ -3634,7 +4076,7 @@ class Write(mSel.Selection):
             loc (Locale | None, optional): Local used to spell words. Default ``Locale("en", "US", "")``
 
         Returns:
-            bool: True if CONFIGURED_SERVICES_SETTING event is not canceled; Otherwise, False
+            bool: ``True`` if ``CONFIGURED_SERVICES_SETTING`` event is not canceled; Otherwise, ``False``.
 
         :events:
             .. cssclass:: lo_event
@@ -3666,7 +4108,9 @@ class Write(mSel.Selection):
     @classmethod
     def dicts_info(cls) -> None:
         """
-        Prints dictionary info to console
+        Prints dictionary info to console.
+
+        |lo_unsafe|
         """
         dict_lst = mLo.Lo.create_instance_mcf(XSearchableDictionaryList, "com.sun.star.linguistic2.DictionaryList")
         if not dict_lst:
@@ -3685,7 +4129,9 @@ class Write(mSel.Selection):
     @classmethod
     def print_dicts_info(cls, dict_list: XSearchableDictionaryList) -> None:
         """
-        Prints dictionaries info to console
+        Prints dictionaries info to console.
+
+        |lo_safe|
 
         Args:
             dict_list (XSearchableDictionaryList): dictionary list
@@ -3704,7 +4150,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_dict_type(dt: DictionaryType) -> str:
         """
-        Gets dictionary type
+        Gets dictionary type.
+
+        |lo_safe|
 
         Args:
             dt (DictionaryType): Dictionary Type
@@ -3721,7 +4169,9 @@ class Write(mSel.Selection):
     @staticmethod
     def print_con_dicts_info(cd_lst: XConversionDictionaryList) -> None:
         """
-        Prints Conversion dictionary list to console
+        Prints Conversion dictionary list to console.
+
+        |lo_safe|
 
         Args:
             cd_lst (XConversionDictionaryList): conversion dictionary list
@@ -3740,7 +4190,9 @@ class Write(mSel.Selection):
     @staticmethod
     def get_lingu_properties() -> XLinguProperties:
         """
-        Gets Lingu Properties
+        Gets Lingu Properties.
+
+        |lo_unsafe|
 
         Raises:
             CreateInstanceMcfError: If unable to create ``com.sun.star.linguistic2.LinguProperties`` instance
@@ -3757,7 +4209,9 @@ class Write(mSel.Selection):
     @staticmethod
     def load_spell_checker() -> XSpellChecker:
         """
-        Gets spell checker
+        Gets spell checker.
+
+        |lo_unsafe|
 
         Raises:
             CreateInstanceMcfError: If unable to create ``com.sun.star.linguistic2.LinguServiceManager`` instance
@@ -3836,14 +4290,16 @@ class Write(mSel.Selection):
     @staticmethod
     def spell_word(word: str, speller: XSpellChecker) -> bool:
         """
-        Spell Check a word for en US
+        Spell Check a word for en US.
+
+        |lo_safe|
 
         Args:
-            word (str): word to spell check
-            speller (XSpellChecker): spell checker instance
+            word (str): word to spell check.
+            speller (XSpellChecker): spell checker instance.
 
         Returns:
-            bool: True if no spelling errors are detected; Otherwise, False
+            bool: ``True`` if no spelling errors are detected; Otherwise, ``False``.
         """
         ...
 
@@ -3851,30 +4307,34 @@ class Write(mSel.Selection):
     @staticmethod
     def spell_word(word: str, speller: XSpellChecker, loc: Locale) -> bool:
         """
-        Spell Check a word for en US
+        Spell Check a word for en US.
+
+        |lo_safe|
 
         Args:
-            word (str): word to spell check
-            speller (XSpellChecker): spell checker instance
+            word (str): word to spell check.
+            speller (XSpellChecker): spell checker instance.
             loc (Locale | None): Local used to spell word.
 
         Returns:
-            bool: True if no spelling errors are detected; Otherwise, False
+            bool: ``True`` if no spelling errors are detected; Otherwise, ``False``.
         """
         ...
 
     @staticmethod
     def spell_word(word: str, speller: XSpellChecker, loc: Locale | None = None) -> bool:
         """
-        Spell Check a word for en US
+        Spell Check a word for en US.
+
+        |lo_safe|
 
         Args:
-            word (str): word to spell check
-            speller (XSpellChecker): spell checker instance
-            loc (Locale | None, optional): Local used to spell word. Default ``Locale("en", "US", "")``
+            word (str): word to spell check.
+            speller (XSpellChecker): spell checker instance.
+            loc (Locale | None, optional): Local used to spell word. Default ``Locale("en", "US", "")``.
 
         Returns:
-            bool: True if no spelling errors are detected; Otherwise, False
+            bool: ``True`` if no spelling errors are detected; Otherwise, ``False``.
         """
         if loc is None:
             loc = Locale("en", "US", "")
@@ -3895,13 +4355,15 @@ class Write(mSel.Selection):
     @staticmethod
     def load_thesaurus() -> XThesaurus:
         """
-        Gets Thesaurus
+        Gets Thesaurus.
+
+        |lo_unsafe|
 
         Raises:
             CreateInstanceMcfError: If unable to create ``com.sun.star.linguistic2.LinguServiceManager`` instance
 
         Returns:
-            XThesaurus: Thesaurus
+            XThesaurus: Thesaurus.
         """
         lingo_mgr = mLo.Lo.create_instance_mcf(
             XLinguServiceManager, "com.sun.star.linguistic2.LinguServiceManager", raise_err=True
@@ -3912,14 +4374,16 @@ class Write(mSel.Selection):
     @staticmethod
     def print_meaning(word: str, thesaurus: XThesaurus) -> int:
         """
-        Prints word meanings found in thesaurus to console
+        Prints word meanings found in thesaurus to console.
+
+        |lo_safe|
 
         Args:
-            word (str): Word to print meanings of
-            thesaurus (XThesaurus): thesaurus instance
+            word (str): Word to print meanings of.
+            thesaurus (XThesaurus): thesaurus instance.
 
         Returns:
-            int: Number of meanings found
+            int: Number of meanings found.
         """
         ...
 
@@ -3927,30 +4391,34 @@ class Write(mSel.Selection):
     @staticmethod
     def print_meaning(word: str, thesaurus: XThesaurus, loc: Locale) -> int:
         """
-        Prints word meanings found in thesaurus to console
+        Prints word meanings found in thesaurus to console.
+
+        |lo_safe|
 
         Args:
-            word (str): Word to print meanings of
-            thesaurus (XThesaurus): thesaurus instance
+            word (str): Word to print meanings of.
+            thesaurus (XThesaurus): thesaurus instance.
             loc (Locale | None): Local used to query meanings.
 
         Returns:
-            int: Number of meanings found
+            int: Number of meanings found.
         """
         ...
 
     @staticmethod
     def print_meaning(word: str, thesaurus: XThesaurus, loc: Locale | None = None) -> int:
         """
-        Prints word meanings found in thesaurus to console
+        Prints word meanings found in thesaurus to console.
+
+        |lo_safe|
 
         Args:
-            word (str): Word to print meanings of
-            thesaurus (XThesaurus): thesaurus instance
-            loc (Locale | None, optional): Local used to query meanings. Default ``Locale("en", "US", "")``
+            word (str): Word to print meanings of.
+            thesaurus (XThesaurus): thesaurus instance.
+            loc (Locale | None, optional): Local used to query meanings. Default ``Locale("en", "US", "")``.
 
         Returns:
-            int: Number of meanings found
+            int: Number of meanings found.
         """
         if loc is None:
             loc = Locale("en", "US", "")
@@ -3978,13 +4446,15 @@ class Write(mSel.Selection):
     @staticmethod
     def load_proofreader() -> XProofreader:
         """
-        Gets Proof Reader
+        Gets Proof Reader.
+
+        |lo_unsafe|
 
         Raises:
-            CreateInstanceMcfError: If unable to create linguistic2.Proofreader instance
+            CreateInstanceMcfError: If unable to create linguistic2.Proofreader instance.
 
         Returns:
-            XProofreader: Proof Reader
+            XProofreader: Proof Reader.
         """
         return mLo.Lo.create_instance_mcf(XProofreader, "com.sun.star.linguistic2.Proofreader", raise_err=True)
 
@@ -3992,11 +4462,13 @@ class Write(mSel.Selection):
     @classmethod
     def proof_sentence(cls, sent: str, proofreader: XProofreader) -> int:
         """
-        Proofs a sentence for en US
+        Proofs a sentence for en US.
+
+        |lo_safe|
 
         Args:
-            sent (str): sentence to proof
-            proofreader (XProofreader): Proof reader instance
+            sent (str): sentence to proof.
+            proofreader (XProofreader): Proof reader instance.
 
         Returns:
             int: Number of word of sentence that did not pass proof reading.
@@ -4007,11 +4479,13 @@ class Write(mSel.Selection):
     @classmethod
     def proof_sentence(cls, sent: str, proofreader: XProofreader, loc: Locale) -> int:
         """
-        Proofs a sentence for en US
+        Proofs a sentence for en US.
+
+        |lo_safe|
 
         Args:
-            sent (str): sentence to proof
-            proofreader (XProofreader): Proof reader instance
+            sent (str): sentence to proof.
+            proofreader (XProofreader): Proof reader instance.
             loc (Locale | None): Local used to do proof reading.
 
         Returns:
@@ -4022,12 +4496,14 @@ class Write(mSel.Selection):
     @classmethod
     def proof_sentence(cls, sent: str, proofreader: XProofreader, loc: Locale | None = None) -> int:
         """
-        Proofs a sentence for en US
+        Proofs a sentence for en US.
+
+        |lo_safe|
 
         Args:
-            sent (str): sentence to proof
-            proofreader (XProofreader): Proof reader instance
-            loc (Locale | None, optional): Local used to do proof reading. Default ``Locale("en", "US", "")``
+            sent (str): sentence to proof.
+            proofreader (XProofreader): Proof reader instance.
+            loc (Locale | None, optional): Local used to do proof reading. Default ``Locale("en", "US", "")``.
 
         Returns:
             int: Number of word of sentence that did not pass proof reading.
@@ -4049,9 +4525,11 @@ class Write(mSel.Selection):
         """
         Prints proof errors to console.
 
+        |lo_safe|
+
         Args:
-            string (str): error string
-            err (SingleProofreadingError): Single proof reading error
+            string (str): error string.
+            err (SingleProofreadingError): Single proof reading error.
         """
         e_end = err.nErrorStart + err.nErrorLength
         err_txt = string[err.nErrorStart : e_end]
@@ -4067,13 +4545,15 @@ class Write(mSel.Selection):
     @staticmethod
     def guess_locale(test_str: str) -> Locale | None:
         """
-        Guesses Primary Language and returns results
+        Guesses Primary Language and returns results.
+
+        |lo_unsafe|
 
         Args:
-            test_str (str): text used to make guess
+            test_str (str): text used to make guess.
 
         Returns:
-            Locale | None: Local if guess succeeds; Otherwise, None
+            Locale | None: Local if guess succeeds; Otherwise, ``None``.
         """
         guesser = mLo.Lo.create_instance_mcf(XLanguageGuessing, "com.sun.star.linguistic2.LanguageGuessing")
         if guesser is None:
@@ -4084,10 +4564,12 @@ class Write(mSel.Selection):
     @staticmethod
     def print_locale(loc: Locale) -> None:
         """
-        Prints a locale to the console
+        Prints a locale to the console.
+
+        |lo_safe|
 
         Args:
-            loc (Locale): Locale to print
+            loc (Locale): Locale to print.
         """
         if loc is not None:
             print(f"Locale lang: '{loc.Language}'; country: '{loc.Country}'; variant: '{loc.Variant}'")
@@ -4099,7 +4581,9 @@ class Write(mSel.Selection):
     @staticmethod
     def open_sent_check_options() -> None:
         """
-        open Options - Language Settings - English sentence checking
+        Open Options - Language Settings - English sentence checking.
+
+        |lo_unsafe|
 
         Returns:
             None:
@@ -4120,6 +4604,8 @@ class Write(mSel.Selection):
         """
         Activate dialog in  Tools > Spelling and Grammar...
 
+        |lo_unsafe|
+
         Returns:
             None:
 
@@ -4132,7 +4618,9 @@ class Write(mSel.Selection):
     @staticmethod
     def toggle_auto_spell_check() -> None:
         """
-        Toggles spell check on and off
+        Toggles spell check on and off.
+
+        |lo_unsafe|
 
         Returns:
             None:
@@ -4145,7 +4633,9 @@ class Write(mSel.Selection):
     @staticmethod
     def open_thesaurus_dialog() -> None:
         """
-        Opens LibreOffice Thesaurus Dialog
+        Opens LibreOffice Thesaurus Dialog.
+
+        |lo_unsafe|
 
         Returns:
             None:
@@ -4160,7 +4650,9 @@ class Write(mSel.Selection):
     @classproperty
     def active_doc(cls) -> XTextDocument:
         """
-        Gets current active document
+        Gets current active document.
+
+        |lo_unsafe|
 
         Returns:
             XTextDocument: Text Document
