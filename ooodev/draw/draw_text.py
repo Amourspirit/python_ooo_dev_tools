@@ -15,13 +15,12 @@ from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.context.lo_context import LoContext
 from .draw_text_cursor import DrawTextCursor
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial, LoInstPropsPartial):
+class DrawText(Generic[_T], LoInstPropsPartial, TextComp, QiPartial, StylePartial, ServicePartial):
     """
     Represents text content.
 
@@ -62,8 +61,7 @@ class DrawText(Generic[_T], TextComp, QiPartial, StylePartial, ServicePartial, L
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mDraw.Draw.add_bullet(self.component, level, text)
+        mDraw.Draw.add_bullet(self.component, level, text)
 
     def get_cursor(self) -> DrawTextCursor[_T]:
         """

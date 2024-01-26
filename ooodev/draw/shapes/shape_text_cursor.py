@@ -26,6 +26,7 @@ _T = TypeVar("_T", bound="ComponentT")
 
 class ShapeTextCursor(
     Generic[_T],
+    LoInstPropsPartial,
     TextCursorPartial,
     TextCursorComp,
     ShapePartialProps,
@@ -34,7 +35,6 @@ class ShapeTextCursor(
     PropPartial,
     QiPartial,
     StylePartial,
-    LoInstPropsPartial,
 ):
     """
     Represents a text cursor.

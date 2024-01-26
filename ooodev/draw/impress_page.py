@@ -7,7 +7,6 @@ from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from .draw_page import DrawPage
 
@@ -36,8 +35,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         Returns:
             ImpressPage: Master Page.
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.get_master_page(self.component)  # type: ignore
+        page = mDraw.Draw.get_master_page(self.component)  # type: ignore
         return ImpressPage(owner=self._owner, component=page, lo_inst=self.lo_inst)
 
     def get_notes_page(self) -> ImpressPage[_T]:
@@ -56,8 +54,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page_by_index`
         """
-        with LoContext(self.lo_inst):
-            page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
+        page = mDraw.Draw.get_notes_page(self.component)  # type: ignore
         return ImpressPage(owner=self._owner, component=page, lo_inst=self.lo_inst)
 
     def remove_master_page(self) -> None:
@@ -74,8 +71,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
             raise mEx.DrawPageError("Owner is None")
         if not self.lo_inst.is_uno_interfaces(self._owner, XDrawPage):
             raise mEx.DrawPageError("Owner component is not XDrawPage")
-        with LoContext(self.lo_inst):
-            mDraw.Draw.remove_master_page(doc=self._owner, slide=self.__component)  # type: ignore
+        mDraw.Draw.remove_master_page(doc=self._owner, slide=self.__component)  # type: ignore
 
     def set_master_footer(self, text: str) -> None:
         """
@@ -91,8 +87,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mDraw.Draw.set_master_footer(master=self.__component, text=text)
+        mDraw.Draw.set_master_footer(master=self.__component, text=text)
 
     def title_only_slide(self, header: str) -> None:
         """
@@ -108,8 +103,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mDraw.Draw.title_only_slide(self.component, header)  # type: ignore
+        mDraw.Draw.title_only_slide(self.component, header)  # type: ignore
 
     def title_slide(self, title: str, sub_title: str = "") -> None:
         """
@@ -125,8 +119,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mDraw.Draw.title_slide(self.component, title, sub_title)  # type: ignore
+        mDraw.Draw.title_slide(self.component, title, sub_title)  # type: ignore
 
     def set_master_page(self, page: XDrawPage) -> None:
         """
@@ -141,5 +134,4 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mDraw.Draw.set_master_page(slide=self.component, page=page)  # type: ignore
+        mDraw.Draw.set_master_page(slide=self.component, page=page)  # type: ignore

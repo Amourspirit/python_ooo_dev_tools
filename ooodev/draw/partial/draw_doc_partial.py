@@ -8,6 +8,7 @@ from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.draw import draw_pages as mDrawPages
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import gui as mGUI
 from ooodev.utils import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
@@ -56,8 +57,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPage: The slide that was inserted at the end of the document.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.add_slide(doc=self.__component)
+        result = mDraw.Draw.add_slide(doc=self.__component)
         return mDrawPage.DrawPage(self.__owner, result)
 
     def add_layer(self, lm: XLayerManager, layer_name: str) -> XLayer:
@@ -91,8 +91,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             NameContainerComp: Name Container.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.build_play_list(self.__component, custom_name, *slide_idxs)
+        result = mDraw.Draw.build_play_list(self.__component, custom_name, *slide_idxs)
         return NameContainerComp(result)
 
     def close_doc(self, deliver_ownership: bool = False) -> bool:
@@ -165,8 +164,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPage: Duplicated slide.
         """
-        with LoContext(self.__lo_inst):
-            page = mDraw.Draw.duplicate(self.__component, idx)
+        page = mDraw.Draw.duplicate(self.__component, idx)
         return mDrawPage.DrawPage(self.__owner, page)
 
     def find_master_page(self, style: str) -> mMasterDrawPage.MasterDrawPage[_T]:
@@ -183,8 +181,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPage: Master page as Draw Page if found.
         """
-        with LoContext(self.__lo_inst):
-            page = mDraw.Draw.find_master_page(self.__component, style)
+        page = mDraw.Draw.find_master_page(self.__component, style)
         return mMasterDrawPage.MasterDrawPage(self.__owner, page)
 
     def find_slide_idx_by_name(self, name: str) -> int:
@@ -197,8 +194,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             int: Zero based index if found; Otherwise ``-1``
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.find_slide_idx_by_name(self.__component, name)
+        result = mDraw.Draw.find_slide_idx_by_name(self.__component, name)
         return result
 
     def get_controller(self) -> XController:
@@ -222,8 +218,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPage: Draw Page
         """
-        with LoContext(self.__lo_inst):
-            page = mDraw.Draw.get_handout_master_page(self.__component)
+        page = mDraw.Draw.get_handout_master_page(self.__component)
         return mDrawPage.DrawPage(self.__owner, page)
 
     def get_layer(self, layer_name: DrawingLayerKind | str) -> XLayer:
@@ -255,8 +250,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             XLayerManager: Layer Manager
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_layer_manager(self.__component)
+        result = mDraw.Draw.get_layer_manager(self.__component)
         return result
 
     def get_master_page(self, idx: int) -> mMasterDrawPage.MasterDrawPage[_T]:
@@ -273,8 +267,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             MasterDrawPage: Master page as Draw Page.
         """
-        with LoContext(self.__lo_inst):
-            page = mDraw.Draw.get_master_page(doc=self.__component, idx=idx)
+        page = mDraw.Draw.get_master_page(doc=self.__component, idx=idx)
         return mMasterDrawPage.MasterDrawPage(self.__owner, page)
 
     def get_master_page_count(self) -> int:
@@ -307,8 +300,7 @@ class DrawDocPartial(Generic[_T]):
         See Also:
             :py:meth:`~.draw.Draw.get_notes_page`
         """
-        with LoContext(self.__lo_inst):
-            page = mDraw.Draw.get_notes_page_by_index(self.__component, idx)
+        page = mDraw.Draw.get_notes_page_by_index(self.__component, idx)
         return mDrawPage.DrawPage(self.__owner, page)
 
     def get_ordered_shapes(self) -> List[mDrawShape.DrawShape[_T]]:
@@ -321,8 +313,7 @@ class DrawDocPartial(Generic[_T]):
         See Also:
             :py:meth:`~.draw.Draw.get_shapes`
         """
-        with LoContext(self.__lo_inst):
-            shapes = mDraw.Draw.get_ordered_shapes(doc=self.__component)
+        shapes = mDraw.Draw.get_ordered_shapes(doc=self.__component)
         return [mDrawShape.DrawShape(self.__owner, shape) for shape in shapes]
 
     def get_play_list(self) -> NameContainerComp:
@@ -335,8 +326,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             NameContainerComp: Name Container
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_play_list(self.__component)
+        result = mDraw.Draw.get_play_list(self.__component)
         return NameContainerComp(result)
 
     def get_shapes(self) -> List[mDrawShape.DrawShape[_T]]:
@@ -352,8 +342,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             List[DrawShape]: List of Shapes.
         """
-        with LoContext(self.__lo_inst):
-            shapes = mDraw.Draw.get_shapes(doc=self.__component)
+        shapes = mDraw.Draw.get_shapes(doc=self.__component)
         return [mDrawShape.DrawShape(self.__owner, shape) for shape in shapes]
 
     def get_shapes_text(self) -> str:
@@ -367,8 +356,7 @@ class DrawDocPartial(Generic[_T]):
             - :py:meth:`~.draw.Draw.get_shapes`
             - :py:meth:`~.draw.Draw.get_ordered_shapes`
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_shapes_text(doc=self.__component)
+        result = mDraw.Draw.get_shapes_text(doc=self.__component)
         return result
 
     # region get_slide()
@@ -438,13 +426,11 @@ class DrawDocPartial(Generic[_T]):
             DrawPage: Slide as Draw Page.
         """
         if not kwargs:
-            with LoContext(self.__lo_inst):
-                result = mDraw.Draw.get_slide(doc=self.__component)
+            result = mDraw.Draw.get_slide(doc=self.__component)
             return mDrawPage.DrawPage(self.__owner, result)
         if "slides" not in kwargs:
             kwargs["doc"] = self.__component
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_slide(**kwargs)
+        result = mDraw.Draw.get_slide(**kwargs)
         return mDrawPage.DrawPage(self.__owner, result)
 
     # endregion get_slide()
@@ -462,8 +448,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             int: Slide Number.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_slide_number(xdraw_view=xdraw_view)
+        result = mDraw.Draw.get_slide_number(xdraw_view=xdraw_view)
         return result
 
     def get_slide_size(self) -> Size:
@@ -476,8 +461,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             ~ooodev.utils.data_type.size.Size: Size struct.
         """
-        with LoContext(self.__lo_inst):
-            result = mDraw.Draw.get_slide_size(self.__component)  # type: ignore
+        result = mDraw.Draw.get_slide_size(self.__component)  # type: ignore
         return result
 
     def get_slides(self) -> mDrawPages.DrawPages:
@@ -491,8 +475,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPages: Draw Pages.
         """
-        with LoContext(self.__lo_inst):
-            pages = mDraw.Draw.get_slides(self.__component)
+        pages = mDraw.Draw.get_slides(self.__component)
         return mDrawPages.DrawPages(owner=cast("DrawDoc", self.__component), slides=pages)
 
     def get_slides_count(self) -> int:
@@ -511,8 +494,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             List[DrawPage[_T]]: List of pages
         """
-        with LoContext(self.__lo_inst):
-            slides = mDraw.Draw.get_slides_list(self.__component)
+        slides = mDraw.Draw.get_slides_list(self.__component)
         return [mDrawPage.DrawPage(self.__owner, slide) for slide in slides]
 
     def get_viewed_page(self) -> mDrawPage.DrawPage[_T]:
@@ -525,8 +507,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPage: Draw Page
         """
-        with LoContext(self.__lo_inst):
-            page = mDraw.Draw.get_viewed_page(self.__component)
+        page = mDraw.Draw.get_viewed_page(self.__component)
         return mDrawPage.DrawPage(self.__owner, page)
 
     def goto_page(self, page: XDrawPage) -> None:
@@ -542,8 +523,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mDraw.Draw.goto_page(doc=self.__component, page=page)
+        mDraw.Draw.goto_page(doc=self.__component, page=page)
 
     def insert_master_page(self, idx: int) -> mMasterDrawPage.MasterDrawPage[_T]:
         """
@@ -558,8 +538,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             MasterDrawPage: The newly inserted draw page.
         """
-        with LoContext(self.__lo_inst):
-            page = mDraw.Draw.insert_master_page(doc=self.__component, idx=idx)
+        page = mDraw.Draw.insert_master_page(doc=self.__component, idx=idx)
         return mMasterDrawPage.MasterDrawPage(self.__owner, page)
 
     def insert_slide(self, idx: int) -> mDrawPage.DrawPage[_T]:
@@ -577,11 +556,10 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             DrawPage: New slide that was inserted.
         """
-        if idx < 0:
-            idx = self.get_slides_count() + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
-        slide = mDraw.Draw.insert_slide(doc=self.__component, idx=idx)
+        slides = mDraw.Draw.get_slides(doc=self.__component)
+        count = slides.getCount()
+        index = mGenUtil.Util.get_index(idx, count, True)
+        slide = slides.insertNewByIndex(index)
         return mDrawPage.DrawPage(self.__owner, slide)
 
     def set_visible(self, visible: bool = True) -> None:
@@ -594,8 +572,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             None:
         """
-        with LoContext(self.__lo_inst):
-            mGUI.GUI.set_visible(doc=self.__component, visible=visible)
+        mGUI.GUI.set_visible(doc=self.__component, visible=visible)
 
     def zoom(self, type: ZoomKind = ZoomKind.ENTIRE_PAGE) -> None:
         """
