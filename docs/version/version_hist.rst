@@ -11,6 +11,10 @@ Version 0.22.2
 
 ``ooodev.Calc.CalcCell`` now has a ``make_constraint()`` method.
 
+Updates for event related classes.
+
+Other Misc updates.
+
 Version 0.22.1
 ==============
 

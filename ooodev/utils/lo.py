@@ -638,6 +638,8 @@ class Lo(metaclass=StaticProperty):
             return cls._lo_inst.loader_current
 
         cls._lo_inst = lo_inst.LoInst(opt=opt, events=_Events())
+        # cls._lo_inst.events.add_observer(_Events())
+        # _Events().add_observer(cls._lo_inst.events)
 
         try:
             result = cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)

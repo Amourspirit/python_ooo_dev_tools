@@ -45,12 +45,12 @@ def test_highlight_range(loader) -> None:
             EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTING, highlighting),
             EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTED, highlighted),
             EventArg(CalcNamedEvent.CELLS_BORDER_ADDING, adding_border),
-        ):
-
-            sheet = Calc.get_sheet(doc=doc, index=0)
+        ) as events:
+            Lo.current_lo.add_event_observers(events)
+            sheet = Calc.get_sheet(doc=doc, idx=0)
             rng = sheet.getCellRangeByName(rng_name)
             if visible:
-                GUI.set_visible(is_visible=visible, odoc=doc)
+                GUI.set_visible(visible=visible, doc=doc)
             first = Calc.highlight_range(sheet, headline, rng)
             Lo.delay(delay)
             assert first is not None
@@ -58,9 +58,10 @@ def test_highlight_range(loader) -> None:
             assert result == "Modified from callback"
             assert is_adding_border
             assert is_highlighted
+            Lo.current_lo.remove_event_observer(events)
 
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close_doc(doc)
 
 
 def test_highlight_range_cancel(loader) -> None:
@@ -86,10 +87,10 @@ def test_highlight_range_cancel(loader) -> None:
         rng_name = "B3:F8"
         headline = "Hello World!"
         with event_ctx(EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTING, highlighting)) as events:
-
+            Lo.current_lo.add_event_observers(events)
             if visible:
-                GUI.set_visible(is_visible=visible, odoc=doc)
-            sheet = Calc.get_sheet(doc=doc, index=0)
+                GUI.set_visible(visible=visible, doc=doc)
+            sheet = Calc.get_sheet(doc=doc, idx=0)
             rng = sheet.getCellRangeByName(rng_name)
             with pytest.raises(mEx.CancelEventError):
                 _ = Calc.highlight_range(sheet, headline, rng)
@@ -100,7 +101,7 @@ def test_highlight_range_cancel(loader) -> None:
         assert result == headline
         Lo.delay(delay)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close_doc(doc)
 
 
 def test_highlight_local_events(loader) -> None:
@@ -138,20 +139,21 @@ def test_highlight_local_events(loader) -> None:
     doc = Calc.create_doc(loader)
     try:
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
         rng_name = "B3:F8"
         headline = "Hello World!"
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         rng = sheet.getCellRangeByName(rng_name)
 
         def do_work():
             # test event is a function call.
-            # none of the events will be called ouside of function.
+            # none of the events will be called outside of function.
             nonlocal sheet, headline, rng
             events = Events()
             events.on(CalcNamedEvent.CELLS_HIGH_LIGHTING, highlighting)
             events.on(CalcNamedEvent.CELLS_HIGH_LIGHTED, highlighted)
             events.on(CalcNamedEvent.CELLS_BORDER_ADDING, adding_border)
+            Lo.current_lo.add_event_observers(events)
             return Calc.highlight_range(sheet, headline, rng)
 
         first = do_work()
@@ -167,7 +169,7 @@ def test_highlight_local_events(loader) -> None:
         assert result == "Modified from callback"
 
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close_doc(doc)
 
 
 def test_highlight_events_destroy(loader) -> None:
@@ -203,10 +205,10 @@ def test_highlight_events_destroy(loader) -> None:
     doc = Calc.create_doc(loader)
     try:
         if visible:
-            GUI.set_visible(is_visible=visible, odoc=doc)
+            GUI.set_visible(visible=visible, doc=doc)
         rng_name = "B3:F8"
         headline = "Hello World!"
-        sheet = Calc.get_sheet(doc=doc, index=0)
+        sheet = Calc.get_sheet(doc=doc, idx=0)
         rng = sheet.getCellRangeByName(rng_name)
         # by creating events and then destroying them it is
         # possible to register and then deregister callbacks
@@ -214,6 +216,7 @@ def test_highlight_events_destroy(loader) -> None:
         events.on(CalcNamedEvent.CELLS_HIGH_LIGHTING, highlighting)
         events.on(CalcNamedEvent.CELLS_HIGH_LIGHTED, highlighted)
         events.on(CalcNamedEvent.CELLS_BORDER_ADDING, adding_border)
+        Lo.current_lo.add_event_observers(events)
         first = Calc.highlight_range(sheet, headline, rng)
         events = None
         _ = None
@@ -231,4 +234,4 @@ def test_highlight_events_destroy(loader) -> None:
         assert result == "Modified from callback"
 
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close_doc(doc)
