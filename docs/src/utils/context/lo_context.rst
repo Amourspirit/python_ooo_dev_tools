@@ -34,12 +34,12 @@ An example of use is shown below:
     # get fonts of second document
     With LoContext(lo_inst=doc2.lo_inst):
         # the context is changed to the second document.
-        # As soona a the LoContext block is exited, the context is restored to the first document.
+        # As soon as the LoContext block is exited, the context is restored to the first document.
         fonts =  Info.get_fonts()
 
 .. seealso::
 
-    :py:meth:`ooodev.utils.info.Info.get_font`
+    :py:meth:`ooodev.utils.info.Info.get_fonts`
 
 
 Class Declaration

@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.22.2
+==============
+
+``ooodev.Calc.CalcDoc`` has new ``create_doc()`` and ``open_doc()`` methods.
+
+``ooodev.Calc.CalcCellRange`` now has a ``highlight()`` method.
+
+``ooodev.Calc.CalcCell`` now has a ``make_constraint()`` method.
+
 Version 0.22.1
 ==============
 

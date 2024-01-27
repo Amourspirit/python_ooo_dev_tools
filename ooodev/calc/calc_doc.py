@@ -9,6 +9,7 @@ from com.sun.star.sheet import XSpreadsheets
 
 
 if TYPE_CHECKING:
+    from com.sun.star.frame import XComponentLoader
     from com.sun.star.beans import PropertyValue
     from com.sun.star.frame import XController
     from com.sun.star.sheet import XViewPane
@@ -18,6 +19,8 @@ if TYPE_CHECKING:
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from com.sun.star.sheet import XSpreadsheetDocument
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from ooodev.events.args.event_args import EventArgs
 else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any
@@ -923,6 +926,243 @@ class CalcDoc(
         """
         with LoContext(self.lo_inst):
             mCalc.Calc.zoom(doc=self.component, type=type)
+
+    # region create_doc()
+    @overload
+    @staticmethod
+    def create_doc() -> CalcDoc:
+        """
+        Creates a new spreadsheet document.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(*, lo_inst: LoInst) -> CalcDoc:
+        """
+        Creates a new spreadsheet document.
+
+        Args:
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader) -> CalcDoc:
+        """
+        Creates a new spreadsheet document.
+
+        Args:
+            loader (XComponentLoader): Component Loader.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader, lo_inst: LoInst) -> CalcDoc:
+        """
+        Creates a new spreadsheet document.
+
+        Args:
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @staticmethod
+    def create_doc(loader: XComponentLoader | None = None, lo_inst: LoInst | None = None) -> CalcDoc:
+        """
+        Creates a new spreadsheet document.
+
+
+        Args:
+            loader (XComponentLoader): Component Loader.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Raises:
+            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface.
+            CancelEventError: If DOC_CREATING event is canceled.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing ``loader``.
+        """
+        # Note: XSpreadsheetDocument does not inherit XComponent!
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        with LoContext(lo_inst):
+            if loader is None:
+                doc = mCalc.Calc.create_doc()
+            else:
+                doc = mCalc.Calc.create_doc(loader=loader)
+        return CalcDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion create_doc()
+
+    # region open_doc()
+    @overload
+    @staticmethod
+    def open_doc() -> CalcDoc:
+        """
+        Creates a spreadsheet document.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(*, lo_inst: LoInst) -> CalcDoc:
+        """
+        Creates a spreadsheet document.
+
+        Args:
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr) -> CalcDoc:
+        """
+        Opens a spreadsheet document.
+
+        Args:
+            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, *, lo_inst: LoInst) -> CalcDoc:
+        """
+        Opens a spreadsheet document.
+
+        Args:
+            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(*, loader: XComponentLoader) -> CalcDoc:
+        """
+        Creates a spreadsheet document.
+
+        Args:
+            loader (XComponentLoader): Component loader.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader) -> CalcDoc:
+        """
+        Opens a spreadsheet document.
+
+        Args:
+            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
+            loader (XComponentLoader): Component loader.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @overload
+    @staticmethod
+    def open_doc(fnm: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> CalcDoc:
+        """
+        Opens a spreadsheet document.
+
+        Args:
+            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
+            loader (XComponentLoader): Component loader.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+        """
+        ...
+
+    @staticmethod
+    def open_doc(
+        fnm: PathOrStr | None = None,
+        loader: XComponentLoader | None = None,
+        lo_inst: LoInst | None = None,
+    ) -> CalcDoc:
+        """
+        Opens or creates a spreadsheet document.
+
+        Args:
+            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
+            loader (XComponentLoader): Component loader.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Raises:
+            CancelEventError: If ``DOC_OPENING`` is canceled.
+
+        Returns:
+            CalcDoc: Spreadsheet document.
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
+
+        Note:
+            Event args ``event_data`` is a dictionary containing all method parameters.
+
+            If ``fnm`` is omitted then ``DOC_OPENED`` event will not be raised.
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        if fnm is None:
+            fnm = ""
+        with LoContext(lo_inst):
+            if loader is None:
+                doc = mCalc.Calc.open_doc(fnm=fnm)
+            else:
+                doc = mCalc.Calc.open_doc(fnm=fnm, loader=loader)
+        return CalcDoc(doc=doc, lo_inst=lo_inst)
+
+    # endregion open_doc()
 
     # region Properties
 

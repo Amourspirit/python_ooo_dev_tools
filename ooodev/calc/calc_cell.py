@@ -1,11 +1,15 @@
 from __future__ import annotations
-from typing import Any, Sequence, TYPE_CHECKING
+from typing import Any, overload, Sequence, TYPE_CHECKING
 import uno
 
 if TYPE_CHECKING:
     from com.sun.star.awt import Point
-    from com.sun.star.sheet import XSheetAnnotation
+    from com.sun.star.sheet import SolverConstraint  # struct
     from com.sun.star.sheet import XGoalSeek
+    from com.sun.star.sheet import XSheetAnnotation
+    from com.sun.star.sheet import XSpreadsheet
+    from com.sun.star.table import CellAddress
+    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
     from .calc_sheet import CalcSheet
     from ooodev.proto.style_obj import StyleT
     from . import calc_cell_cursor as mCalcCellCursor
@@ -396,6 +400,55 @@ class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StyleP
         """
         with LoContext(self.lo_inst):
             mCalc.Calc.split_window(doc=self.calc_sheet.calc_doc.component, cell_name=str(self._cell_obj))
+
+    # region make_constraint()
+    @overload
+    def make_constraint(self, num: int | float, op: str) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str): Operation such as ``<=``.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        ...
+
+    @overload
+    def make_constraint(self, num: int | float, op: SolverConstraintOperator) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (SolverConstraintOperator): Operation such as ``SolverConstraintOperator.EQUAL``.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        ...
+
+    def make_constraint(self, num: int | float, op: SolverConstraintOperator | str) -> SolverConstraint:
+        """
+        Makes a constraint for a solver model.
+
+        Args:
+            num (Number): Constraint number such as float or int.
+            op (str | SolverConstraintOperator): Operation such as ``<=``.
+
+        Returns:
+            SolverConstraint: Solver constraint that can be use in a solver model.
+        """
+        if isinstance(op, str):
+            return mCalc.Calc.make_constraint(num=num, op=op, sheet=self.calc_sheet.component, cell_obj=self._cell_obj)
+        else:
+            return mCalc.Calc.make_constraint(
+                num=num, op=op, sheet=self.calc_sheet.component, cell_name=str(self._cell_obj)
+            )
+
+    # endregion make_constraint()
 
     # region Properties
     @property

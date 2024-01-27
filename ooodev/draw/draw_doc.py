@@ -428,7 +428,7 @@ class DrawDoc(
 
         Args:
             fnm (PathOrStr): path of document to open
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
 
         Returns:
             DrawDoc: Document
@@ -459,7 +459,7 @@ class DrawDoc(
         Args:
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
 
         Returns:
             DrawDoc: Document
@@ -490,7 +490,7 @@ class DrawDoc(
         Args:
             fnm (PathOrStr): path of document to open
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
 
         Returns:
             DrawDoc: Document
@@ -507,7 +507,7 @@ class DrawDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
 
 
         Returns:
@@ -525,7 +525,7 @@ class DrawDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader): Component Loader
             props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
 
         Returns:
             DrawDoc: Document
@@ -546,7 +546,7 @@ class DrawDoc(
             fnm (PathOrStr): path of document to open
             loader (XComponentLoader, optional): Component Loader
             props (Iterable[PropertyValue], optional): Properties passed to component loader
-            lo_inst (LoInst, Optional): Lo instance.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
 
         Raises:
             CancelEventError: if DOC_OPENING event is canceled.
