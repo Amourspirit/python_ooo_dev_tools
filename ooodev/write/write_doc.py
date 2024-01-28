@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import Any, List, Iterable, overload, Sequence, TYPE_CHECKING
+from typing import Any, List, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
-from com.sun.star.frame import XComponentLoader
 from com.sun.star.frame import XModel
 from com.sun.star.style import XStyle
 from com.sun.star.text import XTextFramesSupplier
@@ -11,7 +10,6 @@ from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import PropertyValue
     from com.sun.star.frame import XController
     from com.sun.star.graphic import XGraphic
     from com.sun.star.text import XText
@@ -54,11 +52,11 @@ from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.type_var import PathOrStr
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -96,8 +94,11 @@ class WriteDoc(
     GuiPartial,
     EventsPartial,
     StylePartial,
+    DocIoPartial["WriteDoc"],
 ):
     """A class to represent a Write document."""
+
+    DOC_TYPE = DocType.WRITER
 
     def __init__(self, doc: XTextDocument, lo_inst: LoInst | None = None) -> None:
         """
@@ -134,6 +135,7 @@ class WriteDoc(
         GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
+        DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._draw_page = None
         self._draw_pages = None
         self._text_frames = None
@@ -237,177 +239,69 @@ class WriteDoc(
 
     # endregion get_cursor()
 
-    # region Create Document
-    @overload
-    @staticmethod
-    def create_doc() -> WriteDoc:
+    # region DocIoPartial overrides
+    def _on_io_saving(self, event_args: CancelEventArgs) -> None:
         """
-        Creates a new Draw document.
-
-        Returns:
-            WriteDoc: WriteDoc representing document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc(loader: XComponentLoader) -> WriteDoc:
-        """
-        Creates a new Draw document.
+        Event called before document is saved.
 
         Args:
-            loader (XComponentLoader): Component Loader. Usually generated with :py:class:`~.lo.Lo`
-
-        Returns:
-            WriteDoc: WriteDoc representing document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc(lo_inst: LoInst) -> WriteDoc:
-        """
-        Creates a new Draw document.
-
-        Args:
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: WriteDoc representing document
-        """
-        ...
-
-    @staticmethod
-    def create_doc(*args, **kwargs) -> WriteDoc:
-        """
-        Creates a new Draw document.
-
-        Args:
-            loader (XComponentLoader, optional): Component Loader. Usually generated with :py:class:`~.lo.Lo`
-            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: WriteDoc representing document
-        """
-        doc = None
-        lo_inst = None
-        # 0 or 1 args
-        arguments = list(args)
-        arguments.extend(kwargs.values())
-        count = len(arguments)
-        if count == 0:
-            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
-        if count == 1:
-            arg = arguments[0]
-            if mLo.Lo.is_uno_interfaces(arg, XComponentLoader):
-                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=arg)
-            if isinstance(arg, LoInst):
-                with LoContext(arg) as lo_inst:
-                    doc = lo_inst.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
-        if doc is None:
-            raise TypeError("create_doc() got an unexpected argument")
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
-
-    # endregion Create Document
-
-    # region create_doc_from_template()
-
-    @overload
-    @staticmethod
-    def create_doc_from_template(template_path: PathOrStr) -> WriteDoc:
-        """
-        Create a document from a template.
-
-        Args:
-            template_path (PathOrStr): path to template file.
-
-        Returns:
-            WriteDoc: Document as WriteDoc instance.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc_from_template(template_path: PathOrStr, *, lo_inst: LoInst) -> WriteDoc:
-        """
-        Create a document from a template.
-
-        Args:
-            template_path (PathOrStr): path to template file.
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document as WriteDoc instance.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> WriteDoc:
-        """
-        Create a document from a template.
-
-        Args:
-            template_path (PathOrStr): path to template file.
-            loader (XComponentLoader): Component Loader.
-
-        Returns:
-            WriteDoc: Document as WriteDoc instance.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> WriteDoc:
-        """
-        Create a document from a template.
-
-        Args:
-            template_path (PathOrStr): path to template file.
-            loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document as WriteDoc instance.
-        """
-        ...
-
-    @staticmethod
-    def create_doc_from_template(
-        template_path: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
-    ) -> WriteDoc:
-        """
-        Create a document from a template.
-
-        Args:
-            template_path (PathOrStr): path to template file.
-            loader (XComponentLoader, optional): Component Loader.
-            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
+            event_args (CancelEventArgs): Event data.
 
         Raises:
-            Exception: If unable to create document.
-
-        Returns:
-            WriteDoc: Document as WriteDoc instance.
+            CancelEventError: If event is canceled.
         """
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        if loader is None:
-            doc = lo_inst.create_doc_from_template(template_path=template_path)
-        else:
-            doc = lo_inst.create_doc_from_template(template_path=template_path, loader=loader)
-        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
+        event_args.event_data["text_doc"] = self.component
+        self.trigger_event(WriteNamedEvent.DOC_SAVING, event_args)
 
-    # endregion create_doc_from_template()
+    def _on_io_saved(self, event_args: EventArgs) -> None:
+        """
+        Event called after document is saved.
 
-    def close_doc(self) -> bool:
+        Args:
+            event_args (EventArgs): Event data.
+        """
+        self.trigger_event(WriteNamedEvent.DOC_SAVED, event_args)
+
+    def _on_io_closing(self, event_args: CancelEventArgs) -> None:
+        """
+        Event called before document is closed.
+
+        Args:
+            event_args (CancelEventArgs): Event data.
+
+        Raises:
+            CancelEventError: If event is canceled.
+        """
+        event_args.event_data["text_doc"] = self.component
+        self.trigger_event(WriteNamedEvent.DOC_CLOSING, event_args)
+
+    def _on_io_closed(self, event_args: EventArgs) -> None:
+        """
+        Event called after document is closed.
+
+        Args:
+            event_args (EventArgs): Event data.
+        """
+        self.trigger_event(WriteNamedEvent.DOC_CLOSED, event_args)
+
+    # endregion DocIoPartial overrides
+
+    # region Close Document
+
+    def close_doc(self, deliver_ownership=True) -> bool:
         """
         Closes text document
 
+        Args:
+            deliver_ownership (bool, optional): If ``True`` ownership is delivered to caller. Default ``True``.
+                ``True`` delegates the ownership of this closing object to anyone which throw the CloseVetoException.
+                This new owner has to close the closing object again if his still running processes will be finished.
+                ``False`` let the ownership at the original one which called the close() method.
+                They must react for possible CloseVetoExceptions such as when document needs saving and
+                try it again at a later time. This can be useful for a generic UI handling.
+
         Returns:
-            bool: False if DOC_CLOSING event is canceled, Other
+            bool: ``False`` if ``DOC_CLOSING`` event is canceled, Otherwise ``True``.
 
         :events:
             .. cssclass:: lo_event
@@ -422,14 +316,9 @@ class WriteDoc(
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
 
-        cargs = CancelEventArgs(self.close_doc.__qualname__)
-        cargs.event_data = {"text_doc": self.component}
-        self.trigger_event(WriteNamedEvent.DOC_CLOSING, cargs)
-        if cargs.cancel:
-            return False
-        result = mLo.Lo.close(self.component)  # type: ignore
-        self.trigger_event(WriteNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
-        return result
+        return self.close(deliver_ownership)
+
+    # endregion Close Document
 
     def compare_cursor_ends(self, c1: XTextRange, c2: XTextRange) -> mSelection.Selection.CompareEnum:
         """
@@ -1037,30 +926,6 @@ class WriteDoc(
         """
         return mSelection.Selection.select_next_word(self.component)
 
-    def save_doc(self, fnm: PathOrStr) -> bool:
-        """
-        Saves text document
-
-        Args:
-            fnm (PathOrStr): Path to save as
-
-        Returns:
-            bool: True if doc is saved; Otherwise, False
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_SAVING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.write_named_event.WriteNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
-
-        Note:
-            Event args ``event_data`` is a dictionary containing ``text_doc`` and ``fnm``.
-
-        Attention:
-            :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
-        """
-        return mWrite.Write.save_doc(self.component, fnm)
-
     def set_a4_page_format(
         self,
     ) -> bool:
@@ -1217,372 +1082,6 @@ class WriteDoc(
         """
         with LoContext(self.lo_inst):
             mGUI.GUI.zoom_value(value=value)
-
-    # region Static Open Methods
-    # region open_doc()
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, *, lo_inst: LoInst | None) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, loader: XComponentLoader) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, loader: XComponentLoader, *, lo_inst: LoInst) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue]) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            props (Iterable[PropertyValue]): Properties passed to component loader
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, *, props: Iterable[PropertyValue], lo_inst: LoInst) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
-            props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(
-        fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue], lo_inst: LoInst
-    ) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader): Component Loader
-            props (Iterable[PropertyValue]): Properties passed to component loader
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @staticmethod
-    def open_doc(
-        fnm: PathOrStr,
-        loader: XComponentLoader | None = None,
-        props: Iterable[PropertyValue] | None = None,
-        lo_inst: LoInst | None = None,
-    ) -> WriteDoc:
-        """
-        Open a office document
-
-        Args:
-            fnm (PathOrStr): path of document to open
-            loader (XComponentLoader, optional): Component Loader
-            props (Iterable[PropertyValue], optional): Properties passed to component loader
-            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
-
-        Raises:
-            Exception: if unable to open document
-            CancelEventError: if DOC_OPENING event is canceled.
-
-        Returns:
-            WriteDoc: Document
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
-
-        Note:
-            Event args ``event_data`` is a dictionary containing all method parameters.
-
-        See Also:
-            - :py:meth:`~Lo.open_doc`
-            - :py:meth:`load_office`
-            - :ref:`ch02_open_doc`
-
-        Note:
-            If connection it office is a remote server then File URL must be used,
-            such as ``file:///home/user/fancy.odt``
-        """
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        doc = lo_inst.open_doc(fnm=fnm, loader=loader, props=props)  # type: ignore
-        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
-
-    # endregion open_doc()
-
-    # region open_readonly_doc()
-    @overload
-    @staticmethod
-    def open_readonly_doc(fnm: PathOrStr) -> WriteDoc:
-        """
-        Open a office document as read-only
-
-        Args:
-            fnm (PathOrStr): path of document to open.
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_readonly_doc(fnm: PathOrStr, *, lo_inst: LoInst) -> WriteDoc:
-        """
-        Open a office document as read-only.
-
-        Args:
-            fnm (PathOrStr): path of document to open.
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader) -> WriteDoc:
-        """
-        Open a office document as read-only.
-
-        Args:
-            fnm (PathOrStr): path of document to open.
-            loader (XComponentLoader): Component Loader.
-
-        Returns:
-            WriteDoc: Document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_readonly_doc(fnm: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> WriteDoc:
-        """
-        Open a office document as read-only.
-
-        Args:
-            fnm (PathOrStr): path of document to open.
-            loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document.
-        """
-        ...
-
-    @staticmethod
-    def open_readonly_doc(
-        fnm: PathOrStr, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
-    ) -> WriteDoc:
-        """
-        Open a office document as read-only.
-
-        Args:
-            fnm (PathOrStr): path of document to open.
-            loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
-
-        Raises:
-            Exception: if unable to open document.
-
-        Returns:
-            WriteDoc: Document.
-
-        See Also:
-            - :ref:`ch02_open_doc`
-        """
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        if loader is None:
-            doc = lo_inst.open_readonly_doc(fnm=fnm)
-        else:
-            doc = lo_inst.open_readonly_doc(fnm=fnm, loader=loader)
-        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
-
-    # endregion open_readonly_doc()
-
-    # region open_flat_doc()
-    @overload
-    @staticmethod
-    def open_flat_doc(fnm: PathOrStr, doc_type: DocType) -> WriteDoc:
-        """
-        Opens a flat document
-
-        Args:
-            fnm (PathOrStr): path of XML document
-            doc_type (DocType): Type of document to open
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, *, lo_inst: LoInst) -> WriteDoc:
-        """
-        Opens a flat document
-
-        Args:
-            fnm (PathOrStr): path of XML document
-            doc_type (DocType): Type of document to open
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> WriteDoc:
-        """
-        Opens a flat document
-
-        Args:
-            fnm (PathOrStr): path of XML document
-            doc_type (DocType): Type of document to open
-            loader (XComponentLoader, optional): Component loader
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_flat_doc(fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader, lo_inst: LoInst) -> WriteDoc:
-        """
-        Opens a flat document
-
-        Args:
-            fnm (PathOrStr): path of XML document
-            doc_type (DocType): Type of document to open
-            loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document
-        """
-        ...
-
-    @staticmethod
-    def open_flat_doc(
-        fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader | None = None, lo_inst: LoInst | None = None
-    ) -> WriteDoc:
-        """
-        Opens a flat document
-
-        Args:
-            fnm (PathOrStr): path of XML document
-            doc_type (DocType): Type of document to open
-            loader (XComponentLoader, optional): Component loader
-            lo_inst (LoInst, optional): Lo instance. Used when created multiple documents.
-
-        Returns:
-            WriteDoc: Document
-
-        See Also:
-            - :py:meth:`~Lo.open_flat_doc`
-            - :ref:`ch02_open_doc`
-        """
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        if loader is None:
-            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type)
-        else:
-            doc = lo_inst.open_flat_doc(fnm=fnm, doc_type=doc_type, loader=loader)
-        return WriteDoc(doc=doc, lo_inst=lo_inst)  # type: ignore
-
-    # endregion open_flat_doc()
-    # endregion Static Open Methods
 
     # region Properties
     @property

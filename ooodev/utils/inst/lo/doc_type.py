@@ -1,5 +1,9 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from enum import Enum, IntEnum
+
+if TYPE_CHECKING:
+    from ooodev.utils.inst.lo.service import Service
 
 
 class DocType(IntEnum):
@@ -20,6 +24,12 @@ class DocType(IntEnum):
         """Gets the document type as string Enum"""
         return DocTypeStr[self.name]
 
+    def get_service(self) -> Service:
+        """Gets the service type as Service Enum"""
+        from ooodev.utils.inst.lo.service import Service
+
+        return Service[self.name]
+
 
 class DocTypeStr(str, Enum):
     """Document Type as string Enum"""
@@ -38,3 +48,9 @@ class DocTypeStr(str, Enum):
     def get_doc_type(self) -> DocType:
         """Gets the document type as DocType Enum"""
         return DocType[self.name]
+
+    def get_service(self) -> Service:
+        """Gets the service type as Service Enum"""
+        from ooodev.utils.inst.lo.service import Service
+
+        return Service[self.name]

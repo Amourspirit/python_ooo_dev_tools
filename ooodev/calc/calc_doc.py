@@ -6,6 +6,7 @@ from com.sun.star.drawing import XDrawPagesSupplier
 from com.sun.star.frame import XModel
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheets
+from com.sun.star.sheet import XSpreadsheetDocument
 
 
 if TYPE_CHECKING:
@@ -18,9 +19,6 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCellRange
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
-    from com.sun.star.sheet import XSpreadsheetDocument
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
-    from ooodev.events.args.event_args import EventArgs
 else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any
@@ -28,6 +26,8 @@ else:
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
 from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.event_singleton import _Events
 from ooodev.exceptions import ex as mEx
@@ -40,15 +40,18 @@ from ooodev.utils import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import PathOrStr
+from ooodev.events.partial.events_partial import EventsPartial
 from . import calc_sheet as mCalcSheet
 from . import calc_sheets as mCalcSheets
 from . import calc_sheet_view as mCalcSheetView
@@ -56,9 +59,19 @@ from .spreadsheet_draw_pages import SpreadsheetDrawPages
 
 
 class CalcDoc(
-    LoInstPropsPartial, SpreadsheetDocumentComp, QiPartial, PropPartial, GuiPartial, ServicePartial, StylePartial
+    LoInstPropsPartial,
+    SpreadsheetDocumentComp,
+    QiPartial,
+    PropPartial,
+    GuiPartial,
+    ServicePartial,
+    StylePartial,
+    EventsPartial,
+    DocIoPartial["CalcDoc"],
 ):
     """Defines a Calc Document"""
+
+    DOC_TYPE = DocType.CALC
 
     def __init__(self, doc: XSpreadsheetDocument, lo_inst: LoInst | None = None) -> None:
         """
@@ -84,7 +97,9 @@ class CalcDoc(
         PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
+        DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None
@@ -226,8 +241,12 @@ class CalcDoc(
         Closes document.
 
         Args:
-            deliver_ownership (bool): If ``True`` delegates the ownership of this closing object to
-                anyone which throw the CloseVetoException. Default is ``False``.
+            deliver_ownership (bool, optional): If ``True`` ownership is delivered to caller. Default ``True``.
+                ``True`` delegates the ownership of this closing object to anyone which throw the CloseVetoException.
+                This new owner has to close the closing object again if his still running processes will be finished.
+                ``False`` let the ownership at the original one which called the close() method.
+                They must react for possible CloseVetoExceptions such as when document needs saving and
+                try it again at a later time. This can be useful for a generic UI handling.
 
         Returns:
             None:
@@ -244,37 +263,31 @@ class CalcDoc(
             :py:meth:`~.utils.lo.Lo.close` method is called along with any of its events.
         """
 
-        self.lo_inst.close_doc(doc=self.component, deliver_ownership=deliver_ownership)
+        self.close(deliver_ownership=deliver_ownership)
 
     # endregion close_doc()
 
-    def save_doc(self, fnm: PathOrStr) -> bool:
+    def _on_io_saving(self, event_args: CancelEventArgs) -> None:
         """
-        Saves text document
+        Event called before document is saved.
 
         Args:
-            fnm (PathOrStr): Path to save as
+            event_args (CancelEventArgs): Event data.
 
         Raises:
-            MissingInterfaceError: If doc does not implement XComponent interface
-
-        Returns:
-            bool: True if doc is saved; Otherwise, False
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SAVING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_SAVED` :eventref:`src-docs-event`
-
-        Note:
-            Event args ``event_data`` is a dictionary containing ``text_doc`` and ``fnm``.
-
-        Attention:
-            :py:meth:`Lo.save_doc <.utils.lo.Lo.save_doc>` method is called along with any of its events.
+            CancelEventError: If event is canceled.
         """
-        # this could be self.lo_inst.save_doc(self.component, fnm)
-        return mCalc.Calc.save_doc(doc=self.component, fnm=fnm)
+        event_args.event_data["doc"] = self.component
+        self.trigger_event(CalcNamedEvent.DOC_SAVING, event_args)
+
+    def _on_io_saved(self, event_args: EventArgs) -> None:
+        """
+        Event called after document is saved.
+
+        Args:
+            event_args (EventArgs): Event data.
+        """
+        self.trigger_event(CalcNamedEvent.DOC_SAVED, event_args)
 
     def get_selected_addr(self) -> CellRangeAddress:
         """
@@ -928,239 +941,56 @@ class CalcDoc(
             mCalc.Calc.zoom(doc=self.component, type=type)
 
     # region create_doc()
-    @overload
-    @staticmethod
-    def create_doc() -> CalcDoc:
-        """
-        Creates a new spreadsheet document.
 
-        Returns:
-            CalcDoc: Spreadsheet document.
+    @classmethod
+    def _on_io_creating_doc(cls, event_args: CancelEventArgs) -> None:
         """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc(*, lo_inst: LoInst) -> CalcDoc:
-        """
-        Creates a new spreadsheet document.
+        Event called before document is Created.
 
         Args:
-            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc(loader: XComponentLoader) -> CalcDoc:
-        """
-        Creates a new spreadsheet document.
-
-        Args:
-            loader (XComponentLoader): Component Loader.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def create_doc(loader: XComponentLoader, lo_inst: LoInst) -> CalcDoc:
-        """
-        Creates a new spreadsheet document.
-
-        Args:
-            loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @staticmethod
-    def create_doc(loader: XComponentLoader | None = None, lo_inst: LoInst | None = None) -> CalcDoc:
-        """
-        Creates a new spreadsheet document.
-
-
-        Args:
-            loader (XComponentLoader): Component Loader.
-            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+            event_args (CancelEventArgs): Event data.
 
         Raises:
-            MissingInterfaceError: If doc does not have XSpreadsheetDocument interface.
-            CancelEventError: If DOC_CREATING event is canceled.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_CREATED` :eventref:`src-docs-event`
-
-        Note:
-            Event args ``event_data`` is a dictionary containing ``loader``.
+            CancelEventError: If event is canceled.
         """
-        # Note: XSpreadsheetDocument does not inherit XComponent!
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        with LoContext(lo_inst):
-            if loader is None:
-                doc = mCalc.Calc.create_doc()
-            else:
-                doc = mCalc.Calc.create_doc(loader=loader)
-        return CalcDoc(doc=doc, lo_inst=lo_inst)
+        _Events().trigger(CalcNamedEvent.DOC_CREATING, event_args)
+
+    @classmethod
+    def _on_io_created_doc(cls, event_args: EventArgs) -> None:
+        """
+        Event called after document is Created.
+
+        Args:
+            event_args (EventArgs): Event data.
+        """
+        _Events().trigger(CalcNamedEvent.DOC_CREATED, event_args)
 
     # endregion create_doc()
 
     # region open_doc()
-    @overload
-    @staticmethod
-    def open_doc() -> CalcDoc:
-        """
-        Creates a spreadsheet document.
 
-        Returns:
-            CalcDoc: Spreadsheet document.
+    @classmethod
+    def _on_io_opening_doc(cls, event_args: CancelEventArgs) -> None:
         """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(*, lo_inst: LoInst) -> CalcDoc:
-        """
-        Creates a spreadsheet document.
+        Event called before document is Opened.
 
         Args:
-            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr) -> CalcDoc:
-        """
-        Opens a spreadsheet document.
-
-        Args:
-            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, *, lo_inst: LoInst) -> CalcDoc:
-        """
-        Opens a spreadsheet document.
-
-        Args:
-            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
-            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(*, loader: XComponentLoader) -> CalcDoc:
-        """
-        Creates a spreadsheet document.
-
-        Args:
-            loader (XComponentLoader): Component loader.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, loader: XComponentLoader) -> CalcDoc:
-        """
-        Opens a spreadsheet document.
-
-        Args:
-            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
-            loader (XComponentLoader): Component loader.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @overload
-    @staticmethod
-    def open_doc(fnm: PathOrStr, loader: XComponentLoader, lo_inst: LoInst) -> CalcDoc:
-        """
-        Opens a spreadsheet document.
-
-        Args:
-            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
-            loader (XComponentLoader): Component loader.
-            lo_inst (LoInst): Lo Instance. Use when creating multiple documents. Defaults to None.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-        """
-        ...
-
-    @staticmethod
-    def open_doc(
-        fnm: PathOrStr | None = None,
-        loader: XComponentLoader | None = None,
-        lo_inst: LoInst | None = None,
-    ) -> CalcDoc:
-        """
-        Opens or creates a spreadsheet document.
-
-        Args:
-            fnm (str): Spreadsheet file to open. If omitted then a new Spreadsheet document is returned.
-            loader (XComponentLoader): Component loader.
-            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+            event_args (CancelEventArgs): Event data.
 
         Raises:
-            CancelEventError: If ``DOC_OPENING`` is canceled.
-
-        Returns:
-            CalcDoc: Spreadsheet document.
-
-        :events:
-            .. cssclass:: lo_event
-
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENING` :eventref:`src-docs-event-cancel`
-                - :py:attr:`~.events.calc_named_event.CalcNamedEvent.DOC_OPENED` :eventref:`src-docs-event`
-
-        Note:
-            Event args ``event_data`` is a dictionary containing all method parameters.
-
-            If ``fnm`` is omitted then ``DOC_OPENED`` event will not be raised.
+            CancelEventError: If event is canceled.
         """
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        if fnm is None:
-            fnm = ""
-        with LoContext(lo_inst):
-            if loader is None:
-                doc = mCalc.Calc.open_doc(fnm=fnm)
-            else:
-                doc = mCalc.Calc.open_doc(fnm=fnm, loader=loader)
-        return CalcDoc(doc=doc, lo_inst=lo_inst)
+        _Events().trigger(CalcNamedEvent.DOC_OPENING, event_args)
+
+    @classmethod
+    def _on_io_opened_doc(cls, event_args: EventArgs) -> None:
+        """
+        Event called after document is Opened.
+
+        Args:
+            event_args (EventArgs): Event data.
+        """
+        _Events().trigger(CalcNamedEvent.DOC_OPENED, event_args)
 
     # endregion open_doc()
 
