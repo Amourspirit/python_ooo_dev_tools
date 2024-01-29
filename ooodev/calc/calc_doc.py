@@ -10,7 +10,6 @@ from com.sun.star.sheet import XSpreadsheetDocument
 
 
 if TYPE_CHECKING:
-    from com.sun.star.frame import XComponentLoader
     from com.sun.star.beans import PropertyValue
     from com.sun.star.frame import XController
     from com.sun.star.sheet import XViewPane
@@ -50,7 +49,6 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.type_var import PathOrStr
 from ooodev.events.partial.events_partial import EventsPartial
 from . import calc_sheet as mCalcSheet
 from . import calc_sheets as mCalcSheets

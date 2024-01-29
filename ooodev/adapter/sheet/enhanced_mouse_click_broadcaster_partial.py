@@ -27,8 +27,8 @@ class EnhancedMouseClickBroadcasterPartial:
         Constructor
 
         Args:
-            component (XEnhancedMouseClickBroadcaster ): UNO Component that implements ``com.sun.star.sheet.XEnhancedMouseClickBroadcaster ``.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XEnhancedMouseClickBroadcaster ``.
+            component (XEnhancedMouseClickBroadcaster): UNO Component that implements ``com.sun.star.sheet.XEnhancedMouseClickBroadcaster``.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XEnhancedMouseClickBroadcaster``.
         """
         self.__interface = interface
         self.__validate(component)

@@ -35,8 +35,10 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameContainer
     from com.sun.star.drawing import GluePoint2
     from com.sun.star.drawing import HomogenMatrix3
+    from com.sun.star.drawing import Shape  # Service
     from com.sun.star.graphic import XGraphic
     from ooo.dyn.drawing.line_style import LineStyle
+    from ooodev.events.lo_events import Events
     from ooodev.proto.size_obj import SizeObj
     from ooodev.units import UnitT
     from ooodev.utils import color as mColor
@@ -45,8 +47,6 @@ if TYPE_CHECKING:
     from ooodev.utils.inst.lo.lo_inst import LoInst
     from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.utils.type_var import PathOrStr
-    from ooodev.events.lo_events import Events
-    from com.sun.star.drawing import Shape  # Service
 
 
 class ShapeBase(

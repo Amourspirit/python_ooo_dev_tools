@@ -1,4 +1,4 @@
-.. _class_write_write_forms:
+.. _ooodev.draw.DrawForms:
 
 Class DrawForms
 ================
@@ -96,6 +96,9 @@ To iterate over the forms in a sheet, use the ``for`` keyword:
     >>> for form in doc.slides[0].draw_page.forms:
     ...     print(form.name)
     MyForm
+
+An example can be found on `Live LibreOffice Python UNO Examples <https://github.com/Amourspirit/python-ooouno-ex>`__.
+Example: `Build Form <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/draw/odev_build_form>`__.
 
 Class Declaration
 -----------------

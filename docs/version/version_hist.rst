@@ -2,7 +2,12 @@
 Version History
 ***************
 
-Version 0.22.2
+Version 0.23.1
+==============
+
+Minor updates for form controls.
+
+Version 0.23.0
 ==============
 
 Document classes can now create instances of themselves and open documents.
@@ -20,7 +25,7 @@ Version 0.22.1
 
 Added ``ooodev.write.WriteDoc.text_frames`` property. This property returns a ``ooodev.write.WriteTextFrames`` class for working with text frames.
 
-Marked many methods in ``ooodev.office`` class as safe for mulit document usage or not. When no the ``LoContext`` manager can be used.
+Marked many methods in ``ooodev.office`` class as safe for multi-document usage or not. When no the ``LoContext`` manager can be used.
 
 Better support for multi documents. Now classes ``ooodev.draw``, ``ooodev.calc`` and ``ooodev.write`` can be used with multiple documents at the same time.
 
@@ -99,7 +104,7 @@ Version 0.20.4
 ==============
 
 Now ``ooodev.write.WriteTextViewCursor`` export Writer document pages as images (png or jpg) files.
-See ``./tests/test_write/test_write_ns/test_export_image.py``file for examples.
+See ``./tests/test_write/test_write_ns/test_export_image.py`` file for examples.
 
 Version 0.20.3
 ==============

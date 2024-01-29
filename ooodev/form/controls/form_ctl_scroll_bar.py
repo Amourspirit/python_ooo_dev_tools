@@ -15,13 +15,32 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import ScrollBar as ControlModel  # service
     from com.sun.star.awt import UnoControlScrollBar as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlScrollBar(FormCtlBase, AdjustmentEvents, ResetEvents):
     """``com.sun.star.form.component.ScrollBar`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        """
+        Constructor
+
+        Args:
+            ctl (XControl): Control supporting ``com.sun.star.form.component.ScrollBar`` service.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``None``.
+
+        Returns:
+            None:
+
+        Note:
+            If the :ref:`LoContext <ooodev.utils.context.lo_context.LoContext>` manager is use before this class is instantiated,
+            then the Lo instance will be set using the current Lo instance. That the context manager has set.
+            Generally speaking this means that there is no need to set ``lo_inst`` when instantiating this class.
+
+        See Also:
+            :ref:`ooodev.form.Forms`.
+        """
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         ResetEvents.__init__(self, trigger_args=generic_args, cb=self._on_reset_add_remove)
 

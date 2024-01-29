@@ -137,6 +137,7 @@ class FormPartial:
         Returns:
             FormCtlButton: Button Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             result = mForms.Forms.insert_control_button(
                 doc=self.__doc,
@@ -187,6 +188,7 @@ class FormPartial:
         Returns:
             FormCtlCheckBox: Checkbox Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             result = mForms.Forms.insert_control_check_box(
                 doc=self.__doc,
@@ -244,6 +246,7 @@ class FormPartial:
         Returns:
             FormCtlComboBox: ComboBox Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             result = mForms.Forms.insert_control_combo_box(
                 doc=self.__doc,
@@ -302,6 +305,7 @@ class FormPartial:
         Returns:
             FormCtlCurrencyField: Currency Field Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             result = mForms.Forms.insert_control_currency_field(
                 doc=self.__doc,
@@ -360,6 +364,7 @@ class FormPartial:
         Returns:
             FormCtlDateField: Date Field Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_date_field(
                 doc=self.__doc,
@@ -406,6 +411,7 @@ class FormPartial:
         Returns:
             FormCtlFile: File Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_file(
                 doc=self.__doc,
@@ -455,6 +461,7 @@ class FormPartial:
         Returns:
             FormCtlFormattedField: Currency Field Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_formatted_field(
                 doc=self.__doc,
@@ -502,6 +509,7 @@ class FormPartial:
         Returns:
             FormCtlGroupBox: Groupbox Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_group_box(
                 doc=self.__doc,
@@ -546,6 +554,7 @@ class FormPartial:
         Returns:
             FormCtlGrid: Grid Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_grid(
                 doc=self.__doc,
@@ -586,6 +595,7 @@ class FormPartial:
         Returns:
             FormCtlHidden: Hidden Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_hidden(
                 doc=self.__doc,
@@ -633,6 +643,7 @@ class FormPartial:
         Returns:
             FormCtlImageButton: Image Button Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_image_button(
                 doc=self.__doc,
@@ -678,6 +689,7 @@ class FormPartial:
         Returns:
             FormCtlFixedText: Label Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_label(
                 doc=self.__doc,
@@ -732,6 +744,7 @@ class FormPartial:
         Returns:
             FormCtlListBox: ListBox Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_list_box(
                 doc=self.__doc,
@@ -779,6 +792,7 @@ class FormPartial:
         Returns:
             FormCtlNavigationToolBar: Navigation Toolbar Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_navigation_toolbar(
                 doc=self.__doc,
@@ -832,6 +846,7 @@ class FormPartial:
         Returns:
             FormCtlNumericField: Numeric Field Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_numeric_field(
                 doc=self.__doc,
@@ -885,6 +900,7 @@ class FormPartial:
         Returns:
             FormCtlPatternField: Pattern Field Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_pattern_field(
                 doc=self.__doc,
@@ -939,6 +955,7 @@ class FormPartial:
         Returns:
             FormCtlRadioButton: Radio Button Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_radio_button(
                 doc=self.__doc,
@@ -986,6 +1003,7 @@ class FormPartial:
         Returns:
             FormCtlRichText: Rich Text Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_rich_text(
                 doc=self.__doc,
@@ -1037,6 +1055,7 @@ class FormPartial:
         Returns:
             FormCtlScrollBar: Scrollbar Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_scroll_bar(
                 doc=self.__doc,
@@ -1092,8 +1111,9 @@ class FormPartial:
         Returns:
             FormCtlSpinButton: Spin Button Control,
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
-            rersults = mForms.Forms.insert_control_spin_button(
+            results = mForms.Forms.insert_control_spin_button(
                 doc=self.__doc,
                 draw_page=self.__draw_page,
                 x=x,
@@ -1110,7 +1130,7 @@ class FormPartial:
                 parent_form=self.__component,
                 styles=styles,
             )
-        return rersults
+        return results
 
     def insert_control_submit_button(
         self,
@@ -1138,6 +1158,7 @@ class FormPartial:
         Returns:
             FormCtlSubmitButton: Submit Button Control
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_submit_button(
                 doc=self.__doc,
@@ -1185,6 +1206,7 @@ class FormPartial:
         Returns:
             FormCtlTextField: Text Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_text_field(
                 doc=self.__doc,
@@ -1242,6 +1264,7 @@ class FormPartial:
         Returns:
             FormCtlTimeField: Time Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_time_field(
                 doc=self.__doc,
@@ -1296,6 +1319,7 @@ class FormPartial:
         Returns:
             FormCtlDbCheckBox: Database Checkbox Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_check_box(
                 doc=self.__doc,
@@ -1352,6 +1376,7 @@ class FormPartial:
         Returns:
             FormCtlDbComboBox: Database ComboBox Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_combo_box(
                 doc=self.__doc,
@@ -1410,6 +1435,7 @@ class FormPartial:
         Returns:
             FormCtlDbCurrencyField: Database Currency Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_currency_field(
                 doc=self.__doc,
@@ -1468,6 +1494,7 @@ class FormPartial:
         Returns:
             FormCtlDbDateField: Database Date Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_date_field(
                 doc=self.__doc,
@@ -1522,6 +1549,7 @@ class FormPartial:
         Returns:
             FormCtlDbFormattedField: Database Currency Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_formatted_field(
                 doc=self.__doc,
@@ -1579,6 +1607,7 @@ class FormPartial:
         Returns:
             FormCtlDbListBox: Database ListBox Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_list_box(
                 doc=self.__doc,
@@ -1638,6 +1667,7 @@ class FormPartial:
         Returns:
             FormCtlDbNumericField: Database Numeric Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_numeric_field(
                 doc=self.__doc,
@@ -1691,6 +1721,7 @@ class FormPartial:
         Returns:
             FormCtlDbPatternField: Database Pattern Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_pattern_field(
                 doc=self.__doc,
@@ -1743,6 +1774,7 @@ class FormPartial:
         Returns:
             FormCtlDbRadioButton: Database Radio Button Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_radio_button(
                 doc=self.__doc,
@@ -1793,6 +1825,7 @@ class FormPartial:
         Returns:
             FormCtlDbTextField: Database Text Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_text_field(
                 doc=self.__doc,
@@ -1850,6 +1883,7 @@ class FormPartial:
         Returns:
             FormCtlTimeField: Database Time Field Control.
         """
+        # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_db_control_time_field(
                 doc=self.__doc,

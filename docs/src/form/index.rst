@@ -8,4 +8,5 @@ form
     :glob:
 
     controls/index
+    partial/index
     *

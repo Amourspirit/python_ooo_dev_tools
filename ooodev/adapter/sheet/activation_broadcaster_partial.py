@@ -27,8 +27,8 @@ class ActivationBroadcasterPartial:
         Constructor
 
         Args:
-            component (XActivationBroadcaster ): UNO Component that implements ``com.sun.star.sheet.XActivationBroadcaster ``.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XActivationBroadcaster ``.
+            component (XActivationBroadcaster): UNO Component that implements ``com.sun.star.sheet.XActivationBroadcaster``.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XActivationBroadcaster``.
         """
         self.__interface = interface
         self.__validate(component)

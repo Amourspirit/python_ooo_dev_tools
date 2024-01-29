@@ -13,8 +13,8 @@ Introduction
 
 The ``SpreadsheetDrawPage`` class is for accessing the draw page of a spreadsheet document.
 
-This class has a ``forms`` property that gives access to :ref:`class_calc_calc_forms`
-which in turn gives access to :ref:`class_calc_calc_form` that represents a form in the spreadsheet document.
+This class has a ``forms`` property that gives access to :ref:`ooodev.calc.CalcForm`
+which in turn gives access to :ref:`ooodev.calc.CalcForms` that represents a form in the spreadsheet document.
 
 Adding a shape to a sheet
 ^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -19,6 +19,7 @@ An example of use is shown below:
 
     from ooodev.utils.info import Info
     from ooodev.write import WriteDoc
+    from ooodev.utils.context.lo_context import LoContext
 
     # create first document
     doc1  = WriteDoc.create_doc()
@@ -33,8 +34,9 @@ An example of use is shown below:
 
     # get fonts of second document
     With LoContext(lo_inst=doc2.lo_inst):
-        # the context is changed to the second document.
-        # As soon as the LoContext block is exited, the context is restored to the first document.
+        # The context is changed to the second document.
+        # As soon as the LoContext block is exited, the context is
+        # restored to the first document.
         fonts =  Info.get_fonts()
 
 .. seealso::

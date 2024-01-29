@@ -22,8 +22,8 @@ class ViewFreezablePartial:
         Constructor
 
         Args:
-            component (XViewFreezable ): UNO Component that implements ``com.sun.star.sheet.XViewFreezable ``.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XViewFreezable ``.
+            component (XViewFreezable): UNO Component that implements ``com.sun.star.sheet.XViewFreezable``.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XViewFreezable``.
         """
         self.__interface = interface
         self.__validate(component)

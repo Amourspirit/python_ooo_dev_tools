@@ -110,13 +110,15 @@ class Forms:
     @classmethod
     def get_forms(cls, obj: XComponent | XDrawPage) -> XNameContainer:
         """
-        Gets Forms
+        Gets Forms.
+
+        |lo_safe|
 
         Args:
-            obj (XComponent | XDrawPage): component or draw page
+            obj (XComponent | XDrawPage): component or draw page.
 
         Returns:
-            XNameContainer: name container
+            XNameContainer: name container.
         """
         if mLo.Lo.is_uno_interfaces(obj, XDrawPage):
             draw_page = obj
@@ -132,16 +134,18 @@ class Forms:
     @staticmethod
     def get_draw_page(doc: XComponent | XDrawPage) -> XDrawPage:
         """
-        Gets draw page
+        Gets draw page.
+
+        |lo_safe|
 
         Args:
             doc (XComponent, XDrawPage): Component or Draw Page.
 
         Raises:
-            Exception: If unable to get draw page
+            Exception: If unable to get draw page.
 
         Returns:
-            XDrawPage: Draw Page
+            XDrawPage: Draw Page.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -179,7 +183,9 @@ class Forms:
     @classmethod
     def get_form(cls, obj: XComponent | XDrawPage, form_name: str = "") -> XNameContainer | XForm:
         """
-        Gets form as name container
+        Gets form as name container.
+
+        |lo_safe|
 
         Args:
             obj (XComponent | XDrawPage): Component or draw page
@@ -220,17 +226,19 @@ class Forms:
     @staticmethod
     def get_form_by_name(form_name: str, named_forms: XNameContainer) -> XNameContainer:
         """
-        Get a form by name
+        Get a form by name.
+
+        |lo_safe|
 
         Args:
-            form_name (str): form name
-            named_forms (XNameContainer): name container
+            form_name (str): form name.
+            named_forms (XNameContainer): name container.
 
         Raises:
-            Exception: If not able to find form
+            Exception: If not able to find form.
 
         Returns:
-            XNameContainer: Name Container
+            XNameContainer: Name Container.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -241,13 +249,15 @@ class Forms:
     @staticmethod
     def get_indexed_forms(draw_page: XDrawPage) -> XIndexContainer:
         """
-        Get index forms
+        Get index forms.
+
+        |lo_safe|
 
         Args:
-            draw_page (XDrawPage): Draw page
+            draw_page (XDrawPage): Draw page.
 
         Returns:
-            XIndexContainer: Index container
+            XIndexContainer: Index container.
         """
         form_supp = mLo.Lo.qi(XFormsSupplier, draw_page, True)
         return mLo.Lo.qi(XIndexContainer, form_supp.getForms(), True)
@@ -255,11 +265,13 @@ class Forms:
     # region        insert_form()
     @classmethod
     def _insert_form_name_comp(cls, doc: XComponent) -> XNameContainer:
+        """Lo UN-Safe Method."""
         doc_forms = cls.get_forms(doc)
         return cls._insert_form_name_container("GridForm", doc_forms)
 
     @classmethod
     def _insert_form_name_container(cls, form_name: str, named_forms: XNameContainer) -> XNameContainer:
+        """Lo UN-safe Method."""
         # sourcery skip: raise-specific-error
         if named_forms.hasByName(form_name):
             mLo.Lo.print(f'"{form_name}" already exists')
@@ -278,7 +290,9 @@ class Forms:
     @classmethod
     def insert_form(cls, doc: XComponent) -> XNameContainer:
         """
-        Insert form
+        Insert form.
+
+        |lo_unsafe|
 
         Args:
             form_name (str): Form name
@@ -293,7 +307,9 @@ class Forms:
     @classmethod
     def insert_form(cls, form_name: str, named_forms: XNameContainer) -> XNameContainer:
         """
-        Insert form
+        Insert form.
+
+        |lo_unsafe|
 
         Args:
             form_name (str): Form name
@@ -307,7 +323,9 @@ class Forms:
     @classmethod
     def insert_form(cls, *args, **kwargs) -> XNameContainer:
         """
-        Insert form
+        Insert form.
+
+        |lo_unsafe|
 
         Args:
             form_name (str): Form name
@@ -355,14 +373,16 @@ class Forms:
     @classmethod
     def has_form(cls, doc: XComponent, form_name: str) -> bool:
         """
-        Gets if component has form by name
+        Gets if component has form by name.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Component
-            form_name (str): Form name
+            doc (XComponent): Component.
+            form_name (str): Form name.
 
         Returns:
-            bool: ``True`` if has form, Otherwise ``False``
+            bool: ``True`` if has form, Otherwise ``False``.
         """
         try:
             draw_page = cls.get_draw_page(doc)
@@ -383,8 +403,10 @@ class Forms:
         """
         Prints form names to console.
 
+        |lo_safe|
+
         Args:
-            doc (XComponent): Component
+            doc (XComponent): Component.
 
         Returns:
             None:
@@ -401,9 +423,11 @@ class Forms:
         """
         Prints forms information to console.
 
+        |lo_safe|
+
         Args:
-            obj (XComponent | XNameAccess): Component or Name Access
-            tab_str (str, optional): tab string
+            obj (XComponent | XNameAccess): Component or Name Access.
+            tab_str (str, optional): tab string.
 
         Returns:
             None:
@@ -442,17 +466,43 @@ class Forms:
     @overload
     @classmethod
     def get_models(cls, obj: XComponent) -> List[XControlModel]:
+        """
+        Gets models from obj.
+
+        |lo_safe|
+
+        Args:
+            obj (XComponent): Component or Name Access
+
+        Returns:
+            List[XControlModel]: List of found models
+
+        """
         ...
 
     @overload
     @classmethod
     def get_models(cls, obj: XNameAccess) -> List[XControlModel]:
+        """
+        Gets models from obj.
+
+        |lo_safe|
+
+        Args:
+            obj (XNameAccess): Component or Name Access
+
+        Returns:
+            List[XControlModel]: List of found models
+
+        """
         ...
 
     @classmethod
     def get_models(cls, obj: XComponent | XNameAccess) -> List[XControlModel]:
         """
-        Gets models from obj
+        Gets models from obj.
+
+        |lo_safe|
 
         Args:
             obj (XComponent | XNameAccess): Component or Name Access
@@ -489,7 +539,9 @@ class Forms:
     @classmethod
     def get_models2(cls, doc: XComponent, form_name: str) -> List[XControlModel]:
         """
-        Gets models from doc
+        Gets models from doc.
+
+        |lo_safe|
 
         Args:
             doc (XComponent): Component
@@ -524,7 +576,9 @@ class Forms:
     @classmethod
     def get_event_source_name(cls, event: EventObject) -> str:
         """
-        Gets event source name
+        Gets event source name.
+
+        |lo_safe|
 
         Args:
             event (EventObject): event object
@@ -538,7 +592,9 @@ class Forms:
     @staticmethod
     def get_event_control_model(event: EventObject) -> XControlModel:
         """
-        Gets event control model
+        Gets event control model.
+
+        |lo_safe|
 
         Args:
             event (EventObject): event object
@@ -552,7 +608,9 @@ class Forms:
     @staticmethod
     def get_form_name(ctl_model: XControlModel) -> str:
         """
-        Gets form name
+        Gets form name.
+
+        |lo_safe|
 
         Args:
             ctl_model (XControlModel): control model
@@ -567,7 +625,9 @@ class Forms:
     @classmethod
     def belongs_to_form(cls, ctl_model: XControlModel, form_name: str) -> bool:
         """
-        Get if a control belongs to a form
+        Get if a control belongs to a form.
+
+        |lo_safe|
 
         Args:
             ctl_model (XControlModel): Control Model
@@ -581,20 +641,24 @@ class Forms:
     @staticmethod
     def get_name(ctl_model: XControlModel) -> str:
         """
-        Gets name of a given form component
+        Gets name of a given form component.
+
+        |lo_safe|
 
         Args:
-            ctl_model (XControlModel): Control Model
+            ctl_model (XControlModel): Control Model.
 
         Returns:
-            str: Name of component
+            str: Name of component.
         """
         return str(mProps.Props.get(ctl_model, "Name"))
 
     @staticmethod
     def get_label(ctl_model: XControlModel) -> str:
         """
-        Gets label of a given form component
+        Gets label of a given form component.
+
+        |lo_safe|
 
         Args:
             ctl_model (XControlModel): Control Model
@@ -607,7 +671,9 @@ class Forms:
     @classmethod
     def get_type_str(cls, ctl_model: XControlModel | FormCtlBase) -> str | None:
         """
-        Gets type as string
+        Gets type as string.
+
+        |lo_safe|
 
         Args:
             ctl_model (XControlModel | FormCtlBase): Control Model
@@ -668,15 +734,17 @@ class Forms:
     @staticmethod
     def get_id(ctl_model: XControlModel | FormCtlBase) -> int:
         """
-        Gets class id for a form component
+        Gets class id for a form component.
+
+        |lo_safe|
 
         Args:
-            ctl_model (XControlModel | FormCtlBase): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model.
 
         Returns:
-            int: Class Id if found, Otherwise ``-1``
+            int: Class Id if found, Otherwise ``-1``.
         """
-        if isinstance(ctl_model, FormCtlBase):
+        if mInfo.Info.is_instance(ctl_model, FormCtlBase):
             return ctl_model.get_id()
         class_id = mProps.Props.get(ctl_model, "ClassId")
         if class_id is None:
@@ -687,13 +755,15 @@ class Forms:
     @classmethod
     def is_button(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
-        Gets if component is a command button or a image button
+        Gets if component is a command button or a image button.
+
+        |lo_safe|
 
         Args:
-            ctl_model (XControlModel | FormCtlBase): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model.
 
         Returns:
-            bool: ``True`` if is button; Otherwise, ``False``
+            bool: ``True`` if is button; Otherwise, ``False``.
         """
         button_id = cls.get_id(ctl_model)
         if button_id == -1:
@@ -707,13 +777,15 @@ class Forms:
     @classmethod
     def is_text_field(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
-        Gets if component is a text field
+        Gets if component is a text field.
+
+        |lo_safe|
 
         Args:
-            ctl_model (XControlModel | FormCtlBase): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model.
 
         Returns:
-            bool: ``True`` if is text field; Otherwise, ``False``
+            bool: ``True`` if is text field; Otherwise, ``False``.
         """
         text_id = cls.get_id(ctl_model)
         if text_id == -1:
@@ -731,13 +803,15 @@ class Forms:
     @classmethod
     def is_box(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
-        Gets if component is a box
+        Gets if component is a box.
+
+        |lo_safe|
 
         Args:
-            ctl_model (XControlModel | FormCtlBase): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model.
 
         Returns:
-            bool: ``True`` if is box; Otherwise, ``False``
+            bool: ``True`` if is box; Otherwise, ``False``.
         """
         box_id = cls.get_id(ctl_model)
         if box_id == -1:
@@ -748,13 +822,15 @@ class Forms:
     @classmethod
     def is_list(cls, ctl_model: XControlModel | FormCtlBase) -> bool:
         """
-        Gets if component is a list
+        Gets if component is a list.
+
+        |lo_safe|
 
         Args:
-            ctl_model (XControlModel | FormCtlBase): Control Model
+            ctl_model (XControlModel | FormCtlBase): Control Model.
 
         Returns:
-            bool: ``True`` if is list; Otherwise, ``False``
+            bool: ``True`` if is list; Otherwise, ``False``.
         """
         control_id = cls.get_id(ctl_model)
         if control_id == -1:
@@ -770,15 +846,17 @@ class Forms:
         """
         Gets the control from the specified control model.
 
+        |lo_safe|
+
         Args:
-            doc (XComponent): Component
-            ctl_model (XControlModel): Control Model
+            doc (XComponent): Component.
+            ctl_model (XControlModel): Control Model.
 
         Raises:
-            Exception: If unable to get control
+            Exception: If unable to get control.
 
         Returns:
-            XControl: Control
+            XControl: Control.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -794,12 +872,14 @@ class Forms:
         """
         Gets a named control.
 
+        |lo_safe|
+
         Args:
-            doc (XComponent): Component
-            ctl_name (str): Name of control
+            doc (XComponent): Component.
+            ctl_name (str): Name of control.
 
         Returns:
-            XControl | None: Control if found; Otherwise, None
+            XControl | None: Control if found; Otherwise, ``None``.
         """
         models = cls.get_models(doc)
         ctl = None
@@ -819,14 +899,16 @@ class Forms:
     @classmethod
     def get_control_model(cls, doc: XComponent, ctl_name: str) -> XControlModel | None:
         """
-        Gets Control Model by Name
+        Gets Control Model by Name.
+
+        |lo_safe|
 
         Args:
-            doc (XComponent): Component
-            ctl_name (str): Name of control
+            doc (XComponent): Component.
+            ctl_name (str): Name of control.
 
         Returns:
-            XControlModel | None: Control Model if found; Otherwise, None
+            XControlModel | None: Control Model if found; Otherwise, ``None``.
         """
         control = cls.get_named_control(doc, ctl_name)
         return None if control is None else control.getModel()
@@ -841,6 +923,8 @@ class Forms:
         Creates a name.
 
         Make a unique string by appending a number to the supplied name
+
+        |lo_safe|
 
         Args:
             elem_container (XNameAccess, None): container. If None, then a random string is appended to name.
@@ -889,7 +973,9 @@ class Forms:
         name: str = "",
     ) -> XControlShape:
         """
-        Add a control
+        Add a control.
+
+        |lo_unsafe|
 
         Args:
             name (str): Control Name
@@ -964,23 +1050,25 @@ class Forms:
         styles: Iterable[StyleT] | None = None,
     ) -> Tuple[XPropertySet, XControlShape]:
         """
-        Add a control
+        Add a control.
+
+        |lo_unsafe|
 
         Args:
             doc (XComponent, XDrawPage): Component or Draw Page.
             name (str): Control Name
-            label (str | None): Label to assign to control
+            label (str | None): Label to assign to control.
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
-            x (int, UnitT): Control X position
-            y (int, UnitT): Control Y Position
-            width (int, UnitT): Control width#
-            height (int, UnitT): control height
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            x (int, UnitT): Control X position.
+            y (int, UnitT): Control Y Position.
+            width (int, UnitT): Control width.
+            height (int, UnitT): control height.
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
-            Tuple[XPropertySet, XControlShape]: Control Property Set and Control Shape
+            Tuple[XPropertySet, XControlShape]: Control Property Set and Control Shape.
         """
         try:
             shape = cls.get_shape(
@@ -1061,18 +1149,20 @@ class Forms:
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
-        Add a control
+        Add a control.
+
+        |lo_unsafe|
 
         Args:
             doc (XComponent, XDrawPage): Component or Draw Page.
-            name (str): Control Name
-            label (str | None): Label to assign to control
+            name (str): Control Name.
+            label (str | None): Label to assign to control.
             comp_kind (FormComponentKind | str): Kind of control such as ``CheckBox``.
-            x (int, UnitT): Control X position
-            y (int, UnitT): Control Y Position
-            width (int, UnitT): Control width#
-            height (int, UnitT): control height
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            x (int, UnitT): Control X position.
+            y (int, UnitT): Control Y Position.
+            width (int, UnitT): Control width.
+            height (int, UnitT): control height.
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
@@ -1154,7 +1244,9 @@ class Forms:
         ctl_styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
-        Create a label and data field control, with the label preceding the control
+        Create a label and data field control, with the label preceding the control.
+
+        |lo_unsafe|
 
         Args:
             doc (XComponent, XDrawPage): Component or Draw Page.
@@ -1206,6 +1298,7 @@ class Forms:
         lbl_styles: Iterable[StyleT] | None,
         ctl_styles: Iterable[StyleT] | None,
     ) -> XPropertySet:
+        """Lo Unsafe Method."""
         try:
             name = f"{label}_label"
             # create label (fixed text) control
@@ -1222,7 +1315,7 @@ class Forms:
             )
             try:
                 space_value = round(cast("UnitT", spacing).get_value_mm())
-            except:
+            except Exception:
                 space_value = cast(int, spacing)
 
             if orientation == OrientationKind.HORIZONTAL:
@@ -1280,20 +1373,22 @@ class Forms:
 
         By Default the button has no tab stop and does not focus on click.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent, XDrawPage): Component or Draw Page.
-            name (str): Button name
-            label (str | None): Button Label
-            x (int): Button X position
-            y (int): Button Y position
-            height (int): Button Height
+            name (str): Button name.
+            label (str | None): Button Label.
+            x (int): Button X position.
+            y (int): Button Y position.
+            height (int): Button Height.
             width (int, optional): Button Height. Defaults to 6.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
-            Tuple[XPropertySet, XControlShape]: Button Property Set and Control Shape
+            Tuple[XPropertySet, XControlShape]: Button Property Set and Control Shape.
         """
         try:
             btn_props, ctl_shape = cls._add_control(
@@ -1339,20 +1434,22 @@ class Forms:
 
         By Default the button has no tab stop and does not focus on click.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent, XDrawPage): Component or Draw Page.
-            name (str): Button name
-            label (str | None): Button Label
-            x (int): Button X position
-            y (int): Button Y position
-            height (int): Button Height
+            name (str): Button name.
+            label (str | None): Button Label.
+            x (int): Button X position.
+            y (int): Button Y position.
+            height (int): Button Height.
             width (int, optional): Button Height. Defaults to 6.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
-            XPropertySet: Button Property Set
+            XPropertySet: Button Property Set.
 
         .. versionchanged:: 0.9.2
             Added ``styles`` argument.
@@ -1387,20 +1484,22 @@ class Forms:
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
-        Adds a list
+        Adds a list.
+
+        |lo_unsafe|
 
         Args:
             doc (XComponent, XDrawPage): Component | Draw Page.
-            name (str): List Name
-            entries (Iterable[str]): List Entries
-            x (int): List X position
-            y (int): List Y Position
-            width (int): List Width
-            height (int): List Height
+            name (str): List Name.
+            entries (Iterable[str]): List Entries.
+            x (int): List X position.
+            y (int): List Y Position.
+            width (int): List Width.
+            height (int): List Height.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
-            XPropertySet: List property set
+            XPropertySet: List property set.
 
         .. versionchanged:: 0.9.2
             Added ``styles`` argument.
@@ -1444,20 +1543,22 @@ class Forms:
         styles: Iterable[StyleT] | None = None,
     ) -> XPropertySet:
         """
-        Add a list with a SQL command as it data source
+        Add a list with a SQL command as it data source.
+
+        |lo_unsafe|
 
         Args:
             doc (XComponent, XDrawPage): Component or Draw Page.
-            name (str): List Name
-            sql_cmd (str): SQL Command
-            x (int): List X position
-            y (int): List Y Position
-            width (int): List Width
-            height (int): List Height
+            name (str): List Name.
+            sql_cmd (str): SQL Command.
+            x (int): List X position.
+            y (int): List Y Position.
+            width (int): List Width.
+            height (int): List Height.
             styles (Iterable[StyleT], optional): One or more styles to apply.
 
         Returns:
-            XPropertySet: List property set
+            XPropertySet: List property set.
 
         .. versionchanged:: 0.9.2
             Added ``styles`` argument.
@@ -1488,12 +1589,14 @@ class Forms:
     @staticmethod
     def create_grid_column(grid_model: XControlModel, data_field: str, col_kind: str, width: int) -> None:
         """
-        Adds a column to a gird
+        Adds a column to a gird.
+
+        |lo_safe|
 
         Args:
-            grid_model (XControlModel): Grid control Model
-            data_field (str): the database field to which the column should be bound
-            col_kind (str):  the column type such as "NumericField"
+            grid_model (XControlModel): Grid control Model.
+            data_field (str): the database field to which the column should be bound.
+            col_kind (str):  the column type such as "NumericField".
             width (int): the column width (in mm). If 0, no width is set.
 
         Returns:
@@ -1520,12 +1623,14 @@ class Forms:
     @staticmethod
     def bind_form_to_table(xform: XForm, src_name: str, tbl_name: str) -> None:
         """
-        Bind the form to the database in the src_name URL
+        Bind the form to the database in the src_name URL.
+
+        |lo_safe|
 
         Args:
-            xform (XForm): Form
-            src_name (str): Source Name URL
-            tbl_name (str): Table Name
+            xform (XForm): Form.
+            src_name (str): Source Name URL.
+            tbl_name (str): Table Name.
 
         Returns:
             None:
@@ -1535,12 +1640,14 @@ class Forms:
     @staticmethod
     def bind_form_to_sql(xform: XForm, src_name: str, cmd: str) -> None:
         """
-        Bind the form to the database in the ``src_name`` URL, and send a SQL cmd
+        Bind the form to the database in the ``src_name`` URL, and send a SQL cmd.
+
+        |lo_safe|
 
         Args:
-            xform (XForm): Form
-            src_name (str): Source Name URL
-            cmd (str): Command
+            xform (XForm): Form.
+            src_name (str): Source Name URL.
+            cmd (str): Command.
 
         Returns:
             None:
@@ -1561,14 +1668,16 @@ class Forms:
         language: str | LanguageKind = LanguageKind.PYTHON,
     ) -> None:
         """
-        Binds a macro to a form control
+        Binds a macro to a form control.
+
+        |lo_safe|
 
         Args:
-            ctl_props (XPropertySet): Properties of control
-            interface_name (str, XInterface): Interface Name or a UNO object that implements the ``XInterface``
-            method_name (str): Method Name
-            script_name (str): Script Name
-            loc (str): can be user, share, document, and extensions
+            ctl_props (XPropertySet): Properties of control.
+            interface_name (str, XInterface): Interface Name or a UNO object that implements the ``XInterface``.
+            method_name (str): Method Name.
+            script_name (str): Script Name.
+            loc (str): can be user, share, document, and extensions.
             language (str | LanguageKind, optional): Language. Defaults to LanguageKind.PYTHON.
 
         Returns:
@@ -1633,6 +1742,8 @@ class Forms:
     ) -> FormCtlButton:
         """
         Inserts a button control.
+        
+        |lo_unsafe|
 
         By Default the button has tab stop and does focus on click.
 
@@ -1707,11 +1818,13 @@ class Forms:
         """
         Inserts a check box control into the form.
 
+        |lo_unsafe|
+
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             label (str, optional): Label (text) to assign to checkbox.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
@@ -1725,7 +1838,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlCheckBox: Checkbox Control
+            FormCtlCheckBox: Checkbox Control.
 
         .. versionadded:: 0.14.0
         """
@@ -1793,21 +1906,23 @@ class Forms:
     ) -> FormCtlComboBox:
         """
         Inserts a ComboBox control into the form.
+        
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            entries (Iterable[str], optional): Combo box entries
+            entries (Iterable[str], optional): Combo box entries.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to ``0``.
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1815,7 +1930,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlComboBox: ComboBox Control
+            FormCtlComboBox: ComboBox Control.
 
         .. versionadded:: 0.14.0
         """
@@ -1886,20 +2001,22 @@ class Forms:
     ) -> FormCtlCurrencyField:
         """
         Inserts a currency field control into the form.
+        
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
-            accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
+            accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -1907,7 +2024,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlCurrencyField: Currency Field Control
+            FormCtlCurrencyField: Currency Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -1977,12 +2094,14 @@ class Forms:
     ) -> FormCtlDateField:
         """
         Inserts a Date field control into the form.
+        
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
             min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
@@ -1998,7 +2117,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlDateField: Date Field Control
+            FormCtlDateField: Date Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2060,14 +2179,16 @@ class Forms:
     ) -> FormCtlFile:
         """
         Inserts a file control.
+        
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2129,17 +2250,19 @@ class Forms:
         """
         Inserts a currency field control into the form.
 
+        |lo_unsafe|
+
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2209,15 +2332,17 @@ class Forms:
     ) -> FormCtlGroupBox:
         """
         Inserts a Groupbox control into the form.
+        
+        |lo_unsafe|
 
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT): Height.
             label (str, optional): Groupbox label.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2277,14 +2402,16 @@ class Forms:
         """
         Inserts a Grid control.
 
+        |lo_unsafe|
+
         Args:
-            doc (XComponent): Component
-            x (int | UnitT): X Coordinate
-            y (int | UnitT): Y Coordinate
-            width (int | UnitT): Width
+            doc (XComponent): Component.
+            x (int | UnitT): X Coordinate.
+            y (int | UnitT): Y Coordinate.
+            width (int | UnitT): Width.
             height (int, UnitT): Height.
             label (str, optional): Grid label.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2340,6 +2467,8 @@ class Forms:
     ) -> FormCtlHidden:
         """
         Inserts a Hidden control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -2347,14 +2476,14 @@ class Forms:
             y (int | UnitT): Y Coordinate.
             width (int | UnitT): Width.
             height (int, UnitT): Height.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             draw_page (XDrawPage, optional): Draw Page in which to add control.
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlHidden: Hidden Control
+            FormCtlHidden: Hidden Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2404,6 +2533,8 @@ class Forms:
     ) -> FormCtlImageButton:
         """
         Inserts an Image Button control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -2416,7 +2547,7 @@ class Forms:
                 Value such as ``file:///path/to/image.png`` and ``/path/to/image.png`` are valid.
                 Relative paths are supported.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2424,7 +2555,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlImageButton: Image Button Control
+            FormCtlImageButton: Image Button Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2478,6 +2609,8 @@ class Forms:
         """
         Inserts a Label control.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -2485,7 +2618,7 @@ class Forms:
             width (int, UnitT, optional): Width.
             label (str): Contents of label.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2493,7 +2626,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlFixedText: Label Control
+            FormCtlFixedText: Label Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2548,6 +2681,8 @@ class Forms:
     ) -> FormCtlListBox:
         """
         Inserts a ListBox control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -2561,7 +2696,7 @@ class Forms:
             line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
             multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2569,7 +2704,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlListBox: ListBox Control
+            FormCtlListBox: ListBox Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2633,6 +2768,8 @@ class Forms:
     ) -> FormCtlNavigationToolBar:
         """
         Inserts a Navigation Toolbar control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -2640,7 +2777,7 @@ class Forms:
             y (int | UnitT): Y Coordinate.
             width (int | UnitT): Width.
             height (int, UnitT): Height.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2705,6 +2842,8 @@ class Forms:
     ) -> FormCtlNumericField:
         """
         Inserts a Numeric field control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -2716,9 +2855,9 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
-            accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
+            accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2793,6 +2932,8 @@ class Forms:
     ) -> FormCtlPatternField:
         """
         Inserts a Pattern field control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -2803,7 +2944,7 @@ class Forms:
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2811,7 +2952,7 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlPatternField: Pattern Field Control
+            FormCtlPatternField: Pattern Field Control.
 
         .. versionadded:: 0.14.0
         """
@@ -2876,6 +3017,8 @@ class Forms:
     ) -> FormCtlRadioButton:
         """
         Inserts a radio button control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -2889,7 +3032,7 @@ class Forms:
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -2961,6 +3104,8 @@ class Forms:
         """
         Inserts a Rich Text control.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -2968,7 +3113,7 @@ class Forms:
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3029,6 +3174,8 @@ class Forms:
     ) -> FormCtlScrollBar:
         """
         Inserts a Scrollbar control.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -3041,7 +3188,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3106,6 +3253,8 @@ class Forms:
     ) -> FormCtlSpinButton:
         """
         Inserts a Spin Button control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -3118,7 +3267,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3181,13 +3330,15 @@ class Forms:
         """
         Inserts a submit button control.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
             y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3247,6 +3398,8 @@ class Forms:
     ) -> FormCtlTextField:
         """
         Inserts a Text field control.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -3334,6 +3487,8 @@ class Forms:
         """
         Inserts a Time field control into the form.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -3347,7 +3502,7 @@ class Forms:
             time_format (TimeFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
             pin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3427,6 +3582,8 @@ class Forms:
         """
         Inserts a database check box control into the form.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -3437,7 +3594,7 @@ class Forms:
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3494,13 +3651,15 @@ class Forms:
         """
         Inserts a  Database ComboBox control into the form.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
             y (int | UnitT): Y Coordinate.
             width (int | UnitT): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            entries (Iterable[str], optional): Combo box entries
+            entries (Iterable[str], optional): Combo box entries.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to ``0``.
@@ -3565,6 +3724,8 @@ class Forms:
     ) -> FormCtlDbCurrencyField:
         """
         Inserts a database currency field control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -3578,7 +3739,7 @@ class Forms:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3637,6 +3798,8 @@ class Forms:
     ) -> FormCtlDbDateField:
         """
         Inserts a Database Date field control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -3650,7 +3813,7 @@ class Forms:
             drop_down (bool, optional): Specifies if the control is a dropdown. Defaults to ``True``.
             date_format (DateFormatKind, optional): Date format. Defaults to ``DateFormatKind.SYSTEM_SHORT``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3707,6 +3870,8 @@ class Forms:
     ) -> FormCtlDbFormattedField:
         """
         Inserts a Database currency field control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -3718,7 +3883,7 @@ class Forms:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3775,6 +3940,8 @@ class Forms:
     ) -> FormCtlDbListBox:
         """
         Inserts a Database ListBox control into the form.
+        
+        |lo_unsafe|
 
         Args:
             doc (XComponent): Component.
@@ -3788,7 +3955,7 @@ class Forms:
             line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
             multi_select (int, optional): Specifies if multiple entries can be selected. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3848,6 +4015,8 @@ class Forms:
         """
         Inserts a Database Numeric field control into the form.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -3860,7 +4029,7 @@ class Forms:
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
             accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3917,6 +4086,8 @@ class Forms:
         """
         Inserts a Database Pattern field control into the form.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -3926,7 +4097,7 @@ class Forms:
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -3980,6 +4151,8 @@ class Forms:
         """
         Inserts a Database radio button control into the form.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -3991,7 +4164,7 @@ class Forms:
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -4045,6 +4218,8 @@ class Forms:
         """
         Inserts a Database Text field control.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -4054,7 +4229,7 @@ class Forms:
             text (str, optional): Text value.
             echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
@@ -4111,6 +4286,8 @@ class Forms:
         """
         Inserts a Database Time field control into the form.
 
+        |lo_unsafe|
+
         Args:
             doc (XComponent): Component.
             x (int | UnitT): X Coordinate.
@@ -4124,7 +4301,7 @@ class Forms:
             time_format (TimeFormatKind, optional): Date format. Defaults to ``TimeFormatKind.SHORT_24H``.
             pin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``True``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
+            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
