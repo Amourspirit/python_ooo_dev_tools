@@ -11,13 +11,14 @@ from ..form_ctl_numeric_field import FormCtlNumericField
 if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseNumericField as ControlModel  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlDbNumericField(FormCtlNumericField, DataAwareControlModelPartial, UpdateEvents):
     """``com.sun.star.form.component.DatabaseNumericField`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlNumericField.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlNumericField.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         UpdateEvents.__init__(self, trigger_args=generic_args, cb=self._on_update_events_add_remove)
         DataAwareControlModelPartial.__init__(self, self.get_model())

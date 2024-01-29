@@ -14,13 +14,14 @@ from .form_ctl_base import FormCtlBase
 if TYPE_CHECKING:
     from com.sun.star.form.component import CurrencyField as ControlModel  # service
     from com.sun.star.form.control import CurrencyField as ControlView  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlCurrencyField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     """``com.sun.star.form.component.CurrencyField`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
         ResetEvents.__init__(self, trigger_args=generic_args, cb=self._on_reset_add_remove)

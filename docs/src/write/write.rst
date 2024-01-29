@@ -13,8 +13,8 @@ Introduction
 
 The ``WriteDrawPage`` class is for accessing the draw page of a Writer document.
 
-This class has a ``forms`` property that gives access to :ref:`class_write_write_forms`
-which in turn gives access to :ref:`class_write_write_form` that represents a form in the document.
+This class has a ``forms`` property that gives access to :ref:`ooodev.write.WriteForms`
+which in turn gives access to :ref:`ooodev.write.WriteForm` that represents a form in the document.
 
 Adding a shape to a sheet
 ^^^^^^^^^^^^^^^^^^^^^^^^^

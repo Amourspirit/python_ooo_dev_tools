@@ -11,13 +11,14 @@ from .form_ctl_base import FormCtlBase
 if TYPE_CHECKING:
     from com.sun.star.form.component import SubmitButton as ControlModel  # service
     from com.sun.star.form.control import SubmitButton as ControlView  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlSubmitButton(FormCtlBase, SubmissionVetoEvents):
     """``com.sun.star.form.component.SubmitButton`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         SubmissionVetoEvents.__init__(self, trigger_args=generic_args, cb=self._on_submission_veto_add_remove)
 

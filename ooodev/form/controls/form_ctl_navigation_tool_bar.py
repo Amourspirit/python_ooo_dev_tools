@@ -10,13 +10,14 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.form.component import NavigationToolBar as ControlModel  # service
     from com.sun.star.form.control import NavigationToolBar as ControlView  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlNavigationToolBar(FormCtlBase):
     """``com.sun.star.form.component.NavigationToolBar`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
 
     # region Overrides
 

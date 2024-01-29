@@ -17,13 +17,14 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import ComboBox as ControlModel  # service
     from com.sun.star.form.control import ComboBox as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlComboBox(FormCtlBase, ActionEvents, ItemEvents, TextEvents, ResetEvents):
     """``com.sun.star.form.component.ComboBox`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_events_listener_add_remove)

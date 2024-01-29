@@ -1,4 +1,4 @@
-.. _class_write_write_form:
+.. _ooodev.write.WriteForm:
 
 Class WriteForm
 ===============

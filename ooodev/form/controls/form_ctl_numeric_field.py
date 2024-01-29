@@ -14,13 +14,14 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import NumericField as ControlModel  # service
     from com.sun.star.form.control import NumericField as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlNumericField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
     """``com.sun.star.form.component.NumericField`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)

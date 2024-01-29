@@ -1,4 +1,4 @@
-.. _class_draw_draw_form:
+.. _ooodev.draw.DrawForm:
 
 Class DrawForm
 ===============

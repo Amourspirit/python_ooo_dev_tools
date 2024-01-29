@@ -15,13 +15,14 @@ from ..form_ctl_list_box import FormCtlListBox
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.form.component import DatabaseListBox as ControlModel  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlDbListBox(FormCtlListBox, DataAwareControlModelPartial, UpdateEvents):
     """``com.sun.star.form.component.ListBox`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlListBox.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlListBox.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         UpdateEvents.__init__(self, trigger_args=generic_args, cb=self._on_update_events_add_remove)
         DataAwareControlModelPartial.__init__(self, self.get_model())

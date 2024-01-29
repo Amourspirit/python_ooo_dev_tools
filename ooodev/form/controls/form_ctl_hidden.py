@@ -10,13 +10,14 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.form.component import HiddenControl as ControlModel  # service
     from com.sun.star.awt import UnoControl as ControlView  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlHidden(FormCtlBase):
     """``com.sun.star.form.component.HiddenControl`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
 
     # region Overrides
 

@@ -9,13 +9,14 @@ from .form_ctl_base import FormCtlBase
 if TYPE_CHECKING:
     from com.sun.star.form.component import GroupBox as ControlModel  # service
     from com.sun.star.form.control import GroupBox as ControlView  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlGroupBox(FormCtlBase):
     """``com.sun.star.form.component.GroupBox`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
 
     # region Overrides
 

@@ -17,13 +17,14 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import ImageButton as ControlModel  # service
     from com.sun.star.form.control import ImageButton as ControlView  # service
     from ooodev.utils.type_var import PathOrStr
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
     """``com.sun.star.form.component.ImageButton`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         ApproveActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_approve_action_add_remove)
 

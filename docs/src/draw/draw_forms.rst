@@ -1,4 +1,4 @@
-.. _class_write_write_forms:
+.. _ooodev.draw.DrawForms:
 
 Class DrawForms
 ================

@@ -1,4 +1,4 @@
-.. _class_calc_calc_form:
+.. _ooodev.calc.CalcForm:
 
 Class CalcForm
 ==============

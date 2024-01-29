@@ -19,13 +19,14 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import TextField as ControlModel  # service
     from com.sun.star.form.control import TextField as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlTextField(FormCtlBase, TextEvents, ResetEvents):
     """``com.sun.star.form.component.TextField`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
         ResetEvents.__init__(self, trigger_args=generic_args, cb=self._on_reset_add_remove)

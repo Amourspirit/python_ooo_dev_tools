@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING, Type
 import contextlib
 import uno
 from com.sun.star.beans import XPropertySet
@@ -20,21 +20,29 @@ from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImp
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.units import UnitMM
 from ooodev.utils import lo as mLo
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.form_component_kind import FormComponentKind
-from ooodev.units import UnitMM
+from ooodev.utils.kind.language_kind import LanguageKind
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ControlShape  # service
     from com.sun.star.awt import XControl
     from com.sun.star.awt import UnoControlModel  # service
     from com.sun.star.awt import UnoControl  # service
+    from com.sun.star.uno import XInterface
+    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.form.forms import Forms
     from ooodev.proto.style_obj import StyleT
 
 
 class FormCtlBase(
+    LoInstPropsPartial,
     FocusEvents,
     KeyEvents,
     MouseEvents,
@@ -44,20 +52,26 @@ class FormCtlBase(
     PropertyChangeImplement,
     PropertiesChangeImplement,
     VetoableChangeImplement,
+    ServicePartial,
 ):
     """Base class for all form controls"""
 
     # region init
-    def __init__(self, ctl: XControl) -> None:
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             ctl (UnoControlModel): Control
         """
+        # if the LoContext manager is use before this class is instantiated, then the Lo instance will be set using the
+        # current Lo instance. That the context manager has set
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         self._set_control(ctl)
-        # in some cases the contol model is removed from the control.
+        # in some cases the control model is removed from the control.
         # This means that self.get_control().getModel() return None.
         # By capturing the model here, we can set it back to the control if it is removed.
         # The model is removed for instance when a control is on a spreadsheet and the sheet is deactivated.
@@ -72,6 +86,7 @@ class FormCtlBase(
         PropertyChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
         VetoableChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
+        ServicePartial.__init__(self, component=self.__model, lo_inst=self.lo_inst)
         self.__control_shape = cast("ControlShape", None)
 
     # endregion init
@@ -117,6 +132,43 @@ class FormCtlBase(
     # endregion Lazy Listeners
 
     # region other methods
+
+    def assign_script(
+        self,
+        interface_name: str | XInterface,
+        method_name: str,
+        script_name: str,
+        loc: str,
+        language: str | LanguageKind = LanguageKind.PYTHON,
+    ) -> None:
+        """
+        Binds a macro to a form control.
+
+        |lo_safe|
+
+        Args:
+            interface_name (str, XInterface): Interface Name or a UNO object that implements the ``XInterface``.
+            method_name (str): Method Name.
+            script_name (str): Script Name.
+            loc (str): can be user, share, document, and extensions.
+            language (str | LanguageKind, optional): Language. Defaults to LanguageKind.PYTHON.
+
+        Returns:
+            None:
+
+        See Also:
+            `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
+        """
+        props = self.get_property_set()
+        self._forms_class.assign_script(
+            ctl_props=props,
+            interface_name=interface_name,
+            method_name=method_name,
+            script_name=script_name,
+            loc=loc,
+            language=language,
+        )
+
     def get_id(self) -> int:
         """
         Gets class id for this control.
@@ -169,7 +221,9 @@ class FormCtlBase(
             return self.__generic_args
 
     def get_property_set(self) -> XPropertySet:
-        """Gets the property set for this control"""
+        """
+        Gets the property set for this control.
+        """
         return mLo.Lo.qi(XPropertySet, self.get_model(), True)
 
     def apply_styles(self, *styles: StyleT) -> None:
@@ -180,8 +234,9 @@ class FormCtlBase(
             *styles: Styles to apply
         """
         model = self.get_model()
-        for style in styles:
-            style.apply(model)
+        with LoContext(self.lo_inst):
+            for style in styles:
+                style.apply(model)
 
     def get_form_name(self) -> str:
         """
@@ -294,5 +349,17 @@ class FormCtlBase(
     @control_shape.setter
     def control_shape(self, value: ControlShape) -> None:
         self.__control_shape = value
+
+    @property
+    def _forms_class(self) -> Type[Forms]:
+        """Gets the class name for the form"""
+        # delay import to avoid circular import.
+        try:
+            return self._forms_class_instance
+        except AttributeError:
+            from ooodev.form.forms import Forms as OooDevForms
+
+            self._forms_class_instance = OooDevForms
+        return self._forms_class_instance
 
     # endregion Properties

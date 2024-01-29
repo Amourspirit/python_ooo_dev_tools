@@ -13,13 +13,14 @@ from .form_ctl_base import FormCtlBase
 if TYPE_CHECKING:
     from com.sun.star.form.component import CommandButton as ControlModel  # service
     from com.sun.star.form.control import CommandButton as ControlView  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlButton(FormCtlBase, ActionEvents, ApproveActionEvents, ResetEvents):
     """``com.sun.star.form.component.CommandButton`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
         ApproveActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_approve_action_add_remove)

@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import GridControl as ControlModel  # service
     from com.sun.star.form.control import GridControl as ControlView  # service
     from ooodev.units import UnitT
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlGrid(
@@ -28,8 +29,8 @@ class FormCtlGrid(
 ):
     """``com.sun.star.form.component.GridControl`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         ResetEvents.__init__(self, trigger_args=generic_args, cb=self._on_reset_add_remove)
         GridControlEvents.__init__(self, trigger_args=generic_args, cb=self._on_grid_control_add_remove)

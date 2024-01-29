@@ -11,13 +11,14 @@ from ..form_ctl_time_field import FormCtlTimeField
 if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseTimeField as ControlModel  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlDbTimeField(FormCtlTimeField, DataAwareControlModelPartial, UpdateEvents):
     """``com.sun.star.form.component.DatabaseTimeField`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlTimeField.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlTimeField.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         UpdateEvents.__init__(self, trigger_args=generic_args, cb=self._on_update_events_add_remove)
         DataAwareControlModelPartial.__init__(self, self.get_model())

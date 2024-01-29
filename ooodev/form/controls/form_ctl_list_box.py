@@ -18,13 +18,14 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.form.component import ListBox as ControlModel  # service
     from com.sun.star.form.control import ListBox as ControlView  # service
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
 class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemListEvents, ResetEvents):
     """``com.sun.star.form.component.ListBox`` control"""
 
-    def __init__(self, ctl: XControl) -> None:
-        FormCtlBase.__init__(self, ctl)
+    def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
+        FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
         ChangeEvents.__init__(self, trigger_args=generic_args, cb=self._on_change_add_remove)
