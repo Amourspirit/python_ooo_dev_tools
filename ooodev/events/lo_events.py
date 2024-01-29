@@ -4,8 +4,8 @@ This module is for the purpose of sharing events between classes.
 """
 from __future__ import annotations
 import contextlib
-from weakref import ref, ReferenceType, proxy
-from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union
+from weakref import ref, ReferenceType
+from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union, Tuple
 from . import event_singleton
 from ..proto import event_observer
 from ..utils.type_var import EventCallback as EventCallback
@@ -31,6 +31,7 @@ class _event_base(object):
 
     def __init__(self) -> None:
         self._callbacks: Dict[str, List[ReferenceType[EventCallback]]] | None = None
+        self._observers: Union[List[ReferenceType[event_observer.EventObserver]], None] = None
 
     def on(self, event_name: str, callback: EventCallback):
         """
@@ -57,8 +58,8 @@ class _event_base(object):
             callback (Callable[[object, EventArgs], None]): Callback function
 
         Returns:
-            bool: True if callback has been removed; Otherwise, False.
-            False means the callback was not found.
+            bool: ``True`` if callback has been removed; Otherwise, ``False``.
+                False means the callback was not found.
         """
         if self._callbacks is None:
             return False
@@ -73,6 +74,8 @@ class _event_base(object):
     def _clear(self) -> None:
         if self._callbacks is not None:
             self._callbacks.clear()
+        if self._observers is not None:
+            self._observers.clear()
 
     def _set_event_args(self, event_name: str, event_args: EventArgsT) -> None:
         if event_args is None:
@@ -117,6 +120,59 @@ class _event_base(object):
                 if len(self._callbacks[event_name]) == 0:
                     del self._callbacks[event_name]
 
+    def add_observer(self, *args: event_observer.EventObserver) -> None:
+        """
+        Adds observers that gets their ``trigger`` method called when this class ``trigger`` method is called.
+
+        Parameters:
+            args (EventObserver): One or more observers to add.
+
+        Returns:
+            None:
+
+        Note:
+            Observers are removed automatically when they are out of scope.
+        """
+        if self._observers is None:
+            self._observers = []
+        for observer in args:
+            self._observers.append(ref(observer))
+
+    def _update_observers(self, event_name: str, event_args: EventArgsT) -> None:
+        # sourcery skip: last-if-guard
+        if self._observers is not None:
+            cleanup = None
+            for i, observer in enumerate(self._observers):
+                if observer() is None:
+                    if cleanup is None:
+                        cleanup = []
+                    cleanup.append(i)
+                    continue
+                observer().trigger(event_name=event_name, event_args=event_args)  # type: ignore
+            if cleanup:
+                # reverse list to allow removing form highest to lowest to avoid errors
+                cleanup.reverse()
+                for i in cleanup:
+                    _ = self._observers.pop(i)
+
+    def remove_observer(self, observer: event_observer.EventObserver) -> bool:
+        """
+        Removes an observer
+
+        Args:
+            observer (EventObserver): One or more observers to add.
+
+        Returns:
+            bool: ``True`` if observer has been removed; Otherwise, ``False``.
+        """
+
+        if self._observers is None:
+            return False
+        with contextlib.suppress(Exception):
+            self._observers.remove(ref(observer))
+            return True
+        return False
+
 
 class Events(_event_base):
     """
@@ -151,8 +207,9 @@ class Events(_event_base):
         super().__init__()
         self._source = source
         self._t_args = trigger_args
+
         # register wih LoEvents so this instance get triggered when LoEvents() are triggered.
-        LoEvents().add_observer(self)  # type: ignore
+        # LoEvents().add_observer(self)  # type: ignore
 
     def clear(self) -> None:
         """
@@ -167,6 +224,8 @@ class Events(_event_base):
             super().trigger(event_name=event_name, event_args=event_args)
         else:
             super().trigger(event_name, event_args, *self._t_args.args, **self._t_args.kwargs)
+
+        self._update_observers(event_name, event_args)
 
     def _set_event_args(self, event_name: str, event_args: EventArgsT) -> None:
         if event_args is None:
@@ -208,10 +267,7 @@ class LoEvents(_event_base):
         Note:
             Observers are removed automatically when they are out of scope.
         """
-        if self._observers is None:
-            self._observers = []
-        for observer in args:
-            self._observers.append(ref(observer))
+        super().add_observer(*args)
 
     def trigger(self, event_name: str, event_args: EventArgsT):
         super().trigger(event_name, event_args)
@@ -252,28 +308,54 @@ class DummyEvents:
 
 
 @contextlib.contextmanager
-def event_ctx(*args: EventArg) -> Generator[event_observer.EventObserver, None, None]:
+def event_ctx(
+    *args: EventArg | Tuple[str, EventCallback],
+    source: Any = None,
+    trigger_args: GenericArgs | None = None,
+    lo_observe: bool = False,
+) -> Generator[event_observer.EventObserver, None, None]:
     """
     Event context manager.
 
     This manager adds and removes events.
 
     Parameters:
-        args (EventArg): One or more EventArgs to add.
+        args (EventArg, Tuple[str, EventCallback], optional): One or more EventArgs to add.
+        source (Any, optional): Source can be class or any object.
+        trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
 
     Yields:
         Generator[EventObserver, None, None]: events
     """
+    e_obj = None
+    lo_inst = None
     try:
-        # yields a weakref.proxy obj
-        # weakref is dead as soon as e_obj is set to none.
-        e_obj = Events()  # automatically adds itself as an observer to LoEvents()
+        e_obj = Events(
+            source=source, trigger_args=trigger_args
+        )  # automatically adds itself as an observer to LoEvents()
         for arg in args:
-            e_obj.on(arg.name, arg.callback)
-        yield proxy(e_obj)
+            if isinstance(arg, tuple):
+                e_obj.on(arg[0], arg[1])
+            else:
+                e_obj.on(arg.name, arg.callback)
+        # a proxy is not able to be added to the LoEvents() observer list
+        # yield proxy(e_obj)
+        if lo_observe:
+            from ooodev.utils.lo import Lo
+
+            lo_inst = Lo.current_lo
+            lo_inst.add_event_observers(e_obj)
+        yield e_obj
     except Exception:
         raise
     finally:
+        if e_obj is not None:
+            e_obj.clear()
+            if lo_inst is not None:
+                # strictly speaking this is not necessary because Events will automatically remove
+                # stale observers; However, it is good practice to remove observers when they are
+                # no longer needed.
+                lo_inst.remove_event_observer(e_obj)
         e_obj = None
         _ = None  # just to make sure _ is not a ref to e_obj
 

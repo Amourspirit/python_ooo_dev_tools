@@ -1,21 +1,25 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-from ooodev.events.args.event_args_t import EventArgsT
-from ooodev.events.lo_events import Events
-from ooodev.utils.type_var import EventCallback
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
+    try:
+        from typing import Protocol
+    except ImportError:
+        from typing_extensions import Protocol
+    from ooodev.events.args.event_args_t import EventArgsT
+    from ..utils.type_var import EventCallback
     from ooodev.proto.event_observer import EventObserver
+else:
+    Protocol = object
+    EventArgsT = Any
+    EventCallback = Any
+    EventObserver = Any
 
 
-class EventsPartial:
-    def __init__(self, events: EventObserver | None = None):
-        if events is not None:
-            self.__events = events
-        else:
-            self.__events = Events(source=self)
-
-    # region Events
+class EventsT(Protocol):
+    """
+    Protocol Class for Events.
+    """
 
     def add_event_observers(self, *args: EventObserver) -> None:
         """
@@ -30,19 +34,7 @@ class EventsPartial:
         Note:
             Observers are removed automatically when they are out of scope.
         """
-        self.__events.add_observer(*args)
-
-    def remove_event_observer(self, observer: EventObserver) -> bool:
-        """
-        Removes an observer
-
-        Args:
-            observer (EventObserver): One or more observers to add.
-
-        Returns:
-            bool: ``True`` if observer has been removed; Otherwise, ``False``.
-        """
-        return self.__events.remove_observer(observer)
+        ...
 
     def subscribe_event(self, event_name: str, callback: EventCallback) -> None:
         """
@@ -55,7 +47,7 @@ class EventsPartial:
         Returns:
             None:
         """
-        self.__events.on(event_name, callback)
+        ...
 
     def unsubscribe_event(self, event_name: str, callback: EventCallback) -> None:
         """
@@ -68,7 +60,7 @@ class EventsPartial:
         Returns:
             None:
         """
-        self.__events.remove(event_name, callback)
+        ...
 
     def trigger_event(self, event_name: str, event_args: EventArgsT):
         """
@@ -81,6 +73,4 @@ class EventsPartial:
         Returns:
             None:
         """
-        self.__events.trigger(event_name, event_args)
-
-    # endregion Events
+        ...

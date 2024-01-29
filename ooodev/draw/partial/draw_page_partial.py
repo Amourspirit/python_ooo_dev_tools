@@ -33,11 +33,12 @@ if TYPE_CHECKING:
     from com.sun.star.text import XText
     from ooo.dyn.presentation.animation_speed import AnimationSpeed
     from ooo.dyn.presentation.fade_effect import FadeEffect
+    from ooodev.draw.shapes import ShapeBase
     from ooodev.proto.dispatch_shape import DispatchShape
     from ooodev.units import UnitT
     from ooodev.utils.data_type.size import Size
-    from ooodev.utils.kind.drawing_slide_show_kind import DrawingSlideShowKind
     from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.utils.kind.drawing_slide_show_kind import DrawingSlideShowKind
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -1023,18 +1024,21 @@ class DrawPagePartial(Generic[_T]):
         """
         return mDraw.Draw.get_shape_text(slide=self.__component)
 
-    def get_shapes(self) -> List[DrawShape[_T]]:
+    def get_shapes(self) -> List[ShapeBase[_T]]:
         """
         Gets shapes
 
         Returns:
-            List[DrawShape[_T]]: List of Shapes.
+            List[ShapeBase[_T]]: List of Shapes.
 
         See Also:
             :py:meth:`~.draw.Draw.get_ordered_shapes`
         """
         shapes = mDraw.Draw.get_shapes(slide=self.component)  # type: ignore
-        return [DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst) for shape in shapes]
+        from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
+
+        factory = ShapeFactoryPartial(owner=self.__owner, lo_inst=self.__lo_inst)
+        return [factory.shape_factory(shape) for shape in shapes]
 
     def get_size_mm(self) -> Size:
         """

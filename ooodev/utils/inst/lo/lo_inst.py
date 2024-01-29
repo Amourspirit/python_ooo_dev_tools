@@ -46,7 +46,8 @@ from ooodev.mock import mock_g
 from ooodev.adapter.lang.event_listener import EventListener
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
-from ooodev.conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
+from ooodev.conn.connect import ConnectBase, LoDirectStart
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
@@ -56,7 +57,6 @@ from ooodev.events.lo_events import Events
 from ooodev.events.lo_named_event import LoNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.formatters.formatter_table import FormatterTable
-from ooodev.proto.event_observer import EventObserver
 from ooodev.utils import file_io as mFileIO
 from ooodev.utils import info as mInfo
 from ooodev.utils import props as mProps
@@ -84,9 +84,12 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
     from com.sun.star.util import Date as UnoDate
+    from ooodev.proto.event_observer import EventObserver
+
+    # from ooodev.events.events_t import EventsT
 
 
-class LoInst:
+class LoInst(EventsPartial):
     """
     Lo instance class. This is the main class for interacting with LO.
 
@@ -105,8 +108,10 @@ class LoInst:
             opt (LoOptions, optional): Options
             events (EventObserver, optional): Event observer
         """
+        _events = Events(source=self) if events is None else events
+        EventsPartial.__init__(self, _events)
         self._is_default = False
-        # self._events = Events(self)
+        # self.trigger_event = Events(self)
         self._xcc: XComponentContext | None = None
         self._doc: XComponent | None = None
         """remote component context"""
@@ -121,7 +126,6 @@ class LoInst:
         self._lo_loader: LoLoader | None = None
 
         self._opt = LoOptions() if opt is None else opt
-        self._events = Events() if events is None else events
         self._allow_print = self._opt.verbose
         self._set_lo_events()
 
@@ -136,10 +140,10 @@ class LoInst:
         self._event_listener = EventListener()
         self._event_listener.on("disposing", self._fn_on_lo_disposing_bridge)
 
-        self._events.on(LoNamedEvent.RESET, self._fn_on_lo_del_cache_attrs)
-        self._events.on(LoNamedEvent.OFFICE_LOADING, self._fn_on_lo_loading)
-        self._events.on(LoNamedEvent.OFFICE_LOADED, self._fn_on_lo_loaded)
-        self._events.on(LoNamedEvent.BRIDGE_DISPOSED, self._fn_on_lo_disposed)
+        self.subscribe_event(LoNamedEvent.RESET, self._fn_on_lo_del_cache_attrs)
+        self.subscribe_event(LoNamedEvent.OFFICE_LOADING, self._fn_on_lo_loading)
+        self.subscribe_event(LoNamedEvent.OFFICE_LOADED, self._fn_on_lo_loaded)
+        self.subscribe_event(LoNamedEvent.BRIDGE_DISPOSED, self._fn_on_lo_disposed)
 
     def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:  # pylint: disable=unused-argument
         # clears Lo Attributes that are dynamically created
@@ -150,7 +154,7 @@ class LoInst:
 
     # pylint: disable=unused-argument
     def on_lo_disposing_bridge(self, src: EventListener, event: EventObject) -> None:
-        self._events.trigger(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(self.on_lo_disposing_bridge.__qualname__))
+        self.trigger_event(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(self.on_lo_disposing_bridge.__qualname__))
 
     def on_lo_disposed(self, source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
         self.print("Office bridge has gone!!")
@@ -486,9 +490,9 @@ class LoInst:
         }
 
         eargs = EventArgs.from_args(cargs)
-        self._events.trigger(LoNamedEvent.RESET, eargs)
+        self.trigger_event(LoNamedEvent.RESET, eargs)
 
-        self._events.trigger(LoNamedEvent.OFFICE_LOADING, cargs)
+        self.trigger_event(LoNamedEvent.OFFICE_LOADING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
@@ -532,7 +536,7 @@ class LoInst:
         self.print("Closing Office")
 
         cargs = CancelEventArgs(self.close_office.__qualname__)
-        self._events.trigger(LoNamedEvent.OFFICE_CLOSING, cargs)
+        self.trigger_event(LoNamedEvent.OFFICE_CLOSING, cargs)
         if cargs.cancel:
             return False
 
@@ -555,8 +559,8 @@ class LoInst:
             num_tries += 1
         if self._is_office_terminated:
             eargs = EventArgs.from_args(cargs)
-            self._events.trigger(LoNamedEvent.OFFICE_CLOSED, eargs)
-            self._events.trigger(LoNamedEvent.RESET, eargs)
+            self.trigger_event(LoNamedEvent.OFFICE_CLOSED, eargs)
+            self.trigger_event(LoNamedEvent.RESET, eargs)
         return self._is_office_terminated
 
     def _try_to_terminate(self, num_tries: int) -> bool:
@@ -591,8 +595,8 @@ class LoInst:
             self._lo_inst.kill_soffice()
             self._is_office_terminated = True
             eargs = EventArgs(self.kill_office.__qualname__)
-            self._events.trigger(LoNamedEvent.OFFICE_CLOSED, eargs)
-            self._events.trigger(LoNamedEvent.RESET, eargs)
+            self.trigger_event(LoNamedEvent.OFFICE_CLOSED, eargs)
+            self.trigger_event(LoNamedEvent.RESET, eargs)
             self.print("Killed Office")
         except Exception as e:
             raise Exception("Unable to kill Office") from e
@@ -627,14 +631,14 @@ class LoInst:
             raise mEx.LoadingError("Cannot set loader for default instance")
         cargs = CancelEventArgs(self.open_doc.__qualname__)
         cargs.event_data = component
-        self._events.trigger(LoNamedEvent.COMPONENT_LOADING, cargs)
+        self.trigger_event(LoNamedEvent.COMPONENT_LOADING, cargs)
         if cargs.cancel:
             return
         eargs = EventArgs.from_args(cargs)
-        self._events.trigger(LoNamedEvent.RESET, eargs)
+        self.trigger_event(LoNamedEvent.RESET, eargs)
         self._ms_factory = self.qi(XMultiServiceFactory, component)
         self._doc = component
-        self._events.trigger(LoNamedEvent.COMPONENT_LOADED, eargs)
+        self.trigger_event(LoNamedEvent.COMPONENT_LOADED, eargs)
 
     # region open_flat_doc()
     @overload
@@ -694,8 +698,8 @@ class LoInst:
             "props": props,
         }
         eargs = EventArgs.from_args(cargs)
-        self._events.trigger(LoNamedEvent.RESET, eargs)
-        self._events.trigger(LoNamedEvent.DOC_OPENING, cargs)
+        self.trigger_event(LoNamedEvent.RESET, eargs)
+        self.trigger_event(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
@@ -725,7 +729,7 @@ class LoInst:
             self._doc = doc
             if self._doc is None:
                 raise mEx.NoneError("loadComponentFromURL() returned None")
-            self._events.trigger(LoNamedEvent.DOC_OPENED, eargs)
+            self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
             return self._doc
         except Exception as e:
             raise Exception("Unable to open the document") from e
@@ -836,22 +840,23 @@ class LoInst:
             "props": props,
         }
         eargs = EventArgs.from_args(cargs)
-        self._events.trigger(LoNamedEvent.RESET, eargs)
-        self._events.trigger(LoNamedEvent.DOC_CREATING, cargs)
+        self.trigger_event(LoNamedEvent.RESET, eargs)
+        self.trigger_event(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
         dtype = LoDocTypeStr(cargs.event_data["doc_type"])
-        if props is None:
+        properties = cast("Iterable[PropertyValue]", cargs.event_data["props"])
+        if properties is None:
             local_props = mProps.Props.make_props(Hidden=True)
         else:
-            local_props = tuple(props)
+            local_props = tuple(properties)
         self.print(f"Creating Office document {dtype}")
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, local_props)  # type: ignore
             self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
             self._doc = doc
-            self._events.trigger(LoNamedEvent.DOC_CREATED, eargs)
+            self.trigger_event(LoNamedEvent.DOC_CREATED, eargs)
             return self._doc
         except Exception as e:
             raise Exception("Could not create a document") from e
@@ -895,7 +900,7 @@ class LoInst:
         if loader is None:
             loader = cast(XComponentLoader, self._loader)
         cargs = CancelEventArgs(self.create_doc_from_template.__qualname__)
-        self._events.trigger(LoNamedEvent.DOC_CREATING, cargs)
+        self.trigger_event(LoNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if not mFileIO.FileIO.is_openable(template_path):
@@ -909,7 +914,7 @@ class LoInst:
             self._ms_factory = self.qi(XMultiServiceFactory, self._doc)
             if self._ms_factory is None:
                 raise mEx.MissingInterfaceError(XMultiServiceFactory)
-            self._events.trigger(LoNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
+            self.trigger_event(LoNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
             return self._doc
         except Exception as e:
             raise Exception("Could not create document from template") from e
@@ -922,7 +927,7 @@ class LoInst:
         # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.save.__qualname__)
         cargs.event_data = {"doc": doc}
-        self._events.trigger(LoNamedEvent.DOC_SAVING, cargs)
+        self.trigger_event(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             return False
 
@@ -933,7 +938,7 @@ class LoInst:
         except IOException as e:
             raise Exception("Could not save the document") from e
 
-        self._events.trigger(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
+        self.trigger_event(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
         return True
 
     # region    save_doc()
@@ -965,7 +970,7 @@ class LoInst:
         password = cast(str, cargs.event_data["password"])
         format = cast(str, cargs.event_data["format"])
 
-        self._events.trigger(LoNamedEvent.DOC_SAVING, cargs)
+        self.trigger_event(LoNamedEvent.DOC_SAVING, cargs)
         if cargs.cancel:
             return False
         store = self.qi(XStorable, doc, True)
@@ -979,7 +984,7 @@ class LoInst:
             kargs["format"] = format
             result = self.store_doc_format(**kargs)
         if result:
-            self._events.trigger(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
+            self.trigger_event(LoNamedEvent.DOC_SAVED, EventArgs.from_args(cargs))
         return result
 
     # endregion save_doc()
@@ -1002,7 +1007,7 @@ class LoInst:
             "fnm": fnm,
             "password": password,
         }
-        self._events.trigger(LoNamedEvent.DOC_STORING, cargs)
+        self.trigger_event(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
             return False
         ext = mInfo.Info.get_ext(fnm)
@@ -1015,7 +1020,7 @@ class LoInst:
             self.store_doc_format(store=store, fnm=fnm, format=txt_format)
         else:
             self.store_doc_format(store=store, fnm=fnm, format=txt_format, password=password)
-        self._events.trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
+        self.trigger_event(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
         return True
 
     # endregion  store_doc()
@@ -1147,7 +1152,7 @@ class LoInst:
             "fnm": fnm,
             "password": password,
         }
-        self._events.trigger(LoNamedEvent.DOC_STORING, cargs)
+        self.trigger_event(LoNamedEvent.DOC_STORING, cargs)
         if cargs.cancel:
             return False
         pth = mFileIO.FileIO.get_absolute_path(cast("PathOrStr", cargs.event_data["fnm"]))
@@ -1164,7 +1169,7 @@ class LoInst:
             store.storeToURL(save_file_url, store_props)  # type: ignore
         except IOException as e:
             raise Exception(f"Could not save '{pth}'") from e
-        self._events.trigger(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
+        self.trigger_event(LoNamedEvent.DOC_STORED, EventArgs.from_args(cargs))
         return True
 
     # endregion store_doc_format()
@@ -1183,7 +1188,7 @@ class LoInst:
         # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.close.__qualname__)
         cargs.event_data = deliver_ownership
-        self._events.trigger(LoNamedEvent.DOC_CLOSING, cargs)
+        self.trigger_event(LoNamedEvent.DOC_CLOSING, cargs)
         if cargs.cancel:
             return False
         if closeable is None:
@@ -1192,7 +1197,7 @@ class LoInst:
         try:
             closeable.close(cargs.event_data)
             self._doc = None
-            self._events.trigger(LoNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
+            self.trigger_event(LoNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
             return True
         except CloseVetoException as e:
             raise Exception("Close was vetoed") from e
@@ -1227,8 +1232,8 @@ class LoInst:
         cargs = CancelEventArgs(self.addon_initialize.__qualname__)
         cargs.event_data = {"addon_xcc": addon_xcc}
         eargs = EventArgs.from_args(cargs)
-        self._events.trigger(LoNamedEvent.RESET, eargs)
-        self._events.trigger(LoNamedEvent.DOC_OPENING, cargs)
+        self.trigger_event(LoNamedEvent.RESET, eargs)
+        self.trigger_event(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         xcc = addon_xcc
@@ -1247,7 +1252,7 @@ class LoInst:
             raise Exception("Could not access document")
         self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
         self._doc = doc
-        self._events.trigger(LoNamedEvent.DOC_OPENED, eargs)
+        self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
     # ============= initialization via script context ======================
@@ -1257,8 +1262,8 @@ class LoInst:
         cargs = CancelEventArgs(self.script_initialize.__qualname__)
         cargs.event_data = {"sc": sc}
         eargs = EventArgs.from_args(cargs)
-        self._events.trigger(LoNamedEvent.RESET, eargs)
-        self._events.trigger(LoNamedEvent.DOC_OPENING, cargs)
+        self.trigger_event(LoNamedEvent.RESET, eargs)
+        self.trigger_event(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if sc is None:
@@ -1277,13 +1282,23 @@ class LoInst:
             raise Exception("Could not access document")
         self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
         self._doc = doc
-        self._events.trigger(LoNamedEvent.DOC_OPENED, eargs)
+        self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
     # region dispatch_cmd()
+
+    def _get_frame(self) -> XFrame:
+        if self._doc is None:
+            raise mEx.LoNotLoadedError("No document loaded")
+
+        component = self.qi(XComponent, self._doc, True)
+        model = self.qi(XModel, component, True)
+        controller = model.getCurrentController()
+        return controller.getFrame()
+
     @overload
     def dispatch_cmd(self, cmd: str) -> Any:
         ...
@@ -1308,7 +1323,7 @@ class LoInst:
             str_cmd = str(cmd)  # make sure and enum or other lookup did not get passed by mistake
             cargs = DispatchCancelArgs(self.dispatch_cmd.__qualname__, str_cmd)
             cargs.event_data = props
-            self._events.trigger(LoNamedEvent.DISPATCHING, cargs)
+            self.trigger_event(LoNamedEvent.DISPATCHING, cargs)
             if cargs.cancel:
                 raise mEx.CancelEventError(cargs, f'Dispatch Command "{str_cmd}" has been canceled')
             props = cargs.event_data
@@ -1317,8 +1332,7 @@ class LoInst:
             else:
                 dispatch_props = tuple(props)
             if frame is None:
-                desk_top = cast(XDesktop, self._xdesktop)
-                frame = desk_top.getCurrentFrame()
+                frame = self._get_frame()
 
             helper = self.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
             if helper is None:
@@ -1329,7 +1343,7 @@ class LoInst:
             result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
-            self._events.trigger(LoNamedEvent.DISPATCHED, eargs)
+            self.trigger_event(LoNamedEvent.DISPATCHED, eargs)
             return result
         except mEx.CancelEventError:
             raise
@@ -1590,25 +1604,25 @@ class LoInst:
     def lock_controllers(self) -> bool:
         # much faster updates as screen is basically suspended
         cargs = CancelEventArgs(self.lock_controllers.__qualname__)
-        self._events.trigger(LoNamedEvent.CONTROLLERS_LOCKING, cargs)
+        self.trigger_event(LoNamedEvent.CONTROLLERS_LOCKING, cargs)
         if cargs.cancel:
             return False
         # doc = self.xscript_context.getDocument() if self._opt.dynamic else self.lo_component
         xmodel = self.qi(XModel, self.lo_component, True)
         xmodel.lockControllers()
-        self._events.trigger(LoNamedEvent.CONTROLLERS_LOCKED, EventArgs(self))
+        self.trigger_event(LoNamedEvent.CONTROLLERS_LOCKED, EventArgs(self))
         return True
 
     def unlock_controllers(self) -> bool:
         cargs = CancelEventArgs(self.unlock_controllers.__qualname__)
-        self._events.trigger(LoNamedEvent.CONTROLLERS_UNLOCKING, cargs)
+        self.trigger_event(LoNamedEvent.CONTROLLERS_UNLOCKING, cargs)
         if cargs.cancel:
             return False
         # doc = self.xscript_context.getDocument() if self._opt.dynamic else self.lo_component
         xmodel = self.qi(XModel, self.lo_component, True)
         if xmodel.hasControllersLocked():
             xmodel.unlockControllers()
-        self._events.trigger(LoNamedEvent.CONTROLLERS_UNLOCKED, EventArgs.from_args(cargs))
+        self.trigger_event(LoNamedEvent.CONTROLLERS_UNLOCKED, EventArgs.from_args(cargs))
         return True
 
     def has_controllers_locked(self) -> bool:
@@ -1619,7 +1633,7 @@ class LoInst:
         if not self._allow_print:
             return
         cargs = CancelEventArgs(self.print.__qualname__)
-        self._events.trigger(GblNamedEvent.PRINTING, cargs)
+        self.trigger_event(GblNamedEvent.PRINTING, cargs)
         if cargs.cancel:
             return
         print(*args, **kwargs)
@@ -1801,7 +1815,8 @@ class LoInst:
 
     @property
     def events(self) -> EventObserver:
-        return self._events
+        # mangled name.
+        return self._EventsPartial__events  # type: ignore
 
     @property
     def lo_loader(self) -> LoLoader:

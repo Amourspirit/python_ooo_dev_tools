@@ -238,7 +238,7 @@ class DrawPage(
             DrawForms: Forms of the draw page.
         """
         if self._forms is None:
-            self._forms = DrawForms(owner=self, forms=self.component.getForms(), lo_inst=self._lo_inst)  # type: ignore
+            self._forms = DrawForms(owner=self, forms=self.component.getForms(), lo_inst=self.lo_inst)  # type: ignore
         return self._forms
 
     @property

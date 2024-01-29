@@ -129,7 +129,8 @@ def test_event_new_doc(loader) -> None:
     events = Events()
     events.on(WriteNamedEvent.DOC_CREATING, on_write_creating)
     events.on(WriteNamedEvent.DOC_CREATED, on_write_created)
-    doc = Write.create_doc(loader)
+    Lo.current_lo.add_event_observers(events)
+    _ = Write.create_doc(loader)
     assert fired_creating is True
     assert fired_created is True
 
@@ -142,7 +143,6 @@ def test_event_new_doc(loader) -> None:
 )
 @settings(max_examples=10)
 def test_event_kv(key: str, value: Any) -> None:
-
     args = EventArgs("random_event")
     args._event_name = "test_event_kv"
 

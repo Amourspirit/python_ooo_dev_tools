@@ -18,7 +18,7 @@ from com.sun.star.lang import XMultiServiceFactory
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
-from ooodev.events.lo_events import Events
+from ooodev.events.lo_events import Events, event_ctx
 from ooodev.events.props_named_event import PropsNamedEvent
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelArgs
 from ooodev.events.args.key_val_args import KeyValArgs as KeyValArgs
@@ -97,7 +97,7 @@ class StyleBase(metaclass=MetaStyle):
                 self._dv[key] = value
         super().__init__()
         self._set_style_internal_events()
-    
+
     def _get_mm100_obj_from_mm(self, value: UnitT | float, min_value: int = -9999) -> UnitMM100:
         """
         Gets a UnitMM100 object from mm.
@@ -204,7 +204,7 @@ class StyleBase(metaclass=MetaStyle):
     def _set(self, key: str, val: Any) -> bool:
         """Sets a property value"""
         kvargs = KeyValCancelArgs("style_base", key=key, value=val)
-        cargs = CancelEventArgs.from_args(kvargs)
+        cargs = CancelEventArgs.from_args(kvargs)  # type: ignore
         self._events.trigger(FormatNamedEvent.STYLE_SETTING, kvargs)
         self._events.trigger(FormatNamedEvent.STYLE_MODIFYING, cargs)
         if kvargs.cancel:
@@ -213,7 +213,7 @@ class StyleBase(metaclass=MetaStyle):
             return False
         data_values = self._get_properties()
         data_values[kvargs.key] = kvargs.value
-        self._events.trigger(FormatNamedEvent.STYLE_SET, KeyValArgs.from_args(kvargs))
+        self._events.trigger(FormatNamedEvent.STYLE_SET, KeyValArgs.from_args(kvargs))  # type: ignore
         return True
 
     def _clear(self) -> None:
@@ -352,6 +352,7 @@ class StyleBase(metaclass=MetaStyle):
 
     # region Internal Methods
     def _props_set(self, obj: Any, **kwargs: Any) -> None:
+        """Lo Safe Method."""
         # set properties. Can be overridden in child classes
         # may be useful to wrap in try statements in child classes
         try:
@@ -439,12 +440,14 @@ class StyleBase(metaclass=MetaStyle):
                 self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
                 if cargs.cancel:
                     return
-                events = Events(source=self)
-                events.on(PropsNamedEvent.PROP_SETTING, _on_props_setting)
-                events.on(PropsNamedEvent.PROP_SET, _on_props_set)
-                events.on(PropsNamedEvent.PROP_SET_ERROR, _on_props_set_error)
-                self._props_set(obj, **data_values)
-                events = None
+                with event_ctx(
+                    (PropsNamedEvent.PROP_SETTING, _on_props_setting),
+                    (PropsNamedEvent.PROP_SET, _on_props_set),
+                    (PropsNamedEvent.PROP_SET_ERROR, _on_props_set_error),
+                    source=self,
+                    lo_observe=True,
+                ):
+                    self._props_set(obj, **data_values)
                 eargs = EventArgs.from_args(cargs)
                 self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
@@ -554,7 +557,7 @@ class StyleBase(metaclass=MetaStyle):
             if cargs.cancel:
                 continue
             self._dv_bak[attr] = val
-            eargs = KeyValArgs.from_args(cargs)
+            eargs = KeyValArgs.from_args(cargs)  # type: ignore
             self._events.trigger(FormatNamedEvent.STYLE_BACKED_UP, eargs)
 
     def restore(self, obj: Any, clear: bool = False) -> None:
@@ -582,11 +585,14 @@ class StyleBase(metaclass=MetaStyle):
         if self._dv_bak is None:
             return
         if len(self._dv_bak) > 0:
-            events = Events(source=self)
-            events.on(PropsNamedEvent.PROP_SETTING, _on_props_restore_setting)
-            events.on(PropsNamedEvent.PROP_SET, _on_props_restore_set)
-            mProps.Props.set(obj, **self._dv_bak)
-            events = None
+            with event_ctx(
+                (PropsNamedEvent.PROP_SETTING, _on_props_restore_setting),
+                (PropsNamedEvent.PROP_SET, _on_props_restore_set),
+                source=self,
+                lo_observe=True,
+            ):
+                mProps.Props.set(obj, **self._dv_bak)
+
             if clear:
                 self._dv_bak.clear()
 
@@ -961,7 +967,7 @@ class StyleMulti(StyleBase):
                 style.apply(obj, **key_word.kwargs)
             else:
                 style.apply(obj)
-            self._events.trigger(FormatNamedEvent.STYLE_MULTI_CHILD_APPLIED, KeyValArgs.from_args(kvargs))
+            self._events.trigger(FormatNamedEvent.STYLE_MULTI_CHILD_APPLIED, KeyValArgs.from_args(kvargs))  # type: ignore
         # apply this instance properties after all others styles.
         # allows this instance to overwrite properties set by multi styles if needed.
         super().apply(obj, **kwargs)
@@ -1039,7 +1045,7 @@ class StyleMulti(StyleBase):
             styles[key] = _StyleInfo(style, None)
         else:
             styles[key] = _StyleInfo(style, _StyleMultiArgs(*attrs, **kwargs))
-        self._events.trigger(FormatNamedEvent.MULTI_STYLE_SET, KeyValArgs.from_args(kvargs))
+        self._events.trigger(FormatNamedEvent.MULTI_STYLE_SET, KeyValArgs.from_args(kvargs))  # type: ignore
 
     def _update_style(self, value: StyleMulti) -> None:
         # pylint: disable=protected-access

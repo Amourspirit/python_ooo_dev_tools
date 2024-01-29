@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import SheetCellRange
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from ooodev.proto.style_obj import StyleT
+    from ooodev.utils.color import Color
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.cell_values import CellValues
     from ooodev.utils.data_type.range_obj import RangeObj
@@ -33,6 +34,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import file_io as mFile
 from ooodev.utils import lo as mLo
+from ooodev.utils.color import CommonColor
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.inst.lo.lo_inst import LoInst
@@ -699,6 +701,52 @@ class CalcCellRange(
         exporter.export(fnm=fnm, resolution=resolution)
 
     # endregion export
+    @overload
+    def highlight(self, headline: str) -> mCalcCell.CalcCell:
+        """
+        Draw a light blue colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        Args:
+            headline (str): Headline.
+
+        Returns:
+            CalcCell: Cell object. First cell of range that headline ia applied on.
+        """
+        ...
+
+    @overload
+    def highlight(self, headline: str, color: Color) -> mCalcCell.CalcCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        Args:
+            headline (str): Headline.
+            color (~ooodev.utils.color.Color): RGB color.
+
+        Returns:
+            CalcCell: Cell object. First cell of range that headline ia applied on.
+        """
+        ...
+
+    def highlight(self, headline: str, color: Color = CommonColor.LIGHT_BLUE) -> mCalcCell.CalcCell:
+        """
+        Draw a colored border around the range and write a headline in the
+        top-left cell of the range.
+
+        Args:
+            headline (str): Headline.
+            color (~ooodev.utils.color.Color): RGB color.
+
+        Returns:
+            CalcCell: Cell object. First cell of range that headline ia applied on.
+        """
+        cell = mCalc.Calc.highlight_range(
+            sheet=self.calc_sheet.component, headline=headline, range_obj=self._range_obj, color=color
+        )
+        cell_obj = mCalc.Calc.get_cell_obj(cell=cell)
+        return mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
 
     # region Properties
     @property

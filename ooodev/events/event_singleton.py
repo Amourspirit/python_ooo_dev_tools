@@ -15,7 +15,7 @@ from ..utils import type_var
 from ..proto import event_observer
 
 
-class _Events(object):
+class _Events:
     """
     Singleton Class for sharing events among internal classes. DO NOT USE!
 
@@ -113,6 +113,24 @@ class _Events(object):
             self._observers = []
         for observer in args:
             self._observers.append(ref(observer))
+
+    def remove_observer(self, observer: event_observer.EventObserver) -> bool:
+        """
+        Removes an observer
+
+        Args:
+            observer (EventObserver): One or more observers to add.
+
+        Returns:
+            bool: ``True`` if observer has been removed; Otherwise, ``False``.
+        """
+
+        if self._observers is None:
+            return False
+        with contextlib.suppress(Exception):
+            self._observers.remove(ref(observer))
+            return True
+        return False
 
     def remove(self, event_name: str, callback: type_var.EventCallback) -> bool:
         """

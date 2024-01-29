@@ -24,7 +24,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
     visible = False if Lo.bridge_connector.headless else True
     delay = 0  # 500
-    doc = WriteDoc(Write.create_doc(loader))
+    doc = WriteDoc.create_doc(loader)
     try:
         if visible:
             doc.set_visible(visible=visible)

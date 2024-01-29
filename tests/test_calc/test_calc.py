@@ -43,6 +43,7 @@ def test_create_doc_events_no_loader(loader):
     events = Events()
     events.on(CalcNamedEvent.DOC_CREATING, on)
     events.on(CalcNamedEvent.DOC_CREATED, after)
+    Lo.current_lo.add_event_observers(events)
 
     doc = Calc.create_doc()
     assert doc is not None
@@ -55,12 +56,14 @@ def test_create_doc_events_no_loader(loader):
     events = None
     events = Events()
     events.on(CalcNamedEvent.DOC_CREATING, on_cancel)
+    Lo.current_lo.add_event_observers(events)
     with pytest.raises(mEx.CancelEventError):
         doc = Calc.create_doc()
     events = None
 
     with event_ctx() as events:
         events.on(CalcNamedEvent.DOC_CREATING, on_cancel)
+        Lo.current_lo.add_event_observers(events)
         with pytest.raises(mEx.CancelEventError):
             doc = Calc.create_doc()
 
@@ -99,6 +102,7 @@ def test_create_doc_events(loader):
     events = Events()
     events.on(CalcNamedEvent.DOC_CREATING, on)
     events.on(CalcNamedEvent.DOC_CREATED, after)
+    Lo.current_lo.add_event_observers(events)
 
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -111,12 +115,14 @@ def test_create_doc_events(loader):
     events = None
     events = Events()
     events.on(CalcNamedEvent.DOC_CREATING, on_cancel)
+    Lo.current_lo.add_event_observers(events)
     with pytest.raises(mEx.CancelEventError):
         doc = Calc.create_doc(loader)
     events = None
 
     with event_ctx() as events:
         events.on(CalcNamedEvent.DOC_CREATING, on_cancel)
+        Lo.current_lo.add_event_observers(events)
         with pytest.raises(mEx.CancelEventError):
             doc = Calc.create_doc(loader)
 
@@ -172,6 +178,7 @@ def test_get_sheet(loader) -> None:
         with event_ctx() as events:
             events.on(CalcNamedEvent.SHEET_GETTING, on)
             events.on(CalcNamedEvent.SHEET_GET, after)
+            Lo.current_lo.add_event_observers(events)
             sheet_1_1 = Calc.get_sheet(doc=doc, sheet_name="Sheet1")
         assert on_firing
         assert on_fired
@@ -186,6 +193,7 @@ def test_get_sheet(loader) -> None:
             with event_ctx() as events:
                 events.on(CalcNamedEvent.SHEET_GETTING, on)
                 events.on(CalcNamedEvent.SHEET_GET, after)
+                Lo.current_lo.add_event_observers(events)
                 # test overload no doc arg
                 sheet_1_2 = Calc.get_sheet("Sheet1")
                 assert sheet_1_2 is not None
@@ -200,6 +208,7 @@ def test_get_sheet(loader) -> None:
             with event_ctx() as events:
                 events.on(CalcNamedEvent.SHEET_GETTING, on)
                 events.on(CalcNamedEvent.SHEET_GET, after)
+                Lo.current_lo.add_event_observers(events)
                 sheet_1_3 = Calc.get_sheet(doc=doc, idx=0)
                 sheet_1_3 = Calc.get_sheet()
 
@@ -232,8 +241,6 @@ def test_get_sheet(loader) -> None:
 def test_insert_sheet(loader) -> None:
     from ooodev.utils.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
     from ooodev.events.lo_events import Events, is_meth_event
@@ -257,6 +264,7 @@ def test_insert_sheet(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.SHEET_INSERTING, on)
         events.on(CalcNamedEvent.SHEET_INSERTED, after)
+        Lo.current_lo.add_event_observers(events)
         sheet_names = Calc.get_sheet_names(doc)
         assert len(sheet_names) == 1
         assert sheet_names[0] == "Sheet1"
@@ -308,6 +316,7 @@ def test_remove_sheet(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.SHEET_REMOVING, on)
         events.on(CalcNamedEvent.SHEET_REMOVED, after)
+        Lo.current_lo.add_event_observers(events)
 
         sheet_names = Calc.get_sheet_names(doc)
 
@@ -423,6 +432,7 @@ def test_move_sheet(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.SHEET_MOVING, on)
         events.on(CalcNamedEvent.SHEET_MOVED, after)
+        Lo.current_lo.add_event_observers(events)
         sheet_names = Calc.get_sheet_names(doc)
         assert len(sheet_names) == 1
         assert sheet_names[0] == "Sheet1"
@@ -569,6 +579,7 @@ def test_get_set_active_sheet(loader) -> None:
     doc = Calc.create_doc(loader)
     try:
         events = Events()
+        Lo.current_lo.add_event_observers(events)
         events.on(CalcNamedEvent.SHEET_ACTIVATING, on)
         events.on(CalcNamedEvent.SHEET_ACTIVATED, after)
         sheet = Calc.get_active_sheet(doc)
@@ -646,6 +657,7 @@ def test_goto_cell(loader) -> None:
     from ooodev.events.args.dispatch_args import DispatchArgs
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.lo_named_event import LoNamedEvent
+    from ooodev.events.event_singleton import _Events
 
     # from ooodev.utils.inst.lo.lo_inst import LoInst
 
@@ -673,6 +685,8 @@ def test_goto_cell(loader) -> None:
         events = Events()
         events.on(LoNamedEvent.DISPATCHING, on)
         events.on(LoNamedEvent.DISPATCHED, after)
+        # events.add_observer(_Events())
+        Lo.current_lo.add_event_observers(events)
 
         # test overloads
         Calc.goto_cell(cell_name="B4", doc=doc)
@@ -914,6 +928,7 @@ def test_insert_row(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.SHEET_ROW_INSERTING, on)
         events.on(CalcNamedEvent.SHEET_ROW_INSERTED, after)
+        Lo.current_lo.add_event_observers(events)
 
         sheet = Calc.get_active_sheet(doc)
         Calc.set_val(value="hello world", sheet=sheet, cell_name="A2")
@@ -962,6 +977,7 @@ def test_delete_row(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.SHEET_ROW_DELETING, on)
         events.on(CalcNamedEvent.SHEET_ROW_DELETED, after)
+        Lo.current_lo.add_event_observers(events)
         sheet = Calc.get_active_sheet(doc)
 
         Calc.set_val(value="hello world", sheet=sheet, cell_name="A3")
@@ -1010,6 +1026,7 @@ def test_insert_column(loader) -> None:
     doc = Calc.create_doc(loader)
     try:
         events = Events()
+        Lo.current_lo.add_event_observers(events)
         events.on(CalcNamedEvent.SHEET_COL_INSERTING, on)
         events.on(CalcNamedEvent.SHEET_COL_INSERTED, after)
 
@@ -1060,6 +1077,7 @@ def test_insert_cells_down(loader) -> None:
     doc = Calc.create_doc(loader)
     try:
         events = Events()
+        Lo.current_lo.add_event_observers(events)
         events.on(CalcNamedEvent.CELLS_INSERTING, on)
         events.on(CalcNamedEvent.CELLS_INSERTED, after)
 
@@ -1148,6 +1166,7 @@ def test_insert_cells_right(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.CELLS_INSERTING, on)
         events.on(CalcNamedEvent.CELLS_INSERTED, after)
+        Lo.current_lo.add_event_observers(events)
 
         sheet = Calc.get_active_sheet(doc)
 
@@ -1200,6 +1219,7 @@ def test_delete_cells_down(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.CELLS_DELETING, on)
         events.on(CalcNamedEvent.CELLS_DELETED, after)
+        Lo.current_lo.add_event_observers(events)
 
         sheet = Calc.get_active_sheet(doc)
 
@@ -1361,6 +1381,7 @@ def test_clear_cells(loader) -> None:
         events = Events()
         events.on(CalcNamedEvent.CELLS_CLEARING, on)
         events.on(CalcNamedEvent.CELLS_CLEARED, after)
+        Lo.current_lo.add_event_observers(events)
 
         rng_name = "A3:C23"
         rng_clear = "A3:C22"
@@ -2513,7 +2534,7 @@ def test_get_cell_range(loader) -> None:
         rng = Calc.get_cell_range(sheet, multi_col_start, multi_row_start, multi_col_end, multi_row_end)
         assert rng is not None
         addr = Calc.get_address(cell_range=rng)
-        assert Calc.is_single_cell_range(addr) == False
+        assert Calc.is_single_cell_range(addr) is False
 
         with pytest.raises(TypeError):
             # error on unused key
@@ -3569,7 +3590,7 @@ def test_highlight_range(loader) -> None:
         is_adding_border = True
 
     visible = True
-    delay = 3000
+    delay = 300
     assert loader is not None
     doc = Calc.create_doc(loader)
     assert doc is not None
@@ -3597,7 +3618,8 @@ def test_highlight_range(loader) -> None:
             EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTING, highlighting),
             EventArg(CalcNamedEvent.CELLS_HIGH_LIGHTED, highlighted),
             EventArg(CalcNamedEvent.CELLS_BORDER_ADDING, adding_border),
-        ):
+        ) as events:
+            Lo.current_lo.add_event_observers(events)
             sheet = Calc.get_sheet(doc=doc, idx=0)
             rng = sheet.getCellRangeByName(rng_name)
             if visible:

@@ -204,7 +204,22 @@ class Calc:
 
     @overload
     @classmethod
+    def open_doc(cls, *, visible: bool) -> XSpreadsheetDocument:
+        ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr, *, visible: bool) -> XSpreadsheetDocument:
+        ...
+
+    @overload
+    @classmethod
     def open_doc(cls, *, loader: XComponentLoader) -> XSpreadsheetDocument:
+        ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, *, loader: XComponentLoader, visible: bool) -> XSpreadsheetDocument:
         ...
 
     @overload
@@ -212,8 +227,15 @@ class Calc:
     def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XSpreadsheetDocument:
         ...
 
+    @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None) -> XSpreadsheetDocument:
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader, *, visible: bool) -> XSpreadsheetDocument:
+        ...
+
+    @classmethod
+    def open_doc(
+        cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None, **kwargs: Any
+    ) -> XSpreadsheetDocument:
         """
         Opens or creates a spreadsheet document.
 
@@ -240,13 +262,25 @@ class Calc:
 
             If ``fnm`` is omitted then ``DOC_OPENED`` event will not be raised.
         """
+        # MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE
+        props_dict = {"Hidden": True}
+        if "visible" in kwargs:
+            visible = bool(kwargs.pop("visible"))
+            props_dict["Hidden"] = not visible
+        if kwargs:
+            props_dict.update(kwargs)
+        local_props = mProps.Props.make_props(**props_dict)
         cargs = CancelEventArgs(Calc.open_doc.__qualname__)
         cargs.event_data = {"fnm": fnm, "loader": loader}
         _Events().trigger(CalcNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if _fnm := cast(PathOrStr, cargs.event_data["fnm"]):
-            doc = mLo.Lo.open_doc(fnm=_fnm) if loader is None else mLo.Lo.open_doc(fnm=_fnm, loader=loader)
+            doc = (
+                mLo.Lo.open_doc(fnm=_fnm, props=local_props)
+                if loader is None
+                else mLo.Lo.open_doc(fnm=_fnm, loader=loader, props=local_props)
+            )
             _Events().trigger(CalcNamedEvent.DOC_OPENED, EventArgs.from_args(cargs))
         elif loader is None:
             doc = cls.create_doc()
@@ -351,8 +385,18 @@ class Calc:
     def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument:
         ...
 
+    @overload
     @staticmethod
-    def create_doc(loader: XComponentLoader | None = None) -> XSpreadsheetDocument:
+    def create_doc(*, visible: bool) -> XSpreadsheetDocument:
+        ...
+
+    @overload
+    @staticmethod
+    def create_doc(loader: XComponentLoader, *, visible: bool) -> XSpreadsheetDocument:
+        ...
+
+    @staticmethod
+    def create_doc(loader: XComponentLoader | None = None, **kwargs: Any) -> XSpreadsheetDocument:
         """
         Creates a new spreadsheet document.
 
@@ -380,16 +424,30 @@ class Calc:
         Note:
             Event args ``event_data`` is a dictionary containing ``loader``.
         """
+
+        # MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE
+
+        props_dict = {"Hidden": True}
+        if "visible" in kwargs:
+            visible = bool(kwargs.pop("visible"))
+            props_dict["Hidden"] = not visible
+        if kwargs:
+            props_dict.update(kwargs)
+        local_props = mProps.Props.make_props(**props_dict)
         cargs = CancelEventArgs(Calc.create_doc.__qualname__)
         cargs.event_data = {"loader": loader}
         _Events().trigger(CalcNamedEvent.DOC_CREATING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if loader is None:
-            doc = mLo.Lo.qi(XSpreadsheetDocument, mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC), True)
+            doc = mLo.Lo.qi(
+                XSpreadsheetDocument, mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, props=local_props), True
+            )
         else:
             doc = mLo.Lo.qi(
-                XSpreadsheetDocument, mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader), True
+                XSpreadsheetDocument,
+                mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.CALC, loader=loader, props=local_props),
+                True,
             )
         _Events().trigger(CalcNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
         return doc

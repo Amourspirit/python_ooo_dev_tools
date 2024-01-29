@@ -8,18 +8,15 @@ if __name__ == "__main__":
 def test_get_sheet(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
-    from ooodev.utils.lo import Lo
-    from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = Calc.create_doc(loader)
+    doc = CalcDoc.create_doc(loader)
     try:
-        calc_doc = CalcDoc(doc)
-        sheet_names = calc_doc.get_sheet_names()
+        sheet_names = doc.get_sheet_names()
         assert len(sheet_names) == 1
 
         assert sheet_names[0] == "Sheet1"
-        sheet = calc_doc.get_sheet(sheet_name="Sheet1")
+        sheet = doc.get_sheet(sheet_name="Sheet1")
 
         sheet_name = sheet.get_sheet_name()
         assert sheet_name == "Sheet1"
@@ -38,35 +35,33 @@ def test_get_sheet(loader) -> None:
         cell.value = 2.5
         assert cell.value == 2.5
 
-        assert calc_doc.sheets[0].sheet_name == "Sheet1"
-        assert calc_doc.sheets["Sheet1"].sheet_name == "Sheet1"
-        assert calc_doc.sheets[-1].name == "Sheet1"
-        calc_doc.sheets[-1].name = "My Sheet"
-        assert calc_doc.sheets[-1].name == "My Sheet"
+        assert doc.sheets[0].sheet_name == "Sheet1"
+        assert doc.sheets["Sheet1"].sheet_name == "Sheet1"
+        assert doc.sheets[-1].name == "Sheet1"
+        doc.sheets[-1].name = "My Sheet"
+        assert doc.sheets[-1].name == "My Sheet"
 
-        calc_doc.sheets.insert_new_by_name("Last Sheet", -1)
+        doc.sheets.insert_new_by_name("Last Sheet", -1)
 
-        assert calc_doc.sheets.get_index_by_name("Last Sheet") == 1
+        assert doc.sheets.get_index_by_name("Last Sheet") == 1
 
     finally:
-        Lo.close_doc(doc)
+        doc.close()
 
 
 def test_get_other_cells(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
     from ooodev.utils.lo import Lo
-    from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = Calc.create_doc(loader)
+    doc = CalcDoc.create_doc(loader)
     try:
-        calc_doc = CalcDoc(doc)
-        sheet_names = calc_doc.get_sheet_names()
+        sheet_names = doc.get_sheet_names()
         assert len(sheet_names) == 1
 
         assert sheet_names[0] == "Sheet1"
-        sheet = calc_doc.get_sheet(sheet_name="Sheet1")
+        sheet = doc.get_sheet(sheet_name="Sheet1")
 
         sheet_name = sheet.get_sheet_name()
         assert sheet_name == "Sheet1"
@@ -106,7 +101,7 @@ def test_get_other_cells(loader) -> None:
         assert cell_a1.cell_obj.row == 1
 
     finally:
-        Lo.close_doc(doc)
+        doc.close_doc()
 
 
 # def test_sheet_row(loader) -> None:
@@ -134,7 +129,7 @@ def test_insert_remove_sheet(loader) -> None:
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet_names = doc.get_sheet_names()
         assert len(sheet_names) == 1
@@ -192,7 +187,7 @@ def test_calc_sheet(loader) -> None:
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet_names = doc.sheets.get_sheet_names()
         assert len(sheet_names) == 1
@@ -326,39 +321,35 @@ def test_get_view(loader) -> None:
 
 
 def test_get_set_active_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = Calc.create_doc(loader)
+    doc = CalcDoc.create_doc(loader)
     try:
-        calc_doc = CalcDoc(doc)
-        sheet = calc_doc.get_active_sheet()
+        sheet = doc.get_active_sheet()
         assert sheet is not None
         name = sheet.get_sheet_name()
         assert name == "Sheet1"
-        new_sht = calc_doc.insert_sheet(name="mysheet", idx=1)
+        new_sht = doc.insert_sheet(name="mysheet", idx=1)
         assert new_sht is not None
-        lst_sheet = calc_doc.insert_sheet(name="last", idx=1)
+        lst_sheet = doc.insert_sheet(name="last", idx=1)
         assert lst_sheet is not None
         new_sht.set_active()
 
-        active_sheet = calc_doc.get_active_sheet()
+        active_sheet = doc.get_active_sheet()
         assert active_sheet is not None
         name = active_sheet.get_sheet_name()
         assert name == "mysheet"
 
     finally:
-        Lo.close_doc(doc)
+        doc.close()
 
 
 def test_get_selected_cell(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         rng = sheet.get_range(range_name="B1:D4")
@@ -377,11 +368,10 @@ def test_get_selected_cell(loader) -> None:
 
 def test_insert_row(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         cell = sheet["A2"]
@@ -401,7 +391,7 @@ def test_delete_row(loader) -> None:
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         cell_obj = Calc.get_cell_obj("A5")
@@ -418,11 +408,10 @@ def test_delete_row(loader) -> None:
 
 def test_insert_col(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         cell = sheet.get_cell(cell_name="C2")
@@ -433,16 +422,14 @@ def test_insert_col(loader) -> None:
         assert cell.get_val() == "test"
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_del_col(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         cell = sheet.get_cell(cell_name="E2")
@@ -453,16 +440,15 @@ def test_del_col(loader) -> None:
         assert cell.get_val() == "test"
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_insert_cells_down_rng(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         rng = sheet.get_range(range_name="B1:D4")
@@ -474,16 +460,15 @@ def test_insert_cells_down_rng(loader) -> None:
         assert cell.get_val() == "test"
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_insert_cells_right(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         rng = sheet.get_range(range_name="B1:D4")
@@ -495,16 +480,15 @@ def test_insert_cells_right(loader) -> None:
         assert cell.get_val() == "test"
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_delete_cells_down(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         rng = sheet.get_range(range_name="B1:D4")
@@ -516,17 +500,16 @@ def test_delete_cells_down(loader) -> None:
         assert cell.get_val() == "test"
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_delete_cells_left(loader) -> None:
     from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
     vals = get_vals()
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         sheet.set_array(values=vals, name="A1")
@@ -540,17 +523,16 @@ def test_delete_cells_left(loader) -> None:
         assert cell.get_val() == "test"
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_clear_cells(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc, CellFlagsEnum
+    from ooodev.office.calc import CellFlagsEnum
     from ooodev.calc import CalcDoc
 
     assert loader is not None
     vals = get_vals()
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
 
     try:
         flags = CellFlagsEnum.VALUE | CellFlagsEnum.STRING
@@ -562,17 +544,15 @@ def test_clear_cells(loader) -> None:
         cell = sheet.get_cell(cell_name="A1")
         assert cell.get_val() is None
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_clear_cells_range(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     assert loader is not None
     vals = get_vals()
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         sheet.set_array(values=vals, name="A1")
@@ -584,16 +564,14 @@ def test_clear_cells_range(loader) -> None:
         assert cell.get_val() is None
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_get_number(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     vals = get_vals()
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         sheet.set_array(values=vals, name="A1")
@@ -604,16 +582,14 @@ def test_get_number(loader) -> None:
         assert cell.get_num() == 7.0
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_set_arr_by_range(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
     from ooodev.utils.table_helper import TableHelper
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         arr1 = ((1, 2, 3), (4, 5, 6), (7, 8, 9))
         arr = TableHelper.to_2d_list(arr1)
@@ -628,16 +604,14 @@ def test_set_arr_by_range(loader) -> None:
         cell = sheet.get_cell(cell_name="C3")
         assert cell.get_num() == 9.0
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_get_array(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
     vals = get_vals()
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         sheet.set_array(values=vals, name="A1")
@@ -651,12 +625,10 @@ def test_get_array(loader) -> None:
                 assert arr1[i][j] == arr2[i][j]
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_float_arr(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
     from ooodev.utils.table_helper import TableHelper
 
@@ -665,7 +637,7 @@ def test_float_arr(loader) -> None:
             return "1"
         return str(int(prev_val) + 1)
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         arr_size = 8
         arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
@@ -679,15 +651,13 @@ def test_float_arr(loader) -> None:
                 assert arr_float[row][col] == float(arr[row][col])
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_set_date(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
 
@@ -696,15 +666,13 @@ def test_set_date(loader) -> None:
         assert cell.get_string() == "44887.0"
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_annotation(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
 
@@ -717,15 +685,13 @@ def test_annotation(loader) -> None:
         assert ann_str == msg
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def test_is_single_cell_range(loader) -> None:
-    from ooodev.utils.lo import Lo
-    from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.get_active_sheet()
         rng = sheet.get_range(range_name="A1:A1")
@@ -744,7 +710,7 @@ def test_is_single_cell_range(loader) -> None:
         assert not rng.is_single_row_range()
 
     finally:
-        Lo.close_doc(doc.component)
+        doc.close()
 
 
 def get_vals():
