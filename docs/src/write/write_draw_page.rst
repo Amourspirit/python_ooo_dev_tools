@@ -1,4 +1,4 @@
-.. _class_write_draw_page:
+.. _ooodev.write.WriteDrawPage:
 
 Class WriteDrawPage
 ===================

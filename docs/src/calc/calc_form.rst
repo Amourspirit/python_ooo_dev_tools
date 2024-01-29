@@ -39,10 +39,12 @@ Here is an example of adding a button to a form and adding an event handler for 
     >>> btn = frm.insert_control_button(x=10, y=10, width=40, height=10, label="Button Test")
     >>> btn.add_event_action_performed(on_btn_action_preformed)
     >>>
-    >>> def on_btn_action_preformed(src: Any, event: EventArgs, control_src: FormCtlButton, *args, **kwargs) -> None:
-    ...    print(
-    ...        f"Action Performed: '{control_src.model.Label}', Control Name: {control_src.name}"
-    ...    )
+    >>> def on_btn_action_preformed(
+    ...     src: Any, event: EventArgs, control_src: FormCtlButton, *args, **kwargs
+    ... ) -> None:
+    ...     print(
+    ...         f"Action Performed: '{control_src.model.Label}', Control Name: {control_src.name}"
+    ...     )
 
 Class Declaration
 -----------------

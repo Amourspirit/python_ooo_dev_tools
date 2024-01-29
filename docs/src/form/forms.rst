@@ -23,14 +23,15 @@ Multi-Document Support
 ----------------------
 
 Multi-Document support is available in |odev|.
-The :ref:`ooodev.draw.DrawForm`, :ref:`ooodev.calc.CalcForm`, and :ref:`ooodev.writer.WriterForm` classes all inherit from
+The :ref:`ooodev.draw.DrawForm`, :ref:`ooodev.calc.CalcForm`, and :ref:`ooodev.write.WriteForm` classes all inherit from
 the :py:class:`~ooodev.form.partial.form_partial.FormsPartial` class which has multi document support built in.
 
 When creating your own form class it is recommended it inherit from the :py:class:`~ooodev.form.partial.form_partial.FormsPartial` class.
 
 Methods in the this ``Forms`` class are identified if they have multi-document support or not.
 
-For methods that do no have multi-document support you will need to use the :ref:`ooodev.utils.context.lo_context.LoContext` context manager before calling them.
+For methods that do no have multi-document support you will need to use the :ref:`ooodev.utils.context.lo_context.LoContext` context manager before calling them
+in a multi-document environment.
 
 .. code-block:: python
 

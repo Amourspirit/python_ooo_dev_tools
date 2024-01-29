@@ -3,6 +3,12 @@
 Class WriteForm
 ===============
 
+.. image:: https://github.com/Amourspirit/python-ooouno-ex/assets/4193389/75fc2796-6e6b-43e9-b5d1-cf974b8b630f
+    :align: center
+    :alt: Writer Form
+    :width: 500
+    :height: 504
+
 .. contents:: Table of Contents
     :local:
     :backlinks: none
@@ -36,10 +42,19 @@ Here is an example of adding a button to a form and adding an event handler for 
     >>> btn = frm.insert_control_button(x=10, y=10, width=40, height=10, label="Button Test")
     >>> btn.add_event_action_performed(on_btn_action_preformed)
     >>>
-    >>> def on_btn_action_preformed(src: Any, event: EventArgs, control_src: FormCtlButton, *args, **kwargs) -> None:
-    ...    print(
-    ...        f"Action Performed: '{control_src.model.Label}', Control Name: {control_src.name}"
-    ...    )
+    >>> def on_btn_action_preformed(
+    ...     src: Any, event: EventArgs, control_src: FormCtlButton, *args, **kwargs
+    ... ) -> None:
+    ...     print(
+    ...         f"Action Performed: '{control_src.model.Label}', Control Name: {control_src.name}"
+    ...     )
+
+Other Examples
+--------------
+
+An example can be found on `Live LibreOffice Python UNO Examples <https://github.com/Amourspirit/python-ooouno-ex>`__.
+Example: `Build Forms <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_form2>`__.
+
 
 Class Declaration
 -----------------

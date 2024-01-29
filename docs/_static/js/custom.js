@@ -4,7 +4,7 @@ $(document).ready(function () {
     // Links that are on a different domain from the docs.
     // Any links that are have the same domain as the docs
     // will not open in a new window.
-    $('a.external').filter(function () {
+    $('a.external, a.image-reference').filter(function () {
         return this.href.indexOf(location.origin) != 0;
     }).click(function () {
         window.open(this.href);

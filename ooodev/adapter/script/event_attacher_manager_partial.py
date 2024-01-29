@@ -8,6 +8,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import lo as mLo
 
 if TYPE_CHECKING:
+    from com.sun.star.uno import XInterface
     from com.sun.star.script import XScriptListener
     from com.sun.star.script import ScriptEventDescriptor  # struct
     from ooodev.utils.type_var import UnoInterface
@@ -54,13 +55,13 @@ class EventAttacherManagerPartial:
         """
         self.__component.addScriptListener(listener)
 
-    def attach(self, idx: int, obj: Any, helper: Any) -> None:
+    def attach(self, idx: int, obj: XInterface, helper: Any) -> None:
         """
         Attaches all the ScriptEvents which are registered for the given index to the given object.
         """
         self.__component.attach(idx, obj, helper)
 
-    def detach(self, idx: int, obj: Any) -> None:
+    def detach(self, idx: int, obj: XInterface) -> None:
         """
         Detaches all the ScriptEvents which are registered for the given index from the given object.
         """

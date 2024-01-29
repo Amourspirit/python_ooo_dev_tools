@@ -93,6 +93,13 @@ To iterate over the forms in a sheet, use the ``for`` keyword:
     ...     print(form.name)
     MyForm
 
+Other Examples
+--------------
+
+An example can be found on `Live LibreOffice Python UNO Examples <https://github.com/Amourspirit/python-ooouno-ex>`__.
+Example: `Build Forms <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/writer/odev_build_form2>`__.
+
+
 Class Declaration
 -----------------
 

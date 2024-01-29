@@ -28,7 +28,6 @@ from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.utils.kind.language_kind import LanguageKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ControlShape  # service
@@ -52,9 +51,10 @@ class FormCtlBase(
     PropertyChangeImplement,
     PropertiesChangeImplement,
     VetoableChangeImplement,
-    ServicePartial,
 ):
     """Base class for all form controls"""
+
+    # both view and Model implement XServiceInfo and has supportsService() method .
 
     # region init
     def __init__(self, ctl: XControl, lo_inst: LoInst | None = None) -> None:
@@ -62,10 +62,20 @@ class FormCtlBase(
         Constructor
 
         Args:
-            ctl (UnoControlModel): Control
+            ctl (XControl): Control.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``None``.
+
+        Returns:
+            None:
+
+        Note:
+            If the :ref:`LoContext <ooodev.utils.context.lo_context.LoContext>` manager is use before this class is instantiated,
+            then the Lo instance will be set using the current Lo instance. That the context manager has set.
+            Generally speaking this means that there is no need to set ``lo_inst`` when instantiating this class.
+
+        See Also:
+            :ref:`ooodev.form.Forms`.
         """
-        # if the LoContext manager is use before this class is instantiated, then the Lo instance will be set using the
-        # current Lo instance. That the context manager has set
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
@@ -86,7 +96,6 @@ class FormCtlBase(
         PropertyChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
         VetoableChangeImplement.__init__(self, component=self.__model, trigger_args=trigger_args)  # type: ignore
-        ServicePartial.__init__(self, component=self.__model, lo_inst=self.lo_inst)
         self.__control_shape = cast("ControlShape", None)
 
     # endregion init
