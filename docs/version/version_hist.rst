@@ -5,7 +5,7 @@ Version History
 Version 0.22.2
 ==============
 
-``ooodev.Calc.CalcDoc`` has new ``create_doc()`` and ``open_doc()`` methods.
+Document classes can now create instances of themselves and open documents.
 
 ``ooodev.Calc.CalcCellRange`` now has a ``highlight()`` method.
 

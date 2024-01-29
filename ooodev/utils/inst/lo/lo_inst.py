@@ -1289,6 +1289,16 @@ class LoInst(EventsPartial):
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
     # region dispatch_cmd()
+
+    def _get_frame(self) -> XFrame:
+        if self._doc is None:
+            raise mEx.LoNotLoadedError("No document loaded")
+
+        component = self.qi(XComponent, self._doc, True)
+        model = self.qi(XModel, component, True)
+        controller = model.getCurrentController()
+        return controller.getFrame()
+
     @overload
     def dispatch_cmd(self, cmd: str) -> Any:
         ...
@@ -1322,8 +1332,7 @@ class LoInst(EventsPartial):
             else:
                 dispatch_props = tuple(props)
             if frame is None:
-                desk_top = cast(XDesktop, self._xdesktop)
-                frame = desk_top.getCurrentFrame()
+                frame = self._get_frame()
 
             helper = self.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
             if helper is None:
