@@ -8,5 +8,6 @@ dialog
     :glob:
 
     dl_control/index
+    partial/index
     search/index
     *

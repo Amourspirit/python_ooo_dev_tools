@@ -11,6 +11,7 @@ Submodules
    ooodev.adapter.container.container_events
    ooodev.adapter.container.container_listener
    ooodev.adapter.container.container_partial
+   ooodev.adapter.container.control_container_partial
    ooodev.adapter.container.element_access_partial
    ooodev.adapter.container.element_access_t
    ooodev.adapter.container.element_index_partial

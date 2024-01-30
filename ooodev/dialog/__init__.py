@@ -14,6 +14,7 @@ from ..utils.kind.state_kind import StateKind as StateKind
 from ..utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from .dialogs import Dialogs as Dialogs
+from .dialog import Dialog as Dialog
 
 # endregion dialogs
 
@@ -29,3 +30,5 @@ from ooo.dyn.awt.message_box_type import MessageBoxType as MessageBoxType
 from .msgbox import MsgBox as MsgBox
 
 # endregion msgbox
+
+__all__ = ["Dialogs", "Dialog"]

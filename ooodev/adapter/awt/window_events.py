@@ -125,7 +125,7 @@ class WindowEvents:
 
     def remove_event_window_hidden(self, cb: EventArgsCallbackT) -> None:
         """
-        Removes a listener for an event
+        Removes a listener for an event.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="windowHidden", is_add=False)
@@ -169,7 +169,7 @@ class WindowEvents:
 
     def remove_event_window_events_disposing(self, cb: EventArgsCallbackT) -> None:
         """
-        Removes a listener for an event
+        Removes a listener for an event.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="disposing", is_add=False)

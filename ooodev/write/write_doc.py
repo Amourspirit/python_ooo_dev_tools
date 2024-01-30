@@ -28,6 +28,7 @@ from ooodev.adapter.text.textfield.page_number_comp import PageNumberComp
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.util.refresh_events import RefreshEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
+from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -95,6 +96,7 @@ class WriteDoc(
     EventsPartial,
     StylePartial,
     DocIoPartial["WriteDoc"],
+    CreateDialogPartial,
 ):
     """A class to represent a Write document."""
 
@@ -136,6 +138,7 @@ class WriteDoc(
         EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
+        CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
         self._draw_page = None
         self._draw_pages = None
         self._text_frames = None
@@ -171,7 +174,7 @@ class WriteDoc(
         Returns:
             XController: Controller.
         """
-        model = mLo.Lo.qi(XModel, self.component, True)
+        model = self.qi(XModel, True)
         return model.getCurrentController()
 
     # region get_cursor()

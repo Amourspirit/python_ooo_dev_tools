@@ -24,6 +24,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 
 if TYPE_CHECKING:
@@ -37,11 +38,13 @@ if TYPE_CHECKING:
 # pylint: disable=unused-argument
 
 
-class CtlBase(unohelper.Base):
+class CtlBase(unohelper.Base, LoInstPropsPartial):
     """Control Base Class"""
 
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
+        unohelper.Base.__init__(self)
+        LoInstPropsPartial.__init__(self, lo_inst=mLo.Lo.current_lo)
         self._set_control(ctl)
 
     def _set_control(self, ctl: Any) -> None:
@@ -58,8 +61,10 @@ class CtlBase(unohelper.Base):
             self.__generic_args = GenericArgs(control_src=self)
             return self.__generic_args
 
-    def get_view_ctl(self) -> XControl:
+    def get_view(self) -> XControl:
         return self._ctl_view
+
+    get_view_ctl = get_view
 
     def get_uno_srv_name(self) -> str:
         """Get Uno service name"""
@@ -76,7 +81,7 @@ class CtlBase(unohelper.Base):
             XPropertySet | None: Property set
         """
         try:
-            return mLo.Lo.qi(XPropertySet, self.get_view_ctl().getModel())
+            return mLo.Lo.qi(XPropertySet, self.get_model())
         except Exception:
             return None
 
@@ -85,7 +90,7 @@ class CtlBase(unohelper.Base):
     # region Other Methods
     def get_model(self) -> XControlModel:
         """Gets the Model for the control"""
-        return self.get_view_ctl().getModel()
+        return self.get_view().getModel()
 
     # endregion Other Methods
 
@@ -93,7 +98,7 @@ class CtlBase(unohelper.Base):
     @property
     def enabled(self) -> bool:
         """Gets/Sets the enabled state for the control"""
-        model = cast(Any, self.get_view_ctl().getModel())
+        model = cast(Any, self.get_model())
         return model.Enabled if hasattr(model, "Enabled") else True
 
     @enabled.setter
@@ -106,7 +111,7 @@ class CtlBase(unohelper.Base):
     def visible(self) -> bool:
         """Gets/Sets the visible state for the control"""
         try:
-            model = cast(Any, self.get_view_ctl().getModel())
+            model = cast(Any, self.get_view().getModel())
             return model.EnableVisible
         except Exception:
             return True
@@ -114,12 +119,12 @@ class CtlBase(unohelper.Base):
     @property
     def width(self) -> int:
         """Gets the width of the control"""
-        view = mLo.Lo.qi(XView, self.get_view_ctl(), True)
+        view = mLo.Lo.qi(XView, self.get_view(), True)
         return view.getSize().Width
 
     @width.setter
     def width(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view_ctl(), True)
+        win = mLo.Lo.qi(XWindow, self.get_view(), True)
         pos_size = win.getPosSize()
         pos_size.Width = value
         win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
@@ -127,12 +132,12 @@ class CtlBase(unohelper.Base):
     @property
     def height(self) -> int:
         """Gets/Sets the height of the control"""
-        view = mLo.Lo.qi(XView, self.get_view_ctl(), True)
+        view = mLo.Lo.qi(XView, self.get_view(), True)
         return view.getSize().Height
 
     @height.setter
     def height(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view_ctl(), True)
+        win = mLo.Lo.qi(XWindow, self.get_view(), True)
         pos_size = win.getPosSize()
         pos_size.Height = value
         win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
@@ -140,24 +145,24 @@ class CtlBase(unohelper.Base):
     @property
     def x(self) -> int:
         """Gets/Sets the x position for the control"""
-        view = mLo.Lo.qi(XWindow, self.get_view_ctl(), True)
+        view = mLo.Lo.qi(XWindow, self.get_view(), True)
         return view.getPosSize().X
 
     @x.setter
     def x(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view_ctl(), True)
+        win = mLo.Lo.qi(XWindow, self.get_view(), True)
         size_pos = win.getPosSize()
         win.setPosSize(value, size_pos.Y, size_pos.Width, size_pos.Height, PosSize.X)
 
     @property
     def y(self) -> int:
         """Gets/Sets the y position for the control"""
-        view = mLo.Lo.qi(XWindow, self.get_view_ctl(), True)
+        view = mLo.Lo.qi(XWindow, self.get_view(), True)
         return view.getPosSize().Y
 
     @y.setter
     def y(self, value: int) -> None:
-        view = mLo.Lo.qi(XWindow, self.get_view_ctl(), True)
+        view = mLo.Lo.qi(XWindow, self.get_view(), True)
         size = view.getPosSize()
         view.setPosSize(size.X, value, size.Width, size.Height, PosSize.Y)
 

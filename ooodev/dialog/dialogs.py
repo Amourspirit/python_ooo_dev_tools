@@ -145,16 +145,18 @@ class Dialogs:
     @staticmethod
     def load_dialog(script_name: str) -> XDialog:
         """
-        Create a dialog for the given script name
+        Create a dialog for the given script name.
+
+        |lo_unsafe|
 
         Args:
-            script_name (str): script name
+            script_name (str): script name.
 
         Raises:
-            Exception: if unable to create dialog
+            Exception: if unable to create dialog.
 
         Returns:
-            XDialog: Dialog instance
+            XDialog: Dialog instance.
         """
         dp = mLo.Lo.create_instance_mcf(XDialogProvider, "com.sun.star.awt.DialogProvider", raise_err=True)
 
@@ -167,14 +169,16 @@ class Dialogs:
     @staticmethod
     def load_addon_dialog(extension_id: str, dialog_fnm: str) -> XDialog:
         """
-        Loads addon dialog
+        Loads addon dialog.
+
+        |lo_unsafe|
 
         Args:
-            extension_id (str): Addon id
-            dialog_fnm (str): Addon file path
+            extension_id (str): Addon id.
+            dialog_fnm (str): Addon file path.
 
         Raises:
-            Exception: if unable to create dialog
+            Exception: if unable to create dialog.
 
         Returns:
             XDialog: Dialog instance
@@ -189,14 +193,16 @@ class Dialogs:
     @staticmethod
     def find_control(dialog_ctrl: XControl, name: str) -> XControl | None:
         """
-        Finds control by name
+        Finds control by name.
+
+        |lo_safe|
 
         Args:
-            dialog_ctrl (XControl): Control
-            name (str): Name to find
+            dialog_ctrl (XControl): Control.
+            name (str): Name to find.
 
         Returns:
-            XControl: Control if found, else ``None``
+            XControl: Control if found, else ``None``.
         """
         ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
         return ctrl_con.getControl(name)
@@ -204,14 +210,16 @@ class Dialogs:
     @classmethod
     def find_controls(cls, dialog_ctrl: XControl, control_type: Type[ControlT]) -> List[ControlT]:
         """
-        Finds controls by type
+        Finds controls by type.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
-            control_type (ControlT): Control type
+            dialog_ctrl (XControl): Control.
+            control_type (ControlT): Control type.
 
         Returns:
-            List[ControlT]: List of controls
+            List[ControlT]: List of controls.
         """
         ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
         controls = ctrl_con.getControls()
@@ -229,13 +237,15 @@ class Dialogs:
         dialog_ctrl: XControl,
     ) -> DialogControlBase | None:
         """
-        Gets a control as a ``DialogControlBase`` control
+        Gets a control as a ``DialogControlBase`` control.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
+            dialog_ctrl (XControl): Control.
 
         Returns:
-            XControl: Returns a ``DialogControlBase`` such as ``CtlButton`` or ``CtlCheckBox`` if found, else ``None``
+            DialogControlBase | None: Returns a ``DialogControlBase`` such as ``CtlButton`` or ``CtlCheckBox`` if found, else ``None``
         """
         si = mLo.Lo.qi(XServiceInfo, dialog_ctrl)
         if not si:
@@ -296,7 +306,9 @@ class Dialogs:
     @classmethod
     def show_control_info(cls, dialog_ctrl: XControl) -> None:
         """
-        Prints info for a control to console
+        Prints info for a control to console.
+
+        |lo_safe|
 
         Args:
             dialog_ctrl (XControl): Control
@@ -314,13 +326,15 @@ class Dialogs:
     @staticmethod
     def get_dialog_controls_arr(dialog_ctrl: XControl) -> Tuple[XControl, ...]:
         """
-        Gets all controls for a given control
+        Gets all controls for a given control.
+
+        |lo_safe|
 
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
 
         Returns:
-            Tuple[XControl, ...]: controls
+            Tuple[XControl, ...]: controls.
         """
         ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
         return ctrl_con.getControls()
@@ -337,26 +351,30 @@ class Dialogs:
     @staticmethod
     def get_control_props(control_model: Any) -> XPropertySet:
         """
-        Gets property set for a control model
+        Gets property set for a control model.
+
+        |lo_safe|
 
         Args:
-            control_model (Any): control model
+            control_model (Any): control model.
 
         Returns:
-            XPropertySet: Property set
+            XPropertySet: Property set.
         """
         return mLo.Lo.qi(XPropertySet, control_model, True)
 
     @classmethod
     def get_control_name(cls, control: XControl) -> str:
         """
-        Get the name of a control
+        Get the name of a control.
+
+        |lo_safe|
 
         Args:
-            control (XControl): control
+            control (XControl): control.
 
         Returns:
-            str: control name
+            str: control name.
         """
         props = cls.get_control_props(control.getModel())
         return str(props.getPropertyValue("Name"))
@@ -364,13 +382,15 @@ class Dialogs:
     @classmethod
     def get_control_class_id(cls, control: XControl) -> str:
         """
-        Gets control class id
+        Gets control class id.
+
+        |lo_safe|
 
         Args:
-            control (XControl): control
+            control (XControl): control.
 
         Returns:
-            str: class id
+            str: class id.
         """
         props = cls.get_control_props(control.getModel())
         return str(props.getPropertyValue("DefaultControl"))
@@ -378,26 +398,30 @@ class Dialogs:
     @classmethod
     def get_event_source_name(cls, event: EventObject) -> str:
         """
-        Get event source name
+        Get event source name.
+
+        |lo_safe|
 
         Args:
-            event (EventObject): event
+            event (EventObject): event.
 
         Returns:
-            str: event source name
+            str: event source name.
         """
         return cls.get_control_name(cls.get_event_control(event))
 
     @staticmethod
     def get_event_control(event: EventObject) -> XControl:
         """
-        Gets event control from event
+        Gets event control from event.
+
+        |lo_safe|
 
         Args:
-            event (EventObject): event
+            event (EventObject): event.
 
         Returns:
-            XControl: control
+            XControl: control.
         """
         return mLo.Lo.qi(XControl, event.Source, True)
 
@@ -407,23 +431,27 @@ class Dialogs:
     @staticmethod
     def get_dialog(dialog_ctrl: XControl) -> XDialog:
         """
-        Gets dialog from dialog control
+        Gets dialog from dialog control.
+
+        |lo_safe|
 
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
 
         Returns:
-            XDialog: dialog
+            XDialog: dialog.
         """
         return mLo.Lo.qi(XDialog, dialog_ctrl, True)
 
     @staticmethod
     def get_dialog_control(dialog: XDialog) -> XControl:
         """
-        Gets dialog control
+        Gets dialog control.
+
+        |lo_safe|
 
         Args:
-            dialog (XDialog): dialog
+            dialog (XDialog): dialog.
 
         Returns:
             XControl: control.
@@ -433,13 +461,15 @@ class Dialogs:
     @staticmethod
     def get_dialog_window(dialog_ctrl: XControl) -> XTopWindow:
         """
-        Gets dialog window
+        Gets dialog window.
+
+        |lo_safe|
 
         Args:
-            dialog_ctrl (XControl): dialog control
+            dialog_ctrl (XControl): dialog control.
 
         Returns:
-            XTopWindow: Top window instance
+            XTopWindow: Top window instance.
         """
         return mLo.Lo.qi(XTopWindow, dialog_ctrl, True)
 
@@ -458,7 +488,9 @@ class Dialogs:
         **props: Any,
     ) -> CtlDialog:
         """
-        Creates a dialog
+        Creates a dialog.
+
+        |lo_unsafe|
 
         Args:
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
@@ -472,7 +504,7 @@ class Dialogs:
             DialogError: If unable to create dialog.
 
         Returns:
-            CtlDialog: Control
+            CtlDialog: Control.
 
         See Also:
             `API UnoControlDialogModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogModel.html>`_
@@ -509,13 +541,15 @@ class Dialogs:
     @classmethod
     def create_dialog_peer(cls, dialog_ctrl: XControl | CtlDialog) -> XDialog:
         """
-        Gets a dialog
+        Creates a dialog peer.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
 
         Returns:
-            XDialog: Dialog
+            XDialog: Dialog.
         """
         if isinstance(dialog_ctrl, CtlDialog):
             ctrl = dialog_ctrl.control
@@ -545,13 +579,15 @@ class Dialogs:
     @staticmethod
     def get_dialog_nm_con(ctrl: XControl) -> XNameContainer:
         """
-        Gets Name container from control
+        Gets Name container from control.
+
+        |lo_safe|
 
         Args:
-            ctrl (XControl): Dialog control
+            ctrl (XControl): Dialog control.
 
         Returns:
-            XNameContainer: Name Container
+            XNameContainer: Name Container.
         """
         return mLo.Lo.qi(XNameContainer, ctrl.getModel(), True)
 
@@ -560,11 +596,13 @@ class Dialogs:
         """
         Creates a name.
 
-        Make a unique string by appending a number to the supplied name
+        Make a unique string by appending a number to the supplied name.
+
+        |lo_safe|
 
         Args:
-            elem_container (XNameAccess): container
-            name (str): current name
+            elem_container (XNameAccess): container.
+            name (str): current name.
 
         Returns:
             str: a name not in container.
@@ -594,11 +632,13 @@ class Dialogs:
         **props: Any,
     ) -> CtlButton:
         """
-        Insert Button Control
+        Insert Button Control.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): control
-            label (str): Button Label
+            dialog_ctrl (XControl): control.
+            label (str): Button Label.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -608,10 +648,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create button control
+            DialogError: If unable to create button control.
 
         Returns:
-            CtlButton: Button control
+            CtlButton: Button control.
 
         See Also:
             `API UnoControlButtonModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlButtonModel.html>`_
@@ -672,11 +712,13 @@ class Dialogs:
         **props: Any,
     ) -> CtlCheckBox:
         """
-        Inserts a check box control
+        Inserts a check box control.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
-            label (str): Checkbox label text
+            dialog_ctrl (XControl): Control.
+            label (str): Checkbox label text.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -691,7 +733,7 @@ class Dialogs:
             DialogError: If unable to create checkbox control.
 
         Returns:
-            CtlCheckBox: Check box control
+            CtlCheckBox: Check box control.
 
         See Also:
             `API UnoControlCheckBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlCheckBoxModel.html>`_
@@ -749,11 +791,13 @@ class Dialogs:
         **props: Any,
     ) -> CtlComboBox:
         """
-        Insert a combo box control
+        Insert a combo box control.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
-            entries (Iterable[str]): Combo box entries
+            dialog_ctrl (XControl): Control.
+            entries (Iterable[str]): Combo box entries.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -766,10 +810,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create combo box control
+            DialogError: If unable to create combo box control.
 
         Returns:
-            CtlComboBox: Combo box control
+            CtlComboBox: Combo box control.
 
         See Also:
             `API UnoControlComboBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlComboBoxModel.html>`_
@@ -834,10 +878,12 @@ class Dialogs:
         **props: Any,
     ) -> CtlCurrencyField:
         """
-        Inserts a currency control
+        Inserts a currency control.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
+            dialog_ctrl (XControl): Control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -847,13 +893,13 @@ class Dialogs:
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
             spin_button (bool, optional): When ``True``, a spin button is present. Defaults to ``False``.
             increment (int, optional): The step when the spin button is pressed. Defaults to ``1``.
-            accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits
+            accuracy (int, optional): Specifies the decimal accuracy. Default is ``2`` decimal digits.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create currency field box control
+            DialogError: If unable to create currency field box control.
 
         Returns:
             CtlCurrencyField: Currency field control.
@@ -919,8 +965,10 @@ class Dialogs:
         """
         Create a new control of type DateField in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): Control
+            dialog_ctrl (XControl): Control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -935,10 +983,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create date field control
+            DialogError: If unable to create date field control.
 
         Returns:
-            CtlDateField: Date field control
+            CtlDateField: Date field control.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -992,10 +1040,12 @@ class Dialogs:
         **props: Any,
     ) -> CtlFile:
         """
-        Create a new control of type FileControl in the actual dialog
+        Create a new control of type FileControl in the actual dialog.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1005,10 +1055,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create file control
+            DialogError: If unable to create file control.
 
         Returns:
-            CtlFile: File Control
+            CtlFile: File Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1057,10 +1107,12 @@ class Dialogs:
         **props: Any,
     ) -> CtlFixedLine:
         """
-        Create a new control of type Fixed Line in the actual dialog
+        Create a new control of type Fixed Line in the actual dialog.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1070,10 +1122,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create fixed line control
+            DialogError: If unable to create fixed line control.
 
         Returns:
-            CtlFixedLine: Fixed Line Control
+            CtlFixedLine: Fixed Line Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1126,8 +1178,10 @@ class Dialogs:
         """
         Create a new control of type FormattedField in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): Control
+            dialog_ctrl (XControl): Control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1141,10 +1195,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create formatted field control
+            DialogError: If unable to create formatted field control.
 
         Returns:
-            CtlFormattedField: Formatted Field
+            CtlFormattedField: Formatted Field.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1200,8 +1254,10 @@ class Dialogs:
         """
         Create a new control of type GroupBox in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1211,10 +1267,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create group box control
+            DialogError: If unable to create group box control.
 
         Returns:
-            CtlGroupBox: Group box Control
+            CtlGroupBox: Group box Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1270,10 +1326,12 @@ class Dialogs:
         """
         Create a new control of type Hyperlink in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
-            label (str): Hyperlink label
-            url (str): Hyperlink URL
+            dialog_ctrl (XControl): control.
+            label (str): Hyperlink label.
+            url (str): Hyperlink URL.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1286,10 +1344,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create Hyperlink control
+            DialogError: If unable to create Hyperlink control.
 
         Returns:
-            CtlHyperlinkFixed: Hyperlink Control
+            CtlHyperlinkFixed: Hyperlink Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1351,8 +1409,10 @@ class Dialogs:
         """
         Create a new control of type ImageControl in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1367,10 +1427,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create image control
+            DialogError: If unable to create image control.
 
         Returns:
-            CtlImage: Image Control
+            CtlImage: Image Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1432,11 +1492,13 @@ class Dialogs:
         **props: Any,
     ) -> CtlFixedText:
         """
-        Insert a Fixed Text into a control
+        Insert a Fixed Text into a control.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
-            label (str): Contents of label
+            dialog_ctrl (XControl): Control.
+            label (str): Contents of label.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1445,10 +1507,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create Fixed Text
+            DialogError: If unable to create Fixed Text.
 
         Returns:
-            CtlFixedText: Fixed Text Control
+            CtlFixedText: Fixed Text Control.
 
         See Also:
             `API UnoControlFixedTextModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlFixedTextModel.html>`_
@@ -1500,11 +1562,13 @@ class Dialogs:
         **props: Any,
     ) -> CtlListBox:
         """
-        Insert a list box control
+        Insert a list box control.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
-            entries (Iterable[str]): List box entries
+            dialog_ctrl (XControl): Control.
+            entries (Iterable[str]): List box entries.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1518,10 +1582,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create list box control
+            DialogError: If unable to create list box control.
 
         Returns:
-            CtlListBox: List box control
+            CtlListBox: List box control.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1580,9 +1644,11 @@ class Dialogs:
         """
         Inserts a password field.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): Control
-            text (str): Text value
+            dialog_ctrl (XControl): Control.
+            text (str): Text value.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1592,13 +1658,13 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create text field
+            DialogError: If unable to create text field.
 
         Returns:
-            CtlTextEdit: Text Field Control
+            CtlTextEdit: Text Field Control.
 
         See Also:
-            :py:meth:`~.dialogs.Dialogs.insert_text_field`
+            :py:meth:`~.dialogs.Dialogs.insert_text_field`.
         """
         return cls.insert_text_field(
             dialog_ctrl=dialog_ctrl,
@@ -1631,8 +1697,10 @@ class Dialogs:
         """
         Create a new control of type PatternField in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1644,10 +1712,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create pattern field control
+            DialogError: If unable to create pattern field control.
 
         Returns:
-            CtlPatternField: Pattern Field Control
+            CtlPatternField: Pattern Field Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1706,8 +1774,10 @@ class Dialogs:
         """
         Create a new control of type NumericField in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1723,10 +1793,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create numeric field control
+            DialogError: If unable to create numeric field control.
 
         Returns:
-            CtlNumericField: Numeric Field Control
+            CtlNumericField: Numeric Field Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1749,7 +1819,7 @@ class Dialogs:
             ctl_props.setPropertyValue("DecimalAccuracy", accuracy)
             ctl_props.setPropertyValue("Spin", spin_button)
             ctl_props.setPropertyValue("Name", name)
-            if not value is None:
+            if value is not None:
                 ctl_props.setPropertyValue("Value", value)
 
             # set any extra user properties
@@ -1788,8 +1858,10 @@ class Dialogs:
         """
         Create a new control of type Progress Control in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1802,10 +1874,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create numeric field control
+            DialogError: If unable to create numeric field control.
 
         Returns:
-            CtlProgressBar: Progress Bar Control
+            CtlProgressBar: Progress Bar Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1859,9 +1931,11 @@ class Dialogs:
         """
         Create a new control of type RadioButton in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): Control
-            label (str): Contents of label
+            dialog_ctrl (XControl): Control.
+            label (str): Contents of label.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1871,10 +1945,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create radio button
+            DialogError: If unable to create radio button.
 
         Returns:
-            CtlRadioButton: Radio button control
+            CtlRadioButton: Radio button control.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1927,8 +2001,10 @@ class Dialogs:
         """
         Create a new control of type ScrollBar in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -1941,10 +2017,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create scroll bar control
+            DialogError: If unable to create scroll bar control.
 
         Returns:
-            CtlScrollBar: Scroll Bar Control
+            CtlScrollBar: Scroll Bar Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1992,8 +2068,10 @@ class Dialogs:
         """
         Create a new control of type tab in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -2002,13 +2080,13 @@ class Dialogs:
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
 
         Raises:
-            DialogError: If unable to create tab control
+            DialogError: If unable to create tab control.
 
         Returns:
-            CtlTabPageContainer: Tab Control
+            CtlTabPageContainer: Tab Control.
 
         See Also:
-            :py:meth:`~.dialogs.Dialogs.insert_tab_page`
+            :py:meth:`~.dialogs.Dialogs.insert_tab_page`.
         """
         try:
             dialog = cast("UnoControlDialog", cls.get_dialog(dialog_ctrl))
@@ -2055,20 +2133,23 @@ class Dialogs:
         """
         Create a new control of type Tab Page in the actual tab control.
 
+        |lo_unsafe|
+
         Args:
-            tab_ctrl (CtlTabPageContainer): Tab Container
-            title (str): Tab title
+            dialog_ctrl (XControl): control.
+            tab_ctrl (CtlTabPageContainer): Tab Container.
+            title (str): Tab title.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create tab page control
+            DialogError: If unable to create tab page control.
 
         Returns:
-            CtlTabPage: Tab Page Control
+            CtlTabPage: Tab Page Control.
 
         See Also:
-            :py:meth:`~.dialogs.Dialogs.insert_tab_control`
+            :py:meth:`~.dialogs.Dialogs.insert_tab_control`.
         """
 
         def create_name(ctl: UnoControlTabPageContainer, name: str) -> str:
@@ -2150,8 +2231,10 @@ class Dialogs:
 
         To add data to the table use :py:meth:`~.dialogs.Dialogs.set_table_data`.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -2165,13 +2248,13 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create table control
+            DialogError: If unable to create table control.
 
         Returns:
-            CtlGrid: Table Control
+            CtlGrid: Table Control.
 
         See Also:
-            :py:meth:`~.dialogs.Dialogs.set_table_data`
+            :py:meth:`~.dialogs.Dialogs.set_table_data`.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -2231,10 +2314,12 @@ class Dialogs:
         **props: Any,
     ) -> CtlTextEdit:
         """
-        Inserts a text Field
+        Inserts a text Field.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
+            dialog_ctrl (XControl): Control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -2246,10 +2331,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create text field
+            DialogError: If unable to create text field.
 
         Returns:
-            CtlTextEdit: Text Field Control
+            CtlTextEdit: Text Field Control.
 
         See Also:
             `API UnoControlEditModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
@@ -2306,8 +2391,10 @@ class Dialogs:
         """
         Create a new control of type Tree in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): control
+            dialog_ctrl (XControl): control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -2317,10 +2404,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create Tree control
+            DialogError: If unable to create Tree control.
 
         Returns:
-            CtlTree: Tree Control
+            CtlTree: Tree Control.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -2385,8 +2472,10 @@ class Dialogs:
         """
         Create a new control of type TimeField in the actual dialog.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): Control
+            dialog_ctrl (XControl): Control.
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
             y (int): Y coordinate. If ``-1``, the dialog Position is not set.
             width (int): Width. If ``-1``, the dialog Size is not set.
@@ -2401,10 +2490,10 @@ class Dialogs:
             props (dict, optional): Extra properties to set for control.
 
         Raises:
-            DialogError: If unable to create time field control
+            DialogError: If unable to create time field control.
 
         Returns:
-            CtlTimeField: Time field control
+            CtlTimeField: Time field control.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -2449,7 +2538,9 @@ class Dialogs:
     @staticmethod
     def _set_size_pos(ctl: XWindow, x: int = -1, y: int = -1, width: int = -1, height: int = -1) -> None:
         """
-        Set Position and size for a control
+        Set Position and size for a control.
+
+        |lo_safe|
 
         Args:
             ctl (XWindow): Control that implements XWindow
@@ -2474,18 +2565,19 @@ class Dialogs:
     @classmethod
     def get_radio_group_value(cls, dialog_ctrl: XControl, radio_button: str) -> List[CtlRadioButton]:
         """
-        Get a radio button group. Similar to :py:meth:`~.dialogs.Dialogs.find_radio_siblings` but alos includes first radio button.
+        Get a radio button group. Similar to :py:meth:`~.dialogs.Dialogs.find_radio_siblings` but also includes first radio button.
+
+        |lo_unsafe|
 
         Args:
-            dialog_ctrl (XControl): Control
-            radio_button (str): Name of the first radio button of the group
+            dialog_ctrl (XControl): Control.
+            radio_button (str): Name of the first radio button of the group.
 
         Returns:
-            Any: Value of the selected radio button
-
+            Any: Value of the selected radio button.
 
         See Also:
-            :py:meth:`~.dialogs.Dialogs.find_radio_siblings`
+            :py:meth:`~.dialogs.Dialogs.find_radio_siblings`.
         """
         result: List[CtlRadioButton] = []
         ctl = cls.find_control(dialog_ctrl, radio_button)
@@ -2501,20 +2593,22 @@ class Dialogs:
     @classmethod
     def find_radio_siblings(cls, dialog_ctrl: XControl, radio_button: str) -> List[CtlRadioButton]:
         """
-        Given the name of the first radio button of a group, return all the controls of the group
+        Given the name of the first radio button of a group, return all the controls of the group.
 
         For dialogs, radio buttons are considered of the same group when their tab indexes are contiguous.
 
+        |lo_unsafe|
+
         Args:
-            dialog_ctrl (XControl): Control
-            radio_button (str): Specifies the exact name of the 1st radio button of the group
+            dialog_ctrl (XControl): Control.
+            radio_button (str): Specifies the exact name of the 1st radio button of the group.
 
         Returns:
-            List[CtlRadioButton]: List of the names of the 1st and the next radio buttons
+            List[CtlRadioButton]: List of the names of the 1st and the next radio buttons.
             belonging to the same group in their tab index order. does not include the first button.
 
         See Also:
-            :py:meth:`~.dialogs.Dialogs.get_radio_group_value`
+            :py:meth:`~.dialogs.Dialogs.get_radio_group_value`.
         """
         ctl = cls.find_control(dialog_ctrl, radio_button)
         result: List[CtlRadioButton] = []

@@ -1,21 +1,22 @@
 from __future__ import annotations
 import datetime
-from typing import Any, TYPE_CHECKING, cast, Tuple
+from typing import Any, TYPE_CHECKING, cast, Tuple, Protocol, TypeVar
 from pathlib import Path
 import uno  # pylint: disable=unused-import
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 
-from ooodev.dialog import Dialogs, ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind, StateKind
+from ooodev.dialog import ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind, StateKind
 from ooodev.utils import lo as mLo
-from ooodev.utils.gui import GUI
-from ooodev.office.calc import Calc
-from ooodev.utils.file_io import FileIO
+from ooodev.calc import CalcDoc
+from ooodev.write import WriteDoc
 from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.color import StandardColor
 from ooodev.dialog.dl_control.ctl_date_field import CtlDateField
-
+from ooodev.dialog import TriStateKind
+from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
+from ooodev.utils.partial.gui_partial import GuiPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import ItemEvent
@@ -34,6 +35,7 @@ class Runner:
     # pylint: disable=unused-argument
     def __init__(
         self,
+        doc: WriteDoc | CalcDoc,
         title: str,
         msg: str,
         input_value: str = "",
@@ -41,6 +43,7 @@ class Runner:
         cancel_lbl: str = "Cancel",
         is_password: bool = False,
     ) -> None:
+        self._doc = doc
         self._init_handlers()
 
         # self._dialog = cast(
@@ -65,7 +68,7 @@ class Runner:
         else:
             self._padding = 14
         self._tab_index = 1
-        self._dialog = Dialogs.create_dialog(
+        self._dialog = self._doc.create_dialog(
             x=-1,
             y=-1,
             width=self._width,
@@ -73,8 +76,7 @@ class Runner:
             title=self._title,
         )
 
-        self._ctl_lbl = Dialogs.insert_label(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_lbl = self._dialog.insert_label(
             label=msg,
             x=self._margin,
             y=self._margin,
@@ -86,8 +88,7 @@ class Runner:
         self._ctl_lbl.add_event_mouse_exited(self._fn_on_mouse_exit)
         sz = self._ctl_lbl.view.getPosSize()
         if is_password:
-            self._txt_input = Dialogs.insert_password_field(
-                dialog_ctrl=self._dialog.control,
+            self._txt_input = self._dialog.insert_password_field(
                 text=input_value,
                 x=sz.X,
                 y=sz.Height + sz.Y + 4,
@@ -96,8 +97,7 @@ class Runner:
                 border=border_kind,
             )
         else:
-            self._txt_input = Dialogs.insert_text_field(
-                dialog_ctrl=self._dialog.control,
+            self._txt_input = self._dialog.insert_text_field(
                 text=input_value,
                 x=sz.X,
                 y=sz.Height + sz.Y + 4,
@@ -108,8 +108,7 @@ class Runner:
         self._set_tab_index(self._txt_input)
         self._txt_input.add_event_text_changed(self._fn_on_text_changed)
 
-        self._ctl_btn_cancel = Dialogs.insert_button(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_btn_cancel = self._dialog.insert_button(
             label=cancel_lbl,
             x=self._width - self._btn_width - self._margin,
             y=self._height - self._btn_height - self._margin,
@@ -123,8 +122,7 @@ class Runner:
         self._ctl_btn_cancel.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_btn_cancel.add_event_mouse_exited(self._fn_on_mouse_exit)
         sz = self._ctl_btn_cancel.view.getPosSize()
-        self._ctl_button_ok = Dialogs.insert_button(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_button_ok = self._dialog.insert_button(
             label=ok_lbl,
             x=sz.X - sz.Width - self._margin,
             y=sz.Y,
@@ -140,43 +138,40 @@ class Runner:
         sz = self._txt_input.view.getPosSize()
         # ctl_button_ok.width += 30
         # ctl_button_ok.x -= 30
-        self._ctl_chk1 = Dialogs.insert_check_box(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_chk1 = self._dialog.insert_check_box(
             label="Check Box 1",
             x=sz.X,
             y=sz.Height + sz.Y + self._padding,
             width=200,
             height=20,
             tri_state=False,
-            state=Dialogs.StateEnum.CHECKED,
+            state=TriStateKind.CHECKED,
             border=border_kind,
         )
         self._set_tab_index(self._ctl_chk1)
 
         sz = self._ctl_chk1.view.getPosSize()
-        self._ctl_chk2 = Dialogs.insert_check_box(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_chk2 = self._dialog.insert_check_box(
             label="Check Box 2",
             x=sz.X,
             y=sz.Height + sz.Y,
             width=sz.Width,
             height=sz.Height,
             tri_state=False,
-            state=Dialogs.StateEnum.NOT_CHECKED,
+            state=TriStateKind.NOT_CHECKED,
             border=border_kind,
         )
         self._set_tab_index(self._ctl_chk2)
 
         sz = self._ctl_chk2.view.getPosSize()
-        self._ctl_chk3 = Dialogs.insert_check_box(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_chk3 = self._dialog.insert_check_box(
             label="Check Box 3",
             x=sz.X,
             y=sz.Height + sz.Y,
             width=sz.Width,
             height=sz.Height,
             tri_state=True,
-            state=Dialogs.StateEnum.DONT_KNOW,
+            state=TriStateKind.DONT_KNOW,
             border=border_kind,
         )
         self._set_tab_index(self._ctl_chk3)
@@ -185,8 +180,7 @@ class Runner:
         self._ctl_chk3.add_event_item_state_changed(self._fn_on_check_box_state)
 
         sz = self._ctl_chk1.view.getPosSize()
-        self._ctl_date = Dialogs.insert_date_field(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_date = self._dialog.insert_date_field(
             x=sz.Width + self._padding,
             y=sz.Y,
             width=190,
@@ -204,8 +198,7 @@ class Runner:
         self._ctl_date.add_event_text_changed(self._fn_on_text_changed)
         self._ctl_date.add_event_mouse_exited(self._fn_on_mouse_exit)
         sz = self._ctl_date.view.getPosSize()
-        self._ctl_currency = Dialogs.insert_currency_field(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_currency = self._dialog.insert_currency_field(
             x=sz.Width + sz.X + self._padding,
             y=sz.Y,
             width=sz.Width,
@@ -218,8 +211,7 @@ class Runner:
         sz = self._ctl_currency.view.getPosSize()
         self._ctl_currency.add_event_down(self._fn_on_down)
         self._ctl_currency.add_event_up(self._fn_on_up)
-        self._ctl_pattern = Dialogs.insert_pattern_field(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_pattern = self._dialog.insert_pattern_field(
             x=sz.X,
             y=sz.Y + sz.Height + self._padding,
             width=sz.Width,
@@ -234,8 +226,7 @@ class Runner:
         self._ctl_pattern.add_event_text_changed(self._fn_on_text_changed)
 
         sz_date = self._ctl_date.view.getPosSize()
-        self._ctl_num_field = Dialogs.insert_numeric_field(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_num_field = self._dialog.insert_numeric_field(
             x=sz_date.X,
             y=sz_date.Y + sz_date.Height + self._padding,
             width=sz.Width,
@@ -251,8 +242,7 @@ class Runner:
 
         sz_numeric = self._ctl_num_field.view.getPosSize()
         # sz_fmt = ctl_formatted.getPosSize()
-        self._ctl_combo1 = Dialogs.insert_combo_box(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_combo1 = self._dialog.insert_combo_box(
             x=self._margin,
             y=sz_numeric.Height + sz_numeric.Y + self._padding,
             width=200,
@@ -266,8 +256,7 @@ class Runner:
 
         sz = self._ctl_combo1.view.getPosSize()
 
-        self._ctl_progress = Dialogs.insert_progress_bar(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_progress = self._dialog.insert_progress_bar(
             x=sz_date.X,
             y=sz.Y,
             width=400,
@@ -281,8 +270,7 @@ class Runner:
         self._ctl_progress.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_progress.add_event_mouse_exited(self._fn_on_mouse_exit)
 
-        self._ctl_scroll_progress = Dialogs.insert_scroll_bar(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_scroll_progress = self._dialog.insert_scroll_bar(
             x=self._ctl_progress.x,
             y=self._ctl_progress.y + self._ctl_progress.height + self._padding,
             width=self._ctl_progress.width,
@@ -294,8 +282,7 @@ class Runner:
         self._ctl_scroll_progress.value = self._ctl_progress.value
         self._ctl_scroll_progress.add_event_adjustment_value_changed(self._fn_on_scroll_adjustment)
 
-        self._ctl_file = Dialogs.insert_file_control(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_file = self._dialog.insert_file_control(
             x=sz.X,
             y=sz.Height + sz.Y + self._padding,
             width=200,
@@ -306,8 +293,7 @@ class Runner:
         self._ctl_file.text = "file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png"
         self._ctl_file.add_event_text_changed(self._fn_on_text_changed)
         sz = self._ctl_file.view.getPosSize()
-        self._ctl_ln = Dialogs.insert_fixed_line(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_ln = self._dialog.insert_fixed_line(
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
             width=self._width - (self._margin * 2),
@@ -316,8 +302,7 @@ class Runner:
         self._set_tab_index(self._ctl_ln)
 
         sz = self._ctl_ln.view.getPosSize()
-        self._ctl_formatted = Dialogs.insert_formatted_field(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_formatted = self._dialog.insert_formatted_field(
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
             width=200,
@@ -347,8 +332,7 @@ class Runner:
         # Alternatively it seems radio control groups can also be added with out setting a tab index as well.
         # In order for this to work a different control such as a group box must be added to the dialog between
         # adding radio control groups.
-        self._ctl_gb1 = Dialogs.insert_group_box(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_gb1 = self._dialog.insert_group_box(
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
             width=round((self._width // 2) - ((self._padding * 2) * 0.75)),
@@ -359,8 +343,7 @@ class Runner:
 
         # insert radio buttons into group box one
         sz = self._ctl_gb1.view.getPosSize()
-        self._rb1 = Dialogs.insert_radio_button(
-            dialog_ctrl=self._dialog.control,
+        self._rb1 = self._dialog.insert_radio_button(
             label="Radio Button 1",
             x=sz.X + self._padding,
             y=sz.Y + 10,
@@ -373,8 +356,7 @@ class Runner:
         self._rb1.add_event_property_change("State", self._fn_on_property_changed)
         rb_sz = self._rb1.view.getPosSize()
         for i in range(1, 4):
-            radio_btn = Dialogs.insert_radio_button(
-                dialog_ctrl=self._dialog.control,
+            radio_btn = self._dialog.insert_radio_button(
                 label=f"Radio Button {i + 1}",
                 x=rb_sz.X,
                 y=rb_sz.Y + (rb_sz.Height * i),
@@ -386,8 +368,7 @@ class Runner:
             radio_btn.add_event_property_change("State", self._fn_on_property_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
-        self._ctl_gb2 = Dialogs.insert_group_box(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_gb2 = self._dialog.insert_group_box(
             x=sz.X + sz.Width + self._padding,
             y=sz.Y,
             width=sz.Width,
@@ -399,8 +380,7 @@ class Runner:
 
         # insert radio buttons into group box two
         sz = self._ctl_gb2.view.getPosSize()
-        self._rb2 = Dialogs.insert_radio_button(
-            dialog_ctrl=self._dialog.control,
+        self._rb2 = self._dialog.insert_radio_button(
             label="Radio Button 1",
             x=sz.X + self._padding,
             y=sz.Y + 10,
@@ -414,8 +394,7 @@ class Runner:
         self._rb2.add_event_property_change("State", self._fn_on_property_changed)
         rb_sz = self._rb2.view.getPosSize()
         for i in range(1, 4):
-            radio_btn = Dialogs.insert_radio_button(
-                dialog_ctrl=self._dialog.control,
+            radio_btn = self._dialog.insert_radio_button(
                 label=f"Radio Button {i + 1}",
                 x=rb_sz.X,
                 y=rb_sz.Y + (rb_sz.Height * i),
@@ -427,8 +406,7 @@ class Runner:
             radio_btn.add_event_property_change("State", self._fn_on_property_changed)
 
         sz = self._ctl_gb1.view.getPosSize()
-        self._ctl_link = Dialogs.insert_hyperlink(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_link = self._dialog.insert_hyperlink(
             x=self._margin,
             y=sz.Height + sz.Y + self._padding,
             width=200,
@@ -441,8 +419,7 @@ class Runner:
         self._ctl_link.add_event_action_performed(self._fn_on_action_general)
 
         sz = self._ctl_link.view.getPosSize()
-        self._ctl_time = Dialogs.insert_time_field(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_time = self._dialog.insert_time_field(
             x=sz.X,
             y=sz.Y + sz.Height + self._padding,
             width=sz.Width,
@@ -460,8 +437,7 @@ class Runner:
         sz = self._ctl_gb2.view.getPosSize()
         # file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png
         pth = Path(__file__).parent.parent.parent / "fixtures" / "image" / "img_brick.png"
-        self._ctl_img = Dialogs.insert_image_control(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_img = self._dialog.insert_image_control(
             x=sz.X,
             y=sz.Y + sz.Height + self._padding,
             width=120,
@@ -478,8 +454,7 @@ class Runner:
         self._ctl_img.add_event_mouse_exited(self._fn_on_mouse_exit)
 
         sz = self._ctl_img.view.getPosSize()
-        self._ctl_list_box = Dialogs.insert_list_box(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_list_box = self._dialog.insert_list_box(
             x=sz.X + sz.Width + self._padding,
             y=sz.Y,
             width=sz.Width,
@@ -511,13 +486,15 @@ class Runner:
 
     def show(self) -> str:
         # Dialogs.create_dialog_peer(self._dialog)
-        window = mLo.Lo.get_frame().getContainerWindow()
+        # window = mLo.Lo.get_frame().getContainerWindow()
+        self._doc.activate()
+        window = self._doc.get_frame().getContainerWindow()
         ps = window.getPosSize()
         x = round(ps.Width / 2 - self._width / 2)
         y = round(ps.Height / 2 - self._height / 2)
-        self._dialog.control.setTitle(self._title)
-        self._dialog.control.setPosSize(x, y, self._width, self._height, PosSize.POSSIZE)
-        self._dialog.control.setVisible(True)
+        self._dialog.set_title(self._title)
+        self._dialog.set_pos_size(x, y, self._width, self._height, PosSize.POSSIZE)
+        self._dialog.set_visible(True)
         ret = self._txt_input.text if self._dialog.execute() else ""  # type: ignore
         self._dialog.dispose()
         return ret
@@ -675,14 +652,23 @@ class Runner:
 
 
 def main():
+    # It is important to activate windows before displaying the dialog when using multi-documents.
+    # In this case the windows are activated in the show method.
     with mLo.Lo.Loader(mLo.Lo.ConnectSocket(), opt=mLo.Lo.Options(verbose=True)):
-        doc = Calc.create_doc()
-        GUI.set_visible(visible=True, doc=doc)
-        run()
+        doc = CalcDoc.create_doc(visible=True)
+
+        inst2 = mLo.Lo.create_lo_instance()
+        doc2 = CalcDoc.create_doc(lo_inst=inst2, visible=True)
+        run(doc2)
+
+        inst3 = mLo.Lo.create_lo_instance()
+        doc3 = WriteDoc.create_doc(lo_inst=inst3, visible=True)
+        run(doc3)
+        run(doc)
 
 
-def run() -> None:
-    inst = Runner("title", "msg", "input_value")
+def run(doc: WriteDoc | CalcDoc) -> None:
+    inst = Runner(doc, "title", "msg", "input_value")
     print(inst.show())
 
 

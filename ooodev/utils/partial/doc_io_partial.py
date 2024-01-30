@@ -264,6 +264,21 @@ class DocIoPartial(Generic[_T]):
 
     @overload
     @classmethod
+    def create_doc(cls, *, lo_inst: LoInst, visible: bool) -> _T:
+        """
+        Creates a new document.
+
+        Args:
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents.
+            visible (bool): If ``True`` document is visible; Otherwise, document is invisible. Default ``False``.
+
+        Returns:
+            _T: Class instance representing document.
+        """
+        ...
+
+    @overload
+    @classmethod
     def create_doc(cls, loader: XComponentLoader) -> _T:
         """
         Creates a new document.

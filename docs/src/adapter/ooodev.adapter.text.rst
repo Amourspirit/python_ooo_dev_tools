@@ -33,6 +33,7 @@ Submodules
    ooodev.adapter.text.text_document_comp
    ooodev.adapter.text.text_field_comp
    ooodev.adapter.text.text_frame_comp
+   ooodev.adapter.text.text_frames
    ooodev.adapter.text.text_partial
    ooodev.adapter.text.text_portion_comp
    ooodev.adapter.text.text_portion_type_kind
