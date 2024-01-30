@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, List, overload, Iterable
+from typing import Any, cast, TYPE_CHECKING, List, overload
 import uno
-from com.sun.star.frame import XComponentLoader
 
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
@@ -13,7 +12,6 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
@@ -22,7 +20,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.type_var import PathOrStr
+from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from .partial.draw_doc_partial import DrawDocPartial
 from . import impress_page as mImpressPage
@@ -30,7 +28,6 @@ from . import master_draw_page as mMasterDrawPage
 from .impress_pages import ImpressPages
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import PropertyValue
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.drawing import XDrawPages
     from com.sun.star.lang import XComponent
@@ -51,6 +48,7 @@ class ImpressDoc(
     ServicePartial,
     StylePartial,
     DocIoPartial["ImpressDoc"],
+    CreateDialogPartial,
 ):
     """Impress Document Class"""
 
@@ -84,6 +82,7 @@ class ImpressDoc(
         ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
+        CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
         self._pages = None
 
     # region Lazy Listeners

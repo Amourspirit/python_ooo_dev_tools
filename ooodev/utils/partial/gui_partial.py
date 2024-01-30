@@ -1,12 +1,14 @@
 from __future__ import annotations
 from typing import Any
 import uno
+from com.sun.star.awt import XTopWindow2
+from com.sun.star.awt import XWindow2
 from com.sun.star.frame import XController
-from com.sun.star.frame import XModel
+from com.sun.star.frame import XDispatchProviderInterception
 from com.sun.star.frame import XFrame
+from com.sun.star.frame import XModel
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
-from com.sun.star.frame import XDispatchProviderInterception
 
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils import gui as mGui
@@ -71,8 +73,33 @@ class GuiPartial:
         """
         Activates document window.
         """
-        with LoContext(self.__lo_inst):
-            mGui.GUI.activate(self.__component)
+
+        def gui_activate():
+            with LoContext(self.__lo_inst):
+                mGui.GUI.activate(self.__component)
+
+        frame = self.get_frame()
+        if frame is not None:
+            container = frame.getContainerWindow()
+            if container is None:
+                gui_activate()
+                return
+            x_win2 = self.__lo_inst.qi(XWindow2, container)
+            if x_win2 is None:
+                gui_activate()
+                return
+            top2 = self.__lo_inst.qi(XTopWindow2, container)
+            if top2 is None:
+                gui_activate()
+                return
+            if not x_win2.isVisible():
+                x_win2.setVisible(True)
+            if top2.IsMinimized:
+                top2.IsMinimized = False
+            x_win2.setFocus()
+            top2.toFront()
+        else:
+            gui_activate()
 
     def maximize(self) -> None:
         """

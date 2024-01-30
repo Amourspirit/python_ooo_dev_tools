@@ -43,7 +43,7 @@ class IndexAccessPartial(ElementAccessPartial):
         """.. versionadded:: 0.20.2"""
         return self.get_count()
 
-    # region Methods
+    # region XIndexAccess
     def get_count(self) -> int:
         """
         Gets the number of elements contained in the container.
@@ -65,4 +65,4 @@ class IndexAccessPartial(ElementAccessPartial):
         """
         return self.__component.getByIndex(idx)
 
-    # endregion Methods
+    # endregion XIndexAccess

@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.24.0
+==============
+
+Update for Dialogs and Multi-document support. Now Dialogs can be created from document classes such as ``ooodev.write.WriteDoc`` and ``ooodev.calc.CalcDoc``.
+This ensures that the Dialog is created in the same context as the document and this supports multi-document usage.
+
+Other minor bug fixes and updates.
+
 Version 0.23.1
 ==============
 

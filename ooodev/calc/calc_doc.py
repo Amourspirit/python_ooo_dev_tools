@@ -50,6 +50,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from . import calc_sheet as mCalcSheet
 from . import calc_sheets as mCalcSheets
 from . import calc_sheet_view as mCalcSheetView
@@ -66,6 +67,7 @@ class CalcDoc(
     StylePartial,
     EventsPartial,
     DocIoPartial["CalcDoc"],
+    CreateDialogPartial,
 ):
     """Defines a Calc Document"""
 
@@ -98,6 +100,7 @@ class CalcDoc(
         EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
+        CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None

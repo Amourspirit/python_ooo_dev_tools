@@ -660,7 +660,8 @@ class GUI:
                     break
                 if not x_win2.isVisible():
                     x_win2.setVisible(True)
-                top2.IsMinimized = False
+                if top2.IsMinimized:
+                    top2.IsMinimized = False
                 x_win2.setFocus()
                 top2.toFront()
                 break

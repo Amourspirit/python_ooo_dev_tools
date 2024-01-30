@@ -8,7 +8,7 @@ from ooo.dyn.awt.pos_size import PosSize
 
 from ooodev.dialog import Dialogs, BorderKind, OrientationKind
 from ooodev.events.args.event_args import EventArgs
-from ooodev.office.calc import Calc
+from ooodev.calc import CalcDoc
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.utils.table_helper import TableHelper
@@ -23,7 +23,8 @@ if TYPE_CHECKING:
 
 class Tabs:
     # pylint: disable=unused-argument
-    def __init__(self) -> None:
+    def __init__(self, doc: CalcDoc) -> None:
+        self._doc = doc
         self._border_kind = BorderKind.BORDER_SIMPLE
         self._width = 600
         self._height = 500
@@ -42,27 +43,32 @@ class Tabs:
 
     def _init_dialog(self) -> None:
         self._init_handlers()
-
-        self._dialog = cast(
-            "UnoControlDialog",
-            mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
-        )
-        self._dialog_model = cast(
-            "UnoControlDialogModel",
-            mLo.Lo.create_instance_mcf(XControlModel, "com.sun.star.awt.UnoControlDialogModel", raise_err=True),
-        )
-        self._dialog.setModel(self._dialog_model)
-        mLo.Lo.delay(300)  # wait for window to be created
         self._window = mLo.Lo.get_frame().getContainerWindow()
         ps = self._window.getPosSize()
         x = round(ps.Width / 2 - self._width / 2)
         y = round(ps.Height / 2 - self._height / 2)
-        self._dialog.setPosSize(x, y, self._width, self._height, PosSize.POSSIZE)
-        self._dialog.setTitle(self._title)
-        self._dialog.setVisible(False)
+
+        # self._dialog = cast(
+        #     "UnoControlDialog",
+        #     mLo.Lo.create_instance_mcf(XDialog, "com.sun.star.awt.UnoControlDialog", raise_err=True),
+        # )
+        self._dialog = self._doc.create_dialog(x=x, y=y, width=self._width, height=self._height, title=self._title)
+        self._dialog.create_peer()
+
+        # self._dialog_model = cast(
+        #     "UnoControlDialogModel",
+        #     mLo.Lo.create_instance_mcf(XControlModel, "com.sun.star.awt.UnoControlDialogModel", raise_err=True),
+        # )
+        # self._dialog.setModel(self._dialog_model)
+        mLo.Lo.delay(300)  # wait for window to be created
+        # self._doc.msgbox("Dialog created")
+        self._dialog.set_pos_size(x, y, self._width, self._height, PosSize.POSSIZE)
+        self._dialog.set_title(self._title)
+        self._dialog.set_visible(False)
 
         # createPeer() must be call before inserting tabs
-        self._dialog.createPeer(self._dialog_model.createInstance("com.sun.star.awt.Toolkit"), self._window)  # type: ignore
+        # tk = self._dialog_model.createInstance("com.sun.star.awt.Toolkit")
+        # self._dialog.createPeer(tk, self._window)  # type: ignore
 
         # tab offset will vary depending on border kind and Operating System
         self._tab_offset_vert = (self._margin * 3) + 30
@@ -70,8 +76,7 @@ class Tabs:
         self._active_page_page_id = 1
 
     def _init_tab_control(self) -> None:
-        self._ctl_tab = Dialogs.insert_tab_control(
-            dialog_ctrl=self._dialog,
+        self._ctl_tab = self._dialog.insert_tab_control(
             x=self._margin,
             y=self._margin,
             width=self._width - (self._margin * 2),
@@ -86,15 +91,13 @@ class Tabs:
 
     def _init_tab_main(self) -> None:
         self._tab_count += 1
-        self._tab_main = Dialogs.insert_tab_page(
-            dialog_ctrl=self._dialog,
+        self._tab_main = self._dialog.insert_tab_page(
             tab_ctrl=self._ctl_tab,
             title="Main",
             tab_position=self._tab_count,
         )
         tab_sz = self._ctl_tab.view.getPosSize()
-        ctl_main_lbl = Dialogs.insert_label(
-            dialog_ctrl=self._tab_main.view,
+        ctl_main_lbl = self._dialog.insert_label(
             label=self._msg,
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
@@ -104,20 +107,19 @@ class Tabs:
 
     def _init_tab_tree(self) -> None:
         self._tab_count += 1
-        self._tab_tree = Dialogs.insert_tab_page(
-            dialog_ctrl=self._dialog,
+        self._tab_tree = self._dialog.insert_tab_page(
             tab_ctrl=self._ctl_tab,
             title="Tree",
             tab_position=self._tab_count,
         )
         tab_sz = self._ctl_tab.view.getPosSize()
-        self._tree1 = Dialogs.insert_tree_control(
-            dialog_ctrl=self._tab_tree.view,
+        self._tree1 = self._dialog.insert_tree_control(
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
             width=tab_sz.Width - (self._padding * 2),
             height=300,
             border=self._border_kind,
+            dialog_ctrl=self._tab_tree.view,
         )
         root1 = self._tree1.create_root(display_value="Root 1")
         if root1:
@@ -132,15 +134,13 @@ class Tabs:
 
     def _init_tab_table(self) -> None:
         self._tab_count += 1
-        self._tab_table = Dialogs.insert_tab_page(
-            dialog_ctrl=self._dialog,
+        self._tab_table = self._dialog.insert_tab_page(
             tab_ctrl=self._ctl_tab,
             title="Table",
             tab_position=self._tab_count,
         )
         tab_sz = self._ctl_tab.view.getPosSize()
-        self._ctl_table1 = Dialogs.insert_table_control(
-            dialog_ctrl=self._tab_table.view,
+        self._ctl_table1 = self._dialog.insert_table_control(
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
             width=tab_sz.Width - (self._padding * 2),
@@ -148,6 +148,7 @@ class Tabs:
             grid_lines=True,
             col_header=True,
             row_header=True,
+            dialog_ctrl=self._tab_table.view,
         )
         num_cols = 5
         num_rows = 10
@@ -174,25 +175,23 @@ class Tabs:
 
     def _init_tab_scroll_bar(self) -> None:
         self._tab_count += 1
-        self._tab_scroll_bar = Dialogs.insert_tab_page(
-            dialog_ctrl=self._dialog,
+        self._tab_scroll_bar = self._dialog.insert_tab_page(
             tab_ctrl=self._ctl_tab,
             title="Scroll",
             tab_position=self._tab_count,
         )
         tab_sz = self._ctl_tab.view.getPosSize()
-        ctl_scroll_bar1 = Dialogs.insert_scroll_bar(
-            dialog_ctrl=self._tab_scroll_bar.view,
+        ctl_scroll_bar1 = self._dialog.insert_scroll_bar(
             # x=tab_sz.X + self._padding,
             x=0,
             y=0,
             width=tab_sz.Width - 22,
             height=20,
             border=self._border_kind,
+            dialog_ctrl=self._tab_scroll_bar.view,
         )
 
-        ctl_scroll_bar2 = Dialogs.insert_scroll_bar(
-            dialog_ctrl=self._tab_scroll_bar.view,
+        ctl_scroll_bar2 = self._dialog.insert_scroll_bar(
             x=tab_sz.Width - 22,
             # y=tab_sz.Y,
             y=0,
@@ -200,29 +199,29 @@ class Tabs:
             height=tab_sz.Height - self._tab_offset_vert,
             border=self._border_kind,
             orientation=OrientationKind.VERTICAL,
+            dialog_ctrl=self._tab_scroll_bar.view,
         )
 
     def _init_tab_oth(self) -> None:
         self._tab_count += 1
-        self._tab_oth = Dialogs.insert_tab_page(
-            dialog_ctrl=self._dialog,
+        self._tab_oth = self._dialog.insert_tab_page(
             tab_ctrl=self._ctl_tab,
             title="Other",
             tab_position=self._tab_count,
         )
         tab_sz = self._tab_oth.view.getPosSize()
-        ctl_oth_lbl = Dialogs.insert_label(
-            dialog_ctrl=self._tab_oth.view,
+        ctl_oth_lbl = self._dialog.insert_label(
             label="Nice Day!",
             x=tab_sz.X + self._padding,
             y=tab_sz.Y + self._padding,
             width=100,
             height=20,
+            dialog_ctrl=self._tab_oth.view,
         )
 
     def show(self) -> int:
         self._ctl_tab.active_tab_page_id = self._active_page_page_id
-        self._dialog.setVisible(True)
+        self._dialog.set_visible(True)
         result = self._dialog.execute()
         self._dialog.dispose()
         return result
@@ -255,13 +254,13 @@ class Tabs:
 
 def main():
     with mLo.Lo.Loader(mLo.Lo.ConnectSocket(), opt=mLo.Lo.Options(verbose=True)):
-        doc = Calc.create_doc()
-        GUI.set_visible(visible=True, doc=doc)
-        run()
+        doc = CalcDoc.create_doc(visible=True)
+        # doc.activate()
+        run(doc)
 
 
-def run() -> None:
-    tabs = Tabs()
+def run(doc: CalcDoc) -> None:
+    tabs = Tabs(doc)
     tabs.show()
 
 

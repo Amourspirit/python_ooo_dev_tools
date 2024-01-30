@@ -1,7 +1,7 @@
-.. _class_dialog_Dialogs:
+.. _ooodev.dialog.Dialogs:
 
 Class Dialogs
 =============
 
-.. autoclass:: ooodev.dialog.dialogs.Dialogs
+.. autoclass:: ooodev.dialog.Dialogs
     :members:

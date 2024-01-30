@@ -24,13 +24,13 @@ class MsgBox:
         Simple message box.
 
         Args:
-            msg (str): the message for display
+            msg (str): the message for display.
             title (str, optional): the title of the message box. Defaults to "Message".
             boxtype (MessageBoxType, optional): determines the type of message box to display. Defaults to ``Type.MESSAGEBOX``.
             buttons (MessageBoxButtonsEnum, int, optional): determines what buttons to display. Defaults to ``Buttons.BUTTONS_OK``.
 
         Returns:
-            Results: MessageBoxResultsEnum
+            Results: MessageBoxResultsEnum.
 
             * Button press ``Abort`` return ``MessageBoxResultsEnum.CANCEL``
             * Button press ``Cancel`` return ``MessageBoxResultsEnum.CANCEL``

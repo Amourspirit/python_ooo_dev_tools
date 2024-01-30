@@ -12,10 +12,11 @@ from ooodev.dialog.search.tree_search import RuleTextInsensitive
 from ooodev.dialog.search.tree_search import RuleTextRegex
 from ooodev.dialog.search.tree_search.search_tree import SearchTree
 from ooodev.events.args.event_args import EventArgs
-from ooodev.office.calc import Calc
+from ooodev.calc import CalcDoc
 from ooodev.utils import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.utils.date_time_util import DateUtil
+from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 
 
 if TYPE_CHECKING:
@@ -25,7 +26,8 @@ if TYPE_CHECKING:
 
 class Tree:
     # pylint: disable=unused-argument
-    def __init__(self) -> None:
+    def __init__(self, doc: CalcDoc) -> None:
+        self._doc = doc
         self._border_kind = BorderKind.BORDER_SIMPLE
         self._title = "Tree Example"
         self._width = 600
@@ -41,7 +43,7 @@ class Tree:
 
         self._init_handlers()
 
-        self._dialog = Dialogs.create_dialog(
+        self._dialog = self._doc.create_dialog(
             x=-1,
             y=-1,
             width=self._width,
@@ -50,10 +52,9 @@ class Tree:
         )
         # windows peer must be created before tree control is added; otherwise,
         # the tree control will not work correctly. Some nodes seem not be added or visible.
-        _ = Dialogs.create_dialog_peer(self._dialog)
+        self._dialog.create_peer()
 
-        self._ctl_tree = Dialogs.insert_tree_control(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_tree = self._dialog.insert_tree_control(
             x=self._margin,
             y=self._padding,
             width=self._width - (self._margin * 2),
@@ -116,8 +117,7 @@ class Tree:
 
     def _init_buttons(self) -> None:
         """Add OK, Cancel and Info buttons to dialog control"""
-        self._ctl_btn_cancel = Dialogs.insert_button(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_btn_cancel = self._dialog.insert_button(
             label="Cancel",
             x=self._width - self._btn_width - self._margin,
             y=self._height - self._btn_height - self._padding,
@@ -126,8 +126,7 @@ class Tree:
             btn_type=PushButtonType.CANCEL,
         )
         sz = self._ctl_btn_cancel.view.getPosSize()
-        self._ctl_btn_ok = Dialogs.insert_button(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_btn_ok = self._dialog.insert_button(
             label="OK",
             x=sz.X - sz.Width - self._margin,
             y=sz.Y,
@@ -137,8 +136,7 @@ class Tree:
             DefaultButton=True,
         )
 
-        self._ctl_btn_info = Dialogs.insert_button(
-            dialog_ctrl=self._dialog.control,
+        self._ctl_btn_info = self._dialog.insert_button(
             label="Info",
             x=self._margin,
             y=sz.Y,
@@ -218,13 +216,15 @@ class Tree:
     # endregion Event Handlers
 
     def show(self) -> None:
-        window = mLo.Lo.get_frame().getContainerWindow()
+        # window = mLo.Lo.get_frame().getContainerWindow()
+        self._doc.activate()
+        window = self._doc.get_frame().getContainerWindow()
         ps = window.getPosSize()
         x = round(ps.Width / 2 - self._width / 2)
         y = round(ps.Height / 2 - self._height / 2)
-        self._dialog.control.setTitle(self._title)
-        self._dialog.control.setPosSize(x, y, self._width, self._height, PosSize.POSSIZE)
-        self._dialog.control.setVisible(True)
+        self._dialog.set_title(self._title)
+        self._dialog.set_pos_size(x, y, self._width, self._height, PosSize.POSSIZE)
+        self._dialog.set_visible(True)
         self._search()
         self._dialog.execute()
         self._dialog.dispose()
@@ -232,13 +232,12 @@ class Tree:
 
 def main():
     with mLo.Lo.Loader(mLo.Lo.ConnectSocket(), opt=mLo.Lo.Options(verbose=True)):
-        doc = Calc.create_doc()
-        GUI.set_visible(visible=True, doc=doc)
-        run()
+        doc = CalcDoc.create_doc(visible=True)
+        run(doc)
 
 
-def run() -> None:
-    inst = Tree()
+def run(doc: CalcDoc) -> None:
+    inst = Tree(doc)
     inst.show()
 
 

@@ -21,10 +21,14 @@ Submodules
    ooodev.adapter.awt.action_listener
    ooodev.adapter.awt.adjustment_events
    ooodev.adapter.awt.adjustment_listener
+   ooodev.adapter.awt.control_partial
+   ooodev.adapter.awt.dialog2_partial
+   ooodev.adapter.awt.dialog_partial
    ooodev.adapter.awt.enhanced_mouse_click_events
    ooodev.adapter.awt.enhanced_mouse_click_handler
    ooodev.adapter.awt.focus_events
    ooodev.adapter.awt.focus_listener
+   ooodev.adapter.awt.index_container_comp
    ooodev.adapter.awt.item_events
    ooodev.adapter.awt.item_list_events
    ooodev.adapter.awt.item_list_listener
@@ -48,9 +52,12 @@ Submodules
    ooodev.adapter.awt.text_listener
    ooodev.adapter.awt.top_window_events
    ooodev.adapter.awt.top_window_listener
+   ooodev.adapter.awt.top_window_partial
+   ooodev.adapter.awt.uno_control_dialog_partial
    ooodev.adapter.awt.user_input_interception_partial
    ooodev.adapter.awt.window_events
    ooodev.adapter.awt.window_listener
+   ooodev.adapter.awt.window_partial
 
 Module contents
 ---------------
