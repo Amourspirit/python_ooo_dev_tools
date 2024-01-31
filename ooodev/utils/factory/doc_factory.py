@@ -1,12 +1,15 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import uno
 from com.sun.star.frame import XModule
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils import lo as mLo
 
+if TYPE_CHECKING:
+    from ooodev.proto.office_document_t import OfficeDocumentT
 
-def doc_factory(doc: Any, lo_inst: LoInst | None) -> Any:
+
+def doc_factory(doc: Any, lo_inst: LoInst | None) -> OfficeDocumentT:
     """
     Gets an instance of a document.
 
@@ -19,7 +22,7 @@ def doc_factory(doc: Any, lo_inst: LoInst | None) -> Any:
         ValueError: If unknown identifier.
 
     Returns:
-        Any: A document instance. Such as ``ooodev.draw.DrawDoc`` or ``ooodev.calc.CalcDoc``.
+        OfficeDocumentT: A document instance. Such as ``ooodev.draw.DrawDoc`` or ``ooodev.calc.CalcDoc``.
     """
     if lo_inst is None:
         lo_inst = mLo.Lo.current_lo

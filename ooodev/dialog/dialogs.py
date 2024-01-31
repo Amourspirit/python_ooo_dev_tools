@@ -38,6 +38,7 @@ from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
 from ..exceptions import ex as mEx
 from ..utils import lo as mLo
+from ..utils import info as mInfo
 from ..utils.date_time_util import DateUtil
 from ..utils.kind.align_kind import AlignKind as AlignKind
 from ..utils.kind.border_kind import BorderKind as BorderKind
@@ -228,7 +229,7 @@ class Dialogs:
             return result
         for ctrl in controls:
             control = cls.get_dialog_control_instance(ctrl)
-            if control and isinstance(control, control_type):
+            if control and mInfo.Info.is_instance(control, control_type):
                 result.append(control)
         return result
 
@@ -551,20 +552,17 @@ class Dialogs:
         Returns:
             XDialog: Dialog.
         """
-        if isinstance(dialog_ctrl, CtlDialog):
+        if mInfo.Info.is_instance(dialog_ctrl, CtlDialog):
             ctrl = dialog_ctrl.control
         else:
-            ctrl = dialog_ctrl
+            ctrl = cast("UnoControlDialog", dialog_ctrl)
         xwindow = mLo.Lo.qi(XWindow, ctrl, True)
         # set the dialog window invisible until it is executed
         xwindow.setVisible(False)
 
         xtoolkit = mLo.Lo.create_instance_mcf(XToolkit, "com.sun.star.awt.Toolkit", raise_err=True)
         window_parent_peer = xtoolkit.getDesktopWindow()
-        if isinstance(dialog_ctrl, CtlDialog):
-            dialog_ctrl.control.createPeer(xtoolkit, window_parent_peer)
-        else:
-            dialog_ctrl.createPeer(xtoolkit, window_parent_peer)
+        ctrl.createPeer(xtoolkit, window_parent_peer)
 
         # dialog_component = mLo.Lo.qi(XComponent, dialog_ctrl)
         # dialog_component.dispose() # free window resources

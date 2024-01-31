@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooodev.utils.inst.lo.lo_inst import LoInst
 
 

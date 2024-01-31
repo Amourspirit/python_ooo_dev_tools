@@ -71,7 +71,7 @@ class CalcDoc(
 ):
     """Defines a Calc Document"""
 
-    DOC_TYPE = DocType.CALC
+    DOC_TYPE: DocType = DocType.CALC
 
     def __init__(self, doc: XSpreadsheetDocument, lo_inst: LoInst | None = None) -> None:
         """

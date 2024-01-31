@@ -15,6 +15,14 @@ Class Lo
 
         :rtype: XComponent
 
+    .. py:property:: Lo.current_doc
+
+        Static read-only property
+
+        Gets the current document. Such as ``ooodev.calc.CalcDoc`` or ``ooodev.write.WriteDoc``.
+
+        :rtype: OfficeDocumentT
+
     .. py:property:: Lo.is_macro_mode
 
         Static read-only property

@@ -46,7 +46,6 @@ if TYPE_CHECKING:
         from typing import Literal  # Py >= 3.8
     except ImportError:
         from typing_extensions import Literal
-    from ooo.dyn.beans.property_value import PropertyValue
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
@@ -56,6 +55,8 @@ if TYPE_CHECKING:
     from com.sun.star.script.provider import XScriptContext
     from com.sun.star.uno import XComponentContext
     from com.sun.star.uno import XInterface
+    from ooo.dyn.beans.property_value import PropertyValue
+    from ooodev.proto.office_document_t import OfficeDocumentT
 
 
 # PathOrStr = type_var.PathOrStr
@@ -2070,6 +2071,13 @@ class Lo(metaclass=StaticProperty):
         inst = lo_inst.LoInst(opt=opt)
         _ = inst.load_from_lo_loader(cls._lo_inst.lo_loader)
         return inst
+
+    @classproperty
+    def current_doc(cls) -> OfficeDocumentT:
+        """
+        Gets the current document. Such as ``ooodev.calc.CalcDoc`` or ``ooodev.write.WriteDoc``.
+        """
+        return cls._lo_inst.current_doc
 
     @classproperty
     def null_date(cls) -> datetime:

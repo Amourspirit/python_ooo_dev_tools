@@ -1,0 +1,8 @@
+factory
+=======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

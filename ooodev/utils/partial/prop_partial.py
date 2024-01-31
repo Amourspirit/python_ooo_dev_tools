@@ -13,10 +13,29 @@ class PropPartial:
 
     @overload
     def get_property(self, name: str) -> Any:
+        """
+        Get property value
+
+        Args:
+            name (str): Property Name.
+
+        Returns:
+            Any: Property value or default.
+        """
         ...
 
     @overload
     def get_property(self, name: str, default: Any) -> Any:
+        """
+        Get property value
+
+        Args:
+            name (str): Property Name.
+            default (Any, optional): Return value if property value is ``None``.
+
+        Returns:
+            Any: Property value or default.
+        """
         ...
 
     def get_property(self, name: str, default: Any = gUtil.NULL_OBJ) -> Any:

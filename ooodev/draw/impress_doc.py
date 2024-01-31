@@ -52,7 +52,7 @@ class ImpressDoc(
 ):
     """Impress Document Class"""
 
-    DOC_TYPE = DocType.IMPRESS
+    DOC_TYPE: DocType = DocType.IMPRESS
 
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         """

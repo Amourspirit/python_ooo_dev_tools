@@ -49,7 +49,7 @@ class DrawDoc(
 ):
     """Draw document Class"""
 
-    DOC_TYPE = DocType.DRAW
+    DOC_TYPE: DocType = DocType.DRAW
 
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         """
