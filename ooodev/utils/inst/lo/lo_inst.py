@@ -85,6 +85,7 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XInterface
     from com.sun.star.util import Date as UnoDate
     from ooodev.proto.event_observer import EventObserver
+    from ooodev.proto.office_document_t import OfficeDocumentT
 
     # from ooodev.events.events_t import EventsT
 
@@ -128,6 +129,7 @@ class LoInst(EventsPartial):
         self._opt = LoOptions() if opt is None else opt
         self._allow_print = self._opt.verbose
         self._set_lo_events()
+        self._current_doc = None
 
     # region Events
     def _set_lo_events(self) -> None:
@@ -479,7 +481,6 @@ class LoInst(EventsPartial):
         #                     component loader (XComponentLoader)
         # Once we have a component loader, we can load a document.
         # xcc, mcFactory, and xDesktop are stored as static globals.
-
         if self._is_default:
             raise mEx.LoadingError("Cannot set loader for default instance")
 
@@ -496,6 +497,7 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
+        self._current_doc = None
         b_connector = cargs.event_data["connector"]
         lo_loader = LoLoader(connector=b_connector, cache_obj=cache_obj, opt=opt)
         return self.load_from_lo_loader(lo_loader)
@@ -634,6 +636,7 @@ class LoInst(EventsPartial):
         self.trigger_event(LoNamedEvent.COMPONENT_LOADING, cargs)
         if cargs.cancel:
             return
+        self._current_doc = None
         eargs = EventArgs.from_args(cargs)
         self.trigger_event(LoNamedEvent.RESET, eargs)
         self._ms_factory = self.qi(XMultiServiceFactory, component)
@@ -703,6 +706,7 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
+        self._current_doc = None
         fnm = cast("PathOrStr", cargs.event_data["fnm"])
 
         if fnm is None:
@@ -845,6 +849,7 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
+        self._current_doc = None
         dtype = LoDocTypeStr(cargs.event_data["doc_type"])
         properties = cast("Iterable[PropertyValue]", cargs.event_data["props"])
         if properties is None:
@@ -905,6 +910,8 @@ class LoInst(EventsPartial):
             raise mEx.CancelEventError(cargs)
         if not mFileIO.FileIO.is_openable(template_path):
             raise Exception(f"Template file can not be opened: '{template_path}'")
+
+        self._current_doc = None
         self.print(f"Opening template: '{template_path}'")
         template_url = mFileIO.FileIO.fnm_to_url(fnm=template_path)
 
@@ -1236,6 +1243,8 @@ class LoInst(EventsPartial):
         self.trigger_event(LoNamedEvent.DOC_OPENING, cargs)
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
+
+        self._current_doc = None
         xcc = addon_xcc
         if xcc is None:
             raise TypeError("'addon_xcc' is null. Could not access component context")
@@ -1268,6 +1277,8 @@ class LoInst(EventsPartial):
             raise mEx.CancelEventError(cargs)
         if sc is None:
             raise TypeError("Script Context is null")
+
+        self._current_doc = None
         xcc = sc.getComponentContext()
         if xcc is None:
             raise Exception("Could not access component context")
@@ -1289,15 +1300,6 @@ class LoInst(EventsPartial):
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
     # region dispatch_cmd()
-
-    def _get_frame(self) -> XFrame:
-        if self._doc is None:
-            raise mEx.LoNotLoadedError("No document loaded")
-
-        component = self.qi(XComponent, self._doc, True)
-        model = self.qi(XModel, component, True)
-        controller = model.getCurrentController()
-        return controller.getFrame()
 
     @overload
     def dispatch_cmd(self, cmd: str) -> Any:
@@ -1332,7 +1334,7 @@ class LoInst(EventsPartial):
             else:
                 dispatch_props = tuple(props)
             if frame is None:
-                frame = self._get_frame()
+                frame = self.get_frame()
 
             helper = self.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
             if helper is None:
@@ -1589,6 +1591,13 @@ class LoInst(EventsPartial):
         return result
 
     def get_frame(self) -> XFrame:
+        if self._doc is None:
+            raise mEx.LoNotLoadedError("No document loaded")
+
+        component = self.qi(XComponent, self._doc, True)
+        model = self.qi(XModel, component, True)
+        controller = model.getCurrentController()
+        return controller.getFrame()
         # sourcery skip: raise-specific-error
         if self.star_desktop is None:
             raise Exception("No desktop found")
@@ -1837,6 +1846,15 @@ class LoInst(EventsPartial):
     def is_default(self) -> bool:
         """Gets if the current instance is the default Lo instance."""
         return self._is_default
+
+    @property
+    def current_doc(self) -> OfficeDocumentT:
+        """Get the current document."""
+        if self._current_doc is None:
+            from ooodev.utils.factory.doc_factory import doc_factory
+
+            self._current_doc = doc_factory(doc=self._doc, lo_inst=self)
+        return self._current_doc
 
 
 __all__ = ("LoInst",)

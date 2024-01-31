@@ -24,11 +24,8 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
 
     visible = False if Lo.bridge_connector.headless else True
     delay = 0  # 500
-    doc = WriteDoc.create_doc(loader)
+    doc = WriteDoc.create_doc(loader=loader, visible=visible)
     try:
-        if visible:
-            doc.set_visible(visible=visible)
-
         cursor = doc.get_cursor()
 
         im_fnm = cast(Path, fix_image_path("skinner.png"))

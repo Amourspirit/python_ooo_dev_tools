@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.25.0
+==============
+
+Added ``ooodev.utils.lo.Lo.current_doc`` static property. This property returns the current document that is being worked on such as a ``ooodev.write.WriteDoc`` or ``ooodev.calc.CalcDoc``.
+
+Type support for a more general Document via ``ooodev.proto.office_document_t.OfficeDocumentT``. This is the type returned by ``ooodev.utils.lo.Lo.current_doc``.
+
+Other Type enhancements and protocols.
+
 Version 0.24.0
 ==============
 

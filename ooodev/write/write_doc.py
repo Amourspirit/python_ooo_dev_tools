@@ -58,6 +58,7 @@ from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -93,6 +94,7 @@ class WriteDoc(
     QiPartial,
     PropPartial,
     GuiPartial,
+    ServicePartial,
     EventsPartial,
     StylePartial,
     DocIoPartial["WriteDoc"],
@@ -100,7 +102,7 @@ class WriteDoc(
 ):
     """A class to represent a Write document."""
 
-    DOC_TYPE = DocType.WRITER
+    DOC_TYPE: DocType = DocType.WRITER
 
     def __init__(self, doc: XTextDocument, lo_inst: LoInst | None = None) -> None:
         """
@@ -135,6 +137,7 @@ class WriteDoc(
         QiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
