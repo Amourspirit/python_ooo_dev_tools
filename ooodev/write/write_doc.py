@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, overload, Sequence, TYPE_CHECKING
+from typing import Any, cast, List, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
@@ -289,6 +289,27 @@ class WriteDoc(
             event_args (EventArgs): Event data.
         """
         self.trigger_event(WriteNamedEvent.DOC_CLOSED, event_args)
+
+    # region from_current_doc()
+    @classmethod
+    def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
+        """
+        Event called after from_current_doc is called.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        doc = cast(WriteDoc, event_args.event_data["doc"])
+        if doc.DOC_TYPE != DocType.WRITER:
+            raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not a Write document.")
+
+    # endregion from_current_doc()
 
     # endregion DocIoPartial overrides
 

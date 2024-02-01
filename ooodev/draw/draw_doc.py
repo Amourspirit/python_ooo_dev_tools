@@ -9,6 +9,7 @@ from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
+from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
@@ -149,6 +150,29 @@ class DrawDoc(
         return super().delete_slide(idx=idx)
 
     # endregion Overrides
+
+    # region DocIoPartial Overrides
+    # region from_current_doc()
+    @classmethod
+    def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
+        """
+        Event called after from_current_doc is called.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        doc = cast(DrawDoc, event_args.event_data["doc"])
+        if doc.DOC_TYPE != DocType.DRAW:
+            raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not a Draw document.")
+
+    # endregion from_current_doc()
+    # endregion DocIoPartial Overrides
 
     # region Properties
     @property

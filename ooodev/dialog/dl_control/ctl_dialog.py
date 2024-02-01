@@ -32,7 +32,7 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, TopWindowEvents, WindowEv
         Constructor
 
         Args:
-            ctl (UnoControlDialog): Button Control
+            ctl (UnoControlDialog): Dialog Control.
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         UnoControlDialogComp.__init__(self, component=ctl)

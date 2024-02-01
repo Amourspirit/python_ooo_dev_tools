@@ -1849,10 +1849,16 @@ class LoInst(EventsPartial):
 
     @property
     def current_doc(self) -> OfficeDocumentT:
-        """Get the current document."""
+        """
+        Get the current document.
+
+        This property does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
+        """
         if self._current_doc is None:
             from ooodev.utils.factory.doc_factory import doc_factory
 
+            if self._doc is None:
+                self._doc = self.this_component
             self._current_doc = doc_factory(doc=self._doc, lo_inst=self)
         return self._current_doc
 
