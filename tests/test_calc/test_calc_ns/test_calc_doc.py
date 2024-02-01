@@ -349,7 +349,17 @@ def test_get_selected_cell(loader) -> None:
     from ooodev.calc import CalcDoc
 
     assert loader is not None
+
+    dispatched = False
+
+    def on_dispatching(source, args):
+        # This event will only be called when doc.dispatch_cmd() is called.
+        # A content manager is used to subscribe and unsubscribe to the global events.
+        nonlocal dispatched
+        dispatched = True
+
     doc = CalcDoc.create_doc(loader)
+    doc.subscribe_event("lo_dispatching", on_dispatching)
     try:
         sheet = doc.get_active_sheet()
         rng = sheet.get_range(range_name="B1:D4")
@@ -358,7 +368,10 @@ def test_get_selected_cell(loader) -> None:
         result = view.select(cursor)
         assert result
 
+        # uses CalcDoc.dispatch_cmd() to go to cell.
+        # this will trigger the on_dispatching event.
         _ = sheet.goto_cell(cell_name="B4")
+        assert dispatched is True
         selected_cell = sheet.get_selected_cell()
         assert selected_cell.cell_obj.col == "B"
         assert selected_cell.cell_obj.row == 4

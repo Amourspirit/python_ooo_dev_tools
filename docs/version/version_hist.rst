@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.25.2
+==============
+
+Added the ability for Document classes to dispatch commands via the ``dispatch_cmd()``. This allows for dispatching to be done to the correct document in multi-document usage.
+
+Other minor fixes and updates.
+
+Breaking Changes
+----------------
+
+Removed redundant ``ooodev.calc.calc_cell_range.set_style()`` method. This method was not needed and was redundant with ``ooodev.calc.calc_cell_range.apply_styles()``.
+
 Version 0.25.1
 ==============
 

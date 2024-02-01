@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from .calc_doc import CalcDoc
 
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
+from ooodev.events.lo_events import observe_events
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import lo as mLo
@@ -1955,7 +1956,12 @@ class CalcSheet(
             :ref:`ch23_splitting_panes`
         """
         with LoContext(self.lo_inst):
-            mCalc.Calc.split_window(doc=self.calc_doc.component, cell_name=cell_name)
+            # split window dispatches SplitWindow
+            # use context manager to observe global events while dispatch is taking place.
+            # this will allow CalcDoc to observe the event.
+            # eg: doc.subscribe_event("lo_dispatching", on_dispatching)
+            with observe_events(self.calc_doc.event_observer):
+                mCalc.Calc.split_window(doc=self.calc_doc.component, cell_name=cell_name)
 
     # region unmerge_cells()
     @overload
@@ -2099,10 +2105,10 @@ class CalcSheet(
         """
 
         def go(obj) -> mCellObj.CellObj:
-            frame = self.calc_doc.get_controller().getFrame()
+            frame = self.calc_doc.get_frame()
             s = str(obj)
-            props = mProps.Props.make_props(ToPoint=str(obj))
-            self.lo_inst.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
+            props = mProps.Props.make_props(ToPoint=s)
+            _ = self.calc_doc.dispatch_cmd(cmd="GoToCell", props=props, frame=frame)
             return mCellObj.CellObj.from_cell(cell_val=s)
 
         kargs_len = len(kwargs)
@@ -2207,7 +2213,7 @@ class CalcSheet(
         Returns:
             None:
         """
-        self.lo_inst.dispatch_cmd(cmd="Calculate")
+        self.calc_doc.dispatch_cmd(cmd="Calculate")
 
     def extract_col(self, vals: Table, col_idx: int) -> List[Any]:
         """

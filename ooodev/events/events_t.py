@@ -36,6 +36,18 @@ class EventsT(Protocol):
         """
         ...
 
+    def remove_event_observer(self, observer: EventObserver) -> bool:
+        """
+        Removes an observer
+
+        Args:
+            observer (EventObserver): One or more observers to add.
+
+        Returns:
+            bool: ``True`` if observer has been removed; Otherwise, ``False``.
+        """
+        ...
+
     def subscribe_event(self, event_name: str, callback: EventCallback) -> None:
         """
         Add an event listener to current instance.
@@ -73,4 +85,14 @@ class EventsT(Protocol):
         Returns:
             None:
         """
+        ...
+
+    @property
+    def event_observer(self) -> EventObserver:
+        """Gets/Sets The Event Observer for this instance."""
+        ...
+
+    @event_observer.setter
+    def event_observer(self, value: EventObserver) -> None:
+        """Sets The Event Observer for this instance."""
         ...
