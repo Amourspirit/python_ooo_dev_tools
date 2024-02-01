@@ -3,14 +3,19 @@
 This module is for the purpose of sharing events between classes.
 """
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import contextlib
 from weakref import ref, ReferenceType
 from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union, Tuple
 from . import event_singleton
-from ..proto import event_observer
+
 from ..utils.type_var import EventCallback as EventCallback
 from .args.event_args_t import EventArgsT
 from .args.generic_args import GenericArgs as GenericArgs
+
+if TYPE_CHECKING:
+    from ooodev.proto.event_observer import EventObserver
+    from ooodev.events.events_t import EventsT
 
 
 class EventArg(NamedTuple):
@@ -31,7 +36,7 @@ class _event_base(object):
 
     def __init__(self) -> None:
         self._callbacks: Dict[str, List[ReferenceType[EventCallback]]] | None = None
-        self._observers: Union[List[ReferenceType[event_observer.EventObserver]], None] = None
+        self._observers: Union[List[ReferenceType[EventObserver]], None] = None
 
     def on(self, event_name: str, callback: EventCallback):
         """
@@ -120,7 +125,7 @@ class _event_base(object):
                 if len(self._callbacks[event_name]) == 0:
                     del self._callbacks[event_name]
 
-    def add_observer(self, *args: event_observer.EventObserver) -> None:
+    def add_observer(self, *args: EventObserver) -> None:
         """
         Adds observers that gets their ``trigger`` method called when this class ``trigger`` method is called.
 
@@ -155,7 +160,7 @@ class _event_base(object):
                 for i in cleanup:
                     _ = self._observers.pop(i)
 
-    def remove_observer(self, observer: event_observer.EventObserver) -> bool:
+    def remove_observer(self, observer: EventObserver) -> bool:
         """
         Removes an observer
 
@@ -252,9 +257,9 @@ class LoEvents(_event_base):
         return cls._instance
 
     def __init__(self) -> None:
-        self._observers: Union[List[ReferenceType[event_observer.EventObserver]], None]
+        self._observers: Union[List[ReferenceType[EventObserver]], None]
 
-    def add_observer(self, *args: event_observer.EventObserver) -> None:
+    def add_observer(self, *args: EventObserver) -> None:
         """
         Adds observers that gets their ``trigger`` method called when this class ``trigger`` method is called.
 
@@ -313,7 +318,7 @@ def event_ctx(
     source: Any = None,
     trigger_args: GenericArgs | None = None,
     lo_observe: bool = False,
-) -> Generator[event_observer.EventObserver, None, None]:
+) -> Generator[EventObserver, None, None]:
     """
     Event context manager.
 
@@ -358,6 +363,35 @@ def event_ctx(
                 lo_inst.remove_event_observer(e_obj)
         e_obj = None
         _ = None  # just to make sure _ is not a ref to e_obj
+
+
+@contextlib.contextmanager
+def observe_events(
+    observer: EventObserver,
+    events: EventObserver | None = None,
+) -> Generator[EventObserver, None, None]:
+    """
+    Event Observer context manager.
+
+    This manager adds and removes event observer.
+
+    Parameters:
+        observer (EventObserver): Observer to add.
+        events (EventObserver, optional): Events to add observer to. Defaults to ``LoEvents()`` Singleton
+
+    Yields:
+        Generator[EventObserver, None, None]: events
+    """
+    try:
+        if events is None:
+            events = LoEvents()
+        events.add_observer(observer)
+        yield observer
+    except Exception:
+        raise
+    finally:
+        if events is not None:
+            events.remove_observer(observer)
 
 
 def is_meth_event(source: str, meth: Callable) -> bool:

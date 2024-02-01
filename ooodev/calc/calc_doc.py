@@ -23,12 +23,15 @@ else:
     SpreadsheetDocument = Any
 
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
+from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.event_singleton import _Events
+from ooodev.events.lo_events import observe_events
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
@@ -43,14 +46,13 @@ from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from . import calc_sheet as mCalcSheet
 from . import calc_sheets as mCalcSheets
 from . import calc_sheet_view as mCalcSheetView
@@ -68,6 +70,7 @@ class CalcDoc(
     EventsPartial,
     DocIoPartial["CalcDoc"],
     CreateDialogPartial,
+    DispatchPartial,
 ):
     """Defines a Calc Document"""
 
@@ -101,6 +104,7 @@ class CalcDoc(
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
+        DispatchPartial.__init__(self, lo_inst=self.lo_inst, events=self)
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None
@@ -867,7 +871,12 @@ class CalcDoc(
             :ref:`ch23_splitting_panes`
         """
         with LoContext(self.lo_inst):
-            mCalc.Calc.split_window(doc=self.component, cell_name=cell_name)
+            # split window dispatches GoToCell and SplitWindow
+            # use context manager to observe global events while dispatch is taking place.
+            # this will allow CalcDoc to observe the event.
+            # eg: doc.subscribe_event("lo_dispatching", on_dispatching)
+            with observe_events(self.event_observer):
+                mCalc.Calc.split_window(doc=self.component, cell_name=cell_name)
 
     @overload
     def set_visible(self) -> None:

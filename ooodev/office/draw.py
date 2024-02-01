@@ -3448,7 +3448,7 @@ class Draw:
     @staticmethod
     def combine_shape(doc: XComponent, shapes: XShapes, combine_op: ShapeCombKind) -> XShape:
         """
-        Combines one or more shapes.
+        Combines one or more shapes using a dispatch command.
 
         |lo_unsafe|
 

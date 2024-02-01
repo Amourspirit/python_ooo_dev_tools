@@ -519,7 +519,7 @@ class DocIoPartial(Generic[_T]):
                 doc.sheets[0]["A1"].Value = "Hello World"
 
         See Also:
-            :py:attrib:`ooodev.utils.lo.Lo.current_doc`
+            :py:attr:`ooodev.utils.lo.Lo.current_doc`
         """
         doc = mLo.Lo.current_doc
         args = EventArgs(cls.from_current_doc.__qualname__)

@@ -195,6 +195,7 @@ class TextCursorPartial(Generic[_T]):
         Returns:
             WriteTextContent: Image Link on success; Otherwise, ``None``.
         """
+        ...
 
     @overload
     def add_image_link(
