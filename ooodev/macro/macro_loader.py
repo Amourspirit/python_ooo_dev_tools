@@ -49,7 +49,7 @@ class MacroLoader:
                 self.loader = Lo.load_office()
         else:
             self.loader = Lo.load_office()
-        self._inst = Lo._lo_inst
+        self._inst = Lo.current_lo
 
     def __enter__(self) -> XComponentLoader:
         if self._override:
@@ -58,8 +58,8 @@ class MacroLoader:
         if self._inst is None:
             raise RuntimeError("No running instance of office")
         if self._inst.this_component is None:
+            # if this_component ten load_component() has already been called.
             raise RuntimeError("Critical error: Unable to get ThisComponent")
-        self._inst.load_component(self._inst.this_component)
         return self.loader
 
     def __exit__(self, exc_type, exc_val, exc_tb):

@@ -16,6 +16,9 @@ from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.partial.dispatch_partial import DispatchPartial
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.events.lo_events import observe_events
 
 from .. import draw_page as mDrawPage
 from .. import master_draw_page as mMasterDrawPage
@@ -122,7 +125,10 @@ class DrawDocPartial(Generic[_T]):
 
     def combine_shape(self, shapes: XShapes, combine_op: ShapeCombKind) -> mDrawShape.DrawShape[_T]:
         """
-        Combines one or more shapes.
+        Combines one or more shapes using a dispatch command.
+        
+        If the owner of this instance is an instance of :py:class:`~.events.partial.EventsPartial` then the owner
+        will be added as an observer to the dispatch events, for the duration of this method.
 
         Args:
             doc (XComponent): Document
@@ -136,7 +142,13 @@ class DrawDocPartial(Generic[_T]):
             DrawShape: New combined shape.
         """
         with LoContext(self.__lo_inst):
-            result = mDraw.Draw.combine_shape(self.__component, shapes, combine_op)
+            if isinstance(self.__owner, EventsPartial):
+                events = cast(EventsPartial, self.__owner)
+                with observe_events(events.event_observer):
+                    # add the owner as an observer so it can be notified of the dispatch events.
+                    result = mDraw.Draw.combine_shape(self.__component, shapes, combine_op)
+            else:
+                result = mDraw.Draw.combine_shape(self.__component, shapes, combine_op)
         return mDrawShape.DrawShape(self.__owner, result)
 
     def delete_slide(self, idx: int) -> bool:

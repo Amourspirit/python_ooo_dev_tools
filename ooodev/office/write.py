@@ -3395,6 +3395,7 @@ class Write(mSel.Selection):
         Returns:
             XTextContent: Image Link on success; Otherwise, ``None``.
         """
+        ...
 
     @overload
     @classmethod

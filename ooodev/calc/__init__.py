@@ -1,6 +1,7 @@
 import uno
 from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
 from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
+from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 from ooodev.utils.data_type.cell_obj import CellObj as CellObj
 from ooodev.utils.data_type.range_obj import RangeObj as RangeObj

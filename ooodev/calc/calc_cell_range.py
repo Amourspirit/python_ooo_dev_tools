@@ -306,22 +306,6 @@ class CalcCellRange(
         else:
             self.calc_sheet.set_cell_range_array(cell_range=self.component, values=values)
 
-    def set_style(self, styles: Sequence[StyleT]) -> None:
-        """
-        Sets style for cell
-
-        Args:
-            styles (Sequence[StyleT]): One or more styles to apply to cell.
-
-        Returns:
-            None:
-
-        See Also:
-            - :ref:`help_calc_format_style_cell`
-            - :ref:`help_calc_format_direct_cell`
-        """
-        mCalc.Calc.set_style_range(sheet=self.calc_sheet.component, range_obj=self._range_obj, styles=styles)
-
     def is_merged_cells(self) -> bool:
         """
         Gets is a range of cells is merged.
@@ -747,6 +731,17 @@ class CalcCellRange(
         )
         cell_obj = mCalc.Calc.get_cell_obj(cell=cell)
         return mCalcCell.CalcCell(owner=self.calc_sheet, cell=cell_obj, lo_inst=self.lo_inst)
+
+    def remove_border(self) -> None:
+        """
+        Removes border from range of cells.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.25.2
+        """
+        _ = mCalc.Calc.remove_border(sheet=self.calc_sheet.component, range_obj=self._range_obj)
 
     # region Properties
     @property

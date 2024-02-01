@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 from ooodev.events.args.event_args_t import EventArgsT
 from ooodev.events.lo_events import Events
 from ooodev.utils.type_var import EventCallback
@@ -13,7 +13,7 @@ class EventsPartial:
         if events is not None:
             self.__events = events
         else:
-            self.__events = Events(source=self)
+            self.__events = cast("EventObserver", Events(source=self))
 
     # region Events
 
@@ -84,3 +84,13 @@ class EventsPartial:
         self.__events.trigger(event_name, event_args)
 
     # endregion Events
+
+    @property
+    def event_observer(self) -> EventObserver:
+        """Gets/Sets The Event Observer for this instance."""
+        return self.__events
+
+    @event_observer.setter
+    def event_observer(self, value: EventObserver) -> None:
+        """Sets The Event Observer for this instance."""
+        self.__events = value

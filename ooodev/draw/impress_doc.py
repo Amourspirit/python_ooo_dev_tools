@@ -9,6 +9,7 @@ from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
@@ -17,6 +18,7 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
@@ -47,9 +49,11 @@ class ImpressDoc(
     PropPartial,
     GuiPartial,
     ServicePartial,
+    EventsPartial,
     StylePartial,
     DocIoPartial["ImpressDoc"],
     CreateDialogPartial,
+    DispatchPartial,
 ):
     """Impress Document Class"""
 
@@ -81,9 +85,11 @@ class ImpressDoc(
         PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
+        DispatchPartial.__init__(self, lo_inst=self.lo_inst, events=self)
         self._pages = None
 
     # region Lazy Listeners

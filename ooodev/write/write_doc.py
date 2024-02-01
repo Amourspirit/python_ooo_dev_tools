@@ -48,6 +48,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.data_type.size import Size
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
@@ -99,6 +100,7 @@ class WriteDoc(
     StylePartial,
     DocIoPartial["WriteDoc"],
     CreateDialogPartial,
+    DispatchPartial,
 ):
     """A class to represent a Write document."""
 
@@ -142,6 +144,7 @@ class WriteDoc(
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
+        DispatchPartial.__init__(self, lo_inst=self.lo_inst, events=self)
         self._draw_page = None
         self._draw_pages = None
         self._text_frames = None
