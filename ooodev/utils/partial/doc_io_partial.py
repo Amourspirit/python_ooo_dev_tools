@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, overload, TYPE_CHECKING, TypeVar, Generic, ClassVar
+from typing import Any, cast, overload, TYPE_CHECKING, TypeVar, Generic, ClassVar
 import uno
 from com.sun.star.frame import XComponentLoader
 from com.sun.star.util import XCloseable
@@ -48,7 +48,7 @@ class DocIoPartial(Generic[_T]):
         if not mInfo.Info.is_doc_type(doc_type=cls.DOC_TYPE.get_service(), obj=doc):
             raise Exception("Not a valid document")
 
-        doc_instance = mDocFactory.doc_factory(doc=doc, lo_inst=lo_inst)
+        doc_instance = cast(_T, mDocFactory.doc_factory(doc=doc, lo_inst=lo_inst))
         return doc_instance
 
     # region Close
@@ -494,6 +494,56 @@ class DocIoPartial(Generic[_T]):
         return cls.get_doc_from_component(doc=doc, lo_inst=lo_inst)
 
     # endregion create_doc_from_template()
+
+    # region from_current_doc()
+
+    @classmethod
+    def from_current_doc(cls) -> _T:
+        """
+        Get a document from the current component.
+
+        This method is useful in macros where the access to current document is needed.
+        This method does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
+
+        Args:
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+
+        Returns:
+            _T: Class instance representing document.
+
+        Example:
+            .. code-block:: python
+
+                from ooodev.calc import CalcDoc
+                doc = CalcDoc.from_current_doc()
+                doc.sheets[0]["A1"].Value = "Hello World"
+
+        See Also:
+            :py:attrib:`ooodev.utils.lo.Lo.current_doc`
+        """
+        doc = mLo.Lo.current_doc
+        args = EventArgs(cls.from_current_doc.__qualname__)
+        args.event_data = {"doc": doc}
+        cls._on_from_current_doc_loaded(args)
+        return cast(_T, doc)
+
+    @classmethod
+    def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
+        """
+        Event called after from_current_doc is called.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        pass
+
+    # endregion from_current_doc()
 
     # region open_doc()
     @overload

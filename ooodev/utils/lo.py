@@ -2076,7 +2076,28 @@ class Lo(metaclass=StaticProperty):
     def current_doc(cls) -> OfficeDocumentT:
         """
         Gets the current document. Such as ``ooodev.calc.CalcDoc`` or ``ooodev.write.WriteDoc``.
+
+        This property does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
+
+        Example:
+            In example is a simple way to get the current document in a macro that is running in a Calc document.
+
+            .. code-block:: python
+
+                from ooodev.utils.lo import Lo
+                # get CalcDoc from the current context
+                doc = Lo.current_doc
+                doc.sheets[0]["A1"].Value = "Hello World"
+
+        Returns:
+            OfficeDocumentT: Office Document
+
+        See Also:
+            :py:meth:`ooodev.utils.partial.doc_io_partial.from_current_doc`
         """
+        if cls._lo_inst is None:
+            # for macro mode auto load office
+            cls.load_office()
         return cls._lo_inst.current_doc
 
     @classproperty

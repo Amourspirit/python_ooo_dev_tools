@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Tuple, overload, Sequence, TYPE_CHECKING
+from typing import Any, cast, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.drawing import XDrawPagesSupplier
@@ -995,6 +995,26 @@ class CalcDoc(
 
     # endregion open_doc()
 
+    # region from_current_doc()
+    @classmethod
+    def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
+        """
+        Event called after from_current_doc is called.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        doc = cast(CalcDoc, event_args.event_data["doc"])
+        if doc.DOC_TYPE != DocType.CALC:
+            raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not a Calc document.")
+
+    # endregion from_current_doc()
     # region Properties
 
     @property

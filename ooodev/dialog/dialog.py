@@ -30,7 +30,9 @@ class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
         y: int | UnitT = -1,
         width: int | UnitT = -1,
         height: int | UnitT = -1,
+        *,
         lo_inst: LoInst | None = None,
+        dialog: UnoControlDialog | None = None,
     ) -> None:
         """
         Dialog Constructor
@@ -45,12 +47,13 @@ class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
                 Default is ``-1``.
             height (int, UnitT): The height of the window. In ``1/100 mm`` or ``UnitT``. If ``-1``, the dialog Size is not set.
                 Default is ``-1``.
-            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+            lo_inst (LoInst, optional): Lo Instance. Used when creating multiple documents. Defaults to ``None``.
+            ctl (UnoControlDialog): Dialog Control. If ``None`` then an new Dialog is created. Defaults to ``None``.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-
-        dialog = self.__create_dialog(lo_inst=lo_inst, x=x, y=y, width=width, height=height, title=title)
+        if dialog is None:
+            dialog = self.__create_dialog(lo_inst=lo_inst, x=x, y=y, width=width, height=height, title=title)
         with LoContext(inst=lo_inst):
             CtlDialog.__init__(self, ctl=dialog)
         # LoInstPropsPartial.__init__(self, lo_inst=lo_inst)

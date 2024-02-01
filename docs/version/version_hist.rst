@@ -2,6 +2,28 @@
 Version History
 ***************
 
+Version 0.25.1
+==============
+
+Better support for `ooodev.utils.lo.Lo.current_doc` in macros. Now it is possible to use `ooodev.utils.lo.Lo.current_doc` in macros to get the current document without needing to use ``ooodev.macro.MacroLoader``.
+
+.. code-block:: python
+
+    from ooodev.utils.lo import Lo
+
+    # get the current document
+    doc = Lo.current_doc
+
+Added ``ooodev.utils.partial.doc_io_partial.from_current_doc()`` method.
+This method load a document from the current context and applies to all document classes such as a ``ooodev.write.WriteDoc`` or ``ooodev.calc.CalcDoc``.
+This will also work in macros without needing to use ``ooodev.macro.MacroLoader``.
+
+.. code-block:: python
+
+    from ooodev.calc import CalcDoc
+    doc = CalcDoc.from_current_doc()
+    doc.sheets[0]["A1"].Value = "Hello World"
+
 Version 0.25.0
 ==============
 

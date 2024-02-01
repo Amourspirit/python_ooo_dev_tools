@@ -6,6 +6,8 @@ from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
+from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
+from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
@@ -15,13 +17,12 @@ from ooodev.utils import lo as mLo
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
-from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from .partial.draw_doc_partial import DrawDocPartial
 from . import impress_page as mImpressPage
 from . import master_draw_page as mMasterDrawPage
@@ -345,6 +346,29 @@ class ImpressDoc(
             None:
         """
         mDraw.Draw.remove_master_page(doc=self.component, slide=slide)
+
+    # region DocIoPartial Overrides
+    # region from_current_doc()
+    @classmethod
+    def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
+        """
+        Event called after from_current_doc is called.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        doc = cast(ImpressDoc, event_args.event_data["doc"])
+        if doc.DOC_TYPE != DocType.IMPRESS:
+            raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not an Impress document.")
+
+    # endregion from_current_doc()
+    # endregion DocIoPartial Overrides
 
     # region Properties
     @property
