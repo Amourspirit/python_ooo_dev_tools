@@ -11,11 +11,9 @@ if __name__ == "__main__":
 def test_form_get_index_by_name(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
-    from ooodev.loader.lo import Lo
-    from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
-    doc = CalcDoc(Calc.create_doc(loader))
+    doc = CalcDoc.create_doc(loader)
     try:
         sheet = doc.sheets[0]
         dp = sheet.draw_page

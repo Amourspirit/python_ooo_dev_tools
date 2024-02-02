@@ -15,9 +15,8 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
-from ooodev.loader.inst.doc_type import DocType
-from ooodev.loader.inst.lo_inst import LoInst
-from ooodev.loader.inst.service import Service as LoService
+from ooodev.loader.inst import DocType
+from ooodev.loader.inst import Service as LoService
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -36,6 +35,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
     from com.sun.star.presentation import XPresentation2
     from com.sun.star.presentation import XSlideShowController
+    from ooodev.loader.inst import LoInst
 
 
 class ImpressDoc(

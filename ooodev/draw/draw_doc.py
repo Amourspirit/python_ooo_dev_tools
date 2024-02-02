@@ -17,7 +17,6 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.doc_type import DocType
-from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
@@ -31,6 +30,7 @@ from .partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
+    from ooodev.loader.inst import LoInst
 
 
 class DrawDoc(

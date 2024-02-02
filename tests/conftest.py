@@ -14,9 +14,9 @@ from tests.fixtures.calc import __test__path__ as calc_fixture_path
 from tests.fixtures.xml import __test__path__ as xml_fixture_path
 from tests.fixtures.image import __test__path__ as img_fixture_path
 from tests.fixtures.presentation import __test__path__ as pres_fixture_path
-from ooodev.loader.lo import Lo as mLo
+from ooodev.loader import Lo
 from ooodev.utils import paths as mPaths
-from ooodev.loader.inst.options import Options as LoOptions
+from ooodev.loader.inst import Options as LoOptions
 from ooodev.conn import connectors
 
 # from ooodev.connect import connectors as mConnectors
@@ -152,7 +152,7 @@ def _get_loader_pipe_default(
     dynamic = os.environ.get("ODEV_TEST_OPT_DYNAMIC", "") == "1"
     verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
     visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
-    return mLo.load_office(
+    return Lo.load_office(
         connector=connectors.ConnectPipe(headless=headless, soffice=soffice, env_vars=env_vars, invisible=not visible),
         cache_obj=mCache.Cache(working_dir=working_dir),
         opt=LoOptions(verbose=verbose, dynamic=dynamic),
@@ -167,7 +167,7 @@ def _get_loader_socket_default(
     port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
     verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
     visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
-    return mLo.load_office(
+    return Lo.load_office(
         connector=connectors.ConnectSocket(
             host=host, port=port, headless=headless, soffice=soffice, env_vars=env_vars, invisible=not visible
         ),
@@ -184,7 +184,7 @@ def _get_loader_socket_no_start(
     port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
     verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
     visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
-    return mLo.load_office(
+    return Lo.load_office(
         connector=connectors.ConnectSocket(
             host=host, port=port, headless=headless, start_office=False, env_vars=env_vars, invisible=not visible
         ),
@@ -216,7 +216,7 @@ def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
     if connect_kind == "no_start":
         # only close office if it was started by the test
         return
-    mLo.close_office()
+    Lo.close_office()
 
 
 # endregion Loader methods

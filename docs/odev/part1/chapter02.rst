@@ -765,14 +765,14 @@ The function's code is in EnvStack.cxx, which can be examined by clicking on the
 ==============================
 
 As of |odev| ``0.9.8``, you can open multiple documents from  a single LibreOffice bridge connection.
-In |odev| ``0.9.8`` a new :ref:`ooodev.loader.inst.lo_inst.LoInst` was added. With this new class you can open multiple documents from a single LibreOffice bridge connection.
+In |odev| ``0.9.8`` a new :ref:`ooodev.loader.inst.LoInst` was added. With this new class you can open multiple documents from a single LibreOffice bridge connection.
 
-This is accomplished by creating a new instance of the :ref:`ooodev.loader.inst.lo_inst.LoInst` and then passing the bridge connection to the
+This is accomplished by creating a new instance of the :ref:`ooodev.loader.inst.LoInst` and then passing the bridge connection to the
 :py:meth:`LoInst.load_office <ooodev.utils.inst.lo.lo_inst.LoInst.load_office>` method.
 
-The :ref:`ooodev.loader.inst.lo_inst.LoInst` mirrors the :ref:`utils_lo` in is methods and properties, see :ref:`utils_lo` for any undocumented methods and properties of the :ref:`ooodev.loader.inst.lo_inst.LoInst`.
+The :ref:`ooodev.loader.inst.LoInst` mirrors the :ref:`utils_lo` in is methods and properties, see :ref:`utils_lo` for any undocumented methods and properties of the :ref:`ooodev.loader.inst.LoInst`.
 
-The following code example demonstrates how to use the :ref:`ooodev.loader.inst.lo_inst.LoInst` to open multiple documents from a single LibreOffice bridge connection.
+The following code example demonstrates how to use the :ref:`ooodev.loader.inst.LoInst` to open multiple documents from a single LibreOffice bridge connection.
 
 .. tabs::
 

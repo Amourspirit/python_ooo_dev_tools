@@ -1,9 +1,6 @@
-Module doc_type
-===============
+class DocType
+=============
 
-Module contents
----------------
-
-.. automodule:: ooodev.loader.inst.doc_type
+.. autoclass:: ooodev.loader.inst.DocType
    :members:
    :undoc-members:

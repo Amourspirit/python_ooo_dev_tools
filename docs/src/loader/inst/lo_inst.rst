@@ -1,10 +1,10 @@
-.. _ooodev.loader.inst.lo_inst.LoInst:
+.. _ooodev.loader.inst.LoInst:
 
 Class LoInst
 ============
 
-For general documation of this class see :ref:`utils_lo` as it mirrors this class for properties and methods.
+For general documation of this class see :ref:`ooodev.loader.Lo` as it mirrors this class for properties and methods.
 
-.. autoclass:: ooodev.loader.inst.lo_inst.LoInst
+.. autoclass:: ooodev.loader.inst.LoInst
     :members:
     :undoc-members:
