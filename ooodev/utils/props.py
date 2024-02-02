@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     # using lazy loading: https://snarky.ca/lazy-importing-in-python-3-7/
 from . import gen_util as gUtil
 from . import info as mInfo
-from . import lo as mLo
+from ooodev.loader import lo as mLo
 from ..events.args.key_val_args import KeyValArgs
 from ..events.args.key_val_cancel_args import KeyValCancelArgs
 from ..events.args.event_args import EventArgs
@@ -245,18 +245,15 @@ class Props:
     # region get_xproperty_fast_value()
     @overload
     @classmethod
-    def get_xproperty_fast_value(cls, *, handle: int, fps: XFastPropertySet) -> Any:
-        ...
+    def get_xproperty_fast_value(cls, *, handle: int, fps: XFastPropertySet) -> Any: ...
 
     @overload
     @classmethod
-    def get_xproperty_fast_value(cls, *, prop: Property, fps: XFastPropertySet) -> Any:
-        ...
+    def get_xproperty_fast_value(cls, *, prop: Property, fps: XFastPropertySet) -> Any: ...
 
     @overload
     @classmethod
-    def get_xproperty_fast_value(cls, *, handle: int, obj: object) -> Any:
-        ...
+    def get_xproperty_fast_value(cls, *, handle: int, obj: object) -> Any: ...
 
     @classmethod
     def get_xproperty_fast_value(cls, *args, **kwargs) -> Any:
@@ -398,13 +395,11 @@ class Props:
     # region    set_property()
     @overload
     @classmethod
-    def set_property(cls, obj: object, name: str, value: object) -> None:
-        ...
+    def set_property(cls, obj: object, name: str, value: object) -> None: ...
 
     @overload
     @classmethod
-    def set_property(cls, prop_set: XPropertySet, name: str, value: object) -> None:
-        ...
+    def set_property(cls, prop_set: XPropertySet, name: str, value: object) -> None: ...
 
     @classmethod
     def set_property(cls, *args, **kwargs) -> None:
@@ -1209,7 +1204,7 @@ class Props:
 
                 >>> from ooodev.office.calc import Calc
                 >>> from ooodev.utils.props import Props
-                >>> from ooodev.utils.lo import Lo
+                >>> from ooodev.loader.lo import Lo
                 >>> loader = Lo.load_office()
                 >>> doc = Calc.create_doc(loader)
                 >>> sheets = Calc.get_sheets(doc)
@@ -1273,7 +1268,7 @@ class Props:
 
                 >>> from ooodev.office.calc import Calc
                 >>> from ooodev.utils.props import Props
-                >>> from ooodev.utils.lo import Lo
+                >>> from ooodev.loader.lo import Lo
                 >>> loader = Lo.load_office()
                 >>> doc = Calc.create_doc(loader)
                 >>> sheet = Calc.get_sheet(doc=doc, index=0)

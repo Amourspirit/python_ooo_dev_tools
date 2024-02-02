@@ -7,7 +7,7 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class PositionAxis(StyleBase):

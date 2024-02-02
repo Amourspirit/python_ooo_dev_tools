@@ -7,7 +7,7 @@ import uno  # pylint: disable=unused-import
 from ooo.dyn.util.date_time import DateTime as UnoDateTime
 from ooo.dyn.util.date import Date as UnoDate
 from ooo.dyn.util.time import Time as UnoTime
-from . import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class DateUtil:

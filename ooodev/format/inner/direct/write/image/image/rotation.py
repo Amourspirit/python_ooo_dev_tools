@@ -3,7 +3,7 @@ from typing import cast, overload
 from typing import Any, Tuple, Type, TypeVar
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import Angle as Angle
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -54,13 +54,11 @@ class Rotation(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TRotation], obj: object) -> _TRotation:
-        ...
+    def from_obj(cls: Type[_TRotation], obj: object) -> _TRotation: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation:
-        ...
+    def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation: ...
 
     @classmethod
     def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation:

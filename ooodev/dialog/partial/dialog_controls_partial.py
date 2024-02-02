@@ -16,7 +16,7 @@ from ooo.dyn.awt.push_button_type import PushButtonType
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
 from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.kind.border_kind import BorderKind

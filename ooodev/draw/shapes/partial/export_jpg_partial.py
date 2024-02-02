@@ -5,7 +5,7 @@ from ooodev.draw import DrawNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.utils.type_var import PathOrStr
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.events.lo_events import Events
 from ooodev.utils.inst.lo.lo_inst import LoInst
 

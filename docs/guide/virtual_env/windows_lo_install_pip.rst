@@ -116,7 +116,7 @@ This simple script starts python, Loads LibreOffice Writer, and writes ``Hello W
     >.\python.exe
     Python 3.8.16 (default, Apr 28 2023, 02:01:33) [MSC v.1929 64 bit (AMD64)] on win32
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> from ooodev.utils.lo import Lo
+    >>> from ooodev.loader.lo import Lo
     >>> from ooodev.office.write import Write
     >>> from ooodev.utils.gui import GUI
     >>> 

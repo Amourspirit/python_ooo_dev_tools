@@ -1,4 +1,5 @@
 """Partial Class for Form Component. Not intended to be used directly."""
+
 # region Imports
 from __future__ import annotations
 from typing import cast, Iterable, TYPE_CHECKING
@@ -18,7 +19,7 @@ from ooodev.form import forms as mForms
 from ooodev.proto.component_proto import ComponentT
 from ooodev.proto.style_obj import StyleT
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind

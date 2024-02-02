@@ -8,7 +8,7 @@ from ooodev.adapter.drawing.shape_collection_comp import ShapeCollectionComp
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
 from ooodev.units import UnitMM
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial

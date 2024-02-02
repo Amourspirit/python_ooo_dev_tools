@@ -1005,7 +1005,7 @@ These features are available through the XAnimationNode_ interface, which is obt
     .. code-tab:: python
 
         from com.sun.star.animations import XAnimationNode
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         node_supp = Lo.qi(XAnimationNodeSupplier, slide)
         slide_node = node_supp.getAnimationNode()  # XAnimationNode

@@ -9,7 +9,7 @@ from ooodev.format.writer.direct.shape.transparency import Transparency, Intensi
 from ooodev.format.writer.direct.shape.area import Pattern, PresetPatternKind
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
 from ooodev.office.write import Write
 

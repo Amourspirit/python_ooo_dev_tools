@@ -20,7 +20,7 @@ from ooodev.format.calc.direct.cell.font import (
 )
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.units.unit_pt import UnitPT
 
 if TYPE_CHECKING:

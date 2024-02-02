@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
 
-from . import lo as mLo
+from ooodev.loader import lo as mLo
 from ..exceptions import ex as mEx
 
 from .type_var import PathOrStr, Table
@@ -159,13 +159,11 @@ class FileIO:
     # region uri_to_path()
     @overload
     @classmethod
-    def uri_to_path(cls, uri_fnm: PathOrStr) -> Path:
-        ...
+    def uri_to_path(cls, uri_fnm: PathOrStr) -> Path: ...
 
     @overload
     @classmethod
-    def uri_to_path(cls, uri_fnm: PathOrStr, ensure_absolute: bool) -> Path:
-        ...
+    def uri_to_path(cls, uri_fnm: PathOrStr, ensure_absolute: bool) -> Path: ...
 
     @classmethod
     def uri_to_path(cls, uri_fnm: PathOrStr, ensure_absolute: bool = True) -> Path:
@@ -324,13 +322,11 @@ class FileIO:
     # region is_exist_file()
     @overload
     @classmethod
-    def is_exist_file(cls, fnm: PathOrStr) -> bool:
-        ...
+    def is_exist_file(cls, fnm: PathOrStr) -> bool: ...
 
     @overload
     @classmethod
-    def is_exist_file(cls, fnm: PathOrStr, raise_err: bool) -> bool:
-        ...
+    def is_exist_file(cls, fnm: PathOrStr, raise_err: bool) -> bool: ...
 
     @classmethod
     def is_exist_file(cls, fnm: PathOrStr, raise_err: bool = False) -> bool:
@@ -376,13 +372,11 @@ class FileIO:
     # region is_exist_dir()
     @overload
     @classmethod
-    def is_exist_dir(cls, dnm: PathOrStr) -> bool:
-        ...
+    def is_exist_dir(cls, dnm: PathOrStr) -> bool: ...
 
     @overload
     @classmethod
-    def is_exist_dir(cls, dnm: PathOrStr, raise_err: bool) -> bool:
-        ...
+    def is_exist_dir(cls, dnm: PathOrStr, raise_err: bool) -> bool: ...
 
     @classmethod
     def is_exist_dir(cls, dnm: PathOrStr, raise_err: bool = False) -> bool:
@@ -428,13 +422,11 @@ class FileIO:
     # region make_directory()
     @overload
     @classmethod
-    def make_directory(cls, dir: PathOrStr) -> Path:
-        ...
+    def make_directory(cls, dir: PathOrStr) -> Path: ...
 
     @overload
     @classmethod
-    def make_directory(cls, fnm: PathOrStr) -> Path:
-        ...
+    def make_directory(cls, fnm: PathOrStr) -> Path: ...
 
     @classmethod
     def make_directory(cls, *args, **kwargs) -> Path:

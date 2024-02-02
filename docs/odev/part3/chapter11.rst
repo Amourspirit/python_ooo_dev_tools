@@ -165,7 +165,7 @@ The following lines load a Draw (or Impress) document called "foo" as an XCompon
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         loader = Lo.load_office(Lo.ConnectPipe())
         doc = Lo.open_doc(fnm="foo", loader=loader)
@@ -183,7 +183,7 @@ shown in :numref:`ch11fig_draw_and_presentation_services_and_interfaces`:
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         supplier = Lo.qi(XDrawPagesSupplier, doc)
         pages = supplier.getDrawPages() # XDrawPages
@@ -204,7 +204,7 @@ its index position. The first draw page in the document is retrieved with:
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         page = Lo.qi(XDrawPage, pages.getByIndex(0))
 
@@ -243,7 +243,7 @@ The following code converts the XDrawPage_ object to XShapes_, and accesses the 
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         shapes = Lo.qi(XShapes, page)
         shape = Lo.qi(XShape, shapes.getByIndex(0))
@@ -340,7 +340,7 @@ For example, the text height is changed to ``18pt`` by:
     .. code-tab:: python
 
         from ooodev.utils.props import Props
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         xtext = Lo.qi(XText, shape)
         cursor = xtext.createTextCursor()
@@ -448,7 +448,7 @@ Code for starting a slide show for the "foo" document:
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         loader = Lo.load_office(Lo.ConnectPipe())
         doc = Lo.open_doc("foo", loader)
@@ -468,7 +468,7 @@ Alternatively a slide show can be started with a dispatch command.
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 
         loader = Lo.load_office(Lo.ConnectPipe())

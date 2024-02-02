@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 
 def test_writer_lines(loader, tmp_path):
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
 
@@ -50,7 +50,7 @@ def test_writer_lines(loader, tmp_path):
 
 
 def test_open_no_loader(loader, fix_writer_path):
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
 
@@ -64,7 +64,7 @@ def test_open_no_loader(loader, fix_writer_path):
 
 
 def test_open_no_file_no_loader(loader):
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
 

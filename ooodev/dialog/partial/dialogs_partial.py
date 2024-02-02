@@ -13,7 +13,7 @@ from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ..dl_control.ctl_base import DialogControlBase
 

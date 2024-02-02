@@ -8,7 +8,7 @@ import uno
 
 
 def test_bridge(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
 
     assert Lo.bridge is not None
     assert Lo.is_loaded
@@ -21,7 +21,7 @@ def _test_dispose() -> None:
     # this test is to be run manually
     # if this test were to be run with other test
     # it would wipe out the connection to office because Lo is a static class.
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
 
     with Lo.Loader(Lo.ConnectPipe(headless=True)) as loader:
         # confirm that Lo is connected to office
@@ -39,7 +39,7 @@ def _test_dispose() -> None:
 
 
 def test_lo_inst(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.inst.lo.lo_inst import LoInst
     from ooodev.utils.inst.lo.doc_type import DocTypeStr
     from ooodev.office.calc import Calc

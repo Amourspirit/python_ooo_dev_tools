@@ -11,7 +11,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.office import calc as mCalc
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial

@@ -7,7 +7,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.calc.modify.page.sheet import ScalePagesWidthHeight, CalcStylePageKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 
 

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import uno
 from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XTopWindowListener

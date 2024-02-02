@@ -38,7 +38,7 @@ from ooodev.office import calc as mCalc
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import gui as mGUI
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj

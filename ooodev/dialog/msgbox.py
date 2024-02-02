@@ -9,7 +9,7 @@ from ooo.dyn.awt.message_box_results import MessageBoxResultsEnum as MessageBoxR
 from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum as MessageBoxButtonsEnum
 from ooo.dyn.awt.message_box_type import MessageBoxType as MessageBoxType
 
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class MsgBox:

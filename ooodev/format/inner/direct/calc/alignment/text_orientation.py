@@ -7,7 +7,7 @@ from ooo.dyn.table.cell_orientation import CellOrientation
 from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import Angle as Angle
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -93,13 +93,11 @@ class TextOrientation(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextOrientation], obj: Any) -> _TTextOrientation:
-        ...
+    def from_obj(cls: Type[_TTextOrientation], obj: Any) -> _TTextOrientation: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextOrientation], obj: Any, **kwargs) -> _TTextOrientation:
-        ...
+    def from_obj(cls: Type[_TTextOrientation], obj: Any, **kwargs) -> _TTextOrientation: ...
 
     @classmethod
     def from_obj(cls: Type[_TTextOrientation], obj: Any, **kwargs) -> _TTextOrientation:

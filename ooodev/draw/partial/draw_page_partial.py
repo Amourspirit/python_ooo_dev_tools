@@ -13,7 +13,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import color as mColor
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.image_offset import ImageOffset
 from ooodev.utils.data_type.poly_sides import PolySides

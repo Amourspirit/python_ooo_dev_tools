@@ -10,7 +10,7 @@ import uno
 from ooodev.format.writer.direct.image.wrap import Spacing
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.utils.images_lo import ImagesLo

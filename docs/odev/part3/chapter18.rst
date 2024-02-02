@@ -61,7 +61,7 @@ The |basic_show_py|_ module:
         from ooodev.draw import Draw, ImpressDoc
         from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
         from ooodev.utils.file_io import FileIO
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.utils.props import Props
         from ooodev.utils.type_var import PathOrStr
 
@@ -493,7 +493,7 @@ This creates a play list called "ShortPlay" which will show the slides with indi
         from ooodev.draw import Draw, ImpressDoc
         from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
         from ooodev.utils.file_io import FileIO
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.utils.props import Props
         from ooodev.utils.type_var import PathOrStr
 

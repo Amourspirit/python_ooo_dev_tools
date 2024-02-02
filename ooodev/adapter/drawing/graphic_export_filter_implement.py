@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from com.sun.star.drawing import XGraphicExportFilter
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from .graphic_export_filter_comp import GraphicExportFilterComp
 
 if TYPE_CHECKING:

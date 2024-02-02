@@ -30,7 +30,7 @@ from ooodev.format import CommonColor
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils import sys_info as mSi
 from ooodev.units import Angle
 

@@ -68,7 +68,7 @@ For example |exmonitor|_ uses |terminate_events| and |event_events|.
 
                     from ooodev.office.write import Write
                     from ooodev.utils.gui import GUI
-                    from ooodev.utils.lo import Lo
+                    from ooodev.loader.lo import Lo
 
                     from com.sun.star.awt import XExtendedToolkit
                     from com.sun.star.awt import XTopWindowListener
@@ -139,7 +139,7 @@ For example |exmonitor|_ uses |terminate_events| and |event_events|.
                     from ooodev.adapter.awt.top_window_events import TopWindowEvents
                     from ooodev.office.write import Write
                     from ooodev.utils.gui import GUI
-                    from ooodev.utils.lo import Lo
+                    from ooodev.loader.lo import Lo
 
                     from com.sun.star.awt import XWindow
 
@@ -643,7 +643,7 @@ The code is wrapped up in :py:meth:`.Lo.dispatch_cmd`, which is called twice in 
             import argparse
             import sys
 
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
             from ooodev.utils.gui import GUI
 
             # endregion Imports
@@ -712,7 +712,7 @@ Example using :py:class:`~.global_edit_dispatch.GlobalEditDispatch` class.
     .. code-tab:: python
 
         from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         Lo.dispatch_cmd(cmd=GlobalEditDispatch.COPY)
         # other processing ...
@@ -741,7 +741,7 @@ See :ref:`events_lo_events_Events`.
             import sys
             from typing import Any
 
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
             from ooodev.utils.gui import GUI
             from ooodev.events.lo_events import Events
             from ooodev.events.lo_named_event import LoNamedEvent

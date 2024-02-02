@@ -6,7 +6,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.title_alignment_orientation_props import TitleAlignmentOrientationProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.units import Angle
 
 _TOrientation = TypeVar("_TOrientation", bound="Orientation")

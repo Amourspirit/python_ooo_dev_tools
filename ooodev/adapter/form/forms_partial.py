@@ -4,7 +4,7 @@ import uno
 from com.sun.star.form import XForms
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.adapter.container.container_partial import ContainerPartial
 from ooodev.adapter.container.child_partial import ChildPartial
 from ooodev.adapter.container.name_container_partial import NameContainerPartial

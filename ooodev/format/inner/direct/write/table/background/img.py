@@ -9,7 +9,7 @@ from com.sun.star.graphic import XGraphic
 from ooo.dyn.drawing.rectangle_point import RectanglePoint
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.offset import Offset
 from ooodev.format.inner.direct.write.fill.area.img import (
     SizeMM,
@@ -102,12 +102,10 @@ class Img(ParaImg):
     # region apply()
 
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """

@@ -11,7 +11,7 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.inst.lo.lo_inst import LoInst

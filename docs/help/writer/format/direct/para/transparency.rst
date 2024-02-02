@@ -47,7 +47,7 @@ General function used to run these examples:
             from ooodev.format.writer.direct.para.transparency import Transparency
             from ooodev.office.write import Write
             from ooodev.utils.gui import GUI
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
             from ooodev.utils.color import StandardColor
 
 

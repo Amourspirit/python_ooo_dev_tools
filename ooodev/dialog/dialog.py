@@ -10,7 +10,7 @@ from com.sun.star.beans import XPropertySet
 from ooodev.dialog.partial.dialog_controls_partial import DialogControlsPartial
 from ooodev.dialog.partial.dialogs_partial import DialogsPartial
 from ooodev.dialog.dl_control import CtlDialog
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.utils.context.lo_context import LoContext
 

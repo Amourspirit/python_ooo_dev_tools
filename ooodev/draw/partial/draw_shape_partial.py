@@ -4,7 +4,7 @@ import uno
 
 from ooodev.office import draw as mDraw
 from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShape

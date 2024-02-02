@@ -3,6 +3,7 @@ Module for managing paragraph breaks.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
 from typing import Any, Dict, Tuple, overload, Type, TypeVar
@@ -11,7 +12,7 @@ from ooo.dyn.style.break_type import BreakType as BreakType
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -112,12 +113,10 @@ class Breaks(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -141,13 +140,11 @@ class Breaks(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBreaks], obj: Any) -> _TBreaks:
-        ...
+    def from_obj(cls: Type[_TBreaks], obj: Any) -> _TBreaks: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBreaks], obj: Any, **kwargs) -> _TBreaks:
-        ...
+    def from_obj(cls: Type[_TBreaks], obj: Any, **kwargs) -> _TBreaks: ...
 
     @classmethod
     def from_obj(cls: Type[_TBreaks], obj: Any, **kwargs) -> _TBreaks:

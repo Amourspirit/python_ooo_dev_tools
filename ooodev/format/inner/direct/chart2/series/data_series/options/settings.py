@@ -6,7 +6,7 @@ from com.sun.star.beans import XPropertySet
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 
 
@@ -75,12 +75,10 @@ class Settings(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -138,12 +136,10 @@ class Settings(StyleBase):
     # endregion apply()
     # region Copy()
     @overload
-    def copy(self) -> Settings:
-        ...
+    def copy(self) -> Settings: ...
 
     @overload
-    def copy(self, **kwargs) -> Settings:
-        ...
+    def copy(self, **kwargs) -> Settings: ...
 
     def copy(self, **kwargs) -> Settings:
         """Gets a copy of instance as a new instance"""

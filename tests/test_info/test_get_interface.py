@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 def test_get_interfaces(loader, copy_fix_writer) -> None:
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
 
     test_doc = copy_fix_writer("story.odt")

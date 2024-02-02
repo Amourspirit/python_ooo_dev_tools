@@ -30,7 +30,7 @@ from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.kind.chart2_types import ChartTypes
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 
 

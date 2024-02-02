@@ -9,7 +9,7 @@ from ooodev.format.writer.modify.para.font import FontOnly, InnerFontOnly, FontL
 
 # from ooodev.format.writer.direct.char.font import FontOnly as DirectFontOnly
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

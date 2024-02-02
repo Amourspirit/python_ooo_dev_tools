@@ -8,7 +8,7 @@ from com.sun.star.chart2 import XChartDocument
 
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
@@ -123,12 +123,10 @@ class Gradient(FillGradient):
 
     # region copy()
     @overload
-    def copy(self) -> Gradient:
-        ...
+    def copy(self) -> Gradient: ...
 
     @overload
-    def copy(self, **kwargs) -> Gradient:
-        ...
+    def copy(self, **kwargs) -> Gradient: ...
 
     def copy(self, **kwargs) -> Gradient:
         """
@@ -179,13 +177,11 @@ class Gradient(FillGradient):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Gradient:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Gradient: ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Gradient:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Gradient: ...
 
     @classmethod
     def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Gradient:
@@ -216,13 +212,11 @@ class Gradient(FillGradient):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls, chart_doc: XChartDocument, preset: PresetGradientKind) -> Gradient:
-        ...
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetGradientKind) -> Gradient: ...
 
     @overload
     @classmethod
-    def from_preset(cls, chart_doc: XChartDocument, preset: PresetGradientKind, **kwargs) -> Gradient:
-        ...
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetGradientKind, **kwargs) -> Gradient: ...
 
     @classmethod
     def from_preset(cls, chart_doc: XChartDocument, preset: PresetGradientKind, **kwargs) -> Gradient:

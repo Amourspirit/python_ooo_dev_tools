@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass
 from typing import cast, overload
 
-from .. import lo as mLo
+from ooodev.loader import lo as mLo
 from .. import table_helper as mTb
 from ...office import calc as mCalc
 from ..decorator import enforce

@@ -10,7 +10,7 @@ import uno
 # from ooodev.format.inner.direct.write.para.text_flow import TextFlow, BreakType
 from ooodev.format.writer.direct.para.text_flow import BreakType, Breaks, FlowOptions, Hyphenation
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

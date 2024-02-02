@@ -14,9 +14,9 @@ from tests.fixtures.calc import __test__path__ as calc_fixture_path
 from tests.fixtures.xml import __test__path__ as xml_fixture_path
 from tests.fixtures.image import __test__path__ as img_fixture_path
 from tests.fixtures.presentation import __test__path__ as pres_fixture_path
-from ooodev.utils.lo import Lo as mLo
+from ooodev.loader.lo import Lo as mLo
 from ooodev.utils import paths as mPaths
-from ooodev.utils.inst.lo.options import Options as LoOptions
+from ooodev.loader.inst.options import Options as LoOptions
 from ooodev.conn import connectors
 
 # from ooodev.connect import connectors as mConnectors

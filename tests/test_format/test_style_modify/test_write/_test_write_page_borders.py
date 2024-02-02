@@ -8,7 +8,7 @@ import uno
 from ooodev.format.writer.modify.page.borders import Borders, Side, WriterStylePageKind, BorderLineKind
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

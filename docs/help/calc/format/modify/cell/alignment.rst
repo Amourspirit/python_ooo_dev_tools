@@ -41,7 +41,7 @@ General setup for the examples in this section.
         :emphasize-lines: 13, 14, 15, 16, 17, 18
 
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.alignment import TextAlign, StyleCellKind
         from ooodev.format.calc.modify.cell.alignment import HoriAlignKind, VertAlignKind
 
@@ -146,7 +146,7 @@ General setup for the examples in this section.
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.alignment import TextOrientation
         from ooodev.format.calc.modify.cell.alignment import EdgeKind, StyleCellKind
 
@@ -252,7 +252,7 @@ General setup for the examples in this section.
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.alignment import Properties
         from ooodev.format.calc.modify.cell.alignment import TextDirectionKind, StyleCellKind
 

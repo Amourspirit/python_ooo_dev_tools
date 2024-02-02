@@ -3,10 +3,11 @@ Module for Paragraph Fill Color.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Tuple
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps

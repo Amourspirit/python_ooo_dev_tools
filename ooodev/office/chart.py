@@ -41,7 +41,7 @@ from ooo.dyn.awt.size import Size as UnoSize
 from . import draw as mDraw
 from ..exceptions import ex as mEx
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils.data_type.intensity import Intensity as Intensity
 
@@ -55,15 +55,13 @@ class Chart:
     @classmethod
     def insert_chart(
         cls, *, slide: XDrawPage, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
-    ) -> XChartDocument:
-        ...
+    ) -> XChartDocument: ...
 
     @overload
     @classmethod
     def insert_chart(
         cls, *, doc: XTextDocument, x: int, y: int, width: int, height: int, diagram_name: ChartDiagramKind | str
-    ) -> XChartDocument:
-        ...
+    ) -> XChartDocument: ...
 
     @overload
     @classmethod
@@ -76,8 +74,7 @@ class Chart:
         width: int,
         height: int,
         diagram_name: ChartDiagramKind | str,
-    ) -> XChartDocument:
-        ...
+    ) -> XChartDocument: ...
 
     @overload
     @classmethod
@@ -92,8 +89,7 @@ class Chart:
         width: int,
         height: int,
         diagram_name: ChartDiagramKind | str,
-    ) -> XChartDocument:
-        ...
+    ) -> XChartDocument: ...
 
     @classmethod
     def _insert_chart_slide(
@@ -377,18 +373,15 @@ class Chart:
 
     @overload
     @classmethod
-    def get_chart_doc(cls, shape: XShape) -> XChartDocument:
-        ...
+    def get_chart_doc(cls, shape: XShape) -> XChartDocument: ...
 
     @overload
     @classmethod
-    def get_chart_doc(cls, tbl_chart: XTableChart) -> XChartDocument:
-        ...
+    def get_chart_doc(cls, tbl_chart: XTableChart) -> XChartDocument: ...
 
     @overload
     @classmethod
-    def get_chart_doc(cls, sheet: XSpreadsheet, chart_name: str) -> XChartDocument:
-        ...
+    def get_chart_doc(cls, sheet: XSpreadsheet, chart_name: str) -> XChartDocument: ...
 
     @classmethod
     def get_chart_doc(cls, *args, **kwargs) -> XChartDocument:
@@ -1052,13 +1045,11 @@ class Chart:
     # region set_3d()
     @overload
     @staticmethod
-    def set_3d(chart_doc: XChartDocument, is_3d: bool) -> None:
-        ...
+    def set_3d(chart_doc: XChartDocument, is_3d: bool) -> None: ...
 
     @overload
     @staticmethod
-    def set_3d(chart_doc: XChartDocument, is_3d: bool, solid_type: ChartSolidTypeEnum) -> None:
-        ...
+    def set_3d(chart_doc: XChartDocument, is_3d: bool, solid_type: ChartSolidTypeEnum) -> None: ...
 
     @staticmethod
     def set_3d(chart_doc: XChartDocument, is_3d: bool, solid_type: ChartSolidTypeEnum | None = None) -> None:

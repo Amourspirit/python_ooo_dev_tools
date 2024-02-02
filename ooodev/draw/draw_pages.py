@@ -1,4 +1,5 @@
 """DrawPages class for Draw documents."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import contextlib
@@ -12,7 +13,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial

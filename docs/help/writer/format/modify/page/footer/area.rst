@@ -36,7 +36,7 @@ Note that in order to apply a style, the document footer must be turned on as se
         from ooodev.office.write import Write
         from ooodev.utils.color import StandardColor
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
            with Lo.Loader(Lo.ConnectPipe()):

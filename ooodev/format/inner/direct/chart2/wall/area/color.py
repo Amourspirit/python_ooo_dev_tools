@@ -3,7 +3,7 @@ from typing import Any, Tuple
 
 from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor
 from ooodev.utils import color as mColor
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class Color(FillColor):

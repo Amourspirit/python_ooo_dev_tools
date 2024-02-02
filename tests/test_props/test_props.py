@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 def test_show_indexed_props(loader, capsys: pytest.CaptureFixture) -> None:
     from ooodev.utils.props import Props
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -31,7 +31,7 @@ def test_show_indexed_props(loader, capsys: pytest.CaptureFixture) -> None:
 
 def test_prop_value_to_string(loader) -> None:
     from ooodev.utils.props import Props
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -51,7 +51,7 @@ def test_prop_value_to_string(loader) -> None:
 
 def test_prop_url(loader, fix_writer_path):
     from ooodev.utils.props import Props
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.gen_util import NULL_OBJ
     from com.sun.star.frame import XModel
 
@@ -67,7 +67,7 @@ def test_prop_url(loader, fix_writer_path):
 
 
 def test_prop_get_with_default(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.props import Props
     from ooodev.office.calc import Calc
 

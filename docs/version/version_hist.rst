@@ -21,7 +21,7 @@ Better support for `ooodev.utils.lo.Lo.current_doc` in macros. Now it is possibl
 
 .. code-block:: python
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
 
     # get the current document
     doc = Lo.current_doc
@@ -94,7 +94,7 @@ Example of create two Draw documents at the same time.
 .. code-block:: python
 
     from ooodev.draw import DrawDoc
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
 
     # create first doc normally
     doc_first = DrawDoc.create_doc()

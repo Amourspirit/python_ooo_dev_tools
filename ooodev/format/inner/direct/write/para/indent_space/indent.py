@@ -3,13 +3,14 @@ Module for managing paragraph padding.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
@@ -99,12 +100,10 @@ class Indent(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -128,13 +127,11 @@ class Indent(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndent], obj: Any) -> _TIndent:
-        ...
+    def from_obj(cls: Type[_TIndent], obj: Any) -> _TIndent: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndent], obj: Any, **kwargs) -> _TIndent:
-        ...
+    def from_obj(cls: Type[_TIndent], obj: Any, **kwargs) -> _TIndent: ...
 
     @classmethod
     def from_obj(cls: Type[_TIndent], obj: Any, **kwargs) -> _TIndent:

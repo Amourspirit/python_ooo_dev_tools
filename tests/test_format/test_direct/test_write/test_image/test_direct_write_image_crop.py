@@ -11,7 +11,7 @@ from ooodev.format.writer.direct.image.options import Names
 from ooodev.format.writer.direct.image.crop import ImageCrop, CropOpt, Size, SizeMM
 from ooodev.units.unit_mm import UnitMM
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.images_lo import ImagesLo
 from ooodev.office.write import Write
 

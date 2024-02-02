@@ -21,7 +21,7 @@ Setup
         from ooodev.format.writer.modify.para.area import Color as ParaStyleColor, StyleParaKind
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):

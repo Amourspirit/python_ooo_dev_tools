@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 from ooodev.adapter.drawing.graphic_object_shape_comp import GraphicObjectShapeComp
 from ooodev.office import write as mWrite
 from ooodev.proto.component_proto import ComponentT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.color import Color, CommonColor
 from ooodev.utils.context.lo_context import LoContext
@@ -608,8 +608,7 @@ class TextCursorPartial(Generic[_T]):
     @overload
     def append_line(
         self,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
     def append_line(self, text: str) -> None:

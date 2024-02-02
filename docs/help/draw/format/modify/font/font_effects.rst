@@ -37,7 +37,7 @@ Setting the Font Effects
         from ooodev.format.draw.modify.font import FontEffects, FontUnderlineEnum
         from ooodev.format.draw.modify.font import FontLine
         from ooodev.utils.color import CommonColor
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import overload, TYPE_CHECKING
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.dialog.msgbox import (
     MsgBox,

@@ -53,7 +53,7 @@ General function used to run these examples:
             from ooodev.theme import ThemeTextDoc
             from ooodev.utils.color import StandardColor, RGB
             from ooodev.utils.gui import GUI
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
             
             if TYPE_CHECKING:
                 from com.sun.star.text import TextRangeContentProperties  # service

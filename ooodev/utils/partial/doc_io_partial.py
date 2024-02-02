@@ -9,7 +9,7 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.factory import doc_factory as mDocFactory
 from ooodev.utils.inst.lo.doc_type import DocType

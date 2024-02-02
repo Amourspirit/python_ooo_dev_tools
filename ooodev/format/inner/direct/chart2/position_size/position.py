@@ -4,7 +4,7 @@ import uno
 from ooo.dyn.awt.point import Point as UnoPoint
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitT, UnitConvert, UnitMM
@@ -82,12 +82,10 @@ class Position(StyleBase):
 
     # region copy()
     @overload
-    def copy(self) -> Position:
-        ...
+    def copy(self) -> Position: ...
 
     @overload
-    def copy(self, **kwargs) -> Position:
-        ...
+    def copy(self, **kwargs) -> Position: ...
 
     def copy(self, **kwargs) -> Position:
         """

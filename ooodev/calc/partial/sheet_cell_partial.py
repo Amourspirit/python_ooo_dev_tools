@@ -6,7 +6,7 @@ from com.sun.star.table import XCell
 from com.sun.star.table import XCellRange
 
 from ooodev.office import calc as mCalc
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.inst.lo.lo_inst import LoInst

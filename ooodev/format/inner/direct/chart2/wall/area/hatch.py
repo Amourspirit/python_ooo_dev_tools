@@ -5,7 +5,7 @@ from com.sun.star.chart2 import XChartDocument
 from ooo.dyn.drawing.hatch_style import HatchStyle
 
 from ooodev.units import UnitT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.units import Angle
 from ...chart.area.hatch import Hatch as ChartAreaHatch

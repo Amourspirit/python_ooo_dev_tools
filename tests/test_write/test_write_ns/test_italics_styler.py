@@ -11,7 +11,7 @@ from com.sun.star.text import XTextRange
 
 from ooo.dyn.awt.font_slant import FontSlant  # enum
 
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.write import Write
 from ooodev.write import WriteDoc
 from ooodev.utils.props import Props

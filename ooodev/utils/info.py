@@ -47,7 +47,7 @@ from ooo.dyn.lang.locale import Locale  # struct
 from ooodev.utils.inst.lo.service import Service as LoService
 from . import date_time_util as mDate
 from . import file_io as mFileIO
-from . import lo as mLo
+from ooodev.loader import lo as mLo
 from . import props as mProps
 from ..units import unit_convert as mConvert
 from ..events.args.event_args import EventArgs
@@ -241,38 +241,31 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str: ...
 
     @classmethod
     def get_reg_item_prop(
@@ -2400,23 +2393,19 @@ class Info(metaclass=StaticProperty):
     # region is_type_enum_multi()
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool: ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool: ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool: ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool: ...
 
     @staticmethod
     def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum | str, arg_name: str = "") -> bool:

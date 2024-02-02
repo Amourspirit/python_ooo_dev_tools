@@ -5,7 +5,7 @@ import uno
 from com.sun.star.beans import XPropertyBag
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from .property_set_partial import PropertySetPartial
 from .property_container_partial import PropertyContainerPartial
 from .property_access_partial import PropertyAccessPartial

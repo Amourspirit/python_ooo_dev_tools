@@ -4,7 +4,7 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.listeners.x_selection_change_adapter import XSelectionChangeAdapter
 
@@ -64,7 +64,7 @@ class SelectionChangeListener(XSelectionChangeAdapter):
 
 def test_modify_listener(loader) -> None:
     visible = False
-    delay = 0 # 700
+    delay = 0  # 700
     try:
         sl = SelectionChangeListener(loader, visible)
         assert sl.curr_addr.Column == 0
@@ -103,4 +103,3 @@ def test_modify_listener(loader) -> None:
 
     finally:
         Lo.close(closeable=sl.doc, deliver_ownership=False)
-

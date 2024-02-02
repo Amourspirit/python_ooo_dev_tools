@@ -41,7 +41,7 @@ General function used to run these examples.
         from ooodev.format.writer.modify.para.text_flow import StyleParaKind, BreakType
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):

@@ -4,7 +4,7 @@ from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 from ooodev.exceptions import ex as mEx
 from ooodev.meta.deleted_enum_meta import DeletedUnoEnumMeta
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -110,13 +110,11 @@ class Anchor(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAnchor], obj: Any) -> _TAnchor:
-        ...
+    def from_obj(cls: Type[_TAnchor], obj: Any) -> _TAnchor: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAnchor], obj: Any, **kwargs) -> _TAnchor:
-        ...
+    def from_obj(cls: Type[_TAnchor], obj: Any, **kwargs) -> _TAnchor: ...
 
     @classmethod
     def from_obj(cls: Type[_TAnchor], obj: Any, **kwargs) -> _TAnchor:

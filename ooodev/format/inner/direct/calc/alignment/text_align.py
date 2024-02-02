@@ -6,7 +6,7 @@ from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 from ooo.dyn.table.cell_hori_justify import CellHoriJustify
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitConvert
 from ooodev.units import UnitPT
@@ -140,13 +140,11 @@ class TextAlign(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextAlign], obj: Any) -> _TTextAlign:
-        ...
+    def from_obj(cls: Type[_TTextAlign], obj: Any) -> _TTextAlign: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextAlign], obj: Any, **kwargs) -> _TTextAlign:
-        ...
+    def from_obj(cls: Type[_TTextAlign], obj: Any, **kwargs) -> _TTextAlign: ...
 
     @classmethod
     def from_obj(cls: Type[_TTextAlign], obj: Any, **kwargs) -> _TTextAlign:

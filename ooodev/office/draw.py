@@ -81,7 +81,7 @@ from ..utils import gen_util as gUtil
 from ..utils import gui as mGui
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils import table_helper as mTableHelper
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
@@ -2165,13 +2165,11 @@ class Draw:
 
     @overload
     @classmethod
-    def get_shape_text(cls, shape: XShape) -> str:
-        ...
+    def get_shape_text(cls, shape: XShape) -> str: ...
 
     @overload
     @classmethod
-    def get_shape_text(cls, slide: XDrawPage) -> str:
-        ...
+    def get_shape_text(cls, slide: XDrawPage) -> str: ...
 
     @classmethod
     def get_shape_text(cls, *args, **kwargs) -> str:

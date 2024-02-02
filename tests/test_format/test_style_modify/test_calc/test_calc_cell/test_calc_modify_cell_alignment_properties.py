@@ -9,7 +9,7 @@ import uno
 from ooodev.format import Styler
 from ooodev.format.calc.modify.cell.alignment import Properties, TextDirectionKind, StyleCellKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 
 

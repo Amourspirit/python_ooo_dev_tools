@@ -33,7 +33,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import file_io as mFile
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.color import CommonColor
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize

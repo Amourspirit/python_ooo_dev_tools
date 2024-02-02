@@ -160,7 +160,7 @@ Run a simple test to make sure everything is working.
 .. code-block:: python
 
     >>> import uno
-    >>> from ooodev.utils.lo import Lo
+    >>> from ooodev.loader.lo import Lo
     >>> from ooodev.office.calc import Calc
     >>> from ooodev.utils.gui import GUI
     >>>

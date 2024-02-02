@@ -12,7 +12,7 @@ Example:
 
     .. code-block:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         loader = Lo.load_office(Lo.ConnectSocket())
 

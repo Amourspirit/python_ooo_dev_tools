@@ -36,7 +36,7 @@ class FocusListener(AdapterBase, XFocusListener):
                 If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
-        if subscriber:
+        if subscriber is not None:
             subscriber.addFocusListener(self)
 
     # region XFocusListener

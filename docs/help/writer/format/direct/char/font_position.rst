@@ -34,7 +34,7 @@ Setup
         from ooodev.format.writer.direct.char.font import CharSpacingKind
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
 
         with Lo.Loader(Lo.ConnectPipe()):

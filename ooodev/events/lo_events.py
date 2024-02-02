@@ -346,7 +346,7 @@ def event_ctx(
         # a proxy is not able to be added to the LoEvents() observer list
         # yield proxy(e_obj)
         if lo_observe:
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
 
             lo_inst = Lo.current_lo
             lo_inst.add_event_observers(e_obj)

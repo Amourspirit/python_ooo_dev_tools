@@ -26,7 +26,7 @@ Setup
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.background import Color as StyleBgColor, StyleCellKind
         from ooodev.utils.color import StandardColor
 

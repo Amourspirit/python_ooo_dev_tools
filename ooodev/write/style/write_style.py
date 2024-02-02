@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.adapter.style.style_comp import StyleComp
 from ooodev.proto.component_proto import ComponentT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 

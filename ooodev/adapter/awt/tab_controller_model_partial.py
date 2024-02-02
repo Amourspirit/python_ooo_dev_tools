@@ -4,7 +4,7 @@ import uno
 from com.sun.star.awt import XTabControllerModel
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

@@ -8,7 +8,7 @@ import uno
 from ooodev.format.writer.modify.char.highlight import Highlight
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

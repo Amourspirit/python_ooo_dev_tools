@@ -3,6 +3,7 @@ Module for Fill Transparency.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload
 
@@ -10,7 +11,7 @@ from ooo.dyn.awt.size import Size as Size
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -70,13 +71,11 @@ class PaperFormat(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPaperFormat], obj: Any) -> _TPaperFormat:
-        ...
+    def from_obj(cls: Type[_TPaperFormat], obj: Any) -> _TPaperFormat: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPaperFormat], obj: Any, **kwargs) -> _TPaperFormat:
-        ...
+    def from_obj(cls: Type[_TPaperFormat], obj: Any, **kwargs) -> _TPaperFormat: ...
 
     @classmethod
     def from_obj(cls: Type[_TPaperFormat], obj: Any, **kwargs) -> _TPaperFormat:
@@ -113,15 +112,13 @@ class PaperFormat(StyleBase):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_TPaperFormat], preset: PaperFormatKind, landscape: bool = False) -> _TPaperFormat:
-        ...
+    def from_preset(cls: Type[_TPaperFormat], preset: PaperFormatKind, landscape: bool = False) -> _TPaperFormat: ...
 
     @overload
     @classmethod
     def from_preset(
         cls: Type[_TPaperFormat], preset: PaperFormatKind, landscape: bool = False, **kwargs
-    ) -> _TPaperFormat:
-        ...
+    ) -> _TPaperFormat: ...
 
     @classmethod
     def from_preset(

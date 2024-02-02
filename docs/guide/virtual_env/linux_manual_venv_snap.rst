@@ -207,7 +207,7 @@ For this reason we need to set the ``soffice`` path to the snap directory.
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.utils.kind.zoom_kind import ZoomKind
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils import paths
     from ooodev.dialog.msgbox import (
         MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum

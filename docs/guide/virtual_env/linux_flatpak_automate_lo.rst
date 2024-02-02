@@ -171,7 +171,7 @@ The rest is straight forward for |odev|_.
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.utils.kind.zoom_kind import ZoomKind
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.dialog.msgbox import (
         MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
     )

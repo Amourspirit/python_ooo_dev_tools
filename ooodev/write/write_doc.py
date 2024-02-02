@@ -45,7 +45,7 @@ from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.office import write as mWrite
 from ooodev.utils import gui as mGUI
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.dispatch_partial import DispatchPartial

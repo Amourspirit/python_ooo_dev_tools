@@ -15,7 +15,7 @@ from ..meta.static_meta import StaticProperty, classproperty
 from ..events.args.event_args import EventArgs
 from ..events.lo_named_event import LoNamedEvent
 from ..events.event_singleton import _Events
-from . import lo as mLo
+from ooodev.loader import lo as mLo
 from ..exceptions import ex as mEx
 
 

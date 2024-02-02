@@ -4,7 +4,7 @@
 from __future__ import annotations
 from enum import IntEnum
 from ..office import calc as mCalc
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class ViewState:

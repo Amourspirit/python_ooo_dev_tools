@@ -77,7 +77,7 @@ Write the following code in the APSO console.
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.write import Write
         from ooodev.macro.macro_loader import MacroLoader
 

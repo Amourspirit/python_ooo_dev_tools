@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.draw import Draw, DrawDoc, ZoomKind
 from ooodev.format.draw.modify.transparency import Gradient, GradientStyle, IntensityRange, Angle
 from ooodev.format.draw.modify.area.color import Color as AreaColor

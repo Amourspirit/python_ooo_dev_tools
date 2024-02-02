@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, TypeVar, Type, overload
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.format.calc.style.cell.kind.style_cell_kind import (
     StyleCellKind as StyleCellKind,
 )
@@ -204,12 +204,10 @@ class InnerBorders(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -239,13 +237,11 @@ class InnerBorders(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TInnerBorders], obj: Any) -> _TInnerBorders:
-        ...
+    def from_obj(cls: Type[_TInnerBorders], obj: Any) -> _TInnerBorders: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TInnerBorders], obj: Any, **kwargs) -> _TInnerBorders:
-        ...
+    def from_obj(cls: Type[_TInnerBorders], obj: Any, **kwargs) -> _TInnerBorders: ...
 
     @classmethod
     def from_obj(cls: Type[_TInnerBorders], obj: Any, **kwargs) -> _TInnerBorders:

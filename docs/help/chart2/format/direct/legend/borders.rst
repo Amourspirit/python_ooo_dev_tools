@@ -34,7 +34,7 @@ Setup
         from ooodev.utils.color import StandardColor
         from ooodev.utils.gui import GUI
         from ooodev.utils.kind.zoom_kind import ZoomKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):

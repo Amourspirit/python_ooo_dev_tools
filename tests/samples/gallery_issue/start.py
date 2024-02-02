@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 import uno
 from com.sun.star.gallery import XGalleryItem
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from gallery import Gallery
 
 

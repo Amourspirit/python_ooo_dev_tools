@@ -1,10 +1,13 @@
-.. _utils_lo_lo_inst:
-
 Class LoInst
 ============
 
-For general documation of this class see :ref:`utils_lo` as it mirrors this class for properties and methods.
+This Class is DEPRECATED since version ``0.26.0``.
+It is no longer recommended for use and may be removed in the future.
 
-.. autoclass:: ooodev.utils.inst.lo.lo_inst.LoInst
-    :members:
-    :undoc-members:
+Use :py:mod:`ooodev.loader.inst.lo_inst` instead.
+
+.. code-block:: python
+
+    from ooodev.loader.inst.lo_inst import LoInst
+
+    # other code

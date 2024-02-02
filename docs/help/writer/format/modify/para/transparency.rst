@@ -43,7 +43,7 @@ General function used to run these examples.
         from ooodev.format.writer.modify.para.area import Color as StyleAreaColor
         from ooodev.utils.color import StandardColor
         from ooodev.write import Write, WriteDoc, ZoomKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
 

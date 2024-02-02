@@ -22,7 +22,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM
 from ooodev.units import UnitT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint

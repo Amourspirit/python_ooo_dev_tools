@@ -3,7 +3,7 @@ from typing import Any, TYPE_CHECKING
 import uno
 from com.sun.star.frame import XModule
 from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from ooodev.proto.office_document_t import OfficeDocumentT

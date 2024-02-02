@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.draw import Draw, DrawDoc
 from ooodev.format.draw.modify.area import Img, PresetImageKind, SizeMM
 

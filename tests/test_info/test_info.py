@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
 
 def test_get_doc_type(loader, fix_writer_path) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
 
     test_doc = fix_writer_path("story.odt")
@@ -18,7 +18,7 @@ def test_get_doc_type(loader, fix_writer_path) -> None:
 
 
 def test_get_available_services(loader, copy_fix_writer) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
 
     test_doc = copy_fix_writer("story.odt")
@@ -31,7 +31,7 @@ def test_get_available_services(loader, copy_fix_writer) -> None:
 
 
 def test_get_interfaces(loader, copy_fix_writer) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
 
     test_doc = copy_fix_writer("story.odt")
@@ -51,7 +51,7 @@ def test_get_methods(loader) -> None:
 
 
 def test_get_methods_obj(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
     from ooodev.office.write import Write
     from ooo.dyn.beans.property_concept import PropertyConceptEnum
@@ -71,7 +71,7 @@ def test_get_methods_obj(loader) -> None:
 
 
 def test_identify(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
     from ooodev.office.write import Write
 

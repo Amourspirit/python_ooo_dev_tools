@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 from ooodev.draw import Draw, DrawDoc, ImpressDoc
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 
 def test_master_page_draw(loader) -> None:

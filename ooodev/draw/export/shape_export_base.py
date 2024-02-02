@@ -1,7 +1,7 @@
 from __future__ import annotations
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from .export_base import ExportBase
 

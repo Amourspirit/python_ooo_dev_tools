@@ -1,7 +1,7 @@
 from __future__ import annotations
 from time import sleep, time
 from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class LoContext:

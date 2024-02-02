@@ -6,7 +6,7 @@ from com.sun.star.awt import Rectangle
 
 from ooo.dyn.awt.point import Point as UnoPoint
 from ooodev.utils.data_type.point import Point as OooDevPoint
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 from ooodev.utils.data_type.size import Size
 from ooodev.format.inner.direct.chart2.position_size.position import Position as ShapePosition

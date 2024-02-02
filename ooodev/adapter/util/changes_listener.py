@@ -5,7 +5,7 @@ import uno
 from com.sun.star.util import XChangesListener
 from com.sun.star.util import XChangesNotifier
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
 

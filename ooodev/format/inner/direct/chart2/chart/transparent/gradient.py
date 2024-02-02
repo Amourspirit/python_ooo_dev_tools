@@ -3,6 +3,7 @@ Module for Fill Gradient Color.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, overload, TYPE_CHECKING
@@ -12,7 +13,7 @@ from com.sun.star.chart2 import XChartDocument
 
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as WriteGradient
@@ -142,12 +143,10 @@ class Gradient(WriteGradient):
 
     # region copy()
     @overload
-    def copy(self) -> Gradient:
-        ...
+    def copy(self) -> Gradient: ...
 
     @overload
-    def copy(self, **kwargs) -> Gradient:
-        ...
+    def copy(self, **kwargs) -> Gradient: ...
 
     def copy(self, **kwargs) -> Gradient:
         """

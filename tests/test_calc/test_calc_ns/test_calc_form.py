@@ -11,7 +11,7 @@ if __name__ == "__main__":
 def test_form_get_index_by_name(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 

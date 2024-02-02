@@ -3,6 +3,7 @@ Module for Cell Properties Cell Back Color.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, overload, Type, TypeVar
@@ -10,7 +11,7 @@ from typing import Any, Tuple, overload, Type, TypeVar
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -94,13 +95,11 @@ class Color(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TColor], obj: Any) -> _TColor:
-        ...
+    def from_obj(cls: Type[_TColor], obj: Any) -> _TColor: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TColor], obj: Any, **kwargs) -> _TColor:
-        ...
+    def from_obj(cls: Type[_TColor], obj: Any, **kwargs) -> _TColor: ...
 
     @classmethod
     def from_obj(cls: Type[_TColor], obj: Any, **kwargs) -> _TColor:
@@ -178,7 +177,7 @@ class Color(StyleBase):
         try:
             return self._empty_inst
         except AttributeError:
-            self._empty_inst = self.__class__(_cattribs=self._get_internal_cattribs()) # type: ignore
+            self._empty_inst = self.__class__(_cattribs=self._get_internal_cattribs())  # type: ignore
             self._empty_inst._is_default_inst = True
         return self._empty_inst
 

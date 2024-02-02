@@ -12,7 +12,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.units import Angle
 from ooodev.units import UnitMM
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind

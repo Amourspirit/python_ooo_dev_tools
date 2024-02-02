@@ -11,7 +11,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.direct.chart2.chart.numbers.numbers import Numbers as ChartNumbers
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 
 
@@ -73,12 +73,10 @@ class PercentFormat(ChartNumbers):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs: Any) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs: Any) -> None: ...
 
     def apply(self, obj: Any, **kwargs: Any) -> None:
         """
@@ -111,12 +109,10 @@ class PercentFormat(ChartNumbers):
 
     # region Copy()
     @overload
-    def copy(self) -> PercentFormat:
-        ...
+    def copy(self) -> PercentFormat: ...
 
     @overload
-    def copy(self, **kwargs) -> PercentFormat:
-        ...
+    def copy(self, **kwargs) -> PercentFormat: ...
 
     def copy(self, **kwargs) -> PercentFormat:
         """
@@ -134,13 +130,11 @@ class PercentFormat(ChartNumbers):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> PercentFormat:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> PercentFormat: ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> PercentFormat:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> PercentFormat: ...
 
     @classmethod
     def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> PercentFormat:

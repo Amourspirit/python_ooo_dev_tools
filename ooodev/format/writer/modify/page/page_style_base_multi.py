@@ -3,6 +3,7 @@ Base Class for Page Style.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, overload, TypeVar
@@ -11,7 +12,7 @@ from com.sun.star.beans import XPropertySet
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
@@ -52,12 +53,10 @@ class PageStyleBaseMulti(StyleMulti):
     # region apply()
 
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """

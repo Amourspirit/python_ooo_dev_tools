@@ -21,7 +21,7 @@ from ooodev.format.chart2.direct.axis.font import FontLine, FontUnderlineEnum
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 
 def test_calc_chart_axis_font(loader, copy_fix_calc) -> None:

@@ -15,7 +15,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.inst.lo.doc_type import DocType
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.inst.lo.service import Service as LoService

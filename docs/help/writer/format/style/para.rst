@@ -41,7 +41,7 @@ General function used to run these examples.
             from ooodev.units import UnitMM
             from ooodev.utils.color import StandardColor
             from ooodev.utils.gui import GUI
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
 
 
             def main() -> int:

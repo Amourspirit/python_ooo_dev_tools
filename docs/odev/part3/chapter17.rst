@@ -1756,7 +1756,7 @@ It is used by the |extract_txt|_ example:
 
         # extract_text.py
         from __future__ import annotations
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.draw import Draw
         from ooodev.utils.type_var import PathOrStr
         from ooodev.utils.file_io import FileIO

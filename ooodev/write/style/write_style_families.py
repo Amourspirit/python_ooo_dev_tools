@@ -4,7 +4,7 @@ import uno
 
 from ooodev.adapter.style.style_families_comp import StyleFamiliesComp
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.exceptions import ex as mEx
 from ooodev.utils.partial.qi_partial import QiPartial

@@ -8,7 +8,7 @@ import uno
 from ooodev.format.calc.direct.cell.numbers import Numbers, NumberFormatEnum, NumberFormatIndexEnum
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.units import UnitCM
 
 

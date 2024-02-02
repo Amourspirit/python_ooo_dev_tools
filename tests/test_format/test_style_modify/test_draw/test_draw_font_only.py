@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.draw import Draw, DrawDoc, ZoomKind
 from ooodev.format.draw.modify.font import FontOnly
 from ooodev.format.draw.modify.font import FamilyGraphics, DrawStyleFamilyKind

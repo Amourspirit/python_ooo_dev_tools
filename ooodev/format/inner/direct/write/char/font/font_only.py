@@ -16,7 +16,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.meta.class_property_readonly import ClassPropertyReadonly
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitT
 from ooodev.units import UnitPT
@@ -259,13 +259,11 @@ class FontOnly(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontOnly], obj: Any) -> _TFontOnly:
-        ...
+    def from_obj(cls: Type[_TFontOnly], obj: Any) -> _TFontOnly: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontOnly], obj: Any, **kwargs) -> _TFontOnly:
-        ...
+    def from_obj(cls: Type[_TFontOnly], obj: Any, **kwargs) -> _TFontOnly: ...
 
     @classmethod
     def from_obj(cls: Type[_TFontOnly], obj: Any, **kwargs) -> _TFontOnly:

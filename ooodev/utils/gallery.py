@@ -23,7 +23,7 @@ from com.sun.star.graphic import XGraphic
 
 
 from . import file_io as mFileIo
-from . import lo as mLo
+from ooodev.loader import lo as mLo
 from . import props as mProps
 from . import info as mInfo
 from ..exceptions import ex as mEx
@@ -111,13 +111,11 @@ class Gallery(metaclass=StaticProperty):
     # region get_gallery()
     @overload
     @staticmethod
-    def get_gallery(name: GalleryKind) -> XGalleryTheme:
-        ...
+    def get_gallery(name: GalleryKind) -> XGalleryTheme: ...
 
     @overload
     @staticmethod
-    def get_gallery(name: str) -> XGalleryTheme:
-        ...
+    def get_gallery(name: str) -> XGalleryTheme: ...
 
     @staticmethod
     def get_gallery(name: GalleryKind | str) -> XGalleryTheme:
@@ -255,47 +253,39 @@ class Gallery(metaclass=StaticProperty):
     # region find_gallery_item()
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str) -> GalleryObj:
-        ...
+    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str) -> GalleryObj: ...
 
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: str, name: str) -> GalleryObj:
-        ...
+    def find_gallery_obj(cls, gallery_name: str, name: str) -> GalleryObj: ...
 
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind) -> GalleryObj:
-        ...
+    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind) -> GalleryObj: ...
 
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> GalleryObj:
-        ...
+    def find_gallery_obj(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> GalleryObj: ...
 
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str, *, search_kind: SearchByKind) -> GalleryObj:
-        ...
+    def find_gallery_obj(cls, gallery_name: GalleryKind, name: str, *, search_kind: SearchByKind) -> GalleryObj: ...
 
     @overload
     @classmethod
-    def find_gallery_obj(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> GalleryObj:
-        ...
+    def find_gallery_obj(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> GalleryObj: ...
 
     @overload
     @classmethod
     def find_gallery_obj(
         cls, gallery_name: str, name: str, search_match: SearchMatchKind, search_kind: SearchByKind
-    ) -> GalleryObj:
-        ...
+    ) -> GalleryObj: ...
 
     @overload
     @classmethod
     def find_gallery_obj(
         cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind, search_kind: SearchByKind
-    ) -> GalleryObj:
-        ...
+    ) -> GalleryObj: ...
 
     @classmethod
     def find_gallery_obj(

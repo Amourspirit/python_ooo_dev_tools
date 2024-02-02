@@ -36,7 +36,7 @@ from ooodev.format.chart2.direct.series.data_series.transparency import (
 )
 
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 from ooodev.utils.color import StandardColor
 from ooodev.utils.info import Info

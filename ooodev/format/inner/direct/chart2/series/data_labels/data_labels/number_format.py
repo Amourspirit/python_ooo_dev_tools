@@ -9,7 +9,7 @@ from ooo.dyn.util.number_format import NumberFormatEnum
 
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.direct.chart2.chart.numbers.numbers import Numbers as ChartNumbers
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 
 
@@ -65,12 +65,10 @@ class NumberFormat(ChartNumbers):
 
     # region apply()
     @overload
-    def apply(self, obj: object) -> None:
-        ...
+    def apply(self, obj: object) -> None: ...
 
     @overload
-    def apply(self, obj: object, **kwargs: Any) -> None:
-        ...
+    def apply(self, obj: object, **kwargs: Any) -> None: ...
 
     def apply(self, obj: object, **kwargs: Any) -> None:
         """
@@ -108,12 +106,10 @@ class NumberFormat(ChartNumbers):
 
     # region Copy()
     @overload
-    def copy(self) -> NumberFormat:
-        ...
+    def copy(self) -> NumberFormat: ...
 
     @overload
-    def copy(self, **kwargs) -> NumberFormat:
-        ...
+    def copy(self, **kwargs) -> NumberFormat: ...
 
     def copy(self, **kwargs) -> NumberFormat:
         """
@@ -131,13 +127,11 @@ class NumberFormat(ChartNumbers):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object) -> NumberFormat:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: object) -> NumberFormat: ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> NumberFormat:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> NumberFormat: ...
 
     @classmethod
     def from_obj(cls, chart_doc: XChartDocument, obj: object, **kwargs) -> NumberFormat:

@@ -10,7 +10,7 @@ def test_num_style(loader):
     This test requires Write to be visible.
     If not visible then Write.is_anything_selected() will return false every time.
     """
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.gui import GUI
 

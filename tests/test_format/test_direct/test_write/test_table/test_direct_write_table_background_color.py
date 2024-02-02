@@ -9,7 +9,7 @@ import uno
 from ooodev.format.writer.direct.table.background import Color
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.table_helper import TableHelper
 

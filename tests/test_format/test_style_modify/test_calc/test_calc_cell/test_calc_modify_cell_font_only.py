@@ -9,7 +9,7 @@ import uno
 from ooodev.format import Styler
 from ooodev.format.calc.modify.cell.font import FontOnly, StyleCellKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.units.unit_mm100 import UnitMM100
 

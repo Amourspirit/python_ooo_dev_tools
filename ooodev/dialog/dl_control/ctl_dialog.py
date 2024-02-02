@@ -9,7 +9,7 @@ from com.sun.star.awt import XWindowPeer
 from ooodev.adapter.awt.top_window_events import TopWindowEvents
 from ooodev.adapter.awt.window_events import WindowEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.adapter.awt.index_container_comp import UnoControlDialogComp
 
 from .ctl_base import CtlListenerBase

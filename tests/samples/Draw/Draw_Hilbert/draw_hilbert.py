@@ -17,7 +17,7 @@ from com.sun.star.drawing import XDrawPage
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.utils.props import Props
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
 from ooodev.utils.color import CommonColor
 from ooodev.utils.gui import GUI

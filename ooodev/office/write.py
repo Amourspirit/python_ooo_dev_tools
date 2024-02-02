@@ -75,7 +75,7 @@ from ..utils import file_io as mFileIO
 from ..utils import gen_util as mUtil
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils import selection as mSel
 from ..utils.color import CommonColor, Color
@@ -205,23 +205,19 @@ class Write(mSel.Selection):
     # region open_doc()
     @overload
     @classmethod
-    def open_doc(cls) -> XTextDocument:
-        ...
+    def open_doc(cls) -> XTextDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr) -> XTextDocument:
-        ...
+    def open_doc(cls, fnm: PathOrStr) -> XTextDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, *, loader: XComponentLoader) -> XTextDocument:
-        ...
+    def open_doc(cls, *, loader: XComponentLoader) -> XTextDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XTextDocument:
-        ...
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XTextDocument: ...
 
     @classmethod
     def open_doc(cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None) -> XTextDocument:
@@ -374,13 +370,11 @@ class Write(mSel.Selection):
     # region create_doc()
     @overload
     @staticmethod
-    def create_doc() -> XTextDocument:
-        ...
+    def create_doc() -> XTextDocument: ...
 
     @overload
     @staticmethod
-    def create_doc(loader: XComponentLoader) -> XTextDocument:
-        ...
+    def create_doc(loader: XComponentLoader) -> XTextDocument: ...
 
     @staticmethod
     def create_doc(loader: XComponentLoader | None = None) -> XTextDocument:
@@ -424,13 +418,11 @@ class Write(mSel.Selection):
     # region create_doc_from_template()
     @overload
     @staticmethod
-    def create_doc_from_template(template_path: PathOrStr) -> XTextDocument:
-        ...
+    def create_doc_from_template(template_path: PathOrStr) -> XTextDocument: ...
 
     @overload
     @staticmethod
-    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> XTextDocument:
-        ...
+    def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader) -> XTextDocument: ...
 
     @staticmethod
     def create_doc_from_template(template_path: PathOrStr, loader: XComponentLoader | None = None) -> XTextDocument:
@@ -489,13 +481,11 @@ class Write(mSel.Selection):
     # region close_doc()
     @overload
     @classmethod
-    def close_doc(cls) -> bool:
-        ...
+    def close_doc(cls) -> bool: ...
 
     @overload
     @classmethod
-    def close_doc(cls, text_doc: XTextDocument) -> bool:
-        ...
+    def close_doc(cls, text_doc: XTextDocument) -> bool: ...
 
     @classmethod
     def close_doc(cls, text_doc: XTextDocument | None = None) -> bool:
@@ -589,15 +579,13 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def open_flat_doc_using_text_template(cls, fnm: PathOrStr, template_path: PathOrStr) -> XTextDocument:
-        ...
+    def open_flat_doc_using_text_template(cls, fnm: PathOrStr, template_path: PathOrStr) -> XTextDocument: ...
 
     @overload
     @classmethod
     def open_flat_doc_using_text_template(
         cls, fnm: PathOrStr, template_path: PathOrStr, loader: XComponentLoader
-    ) -> XTextDocument:
-        ...
+    ) -> XTextDocument: ...
 
     @classmethod
     def open_flat_doc_using_text_template(
@@ -933,8 +921,7 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
-    def append(cls, cursor: XTextCursor, text: str) -> None:
-        ...
+    def append(cls, cursor: XTextCursor, text: str) -> None: ...
 
     @overload
     @classmethod

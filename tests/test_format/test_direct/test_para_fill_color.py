@@ -9,7 +9,7 @@ import uno
 from ooodev.format.writer.direct.para.area import Color
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 from ooo.dyn.drawing.fill_style import FillStyle

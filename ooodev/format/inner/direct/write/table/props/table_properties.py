@@ -8,7 +8,7 @@ from ooo.dyn.text.hori_orientation import HoriOrientation
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.size import Size
@@ -287,13 +287,11 @@ class _SharedAuto(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSharedAuto], obj: Any) -> _TSharedAuto:
-        ...
+    def from_obj(cls: Type[_TSharedAuto], obj: Any) -> _TSharedAuto: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSharedAuto], obj: Any, **kwargs) -> _TSharedAuto:
-        ...
+    def from_obj(cls: Type[_TSharedAuto], obj: Any, **kwargs) -> _TSharedAuto: ...
 
     @classmethod
     def from_obj(cls: Type[_TSharedAuto], obj: Any, **kwargs) -> _TSharedAuto:
@@ -460,13 +458,11 @@ class _TblAuto(_SharedAuto):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTblAuto], obj: Any) -> _TTblAuto:
-        ...
+    def from_obj(cls: Type[_TTblAuto], obj: Any) -> _TTblAuto: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
-        ...
+    def from_obj(cls: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto: ...
 
     @classmethod
     def from_obj(cls: Type[_TTblAuto], obj: Any, **kwargs) -> _TTblAuto:
@@ -636,13 +632,11 @@ class _TblCenterWidth(_TblAuto):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblCenterWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblCenterWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblCenterWidth:
@@ -723,13 +717,11 @@ class _TblLeft(_TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblLeft:
-        ...
+    def from_obj(cls, obj: Any) -> _TblLeft: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblLeft:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblLeft: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblLeft:
@@ -794,13 +786,11 @@ class _TblLeftWidth(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblLeftWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblLeftWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblLeftWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblLeftWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblLeftWidth:
@@ -877,13 +867,11 @@ class _TblRight(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRight:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRight: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRight:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRight: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRight:
@@ -942,13 +930,11 @@ class _TblRightWidth(_TblRight):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRightWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRightWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRightWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRightWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRightWidth:
@@ -1020,13 +1006,11 @@ class _TblCenterLeft(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblCenterLeft:
-        ...
+    def from_obj(cls, obj: Any) -> _TblCenterLeft: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterLeft:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblCenterLeft: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblCenterLeft:
@@ -1092,13 +1076,11 @@ class _TblFromLeft(_TblLeft):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblFromLeft:
-        ...
+    def from_obj(cls, obj: Any) -> _TblFromLeft: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeft:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeft: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeft:
@@ -1174,13 +1156,11 @@ class _TblFromLeftWidth(_TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblFromLeftWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblFromLeftWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeftWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeftWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblFromLeftWidth:
@@ -1249,13 +1229,11 @@ class _TblManualLeftRight(_TblCenterWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblManualLeftRight:
-        ...
+    def from_obj(cls, obj: Any) -> _TblManualLeftRight: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblManualLeftRight:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblManualLeftRight: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblManualLeftRight:
@@ -1345,13 +1323,11 @@ class _TblManualCenter(_TblManualLeftRight):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblManualCenter:
-        ...
+    def from_obj(cls, obj: Any) -> _TblManualCenter: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblManualCenter:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblManualCenter: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblManualCenter:
@@ -1460,13 +1436,11 @@ class _TblRelLeftByWidth(_SharedAuto):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
@@ -1579,13 +1553,11 @@ class _TblRelLeftByRight(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
@@ -1657,13 +1629,11 @@ class _TblRelFromLeft(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRelFromLeft:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRelFromLeft: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRelFromLeft:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelFromLeft: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRelFromLeft:
@@ -1727,13 +1697,11 @@ class _TblRelRightByWidth(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRelRightByWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRelRightByWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRelRightByWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelRightByWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRelRightByWidth:
@@ -1805,13 +1773,11 @@ class _TblRelRightByLeft(_TblRelRightByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRelLeftByWidth: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRelLeftByWidth:
@@ -1883,13 +1849,11 @@ class _TblRelCenter(_TblRelLeftByWidth):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> _TblRelCenter:
-        ...
+    def from_obj(cls, obj: Any) -> _TblRelCenter: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> _TblRelCenter:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> _TblRelCenter: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> _TblRelCenter:
@@ -2252,13 +2216,11 @@ class TableProperties(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableProperties], obj: Any) -> _TTableProperties:
-        ...
+    def from_obj(cls: Type[_TTableProperties], obj: Any) -> _TTableProperties: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableProperties], obj: Any, **kwargs) -> _TTableProperties:
-        ...
+    def from_obj(cls: Type[_TTableProperties], obj: Any, **kwargs) -> _TTableProperties: ...
 
     @classmethod
     def from_obj(cls: Type[_TTableProperties], obj: Any, **kwargs) -> _TTableProperties:

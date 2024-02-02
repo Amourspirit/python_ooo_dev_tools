@@ -7,7 +7,7 @@ from ooodev.adapter.sheet.spreadsheet_view_comp import SpreadsheetViewComp
 from ooodev.adapter.sheet.spreadsheet_view_settings_comp import SpreadsheetViewSettingsComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.inst.lo.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial

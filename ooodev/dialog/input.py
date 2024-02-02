@@ -7,7 +7,7 @@ from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 
 from ooodev.dialog import Dialogs, BorderKind
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 if TYPE_CHECKING:

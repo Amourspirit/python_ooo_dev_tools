@@ -3,6 +3,7 @@ Module for managing character fonts.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, TypeVar
@@ -17,7 +18,7 @@ from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.units import Angle as Angle
 from ooodev.units import UnitT
