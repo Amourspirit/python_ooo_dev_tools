@@ -40,8 +40,8 @@ def _test_dispose() -> None:
 
 def test_lo_inst(loader) -> None:
     from ooodev.loader.lo import Lo
-    from ooodev.utils.inst.lo.lo_inst import LoInst
-    from ooodev.utils.inst.lo.doc_type import DocTypeStr
+    from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.loader.inst.doc_type import DocTypeStr
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 

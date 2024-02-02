@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Type, Literal, overload, Optional, TypeVar
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 
 T = TypeVar("T")
 

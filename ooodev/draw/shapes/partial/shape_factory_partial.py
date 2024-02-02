@@ -6,7 +6,7 @@ from ooodev.draw.shapes import DrawShape
 from ooodev.draw.shapes.const import KNOWN_SHAPES
 from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 
 
 _T = TypeVar("_T", bound="ComponentT")

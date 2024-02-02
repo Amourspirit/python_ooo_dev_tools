@@ -11,7 +11,7 @@ from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.units import UnitMM
 from ooodev.loader import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.type_var import PathOrStr
 from .generic_draw_page import GenericDrawPage

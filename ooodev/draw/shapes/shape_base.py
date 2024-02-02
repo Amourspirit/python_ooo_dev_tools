@@ -44,7 +44,7 @@ if TYPE_CHECKING:
     from ooodev.utils import color as mColor
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.size import Size
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.utils.type_var import PathOrStr
 

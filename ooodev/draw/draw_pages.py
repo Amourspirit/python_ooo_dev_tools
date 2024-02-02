@@ -21,7 +21,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 

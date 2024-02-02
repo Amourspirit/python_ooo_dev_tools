@@ -11,7 +11,7 @@ from ooodev.dialog.msgbox import (
 )
 
 if TYPE_CHECKING:
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.dialog import Dialog
 
 

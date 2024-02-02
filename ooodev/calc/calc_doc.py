@@ -42,9 +42,9 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.utils.inst.lo.doc_type import DocType
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial

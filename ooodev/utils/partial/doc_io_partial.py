@@ -12,11 +12,11 @@ from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.factory import doc_factory as mDocFactory
-from ooodev.utils.inst.lo.doc_type import DocType
+from ooodev.loader.inst.doc_type import DocType
 from ooodev.utils.type_var import PathOrStr
 
 if TYPE_CHECKING:
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from com.sun.star.lang import XComponent
 
 _T = TypeVar("_T", bound="ComponentT")

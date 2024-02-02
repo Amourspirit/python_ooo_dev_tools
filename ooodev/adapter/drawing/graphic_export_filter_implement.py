@@ -8,7 +8,7 @@ from ooodev.loader import lo as mLo
 from .graphic_export_filter_comp import GraphicExportFilterComp
 
 if TYPE_CHECKING:
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class GraphicExportFilterImplement(GraphicExportFilterComp):

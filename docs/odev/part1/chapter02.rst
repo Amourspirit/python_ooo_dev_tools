@@ -779,7 +779,7 @@ The following code example demonstrates how to use the :ref:`ooodev.loader.inst.
     .. code-tab:: python
 
         from ooodev.loader.lo import Lo
-        from ooodev.utils.inst.lo.lo_inst import LoInst
+        from ooodev.loader.inst.lo_inst import LoInst
         from ooodev.utils.inst.lo.doc_type import DocTypeStr
         from ooodev.utils.gui import GUI
 

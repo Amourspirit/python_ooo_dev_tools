@@ -19,7 +19,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextCursor
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 

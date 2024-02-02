@@ -11,7 +11,7 @@ from ..form_ctl_check_box import FormCtlCheckBox
 if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseCheckBox as ControlModel  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlDbCheckBox(FormCtlCheckBox, DataAwareControlModelPartial, UpdateEvents):

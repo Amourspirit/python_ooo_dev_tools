@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import GridControl as ControlModel  # service
     from com.sun.star.form.control import GridControl as ControlView  # service
     from ooodev.units import UnitT
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlGrid(

@@ -10,7 +10,7 @@ from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from .write_draw_page import WriteDrawPage

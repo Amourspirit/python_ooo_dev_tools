@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
 from com.sun.star.frame import XModule
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:

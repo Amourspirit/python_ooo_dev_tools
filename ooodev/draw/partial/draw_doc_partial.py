@@ -12,7 +12,7 @@ from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import gui as mGUI
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.kind.zoom_kind import ZoomKind

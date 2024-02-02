@@ -12,7 +12,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import file_io as mFile
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
 

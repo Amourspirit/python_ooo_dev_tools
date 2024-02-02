@@ -16,7 +16,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 
 if TYPE_CHECKING:
     from ooodev.draw import DrawPage
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Grouping,_Combining_and_Binding
 

@@ -89,7 +89,7 @@ from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
 from ..utils.data_type.size import Size
 from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
-from ..utils.inst.lo import lo_inst as mLoInst
+from ooodev.loader.inst import lo_inst as mLoInst
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
 from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind

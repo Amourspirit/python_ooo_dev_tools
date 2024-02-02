@@ -6,7 +6,7 @@ from com.sun.star.text import XParagraphCursor
 
 from ooodev.adapter.text.paragraph_cursor_partial import ParagraphCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from .write_text_cursor import WriteTextCursor
 
 

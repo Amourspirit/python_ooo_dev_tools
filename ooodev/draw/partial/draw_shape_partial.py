@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import uno
 
 from ooodev.office import draw as mDraw
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:

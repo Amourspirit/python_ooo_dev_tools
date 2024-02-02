@@ -16,9 +16,9 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
-from ooodev.utils.inst.lo.doc_type import DocType
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial

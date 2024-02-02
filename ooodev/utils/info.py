@@ -44,7 +44,7 @@ from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from ooo.dyn.beans.the_introspection import theIntrospection
 from ooo.dyn.lang.locale import Locale  # struct
 
-from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.loader.inst.service import Service as LoService
 from . import date_time_util as mDate
 from . import file_io as mFileIO
 from ooodev.loader import lo as mLo

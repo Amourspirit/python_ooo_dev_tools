@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlModel  # service
     from com.sun.star.awt import UnoControl  # service
     from com.sun.star.uno import XInterface
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.form.forms import Forms
     from ooodev.proto.style_obj import StyleT
 

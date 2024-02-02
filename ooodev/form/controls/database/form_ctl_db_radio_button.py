@@ -11,7 +11,7 @@ from ..form_ctl_radio_button import FormCtlRadioButton
 if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseRadioButton as ControlModel  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlDbRadioButton(FormCtlRadioButton, DataAwareControlModelPartial, UpdateEvents):

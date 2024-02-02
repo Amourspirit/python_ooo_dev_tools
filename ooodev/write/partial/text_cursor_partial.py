@@ -17,7 +17,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.color import Color, CommonColor
 from ooodev.utils.context.lo_context import LoContext
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 

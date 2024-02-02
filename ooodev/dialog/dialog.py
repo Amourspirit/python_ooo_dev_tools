@@ -16,7 +16,7 @@ from ooodev.utils.context.lo_context import LoContext
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog  # service
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.units import UnitT
 
 

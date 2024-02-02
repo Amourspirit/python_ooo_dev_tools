@@ -4,7 +4,7 @@ import uno
 from enum import Enum
 
 if TYPE_CHECKING:
-    from ooodev.utils.inst.lo.doc_type import DocType, DocTypeStr
+    from ooodev.loader.inst.doc_type import DocType, DocTypeStr
 
 
 class Service(str, Enum):
@@ -23,7 +23,7 @@ class Service(str, Enum):
 
     def get_doc_type(self) -> DocType:
         """Gets the document type as DocType Enum"""
-        from ooodev.utils.inst.lo.doc_type import DocType
+        from ooodev.loader.inst.doc_type import DocType
 
         return DocType[self.name]
 

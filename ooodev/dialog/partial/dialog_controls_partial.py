@@ -54,7 +54,7 @@ from ..dl_control import CtlTree
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog  # service
     from ooodev.utils.type_var import PathOrStr
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
     # Avoid circular import by creating a property in class instance for Dialogs
     from ooodev.dialog import Dialogs

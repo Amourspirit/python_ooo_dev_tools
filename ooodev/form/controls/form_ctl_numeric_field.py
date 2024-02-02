@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import NumericField as ControlModel  # service
     from com.sun.star.form.control import NumericField as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlNumericField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):

@@ -67,7 +67,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import Form
     from com.sun.star.lang import XComponent
     from ooodev.units import UnitT
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.utils.type_var import PathOrStr
 
 

@@ -26,7 +26,7 @@ class DocType(IntEnum):
 
     def get_service(self) -> Service:
         """Gets the service type as Service Enum"""
-        from ooodev.utils.inst.lo.service import Service
+        from ooodev.loader.inst.service import Service
 
         return Service[self.name]
 
@@ -51,6 +51,6 @@ class DocTypeStr(str, Enum):
 
     def get_service(self) -> Service:
         """Gets the service type as Service Enum"""
-        from ooodev.utils.inst.lo.service import Service
+        from ooodev.loader.inst.service import Service
 
         return Service[self.name]

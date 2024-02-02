@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import FileControl as ControlModel  # service
     from com.sun.star.form.control import TextField as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlFile(FormCtlBase, TextEvents, ResetEvents):

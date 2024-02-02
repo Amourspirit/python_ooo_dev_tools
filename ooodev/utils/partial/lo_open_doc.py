@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Iterable, TYPE_CHECKING, overload
 import uno
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader import lo as mLo
-from ooodev.utils.inst.lo.doc_type import DocType
+from ooodev.loader.inst.doc_type import DocType
 
 
 if TYPE_CHECKING:

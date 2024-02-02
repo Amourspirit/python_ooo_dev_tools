@@ -5,8 +5,6 @@ It is no longer recommended for use and may be removed in the future.
 Use :ref:`ooodev.loader.inst.lo_inst.LoInst` instead.
 """
 
-# raise Exception("DeprecationWarning")
-
 from ooodev.loader.inst.lo_inst import LoInst as LoInst
 import warnings
 

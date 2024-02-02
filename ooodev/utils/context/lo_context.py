@@ -1,6 +1,6 @@
 from __future__ import annotations
 from time import sleep, time
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader import lo as mLo
 
 

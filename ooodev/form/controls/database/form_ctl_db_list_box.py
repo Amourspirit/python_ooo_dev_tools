@@ -15,7 +15,7 @@ from ..form_ctl_list_box import FormCtlListBox
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.form.component import DatabaseListBox as ControlModel  # service
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlDbListBox(FormCtlListBox, DataAwareControlModelPartial, UpdateEvents):

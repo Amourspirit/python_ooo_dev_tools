@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from ooodev.proto.dispatch_shape import DispatchShape
     from ooodev.units import UnitT
     from ooodev.utils.data_type.size import Size
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.utils.kind.drawing_slide_show_kind import DrawingSlideShowKind
 
 _T = TypeVar("_T", bound="ComponentT")

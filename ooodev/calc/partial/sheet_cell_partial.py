@@ -9,7 +9,7 @@ from ooodev.office import calc as mCalc
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 
 from .. import calc_cell as mCalcCell
 from .. import calc_sheet as mCalcSheet

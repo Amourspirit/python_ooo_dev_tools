@@ -659,7 +659,7 @@ def test_goto_cell(loader) -> None:
     from ooodev.events.lo_named_event import LoNamedEvent
     from ooodev.events.event_singleton import _Events
 
-    # from ooodev.utils.inst.lo.lo_inst import LoInst
+    # from ooodev.loader.inst.lo_inst import LoInst
 
     on_firing = False
     on_fired = False
