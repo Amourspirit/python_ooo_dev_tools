@@ -894,22 +894,22 @@ class Info(metaclass=StaticProperty):
         Returns:
             Lo.Service: Service type
         """
-        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
+        if cls.is_doc_type(obj=doc, doc_type=LoService.WRITER):
             mLo.Lo.print("A Writer document")
             return mLo.Lo.Service.WRITER
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.IMPRESS):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.IMPRESS):
             mLo.Lo.print("A Impress document")
             return mLo.Lo.Service.IMPRESS
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.DRAW):
             mLo.Lo.print("A Draw document")
             return mLo.Lo.Service.DRAW
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.CALC):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.CALC):
             mLo.Lo.print("A Calc document")
             return mLo.Lo.Service.CALC
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.BASE):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.BASE):
             mLo.Lo.print("A Base document")
             return mLo.Lo.Service.BASE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.MATH):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.MATH):
             mLo.Lo.print("A Math document")
             return mLo.Lo.Service.MATH
         else:
@@ -928,7 +928,7 @@ class Info(metaclass=StaticProperty):
             doc_type (Service, str): Doc type or service name such as ``com.sun.star.text.TextDocument``.
 
         Returns:
-            bool: True if obj matches; Otherwise, False
+            bool: ``True`` if obj matches; Otherwise, ``False``
         """
         with contextlib.suppress(Exception):
             si = mLo.Lo.qi(XServiceInfo, obj)

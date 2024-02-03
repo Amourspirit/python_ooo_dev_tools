@@ -296,6 +296,22 @@ class WriteDoc(
 
     # region from_current_doc()
     @classmethod
+    def _on_from_current_doc_loading(cls, event_args: CancelEventArgs) -> None:
+        """
+        Event called while from_current_doc loading.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        event_args.event_data["doc_type"] = cls.DOC_TYPE
+
+    @classmethod
     def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
         """
         Event called after from_current_doc is called.
@@ -310,7 +326,7 @@ class WriteDoc(
             event_args.event_data is a dictionary and contains the document in a key named 'doc'.
         """
         doc = cast(WriteDoc, event_args.event_data["doc"])
-        if doc.DOC_TYPE != DocType.WRITER:
+        if doc.DOC_TYPE != cls.DOC_TYPE:
             raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not a Write document.")
 
     # endregion from_current_doc()

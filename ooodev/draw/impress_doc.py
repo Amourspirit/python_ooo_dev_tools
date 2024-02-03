@@ -7,16 +7,17 @@ from ooodev.adapter.presentation.presentation_document_comp import PresentationD
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
+from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.office import draw as mDraw
-from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst import DocType
 from ooodev.loader.inst import Service as LoService
+from ooodev.office import draw as mDraw
+from ooodev.utils import info as mInfo
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -356,6 +357,22 @@ class ImpressDoc(
     # region DocIoPartial Overrides
     # region from_current_doc()
     @classmethod
+    def _on_from_current_doc_loading(cls, event_args: CancelEventArgs) -> None:
+        """
+        Event called while from_current_doc loading.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        event_args.event_data["doc_type"] = cls.DOC_TYPE
+
+    @classmethod
     def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
         """
         Event called after from_current_doc is called.
@@ -370,7 +387,7 @@ class ImpressDoc(
             event_args.event_data is a dictionary and contains the document in a key named 'doc'.
         """
         doc = cast(ImpressDoc, event_args.event_data["doc"])
-        if doc.DOC_TYPE != DocType.IMPRESS:
+        if doc.DOC_TYPE != cls.DOC_TYPE:
             raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not an Impress document.")
 
     # endregion from_current_doc()

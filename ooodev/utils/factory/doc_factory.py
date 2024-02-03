@@ -2,20 +2,47 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
 from com.sun.star.frame import XModule
-from ooodev.loader.inst.lo_inst import LoInst
-from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.office_document_t import OfficeDocumentT
 
 
-def doc_factory(doc: Any, lo_inst: LoInst | None) -> OfficeDocumentT:
+def is_known_doc(doc: Any, lo_inst: LoInst) -> bool:
+    """
+    Checks if the document is known.
+
+    Args:
+        doc (Any): Office document such as Writer, Calc, Draw, Impress.
+        lo_inst (LoInst): Lo Instance. Can be ``Lo.current_lo``.
+
+    Returns:
+        bool: ``True`` if known, ``False`` otherwise.
+    """
+    try:
+        module = lo_inst.qi(XModule, doc)
+        if not module:
+            return False
+        identifier = module.getIdentifier()
+        if not identifier:
+            return False
+        return identifier in (
+            "com.sun.star.drawing.DrawingDocument",
+            "com.sun.star.presentation.PresentationDocument",
+            "com.sun.star.sheet.SpreadsheetDocument",
+            "com.sun.star.text.TextDocument",
+        )
+    except Exception:
+        return False
+
+
+def doc_factory(doc: Any, lo_inst: LoInst) -> OfficeDocumentT:
     """
     Gets an instance of a document.
 
     Args:
         doc (Any): Office document such as Writer, Calc, Draw, Impress.
-        lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents.
+        lo_inst (LoInst): Lo Instance. Can be ``Lo.current_lo``.
 
     Raises:
         ValueError: If no identifier found.
@@ -24,8 +51,6 @@ def doc_factory(doc: Any, lo_inst: LoInst | None) -> OfficeDocumentT:
     Returns:
         OfficeDocumentT: A document instance. Such as ``ooodev.draw.DrawDoc`` or ``ooodev.calc.CalcDoc``.
     """
-    if lo_inst is None:
-        lo_inst = mLo.Lo.current_lo
     module = lo_inst.qi(XModule, doc, True)
     identifier = module.getIdentifier()
     if not identifier:

@@ -3,16 +3,18 @@ from typing import Any, cast, overload, TYPE_CHECKING, TypeVar, Generic, ClassVa
 import uno
 from com.sun.star.frame import XComponentLoader
 from com.sun.star.util import XCloseable
+from com.sun.star.frame import XModule
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst import Service as LoService
+from ooodev.loader.inst.doc_type import DocType
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
-from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.factory import doc_factory as mDocFactory
-from ooodev.loader.inst.doc_type import DocType
 from ooodev.utils.type_var import PathOrStr
 
 if TYPE_CHECKING:
@@ -34,7 +36,7 @@ class DocIoPartial(Generic[_T]):
     @classmethod
     def get_doc_from_component(cls, doc: XComponent, lo_inst: LoInst | None) -> _T:
         """
-        Gets a Draw document.
+        Gets a document.
 
         Args:
             doc (XComponent): Component to build Draw document from.
@@ -47,6 +49,8 @@ class DocIoPartial(Generic[_T]):
         """
         if not mInfo.Info.is_doc_type(doc_type=cls.DOC_TYPE.get_service(), obj=doc):
             raise Exception("Not a valid document")
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
 
         doc_instance = cast(_T, mDocFactory.doc_factory(doc=doc, lo_inst=lo_inst))
         return doc_instance
@@ -521,16 +525,56 @@ class DocIoPartial(Generic[_T]):
         See Also:
             :py:attr:`ooodev.utils.lo.Lo.current_doc`
         """
-        doc = mLo.Lo.current_doc
+        cargs = CancelEventArgs(cls.from_current_doc.__qualname__)
+        cargs.event_data = {"doc_type": None}
+        cls._on_from_current_doc_loading(cargs)
+        if cargs.cancel:
+            if not cargs.handled:
+                if "msg" in cargs.event_data:
+                    msg = cargs.event_data["msg"]
+                else:
+                    msg = "from_current_doc event was canceled"
+                raise mEx.CancelEventError(cargs, msg)
+
+        doc_type = cast(DocType, cargs.event_data["doc_type"])
+        doc = None
+        if doc_type is None:
+            doc = mLo.Lo.current_doc
+        else:
+            doc_service_name = str(doc_type.get_service())
+            for comp in mLo.Lo.desktop.components:
+                module = mLo.Lo.qi(XModule, comp, True)
+                identifier = module.getIdentifier()
+                if identifier == doc_service_name:
+                    doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
+                    break
+        if doc is None:
+            raise mEx.NotSupportedDocumentError("No supported document found")
         args = EventArgs(cls.from_current_doc.__qualname__)
         args.event_data = {"doc": doc}
         cls._on_from_current_doc_loaded(args)
         return cast(_T, doc)
 
     @classmethod
+    def _on_from_current_doc_loading(cls, event_args: CancelEventArgs) -> None:
+        """
+        Event called while from_current_doc loading.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        pass
+
+    @classmethod
     def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
         """
-        Event called after from_current_doc is called.
+        Event called after from_current_doc is loaded.
 
         Args:
             event_args (EventArgs): Event data.

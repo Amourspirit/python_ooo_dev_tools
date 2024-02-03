@@ -22,12 +22,12 @@ class ComponentsComp(ComponentBase, EnumerationAccessPartial):
             component (Components): UNO Component that implements ``com.sun.star.frame.Components`` service.
         """
         ComponentBase.__init__(self, component)
-        EnumerationAccessPartial.__init__(self, component=component, interface=None)
+        EnumerationAccessPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.frame.Components",)
+        return ()
 
     # endregion Overrides
     # region Properties

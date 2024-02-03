@@ -58,6 +58,7 @@ if TYPE_CHECKING:
     from com.sun.star.uno import XInterface
     from ooo.dyn.beans.property_value import PropertyValue
     from ooodev.proto.office_document_t import OfficeDocumentT
+    from ooodev.loader.comp.the_desktop import TheDesktop
 
 
 # PathOrStr = type_var.PathOrStr
@@ -2246,6 +2247,21 @@ class Lo(metaclass=StaticProperty):
             LoInst: Lo Instance
         """
         return cls._lo_inst
+
+    @classproperty
+    def desktop(cls) -> TheDesktop:
+        """
+        Get the current Desktop instance.
+
+        |lo_unsafe|
+
+        Returns:
+            LoInst: Lo Instance
+        """
+        if cls._lo_inst is None:
+            # for macro mode auto load office
+            cls.load_office()
+        return cls._lo_inst.desktop
 
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument

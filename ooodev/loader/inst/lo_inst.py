@@ -48,7 +48,6 @@ from ooodev.adapter.lang.event_listener import EventListener
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
 from ooodev.conn.connect import ConnectBase, LoDirectStart
-from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
@@ -56,15 +55,18 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_events import Events
 from ooodev.events.lo_named_event import LoNamedEvent
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.formatters.formatter_table import FormatterTable
+from ooodev.loader.comp.the_desktop import TheDesktop
+from ooodev.loader.inst.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
+from ooodev.loader.inst.options import Options as LoOptions
 from ooodev.utils import file_io as mFileIO
 from ooodev.utils import info as mInfo
 from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
-from ooodev.loader.inst.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
-from ooodev.loader.inst.options import Options as LoOptions
+from ooodev.utils.factory.doc_factory import doc_factory
 from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
 from .lo_loader import LoLoader
 
@@ -117,7 +119,7 @@ class LoInst(EventsPartial):
         self._xcc: XComponentContext | None = None
         self._doc: XComponent | None = None
         """remote component context"""
-        self._xdesktop: XDesktop | None = None
+        self._xdesktop: TheDesktop | None = None
         """remote desktop UNO service"""
         self._mc_factory: XMultiComponentFactory | None = None
         self._ms_factory: XMultiServiceFactory | None = None
@@ -130,7 +132,6 @@ class LoInst(EventsPartial):
         self._opt = LoOptions() if opt is None else opt
         self._allow_print = self._opt.verbose
         self._set_lo_events()
-        self._current_doc = None
 
     # region Events
     def _set_lo_events(self) -> None:
@@ -139,6 +140,7 @@ class LoInst(EventsPartial):
         self._fn_on_lo_loaded = self.on_lo_loaded
         self._fn_on_lo_disposed = self.on_lo_disposed
         self._fn_on_lo_disposing_bridge = self.on_lo_disposing_bridge
+        self._fn_on_context_changed = self.on_context_changed
 
         self._event_listener = EventListener()
         self._event_listener.on("disposing", self._fn_on_lo_disposing_bridge)
@@ -175,6 +177,12 @@ class LoInst(EventsPartial):
         with contextlib.suppress(Exception):
             if hasattr(self, "_bridge_component") and self.bridge is not None:
                 self.bridge.removeEventListener(self._event_listener)
+
+    def on_context_changed(
+        self, src: Any, event: EventArgs, *args, **kwargs
+    ) -> None:  # pylint: disable=unused-argument
+        print("Context Changed")
+        # print(event.event_data)
 
     # endregion Events
 
@@ -239,7 +247,7 @@ class LoInst(EventsPartial):
         """
         if self._opt.dynamic:
             return self.xscript_context.getDesktop()
-        return self._xdesktop  # type: ignore
+        return self._xdesktop.component  # type: ignore
 
     def get_component_factory(self) -> XMultiComponentFactory:
         """
@@ -284,9 +292,7 @@ class LoInst(EventsPartial):
             if doc is None:
                 raise mEx.NoneError("Document is None")
             return doc
-        if self._doc is None:
-            raise mEx.NoneError("Document is None")
-        return self._doc
+        return self.desktop.get_current_component()
 
     # region interface object creation
 
@@ -485,7 +491,6 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        self._current_doc = None
         b_connector = cargs.event_data["connector"]
         lo_loader = LoLoader(connector=b_connector, cache_obj=cache_obj, opt=opt)
         return self.load_from_lo_loader(lo_loader)
@@ -510,11 +515,14 @@ class LoInst(EventsPartial):
         self._mc_factory = self._xcc.getServiceManager()
         if self._mc_factory is None:
             raise mEx.LoadingError("Office Service Manager is unavailable")
-        self._xdesktop = self.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
+        desktop: Any = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
+        self._xdesktop = TheDesktop(desktop)
+        # self._xdesktop = self.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if self._xdesktop is None:
             # OPTIMIZE: Perhaps system exit is not the best what to handle no desktop service
             raise mEx.LoadingError("Could not create a desktop service")
-        self._loader = self.qi(XComponentLoader, self._xdesktop)
+        self._xdesktop.add_event_frame_action(self._fn_on_context_changed)
+        self._loader = self.qi(XComponentLoader, self._xdesktop.component)
         if self._loader is None:
             raise mEx.LoadingError("Unable to access XComponentLoader")
         return self._loader
@@ -624,7 +632,6 @@ class LoInst(EventsPartial):
         self.trigger_event(LoNamedEvent.COMPONENT_LOADING, cargs)
         if cargs.cancel:
             return
-        self._current_doc = None
         eargs = EventArgs.from_args(cargs)
         self.trigger_event(LoNamedEvent.RESET, eargs)
         self._ms_factory = self.qi(XMultiServiceFactory, component)
@@ -688,7 +695,6 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        self._current_doc = None
         fnm = cast("PathOrStr", cargs.event_data["fnm"])
 
         if fnm is None:
@@ -825,7 +831,6 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        self._current_doc = None
         dtype = LoDocTypeStr(cargs.event_data["doc_type"])
         properties = cast("Iterable[PropertyValue]", cargs.event_data["props"])
         if properties is None:
@@ -883,7 +888,6 @@ class LoInst(EventsPartial):
         if not mFileIO.FileIO.is_openable(template_path):
             raise Exception(f"Template file can not be opened: '{template_path}'")
 
-        self._current_doc = None
         self.print(f"Opening template: '{template_path}'")
         template_url = mFileIO.FileIO.fnm_to_url(fnm=template_path)
 
@@ -1205,7 +1209,6 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
-        self._current_doc = None
         xcc = addon_xcc
         if xcc is None:
             raise TypeError("'addon_xcc' is null. Could not access component context")
@@ -1239,7 +1242,6 @@ class LoInst(EventsPartial):
         if sc is None:
             raise TypeError("Script Context is null")
 
-        self._current_doc = None
         xcc = sc.getComponentContext()
         if xcc is None:
             raise Exception("Could not access component context")
@@ -1662,7 +1664,7 @@ class LoInst(EventsPartial):
     @property
     def star_desktop(self) -> XDesktop:
         """Get current desktop"""
-        return self._xdesktop  # type: ignore
+        return self._xdesktop.component  # type: ignore
 
     StarDesktop, stardesktop = star_desktop, star_desktop
 
@@ -1807,13 +1809,20 @@ class LoInst(EventsPartial):
 
         This property does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
         """
-        if self._current_doc is None:
-            from ooodev.utils.factory.doc_factory import doc_factory
+        return doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
 
-            if self._doc is None:
-                self._doc = self.this_component
-            self._current_doc = doc_factory(doc=self._doc, lo_inst=self)
-        return self._current_doc
+    @property
+    def desktop(self) -> TheDesktop:
+        """Get the current desktop"""
+        if self._xdesktop is None:
+            if self.is_loaded is False:
+                # attempt to connect direct
+                # failure will result in script error and then exit
+                self.load_office()
+            desktop: Any = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
+            self._xdesktop = TheDesktop(desktop)
+            self._xdesktop.add_event_frame_action(self._fn_on_context_changed)
+        return self._xdesktop
 
 
 __all__ = ("LoInst",)

@@ -29,6 +29,6 @@ class Service(str, Enum):
 
     def get_doc_type_str(self) -> DocTypeStr:
         """Gets the document type as DocTypeStr Enum"""
-        from ooodev.utils.inst.lo.doc_type import DocTypeStr
+        from ooodev.loader.inst.doc_type import DocTypeStr
 
         return DocTypeStr[self.name]
