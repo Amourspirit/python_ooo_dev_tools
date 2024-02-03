@@ -117,7 +117,6 @@ class LoInst(EventsPartial):
         self._is_default = False
         # self.trigger_event = Events(self)
         self._xcc: XComponentContext | None = None
-        self._doc: XComponent | None = None
         """remote component context"""
         self._xdesktop: TheDesktop | None = None
         """remote desktop UNO service"""
@@ -563,7 +562,6 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             return False
 
-        self._doc = None
         if self._xdesktop is None:
             self.print("No office connection found")
             return True
@@ -850,7 +848,6 @@ class LoInst(EventsPartial):
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, local_props)  # type: ignore
             self._reset_for_doc(doc)
-            self._doc = doc
             self.trigger_event(LoNamedEvent.DOC_CREATED, eargs)
             return doc
         except Exception as e:
@@ -905,7 +902,6 @@ class LoInst(EventsPartial):
             doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)  # type: ignore
             self._reset_for_doc(doc)
             self.trigger_event(LoNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
-            self._doc = doc
             return doc
         except Exception as e:
             raise Exception("Could not create document from template") from e
@@ -1178,7 +1174,6 @@ class LoInst(EventsPartial):
         self.print("Closing the document")
         try:
             closeable.close(cargs.event_data)
-            self._doc = None
             self.trigger_event(LoNamedEvent.DOC_CLOSED, EventArgs.from_args(cargs))
             return True
         except CloseVetoException as e:
@@ -1194,12 +1189,10 @@ class LoInst(EventsPartial):
     def close_doc(self, doc: Any, deliver_ownership=False) -> None:
         # sourcery skip: raise-specific-error
         if self._disposed:
-            self._doc = None
             return
         try:
             closeable = self.qi(XCloseable, doc, True)
             self.close(closeable=closeable, deliver_ownership=deliver_ownership)
-            self._doc = None
         except DisposedException as e:
             raise Exception("Document close failed since Office link disposed") from e
 
@@ -1233,7 +1226,6 @@ class LoInst(EventsPartial):
         if doc is None:
             raise Exception("Could not access document")
         # self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
-        # self._doc = doc
         self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
@@ -1264,7 +1256,6 @@ class LoInst(EventsPartial):
         if doc is None:
             raise Exception("Could not access document")
         # self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
-        # self._doc = doc
         self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
@@ -1638,9 +1629,12 @@ class LoInst(EventsPartial):
             return self._null_date
         except AttributeError:
             self._null_date = datetime(year=1889, month=12, day=30, tzinfo=timezone.utc)
-            if self._doc is None:
+            if self._xdesktop is None:
                 return self._null_date
-            n_supplier = self.qi(XNumberFormatsSupplier, self._doc)
+            doc = self.desktop.get_current_component()
+            if doc is None:
+                return self._null_date
+            n_supplier = self.qi(XNumberFormatsSupplier, doc)
             if n_supplier is None:
                 # this is not always a XNumberFormatsSupplier such as *.odp documents
                 return self._null_date
@@ -1721,17 +1715,17 @@ class LoInst(EventsPartial):
             self.load_office()
 
         # comp = self.star_desktop.getCurrentComponent()
-        desktop = self.get_desktop()
-        if desktop is None:
+        if self.desktop is None:
             return None
-        if not self._opt.dynamic and self._doc is None or self._opt.dynamic:
-            doc = desktop.getCurrentComponent()
-        else:
-            doc = self._doc
+        desktop = self.desktop.component
+        doc = desktop.getCurrentComponent()
+        # if not self._opt.dynamic and self._doc is None or self._opt.dynamic:
+        #     doc = desktop.getCurrentComponent()
+        # else:
+        #     doc = self._doc
         if doc is None:
             return None
         service_info = self.qi(XServiceInfo, doc, True)
-        # impl = self._doc.ImplementationName
         impl = service_info.getImplementationName()
         # com.sun.star.comp.sfx2.BackingComp is the Main Launcher App.
         if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
