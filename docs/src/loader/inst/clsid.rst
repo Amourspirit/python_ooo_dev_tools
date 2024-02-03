@@ -1,6 +1,6 @@
 Class CLSID
 ===========
 
-.. autoclass:: ooodev.utils.inst.CLSID
+.. autoclass:: ooodev.loader.inst.CLSID
     :members:
     :undoc-members:
