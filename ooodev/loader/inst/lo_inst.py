@@ -247,7 +247,7 @@ class LoInst(EventsPartial):
         """
         if self._opt.dynamic:
             return self.xscript_context.getDesktop()
-        return self._xdesktop.component  # type: ignore
+        return self.desktop.component  # type: ignore
 
     def get_component_factory(self) -> XMultiComponentFactory:
         """
@@ -512,20 +512,45 @@ class LoInst(EventsPartial):
         self._opt = self._lo_loader.options
         self._disposed = False
         self._xcc = self._lo_inst.ctx
+        self._load_from_context()
+        if self._loader is None:
+            raise mEx.LoadingError("Unable to access XComponentLoader")
+        return self._loader
+
+    def _load_from_context(self) -> None:
+        if self._xcc is None:
+            raise mEx.LoadingError("No component context found")
         self._mc_factory = self._xcc.getServiceManager()
         if self._mc_factory is None:
             raise mEx.LoadingError("Office Service Manager is unavailable")
         desktop: Any = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
         self._xdesktop = TheDesktop(desktop)
-        # self._xdesktop = self.create_instance_mcf(XDesktop, "com.sun.star.frame.Desktop")
         if self._xdesktop is None:
-            # OPTIMIZE: Perhaps system exit is not the best what to handle no desktop service
             raise mEx.LoadingError("Could not create a desktop service")
         self._xdesktop.add_event_frame_action(self._fn_on_context_changed)
         self._loader = self.qi(XComponentLoader, self._xdesktop.component)
         if self._loader is None:
             raise mEx.LoadingError("Unable to access XComponentLoader")
-        return self._loader
+
+    def _reset_for_doc(self, doc: XComponent) -> None:
+        """
+        Gets the frame from the document and sets it as the active frame for the desktop.
+
+        Sets the multi service factory for the document.
+
+        Setting the active frame is necessary for the document to be accessible via ``desktop.get_current_component()``.
+
+        Args:
+            doc (XComponent): Document to reset for.
+        """
+        model = self.qi(XModel, doc, True)
+        controller = model.getCurrentController()
+        frm = controller.getFrame()
+        self.desktop.set_active_frame(frm)
+
+        # window = frm.getComponentWindow()
+        # self.desktop.set_component(window=window, controller=controller)
+        self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
 
     # endregion Start Office
 
@@ -634,8 +659,7 @@ class LoInst(EventsPartial):
             return
         eargs = EventArgs.from_args(cargs)
         self.trigger_event(LoNamedEvent.RESET, eargs)
-        self._ms_factory = self.qi(XMultiServiceFactory, component)
-        self._doc = component
+        self._reset_for_doc(component)
         self.trigger_event(LoNamedEvent.COMPONENT_LOADED, eargs)
 
     # region open_flat_doc()
@@ -717,12 +741,11 @@ class LoInst(EventsPartial):
             raise Exception(f"Unable to get url from file: {pth}")
         try:
             doc = loader.loadComponentFromURL(str(open_file_url), "_blank", 0, internal_props)  # type: ignore
-            self._ms_factory = self.qi(XMultiServiceFactory, doc)
-            self._doc = doc
-            if self._doc is None:
+            if doc is None:
                 raise mEx.NoneError("loadComponentFromURL() returned None")
+            self._reset_for_doc(doc)
             self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
-            return self._doc
+            return doc
         except Exception as e:
             raise Exception("Unable to open the document") from e
 
@@ -778,21 +801,7 @@ class LoInst(EventsPartial):
             return LoDocTypeStr.WRITER
 
     def doc_type_str(self, doc_type_val: LoDocType) -> LoDocTypeStr:
-        if doc_type_val == LoDocType.WRITER:
-            return LoDocTypeStr.WRITER
-        elif doc_type_val == LoDocType.IMPRESS:
-            return LoDocTypeStr.IMPRESS
-        elif doc_type_val == LoDocType.DRAW:
-            return LoDocTypeStr.DRAW
-        elif doc_type_val == LoDocType.CALC:
-            return LoDocTypeStr.CALC
-        elif doc_type_val == LoDocType.BASE:
-            return LoDocTypeStr.BASE
-        elif doc_type_val == LoDocType.MATH:
-            return LoDocTypeStr.MATH
-        else:
-            self.print(f"Do not recognize extension '{doc_type_val}'; using writer")
-            return LoDocTypeStr.WRITER
+        return doc_type_val.get_doc_type_str()
 
     # region create_doc()
     @overload
@@ -840,10 +849,10 @@ class LoInst(EventsPartial):
         self.print(f"Creating Office document {dtype}")
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, local_props)  # type: ignore
-            self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
+            self._reset_for_doc(doc)
             self._doc = doc
             self.trigger_event(LoNamedEvent.DOC_CREATED, eargs)
-            return self._doc
+            return doc
         except Exception as e:
             raise Exception("Could not create a document") from e
 
@@ -893,12 +902,11 @@ class LoInst(EventsPartial):
 
         props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
         try:
-            self._doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)  # type: ignore
-            self._ms_factory = self.qi(XMultiServiceFactory, self._doc)
-            if self._ms_factory is None:
-                raise mEx.MissingInterfaceError(XMultiServiceFactory)
+            doc = loader.loadComponentFromURL(template_url, "_blank", 0, props)  # type: ignore
+            self._reset_for_doc(doc)
             self.trigger_event(LoNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
-            return self._doc
+            self._doc = doc
+            return doc
         except Exception as e:
             raise Exception("Could not create document from template") from e
 
@@ -1200,6 +1208,7 @@ class LoInst(EventsPartial):
     # ================= initialization via Addon-supplied context ====================
 
     def addon_initialize(self, addon_xcc: XComponentContext) -> XComponent:
+        # this should most likely be put into a separate addon class
         # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.addon_initialize.__qualname__)
         cargs.event_data = {"addon_xcc": addon_xcc}
@@ -1223,8 +1232,8 @@ class LoInst(EventsPartial):
         doc = xdesktop.getCurrentComponent()
         if doc is None:
             raise Exception("Could not access document")
-        self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
-        self._doc = doc
+        # self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
+        # self._doc = doc
         self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
@@ -1254,8 +1263,8 @@ class LoInst(EventsPartial):
         doc = xdesktop.getCurrentComponent()
         if doc is None:
             raise Exception("Could not access document")
-        self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
-        self._doc = doc
+        # self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
+        # self._doc = doc
         self.trigger_event(LoNamedEvent.DOC_OPENED, eargs)
         return doc
 
@@ -1546,24 +1555,16 @@ class LoInst(EventsPartial):
         return result
 
     def get_frame(self) -> XFrame:
-        if self._doc is None:
-            raise mEx.LoNotLoadedError("No document loaded")
-
-        component = self.qi(XComponent, self._doc, True)
-        model = self.qi(XModel, component, True)
+        model = self.get_model()
         controller = model.getCurrentController()
         return controller.getFrame()
-        # sourcery skip: raise-specific-error
-        if self.star_desktop is None:
-            raise Exception("No desktop found")
-        if self._opt.dynamic:
-            return self.XSCRIPTCONTEXT.getDesktop().getCurrentFrame()
-        return self.get_desktop().getCurrentFrame()
 
     def get_model(self) -> XModel:
         if self._opt.dynamic:
             return self.XSCRIPTCONTEXT.getDocument()
-        return self.qi(XModel, self._doc, True)
+        component = self.desktop.get_current_component()
+        model = self.qi(XModel, component, True)
+        return model
 
     def lock_controllers(self) -> bool:
         # much faster updates as screen is basically suspended
@@ -1572,7 +1573,7 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             return False
         # doc = self.xscript_context.getDocument() if self._opt.dynamic else self.lo_component
-        xmodel = self.qi(XModel, self.lo_component, True)
+        xmodel = self.get_model()
         xmodel.lockControllers()
         self.trigger_event(LoNamedEvent.CONTROLLERS_LOCKED, EventArgs(self))
         return True
@@ -1583,14 +1584,15 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             return False
         # doc = self.xscript_context.getDocument() if self._opt.dynamic else self.lo_component
-        xmodel = self.qi(XModel, self.lo_component, True)
+        xmodel = self.get_model()
         if xmodel.hasControllersLocked():
             xmodel.unlockControllers()
-        self.trigger_event(LoNamedEvent.CONTROLLERS_UNLOCKED, EventArgs.from_args(cargs))
-        return True
+            self.trigger_event(LoNamedEvent.CONTROLLERS_UNLOCKED, EventArgs.from_args(cargs))
+            return True
+        return False
 
     def has_controllers_locked(self) -> bool:
-        xmodel = self.qi(XModel, self.lo_component, True)
+        xmodel = self.get_model()
         return xmodel.hasControllersLocked()
 
     def print(self, *args, **kwargs) -> None:
@@ -1664,7 +1666,7 @@ class LoInst(EventsPartial):
     @property
     def star_desktop(self) -> XDesktop:
         """Get current desktop"""
-        return self._xdesktop.component  # type: ignore
+        return self.desktop.component  # type: ignore
 
     StarDesktop, stardesktop = star_desktop, star_desktop
 
@@ -1683,7 +1685,9 @@ class LoInst(EventsPartial):
         Returns:
             XComponent | None: Component or None if not loaded.
         """
-        return self._doc
+        if self._xdesktop is None:
+            return None
+        return self._xdesktop.get_current_component()
 
     @property
     def this_component(self) -> XComponent | None:
