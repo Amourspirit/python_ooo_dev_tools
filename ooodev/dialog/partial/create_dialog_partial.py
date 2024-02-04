@@ -1,8 +1,12 @@
 from __future__ import annotations
-from typing import overload, TYPE_CHECKING
+from typing import Any, overload, TYPE_CHECKING
 
+from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.events.lo_events import event_ctx
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.dialog.msgbox import (
     MsgBox,
     MessageBoxType,
@@ -13,6 +17,7 @@ from ooodev.dialog.msgbox import (
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.dialog import Dialog
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 
 class CreateDialogPartial:
@@ -143,16 +148,37 @@ class CreateDialogPartial:
         Returns:
             Results: MessageBoxResultsEnum
 
-            * Button press ``Abort`` return ``MessageBoxResultsEnum.CANCEL``
-            * Button press ``Cancel`` return ``MessageBoxResultsEnum.CANCEL``
-            * Button press ``Ignore`` returns ``MessageBoxResultsEnum.IGNORE``
-            * Button press ``No`` returns ``MessageBoxResultsEnum.NO``
-            * Button press ``OK`` returns ``MessageBoxResultsEnum.OK``
-            * Button press ``Retry`` returns ``MessageBoxResultsEnum.RETRY``
-            * Button press ``Yes`` returns ``MessageBoxResultsEnum.YES``
+        Note:
+
+            - Button press ``Abort`` return ``MessageBoxResultsEnum.CANCEL``
+            - Button press ``Cancel`` return ``MessageBoxResultsEnum.CANCEL``
+            - Button press ``Ignore`` returns ``MessageBoxResultsEnum.IGNORE``
+            - Button press ``No`` returns ``MessageBoxResultsEnum.NO``
+            - Button press ``OK`` returns ``MessageBoxResultsEnum.OK``
+            - Button press ``Retry`` returns ``MessageBoxResultsEnum.RETRY``
+            - Button press ``Yes`` returns ``MessageBoxResultsEnum.YES``
+
+        Note:
+            Raises a global event ``GblNamedEvent.MSG_BOX_CREATING`` before creating the dialog.
+            The event args are of type ``CancelEventArgs``.
+            The ``event_data`` is a dictionary that contains the following key:
+
+            - ``msg``: The message to display.
+            - ``title``: The title of the dialog.
+            - ``boxtype``: The type of message box to display.
+            - ``buttons``: The buttons to display.
+
+            If the event is cancelled, the ``result`` value of ``event_data` if set will be returned.
+            Otherwise if the event is not handled, a ``CancelEventError`` is raised.
         """
+
+        def on_dialog_creating(source: Any, event_args: CancelEventArgs, *args, **kwargs) -> None:
+            if isinstance(self, EventsPartial):
+                self.trigger_event(GblNamedEvent.MSG_BOX_CREATING, event_args)
+
         with LoContext(inst=self.__lo_inst):
-            result = MsgBox.msgbox(msg=msg, title=title, boxtype=boxtype, buttons=buttons)
+            with event_ctx((GblNamedEvent.MSG_BOX_CREATING, on_dialog_creating), source=self, lo_observe=True):
+                result = MsgBox.msgbox(msg=msg, title=title, boxtype=boxtype, buttons=buttons)
         return result
 
     # endregion msgbox
@@ -180,18 +206,43 @@ class CreateDialogPartial:
 
         Returns:
             str: The value of input or empty string.
+
+        Note:
+            Raises a global event ``GblNamedEvent.INPUT_BOX_CREATING`` before creating the dialog.
+            The event args are of type ``CancelEventArgs``.
+            The ``event_data`` is a dictionary that contains the following key:
+
+            - ``msg``: The message to display.
+            - ``title``: The title of the dialog.
+            - ``input_value``: The value of the input box when first displayed.
+            - ``ok_lbl``: The label for the OK button.
+            - ``cancel_lbl``: The label for the Cancel button.
+            - ``is_password``: Determines if the input box is masked for password input.
+            - ``frame``: The frame of the dialog. If not set, the frame of the current document is used.
+
+            The default ``frame`` is ``None``. If set value must be a ``XFrame`` object.
+
+            If the event is cancelled, the ``result`` value of ``event_data` if set will be returned.
+            Otherwise if the event is not handled, a ``CancelEventError`` is raised.
         """
         from ooodev.dialog.input import Input
 
+        def on_dialog_creating(source: Any, event_args: CancelEventArgs, *args, **kwargs) -> None:
+            if isinstance(self, GuiPartial):
+                event_args.event_data["frame"] = self.get_frame()
+            if isinstance(self, EventsPartial):
+                self.trigger_event(GblNamedEvent.INPUT_BOX_CREATING, event_args)
+
         with LoContext(inst=self.__lo_inst):
-            result = Input.get_input(
-                title=title,
-                msg=msg,
-                input_value=input_value,
-                ok_lbl=ok_lbl,
-                cancel_lbl=cancel_lbl,
-                is_password=is_password,
-            )
+            with event_ctx((GblNamedEvent.INPUT_BOX_CREATING, on_dialog_creating), source=self, lo_observe=True):
+                result = Input.get_input(
+                    title=title,
+                    msg=msg,
+                    input_value=input_value,
+                    ok_lbl=ok_lbl,
+                    cancel_lbl=cancel_lbl,
+                    is_password=is_password,
+                )
         return result
 
     # endregion input

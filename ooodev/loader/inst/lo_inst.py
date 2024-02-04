@@ -121,7 +121,6 @@ class LoInst(EventsPartial):
         self._xdesktop: TheDesktop | None = None
         """remote desktop UNO service"""
         self._mc_factory: XMultiComponentFactory | None = None
-        self._ms_factory: XMultiServiceFactory | None = None
         self._is_office_terminated: bool = False
         self._lo_inst: ConnectBase | None = None
         self._loader = None
@@ -263,7 +262,8 @@ class LoInst(EventsPartial):
         |lo_unsafe|
         """
         # return cls._bridge_component
-        return self._ms_factory  # type: ignore
+        doc = self.desktop.get_current_component()
+        return self.qi(XMultiServiceFactory, doc, True)
 
     def get_relative_doc(self) -> XComponent:
         """
@@ -321,11 +321,15 @@ class LoInst(EventsPartial):
     def create_instance_msf(
         self, atype: Type[T], service_name: str, msf: XMultiServiceFactory | None = None, raise_err: bool = False
     ) -> T | None:  # sourcery skip: raise-specific-error
-        if self._ms_factory is None:
+        # in a multi document environment, get the multi service factory from the current document
+        doc = self.desktop.get_current_component()
+        ms_factory = self.qi(XMultiServiceFactory, doc)
+
+        if ms_factory is None:
             raise Exception("No document found")
         try:
             if msf is None:
-                obj = self._ms_factory.createInstance(service_name)
+                obj = ms_factory.createInstance(service_name)
             else:
                 obj = msf.createInstance(service_name)
             if raise_err and obj is None:
@@ -492,7 +496,9 @@ class LoInst(EventsPartial):
 
         b_connector = cargs.event_data["connector"]
         lo_loader = LoLoader(connector=b_connector, cache_obj=cache_obj, opt=opt)
-        return self.load_from_lo_loader(lo_loader)
+        loader =  self.load_from_lo_loader(lo_loader)
+        self.trigger_event(LoNamedEvent.OFFICE_LOADED, eargs)
+        return loader
 
     def load_from_lo_loader(self, loader: LoLoader) -> XComponentLoader:
         """
@@ -547,9 +553,8 @@ class LoInst(EventsPartial):
         frm = controller.getFrame()
         self.desktop.set_active_frame(frm)
 
-        # window = frm.getComponentWindow()
-        # self.desktop.set_component(window=window, controller=controller)
-        self._ms_factory = self.qi(XMultiServiceFactory, doc, True)
+        # With some components such as Base, the multi service factory is not available
+        self._ms_factory = self.qi(XMultiServiceFactory, doc)
 
     # endregion Start Office
 

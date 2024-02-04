@@ -1,17 +1,18 @@
 from typing import TYPE_CHECKING, cast
 import uno  # pylint: disable=unused-import
-from com.sun.star.awt import XControlModel
-from com.sun.star.awt import XDialog
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 
 from ooodev.dialog import Dialogs, BorderKind
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.event_singleton import _Events
+from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
-
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlDialog
+    from com.sun.star.frame import XFrame
 
 
 class Input:
@@ -37,9 +38,55 @@ class Input:
             cancel_lbl (str, optional): Cancel Button Label. Defaults to "Cancel".
             is_password (bool, optional): Determines if the input box is masked for password input. Defaults to ``False``.
 
+        Raises:
+            CancelEventError: If the dialog creation was cancelled.
+
         Returns:
             str: The value of input or empty string.
+
+        Note:
+            Raises a global event ``GblNamedEvent.INPUT_BOX_CREATING`` before creating the dialog.
+            The event args are of type ``CancelEventArgs``.
+            The ``event_data`` is a dictionary that contains the following key:
+
+            - ``msg``: The message to display.
+            - ``title``: The title of the dialog.
+            - ``input_value``: The value of the input box when first displayed.
+            - ``ok_lbl``: The label for the OK button.
+            - ``cancel_lbl``: The label for the Cancel button.
+            - ``is_password``: Determines if the input box is masked for password input.
+            - ``frame``: The frame of the dialog. If not set, the frame of the current document is used.
+
+            The default ``frame`` is ``None``. If set value must be a ``XFrame`` object.
+
+            If the event is cancelled, the ``result`` value of ``event_data` if set will be returned.
+            Otherwise if the event is not handled, a ``CancelEventError`` is raised.
         """
+        cargs = CancelEventArgs(Input.get_input.__qualname__)
+        cargs.event_data = {
+            "msg": msg,
+            "title": title,
+            "input_value": input_value,
+            "ok_lbl": ok_lbl,
+            "cancel_lbl": cancel_lbl,
+            "is_password": is_password,
+            "frame": None,
+        }
+        _Events().trigger(GblNamedEvent.INPUT_BOX_CREATING, cargs)
+
+        if cargs.cancel is True:
+            if "result" in cargs.event_data:
+                return cast(str, cargs.event_data["result"])
+            if cargs.handled is False:
+                raise mEx.CancelEventError(cargs, "Dialog creation was cancelled.")
+
+        msg = cast(str, cargs.event_data["msg"])
+        title = cast(str, cargs.event_data["title"])
+        input_value = cast(str, cargs.event_data["input_value"])
+        ok_lbl = cast(str, cargs.event_data["ok_lbl"])
+        cancel_lbl = cast(str, cargs.event_data["cancel_lbl"])
+        is_password = cast(bool, cargs.event_data["is_password"])
+
         width = 450
         height = 120
         btn_width = 100
@@ -99,7 +146,12 @@ class Input:
             btn_type=PushButtonType.OK,
             DefaultButton=True,
         )
-        window = mLo.Lo.get_frame().getContainerWindow()
+
+        frame = cast("XFrame", cargs.event_data["frame"])
+        if frame is not None:
+            window = frame.getContainerWindow()
+        else:
+            window = mLo.Lo.get_frame().getContainerWindow()
         ps = window.getPosSize()
         x = round(ps.Width / 2 - width / 2)
         y = round(ps.Height / 2 - height / 2)

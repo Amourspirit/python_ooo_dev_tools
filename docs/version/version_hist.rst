@@ -2,6 +2,42 @@
 Version History
 ***************
 
+Version 0.26.0
+==============
+
+The ``Lo`` class and other loader classes ahve been moved into ``ooodev.loader`` namespace.
+
+Now ``Lo`` is imported as follows. ``from ooodev.loader import Lo``. This should not be a breaking change as the old import should still work.
+Previous import was ``from ooodev.utils.lo import Lo``.
+
+``Lo`` is basically the context manager for the entire library. It is used to connect to LibreOffice, manage the connection and communitate with Documents.
+In this version the ``Lo`` and related classes have been update to have much better multi-document support.
+
+``Lo`` class now has a ``desktop`` property that is an instance of the new ``ooodev.loader.comp.the_desktop.TheDesktop`` class.
+
+Now in macro mode there are multiple ways to get the current document. The ``Lo`` class has a ``current_doc`` property that returns the current document.
+In Macro Mode it is not necessary to use ``ooodev.macro.MacroLoader`` to access the document in the following mannor.
+
+.. code-block:: python
+
+    from ooodev.loader import Lo
+    doc = Lo.current_doc
+    doc.msgbox("Hello World")
+
+or for know more specific document types such as ``ooodev.write.WriteDoc`` or ``ooodev.calc.CalcDoc``.
+
+.. code-block:: python
+
+    from ooodev.write import WriteDoc
+    doc = WriteDoc.from_current_doc()
+    doc.msgbox("Hello World")
+
+.. code-block:: python
+
+    from ooodev.calc import CalcDoc
+    doc = CalcDoc.from_current_doc()
+    doc.msgbox("Hello World")
+
 Version 0.25.2
 ==============
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+import contextlib
+from typing import Any, TYPE_CHECKING
 
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -22,6 +23,7 @@ class EventEvents:
         trigger_args: GenericArgs | None = None,
         cb: ListenerEventCallbackT | None = None,
         listener: EventListener | None = None,
+        subscriber: Any = None,
     ) -> None:
         """
         Constructor
@@ -31,12 +33,19 @@ class EventEvents:
                 This only applies if the listener is not passed.
             cb (ListenerEventCallbackT | None, optional): Callback that is invoked when an event is added or removed.
             listener (EventListener | None, optional): Listener that is used to manage events.
+            subscriber (Any, optional): An UNO object that has a ``addAdjustmentListener()`` Method.
+                If passed in then this instance listener is automatically added to it.
         """
         self.__callback = cb
         if listener:
             self.__listener = listener
+            if subscriber:
+                # several object such as Scrollbar and SpinValue
+                # There is no common interface for this, so we have to try them all.
+                with contextlib.suppress(AttributeError):
+                    subscriber.addAdjustmentListener(self.__listener)
         else:
-            self.__listener = EventListener(trigger_args=trigger_args)
+            self.__listener = EventListener(trigger_args=trigger_args, subscriber=subscriber)
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
