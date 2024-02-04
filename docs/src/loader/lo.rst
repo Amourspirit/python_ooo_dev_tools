@@ -9,33 +9,39 @@ Class Lo
 
     .. py:property:: Lo.bridge
 
-        Static read-only property
+        Static read-only property.
 
         Gets connection bridge component
+
+        |lo_unsafe|
 
         :rtype: XComponent
 
     .. py:property:: Lo.current_doc
 
-        Static read-only property
+        Static read-only property.
 
         Gets the current document. Such as ``ooodev.calc.CalcDoc`` or ``ooodev.write.WriteDoc``.
+
+        |lo_unsafe|
 
         :rtype: OfficeDocumentT
 
     .. py:property:: Lo.is_macro_mode
 
-        Static read-only property
+        Static read-only property.
 
-        Gets if currently running scripts inside of LO (macro) or standalone
+        Gets if currently running scripts inside of LO (macro) or standalone.
 
         :rtype: bool
 
     .. py:property:: Lo.null_date
 
-        Static read-only property
+        Static read-only property.
 
-        Gets Value of Null Date in UTC
+        Gets Value of Null Date in UTC.
+
+        |lo_safe|
 
         :rtype: datetime
 
@@ -46,15 +52,17 @@ Class Lo
 
     .. py:property:: Lo.star_desktop
 
-        Static read-only property
+        Static read-only property.
 
-        Get current desktop
+        Get current desktop.
+
+        |lo_unsafe|
 
         :rtype: XDesktop
 
     .. py:property:: Lo.this_component
 
-        Static read-only property
+        Static read-only property.
 
         When the current component is the Basic IDE, the ThisComponent object returns
         in Basic the component owning the currently run user script.
@@ -62,21 +70,25 @@ Class Lo
 
         When running in a macro this property can be access directly to get the current document.
 
-        When not in a macro then :py:meth:`~.lo.Lo.load_office` must be called first
+        When not in a macro then :py:meth:`~.lo.Lo.load_office` must be called first.
+
+        |lo_unsafe|
 
         :rtype: XComponent
 
     .. py:property:: Lo.xscript_context
 
-        Static read-only property
+        Static read-only property a substitute to `XSCRIPTCONTEXT` LibreOffice/OpenOffice built-in.
 
-        a substitute to `XSCRIPTCONTEXT` LibreOffice/OpenOffice built-in
+        |lo_unsafe|
 
         :rtype: XScriptContext
 
     .. py:property:: Lo.bridge_connector
 
-        Static read-only property
+        Static read-only property.
+
+        |lo_unsafe|
 
         Get the current Bride connection
 
@@ -84,7 +96,9 @@ Class Lo
 
     .. py:property:: Lo.current_lo
 
-        Static read-only property
+        Static read-only property.
+
+        |lo_unsafe|
 
         Get the current Lo instance
 
@@ -92,8 +106,22 @@ Class Lo
 
     .. py:property:: Lo.loader_current
 
-        Static read-only property
+        Static read-only property.
+
+        |lo_unsafe|
 
         Gets the current ``XComponentLoader`` instance.
 
         :rtype: XComponentLoader
+    
+    .. py:property:: desktop
+
+        Static read-only property.
+
+        Get the current Desktop instance.
+
+        |lo_unsafe|
+
+        Desktop instance. Component property implments is ``XDesktop``
+
+        :rtype: TheDesktop
