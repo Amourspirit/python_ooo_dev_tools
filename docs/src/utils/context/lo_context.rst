@@ -9,7 +9,7 @@ Classes in ``ooodev.Draw``, ``ooodev.Calc``, ``ooodev.Writer`` namespaces alread
 
 In some cases you may want to use muli-documents in your own code. In this case you can use the LoContext class directly.
 
-Only static classes such as :ref:`utils_lo`, :ref:`class_utils_info_info`, :ref:`utils_gui`, and classes in the :ref:`ns_office` namespace would
+Only static classes such as :ref:`ooodev.loader.Lo`, :ref:`class_utils_info_info`, :ref:`utils_gui`, and classes in the :ref:`ns_office` namespace would
 require the use of the ``LoContext`` class in multi-document mode. Methods and properties of these classes marked as ``|lo_safe|`` or ``|lo_unsafe|``.
 This makes them easy to identify. If marked as ``|lo_safe|`` they can be used in multi-document mode without the need to use the ``LoContext`` class.
 

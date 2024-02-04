@@ -3,7 +3,7 @@ import uno
 from com.sun.star.lang import XComponent
 from com.sun.star.frame import XFrame
 
-from .. import lo as mLo
+from ooodev.loader.inst.doc_type import DocType
 
 
 class WindowInfo:
@@ -23,4 +23,4 @@ class WindowInfo:
         self.window_name: str = ""  # Object Name
         self.window_title: str = ""  # Only mean to identify new documents
         self.window_file_name: str = ""  # URL of file name
-        self.document_type: mLo.Lo.DocType = mLo.Lo.DocType.UNKNOWN  # Writer, Calc, ...
+        self.document_type: DocType = DocType.UNKNOWN  # Writer, Calc, ...

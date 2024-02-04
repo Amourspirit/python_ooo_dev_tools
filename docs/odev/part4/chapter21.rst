@@ -61,7 +61,7 @@ Numerical data is stored in the cell range ``A2:D7`` and the rest of the values 
         from ooodev.calc import CalcDoc
         from ooodev.formatters.formatter_table import FormatterTable, FormatTableItem
         from ooodev.utils.file_io import FileIO
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.utils.type_var import PathOrStr, Row, Column
 
 

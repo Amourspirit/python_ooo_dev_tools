@@ -121,7 +121,7 @@ from ..units import UnitConvert
 from ..units import UnitT
 from ..utils import gui as mGui
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils import table_helper as mTblHelper
 from ..utils import view_state as mViewState
@@ -194,43 +194,35 @@ class Calc:
     # region open_doc()
     @overload
     @classmethod
-    def open_doc(cls) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls) -> XSpreadsheetDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls, fnm: PathOrStr) -> XSpreadsheetDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, *, visible: bool) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls, *, visible: bool) -> XSpreadsheetDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr, *, visible: bool) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls, fnm: PathOrStr, *, visible: bool) -> XSpreadsheetDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, *, loader: XComponentLoader) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls, *, loader: XComponentLoader) -> XSpreadsheetDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, *, loader: XComponentLoader, visible: bool) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls, *, loader: XComponentLoader, visible: bool) -> XSpreadsheetDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XSpreadsheetDocument: ...
 
     @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader, *, visible: bool) -> XSpreadsheetDocument:
-        ...
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader, *, visible: bool) -> XSpreadsheetDocument: ...
 
     @classmethod
     def open_doc(
@@ -377,23 +369,19 @@ class Calc:
     # region create_doc()
     @overload
     @staticmethod
-    def create_doc() -> XSpreadsheetDocument:
-        ...
+    def create_doc() -> XSpreadsheetDocument: ...
 
     @overload
     @staticmethod
-    def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument:
-        ...
+    def create_doc(loader: XComponentLoader) -> XSpreadsheetDocument: ...
 
     @overload
     @staticmethod
-    def create_doc(*, visible: bool) -> XSpreadsheetDocument:
-        ...
+    def create_doc(*, visible: bool) -> XSpreadsheetDocument: ...
 
     @overload
     @staticmethod
-    def create_doc(loader: XComponentLoader, *, visible: bool) -> XSpreadsheetDocument:
-        ...
+    def create_doc(loader: XComponentLoader, *, visible: bool) -> XSpreadsheetDocument: ...
 
     @staticmethod
     def create_doc(loader: XComponentLoader | None = None, **kwargs: Any) -> XSpreadsheetDocument:
@@ -527,33 +515,27 @@ class Calc:
 
     @overload
     @classmethod
-    def get_sheet(cls) -> XSpreadsheet:
-        ...
+    def get_sheet(cls) -> XSpreadsheet: ...
 
     @overload
     @classmethod
-    def get_sheet(cls, idx: int) -> XSpreadsheet:
-        ...
+    def get_sheet(cls, idx: int) -> XSpreadsheet: ...
 
     @overload
     @classmethod
-    def get_sheet(cls, sheet_name: str) -> XSpreadsheet:
-        ...
+    def get_sheet(cls, sheet_name: str) -> XSpreadsheet: ...
 
     @overload
     @classmethod
-    def get_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
-        ...
+    def get_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet: ...
 
     @overload
     @classmethod
-    def get_sheet(cls, doc: XSpreadsheetDocument, idx: int) -> XSpreadsheet:
-        ...
+    def get_sheet(cls, doc: XSpreadsheetDocument, idx: int) -> XSpreadsheet: ...
 
     @overload
     @classmethod
-    def get_sheet(cls, doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet:
-        ...
+    def get_sheet(cls, doc: XSpreadsheetDocument, sheet_name: str) -> XSpreadsheet: ...
 
     @classmethod
     def get_sheet(cls, *args, **kwargs) -> XSpreadsheet:
@@ -745,13 +727,11 @@ class Calc:
 
     @overload
     @classmethod
-    def remove_sheet(cls, doc: XSpreadsheetDocument, sheet_name: str) -> bool:
-        ...
+    def remove_sheet(cls, doc: XSpreadsheetDocument, sheet_name: str) -> bool: ...
 
     @overload
     @classmethod
-    def remove_sheet(cls, doc: XSpreadsheetDocument, idx: int) -> bool:
-        ...
+    def remove_sheet(cls, doc: XSpreadsheetDocument, idx: int) -> bool: ...
 
     @classmethod
     def remove_sheet(cls, *args, **kwargs) -> bool:
@@ -1376,13 +1356,11 @@ class Calc:
     # region get_controller()
     @overload
     @classmethod
-    def get_controller(cls) -> XController:
-        ...
+    def get_controller(cls) -> XController: ...
 
     @overload
     @classmethod
-    def get_controller(cls, doc: XSpreadsheetDocument) -> XController:
-        ...
+    def get_controller(cls, doc: XSpreadsheetDocument) -> XController: ...
 
     @classmethod
     def get_controller(cls, doc: XSpreadsheetDocument | None = None) -> XController:
@@ -1516,13 +1494,11 @@ class Calc:
     # region get_active_sheet()
     @overload
     @classmethod
-    def get_active_sheet(cls) -> XSpreadsheet:
-        ...
+    def get_active_sheet(cls) -> XSpreadsheet: ...
 
     @overload
     @classmethod
-    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet:
-        ...
+    def get_active_sheet(cls, doc: XSpreadsheetDocument) -> XSpreadsheet: ...
 
     @classmethod
     def get_active_sheet(cls, doc: XSpreadsheetDocument | None = None) -> XSpreadsheet:
@@ -1650,23 +1626,19 @@ class Calc:
     # region    goto_cell()
     @overload
     @classmethod
-    def goto_cell(cls, cell_name: str, doc: XSpreadsheetDocument) -> None:
-        ...
+    def goto_cell(cls, cell_name: str, doc: XSpreadsheetDocument) -> None: ...
 
     @overload
     @classmethod
-    def goto_cell(cls, cell_obj: mCellObj.CellObj, doc: XSpreadsheetDocument) -> None:
-        ...
+    def goto_cell(cls, cell_obj: mCellObj.CellObj, doc: XSpreadsheetDocument) -> None: ...
 
     @overload
     @classmethod
-    def goto_cell(cls, cell_name: str, frame: XFrame) -> None:
-        ...
+    def goto_cell(cls, cell_name: str, frame: XFrame) -> None: ...
 
     @overload
     @classmethod
-    def goto_cell(cls, cell_obj: mCellObj.CellObj, frame: XFrame) -> None:
-        ...
+    def goto_cell(cls, cell_obj: mCellObj.CellObj, frame: XFrame) -> None: ...
 
     @classmethod
     def goto_cell(cls, *args, **kwargs) -> None:
@@ -1843,13 +1815,11 @@ class Calc:
     # region get_selected_range()
     @overload
     @classmethod
-    def get_selected_range(cls, doc: XSpreadsheetDocument) -> mRngObj.RangeObj:
-        ...
+    def get_selected_range(cls, doc: XSpreadsheetDocument) -> mRngObj.RangeObj: ...
 
     @overload
     @classmethod
-    def get_selected_range(cls, model: XModel) -> mRngObj.RangeObj:
-        ...
+    def get_selected_range(cls, model: XModel) -> mRngObj.RangeObj: ...
 
     @classmethod
     def get_selected_range(cls, *args, **kwargs) -> mRngObj.RangeObj:
@@ -1919,13 +1889,11 @@ class Calc:
 
     @overload
     @classmethod
-    def get_selected_cell(cls) -> mCellObj.CellObj:
-        ...
+    def get_selected_cell(cls) -> mCellObj.CellObj: ...
 
     @overload
     @classmethod
-    def get_selected_cell(cls, doc: XSpreadsheetDocument) -> mCellObj.CellObj:
-        ...
+    def get_selected_cell(cls, doc: XSpreadsheetDocument) -> mCellObj.CellObj: ...
 
     @classmethod
     def get_selected_cell(cls, doc: XSpreadsheetDocument | None = None) -> mCellObj.CellObj:
@@ -4848,13 +4816,11 @@ class Calc:
 
     @overload
     @staticmethod
-    def print_array(vals: Table) -> None:
-        ...
+    def print_array(vals: Table) -> None: ...
 
     @overload
     @staticmethod
-    def print_array(vals: Table, format_opt: FormatterTable) -> None:
-        ...
+    def print_array(vals: Table, format_opt: FormatterTable) -> None: ...
 
     @staticmethod
     def print_array(vals: Table, format_opt: FormatterTable | None = None) -> None:
@@ -9560,7 +9526,7 @@ class Calc:
 
             .. code-block:: python
 
-                from ooodev.utils.lo import Lo
+                from ooodev.loader.lo import Lo
                 from ooodev.office.calc import Calc
                 from com.sun.star.util import XSearchable
 

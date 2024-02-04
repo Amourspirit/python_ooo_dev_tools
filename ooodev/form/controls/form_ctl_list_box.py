@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.form.component import ListBox as ControlModel  # service
     from com.sun.star.form.control import ListBox as ControlView  # service
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlListBox(FormCtlBase, ActionEvents, ChangeEvents, ItemEvents, ItemListEvents, ResetEvents):

@@ -6,7 +6,7 @@ from com.sun.star.frame import XModel
 from com.sun.star.view import XSelectionChangeListener
 from com.sun.star.view import XSelectionSupplier
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
 

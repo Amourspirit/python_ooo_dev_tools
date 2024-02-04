@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCellRange
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
+    from ooodev.loader.inst import LoInst
 else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any
@@ -38,13 +39,12 @@ from ooodev.office import calc as mCalc
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import gui as mGUI
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.utils.inst.lo.doc_type import DocType
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.loader.inst import DocType
+from ooodev.loader.inst import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
@@ -1006,6 +1006,22 @@ class CalcDoc(
 
     # region from_current_doc()
     @classmethod
+    def _on_from_current_doc_loading(cls, event_args: CancelEventArgs) -> None:
+        """
+        Event called while from_current_doc loading.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        event_args.event_data["doc_type"] = cls.DOC_TYPE
+
+    @classmethod
     def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
         """
         Event called after from_current_doc is called.
@@ -1020,7 +1036,7 @@ class CalcDoc(
             event_args.event_data is a dictionary and contains the document in a key named 'doc'.
         """
         doc = cast(CalcDoc, event_args.event_data["doc"])
-        if doc.DOC_TYPE != DocType.CALC:
+        if doc.DOC_TYPE != cls.DOC_TYPE:
             raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not a Calc document.")
 
     # endregion from_current_doc()

@@ -25,7 +25,7 @@ Once an instance of ``Events`` is created it can be used to subscribe to any int
         .. code-tab:: python
 
             from typing import Any
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
             from ooodev.office.calc import Calc
             from ooodev.events.lo_events import Events
             from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs

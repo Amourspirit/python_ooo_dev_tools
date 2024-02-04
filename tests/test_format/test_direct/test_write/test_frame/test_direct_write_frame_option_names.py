@@ -24,7 +24,7 @@ from ooodev.format.writer.direct.frame.type import (
     AnchorKind,
 )
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.office.write import Write
 from ooodev.units.unit_mm import UnitMM

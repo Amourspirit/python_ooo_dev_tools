@@ -28,7 +28,7 @@ from ooodev.format.writer.direct.frame.type import (
 from ooodev.format.writer.direct.frame.wrap import Settings, WrapTextMode
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.units.unit_mm import UnitMM
 

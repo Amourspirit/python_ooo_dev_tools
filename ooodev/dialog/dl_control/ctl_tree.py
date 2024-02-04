@@ -13,7 +13,7 @@ from ooodev.adapter.awt.tree.tree_expansion_events import TreeExpansionEvents
 from ooodev.adapter.tree.tree_data_model_comp import TreeDataModelComp
 from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.dialog.search.tree_search import (

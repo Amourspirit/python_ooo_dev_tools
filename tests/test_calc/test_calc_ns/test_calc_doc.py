@@ -52,7 +52,7 @@ def test_get_sheet(loader) -> None:
 def test_get_other_cells(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     doc = CalcDoc.create_doc(loader)
@@ -105,7 +105,7 @@ def test_get_other_cells(loader) -> None:
 
 
 # def test_sheet_row(loader) -> None:
-#     from ooodev.utils.lo import Lo
+#     from ooodev.loader.lo import Lo
 #     from ooodev.office.calc import Calc
 #     from ooodev.calc import CalcDoc
 
@@ -238,7 +238,7 @@ def test_calc_sheet(loader) -> None:
 def test_merge_unmerge(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
     from ooodev.utils.data_type.range_obj import RangeObj
@@ -262,7 +262,7 @@ def test_merge_unmerge(loader) -> None:
 
 
 def test_move_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
     from ooodev.utils.data_type.range_obj import RangeObj
@@ -282,7 +282,7 @@ def test_move_sheet(loader) -> None:
 
 
 def test_set_sheet_name(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
@@ -303,7 +303,7 @@ def test_set_sheet_name(loader) -> None:
 
 
 def test_get_view(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
@@ -345,7 +345,7 @@ def test_get_set_active_sheet(loader) -> None:
 
 
 def test_get_selected_cell(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -380,7 +380,7 @@ def test_get_selected_cell(loader) -> None:
 
 
 def test_insert_row(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -399,7 +399,7 @@ def test_insert_row(loader) -> None:
 
 
 def test_delete_row(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.calc import CalcDoc
 
@@ -420,7 +420,7 @@ def test_delete_row(loader) -> None:
 
 
 def test_insert_col(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -457,7 +457,7 @@ def test_del_col(loader) -> None:
 
 
 def test_insert_cells_down_rng(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -477,7 +477,7 @@ def test_insert_cells_down_rng(loader) -> None:
 
 
 def test_insert_cells_right(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -497,7 +497,7 @@ def test_insert_cells_right(loader) -> None:
 
 
 def test_delete_cells_down(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -517,7 +517,7 @@ def test_delete_cells_down(loader) -> None:
 
 
 def test_delete_cells_left(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None

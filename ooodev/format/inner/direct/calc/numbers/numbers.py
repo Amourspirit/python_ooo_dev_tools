@@ -15,7 +15,7 @@ from ooo.dyn.util.number_format import NumberFormatEnum
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 
 # com.sun.star.i18n.NumberFormatIndex
@@ -125,12 +125,10 @@ class Numbers(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs: Any) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs: Any) -> None: ...
 
     def apply(self, obj: Any, **kwargs: Any) -> None:
         # sourcery skip: hoist-if-from-if
@@ -165,12 +163,10 @@ class Numbers(StyleBase):
     # endregion apply()
     # region Copy()
     @overload
-    def copy(self: _TNumbers) -> _TNumbers:
-        ...
+    def copy(self: _TNumbers) -> _TNumbers: ...
 
     @overload
-    def copy(self: _TNumbers, **kwargs) -> _TNumbers:
-        ...
+    def copy(self: _TNumbers, **kwargs) -> _TNumbers: ...
 
     def copy(self: _TNumbers, **kwargs) -> _TNumbers:
         """
@@ -253,13 +249,11 @@ class Numbers(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNumbers], obj: Any) -> _TNumbers:
-        ...
+    def from_obj(cls: Type[_TNumbers], obj: Any) -> _TNumbers: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNumbers], obj: Any, **kwargs) -> _TNumbers:
-        ...
+    def from_obj(cls: Type[_TNumbers], obj: Any, **kwargs) -> _TNumbers: ...
 
     @classmethod
     def from_obj(cls: Type[_TNumbers], obj: Any, **kwargs) -> _TNumbers:

@@ -6,8 +6,8 @@ from com.sun.star.form import XForm
 from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from .write_form import WriteForm

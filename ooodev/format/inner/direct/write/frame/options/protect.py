@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import overload
 from typing import Any, Tuple, Type, TypeVar
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -59,13 +59,11 @@ class Protect(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProtect], obj: object) -> _TProtect:
-        ...
+    def from_obj(cls: Type[_TProtect], obj: object) -> _TProtect: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect:
-        ...
+    def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect: ...
 
     @classmethod
     def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect:

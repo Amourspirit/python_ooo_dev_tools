@@ -19,7 +19,7 @@ from ooodev.format.chart2.direct.grid import LineProperties as GridLinePropertie
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 
 def test_calc_chart_axis_grid(loader, copy_fix_calc) -> None:

@@ -8,7 +8,7 @@ from typing import cast, TYPE_CHECKING
 import uno
 
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.info import Info
 from ooodev.office.write import Write
 from ooodev.units import UnitMM100

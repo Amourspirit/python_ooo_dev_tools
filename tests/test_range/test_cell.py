@@ -9,7 +9,7 @@ def test_cell_obj(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.range_obj import RangeObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -54,7 +54,7 @@ def test_cell_obj(loader) -> None:
 def test_cell_obj_init_error(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -104,7 +104,7 @@ def test_cell_obj_init_error(loader) -> None:
 def test_cell_obj_to_cell_values(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -132,7 +132,7 @@ def test_cell_obj_to_cell_values(loader) -> None:
 def test_cell_adjacent(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -166,7 +166,7 @@ def test_cell_adjacent(loader) -> None:
 def test_cell_left_up_error(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -193,7 +193,7 @@ def test_cell_left_up_error(loader) -> None:
 def test_cell_math(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -303,7 +303,7 @@ def test_cell_math(loader) -> None:
 def test_cell_math_errors(loader) -> None:
     from ooodev.utils.data_type.cell_obj import CellObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()

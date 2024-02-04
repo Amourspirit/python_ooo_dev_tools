@@ -4,7 +4,7 @@ from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 from ooo.dyn.text.writing_mode2 import WritingMode2
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
@@ -201,13 +201,11 @@ class Properties(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object) -> _TProperties:
-        ...
+    def from_obj(cls: Type[_TProperties], obj: object) -> _TProperties: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:
-        ...
+    def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties: ...
 
     @classmethod
     def from_obj(cls: Type[_TProperties], obj: object, **kwargs) -> _TProperties:

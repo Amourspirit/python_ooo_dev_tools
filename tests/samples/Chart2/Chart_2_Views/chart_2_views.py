@@ -23,7 +23,7 @@ from ooodev.utils.gui import GUI
 from ooodev.utils.kind.axis_kind import AxisKind
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.utils.kind.data_point_lable_placement_kind import DataPointLabelPlacementKind
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.type_var import PathOrStr
 

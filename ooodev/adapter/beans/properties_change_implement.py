@@ -7,7 +7,7 @@ from com.sun.star.beans import XMultiPropertySet
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from .properties_change_events import PropertiesChangeEvents
 from .properties_change_listener import PropertiesChangeListener
 

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import CheckBox as ControlModel  # service
     from com.sun.star.form.control import CheckBox as ControlView  # service
     from ooodev.events.args.listener_event_args import ListenerEventArgs
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlCheckBox(FormCtlBase, ItemEvents, ResetEvents):

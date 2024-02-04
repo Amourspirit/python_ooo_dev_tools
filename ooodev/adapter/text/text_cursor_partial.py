@@ -5,7 +5,7 @@ import uno
 from com.sun.star.text import XTextCursor
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from . import text_range_partial as mTextRangeComp
 
 if TYPE_CHECKING:

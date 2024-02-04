@@ -3,6 +3,7 @@ Module for managing paragraph Drop Caps.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload
@@ -10,7 +11,7 @@ from typing import Any, Tuple, cast, Type, TypeVar, overload
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitT
 from ooodev.units import UnitConvert
@@ -197,13 +198,11 @@ class DropCaps(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCaps], obj: Any) -> _TDropCaps:
-        ...
+    def from_obj(cls: Type[_TDropCaps], obj: Any) -> _TDropCaps: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCaps], obj: Any, **kwargs) -> _TDropCaps:
-        ...
+    def from_obj(cls: Type[_TDropCaps], obj: Any, **kwargs) -> _TDropCaps: ...
 
     @classmethod
     def from_obj(cls: Type[_TDropCaps], obj: Any, **kwargs) -> _TDropCaps:

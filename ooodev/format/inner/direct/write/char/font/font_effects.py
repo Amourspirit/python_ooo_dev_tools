@@ -3,6 +3,7 @@ Module for managing character fonts.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
@@ -15,7 +16,7 @@ from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -199,13 +200,11 @@ class FontEffects(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontEffects], obj: Any) -> _TFontEffects:
-        ...
+    def from_obj(cls: Type[_TFontEffects], obj: Any) -> _TFontEffects: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontEffects], obj: Any, **kwargs) -> _TFontEffects:
-        ...
+    def from_obj(cls: Type[_TFontEffects], obj: Any, **kwargs) -> _TFontEffects: ...
 
     @classmethod
     def from_obj(cls: Type[_TFontEffects], obj: Any, **kwargs) -> _TFontEffects:

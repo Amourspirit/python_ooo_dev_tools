@@ -5,7 +5,7 @@ import uno
 from com.sun.star.text import XTextViewCursor
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from . import text_cursor_partial as mTextCursorPartial
 
 if TYPE_CHECKING:

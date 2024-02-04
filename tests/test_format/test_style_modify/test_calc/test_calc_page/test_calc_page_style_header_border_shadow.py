@@ -8,7 +8,7 @@ import uno
 from ooodev.format.calc.modify.page.header import Header, CalcStylePageKind
 from ooodev.format.calc.modify.page.header.borders import Shadow, ShadowLocation
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.format import Styler
 from ooodev.utils.color import StandardColor
 from ooodev.office.calc import Calc

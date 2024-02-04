@@ -26,7 +26,7 @@ General function used to run these examples.
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.page.area import Color as PageStyleColor, CalcStylePageKind
         from ooodev.format.calc.modify.page.area import Img as PageStyleImg, PresetImageKind
         from ooodev.utils.color import StandardColor

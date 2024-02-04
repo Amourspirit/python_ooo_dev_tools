@@ -3,7 +3,7 @@
 # that it appears in the file; it depends on the order that the text shapes are saved inside the file.
 from __future__ import annotations
 
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
 from ooodev.utils.type_var import PathOrStr
 from ooodev.utils.file_io import FileIO

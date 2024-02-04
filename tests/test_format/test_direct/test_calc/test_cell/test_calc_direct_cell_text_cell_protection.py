@@ -10,7 +10,7 @@ import uno
 from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellProperties  # service

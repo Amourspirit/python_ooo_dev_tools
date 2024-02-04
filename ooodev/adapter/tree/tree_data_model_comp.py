@@ -4,7 +4,7 @@ import uno
 from com.sun.star.awt.tree import XTreeDataModel
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from .tree_data_model_events import TreeDataModelEvents
 
 if TYPE_CHECKING:

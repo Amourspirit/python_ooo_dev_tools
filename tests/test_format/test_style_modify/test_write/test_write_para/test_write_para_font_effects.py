@@ -7,7 +7,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.writer.modify.para.font import FontEffects, FontLine, FontUnderlineEnum, StyleParaKind
 from ooodev.utils.color import StandardColor, Color
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.write import Write, WriteDoc, ZoomKind
 
 

@@ -37,7 +37,7 @@ Setup
         from ooodev.format import CommonColor
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.font import FontEffects, FontLine, FontUnderlineEnum
 
         def main() -> int:
@@ -148,7 +148,7 @@ Setup
         from ooodev.format import CommonColor
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.font import FontEffects, FontLine, FontUnderlineEnum
 
         def main() -> int:

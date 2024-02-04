@@ -7,7 +7,7 @@ from ooo.dyn.text.control_character import ControlCharacterEnum
 
 from com.sun.star.text import XSimpleText
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from .text_range_partial import TextRangePartial
 
 if TYPE_CHECKING:

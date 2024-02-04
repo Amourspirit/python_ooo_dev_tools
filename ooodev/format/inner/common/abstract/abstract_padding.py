@@ -3,6 +3,7 @@ Module for managing paragraph padding.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
@@ -10,7 +11,7 @@ from typing import Any, Tuple, cast, overload, Type, TypeVar
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.units import UnitT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitMM
 from ooodev.units import UnitConvert
@@ -145,13 +146,11 @@ class AbstractPadding(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractPadding], obj: object) -> _TAbstractPadding:
-        ...
+    def from_obj(cls: Type[_TAbstractPadding], obj: object) -> _TAbstractPadding: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractPadding], obj: object, **kwargs) -> _TAbstractPadding:
-        ...
+    def from_obj(cls: Type[_TAbstractPadding], obj: object, **kwargs) -> _TAbstractPadding: ...
 
     @classmethod
     def from_obj(cls: Type[_TAbstractPadding], obj: object, **kwargs) -> _TAbstractPadding:

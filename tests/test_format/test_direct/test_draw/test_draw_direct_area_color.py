@@ -1,4 +1,5 @@
 """Test for ooodev.format.draw.direct.area.Color"""
+
 # pylint: disable=no-member
 # pylint: disable=unused-import
 # pylint: disable=unused-argument
@@ -16,7 +17,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
 
 from ooodev.format.draw.direct.area import Color as ShapeColor

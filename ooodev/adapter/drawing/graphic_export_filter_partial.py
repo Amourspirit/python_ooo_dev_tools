@@ -5,7 +5,7 @@ import uno
 from com.sun.star.drawing import XGraphicExportFilter
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 from ooodev.adapter.document.exporter_partial import ExporterPartial
 from ooodev.adapter.document.filter_partial import FilterPartial

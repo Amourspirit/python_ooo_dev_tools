@@ -13,7 +13,7 @@ from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_pattern as mPattern
@@ -119,12 +119,10 @@ class Pattern(StyleBase):
     # region Overrides
     # region copy()
     @overload
-    def copy(self: _TPattern) -> _TPattern:
-        ...
+    def copy(self: _TPattern) -> _TPattern: ...
 
     @overload
-    def copy(self: _TPattern, **kwargs) -> _TPattern:
-        ...
+    def copy(self: _TPattern, **kwargs) -> _TPattern: ...
 
     def copy(self: _TPattern, **kwargs) -> _TPattern:
         """Gets a copy of instance as a new instance"""
@@ -199,13 +197,11 @@ class Pattern(StyleBase):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind) -> _TPattern:
-        ...
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind) -> _TPattern: ...
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind, **kwargs) -> _TPattern:
-        ...
+    def from_preset(cls: Type[_TPattern], preset: PresetPatternKind, **kwargs) -> _TPattern: ...
 
     @classmethod
     def from_preset(cls: Type[_TPattern], preset: PresetPatternKind, **kwargs) -> _TPattern:
@@ -232,13 +228,11 @@ class Pattern(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: Any) -> _TPattern:
-        ...
+    def from_obj(cls: Type[_TPattern], obj: Any) -> _TPattern: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPattern], obj: Any, **kwargs) -> _TPattern:
-        ...
+    def from_obj(cls: Type[_TPattern], obj: Any, **kwargs) -> _TPattern: ...
 
     @classmethod
     def from_obj(cls: Type[_TPattern], obj: Any, **kwargs) -> _TPattern:

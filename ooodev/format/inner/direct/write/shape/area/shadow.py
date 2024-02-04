@@ -4,7 +4,7 @@ from typing import Any, Tuple, Type, TypeVar, cast, overload, TYPE_CHECKING
 from enum import Enum
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
@@ -214,13 +214,11 @@ class Shadow(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadow], obj: Any) -> _TShadow:
-        ...
+    def from_obj(cls: Type[_TShadow], obj: Any) -> _TShadow: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadow], obj: Any, **kwargs) -> _TShadow:
-        ...
+    def from_obj(cls: Type[_TShadow], obj: Any, **kwargs) -> _TShadow: ...
 
     @classmethod
     def from_obj(cls: Type[_TShadow], obj: Any, **kwargs) -> _TShadow:

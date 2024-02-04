@@ -5,7 +5,7 @@ from typing import Any
 if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.events.args.event_args import EventArgs

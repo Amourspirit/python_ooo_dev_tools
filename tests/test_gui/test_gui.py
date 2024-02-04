@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 
 def test_get_active_window(loader, fix_writer_path) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.gui import GUI
 
     test_doc = fix_writer_path("scandalStart.odt")
@@ -19,7 +19,7 @@ def test_get_active_window(loader, fix_writer_path) -> None:
 
 
 def test_activate(copy_fix_writer, loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.gui import GUI
 
     # for a manual test remove loader arg from test_activate and uncomment the next line.
@@ -56,7 +56,7 @@ def test_activate(copy_fix_writer, loader) -> None:
 
 
 def test_activate_new_doc(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.gui import GUI
 
     # for a manual test remove loader arg from test_activate and uncomment the next line.

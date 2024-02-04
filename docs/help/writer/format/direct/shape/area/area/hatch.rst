@@ -21,7 +21,7 @@ Setup
         from ooodev.format.writer.direct.shape.area import Hatch as ShapeHatch
         from ooodev.format.writer.direct.shape.area import PresetHatchKind
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.write import Write
         from ooodev.office.draw import Draw
 

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from weakref import ref
 import uno
 
-from .. import lo as mLo
+from ooodev.loader import lo as mLo
 from .. import table_helper as mTb
 from ...office import calc as mCalc
 from ..decorator import enforce
@@ -85,18 +85,15 @@ class RangeObj:
 
     @overload
     @staticmethod
-    def from_range(range_val: str) -> RangeObj:
-        ...
+    def from_range(range_val: str) -> RangeObj: ...
 
     @overload
     @staticmethod
-    def from_range(range_val: mRngValues.RangeValues) -> RangeObj:
-        ...
+    def from_range(range_val: mRngValues.RangeValues) -> RangeObj: ...
 
     @overload
     @staticmethod
-    def from_range(range_val: CellRangeAddress) -> RangeObj:
-        ...
+    def from_range(range_val: CellRangeAddress) -> RangeObj: ...
 
     @staticmethod
     def from_range(range_val: str | mRngValues.RangeValues | CellRangeAddress) -> RangeObj:
@@ -364,20 +361,16 @@ class RangeObj:
     # region contains()
 
     @overload
-    def contains(self, cell_obj: mCellObj.CellObj) -> bool:
-        ...
+    def contains(self, cell_obj: mCellObj.CellObj) -> bool: ...
 
     @overload
-    def contains(self, cell_addr: CellAddress) -> bool:
-        ...
+    def contains(self, cell_addr: CellAddress) -> bool: ...
 
     @overload
-    def contains(self, cell_vals: mCellVals.CellValues) -> bool:
-        ...
+    def contains(self, cell_vals: mCellVals.CellValues) -> bool: ...
 
     @overload
-    def contains(self, cell_name: str) -> bool:
-        ...
+    def contains(self, cell_name: str) -> bool: ...
 
     def contains(self, *args, **kwargs) -> bool:
         """

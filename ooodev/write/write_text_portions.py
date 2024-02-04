@@ -6,10 +6,10 @@ from com.sun.star.container import XEnumerationAccess
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.context.lo_context import LoContext
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from . import write_text_portion as mWriteTextPortion
 

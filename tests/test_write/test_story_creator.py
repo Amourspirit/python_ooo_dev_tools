@@ -1,6 +1,7 @@
 """
 Write 10 forumlae into a new Text doc and save as a pdf file.
 """
+
 from typing import List
 import pytest
 import random
@@ -10,7 +11,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 import uno
 
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.gui import GUI
 from ooodev.utils.date_time_util import DateUtil

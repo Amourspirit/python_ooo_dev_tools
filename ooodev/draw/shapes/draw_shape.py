@@ -17,7 +17,7 @@ from .shape_base import ShapeBase, _T
 
 
 if TYPE_CHECKING:
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class DrawShape(

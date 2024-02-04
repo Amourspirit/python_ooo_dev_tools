@@ -9,7 +9,7 @@ from ooodev.format.writer.modify.page.footer import Footer, WriterStylePageKind
 from ooodev.format.writer.modify.page.footer.area import Pattern, PresetPatternKind
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

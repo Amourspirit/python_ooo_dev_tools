@@ -14,7 +14,7 @@
         from ooodev.events.lo_named_event import LoNamedEvent
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
 
         class DocMonitor:

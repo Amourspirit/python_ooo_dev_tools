@@ -4,7 +4,7 @@ import uno
 from com.sun.star.drawing import XShape
 from ooo.dyn.awt.size import Size as UnoSize
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 from ooodev.utils.data_type.size import Size as OooDevSize
 from ooodev.utils.data_type.point import Point as OooDevPoint

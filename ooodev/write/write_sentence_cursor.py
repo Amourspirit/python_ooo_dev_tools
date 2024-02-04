@@ -6,8 +6,8 @@ from com.sun.star.text import XSentenceCursor
 
 from ooodev.adapter.text.sentence_cursor_partial import SentenceCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
 from .write_text_cursor import WriteTextCursor
 
 

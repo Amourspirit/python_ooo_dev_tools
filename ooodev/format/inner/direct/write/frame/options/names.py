@@ -5,7 +5,7 @@ from typing import Any, cast, Tuple, Type, TypeVar, TYPE_CHECKING
 # from ....style_base import StyleBase
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
@@ -134,13 +134,11 @@ class Names(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNames], obj: Any) -> _TNames:
-        ...
+    def from_obj(cls: Type[_TNames], obj: Any) -> _TNames: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNames], obj: Any, **kwargs) -> _TNames:
-        ...
+    def from_obj(cls: Type[_TNames], obj: Any, **kwargs) -> _TNames: ...
 
     @classmethod
     def from_obj(cls: Type[_TNames], obj: Any, **kwargs) -> _TNames:

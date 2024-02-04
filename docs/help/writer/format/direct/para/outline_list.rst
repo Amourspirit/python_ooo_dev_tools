@@ -42,7 +42,7 @@ Setup
 
             from ooodev.office.write import Write
             from ooodev.utils.gui import GUI
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
             from ooodev.format.writer.direct.para.outline_list import LevelKind, Outline, LineNum, ListStyle
             
             def main() -> int:

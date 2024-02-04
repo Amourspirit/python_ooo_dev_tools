@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, overload, Iterable, TYPE_CHECKING
 import uno
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.events.lo_events import observe_events
 
 if TYPE_CHECKING:

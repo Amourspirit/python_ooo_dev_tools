@@ -18,7 +18,7 @@ from ooodev.format.chart2.direct.axis.numbers import Numbers, NumberFormatIndexE
 
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.kind.zoom_kind import ZoomKind
 
 if TYPE_CHECKING:

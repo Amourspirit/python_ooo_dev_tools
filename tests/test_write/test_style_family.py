@@ -3,7 +3,7 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.info import Info
 from ooodev.utils.gui import GUI

@@ -5,7 +5,7 @@ import uno
 from ooodev.draw import DrawNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from .shape_export_base import ShapeExportBase
 
 if TYPE_CHECKING:

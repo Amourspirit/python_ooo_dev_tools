@@ -5,7 +5,7 @@ from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -73,12 +73,10 @@ class AbstractWritingMode(StyleBase):
     # region apply()
 
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -102,13 +100,11 @@ class AbstractWritingMode(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractWritingMode], obj: Any) -> _TAbstractWritingMode:
-        ...
+    def from_obj(cls: Type[_TAbstractWritingMode], obj: Any) -> _TAbstractWritingMode: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractWritingMode], obj: Any, **kwargs) -> _TAbstractWritingMode:
-        ...
+    def from_obj(cls: Type[_TAbstractWritingMode], obj: Any, **kwargs) -> _TAbstractWritingMode: ...
 
     @classmethod
     def from_obj(cls: Type[_TAbstractWritingMode], obj: Any, **kwargs) -> _TAbstractWritingMode:

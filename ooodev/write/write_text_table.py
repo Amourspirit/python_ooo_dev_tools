@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 from ooodev.adapter.text.text_table_comp import TextTableComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from . import write_text_portions as mWriteTextPortions

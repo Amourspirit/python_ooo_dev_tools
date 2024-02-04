@@ -32,7 +32,7 @@ Setting the font
         from ooodev.format.writer.modify.para.font import FontOnly, FontLang
         from ooodev.format.writer.modify.para.font import StyleParaKind
         from ooodev.write import Write, WriteDoc, ZoomKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):

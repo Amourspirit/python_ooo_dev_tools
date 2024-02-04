@@ -6,7 +6,7 @@ from typing import Any, Tuple, overload, Type, TypeVar
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.units import UnitT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitConvert
 from ooodev.units import UnitMM
@@ -142,13 +142,11 @@ class AbstractHF(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractHF], obj: object) -> _TAbstractHF:
-        ...
+    def from_obj(cls: Type[_TAbstractHF], obj: object) -> _TAbstractHF: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractHF], obj: object, **kwargs) -> _TAbstractHF:
-        ...
+    def from_obj(cls: Type[_TAbstractHF], obj: object, **kwargs) -> _TAbstractHF: ...
 
     @classmethod
     def from_obj(cls: Type[_TAbstractHF], obj: object, **kwargs) -> _TAbstractHF:

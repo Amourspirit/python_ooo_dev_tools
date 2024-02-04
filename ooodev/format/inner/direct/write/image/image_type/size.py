@@ -3,6 +3,7 @@ Module for Fill Transparency.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 import dataclasses
 from typing import Any, Tuple, Type, TypeVar, overload
@@ -11,7 +12,7 @@ import math
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitT
 from ooodev.units import UnitMM
@@ -172,12 +173,10 @@ class Size(AbstractDocument):
                 mLo.Lo.print(f"  {err}")
 
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -222,12 +221,10 @@ class Size(AbstractDocument):
 
     # region copy()
     @overload
-    def copy(self: _TSize) -> _TSize:
-        ...
+    def copy(self: _TSize) -> _TSize: ...
 
     @overload
-    def copy(self: _TSize, **kwargs) -> _TSize:
-        ...
+    def copy(self: _TSize, **kwargs) -> _TSize: ...
 
     def copy(self: _TSize, **kwargs) -> _TSize:
         """Gets a copy of instance as a new instance"""
@@ -256,13 +253,11 @@ class Size(AbstractDocument):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: Any) -> _TSize:
-        ...
+    def from_obj(cls: Type[_TSize], obj: Any) -> _TSize: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:
-        ...
+    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize: ...
 
     @classmethod
     def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:

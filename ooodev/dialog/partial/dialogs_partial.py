@@ -13,14 +13,14 @@ from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ..dl_control.ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog  # service
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
     # Avoid circular import by creating a property in class instance for Dialogs
     from ooodev.dialog import Dialogs

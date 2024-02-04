@@ -4,8 +4,9 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
+
 
 def test_extract_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixture) -> None:
     doc_path = copy_fix_calc("small_totals.ods")
@@ -18,23 +19,23 @@ def test_extract_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixtu
 
     try:
         # basic data extraction
-        assert Calc.get_val(sheet=sheet,cell_name="A1") == 'Stud. No.'
-        
+        assert Calc.get_val(sheet=sheet, cell_name="A1") == "Stud. No."
+
         cell = Calc.get_cell(sheet, "A2")
         a2_type = Calc.get_type_string(cell)
         a2_value = Calc.get_num(cell)
-        assert a2_type == 'VALUE'
+        assert a2_type == "VALUE"
         assert a2_value == 22001.0
-        
+
         cell = Calc.get_cell(sheet=sheet, cell_name="E2")
         e2_type = Calc.get_type_string(cell)
         e2_value = Calc.get_val(sheet=sheet, cell_name="E2")
-        assert e2_type == 'FORMULA'
-        assert e2_value == '=SUM(B2:D2)/100'
-        
+        assert e2_type == "FORMULA"
+        assert e2_value == "=SUM(B2:D2)/100"
+
         data = Calc.get_array(sheet, "A1:E10")
         assert len(data) == 10
-        capsys.readouterr() # clear buffer
+        capsys.readouterr()  # clear buffer
         Calc.print_array(data)
         captured = capsys.readouterr()
         cstr: str = captured.out
@@ -52,11 +53,11 @@ def test_extract_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixtu
         # 23723.0  17.2916666666667  27.7083333333333  36.225  0.81225
         # 24277.0  0.0  16.0416666666667  19.6875  0.357291666666667
         #   11.9444444444444  22.6041666666667  27.475  0.620236111111111
-        #   0.597222222222222  0.645833333333334  0.610555555555556  
+        #   0.597222222222222  0.645833333333334  0.610555555555556
         #   Proj/20  Mid/35  Fin/45  Total%
 
         ids = Calc.get_float_array(sheet=sheet, range_name="A2:A7")
-        capsys.readouterr() # clear buffer
+        capsys.readouterr()  # clear buffer
         Calc.print_array(ids)
         captured = capsys.readouterr()
         expected = """Row x Column size: 6 x 1
@@ -79,7 +80,7 @@ def test_extract_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixtu
         assert projs[4] == pytest.approx(17.3, rel=1e-2)
         assert projs[5] == pytest.approx(0.0, rel=1e-2)
 
-        stud = Calc.convert_to_doubles( Calc.get_row(sheet, "A4:E4"))
+        stud = Calc.convert_to_doubles(Calc.get_row(sheet, "A4:E4"))
         assert stud[0] == pytest.approx(22048.0, rel=1e-2)
         assert stud[1] == pytest.approx(14.0, rel=1e-2)
         assert stud[2] == pytest.approx(19.3, rel=1e-2)

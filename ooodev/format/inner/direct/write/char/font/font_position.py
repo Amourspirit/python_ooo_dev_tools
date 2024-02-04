@@ -3,6 +3,7 @@ Module for managing character Font position.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
@@ -11,7 +12,7 @@ from enum import Enum
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -176,13 +177,11 @@ class FontPosition(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontPosition], obj: Any) -> _TFontPosition:
-        ...
+    def from_obj(cls: Type[_TFontPosition], obj: Any) -> _TFontPosition: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFontPosition], obj: Any, **kwargs) -> _TFontPosition:
-        ...
+    def from_obj(cls: Type[_TFontPosition], obj: Any, **kwargs) -> _TFontPosition: ...
 
     @classmethod
     def from_obj(cls: Type[_TFontPosition], obj: Any, **kwargs) -> _TFontPosition:

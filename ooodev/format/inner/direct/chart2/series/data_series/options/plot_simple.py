@@ -5,7 +5,7 @@ from com.sun.star.chart2 import XChartDocument
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 _TPlotSimple = TypeVar("_TPlotSimple", bound="PlotSimple")
 
@@ -52,12 +52,10 @@ class PlotSimple(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -86,12 +84,10 @@ class PlotSimple(StyleBase):
 
     # region Copy()
     @overload
-    def copy(self: _TPlotSimple) -> _TPlotSimple:
-        ...
+    def copy(self: _TPlotSimple) -> _TPlotSimple: ...
 
     @overload
-    def copy(self: _TPlotSimple, **kwargs) -> _TPlotSimple:
-        ...
+    def copy(self: _TPlotSimple, **kwargs) -> _TPlotSimple: ...
 
     def copy(self: _TPlotSimple, **kwargs) -> _TPlotSimple:
         """Gets a copy of instance as a new instance"""

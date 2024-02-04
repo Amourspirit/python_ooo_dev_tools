@@ -7,7 +7,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.writer.modify.para.area import StyleParaKind, Img, PresetImageKind, SizeMM
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 from ooo.dyn.drawing.fill_style import FillStyle

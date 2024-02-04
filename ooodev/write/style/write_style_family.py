@@ -7,8 +7,8 @@ from ooodev.adapter.container.name_container_partial import NameContainerPartial
 from ooodev.adapter.style.style_family_comp import StyleFamilyComp
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 
 from .write_style import WriteStyle

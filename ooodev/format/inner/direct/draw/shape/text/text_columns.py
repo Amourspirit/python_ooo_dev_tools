@@ -5,7 +5,7 @@ from com.sun.star.text import XTextColumns
 
 import contextlib
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitMM
@@ -93,13 +93,11 @@ class TextColumns(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextColumns], obj: object) -> _TTextColumns:
-        ...
+    def from_obj(cls: Type[_TTextColumns], obj: object) -> _TTextColumns: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextColumns], obj: object, **kwargs) -> _TTextColumns:
-        ...
+    def from_obj(cls: Type[_TTextColumns], obj: object, **kwargs) -> _TTextColumns: ...
 
     @classmethod
     def from_obj(cls: Type[_TTextColumns], obj: Any, **kwargs) -> _TTextColumns:

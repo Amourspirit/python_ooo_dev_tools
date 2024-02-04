@@ -16,7 +16,7 @@ from ooodev.format.calc.direct.cell.borders import (
 )
 from ooodev.format import CommonColor, Styler
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.units.unit_convert import UnitConvert
 
 if TYPE_CHECKING:

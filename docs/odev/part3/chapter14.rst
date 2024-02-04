@@ -423,7 +423,7 @@ The :py:class:`~.utils.gallery.Gallery` class helps access the gallery in this w
         # from gallery_info.py
         from __future__ import annotations
         import uno
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.utils.gallery import Gallery, GalleryKind, SearchByKind, SearchMatchKind
 
 

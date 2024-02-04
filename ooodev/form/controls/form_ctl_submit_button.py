@@ -11,7 +11,7 @@ from .form_ctl_base import FormCtlBase
 if TYPE_CHECKING:
     from com.sun.star.form.component import SubmitButton as ControlModel  # service
     from com.sun.star.form.control import SubmitButton as ControlView  # service
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlSubmitButton(FormCtlBase, SubmissionVetoEvents):

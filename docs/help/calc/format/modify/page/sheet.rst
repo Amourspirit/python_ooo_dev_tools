@@ -28,7 +28,7 @@ General function used to run these examples.
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.page.sheet import Order, Printing
         from ooodev.format.calc.modify.page.sheet import CalcStylePageKind
 

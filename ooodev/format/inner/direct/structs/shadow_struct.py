@@ -7,7 +7,7 @@ from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.units import UnitT
@@ -145,12 +145,10 @@ class ShadowStruct(StructBase):
 
     # region copy()
     @overload
-    def copy(self: _TShadowStruct) -> _TShadowStruct:
-        ...
+    def copy(self: _TShadowStruct) -> _TShadowStruct: ...
 
     @overload
-    def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
-        ...
+    def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct: ...
 
     def copy(self: _TShadowStruct, **kwargs) -> _TShadowStruct:
         """Gets a copy of instance as a new instance"""
@@ -167,12 +165,10 @@ class ShadowStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, keys: Dict[str, str]) -> None:
-        ...
+    def apply(self, obj: Any, keys: Dict[str, str]) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         """
@@ -210,13 +206,11 @@ class ShadowStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadowStruct], obj: Any) -> _TShadowStruct:
-        ...
+    def from_obj(cls: Type[_TShadowStruct], obj: Any) -> _TShadowStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TShadowStruct], obj: Any, **kwargs) -> _TShadowStruct:
-        ...
+    def from_obj(cls: Type[_TShadowStruct], obj: Any, **kwargs) -> _TShadowStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TShadowStruct], obj: Any, **kwargs) -> _TShadowStruct:
@@ -249,13 +243,11 @@ class ShadowStruct(StructBase):
     # region from_shadow()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat) -> _TShadowStruct:
-        ...
+    def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat) -> _TShadowStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:
-        ...
+    def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TShadowStruct], shadow: ShadowFormat, **kwargs) -> _TShadowStruct:

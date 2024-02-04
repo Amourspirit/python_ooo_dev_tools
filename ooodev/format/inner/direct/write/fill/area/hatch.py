@@ -3,6 +3,7 @@ Module for Fill Properties Fill Hatch.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 
@@ -12,7 +13,7 @@ from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
@@ -178,12 +179,10 @@ class Hatch(StyleMulti):
 
     # region copy()
     @overload
-    def copy(self: _THatch) -> _THatch:
-        ...
+    def copy(self: _THatch) -> _THatch: ...
 
     @overload
-    def copy(self: _THatch, **kwargs) -> _THatch:
-        ...
+    def copy(self: _THatch, **kwargs) -> _THatch: ...
 
     def copy(self: _THatch, **kwargs) -> _THatch:
         cp = super().copy(**kwargs)
@@ -197,13 +196,11 @@ class Hatch(StyleMulti):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch:
-        ...
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch: ...
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
-        ...
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch: ...
 
     @classmethod
     def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
@@ -225,13 +222,11 @@ class Hatch(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: Any) -> _THatch:
-        ...
+    def from_obj(cls: Type[_THatch], obj: Any) -> _THatch: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
-        ...
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch: ...
 
     @classmethod
     def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, overload
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils import props as mProps
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.context.lo_context import LoContext

@@ -23,7 +23,7 @@ Code Example
         from ooodev.format.writer.direct.para.indent_space import Indent, Spacing
         from ooodev.format.writer.direct.char.highlight import Highlight
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
 
         def main() -> int:

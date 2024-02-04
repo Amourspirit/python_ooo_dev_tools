@@ -14,7 +14,7 @@ from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.utils.images_lo import ImagesLo
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.type_var import PathOrStr
 
 

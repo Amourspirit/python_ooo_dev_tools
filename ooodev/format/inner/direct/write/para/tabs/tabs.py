@@ -19,7 +19,7 @@ from ooodev.meta.static_prop import static_prop
 from ooodev.units.unit_obj import UnitT
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.format.inner.direct.structs.tab_stop_struct import TabStopStruct, FillCharKind as FillCharKind
 
 # endregion Import
@@ -102,13 +102,11 @@ class Tabs(TabStopStruct):
     # region find()
     @overload
     @classmethod
-    def find(cls: Type[_TTabs], obj: Any, position: float) -> _TTabs | None:
-        ...
+    def find(cls: Type[_TTabs], obj: Any, position: float) -> _TTabs | None: ...
 
     @overload
     @classmethod
-    def find(cls: Type[_TTabs], obj: Any, position: float, **kwargs) -> _TTabs | None:
-        ...
+    def find(cls: Type[_TTabs], obj: Any, position: float, **kwargs) -> _TTabs | None: ...
 
     @classmethod
     def find(cls: Type[_TTabs], obj: Any, position: float, **kwargs) -> _TTabs | None:
@@ -154,13 +152,11 @@ class Tabs(TabStopStruct):
 
     @overload
     @classmethod
-    def remove_by_pos(cls, obj: Any, position: float) -> bool:
-        ...
+    def remove_by_pos(cls, obj: Any, position: float) -> bool: ...
 
     @overload
     @classmethod
-    def remove_by_pos(cls, obj: Any, position: float, **kwargs) -> bool:
-        ...
+    def remove_by_pos(cls, obj: Any, position: float, **kwargs) -> bool: ...
 
     @classmethod
     def remove_by_pos(cls, obj: Any, position: float, **kwargs) -> bool:
@@ -208,13 +204,11 @@ class Tabs(TabStopStruct):
     # region remove()
     @overload
     @classmethod
-    def remove(cls, obj: Any, tab: TabStop | TabStopStruct) -> bool:
-        ...
+    def remove(cls, obj: Any, tab: TabStop | TabStopStruct) -> bool: ...
 
     @overload
     @classmethod
-    def remove(cls, obj: Any, tab: TabStop | TabStopStruct, **kwargs) -> bool:
-        ...
+    def remove(cls, obj: Any, tab: TabStop | TabStopStruct, **kwargs) -> bool: ...
 
     @classmethod
     def remove(cls, obj: Any, tab: TabStop | TabStopStruct, **kwargs) -> bool:
@@ -241,13 +235,11 @@ class Tabs(TabStopStruct):
     # region remove_all()
     @overload
     @classmethod
-    def remove_all(cls, obj: Any) -> None:
-        ...
+    def remove_all(cls, obj: Any) -> None: ...
 
     @overload
     @classmethod
-    def remove_all(cls, obj: Any, **kwargs) -> None:
-        ...
+    def remove_all(cls, obj: Any, **kwargs) -> None: ...
 
     @classmethod
     def remove_all(cls, obj: Any, **kwargs) -> None:

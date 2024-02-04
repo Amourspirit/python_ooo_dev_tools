@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
+import contextlib
 
 import uno  # pylint: disable=unused-import
 from com.sun.star.lang import XEventListener
@@ -25,14 +26,21 @@ class EventListener(AdapterBase, XEventListener):
         - `API XEventListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1lang_1_1XEventListener.html>`_
     """
 
-    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: Any = None) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
+            subscriber (Any, optional): An UNO object that has a ``addAdjustmentListener()`` Method.
+                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
+        if subscriber:
+            # several object such as Scrollbar and SpinValue
+            # There is no common interface for this, so we have to try them all.
+            with contextlib.suppress(AttributeError):
+                subscriber.addEventListener(self)
 
     def disposing(self, event: EventObject) -> None:
         """

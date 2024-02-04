@@ -12,7 +12,7 @@ from com.sun.star.text import XTextRange
 
 from ooo.dyn.awt.font_slant import FontSlant  # enum
 
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.gui import GUI
 from ooodev.utils.props import Props
@@ -21,7 +21,7 @@ from ooodev.utils.color import CommonColor, Color
 
 def test_italic_styler(loader, copy_fix_writer):
     visible = False
-    delay = 0 #, 1_000
+    delay = 0  # , 1_000
     test_doc = copy_fix_writer("cicero_dummy.odt")
     doc = Write.open_doc(test_doc, loader)
     try:
@@ -39,7 +39,7 @@ def test_italic_styler(loader, copy_fix_writer):
         Lo.close_doc(doc, False)
 
 
-def italicize_all(doc: XTextDocument, phrase: str, color:Color ) -> int:
+def italicize_all(doc: XTextDocument, phrase: str, color: Color) -> int:
     # cursor = Write.get_view_cursor(doc) # can be used when visible
     cursor = Write.get_cursor(doc)
     cursor.gotoStart(False)
@@ -53,7 +53,9 @@ def italicize_all(doc: XTextDocument, phrase: str, color:Color ) -> int:
         srch_desc.setSearchString(phrase)
         # for props see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1util_1_1SearchDescriptor.html
         Props.set_property(obj=srch_desc, name="SearchCaseSensitive", value=False)
-        Props.set_property(obj=srch_desc, name="SearchWords", value=True) # If TRUE, only complete words will be found.    
+        Props.set_property(
+            obj=srch_desc, name="SearchWords", value=True
+        )  # If TRUE, only complete words will be found.
 
         matches = xsearchable.findAll(srch_desc)
         result = matches.getCount()
@@ -69,9 +71,7 @@ def italicize_all(doc: XTextDocument, phrase: str, color:Color ) -> int:
                 cursor.gotoStart(True)
                 print(f"    - starting at char position: {len(cursor.getString()) - pharse_len}")
 
-                Props.set_properties(
-                    obj=match_tr, names=("CharColor", "CharPosture"), vals=(color, FontSlant.ITALIC)
-                )
+                Props.set_properties(obj=match_tr, names=("CharColor", "CharPosture"), vals=(color, FontSlant.ITALIC))
 
     except Exception as e:
         raise

@@ -5,7 +5,7 @@ import uno
 from com.sun.star.sheet import XCellRangesAccess
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from com.sun.star.table import XCell

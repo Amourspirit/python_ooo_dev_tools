@@ -20,7 +20,7 @@ from ..exceptions import ex as mEx
 from ..units.unit_convert import UnitConvert, UnitLength
 from ..utils import file_io as mFileIO
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils.data_type.size import Size
 from ..utils.type_var import PathOrStr
@@ -232,13 +232,11 @@ class ImagesLo:
     # region save_graphic()
     @overload
     @staticmethod
-    def save_graphic(pic: XGraphic, fnm: PathOrStr) -> None:
-        ...
+    def save_graphic(pic: XGraphic, fnm: PathOrStr) -> None: ...
 
     @overload
     @staticmethod
-    def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str) -> None:
-        ...
+    def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str) -> None: ...
 
     @staticmethod
     def save_graphic(pic: XGraphic, fnm: PathOrStr, im_format: str = "") -> None:

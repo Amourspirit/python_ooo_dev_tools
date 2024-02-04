@@ -21,7 +21,7 @@ from ooodev.format.chart2.direct.series.data_labels.font import FontLine, FontUn
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 
 def test_calc_chart_data_series_labels_font(loader, copy_fix_calc) -> None:

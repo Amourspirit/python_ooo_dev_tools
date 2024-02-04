@@ -9,7 +9,7 @@ from ooodev.format.writer.modify.page.area import Color
 from ooodev.format.writer.modify.page.transparency import Transparency, Intensity
 from ooodev.format import Styler
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write
 

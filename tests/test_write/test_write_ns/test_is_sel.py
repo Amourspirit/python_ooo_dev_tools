@@ -4,7 +4,7 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.write import Write
 from ooodev.write import WriteDoc
 from ooodev.utils.gui import GUI

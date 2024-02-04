@@ -5,11 +5,11 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 
-
 def test_print_doc_properties(loader, copy_fix_presentation) -> None:
-    
-    from ooodev.utils.lo import Lo
+
+    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
+
     test_doc = copy_fix_presentation("algs.odp")
     doc = Lo.open_doc(fnm=test_doc, loader=loader)
     try:

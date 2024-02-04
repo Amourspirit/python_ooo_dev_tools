@@ -11,7 +11,7 @@ from ooodev.format.writer.direct.obj.wrap import (
     WrapTextMode,
 )
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 
