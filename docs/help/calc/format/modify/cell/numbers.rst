@@ -38,7 +38,7 @@ Setup
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.numbers import Numbers
         from ooodev.format.calc.modify.cell.numbers import StyleCellKind, NumberFormatIndexEnum
 

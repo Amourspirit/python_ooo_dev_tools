@@ -21,7 +21,7 @@ Setup
         import uno
 
         from ooodev.draw import Draw, DrawDoc, ZoomKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.draw.direct.text.text import Spacing as TextSpacing
         from ooodev.format.draw.direct.text.text import TextAnchor, ShapeBasePointKind
 

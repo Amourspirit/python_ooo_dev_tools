@@ -35,7 +35,7 @@ Setting the Line Spacing
         from ooodev.draw import Draw, DrawDoc, ZoomKind
         from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
         from ooodev.format.draw.modify.indent_space import LineSpacing, ModeKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):

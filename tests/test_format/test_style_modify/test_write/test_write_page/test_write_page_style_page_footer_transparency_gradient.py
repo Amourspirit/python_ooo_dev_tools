@@ -11,7 +11,7 @@ from ooodev.format.writer.modify.page.footer.transparency import Gradient, Gradi
 from ooodev.format import Styler
 from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

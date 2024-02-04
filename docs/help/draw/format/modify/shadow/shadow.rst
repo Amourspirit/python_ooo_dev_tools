@@ -37,7 +37,7 @@ Setting the Shadow
         from ooodev.format.draw.modify.shadow import Shadow, ShadowLocationKind
         from ooodev.format.draw.modify.area.color import Color as AreaColor
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):

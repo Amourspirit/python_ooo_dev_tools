@@ -27,7 +27,7 @@ from ooodev.format.inner.preset import preset_image as mImage
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units.unit_convert import UnitConvert
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
@@ -160,12 +160,10 @@ class Img(StyleBase):
 
     # region copy()
     @overload
-    def copy(self: _TImg) -> _TImg:
-        ...
+    def copy(self: _TImg) -> _TImg: ...
 
     @overload
-    def copy(self: _TImg, **kwargs) -> _TImg:
-        ...
+    def copy(self: _TImg, **kwargs) -> _TImg: ...
 
     def copy(self: _TImg, **kwargs) -> _TImg:
         """Gets a copy of instance as a new instance"""
@@ -243,13 +241,11 @@ class Img(StyleBase):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg:
-        ...
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg: ...
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
-        ...
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg: ...
 
     @classmethod
     def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
@@ -290,13 +286,11 @@ class Img(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: Any) -> _TImg:
-        ...
+    def from_obj(cls: Type[_TImg], obj: Any) -> _TImg: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:
-        ...
+    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg: ...
 
     @classmethod
     def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:

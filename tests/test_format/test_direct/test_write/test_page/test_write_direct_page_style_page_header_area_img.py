@@ -10,7 +10,7 @@ from ooodev.format.writer.direct.page.header import Header
 from ooodev.format.writer.direct.page.header.area import Img, PresetImageKind
 from ooodev.format.writer.direct.char.font import Font
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.color import StandardColor
 from ooodev.utils.info import Info

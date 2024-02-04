@@ -10,7 +10,7 @@ from ooo.dyn.style.tab_align import TabAlign as TabAlign
 from ooo.dyn.style.tab_stop import TabStop
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitT
 from ooodev.units import UnitMM
@@ -118,12 +118,10 @@ class TabStopStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, keys: Dict[str, str]) -> None:
-        ...
+    def apply(self, obj: Any, keys: Dict[str, str]) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         """
@@ -212,13 +210,11 @@ class TabStopStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTabStopStruct], obj: Any) -> _TTabStopStruct:
-        ...
+    def from_obj(cls: Type[_TTabStopStruct], obj: Any) -> _TTabStopStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTabStopStruct], obj: Any, **kwargs) -> _TTabStopStruct:
-        ...
+    def from_obj(cls: Type[_TTabStopStruct], obj: Any, **kwargs) -> _TTabStopStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TTabStopStruct], obj: Any, index: int = 0, **kwargs) -> _TTabStopStruct:
@@ -253,13 +249,11 @@ class TabStopStruct(StructBase):
     # region from_tab_stop()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct:
-        ...
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop) -> _TTabStopStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:
-        ...
+    def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TTabStopStruct], ts: TabStop, **kwargs) -> _TTabStopStruct:

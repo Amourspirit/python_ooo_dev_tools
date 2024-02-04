@@ -8,7 +8,7 @@ from ooodev.format.inner.common.abstract.abstract_writing_mode import AbstractWr
 from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class _WritingMode(AbstractWritingMode):

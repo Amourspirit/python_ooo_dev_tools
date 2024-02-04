@@ -7,7 +7,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.info import Info
 from ooodev.write import Write
 from ooodev.write import WriteDoc

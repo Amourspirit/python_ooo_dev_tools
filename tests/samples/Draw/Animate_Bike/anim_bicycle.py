@@ -9,7 +9,7 @@ from ooodev.office.draw import Draw, PolySides
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.color import CommonColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.type_var import PathOrStr
 

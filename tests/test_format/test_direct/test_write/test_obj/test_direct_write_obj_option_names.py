@@ -8,7 +8,7 @@ import uno
 
 from ooodev.format.writer.direct.obj.options import Names
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

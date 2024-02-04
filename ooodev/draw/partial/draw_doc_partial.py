@@ -10,9 +10,9 @@ from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import gui as mGUI
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.kind.zoom_kind import ZoomKind
@@ -126,7 +126,7 @@ class DrawDocPartial(Generic[_T]):
     def combine_shape(self, shapes: XShapes, combine_op: ShapeCombKind) -> mDrawShape.DrawShape[_T]:
         """
         Combines one or more shapes using a dispatch command.
-        
+
         If the owner of this instance is an instance of :py:class:`~.events.partial.EventsPartial` then the owner
         will be added as an observer to the dispatch events, for the duration of this method.
 

@@ -3,6 +3,7 @@ Module for Fill Gradient Color.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload, TYPE_CHECKING
@@ -12,7 +13,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import color as mColor
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -176,12 +177,10 @@ class Gradient(StyleMulti):
     # region Overrides
     # region copy()
     @overload
-    def copy(self: _TGradient) -> _TGradient:
-        ...
+    def copy(self: _TGradient) -> _TGradient: ...
 
     @overload
-    def copy(self: _TGradient, **kwargs) -> _TGradient:
-        ...
+    def copy(self: _TGradient, **kwargs) -> _TGradient: ...
 
     def copy(self: _TGradient, **kwargs) -> _TGradient:
         """Gets a copy of instance as a new instance"""
@@ -242,13 +241,11 @@ class Gradient(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: Any) -> _TGradient:
-        ...
+    def from_obj(cls: Type[_TGradient], obj: Any) -> _TGradient: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
-        ...
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient: ...
 
     @classmethod
     def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:

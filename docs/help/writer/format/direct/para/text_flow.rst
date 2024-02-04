@@ -46,7 +46,7 @@ General function used to run these examples:
 
             from ooodev.office.write import Write
             from ooodev.utils.gui import GUI
-            from ooodev.utils.lo import Lo
+            from ooodev.loader.lo import Lo
             from ooodev.format.writer.direct.para.text_flow import Breaks, BreakType, FlowOptions, Hyphenation
             
             def main() -> int:

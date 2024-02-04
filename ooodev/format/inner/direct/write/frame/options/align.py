@@ -3,7 +3,7 @@ from typing import Any, Tuple, Type, TypeVar, overload, TYPE_CHECKING
 from enum import Enum
 from ooodev.exceptions import ex as mEx
 from ooodev.meta.deleted_enum_meta import DeletedUnoEnumMeta
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -94,13 +94,11 @@ class Align(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAlign], obj: object) -> _TAlign:
-        ...
+    def from_obj(cls: Type[_TAlign], obj: object) -> _TAlign: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAlign], obj: object, **kwargs) -> _TAlign:
-        ...
+    def from_obj(cls: Type[_TAlign], obj: object, **kwargs) -> _TAlign: ...
 
     @classmethod
     def from_obj(cls: Type[_TAlign], obj: object, **kwargs) -> _TAlign:

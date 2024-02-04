@@ -9,7 +9,7 @@ from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.utils.data_type.offset import Offset as Offset
@@ -129,12 +129,10 @@ class Img(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -206,13 +204,11 @@ class Img(StyleMulti):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg:
-        ...
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind) -> _TImg: ...
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
-        ...
+    def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg: ...
 
     @classmethod
     def from_preset(cls: Type[_TImg], preset: PresetImageKind, **kwargs) -> _TImg:
@@ -243,13 +239,11 @@ class Img(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: Any) -> _TImg:
-        ...
+    def from_obj(cls: Type[_TImg], obj: Any) -> _TImg: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:
-        ...
+    def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg: ...
 
     @classmethod
     def from_obj(cls: Type[_TImg], obj: Any, **kwargs) -> _TImg:

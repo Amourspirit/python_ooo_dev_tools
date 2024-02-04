@@ -1,4 +1,5 @@
 """Abstract Fill Color Module"""
+
 # pylint: disable=broad-exception-raised
 # pylint: disable=unused-import
 # region Import
@@ -8,7 +9,7 @@ from typing import Any, overload, Type, TypeVar
 from ooo.dyn.drawing.fill_style import FillStyle
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import color as mColor
@@ -87,13 +88,11 @@ class AbstractColor(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractColor], obj: Any) -> _TAbstractColor:
-        ...
+    def from_obj(cls: Type[_TAbstractColor], obj: Any) -> _TAbstractColor: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractColor], obj: Any, **kwargs) -> _TAbstractColor:
-        ...
+    def from_obj(cls: Type[_TAbstractColor], obj: Any, **kwargs) -> _TAbstractColor: ...
 
     @classmethod
     def from_obj(cls: Type[_TAbstractColor], obj: Any, **kwargs) -> _TAbstractColor:

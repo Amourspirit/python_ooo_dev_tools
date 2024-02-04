@@ -153,7 +153,7 @@ The |extract_ex|_ example opens a document using :py:meth:`.Lo.open_doc`, and tr
 
         from ooodev.office.write import Write
         from ooodev.utils.info import Info
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.wrapper.break_context import BreakContext
 
 

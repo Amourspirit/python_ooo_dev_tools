@@ -3,7 +3,7 @@ from typing import cast, overload
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -69,13 +69,11 @@ class Flip(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFlip], obj: object) -> _TFlip:
-        ...
+    def from_obj(cls: Type[_TFlip], obj: object) -> _TFlip: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TFlip], obj: object, **kwargs) -> _TFlip:
-        ...
+    def from_obj(cls: Type[_TFlip], obj: object, **kwargs) -> _TFlip: ...
 
     @classmethod
     def from_obj(cls: Type[_TFlip], obj: object, **kwargs) -> _TFlip:

@@ -7,7 +7,7 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.adapter.drawing.text_shape_comp import TextShapeComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ..partial.draw_shape_partial import DrawShapePartial
@@ -16,7 +16,7 @@ from .shape_base import ShapeBase, _T
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class TextShape(

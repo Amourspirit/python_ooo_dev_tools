@@ -4,7 +4,7 @@ import uno
 from com.sun.star.awt import XBitmap
 from com.sun.star.chart2 import XChartDocument
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ...chart.area.pattern import Pattern as ChartAreaPattern
 
 

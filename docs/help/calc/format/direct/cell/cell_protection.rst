@@ -53,7 +53,7 @@ Setup
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 
         def main() -> int:
@@ -146,7 +146,7 @@ Setup
         import uno
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 
         def main() -> int:

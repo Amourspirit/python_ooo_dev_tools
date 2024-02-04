@@ -10,7 +10,7 @@ import uno
 from ooodev.format.writer.direct.image.borders import Side, Sides, BorderLineKind, LineSize
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.color import StandardColor
 from ooodev.utils.images_lo import ImagesLo

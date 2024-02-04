@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 def test_get_range_values(loader) -> None:
     from ooodev.utils.data_type.range_values import RangeValues
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -213,7 +213,7 @@ def test_range_math_errors() -> None:
 
 def test_get_range_obj(loader) -> None:
     from ooodev.utils.data_type.range_obj import RangeObj
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -291,7 +291,7 @@ def test_get_range_obj(loader) -> None:
 
 def test_get_range_values_cell_address(loader) -> None:
     from ooodev.utils.data_type.range_values import RangeValues
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -322,7 +322,7 @@ def test_get_range_values_cell_address(loader) -> None:
 def test_get_range_obj_cell_address(loader) -> None:
     from ooodev.utils.data_type.range_obj import RangeObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -347,7 +347,7 @@ def test_range_obj_is_methods(loader) -> None:
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.data_type.cell_obj import CellObj
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc()
@@ -434,7 +434,7 @@ def test_range_obj_is_methods(loader) -> None:
     ],
 )
 def test_range_obj_contains(rng_name: str, cell_name: str, expected: bool, loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.range_obj import RangeObj
@@ -677,6 +677,7 @@ def test_subtract_range_cols_start(rng_name: str, col: str, expected: str) -> No
 
 # endregion Test RangeObj add/subtract cols using str
 
+
 # region Test RangeObj add/subtract rows using RowObj
 @pytest.mark.parametrize(
     ("rng_name", "rows", "expected"),
@@ -769,6 +770,7 @@ def test_subtract_range_rows_start_row_obj(rng_name: str, rows: int, expected: s
 
 # endregion Test RangeObj add/subtract rows using RowObj
 
+
 # region Test RangeObj add/subtract cols using ColObj
 @pytest.mark.parametrize(
     ("rng_name", "col", "expected"),
@@ -860,6 +862,7 @@ def test_subtract_range_cols_start_col_obj(rng_name: str, col: str, expected: st
 
 
 # endregion Test RangeObj add/subtract cols using ColObj
+
 
 # region test RangeObj add/subtract using CellObj
 @pytest.mark.parametrize(

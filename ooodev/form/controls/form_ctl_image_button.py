@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.form.component import ImageButton as ControlModel  # service
     from com.sun.star.form.control import ImageButton as ControlView  # service
     from ooodev.utils.type_var import PathOrStr
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlImageButton(FormCtlBase, ApproveActionEvents):

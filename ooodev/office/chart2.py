@@ -61,7 +61,7 @@ from ..utils import file_io as mFileIo
 from ..utils import gui as mGui
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils.kind.axis_kind import AxisKind as AxisKind
 from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
@@ -1370,27 +1370,23 @@ class Chart2:
     # region set_grid_lines()
     @overload
     @classmethod
-    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind) -> XPropertySet:
-        ...
+    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind) -> XPropertySet: ...
 
     @overload
     @classmethod
     def set_grid_lines(
         cls, chart_doc: XChartDocument, axis_val: AxisKind, *, styles: Sequence[StyleT]
-    ) -> XPropertySet:
-        ...
+    ) -> XPropertySet: ...
 
     @overload
     @classmethod
-    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XPropertySet:
-        ...
+    def set_grid_lines(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XPropertySet: ...
 
     @overload
     @classmethod
     def set_grid_lines(
         cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, styles: Sequence[StyleT]
-    ) -> XPropertySet:
-        ...
+    ) -> XPropertySet: ...
 
     @classmethod
     def set_grid_lines(
@@ -2084,18 +2080,15 @@ class Chart2:
     # region get_data_series()
     @overload
     @classmethod
-    def get_data_series(cls, chart_doc: XChartDocument) -> Tuple[XDataSeries, ...]:
-        ...
+    def get_data_series(cls, chart_doc: XChartDocument) -> Tuple[XDataSeries, ...]: ...
 
     @overload
     @classmethod
-    def get_data_series(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase) -> Tuple[XDataSeries, ...]:
-        ...
+    def get_data_series(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase) -> Tuple[XDataSeries, ...]: ...
 
     @overload
     @classmethod
-    def get_data_series(cls, chart_doc: XChartDocument, chart_type: str) -> Tuple[XDataSeries, ...]:
-        ...
+    def get_data_series(cls, chart_doc: XChartDocument, chart_type: str) -> Tuple[XDataSeries, ...]: ...
 
     @classmethod
     def get_data_series(
@@ -2136,18 +2129,15 @@ class Chart2:
     # region get_data_source()
     @overload
     @classmethod
-    def get_data_source(cls, chart_doc: XChartDocument) -> XDataSource:
-        ...
+    def get_data_source(cls, chart_doc: XChartDocument) -> XDataSource: ...
 
     @overload
     @classmethod
-    def get_data_source(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase) -> XDataSource:
-        ...
+    def get_data_source(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase) -> XDataSource: ...
 
     @overload
     @classmethod
-    def get_data_source(cls, chart_doc: XChartDocument, chart_type: str) -> XDataSource:
-        ...
+    def get_data_source(cls, chart_doc: XChartDocument, chart_type: str) -> XDataSource: ...
 
     @classmethod
     def get_data_source(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase | str = "") -> XDataSource:
@@ -2326,13 +2316,11 @@ class Chart2:
     # region add_chart_type()
     @overload
     @classmethod
-    def add_chart_type(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase) -> XChartType:
-        ...
+    def add_chart_type(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase) -> XChartType: ...
 
     @overload
     @classmethod
-    def add_chart_type(cls, chart_doc: XChartDocument, chart_type: str) -> XChartType:
-        ...
+    def add_chart_type(cls, chart_doc: XChartDocument, chart_type: str) -> XChartType: ...
 
     @classmethod
     def add_chart_type(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase | str) -> XChartType:

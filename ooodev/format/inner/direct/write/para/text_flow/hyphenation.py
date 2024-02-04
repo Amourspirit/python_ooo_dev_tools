@@ -3,13 +3,14 @@ Module for managing paragraph hyphenation.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
 from typing import Any, Tuple, overload, Type, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -104,12 +105,10 @@ class Hyphenation(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -132,13 +131,11 @@ class Hyphenation(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyphenation], obj: Any) -> _THyphenation:
-        ...
+    def from_obj(cls: Type[_THyphenation], obj: Any) -> _THyphenation: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyphenation], obj: Any, **kwargs) -> _THyphenation:
-        ...
+    def from_obj(cls: Type[_THyphenation], obj: Any, **kwargs) -> _THyphenation: ...
 
     @classmethod
     def from_obj(cls: Type[_THyphenation], obj: Any, **kwargs) -> _THyphenation:

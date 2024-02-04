@@ -9,7 +9,7 @@ from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.units import Angle as Angle
@@ -219,12 +219,10 @@ class Hatch(StyleMulti):
 
     # region copy()
     @overload
-    def copy(self: _THatch) -> _THatch:
-        ...
+    def copy(self: _THatch) -> _THatch: ...
 
     @overload
-    def copy(self: _THatch, **kwargs) -> _THatch:
-        ...
+    def copy(self: _THatch, **kwargs) -> _THatch: ...
 
     def copy(self: _THatch, **kwargs) -> _THatch:
         """Gets a copy of instance as a new instance"""
@@ -238,12 +236,10 @@ class Hatch(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -273,13 +269,11 @@ class Hatch(StyleMulti):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch:
-        ...
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind) -> _THatch: ...
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
-        ...
+    def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch: ...
 
     @classmethod
     def from_preset(cls: Type[_THatch], preset: PresetHatchKind, **kwargs) -> _THatch:
@@ -304,13 +298,11 @@ class Hatch(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: Any) -> _THatch:
-        ...
+    def from_obj(cls: Type[_THatch], obj: Any) -> _THatch: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:
-        ...
+    def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch: ...
 
     @classmethod
     def from_obj(cls: Type[_THatch], obj: Any, **kwargs) -> _THatch:

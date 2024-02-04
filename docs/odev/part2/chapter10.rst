@@ -1002,7 +1002,7 @@ This information can be used to set the proof reader. LanguageTool is made the d
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from com.sun.star.linguistic2 import XLinguServiceManager2
 
         with Lo.Loader(Lo.ConnectSocket(headless=True)) as loader:
@@ -1025,7 +1025,7 @@ Alternatively, Lightproof can be enabled with:
 
     .. code-tab:: python
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from com.sun.star.linguistic2 import XLinguServiceManager2
 
         with Lo.Loader(Lo.ConnectSocket(headless=True)) as loader:

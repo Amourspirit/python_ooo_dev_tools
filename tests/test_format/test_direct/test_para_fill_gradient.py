@@ -9,7 +9,7 @@ import uno
 from ooodev.format.inner.preset import preset_gradient as mPreset
 from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 if TYPE_CHECKING:

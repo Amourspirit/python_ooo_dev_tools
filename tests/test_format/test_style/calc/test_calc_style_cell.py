@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.calc.style import Cell, StyleCellKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.utils.table_helper import TableHelper

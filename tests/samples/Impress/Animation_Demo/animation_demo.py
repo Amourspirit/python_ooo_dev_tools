@@ -7,7 +7,7 @@ from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 
 from com.sun.star.animations import XAnimateMotion

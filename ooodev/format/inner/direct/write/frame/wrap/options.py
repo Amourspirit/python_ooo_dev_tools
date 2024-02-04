@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, TypeVar, cast, overload
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -89,13 +89,11 @@ class Options(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOptions], obj: Any) -> _TOptions:
-        ...
+    def from_obj(cls: Type[_TOptions], obj: Any) -> _TOptions: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOptions], obj: Any, **kwargs) -> _TOptions:
-        ...
+    def from_obj(cls: Type[_TOptions], obj: Any, **kwargs) -> _TOptions: ...
 
     @classmethod
     def from_obj(cls: Type[_TOptions], obj: Any, **kwargs) -> _TOptions:

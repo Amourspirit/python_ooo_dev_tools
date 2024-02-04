@@ -13,7 +13,7 @@ from ooodev.format.writer.direct.para.area import Color
 from ooodev.format.writer.style.para import Para
 from ooodev.format import StandardColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 if TYPE_CHECKING:

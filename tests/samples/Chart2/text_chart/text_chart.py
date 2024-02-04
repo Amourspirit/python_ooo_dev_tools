@@ -11,7 +11,7 @@ from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.gui import GUI
 from ooodev.utils.kind.chart2_types import ChartTypes
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.type_var import PathOrStr
 
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust

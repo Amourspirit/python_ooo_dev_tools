@@ -4,7 +4,7 @@ from typing import Any, Tuple, Type, TypeVar, overload
 from ooo.dyn.text.wrap_text_mode import WrapTextMode as WrapTextMode
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
@@ -69,13 +69,11 @@ class Settings(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSettings], obj: object) -> _TSettings:
-        ...
+    def from_obj(cls: Type[_TSettings], obj: object) -> _TSettings: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSettings], obj: object, **kwargs) -> _TSettings:
-        ...
+    def from_obj(cls: Type[_TSettings], obj: object, **kwargs) -> _TSettings: ...
 
     @classmethod
     def from_obj(cls: Type[_TSettings], obj: object, **kwargs) -> _TSettings:

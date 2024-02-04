@@ -8,7 +8,7 @@ import uno
 from ooodev.format.calc.modify.page.header import Header, CalcStylePageKind
 from ooodev.format.calc.modify.page.header.borders import Padding
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.format import Styler
 from ooodev.office.calc import Calc
 from ooodev.units.unit_mm100 import UnitMM100

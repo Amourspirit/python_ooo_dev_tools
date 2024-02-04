@@ -16,7 +16,7 @@ from ooodev.format.inner.direct.write.fill.area.img import Img as FillImg, ImgSt
 from ooodev.format.inner.preset import preset_image as mImage
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.meta.deleted_attrib import DeletedAttrib
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
@@ -110,12 +110,10 @@ class Img(FillImg):
 
     # region copy()
     @overload
-    def copy(self) -> Img:
-        ...
+    def copy(self) -> Img: ...
 
     @overload
-    def copy(self, **kwargs) -> Img:
-        ...
+    def copy(self, **kwargs) -> Img: ...
 
     def copy(self, **kwargs) -> Img:
         """Gets a copy of instance as a new instance"""
@@ -131,13 +129,11 @@ class Img(FillImg):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls, chart_doc: XChartDocument, preset: PresetImageKind) -> Img:
-        ...
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetImageKind) -> Img: ...
 
     @overload
     @classmethod
-    def from_preset(cls, chart_doc: XChartDocument, preset: PresetImageKind, **kwargs) -> Img:
-        ...
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetImageKind, **kwargs) -> Img: ...
 
     @classmethod
     def from_preset(cls, chart_doc: XChartDocument, preset: PresetImageKind, **kwargs) -> Img:
@@ -179,13 +175,11 @@ class Img(FillImg):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Img:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Img: ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Img:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Img: ...
 
     @classmethod
     def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Img:

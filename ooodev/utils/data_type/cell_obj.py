@@ -4,8 +4,7 @@ from typing import cast
 from dataclasses import dataclass, field
 from typing import overload
 from weakref import ref
-import numbers
-from .. import lo as mLo
+from ooodev.loader import lo as mLo
 from .. import table_helper as mTb
 from ...office import calc as mCalc
 from ..validation import check
@@ -58,23 +57,19 @@ class CellObj:
 
     @overload
     @staticmethod
-    def from_cell(cell_val: str) -> CellObj:
-        ...
+    def from_cell(cell_val: str) -> CellObj: ...
 
     @overload
     @staticmethod
-    def from_cell(cell_val: CellObj) -> CellObj:
-        ...
+    def from_cell(cell_val: CellObj) -> CellObj: ...
 
     @overload
     @staticmethod
-    def from_cell(cell_val: CellAddress) -> CellObj:
-        ...
+    def from_cell(cell_val: CellAddress) -> CellObj: ...
 
     @overload
     @staticmethod
-    def from_cell(cell_val: mCellVals.CellValues) -> CellObj:
-        ...
+    def from_cell(cell_val: mCellVals.CellValues) -> CellObj: ...
 
     @staticmethod
     def from_cell(cell_val: str | CellAddress | mCellVals.CellValues | CellObj) -> CellObj:

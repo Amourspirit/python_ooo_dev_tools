@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.writer.direct.para.outline_list import ListStyle, StyleListKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

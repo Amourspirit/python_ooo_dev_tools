@@ -60,7 +60,7 @@ Using the :py:meth:`Calc.find_used_range() <ooodev.office.calc.Calc.find_used_ra
 
         import uno
         from com.sun.star.beans import XPropertySet
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.calc import Calc
         from ooodev.utils.info import Info
 

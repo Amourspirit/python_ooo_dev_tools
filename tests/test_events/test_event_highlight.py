@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 
 def test_highlight_range(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.utils.color import CommonColor
@@ -65,7 +65,7 @@ def test_highlight_range(loader) -> None:
 
 
 def test_highlight_range_cancel(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.events.lo_events import event_ctx, EventArg
@@ -105,7 +105,7 @@ def test_highlight_range_cancel(loader) -> None:
 
 
 def test_highlight_local_events(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.utils.color import CommonColor
@@ -173,7 +173,7 @@ def test_highlight_local_events(loader) -> None:
 
 
 def test_highlight_events_destroy(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.utils.color import CommonColor

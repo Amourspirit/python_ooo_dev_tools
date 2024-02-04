@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
 
 def test_get_bitmap(loader, fix_image_path) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
 
@@ -30,7 +30,7 @@ def test_get_bitmap(loader, fix_image_path) -> None:
 
 
 def test_load_graphic(loader, fix_image_path) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
     from ooodev.utils.props import Props
@@ -78,7 +78,7 @@ def test_get_mime_types(loader) -> None:
 
 
 def test_get_size_pixels(loader, fix_image_path) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
 
@@ -94,7 +94,7 @@ def test_get_size_pixels(loader, fix_image_path) -> None:
 
 
 def _test_add_image_link(loader, fix_image_path) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
     from ooodev.utils.gui import GUI

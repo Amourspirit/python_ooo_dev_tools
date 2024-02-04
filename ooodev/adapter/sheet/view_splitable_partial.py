@@ -4,7 +4,7 @@ from typing import Any, TYPE_CHECKING
 from com.sun.star.sheet import XViewSplitable
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.units import UnitT
 
 if TYPE_CHECKING:

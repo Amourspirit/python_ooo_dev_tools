@@ -8,7 +8,7 @@ from ooodev.adapter.drawing.shape_collection_comp import ShapeCollectionComp
 from ooodev.exceptions import ex as mEx
 from ooodev.proto.component_proto import ComponentT
 from ooodev.units import UnitMM
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
@@ -16,7 +16,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 
 if TYPE_CHECKING:
     from ooodev.draw import DrawPage
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Grouping,_Combining_and_Binding
 

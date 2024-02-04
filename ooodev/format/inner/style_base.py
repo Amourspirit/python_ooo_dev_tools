@@ -1,4 +1,5 @@
 """Base Styles class"""
+
 # pylint: disable=too-many-lines
 # pylint: disable=broad-exception-raised
 # pylint: disable=unused-import
@@ -17,7 +18,7 @@ from com.sun.star.lang import XMultiServiceFactory
 
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.events.lo_events import Events, event_ctx
 from ooodev.events.props_named_event import PropsNamedEvent
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelArgs
@@ -466,12 +467,10 @@ class StyleBase(metaclass=MetaStyle):
 
     # region Copy()
     @overload
-    def copy(self: TStyleBase) -> TStyleBase:
-        ...
+    def copy(self: TStyleBase) -> TStyleBase: ...
 
     @overload
-    def copy(self: TStyleBase, **kwargs) -> TStyleBase:
-        ...
+    def copy(self: TStyleBase, **kwargs) -> TStyleBase: ...
 
     def copy(self: TStyleBase, **kwargs) -> TStyleBase:
         """Gets a copy of instance as a new instance"""
@@ -976,12 +975,10 @@ class StyleMulti(StyleBase):
 
     # region Copy()
     @overload
-    def copy(self: TStyleMulti) -> TStyleMulti:
-        ...
+    def copy(self: TStyleMulti) -> TStyleMulti: ...
 
     @overload
-    def copy(self: TStyleMulti, **kwargs) -> TStyleMulti:
-        ...
+    def copy(self: TStyleMulti, **kwargs) -> TStyleMulti: ...
 
     def copy(self: TStyleMulti, **kwargs) -> TStyleMulti:
         """Gets a copy of instance as a new instance"""
@@ -1268,12 +1265,10 @@ class StyleModifyMulti(StyleMulti):
     # region apply()
     # pylint: disable=arguments-differ
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -1309,12 +1304,10 @@ class StyleModifyMulti(StyleMulti):
 
     # region copy()
     @overload
-    def copy(self: _TStyleModifyMulti) -> _TStyleModifyMulti:
-        ...
+    def copy(self: _TStyleModifyMulti) -> _TStyleModifyMulti: ...
 
     @overload
-    def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti:
-        ...
+    def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti: ...
 
     def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti:
         """Gets a copy of instance as a new instance"""
@@ -1469,13 +1462,11 @@ class StyleName(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[TStyleName], obj: Any) -> TStyleName:
-        ...
+    def from_obj(cls: Type[TStyleName], obj: Any) -> TStyleName: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[TStyleName], obj: Any, **kwargs) -> TStyleName:
-        ...
+    def from_obj(cls: Type[TStyleName], obj: Any, **kwargs) -> TStyleName: ...
 
     @classmethod
     def from_obj(cls: Type[TStyleName], obj: Any, **kwargs) -> TStyleName:

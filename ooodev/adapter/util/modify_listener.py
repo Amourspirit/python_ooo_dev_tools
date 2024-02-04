@@ -5,7 +5,7 @@ import uno
 from com.sun.star.util import XModifyListener
 from com.sun.star.util import XModifyBroadcaster
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
 

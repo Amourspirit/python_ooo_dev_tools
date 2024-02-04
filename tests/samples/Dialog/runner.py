@@ -8,7 +8,7 @@ from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 
 from ooodev.dialog import ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind, StateKind
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.calc import CalcDoc
 from ooodev.write import WriteDoc
 from ooodev.events.args.event_args import EventArgs

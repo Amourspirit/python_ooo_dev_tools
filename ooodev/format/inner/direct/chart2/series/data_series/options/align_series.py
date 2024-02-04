@@ -5,7 +5,7 @@ from com.sun.star.chart2 import XChartDocument
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class _AlignSeriesProps(NamedTuple):
@@ -59,12 +59,10 @@ class AlignSeries(StyleBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -98,12 +96,10 @@ class AlignSeries(StyleBase):
 
     # region Copy()
     @overload
-    def copy(self) -> AlignSeries:
-        ...
+    def copy(self) -> AlignSeries: ...
 
     @overload
-    def copy(self, **kwargs) -> AlignSeries:
-        ...
+    def copy(self, **kwargs) -> AlignSeries: ...
 
     def copy(self, **kwargs) -> AlignSeries:
         """Gets a copy of instance as a new instance"""

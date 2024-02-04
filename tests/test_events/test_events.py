@@ -111,7 +111,7 @@ def test_event_cls() -> None:
 
 
 def test_event_new_doc(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.events.write_named_event import WriteNamedEvent
 

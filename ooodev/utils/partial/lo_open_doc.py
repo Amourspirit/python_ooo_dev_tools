@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Iterable, TYPE_CHECKING, overload
 import uno
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.doc_type import DocType
+from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.doc_type import DocType
 
 
 if TYPE_CHECKING:
@@ -182,12 +182,10 @@ class LoOpenPartial:
 
     # region open_flat_doc()
     @overload
-    def open_flat_doc(self, fnm: PathOrStr, doc_type: DocType) -> XComponent:
-        ...
+    def open_flat_doc(self, fnm: PathOrStr, doc_type: DocType) -> XComponent: ...
 
     @overload
-    def open_flat_doc(self, fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> XComponent:
-        ...
+    def open_flat_doc(self, fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader) -> XComponent: ...
 
     def open_flat_doc(self, fnm: PathOrStr, doc_type: DocType, loader: XComponentLoader | None = None) -> XComponent:
         """

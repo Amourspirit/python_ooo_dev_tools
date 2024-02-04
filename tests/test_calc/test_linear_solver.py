@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 from typing import cast
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.office.calc import Calc, SolverConstraintOperator
 

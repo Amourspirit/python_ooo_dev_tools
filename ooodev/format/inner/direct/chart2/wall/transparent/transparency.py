@@ -3,7 +3,7 @@ from typing import Any, Tuple
 
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as WriteTransparency
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.intensity import Intensity
 
 

@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 

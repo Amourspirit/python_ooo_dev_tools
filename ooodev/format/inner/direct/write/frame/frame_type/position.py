@@ -3,6 +3,7 @@ Module for Fill Transparency.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, Type, TypeVar, overload
 from enum import Enum
@@ -13,7 +14,7 @@ from ooo.dyn.text.rel_orientation import RelOrientation
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import UnitT
 from ooodev.units import UnitMM
@@ -340,12 +341,10 @@ class Position(StyleBase):
     # region Overrides
     # region copy()
     @overload
-    def copy(self: _TPosition) -> _TPosition:
-        ...
+    def copy(self: _TPosition) -> _TPosition: ...
 
     @overload
-    def copy(self: _TPosition, **kwargs) -> _TPosition:
-        ...
+    def copy(self: _TPosition, **kwargs) -> _TPosition: ...
 
     def copy(self: _TPosition, **kwargs) -> _TPosition:
         """Gets a copy of instance as a new instance"""
@@ -397,13 +396,11 @@ class Position(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPosition], obj: Any) -> _TPosition:
-        ...
+    def from_obj(cls: Type[_TPosition], obj: Any) -> _TPosition: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPosition], obj: Any, **kwargs) -> _TPosition:
-        ...
+    def from_obj(cls: Type[_TPosition], obj: Any, **kwargs) -> _TPosition: ...
 
     @classmethod
     def from_obj(cls: Type[_TPosition], obj: Any, **kwargs) -> _TPosition:

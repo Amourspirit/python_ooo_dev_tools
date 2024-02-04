@@ -1,11 +1,13 @@
 import pytest
+
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.gui import GUI
 from ooodev.utils.date_time_util import DateUtil
+
 
 def test_make_table(loader, bond_movies_table: list):
     # test require Writer be visible
@@ -18,7 +20,7 @@ def test_make_table(loader, bond_movies_table: list):
             GUI.set_visible(visible, doc)
 
         cursor = Write.get_cursor(doc)
-        
+
         Write.append_para(cursor, "Table of Bond Movies")
         Write.style_prev_paragraph(cursor, "Heading 1")
         Write.append_para(cursor, 'The following table comes form "bondMovies.txt"\n')

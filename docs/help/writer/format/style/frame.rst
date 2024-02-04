@@ -24,7 +24,7 @@ General function used to run these examples.
         from ooodev.format.writer.style import Frame, StyleFrameKind
         from ooodev.format.writer.modify.frame.area import Color as FrameAreaColor
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.write import Write
         from ooodev.units import UnitMM
         from ooodev.utils.color import StandardColor

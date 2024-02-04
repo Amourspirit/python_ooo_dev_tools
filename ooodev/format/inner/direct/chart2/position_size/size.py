@@ -4,7 +4,7 @@ import uno
 from ooo.dyn.awt.size import Size as UnoSize
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import UnitConvert, UnitMM
@@ -85,12 +85,10 @@ class Size(StyleBase):
 
     # region copy()
     @overload
-    def copy(self) -> Size:
-        ...
+    def copy(self) -> Size: ...
 
     @overload
-    def copy(self, **kwargs) -> Size:
-        ...
+    def copy(self, **kwargs) -> Size: ...
 
     def copy(self, **kwargs) -> Size:
         """

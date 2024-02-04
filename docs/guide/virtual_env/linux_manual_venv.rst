@@ -150,7 +150,7 @@ This simple script starts python, Loads LibreOffice Writer, and writes ``Hello W
 
     Python 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0] on linux
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> from ooodev.utils.lo import Lo
+    >>> from ooodev.loader.lo import Lo
     >>> from ooodev.office.write import Write
     >>> from ooodev.utils.gui import GUI
     >>> 

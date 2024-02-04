@@ -81,7 +81,7 @@ from ..utils import gen_util as gUtil
 from ..utils import gui as mGui
 from ..utils import images_lo as mImgLo
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils import table_helper as mTableHelper
 from ..utils.data_type.image_offset import ImageOffset as ImageOffset
@@ -89,7 +89,7 @@ from ..utils.data_type.intensity import Intensity as Intensity
 from ..utils.data_type.poly_sides import PolySides as PolySides
 from ..utils.data_type.size import Size
 from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
-from ..utils.inst.lo import lo_inst as mLoInst
+from ooodev.loader.inst import lo_inst as mLoInst
 from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
 from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
 from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
@@ -2165,13 +2165,11 @@ class Draw:
 
     @overload
     @classmethod
-    def get_shape_text(cls, shape: XShape) -> str:
-        ...
+    def get_shape_text(cls, shape: XShape) -> str: ...
 
     @overload
     @classmethod
-    def get_shape_text(cls, slide: XDrawPage) -> str:
-        ...
+    def get_shape_text(cls, slide: XDrawPage) -> str: ...
 
     @classmethod
     def get_shape_text(cls, *args, **kwargs) -> str:

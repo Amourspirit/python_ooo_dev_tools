@@ -1,4 +1,5 @@
 """DrawPages class for Draw documents."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import contextlib
@@ -8,8 +9,8 @@ from com.sun.star.drawing import XDrawPage
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from .write_draw_page import WriteDrawPage

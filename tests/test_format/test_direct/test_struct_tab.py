@@ -11,7 +11,7 @@ from ooodev.format.inner.direct.structs.tab_stop_struct import TabStopStruct
 # from ooodev.format.inner.direct.write.para.tabs import Tabs
 from ooodev.format.writer.direct.para.tabs import Tabs, TabAlign, FillCharKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

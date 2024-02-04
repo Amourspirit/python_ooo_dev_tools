@@ -23,7 +23,7 @@ from ooodev.utils.color import StandardColor
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.kind.chart2_types import ChartTypes
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 
 def test_calc_chart_data_series_labels_borders(loader, copy_fix_calc) -> None:

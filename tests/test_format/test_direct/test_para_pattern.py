@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 # from ooodev.format.inner.direct.write.para.area.pattern import Pattern, PresetPatternKind

@@ -29,7 +29,7 @@ Setup
         import uno
 
         from ooodev.draw import Draw, DrawDoc, ZoomKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.draw.direct.text.animation import ScrollBackForth
         from ooodev.format.draw.direct.text.animation import TextAnimationDirection
 

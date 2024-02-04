@@ -7,7 +7,7 @@ from ooodev.office.draw import Draw
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.images_lo import ImagesLo
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.type_var import PathOrStr
 
 

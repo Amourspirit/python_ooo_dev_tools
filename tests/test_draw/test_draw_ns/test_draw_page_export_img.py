@@ -207,7 +207,7 @@ def test_impress_export_page_img(loader, copy_fix_presentation, tmp_path_fn):
 
 def test_impress_new_context_export_page_img(loader, copy_fix_presentation, tmp_path_fn):
     test_doc = copy_fix_presentation("algs.odp")
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
 
     lo_inst = Lo.create_lo_instance(Lo.options)
 
@@ -227,7 +227,7 @@ def test_impress_new_context_export_page_img(loader, copy_fix_presentation, tmp_
 
 def test_new_context_slide_save_png(loader, tmp_path_fn) -> None:
     from ooodev.utils.images_lo import ImagesLo
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
 
     lo_inst = Lo.create_lo_instance(Lo.options)
 

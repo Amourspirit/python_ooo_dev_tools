@@ -10,7 +10,7 @@ from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterSt
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.page.page.layout_settings import LayoutSettings as InnerLayoutSettings
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ..page_style_base_multi import PageStyleBaseMulti
 

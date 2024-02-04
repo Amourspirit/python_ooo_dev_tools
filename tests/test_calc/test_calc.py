@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
 
 def test_create_doc_events_no_loader(loader):
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
@@ -69,7 +69,7 @@ def test_create_doc_events_no_loader(loader):
 
 
 def test_create_doc_events(loader):
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
@@ -130,7 +130,7 @@ def test_create_doc_events(loader):
 def test_get_sheet(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
@@ -239,7 +239,7 @@ def test_get_sheet(loader) -> None:
 
 
 def test_insert_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
@@ -282,7 +282,7 @@ def test_insert_sheet(loader) -> None:
 
 
 def test_remove_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
@@ -400,7 +400,7 @@ def test_remove_sheet(loader) -> None:
 
 
 def test_move_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
@@ -467,7 +467,7 @@ def test_move_sheet(loader) -> None:
 
 
 def test_set_sheet_name(loader):
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -492,7 +492,7 @@ def test_set_sheet_name(loader):
 
 # region    View Methods
 def test_get_controller(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.info import Info
 
@@ -506,7 +506,7 @@ def test_get_controller(loader) -> None:
 
 
 def test_zoom_value(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 
@@ -521,7 +521,7 @@ def test_zoom_value(loader) -> None:
 
 
 def test_zoom(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 
@@ -537,7 +537,7 @@ def test_zoom(loader) -> None:
 
 
 def test_get_view(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -553,7 +553,7 @@ def test_get_view(loader) -> None:
 
 
 def test_get_set_active_sheet(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
@@ -605,7 +605,7 @@ def test_get_set_active_sheet(loader) -> None:
 
 
 def test_freeze(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 
@@ -621,7 +621,7 @@ def test_freeze(loader) -> None:
 
 
 def test_freeze_cols(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 
@@ -636,7 +636,7 @@ def test_freeze_cols(loader) -> None:
 
 
 def test_freeze_rows(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 
@@ -651,7 +651,7 @@ def test_freeze_rows(loader) -> None:
 
 
 def test_goto_cell(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
     from ooodev.events.args.dispatch_args import DispatchArgs
@@ -659,7 +659,7 @@ def test_goto_cell(loader) -> None:
     from ooodev.events.lo_named_event import LoNamedEvent
     from ooodev.events.event_singleton import _Events
 
-    # from ooodev.utils.inst.lo.lo_inst import LoInst
+    # from ooodev.loader.inst.lo_inst import LoInst
 
     on_firing = False
     on_fired = False
@@ -741,7 +741,7 @@ def test_goto_cell(loader) -> None:
 
 
 def test_split_window(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 
@@ -756,7 +756,7 @@ def test_split_window(loader) -> None:
 
 
 def test_get_selected_addr(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from com.sun.star.view import XSelectionSupplier
     from com.sun.star.frame import XModel
@@ -817,7 +817,7 @@ def test_get_selected_addr(loader) -> None:
 
 
 def test_get_selected_cell_addr(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.exceptions.ex import CellError
     from ooodev.office.calc import Calc
     from com.sun.star.view import XSelectionSupplier
@@ -851,7 +851,7 @@ def test_get_selected_cell_addr(loader) -> None:
 
 # region    view data methods
 def test_get_view_panes(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -866,7 +866,7 @@ def test_get_view_panes(loader) -> None:
 
 
 def test_get_set_view_data(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -881,7 +881,7 @@ def test_get_set_view_data(loader) -> None:
 
 
 def test_get_set_view_states(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -899,7 +899,7 @@ def test_get_set_view_states(loader) -> None:
 
 # region    insert/remove/clear rows, columns, cells
 def test_insert_row(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
@@ -947,7 +947,7 @@ def test_insert_row(loader) -> None:
 
 
 def test_delete_row(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
@@ -996,7 +996,7 @@ def test_delete_row(loader) -> None:
 
 
 def test_insert_column(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
@@ -1047,7 +1047,7 @@ def test_insert_column(loader) -> None:
 
 
 def test_insert_cells_down(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
@@ -1099,7 +1099,7 @@ def test_insert_cells_down(loader) -> None:
 
 
 def test_insert_cells_down_rng(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc(loader)
@@ -1117,7 +1117,7 @@ def test_insert_cells_down_rng(loader) -> None:
 
 
 def test_insert_cells_down_positional(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     doc = Calc.create_doc(loader)
@@ -1134,7 +1134,7 @@ def test_insert_cells_down_positional(loader) -> None:
 
 
 def test_insert_cells_right(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
@@ -1187,7 +1187,7 @@ def test_insert_cells_right(loader) -> None:
 
 
 def test_delete_cells_down(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
@@ -1244,7 +1244,7 @@ def test_delete_cells_down(loader) -> None:
 
 
 def test_delete_cells_down_rng(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1266,7 +1266,7 @@ def test_delete_cells_down_rng(loader) -> None:
 
 
 def test_delete_cells_down_rng_postional(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1287,7 +1287,7 @@ def test_delete_cells_down_rng_postional(loader) -> None:
 
 
 def test_delete_cells_left(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1314,7 +1314,7 @@ def test_delete_cells_left(loader) -> None:
 
 
 def test_clear_cells(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc, CellFlagsEnum
     from ooodev.utils.gui import GUI
     from ooodev.events.lo_events import Events, is_meth_event
@@ -1549,7 +1549,7 @@ def test_clear_cells(loader) -> None:
 
 # region    set/get values in cells
 def test_set_val(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1601,7 +1601,7 @@ def test_set_val_style(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.utils.color import StandardColor
     from ooodev.utils.gui import GUI
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.units import UnitMM100
 
     # from ooodev.utils.gui import GUI
@@ -1638,7 +1638,7 @@ def test_set_val_style(loader) -> None:
 
 
 def test_get_val(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1690,7 +1690,7 @@ def test_get_val(loader) -> None:
 
 
 def test_get_num(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1762,7 +1762,7 @@ def test_get_num(loader) -> None:
 
 
 def test_get_str(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1840,7 +1840,7 @@ def test_get_str(loader) -> None:
 def test_set_array_by_range(loader) -> None:
     # set_array(values: Sequence[Sequence[object]], sheet: XSpreadsheet, name: str)
     # test when name is a range
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.table_helper import TableHelper
 
@@ -1887,7 +1887,7 @@ def test_set_array_by_cell(loader) -> None:
             return 1.0
         return prev_val + 1.0
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -1935,7 +1935,7 @@ def test_set_array(loader) -> None:
             return 1.0
         return prev_val + 1.0
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2018,7 +2018,7 @@ def test_set_array_style(loader) -> None:
     from ooodev.utils.color import StandardColor
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.gui import GUI
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
 
     def arr_cb(row: int, col: int, prev_val) -> float:
         if row == 0 and col == 0:
@@ -2069,7 +2069,7 @@ def test_get_array(loader) -> None:
             return 1.0
         return prev_val + 1.0
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2156,7 +2156,7 @@ def test_get_float_array(loader) -> None:
             return "1"
         return str(int(prev_val) + 1)
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2181,7 +2181,7 @@ def test_get_float_array(loader) -> None:
 
 # region    set/get rows and columns
 def test_get_set_col(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2246,7 +2246,7 @@ def test_get_set_col(loader) -> None:
 
 
 def test_get_set_row(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2309,7 +2309,7 @@ def test_get_set_row(loader) -> None:
 
 # region    special cell types
 def test_set_date(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2331,7 +2331,7 @@ def test_set_date(loader) -> None:
 
 
 def test_annotation(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2366,7 +2366,7 @@ def test_annotation(loader) -> None:
 
 # region    get XCell and XCellRange methods
 def test_get_cell(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.utils.gui import GUI
@@ -2443,7 +2443,7 @@ def test_get_cell(loader) -> None:
 
 
 def test_is_single_cell_range(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2460,7 +2460,7 @@ def test_is_single_cell_range(loader) -> None:
 
 
 def test_get_cell_range(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2547,7 +2547,7 @@ def test_get_cell_range(loader) -> None:
 
 
 def test_find_used_range(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2571,7 +2571,7 @@ def test_find_used_range(loader) -> None:
 
 
 def test_get_col_range(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2593,7 +2593,7 @@ def test_get_col_range(loader) -> None:
 
 
 def test_get_row_range(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2657,7 +2657,7 @@ def test_get_cell_size(rng: str, width: int, height: int) -> None:
 
 
 def test_get_cell_pos(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2724,7 +2724,7 @@ def test_row_string_to_number() -> None:
 
 # region    get cell and cell range addresses
 def test_get_cell_address(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.data_type.cell_obj import CellObj
 
@@ -2787,7 +2787,7 @@ def test_get_cell_address(loader) -> None:
 
 
 def test_get_address(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2854,7 +2854,7 @@ def test_get_address(loader) -> None:
 
 
 def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2895,7 +2895,7 @@ def test_print_cell_address(capsys: pytest.CaptureFixture, loader) -> None:
 
 
 def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2942,7 +2942,7 @@ def test_print_address(capsys: pytest.CaptureFixture, loader) -> None:
 
 
 def test_print_addresses(capsys: pytest.CaptureFixture, loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -2988,7 +2988,7 @@ Range: Sheet1.B26:J45
 
 
 def test_get_cell_series(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from com.sun.star.sheet import XCellSeries
 
@@ -3004,7 +3004,7 @@ def test_get_cell_series(loader) -> None:
 
 
 def test_is_equal_addresses(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -3066,7 +3066,7 @@ def test_is_equal_addresses(loader) -> None:
 
 # region    convert cell range address to string
 def test_get_range_str(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -3136,7 +3136,7 @@ def test_get_range_str(loader) -> None:
 
 
 def test_get_cell_str(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -3183,7 +3183,7 @@ def test_get_cell_str(loader) -> None:
 
 # region    search
 def test_find_all(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from com.sun.star.util import XSearchable
 
@@ -3216,7 +3216,7 @@ def test_find_all(loader) -> None:
 
 # region    cell decoration
 def test_create_cell_style(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     assert loader is not None
@@ -3227,7 +3227,7 @@ def test_create_cell_style(loader) -> None:
         assert style is not None
         assert style.getName() == "Fancy"
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.calc import Calc
 
         assert loader is not None
@@ -3279,7 +3279,7 @@ def test_create_cell_style(loader) -> None:
 
 
 def test_add_remove_border(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.props import Props
     from ooodev.utils import color
@@ -3564,7 +3564,7 @@ def test_add_remove_border(loader) -> None:
 
 
 def test_highlight_range(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
     from ooodev.utils.color import CommonColor
@@ -3694,7 +3694,7 @@ def test_highlight_range(loader) -> None:
 
 
 def test_set_col_width(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.props import Props
     from ooodev.office.calc import Calc
 
@@ -3714,7 +3714,7 @@ def test_set_col_width(loader) -> None:
 
 
 def test_set_row_height(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.utils.props import Props
     from ooodev.office.calc import Calc
 
@@ -3746,7 +3746,7 @@ def test_set_row_height(loader) -> None:
 
 # region    scenarios
 def test_scenarios(loader) -> None:
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
     from ooodev.utils.gui import GUI
 

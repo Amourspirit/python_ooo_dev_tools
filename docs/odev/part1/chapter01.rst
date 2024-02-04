@@ -662,7 +662,7 @@ In |odev| there is a remote bridge and ``Lo.XSCRIPTCONTEXT`` which implements XS
 
     .. code-tab:: python
         
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.write import Write
 
         loader = Lo.load_office()
@@ -687,7 +687,7 @@ However, if the script is part of a loaded document, then the call to ``loadComp
 
     .. code-tab:: python
         
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.write import Write
 
         _ = Lo.load_office()
@@ -711,7 +711,7 @@ This reduces the code:
 
     .. code-tab:: python
         
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         _ = Lo.load_office()
         doc = Lo.ThisComponent
@@ -733,7 +733,7 @@ or even:
 
     .. code-tab:: python
         
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         doc = Lo.ThisComponent
 
     .. only:: html

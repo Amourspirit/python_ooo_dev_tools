@@ -18,7 +18,7 @@ except ImportError:
     Chart2 = None
 
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.format.chart2.direct.title.area import (
     Color as ChartTitleBgColor,
     Gradient as ChartTitleBgGradient,

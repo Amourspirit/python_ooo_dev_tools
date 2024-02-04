@@ -29,7 +29,7 @@ General function used to run these examples.
         from ooodev.format.calc.style import Cell as CellStyle, StyleCellKind
         from ooodev.office.calc import Calc
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):

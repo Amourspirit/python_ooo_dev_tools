@@ -44,10 +44,10 @@ from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from ooo.dyn.beans.the_introspection import theIntrospection
 from ooo.dyn.lang.locale import Locale  # struct
 
-from ooodev.utils.inst.lo.service import Service as LoService
+from ooodev.loader.inst.service import Service as LoService
 from . import date_time_util as mDate
 from . import file_io as mFileIO
-from . import lo as mLo
+from ooodev.loader import lo as mLo
 from . import props as mProps
 from ..units import unit_convert as mConvert
 from ..events.args.event_args import EventArgs
@@ -241,38 +241,31 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str: ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str:
-        ...
+    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str: ...
 
     @classmethod
     def get_reg_item_prop(
@@ -901,22 +894,22 @@ class Info(metaclass=StaticProperty):
         Returns:
             Lo.Service: Service type
         """
-        if cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.WRITER):
+        if cls.is_doc_type(obj=doc, doc_type=LoService.WRITER):
             mLo.Lo.print("A Writer document")
             return mLo.Lo.Service.WRITER
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.IMPRESS):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.IMPRESS):
             mLo.Lo.print("A Impress document")
             return mLo.Lo.Service.IMPRESS
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.DRAW):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.DRAW):
             mLo.Lo.print("A Draw document")
             return mLo.Lo.Service.DRAW
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.CALC):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.CALC):
             mLo.Lo.print("A Calc document")
             return mLo.Lo.Service.CALC
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.BASE):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.BASE):
             mLo.Lo.print("A Base document")
             return mLo.Lo.Service.BASE
-        elif cls.is_doc_type(obj=doc, doc_type=mLo.Lo.Service.MATH):
+        elif cls.is_doc_type(obj=doc, doc_type=LoService.MATH):
             mLo.Lo.print("A Math document")
             return mLo.Lo.Service.MATH
         else:
@@ -935,7 +928,7 @@ class Info(metaclass=StaticProperty):
             doc_type (Service, str): Doc type or service name such as ``com.sun.star.text.TextDocument``.
 
         Returns:
-            bool: True if obj matches; Otherwise, False
+            bool: ``True`` if obj matches; Otherwise, ``False``
         """
         with contextlib.suppress(Exception):
             si = mLo.Lo.qi(XServiceInfo, obj)
@@ -2400,23 +2393,19 @@ class Info(metaclass=StaticProperty):
     # region is_type_enum_multi()
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool: ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool: ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool: ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool:
-        ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool: ...
 
     @staticmethod
     def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum | str, arg_name: str = "") -> bool:

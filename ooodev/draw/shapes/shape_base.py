@@ -12,7 +12,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.units import Angle
 from ooodev.units import UnitMM
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
@@ -44,7 +44,7 @@ if TYPE_CHECKING:
     from ooodev.utils import color as mColor
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.size import Size
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.utils.type_var import PathOrStr
 

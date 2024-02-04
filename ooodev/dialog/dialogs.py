@@ -37,7 +37,7 @@ from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as Horizontal
 from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
 from ..exceptions import ex as mEx
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import info as mInfo
 from ..utils.date_time_util import DateUtil
 from ..utils.kind.align_kind import AlignKind as AlignKind

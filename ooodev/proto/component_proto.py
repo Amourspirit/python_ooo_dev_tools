@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Union
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader.inst.lo_inst import LoInst
 
 if TYPE_CHECKING:
     try:

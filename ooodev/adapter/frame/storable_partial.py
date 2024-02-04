@@ -5,7 +5,7 @@ import uno
 from com.sun.star.frame import XStorable
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.type_var import UnoInterface
 
 if TYPE_CHECKING:

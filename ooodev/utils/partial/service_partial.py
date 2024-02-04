@@ -3,8 +3,8 @@ from typing import Any, List
 import contextlib
 import uno
 from com.sun.star.lang import XServiceInfo
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.loader import lo as mLo
 
 
 class ServicePartial:

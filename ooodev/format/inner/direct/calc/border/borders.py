@@ -3,6 +3,7 @@ Module for managing table borders (cells and ranges).
 
 .. versionadded:: 0.9.0
 """
+
 # region imports
 from __future__ import annotations
 from typing import Any, Type, overload, cast, Tuple, TypeVar
@@ -10,7 +11,7 @@ from typing import Any, Type, overload, cast, Tuple, TypeVar
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.units import UnitT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
@@ -221,13 +222,11 @@ class Borders(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: Any) -> _TBorders:
-        ...
+    def from_obj(cls: Type[_TBorders], obj: Any) -> _TBorders: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:
-        ...
+    def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders: ...
 
     @classmethod
     def from_obj(cls: Type[_TBorders], obj: Any, **kwargs) -> _TBorders:

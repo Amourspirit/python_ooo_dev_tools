@@ -9,7 +9,7 @@ from ooo.dyn.awt.pos_size import PosSize
 from ooodev.dialog import Dialogs, BorderKind, OrientationKind
 from ooodev.events.args.event_args import EventArgs
 from ooodev.calc import CalcDoc
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.gui import GUI
 from ooodev.utils.table_helper import TableHelper
 

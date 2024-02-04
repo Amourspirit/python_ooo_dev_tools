@@ -7,13 +7,14 @@ Module for handling character highlight.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, Type, overload, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -99,13 +100,11 @@ class Highlight(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THighlight], obj: Any) -> _THighlight:
-        ...
+    def from_obj(cls: Type[_THighlight], obj: Any) -> _THighlight: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THighlight], obj: Any, **kwargs) -> _THighlight:
-        ...
+    def from_obj(cls: Type[_THighlight], obj: Any, **kwargs) -> _THighlight: ...
 
     @classmethod
     def from_obj(cls: Type[_THighlight], obj: Any, **kwargs) -> _THighlight:

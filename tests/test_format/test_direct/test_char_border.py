@@ -9,7 +9,7 @@ import uno
 from ooodev.format.writer.direct.char.borders import Borders, BorderLineKind, Side, LineSize
 from ooodev.format import CommonColor
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.format.writer.direct.char.font import (
     Font,
     FontLine,

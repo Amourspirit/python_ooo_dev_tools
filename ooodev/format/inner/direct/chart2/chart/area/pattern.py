@@ -13,7 +13,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_pattern as mPattern
 from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.meta.deleted_attrib import DeletedAttrib
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 
 
 class Pattern(FillPattern):
@@ -82,12 +82,10 @@ class Pattern(FillPattern):
 
     # region copy()
     @overload
-    def copy(self) -> Pattern:
-        ...
+    def copy(self) -> Pattern: ...
 
     @overload
-    def copy(self, **kwargs) -> Pattern:
-        ...
+    def copy(self, **kwargs) -> Pattern: ...
 
     def copy(self, **kwargs) -> Pattern:
         """Gets a copy of instance as a new instance"""
@@ -102,13 +100,11 @@ class Pattern(FillPattern):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls, chart_doc: XChartDocument, preset: PresetPatternKind) -> Pattern:
-        ...
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetPatternKind) -> Pattern: ...
 
     @overload
     @classmethod
-    def from_preset(cls, chart_doc: XChartDocument, preset: PresetPatternKind, **kwargs) -> Pattern:
-        ...
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetPatternKind, **kwargs) -> Pattern: ...
 
     @classmethod
     def from_preset(cls, chart_doc: XChartDocument, preset: PresetPatternKind, **kwargs) -> Pattern:
@@ -135,13 +131,11 @@ class Pattern(FillPattern):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Pattern:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> Pattern: ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Pattern:
-        ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Pattern: ...
 
     @classmethod
     def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> Pattern:

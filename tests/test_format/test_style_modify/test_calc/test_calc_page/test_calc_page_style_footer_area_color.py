@@ -7,7 +7,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.calc.modify.page.footer.area import Color, CalcStylePageKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.utils.color import StandardColor
 from ooodev.office.calc import Calc
 

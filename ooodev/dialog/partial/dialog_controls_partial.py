@@ -16,7 +16,7 @@ from ooo.dyn.awt.push_button_type import PushButtonType
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
 from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.kind.border_kind import BorderKind
@@ -54,7 +54,7 @@ from ..dl_control import CtlTree
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog  # service
     from ooodev.utils.type_var import PathOrStr
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
     # Avoid circular import by creating a property in class instance for Dialogs
     from ooodev.dialog import Dialogs

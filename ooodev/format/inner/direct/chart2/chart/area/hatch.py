@@ -16,7 +16,7 @@ from ooodev.format.inner.style_base import StyleMulti
 from ooodev.units import UnitMM
 from ooodev.units import UnitT
 from ooodev.units.unit_convert import UnitConvert
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.color import Color
 from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
@@ -134,12 +134,10 @@ class Hatch(StyleMulti):
     # region Overridden Methods
     # region copy()
     @overload
-    def copy(self) -> Hatch:
-        ...
+    def copy(self) -> Hatch: ...
 
     @overload
-    def copy(self, **kwargs) -> Hatch:
-        ...
+    def copy(self, **kwargs) -> Hatch: ...
 
     def copy(self, **kwargs) -> Hatch:
         """

@@ -22,7 +22,7 @@ Setup
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.draw.direct.text import TextColumns
         from ooodev.format.draw.direct.text.text import TextAnchor, ShapeBasePointKind
         from ooodev.format.draw.direct.para.alignment import Alignment, ParagraphAdjust

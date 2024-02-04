@@ -10,7 +10,7 @@ import uno
 # from ooodev.format.inner.direct.write.para.outline_list import OutlineList, LevelKind, StyleListKind
 from ooodev.format.writer.direct.para.outline_list import Outline, LineNum, ListStyle, LevelKind, StyleListKind
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 

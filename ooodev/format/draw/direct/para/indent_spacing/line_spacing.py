@@ -3,6 +3,7 @@ Module for managing paragraph Line Spacing.
 
 .. versionadded:: 0.17.8
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
@@ -15,7 +16,7 @@ from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.units import UnitT
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 
 # endregion Import
@@ -138,13 +139,11 @@ class LineSpacing(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLineSpacing], obj: Any) -> _TLineSpacing:
-        ...
+    def from_obj(cls: Type[_TLineSpacing], obj: Any) -> _TLineSpacing: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLineSpacing], obj: Any, **kwargs) -> _TLineSpacing:
-        ...
+    def from_obj(cls: Type[_TLineSpacing], obj: Any, **kwargs) -> _TLineSpacing: ...
 
     @classmethod
     def from_obj(cls: Type[_TLineSpacing], obj: Any, **kwargs) -> _TLineSpacing:

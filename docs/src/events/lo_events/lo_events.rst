@@ -39,7 +39,7 @@ In the following example all |odev| internal print commands are canceled.
         import argparse
         from typing import Any, cast
 
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.office.write import Write
         from ooodev.utils.info import Info
         from ooodev.wrapper.break_context import BreakContext

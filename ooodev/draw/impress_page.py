@@ -6,8 +6,8 @@ from com.sun.star.drawing import XDrawPage
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
 from ooodev.proto.component_proto import ComponentT
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.lo_inst import LoInst
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
 from .draw_page import DrawPage
 
 

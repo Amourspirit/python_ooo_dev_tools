@@ -21,7 +21,7 @@ from ooodev.format.chart2.direct.axis.label import TextFlow as AxisTextFlow
 
 from ooodev.utils.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 
 
 def test_chart(loader, copy_fix_calc) -> None:

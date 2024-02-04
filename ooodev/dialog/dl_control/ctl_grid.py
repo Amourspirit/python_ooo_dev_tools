@@ -11,7 +11,7 @@ from com.sun.star.awt.grid import XMutableGridDataModel
 
 from ooodev.adapter.awt.grid.grid_selection_events import GridSelectionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.table_helper import TableHelper

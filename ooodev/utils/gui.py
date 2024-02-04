@@ -47,7 +47,7 @@ from ..dialog import input as mInput
 from ..exceptions import ex as mEx
 from ..utils import file_io as mFileIO
 from ..utils import info as mInfo
-from ..utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ..utils import props as mProps
 from ..utils import sys_info as m_sys_info
 from .data_type.window_info import WindowInfo as GuiWindowInfo
@@ -968,13 +968,11 @@ class GUI:
 
     @overload
     @classmethod
-    def get_window_handle(cls) -> int | None:
-        ...
+    def get_window_handle(cls) -> int | None: ...
 
     @overload
     @classmethod
-    def get_window_handle(cls, doc: XComponent) -> int | None:
-        ...
+    def get_window_handle(cls, doc: XComponent) -> int | None: ...
 
     @classmethod
     def get_window_handle(cls, doc: XComponent | None = None) -> int | None:
@@ -1092,18 +1090,15 @@ class GUI:
     # region ---------------- zooming ----------------------------------
     @overload
     @classmethod
-    def zoom(cls, view: ZoomKind) -> None:
-        ...
+    def zoom(cls, view: ZoomKind) -> None: ...
 
     @overload
     @classmethod
-    def zoom(cls, view: ZoomKind, value: int) -> None:
-        ...
+    def zoom(cls, view: ZoomKind, value: int) -> None: ...
 
     @overload
     @classmethod
-    def zoom(cls, *, value: int = 0) -> None:
-        ...
+    def zoom(cls, *, value: int = 0) -> None: ...
 
     @classmethod
     def zoom(cls, view: ZoomKind = ZoomKind.BY_VALUE, value: int = 0) -> None:

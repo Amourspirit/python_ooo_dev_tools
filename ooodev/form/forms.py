@@ -39,7 +39,7 @@ from ooodev.proto.style_obj import StyleT
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils import gui as mGui
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
@@ -99,13 +99,11 @@ class Forms:
     # region        get_forms()
     @overload
     @classmethod
-    def get_forms(cls, obj: XComponent) -> XNameContainer:
-        ...
+    def get_forms(cls, obj: XComponent) -> XNameContainer: ...
 
     @overload
     @classmethod
-    def get_forms(cls, obj: XDrawPage) -> XNameContainer:
-        ...
+    def get_forms(cls, obj: XDrawPage) -> XNameContainer: ...
 
     @classmethod
     def get_forms(cls, obj: XComponent | XDrawPage) -> XNameContainer:
@@ -167,18 +165,15 @@ class Forms:
     # region        get_form()
     @overload
     @classmethod
-    def get_form(cls, obj: XComponent) -> XNameContainer:
-        ...
+    def get_form(cls, obj: XComponent) -> XNameContainer: ...
 
     @overload
     @classmethod
-    def get_form(cls, obj: XComponent, form_name: str) -> XForm:
-        ...
+    def get_form(cls, obj: XComponent, form_name: str) -> XForm: ...
 
     @overload
     @classmethod
-    def get_form(cls, obj: XDrawPage) -> XNameContainer:
-        ...
+    def get_form(cls, obj: XDrawPage) -> XNameContainer: ...
 
     @classmethod
     def get_form(cls, obj: XComponent | XDrawPage, form_name: str = "") -> XNameContainer | XForm:
@@ -1196,8 +1191,7 @@ class Forms:
     @classmethod
     def add_labelled_control(
         cls, doc: XComponent, *, label: str, comp_kind: FormComponentKind | str, y: int
-    ) -> XPropertySet:
-        ...
+    ) -> XPropertySet: ...
 
     @overload
     @classmethod
@@ -1210,8 +1204,7 @@ class Forms:
         y: int | UnitT,
         lbl_styles: Iterable[StyleT] = ...,
         ctl_styles: Iterable[StyleT] = ...,
-    ) -> XPropertySet:
-        ...
+    ) -> XPropertySet: ...
 
     @overload
     @classmethod
@@ -1224,8 +1217,7 @@ class Forms:
         x: int | UnitT,
         y: int | UnitT,
         height: int | UnitT,
-    ) -> XPropertySet:
-        ...
+    ) -> XPropertySet: ...
 
     @classmethod
     def add_labelled_control(
@@ -1742,7 +1734,7 @@ class Forms:
     ) -> FormCtlButton:
         """
         Inserts a button control.
-        
+
         |lo_unsafe|
 
         By Default the button has tab stop and does focus on click.
@@ -1906,7 +1898,7 @@ class Forms:
     ) -> FormCtlComboBox:
         """
         Inserts a ComboBox control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2001,7 +1993,7 @@ class Forms:
     ) -> FormCtlCurrencyField:
         """
         Inserts a currency field control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2094,7 +2086,7 @@ class Forms:
     ) -> FormCtlDateField:
         """
         Inserts a Date field control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2179,7 +2171,7 @@ class Forms:
     ) -> FormCtlFile:
         """
         Inserts a file control.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2332,7 +2324,7 @@ class Forms:
     ) -> FormCtlGroupBox:
         """
         Inserts a Groupbox control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2467,7 +2459,7 @@ class Forms:
     ) -> FormCtlHidden:
         """
         Inserts a Hidden control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2533,7 +2525,7 @@ class Forms:
     ) -> FormCtlImageButton:
         """
         Inserts an Image Button control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2681,7 +2673,7 @@ class Forms:
     ) -> FormCtlListBox:
         """
         Inserts a ListBox control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2768,7 +2760,7 @@ class Forms:
     ) -> FormCtlNavigationToolBar:
         """
         Inserts a Navigation Toolbar control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2842,7 +2834,7 @@ class Forms:
     ) -> FormCtlNumericField:
         """
         Inserts a Numeric field control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -2932,7 +2924,7 @@ class Forms:
     ) -> FormCtlPatternField:
         """
         Inserts a Pattern field control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3017,7 +3009,7 @@ class Forms:
     ) -> FormCtlRadioButton:
         """
         Inserts a radio button control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3174,7 +3166,7 @@ class Forms:
     ) -> FormCtlScrollBar:
         """
         Inserts a Scrollbar control.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3253,7 +3245,7 @@ class Forms:
     ) -> FormCtlSpinButton:
         """
         Inserts a Spin Button control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3398,7 +3390,7 @@ class Forms:
     ) -> FormCtlTextField:
         """
         Inserts a Text field control.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3724,7 +3716,7 @@ class Forms:
     ) -> FormCtlDbCurrencyField:
         """
         Inserts a database currency field control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3798,7 +3790,7 @@ class Forms:
     ) -> FormCtlDbDateField:
         """
         Inserts a Database Date field control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3870,7 +3862,7 @@ class Forms:
     ) -> FormCtlDbFormattedField:
         """
         Inserts a Database currency field control into the form.
-        
+
         |lo_unsafe|
 
         Args:
@@ -3940,7 +3932,7 @@ class Forms:
     ) -> FormCtlDbListBox:
         """
         Inserts a Database ListBox control into the form.
-        
+
         |lo_unsafe|
 
         Args:

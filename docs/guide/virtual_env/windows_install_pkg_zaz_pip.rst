@@ -124,7 +124,7 @@ Add each line to the APSO console, one line at a time followed by the ``Enter`` 
     APSO python console [LibreOffice]
     3.8.16 (default, Apr 28 2023, 09:24:49) [MSC v.1929 32 bit (Intel)]
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> from ooodev.utils.lo import Lo
+    >>> from ooodev.loader.lo import Lo
     >>> from ooodev.office.write import Write
     >>>
     >>> def say_hello():

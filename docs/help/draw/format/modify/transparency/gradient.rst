@@ -26,7 +26,7 @@ Setting the Font Effects
         from ooodev.format.draw.modify.transparency import GradientStyle, IntensityRange
         from ooodev.format.draw.modify.area.color import Color as AreaColor
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
 
         def main() -> int:

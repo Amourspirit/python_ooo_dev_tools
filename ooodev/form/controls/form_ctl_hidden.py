@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.form.component import HiddenControl as ControlModel  # service
     from com.sun.star.awt import UnoControl as ControlView  # service
-    from ooodev.utils.inst.lo.lo_inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class FormCtlHidden(FormCtlBase):

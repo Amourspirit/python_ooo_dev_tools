@@ -6,7 +6,7 @@ from com.sun.star.util import XModifyBroadcaster
 from ooodev.adapter.adapter_base import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from .modify_listener import ModifyListener
 
 if TYPE_CHECKING:

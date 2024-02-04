@@ -1,6 +1,6 @@
 .. code-block:: python
 
-    from ooodev.utils.lo import Lo
+    from ooodev.loader.lo import Lo
     from ooodev.conn.cache import Cache
     from ooodev.office.calc import Calc
 

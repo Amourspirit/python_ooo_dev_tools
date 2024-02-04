@@ -20,7 +20,7 @@ Setup
         from __future__ import annotations
         import uno
         from ooodev.draw import Draw, DrawDoc, ZoomKind
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.format.draw.direct.position_size.rotation import Rotation
         from ooodev.units import Angle100
 

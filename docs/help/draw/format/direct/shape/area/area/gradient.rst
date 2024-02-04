@@ -23,7 +23,7 @@ Setup
         from ooodev.format.draw.direct.area import PresetGradientKind
         from ooodev.office.draw import Draw
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
 
         def main() -> int:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 from com.sun.star.frame import XComponentLoader
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.events.event_singleton import _Events
 from ooodev.events.lo_named_event import LoNamedEvent
 from ooodev.events.args.event_args import EventArgs

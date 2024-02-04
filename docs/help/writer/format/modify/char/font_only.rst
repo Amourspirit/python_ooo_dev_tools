@@ -36,7 +36,7 @@ Setting the font name and size
         from ooodev.format.writer.modify.char.font import FontOnly, StyleCharKind
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):

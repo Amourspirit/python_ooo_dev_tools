@@ -23,7 +23,7 @@ from com.sun.star.gallery import XGalleryThemeProvider
 from com.sun.star.graphic import XGraphic
 
 from ooodev.utils import file_io as mFileIo
-from ooodev.utils import lo as mLo
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
 from ooodev.exceptions import ex as mEx
@@ -47,13 +47,11 @@ class Gallery(metaclass=StaticProperty):
     # region get_gallery()
     @overload
     @staticmethod
-    def get_gallery(name: GalleryKind) -> XGalleryTheme:
-        ...
+    def get_gallery(name: GalleryKind) -> XGalleryTheme: ...
 
     @overload
     @staticmethod
-    def get_gallery(name: str) -> XGalleryTheme:
-        ...
+    def get_gallery(name: str) -> XGalleryTheme: ...
 
     @staticmethod
     def get_gallery(name: GalleryKind | str) -> XGalleryTheme:
@@ -136,47 +134,41 @@ class Gallery(metaclass=StaticProperty):
     # region find_gallery_item()
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: str, name: str) -> XGalleryItem:
-        ...
+    def find_gallery_item(cls, gallery_name: str, name: str) -> XGalleryItem: ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: GalleryKind, name: str) -> XGalleryItem:
-        ...
+    def find_gallery_item(cls, gallery_name: GalleryKind, name: str) -> XGalleryItem: ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> XGalleryItem:
-        ...
+    def find_gallery_item(cls, gallery_name: str, name: str, search_match: SearchMatchKind) -> XGalleryItem: ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind) -> XGalleryItem:
-        ...
+    def find_gallery_item(
+        cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind
+    ) -> XGalleryItem: ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> XGalleryItem:
-        ...
+    def find_gallery_item(cls, gallery_name: str, name: str, *, search_kind: SearchByKind) -> XGalleryItem: ...
 
     @overload
     @classmethod
-    def find_gallery_item(cls, gallery_name: GalleryKind, name: str, *, search_kind: SearchByKind) -> XGalleryItem:
-        ...
+    def find_gallery_item(cls, gallery_name: GalleryKind, name: str, *, search_kind: SearchByKind) -> XGalleryItem: ...
 
     @overload
     @classmethod
     def find_gallery_item(
         cls, gallery_name: str, name: str, search_match: SearchMatchKind, search_kind: SearchByKind
-    ) -> XGalleryItem:
-        ...
+    ) -> XGalleryItem: ...
 
     @overload
     @classmethod
     def find_gallery_item(
         cls, gallery_name: GalleryKind, name: str, search_match: SearchMatchKind, search_kind: SearchByKind
-    ) -> XGalleryItem:
-        ...
+    ) -> XGalleryItem: ...
 
     @classmethod
     def find_gallery_item(
@@ -255,23 +247,19 @@ class Gallery(metaclass=StaticProperty):
     # region find_gallery_graphic()
     @overload
     @classmethod
-    def find_gallery_graphic(cls, name: str) -> XGraphic:
-        ...
+    def find_gallery_graphic(cls, name: str) -> XGraphic: ...
 
     @overload
     @classmethod
-    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind) -> XGraphic:
-        ...
+    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind) -> XGraphic: ...
 
     @overload
     @classmethod
-    def find_gallery_graphic(cls, name: str, *, search_kind: SearchByKind) -> XGraphic:
-        ...
+    def find_gallery_graphic(cls, name: str, *, search_kind: SearchByKind) -> XGraphic: ...
 
     @overload
     @classmethod
-    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind, search_kind: SearchByKind) -> XGraphic:
-        ...
+    def find_gallery_graphic(cls, name: str, search_match: SearchMatchKind, search_kind: SearchByKind) -> XGraphic: ...
 
     @classmethod
     def find_gallery_graphic(

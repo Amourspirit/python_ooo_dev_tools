@@ -59,7 +59,7 @@ The |stles_info_py|_ example prints out the style family names and the style nam
         from ooodev.office.calc import Calc
         from ooodev.utils.file_io import FileIO
         from ooodev.utils.info import Info
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.utils.props import Props
         from ooodev.utils.type_var import PathOrStr
 

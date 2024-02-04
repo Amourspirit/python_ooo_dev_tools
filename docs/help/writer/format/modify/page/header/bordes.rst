@@ -43,7 +43,7 @@ Note that in order to apply a style, the document header must be turned on as se
         from ooodev.format import Styler
         from ooodev.office.write import Write
         from ooodev.utils.gui import GUI
-        from ooodev.utils.lo import Lo
+        from ooodev.loader.lo import Lo
         from ooodev.utils.color import StandardColor
 
         def main() -> int:

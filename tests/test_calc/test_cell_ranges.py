@@ -4,7 +4,7 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 from ooodev.utils.gui import GUI
-from ooodev.utils.lo import Lo
+from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc, GeneralFunction
 
 from com.sun.star.sheet import CellFlags  # const

@@ -9,16 +9,16 @@ from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
+from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils import info as mInfo
-from ooodev.utils import lo as mLo
-from ooodev.utils.inst.lo.doc_type import DocType
-from ooodev.utils.inst.lo.lo_inst import LoInst
-from ooodev.utils.inst.lo.service import Service as LoService
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -31,6 +31,7 @@ from .partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
+    from ooodev.loader.inst import LoInst
 
 
 class DrawDoc(
@@ -160,6 +161,22 @@ class DrawDoc(
     # region DocIoPartial Overrides
     # region from_current_doc()
     @classmethod
+    def _on_from_current_doc_loading(cls, event_args: CancelEventArgs) -> None:
+        """
+        Event called while from_current_doc loading.
+
+        Args:
+            event_args (EventArgs): Event data.
+
+        Returns:
+            None:
+
+        Note:
+            event_args.event_data is a dictionary and contains the document in a key named 'doc'.
+        """
+        event_args.event_data["doc_type"] = cls.DOC_TYPE
+
+    @classmethod
     def _on_from_current_doc_loaded(cls, event_args: EventArgs) -> None:
         """
         Event called after from_current_doc is called.
@@ -174,7 +191,7 @@ class DrawDoc(
             event_args.event_data is a dictionary and contains the document in a key named 'doc'.
         """
         doc = cast(DrawDoc, event_args.event_data["doc"])
-        if doc.DOC_TYPE != DocType.DRAW:
+        if doc.DOC_TYPE != cls.DOC_TYPE:
             raise mEx.NotSupportedDocumentError(f"Document '{type(doc).__name__}' is not a Draw document.")
 
     # endregion from_current_doc()
