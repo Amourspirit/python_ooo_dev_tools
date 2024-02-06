@@ -30,6 +30,8 @@ if TYPE_CHECKING:
     from ooodev.units import UnitT
     from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
     from .calc_doc import CalcDoc
+    from .calc_charts import CalcCharts
+    from .spreadsheet_draw_page import SpreadsheetDrawPage
 
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
 from ooodev.events.lo_events import observe_events
@@ -45,7 +47,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .spreadsheet_draw_page import SpreadsheetDrawPage
+
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
@@ -84,6 +86,7 @@ class CalcSheet(
         StylePartial.__init__(self, component=sheet)
         mSheetCellPartial.SheetCellPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._draw_page = None
+        self._charts = None
 
     # region get_address()
     @overload
@@ -3690,9 +3693,25 @@ class CalcSheet(
             SpreadsheetDrawPage: Draw Page
         """
         if self._draw_page is None:
+            from .spreadsheet_draw_page import SpreadsheetDrawPage
+
             supp = self.qi(XDrawPageSupplier, True)
             draw_page = supp.getDrawPage()
             self._draw_page = SpreadsheetDrawPage(owner=self, component=draw_page, lo_inst=self.lo_inst)
         return self._draw_page  # type: ignore
+
+    @property
+    def charts(self) -> CalcCharts:
+        """
+        Gets charts.
+
+        Returns:
+            CalcCharts: Calc Charts
+        """
+        if self._charts is None:
+            from .calc_charts import CalcCharts
+
+            self._charts = CalcCharts(owner=self, charts=self.component.getCharts(), lo_inst=self.lo_inst)
+        return self._charts
 
     # endregion Properties

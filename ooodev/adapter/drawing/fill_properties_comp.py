@@ -2,13 +2,14 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 
+from .fill_properties_partial import FillPropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service
     from com.sun.star.lang import XComponent
 
 
-class FillPropertiesComp(ComponentBase):
+class FillPropertiesComp(ComponentBase, FillPropertiesPartial):
     """
     Class for managing FillProperties Component.
     """
@@ -23,11 +24,13 @@ class FillPropertiesComp(ComponentBase):
             component (XComponent): UNO component that implements ``com.sun.star.drawing.FillProperties`` service.
         """
         ComponentBase.__init__(self, component)
+        FillPropertiesPartial.__init__(self, component=component)  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.drawing.FillProperties",)
+        # validated by FillPropertiesPartial
+        return ()
 
     # endregion Overrides
     # region Properties

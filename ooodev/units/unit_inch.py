@@ -1,9 +1,13 @@
 from __future__ import annotations
 import contextlib
-from typing import TypeVar, Type
+from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from .unit_convert import UnitConvert, UnitLength
+
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 _TUnitInch = TypeVar(name="_TUnitInch", bound="UnitInch")
 
@@ -422,3 +426,23 @@ class UnitInch(BaseFloatValue):
         inst = super(UnitInch, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.IN))
         return inst
+
+    @classmethod
+    def from_unit_val(cls: Type[_TUnitInch], value: UnitT | float) -> _TUnitInch:
+        """
+        Get instance from ``UnitT`` or float value.
+
+        Args:
+            value (UnitT, float): ``UnitT`` or float value. If float then it is assumed to be in ``inch`` units.
+
+        Returns:
+            UnitInch:
+        """
+        try:
+            if hasattr(value, "get_value_inch"):
+                return cls.from_inch(value.get_value_inch())  # type: ignore
+
+            unit_100 = value.get_value_mm100()  # type: ignore
+            return cls.from_mm100(unit_100)
+        except AttributeError:
+            return cls.from_inch(float(value))  # type: ignore

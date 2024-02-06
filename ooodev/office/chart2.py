@@ -82,7 +82,6 @@ from ooo.dyn.lang.locale import Locale
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 
 if TYPE_CHECKING:
-    from ooo.lo.chart2.data_point_properties import DataPointProperties
     from com.sun.star.drawing import OLE2Shape
     from com.sun.star.chart2 import DataPointLabel
 # endregion Imports
@@ -2402,7 +2401,7 @@ class Chart2:
         print()
 
     @staticmethod
-    def get_chart_data(data_source: XDataSource, idx: int) -> Tuple[float]:
+    def get_chart_data(data_source: XDataSource, idx: int) -> Tuple[float, ...]:
         """
         Gets chart data
 

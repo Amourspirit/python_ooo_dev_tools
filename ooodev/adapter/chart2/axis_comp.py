@@ -4,13 +4,23 @@ from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImp
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
-
+from ooodev.adapter.drawing.line_properties_partial import LinePropertiesPartial
+from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
+from .axis_partial import AxisPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Axis  # service
 
 
-class AxisComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImplement, VetoableChangeImplement):
+class AxisComp(
+    ComponentBase,
+    LinePropertiesPartial,
+    CharacterPropertiesPartial,
+    AxisPartial,
+    PropertiesChangeImplement,
+    PropertyChangeImplement,
+    VetoableChangeImplement,
+):
     """
     Class for managing Chart2 Axis Component.
     """
@@ -25,6 +35,8 @@ class AxisComp(ComponentBase, PropertiesChangeImplement, PropertyChangeImplement
             component (Axis): UNO Chart2 Axis Component.
         """
         ComponentBase.__init__(self, component)
+        LinePropertiesPartial.__init__(self, component=component)
+        CharacterPropertiesPartial.__init__(self, component=component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

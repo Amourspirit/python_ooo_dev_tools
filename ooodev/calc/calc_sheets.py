@@ -180,14 +180,8 @@ class CalcSheets(
         Returns:
             CalcSheet: The element at the specified index.
         """
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("Index out of range")
-        if idx >= len(self):
-            raise IndexError(f"Index out of range: '{idx}'")
-
-        result = super().get_by_index(idx)
+        index = self._get_index(idx)
+        result = super().get_by_index(index)
         return mCalcSheet.CalcSheet(owner=self.calc_doc, sheet=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides

@@ -1,11 +1,13 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.container import XIndexAccess
 
-from ooodev.utils.type_var import UnoInterface
 from .element_access_partial import ElementAccessPartial
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import UnoInterface
 
 
 class IndexAccessPartial(ElementAccessPartial):

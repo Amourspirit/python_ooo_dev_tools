@@ -1,9 +1,12 @@
 from __future__ import annotations
 import contextlib
-from typing import TypeVar, Type
+from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
 from ooodev.utils.decorator import enforce
 from .unit_convert import UnitConvert, UnitLength
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 _TUnitInch1000 = TypeVar(name="_TUnitInch1000", bound="UnitInch1000")
 
@@ -370,3 +373,23 @@ class UnitInch1000:
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.IN1000)))
         return inst
+
+    @classmethod
+    def from_unit_val(cls: Type[_TUnitInch1000], value: UnitT | float) -> _TUnitInch1000:
+        """
+        Get instance from ``UnitT`` or float value.
+
+        Args:
+            value (UnitT, float): ``UnitT`` or float value. If float then it is assumed to be in ``inch1000`` units.
+
+        Returns:
+            UnitInch100:
+        """
+        try:
+            if hasattr(value, "get_value_inch1000"):
+                return cls.from_inch1000(value.get_value_inch1000())  # type: ignore
+
+            unit_100 = value.get_value_mm100()  # type: ignore
+            return cls.from_mm100(unit_100)
+        except AttributeError:
+            return cls.from_inch1000(round(value))  # type: ignore

@@ -1,10 +1,12 @@
 from __future__ import annotations
 import contextlib
-from typing import TypeVar, Type
+from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from .unit_convert import UnitConvert, UnitLength
-from ooodev.units import UnitT
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 _TUnitPT = TypeVar(name="_TUnitPT", bound="UnitPT")
 
@@ -423,3 +425,20 @@ class UnitPT(BaseFloatValue):
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.PT))
         return inst
+
+    @classmethod
+    def from_unit_val(cls: Type[_TUnitPT], value: UnitT | float) -> _TUnitPT:
+        """
+        Get instance from ``UnitT`` or float value.
+
+        Args:
+            value (UnitT, float): ``UnitT`` or float value. If float then it is assumed to be in ``pt`` units.
+
+        Returns:
+            UnitPT:
+        """
+        try:
+            unit_val = value.get_value_pt()  # type: ignore
+            return cls.from_pt(unit_val)
+        except AttributeError:
+            return cls.from_pt(float(value))  # type: ignore

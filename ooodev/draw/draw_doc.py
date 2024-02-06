@@ -6,7 +6,6 @@ from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.drawing.drawing_document_comp import DrawingDocumentComp
 from ooodev.adapter.frame.storable2_partial import Storable2Partial
 from ooodev.adapter.util.close_events import CloseEvents
-from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -39,7 +38,6 @@ class DrawDoc(
     LoInstPropsPartial,
     DrawingDocumentComp,
     DocumentEventEvents,
-    ModifyEvents,
     PrintJobEvents,
     CloseEvents,
     Storable2Partial,
