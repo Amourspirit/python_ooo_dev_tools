@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, overload, TYPE_CHECKING, Tuple
 from ooodev.loader import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.adapter.chart2.chart_document_comp import ChartDocumentComp
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -18,8 +19,11 @@ from ooodev.utils.color import Color
 if TYPE_CHECKING:
     from com.sun.star.chart2 import ChartDocument  # service
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.utils.kind.chart2_types import ChartTypeNameBase
     from .chart_title import ChartTitle
     from .chart_axis import ChartAxis
+    from .chart_data_series import ChartDataSeries
+    from .chart_diagram import ChartDiagram
 
 
 class ChartDoc(
@@ -62,6 +66,7 @@ class ChartDoc(
         VetoableChangeImplement.__init__(self, component=component, trigger_args=generic_args)  # type: ignore
         self._axis_x = None
         self._axis_y = None
+        self._first_diagram = None
 
     # region Lazy Listeners
 
@@ -122,6 +127,79 @@ class ChartDoc(
         """Sets the wall color."""
         mChart2.Chart2.set_background_colors(self.component, bg_color=Color(-1), wall_color=color)
 
+    # region get_data_series()
+
+    @overload
+    def get_data_series(self) -> Tuple[ChartDataSeries, ...]:
+        """
+        Gets data series for a chart of a given chart type.
+
+        Returns:
+            Tuple[XDataSeries, ...]: Data Series
+        """
+        ...
+
+    @overload
+    def get_data_series(self, chart_type: ChartTypeNameBase) -> Tuple[ChartDataSeries[ChartDoc], ...]:
+        """
+        Gets data series for a chart of a given chart type.
+
+        Args:
+            chart_type (ChartTypeNameBase): Chart Type.
+
+        Returns:
+            Tuple[XDataSeries, ...]: Data Series
+
+        """
+        ...
+
+    @overload
+    def get_data_series(self, chart_type: str) -> Tuple[ChartDataSeries[ChartDoc], ...]:
+        """
+        Gets data series for a chart of a given chart type.
+
+        Args:
+            chart_type (str): Chart Type.
+
+        Returns:
+            Tuple[XDataSeries, ...]: Data Series
+        """
+        ...
+
+    def get_data_series(self, chart_type: ChartTypeNameBase | str = "") -> Tuple[ChartDataSeries[ChartDoc], ...]:
+        """
+        Gets data series for a chart of a given chart type.
+
+        Args:
+            chart_type (ChartTypeNameBase, str, optional): Chart Type.
+
+        Raises:
+            ChartError: If any other error occurs.
+
+        Returns:
+            Tuple[XDataSeries, ...]: Data Series
+
+        See Also:
+            :py:meth:`ooodev.office.chart2.get_data_series`
+        """
+        from .chart_data_series import ChartDataSeries
+
+        data_series = mChart2.Chart2.get_data_series(chart_doc=self.component, chart_type=chart_type)
+        series = tuple(ChartDataSeries(owner=self, component=comp, lo_inst=self.lo_inst) for comp in data_series)
+        return series  # type: ignore
+
+    # endregion get_data_series()
+
+    @property
+    def first_diagram(self) -> ChartDiagram:
+        """Gets the first diagram."""
+        if self._first_diagram is None:
+            from .chart_diagram import ChartDiagram
+
+            diagram = self.get_first_diagram()
+            self._first_diagram = ChartDiagram(owner=self, component=diagram, lo_inst=self.lo_inst)
+        return self._first_diagram
+
     @property
     def axis_x(self) -> ChartAxis:
         """Gets the X Axis Component."""
@@ -138,7 +216,7 @@ class ChartDoc(
         if self._axis_y is None:
             from .chart_axis import ChartAxis
 
-            axis = mChart2.Chart2.get_x_axis(self.component)
+            axis = mChart2.Chart2.get_y_axis(self.component)
             self._axis_y = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
         return self._axis_y
 

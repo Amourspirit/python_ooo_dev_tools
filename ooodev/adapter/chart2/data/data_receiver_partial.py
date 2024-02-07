@@ -105,4 +105,4 @@ class DataReceiverPartial:
         """
         return self.__component.setArguments(args)
 
-    # endregion XChartType
+    # endregion XDataReceiver

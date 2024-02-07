@@ -57,7 +57,7 @@ class DataSeriesContainerPartial:
         """
         retrieve all data series
         """
-        ...
+        return self.__component.getDataSeries()
 
     def remove_data_series(self, data_series: XDataSeries) -> None:
         """

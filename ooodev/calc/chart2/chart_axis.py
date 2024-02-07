@@ -9,6 +9,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
 
 if TYPE_CHECKING:
     from .chart_doc import ChartDoc
@@ -17,7 +18,9 @@ if TYPE_CHECKING:
     from .chart_title import ChartTitle
 
 
-class ChartAxis(LoInstPropsPartial, AxisComp, PropPartial, QiPartial, ServicePartial, StylePartial):
+class ChartAxis(
+    LoInstPropsPartial, AxisComp, PropPartial, FontEffectsPartial, QiPartial, ServicePartial, StylePartial
+):
     """
     Class for managing Chart2 Chart Title Component.
     """
@@ -37,6 +40,7 @@ class ChartAxis(LoInstPropsPartial, AxisComp, PropPartial, QiPartial, ServicePar
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
+        FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
         self._owner = owner
 
     # region StylePartial Overrides

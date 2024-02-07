@@ -15,7 +15,6 @@ from .args.generic_args import GenericArgs as GenericArgs
 
 if TYPE_CHECKING:
     from ooodev.proto.event_observer import EventObserver
-    from ooodev.events.events_t import EventsT
 
 
 class EventArg(NamedTuple):

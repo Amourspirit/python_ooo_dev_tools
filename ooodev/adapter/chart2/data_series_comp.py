@@ -5,7 +5,10 @@ from ooodev.adapter.beans.property_change_implement import PropertyChangeImpleme
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
 
-from .data_series_container_partial import DataSeriesContainerPartial
+from .data_point_properties_partial import DataPointPropertiesPartial
+from .data_series_partial import DataSeriesPartial
+from .data.data_sink_partial import DataSinkPartial
+from .data.data_source_partial import DataSourcePartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import DataSeries  # service
@@ -13,7 +16,10 @@ if TYPE_CHECKING:
 
 class DataSeriesComp(
     ComponentBase,
-    DataSeriesContainerPartial,
+    DataPointPropertiesPartial,
+    DataSeriesPartial,
+    DataSinkPartial,
+    DataSourcePartial,
     PropertiesChangeImplement,
     PropertyChangeImplement,
     VetoableChangeImplement,
@@ -32,7 +38,10 @@ class DataSeriesComp(
             component (DataSeries): UNO Chart2 DataSeries Component.
         """
         ComponentBase.__init__(self, component)
-        DataSeriesContainerPartial.__init__(self, component=component, interface=None)  # type: ignore
+        DataPointPropertiesPartial.__init__(self, component=component)
+        DataSeriesPartial.__init__(self, component=component, interface=None)  # type: ignore
+        DataSinkPartial.__init__(self, component=component, interface=None)
+        DataSourcePartial.__init__(self, component=component, interface=None)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

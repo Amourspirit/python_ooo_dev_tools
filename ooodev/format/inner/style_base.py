@@ -35,6 +35,7 @@ from ooodev.units import UnitT, UnitMM100
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.style import CellStyle
+    from ooodev.proto.event_observer import EventObserver
 
 # endregion Imports
 
@@ -149,6 +150,21 @@ class StyleBase(metaclass=MetaStyle):
     # endregion Init
 
     # region Events
+
+    def add_event_observer(self, *args: EventObserver) -> None:
+        """
+        Adds observers that gets their ``trigger`` method called when this class ``trigger`` method is called.
+
+        Parameters:
+            args (EventObserver): One or more observers to add.
+
+        Returns:
+            None:
+
+        Note:
+            Observers are removed automatically when they are out of scope.
+        """
+        self._events.add_observer(*args)
 
     def add_event_listener(self, event_name: str, callback: EventCallback) -> None:
         """
@@ -405,7 +421,7 @@ class StyleBase(metaclass=MetaStyle):
         # get current keys in internal dictionary
         return tuple(self._get_properties().keys())
 
-    def apply(self, obj: Any, **kwargs) -> None:
+    def apply(self, obj: Any, **kwargs: Any) -> None:
         """
         Applies styles to object
 

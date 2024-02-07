@@ -10,15 +10,29 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
+from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.events.gbl_named_event import GblNamedEvent
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class ChartTitle(Generic[_T], LoInstPropsPartial, TitleComp, PropPartial, QiPartial, ServicePartial, StylePartial):
+class ChartTitle(
+    Generic[_T],
+    LoInstPropsPartial,
+    EventsPartial,
+    TitleComp,
+    PropPartial,
+    FontEffectsPartial,
+    QiPartial,
+    ServicePartial,
+    StylePartial,
+):
     """
     Class for managing Chart2 Chart Title Component.
     """
@@ -33,12 +47,37 @@ class ChartTitle(Generic[_T], LoInstPropsPartial, TitleComp, PropPartial, QiPart
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        EventsPartial.__init__(self)
         TitleComp.__init__(self, component=component)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
+        FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         self._owner = owner
+        self._init_events()
+
+    # region Events
+    def _init_events(self) -> None:
+        self._fn_on_apply_style_text = self._on_apply_style_text
+        self._fn_on_global_cancel = self._on_global_cancel
+        self.subscribe_event("before_style_font_effect", self._fn_on_apply_style_text)
+        self.subscribe_event(GblNamedEvent.EVENT_CANCELED, self._fn_on_global_cancel)
+
+    def _on_apply_style_text(self, source: Any, args: CancelEventArgs) -> None:
+        fo_strs = self.component.getText()
+        if fo_strs:
+            args.event_data["component"] = fo_strs[0]
+        else:
+            args.cancel = True
+
+    def _on_global_cancel(self, source: Any, args: CancelEventArgs) -> None:
+        initial_event = args.get("initial_event", "")
+
+        if initial_event == "before_style_font_effect":
+            args.handled = True
+
+    # endregion Events
 
     # region StylePartial Overrides
 
@@ -53,7 +92,7 @@ class ChartTitle(Generic[_T], LoInstPropsPartial, TitleComp, PropPartial, QiPart
         Returns:
             None:
         """
-        mChart2.Chart2._style_title(self.__component, styles)
+        mChart2.Chart2._style_title(self.component, styles)
 
     # endregion
 

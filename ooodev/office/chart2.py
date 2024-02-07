@@ -2098,10 +2098,9 @@ class Chart2:
 
         Args:
             chart_doc (XChartDocument): Chart Document
-            chart_type (ChartTypeNameBase | str, optional): Chart Type.
+            chart_type (ChartTypeNameBase, str, optional): Chart Type.
 
         Raises:
-            NotFoundError: If chart is not found
             ChartError: If any other error occurs.
 
         Returns:
