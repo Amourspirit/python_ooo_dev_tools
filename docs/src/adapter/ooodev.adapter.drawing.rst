@@ -21,6 +21,7 @@ Submodules
    ooodev.adapter.drawing.drawing_document_comp
    ooodev.adapter.drawing.ellipse_shape_comp
    ooodev.adapter.drawing.fill_properties_comp
+   ooodev.adapter.drawing.fill_properties_partial
    ooodev.adapter.drawing.generic_draw_page_comp
    ooodev.adapter.drawing.generic_drawing_document_comp
    ooodev.adapter.drawing.generic_shape
@@ -30,6 +31,7 @@ Submodules
    ooodev.adapter.drawing.graphic_object_shape_comp
    ooodev.adapter.drawing.group_shape_comp
    ooodev.adapter.drawing.line_properties_comp
+   ooodev.adapter.drawing.line_properties_partial
    ooodev.adapter.drawing.line_shape_comp
    ooodev.adapter.drawing.master_page_comp
    ooodev.adapter.drawing.master_pages_comp

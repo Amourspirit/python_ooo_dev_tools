@@ -22,6 +22,7 @@ Submodules
    ooodev.adapter.container.index_container_comp
    ooodev.adapter.container.index_container_partial
    ooodev.adapter.container.index_container_t
+   ooodev.adapter.container.index_replace_comp
    ooodev.adapter.container.index_replace_partial
    ooodev.adapter.container.index_replace_t
    ooodev.adapter.container.name_access_comp
@@ -30,6 +31,7 @@ Submodules
    ooodev.adapter.container.name_container_comp
    ooodev.adapter.container.name_container_partial
    ooodev.adapter.container.name_index_t
+   ooodev.adapter.container.name_replace_comp
    ooodev.adapter.container.name_replace_partial
    ooodev.adapter.container.named_partial
 
