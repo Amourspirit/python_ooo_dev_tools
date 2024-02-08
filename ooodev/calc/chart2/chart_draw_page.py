@@ -16,6 +16,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.adapter.drawing.shape_collection_comp import ShapeCollectionComp
 from ooodev.adapter.lang.component_partial import ComponentPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -32,6 +33,7 @@ class ChartDrawPage(
     ComponentPartial,
     QiPartial,
     ServicePartial,
+    EventsPartial,
     PropPartial,
     StylePartial,
     ShapeFactoryPartial["ChartDrawPage"],
@@ -45,7 +47,7 @@ class ChartDrawPage(
         Args:
             owner (T): Owner of this component.
             component (XDrawPage): UNO object that supports ``com.sun.star.drawing.GenericDrawPage`` service.
-            lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
@@ -58,6 +60,7 @@ class ChartDrawPage(
         ComponentPartial.__init__(self, component=component, interface=None)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        EventsPartial.__init__(self)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         ShapeFactoryPartial.__init__(self, owner=self, lo_inst=self.lo_inst)

@@ -8,6 +8,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -23,6 +24,7 @@ class ChartType(
     Generic[_T],
     LoInstPropsPartial,
     ChartTypeComp,
+    EventsPartial,
     PropPartial,
     QiPartial,
     ServicePartial,
@@ -37,11 +39,13 @@ class ChartType(
 
         Args:
             component (Any): UNO Chart2 Title Component.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         ChartTypeComp.__init__(self, component=component)
+        EventsPartial.__init__(self)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)

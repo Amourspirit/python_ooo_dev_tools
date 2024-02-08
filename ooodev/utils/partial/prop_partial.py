@@ -4,11 +4,28 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils import props as mProps
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.context.lo_context import LoContext
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.events.lo_events import observe_events
+from ooodev.events.event_singleton import _Events
 
 
 class PropPartial:
+    """
+    Property Partial Class.
+
+    If this class is used in a class that inherits from EventsPartial, it will automatically observe events
+    for property setting and getting while in the context of this class.
+    """
+
     def __init__(self, component: Any, lo_inst: LoInst):
-        self.__lo_inst = lo_inst  # may be used in future
+        """
+        Constructor
+
+        Args:
+            component (Any): Any Uno component that has properties.
+            lo_inst (LoInst): Lo Instance. Use when creating multiple documents.
+        """
+        self.__lo_inst = lo_inst
         self.__component = component
 
     @overload
@@ -50,7 +67,11 @@ class PropPartial:
             Any: Property value or default.
         """
         with LoContext(self.__lo_inst):
-            result = mProps.Props.get(obj=self.__component, name=name, default=default)
+            if isinstance(self, EventsPartial):
+                with observe_events(observer=self.event_observer, events=_Events()):
+                    result = mProps.Props.get(obj=self.__component, name=name, default=default)
+            else:
+                result = mProps.Props.get(obj=self.__component, name=name, default=default)
         return result
 
     def set_property(self, **kwargs: Any) -> None:
@@ -61,4 +82,8 @@ class PropPartial:
             **kwargs: Variable length Key value pairs used to set properties.
         """
         with LoContext(self.__lo_inst):
-            mProps.Props.set(self.__component, **kwargs)
+            if isinstance(self, EventsPartial):
+                with observe_events(observer=self.event_observer, events=_Events()):
+                    mProps.Props.set(self.__component, **kwargs)
+            else:
+                mProps.Props.set(self.__component, **kwargs)

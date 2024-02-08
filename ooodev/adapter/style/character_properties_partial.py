@@ -1075,16 +1075,20 @@ class CharacterPropertiesPartial:
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return NameContainerComp(self.__component.TextUserDefinedAttributes)
+            comp = self.__component.TextUserDefinedAttributes
+            if comp is None:
+                return None
+            return NameContainerComp(comp)
         return None
 
     @text_user_defined_attributes.setter
     def text_user_defined_attributes(self, value: XNameContainer | NameContainerComp) -> None:
-        with contextlib.suppress(AttributeError):
-            if mInfo.Info.is_instance(value, NameContainerComp):
-                self.__component.TextUserDefinedAttributes = value.component
-            else:
-                self.__component.TextUserDefinedAttributes = value  # type: ignore
+        if not hasattr(self.__component, "TextUserDefinedAttributes"):
+            return
+        if mInfo.Info.is_instance(value, NameContainerComp):
+            self.__component.TextUserDefinedAttributes = value.component
+        else:
+            self.__component.TextUserDefinedAttributes = value  # type: ignore
 
     @property
     def unvisited_char_style_name(self) -> str | None:

@@ -10,11 +10,16 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.data_type.range_obj import RangeObj
+from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
+from ooodev.office import chart2 as mCharts
+from ooodev.utils.color import CommonColor
 from .chart2.table_chart import TableChart
 
 
 if TYPE_CHECKING:
     from com.sun.star.table import XTableCharts
+    from ooodev.utils.color import Color
     from .calc_sheet import CalcSheet
 
 
@@ -47,10 +52,6 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
 
     def __getitem__(self, index: str | int) -> TableChart:
         if isinstance(index, int):
-            if index < 0:
-                index = len(self) + index
-                if index < 0:
-                    raise IndexError("list index out of range")
             return self.get_by_index(index)
         return self.get_by_name(index)
 
@@ -123,6 +124,47 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
         return TableChart(owner=self.calc_sheet, component=result, lo_inst=self.lo_inst)
 
     # endregion XNameAccess overrides
+
+    def insert_chart(
+        self,
+        *,
+        rng_obj: RangeObj,
+        cell_name: str = "",
+        width: int = 16,
+        height: int = 9,
+        diagram_name: ChartTemplateBase | str = "Column",
+        color_bg: Color = CommonColor.PALE_BLUE,
+        color_wall: Color = CommonColor.LIGHT_BLUE,
+        **kwargs,
+    ) -> TableChart:
+        from ooodev.office.chart2 import Chart2
+
+        # from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
+        _ = Chart2.insert_chart(
+            sheet=self.calc_sheet.component,
+            cells_range=rng_obj.get_cell_range_address(),
+            cell_name=cell_name,
+            width=width,
+            height=height,
+            diagram_name=diagram_name,
+            color_bg=color_bg,
+            color_wall=color_wall,
+            **kwargs,
+        )
+        return self.get_by_index(-1)
+
+    def remove_chart(self, chart_name: str) -> bool:
+        """
+        Removes a chart from Spreadsheet.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            chart_name (str): Chart Name
+
+        Returns:
+            bool: ``True`` if chart was removed; Otherwise, ``False``
+        """
+        return mCharts.Chart2.remove_chart(sheet=self.calc_sheet.component, chart_name=chart_name)
 
     # region Properties
     @property

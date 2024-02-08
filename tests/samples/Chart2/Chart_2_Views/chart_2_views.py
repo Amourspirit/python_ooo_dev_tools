@@ -79,8 +79,8 @@ class Chart2View:
 
         try:
             doc = Calc.open_doc(fnm=self._data_fnm, loader=loader)
-            GUI.set_visible(is_visible=True, odoc=doc)
-            sheet = Calc.get_sheet(doc=doc, index=0)
+            GUI.set_visible(visible=True, doc=doc)
+            sheet = Calc.get_sheet(doc=doc, idx=0)
 
             chart_doc = None
             if self._chart_kind == ChartKind.AREA:

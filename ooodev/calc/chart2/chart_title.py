@@ -13,6 +13,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.units import Angle
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -43,6 +44,7 @@ class ChartTitle(
 
         Args:
             component (Any): UNO Chart2 Title Component.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
@@ -100,3 +102,13 @@ class ChartTitle(
     def owner(self) -> _T:
         """Chart Document"""
         return self._owner
+
+    @property
+    def rotation(self) -> Angle:
+        """Gets or sets the rotation angle of the title."""
+        return Angle(self.get_property("TextRotation", 0))
+
+    @rotation.setter
+    def rotation(self, value: Angle | int) -> None:
+        rotation = Angle(int(value))
+        self.set_property(TextRotation=rotation.value)

@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+import uno
+from com.sun.star.chart2 import XDataSeries
 from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -12,6 +14,7 @@ from .data.data_source_partial import DataSourcePartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import DataSeries  # service
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class DataSeriesComp(
@@ -30,13 +33,19 @@ class DataSeriesComp(
 
     # pylint: disable=unused-argument
 
-    def __init__(self, component: DataSeries) -> None:
+    def __init__(self, lo_inst: LoInst, component: DataSeries | None = None) -> None:
         """
         Constructor
 
         Args:
-            component (DataSeries): UNO Chart2 DataSeries Component.
+            lo_inst (LoInst): Lo Instance. This instance is used to create ``component`` is it is not provided.
+            component (DataSeries, optional): UNO Chart2 DataSeries Component.
         """
+        if component is None:
+            component = cast(
+                "DataSeries",
+                lo_inst.create_instance_mcf(XDataSeries, "com.sun.star.chart2.DataSeries", raise_err=True),
+            )
         ComponentBase.__init__(self, component)
         DataPointPropertiesPartial.__init__(self, component=component)
         DataSeriesPartial.__init__(self, component=component, interface=None)  # type: ignore

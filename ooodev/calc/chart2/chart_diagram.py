@@ -10,9 +10,11 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 
 if TYPE_CHECKING:
+    from ooodev.loader.inst.lo_inst import LoInst
     from .chart_doc import ChartDoc
     from .coordinate.coordinate_general import CoordinateGeneral
-    from ooodev.loader.inst.lo_inst import LoInst
+    from .chart_title import ChartTitle
+    from .chart_legend import ChartLegend
 
 
 class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, StylePartial):
@@ -26,6 +28,7 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
 
         Args:
             component (Any): UNO Chart2 Title Component.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
@@ -35,6 +38,35 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
         self._owner = owner
+
+    def get_title(self) -> ChartTitle[ChartDiagram] | None:
+        """Gets the Title Diagram Component. This might be considered to be a subtitle."""
+        from .chart_title import ChartTitle
+
+        comp = self.get_title_object()
+        if comp is None:
+            return None
+        return ChartTitle(owner=self, component=comp, lo_inst=self.lo_inst)
+
+    def set_title(self, title: str) -> ChartTitle[ChartDiagram]:
+        """Adds a Chart Title."""
+        from com.sun.star.chart2 import XTitled
+        from com.sun.star.chart2 import XTitle
+        from com.sun.star.chart2 import XFormattedString
+        from .chart_title import ChartTitle
+
+        x_title = self.lo_inst.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
+        x_title_str = self.lo_inst.create_instance_mcf(
+            XFormattedString, "com.sun.star.chart2.FormattedString", raise_err=True
+        )
+        x_title_str.setString(title)
+
+        title_arr = (x_title_str,)
+        x_title.setText(title_arr)
+
+        titled = self.qi(XTitled, True)
+        titled.setTitleObject(x_title)
+        return ChartTitle(owner=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
 
     def get_coordinate_system(self) -> CoordinateGeneral | None:
         """Gets the first Coordinate System Component."""
@@ -72,6 +104,43 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
         return tuple(result)
 
     # endregion CoordinateSystemContainerPartial overrides
+
+    def get_legend(self) -> ChartLegend | None:
+        """
+        Gets the Legend Component.
+
+        Returns:
+            ChartLegend | None: Legend Component if found, otherwise ``None``.
+        """
+        legend = super().get_legend()
+        if legend is None:
+            return None
+        from .chart_legend import ChartLegend
+
+        return ChartLegend(owner=self, component=legend, lo_inst=self.lo_inst)  # type: ignore
+
+    def view_legend(self, visible: bool) -> None:
+        """
+        Shows or hides the legend.
+
+        Args:
+            visible (bool): ``True`` to show the legend, ``False`` to hide it.
+
+        Note:
+            If the legend is not found then it will be created if ``visible`` is ``True``.
+        """
+        legend = self.get_legend()
+        if legend is not None:
+            legend.show = visible
+            return
+        if visible:
+            from .chart_legend import ChartLegend
+            from ooo.dyn.drawing.line_style import LineStyle
+            from ooo.dyn.drawing.fill_style import FillStyle
+
+            legend = ChartLegend(owner=self, lo_inst=self.lo_inst)
+            legend.set_property(LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
+            self.set_legend(legend.component)
 
     @property
     def chart_doc(self) -> ChartDoc:

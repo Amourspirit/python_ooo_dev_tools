@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Union
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT  # do not import from ooodev.unit or will cause circular import.
 from .generic_size import GenericSize
 
 _T = TypeVar("_T", bound=UnitT)

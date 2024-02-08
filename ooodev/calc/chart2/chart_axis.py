@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-
+import uno
+from com.sun.star.chart2 import XScaling
 from ooodev.adapter.chart2.axis_comp import AxisComp
 from ooodev.loader import lo as mLo
+from ooodev.exceptions import ex as mEx
 from ooodev.office import chart2 as mChart2
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -10,6 +12,8 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.utils.kind.curve_kind import CurveKind
 
 if TYPE_CHECKING:
     from .chart_doc import ChartDoc
@@ -19,7 +23,14 @@ if TYPE_CHECKING:
 
 
 class ChartAxis(
-    LoInstPropsPartial, AxisComp, PropPartial, FontEffectsPartial, QiPartial, ServicePartial, StylePartial
+    LoInstPropsPartial,
+    AxisComp,
+    PropPartial,
+    FontEffectsPartial,
+    EventsPartial,
+    QiPartial,
+    ServicePartial,
+    StylePartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -31,16 +42,18 @@ class ChartAxis(
 
         Args:
             component (Any): UNO Chart2 Title Component.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         AxisComp.__init__(self, component=component)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
+        EventsPartial.__init__(self)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
-        FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
         self._owner = owner
 
     # region StylePartial Overrides
@@ -61,35 +74,96 @@ class ChartAxis(
     # endregion
 
     def get_title(self) -> ChartTitle[ChartAxis] | None:
-        """Gets the Chart Title Component."""
+        """
+        Gets the Chart Title Component.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            ChartTitle: Chart Title Component.
+        """
         from com.sun.star.chart2 import XTitled
         from .chart_title import ChartTitle
 
-        titled = self.qi(XTitled, True)
-        comp = titled.getTitleObject()
-        if comp is None:
-            return None
-        return ChartTitle(owner=self, component=comp, lo_inst=self.lo_inst)
+        try:
+            titled = self.qi(XTitled, True)
+            comp = titled.getTitleObject()
+            if comp is None:
+                return None
+            return ChartTitle(owner=self, component=comp, lo_inst=self.lo_inst)
+        except Exception as e:
+            raise mEx.ChartError("Error getting axis title") from e
 
     def set_title(self, title: str) -> ChartTitle:
-        """Sets Chart Title."""
+        """
+        Sets Chart Title.
+
+        Args:
+            title (str): Title text.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            ChartTitle: Chart Title Component.
+        """
         from com.sun.star.chart2 import XTitled
         from com.sun.star.chart2 import XTitle
         from com.sun.star.chart2 import XFormattedString
         from .chart_title import ChartTitle
 
-        x_title = self.lo_inst.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
-        x_title_str = self.lo_inst.create_instance_mcf(
-            XFormattedString, "com.sun.star.chart2.FormattedString", raise_err=True
-        )
-        x_title_str.setString(title)
+        try:
+            x_title = self.lo_inst.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
+            x_title_str = self.lo_inst.create_instance_mcf(
+                XFormattedString, "com.sun.star.chart2.FormattedString", raise_err=True
+            )
+            x_title_str.setString(title)
 
-        title_arr = (x_title_str,)
-        x_title.setText(title_arr)
+            title_arr = (x_title_str,)
+            x_title.setText(title_arr)
 
-        titled = self.qi(XTitled, True)
-        titled.setTitleObject(x_title)
-        return ChartTitle(owner=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
+            titled = self.qi(XTitled, True)
+            titled.setTitleObject(x_title)
+            return ChartTitle(owner=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
+        except Exception as e:
+            raise mEx.ChartError("Error setting axis title") from e
+
+    def scale(self, scale_type: CurveKind) -> None:
+        """
+        Scales the axis.
+
+        Args:
+            scale_type (CurveKind): Scale kind
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            None:
+
+        Note:
+            Supported types of ``scale_type`` are ``LINEAR``, ``LOGARITHMIC``, ``EXPONENTIAL`` and ``POWER``.
+            If ``scale_type``  is not supported then the ``Scaling`` is not set.
+        """
+        try:
+            sd = self.get_scale_data()
+            s = None
+            if scale_type == CurveKind.LINEAR:
+                s = "LinearScaling"
+            elif scale_type == CurveKind.LOGARITHMIC:
+                s = "LogarithmicScaling"
+            elif scale_type == CurveKind.EXPONENTIAL:
+                s = "ExponentialScaling"
+            elif scale_type == CurveKind.POWER:
+                s = "PowerScaling"
+            if s is None:
+                self.lo_inst.print(f'Did not recognize scaling type: "{scale_type}"')
+            else:
+                sd.Scaling = self.lo_inst.create_instance_mcf(XScaling, f"com.sun.star.chart2.{s}", raise_err=True)
+            self.set_scale_data(sd)
+        except Exception as e:
+            raise mEx.ChartError("Error setting axis scale") from e
 
     @property
     def chart_doc(self) -> ChartDoc:

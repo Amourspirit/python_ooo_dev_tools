@@ -26,7 +26,9 @@ class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemParti
         Constructor
 
         Args:
+            owner (ChartDiagram): Chart Diagram.
             component (Any): UNO Chart2 Coordinate General.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo

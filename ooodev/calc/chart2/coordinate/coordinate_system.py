@@ -14,6 +14,14 @@ class CoordinateSystem(CoordinateGeneral):
     """Coordinate System Component."""
 
     def __init__(self, owner: ChartDiagram, component: XCoordinateSystem, lo_inst: LoInst) -> None:
+        """
+        Constructor
+
+        Args:
+            owner (ChartDiagram): Chart Diagram.
+            component (XCoordinateSystem): UNO Chart2 ``XCoordinateSystem``.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+        """
         CoordinateGeneral.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
 
     # region Overrides

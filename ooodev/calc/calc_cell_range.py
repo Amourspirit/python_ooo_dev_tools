@@ -6,7 +6,6 @@ import uno
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
-from ooodev.units import UnitMM
 
 
 if TYPE_CHECKING:
@@ -22,6 +21,8 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row, PathOrStr
     from . import calc_cell_cursor as mCalcCellCursor
     from .calc_sheet import CalcSheet
+    from .chart2.table_chart import TableChart
+    from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
 else:
     CellRangeAddress = Any
     ImgExportT = Any
@@ -31,13 +32,14 @@ from ooodev.calc import CalcNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.office import calc as mCalc
-from ooodev.utils import file_io as mFile
 from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.office import calc as mCalc
+from ooodev.units import UnitMM
+from ooodev.utils import file_io as mFile
 from ooodev.utils.color import CommonColor
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
-from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -76,6 +78,36 @@ class CalcCellRange(
         StylePartial.__init__(self, component=cell_range)
         EventsPartial.__init__(self)
         ServicePartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)
+
+    # region Chart2
+    def insert_chart(
+        self,
+        *,
+        cell_name: str = "",
+        width: int = 16,
+        height: int = 9,
+        diagram_name: ChartTemplateBase | str = "Column",
+        color_bg: Color = CommonColor.PALE_BLUE,
+        color_wall: Color = CommonColor.LIGHT_BLUE,
+        **kwargs,
+    ) -> TableChart:
+        from ooodev.office.chart2 import Chart2
+
+        # from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
+        _ = Chart2.insert_chart(
+            sheet=self.calc_sheet.component,
+            cells_range=self._range_obj.get_cell_range_address(),
+            cell_name=cell_name,
+            width=width,
+            height=height,
+            diagram_name=diagram_name,
+            color_bg=color_bg,
+            color_wall=color_wall,
+            **kwargs,
+        )
+        return self.calc_sheet.charts[-1]
+
+    # endregion Chart2
 
     def change_style(self, style_name: str) -> bool:
         """

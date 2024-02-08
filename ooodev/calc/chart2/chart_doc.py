@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import Any, overload, TYPE_CHECKING, Tuple
+from typing import Any, overload, List, Sequence, TYPE_CHECKING, Tuple
 from ooodev.loader import lo as mLo
-from ooodev.utils import info as mInfo
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import props as mProps
 from ooodev.adapter.chart2.chart_document_comp import ChartDocumentComp
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -14,16 +15,29 @@ from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.document.storage_change_event_events import StorageChangeEventEvents
 from ooodev.office import chart2 as mChart2
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.color import Color
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import ChartDocument  # service
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.utils.comp.prop import Prop
     from ooodev.utils.kind.chart2_types import ChartTypeNameBase
-    from .chart_title import ChartTitle
+    from ooodev.utils.kind.curve_kind import CurveKind
     from .chart_axis import ChartAxis
     from .chart_data_series import ChartDataSeries
     from .chart_diagram import ChartDiagram
+    from .chart_error_bar import ChartErrorBar
+    from .chart_title import ChartTitle
+    from .chart_type import ChartType
+    from .coordinate.coordinate_general import CoordinateGeneral
+    from .regression_curve.regression_curve import RegressionCurve
+else:
+    CoordinateGeneral = Any
+    StyleT = Any
+    RegressionCurve = Any
+    Prop = Any
 
 
 class ChartDoc(
@@ -48,6 +62,7 @@ class ChartDoc(
 
         Args:
             component (Any): UNO Chart2 ChartDocument Component.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
@@ -65,7 +80,9 @@ class ChartDoc(
         PropertyChangeImplement.__init__(self, component=component, trigger_args=generic_args)  # type: ignore
         VetoableChangeImplement.__init__(self, component=component, trigger_args=generic_args)  # type: ignore
         self._axis_x = None
+        self._axis2_x = None
         self._axis_y = None
+        self._axis2_y = None
         self._first_diagram = None
 
     # region Lazy Listeners
@@ -87,8 +104,18 @@ class ChartDoc(
 
     # endregion Lazy Listeners
 
+    # region context manage
+    def __enter__(self) -> ChartDoc:
+        self.lock_controllers()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.unlock_controllers()
+
+    # endregion context manage
+
     # region Methods
-    def set_title(self, title: str) -> ChartTitle:
+    def set_title(self, title: str) -> ChartTitle[ChartDoc]:
         """Adds a Chart Title."""
         from com.sun.star.chart2 import XTitled
         from com.sun.star.chart2 import XTitle
@@ -130,7 +157,7 @@ class ChartDoc(
     # region get_data_series()
 
     @overload
-    def get_data_series(self) -> Tuple[ChartDataSeries, ...]:
+    def get_data_series(self) -> Tuple[ChartDataSeries[ChartDoc], ...]:
         """
         Gets data series for a chart of a given chart type.
 
@@ -190,6 +217,230 @@ class ChartDoc(
 
     # endregion get_data_series()
 
+    def get_templates(self) -> List[str]:
+        """
+        Gets a list of chart templates (services).
+
+        Raises:
+            ChartError: If error occurs
+
+        Returns:
+            List[str]: List of chart templates
+        """
+        return mChart2.Chart2.get_chart_templates(self.component)
+
+    def set_y_error_bar(self, data_label: str, data_range: str) -> ChartErrorBar:
+        """
+        Set Error Bar
+
+        Raises:
+            ChartError: If any error occurs.
+
+        Returns:
+            ChartErrorBar: Chart Error Bar
+        """
+        from .chart_error_bar import ChartErrorBar
+        from ooo.dyn.chart.error_bar_style import ErrorBarStyle
+        from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind
+
+        try:
+            eb = ChartErrorBar(lo_inst=self.lo_inst)
+            eb.set_property(ShowPositiveError=True, ShowNegativeError=True, ErrorBarStyle=ErrorBarStyle.FROM_DATA)
+            dp = self.get_data_provider()
+            with LoContext(self.lo_inst):
+                pos_err_seq = mChart2.Chart2.create_ld_seq(
+                    dp=dp, role=DataRoleKind.ERROR_BARS_Y_POSITIVE, data_label=data_label, data_range=data_range
+                )
+                neg_err_seq = mChart2.Chart2.create_ld_seq(
+                    dp=dp, role=DataRoleKind.ERROR_BARS_Y_NEGATIVE, data_label=data_label, data_range=data_range
+                )
+            ld_seq = (pos_err_seq, neg_err_seq)
+            eb.set_data(ld_seq)
+            data_series = self.get_data_series()[0]
+            data_series.set_property(ErrorBarY=eb.component)
+            return eb
+        except Exception as e:
+            raise mEx.ChartError("Error setting error bar", e)
+
+    def add_stock_line(self, data_label: str, data_range: str) -> None:
+        """
+        Add Stock Line
+
+        Args:
+            data_label (str): Data Label
+            data_range (str): Data Range
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            None:
+        """
+        with LoContext(self.lo_inst):
+            mChart2.Chart2.add_stock_line(self.component, data_label, data_range)
+
+    def add_chart_type(self, chart_type: ChartTypeNameBase | str) -> ChartType[CoordinateGeneral]:
+        """
+        Add Chart Type
+
+        Args:
+            chart_type (ChartTypeNameBase): Chart Type
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            None:
+        """
+        from .chart_type import ChartType
+        from com.sun.star.chart2 import XChartType
+
+        try:
+            ct = self.lo_inst.create_instance_mcf(XChartType, f"com.sun.star.chart2.{chart_type}", raise_err=True)
+            coord_sys = self.first_diagram.get_coordinate_system()
+            if coord_sys is None:
+                raise mEx.ChartError("Coordinate System not found")
+            coord_sys.add_chart_type(ct)
+            return ChartType(owner=coord_sys, component=ct, lo_inst=self.lo_inst)
+        except mEx.ChartError:
+            raise
+        except Exception as e:
+            raise mEx.ChartError("Error adding chart type", e)
+
+    def add_cat_labels(self, data_label: str, data_range: str) -> None:
+        """
+        Add Category Labels.
+
+        Args:
+            data_label (str): Data label.
+            data_range (str): Data range.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            None:
+        """
+        with LoContext(self.lo_inst):
+            mChart2.Chart2.add_cat_labels(self.component, data_label, data_range)
+
+    def create_curve(self, curve_kind: CurveKind) -> RegressionCurve:
+        """
+        Creates a regression curve.
+
+        Matches the regression constants defined in ``curve_kind`` to regression services offered by the API:
+
+        Args:
+            curve_kind (CurveKind): Curve kind.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            XRegressionCurve: Regression Curve object.
+        """
+        from .regression_curve.regression_curve import RegressionCurve
+        from com.sun.star.chart2 import XRegressionCurve
+
+        try:
+            curve = self.lo_inst.create_instance_mcf(XRegressionCurve, curve_kind.to_namespace(), raise_err=True)
+            return RegressionCurve(owner=self, component=curve, lo_inst=self.lo_inst)
+        except Exception as e:
+            raise mEx.ChartError("Error creating curve") from e
+
+    def get_number_format_key(self, nf_str: str) -> int:
+        """
+        Converts a number format string into a number format key, which can be assigned to
+        ``NumberFormat`` property.
+
+        |lo_safe|
+
+        Args:
+            chart_doc (XChartDocument): Chart Document
+            nf_str (str): Number format string.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            int: Number format key.
+
+        Note:
+            The string-to-key conversion is straight forward if you know what number format string to use,
+            but there's little documentation on them. Probably the best approach is to use the Format
+            Cells menu item in a spreadsheet document, and examine the dialog
+        """
+        from ooo.dyn.lang.locale import Locale
+
+        try:
+            n_formats = self.get_number_formats()
+            # locale = Locale("en", "us", "")
+            # locale = mInfo.Info.language_locale
+            # note the empty locale for default locale
+            key = int(n_formats.queryKey(nf_str, Locale(), False))
+            if key == -1:
+                self.lo_inst.print(f'Could not access key for number format: "{nf_str}"')
+            return key
+        except Exception as e:
+            raise mEx.ChartError("Error getting number format key") from e
+
+    def draw_regression_curve(
+        self, curve_kind: CurveKind, styles: Sequence[StyleT] | None = None
+    ) -> Prop[RegressionCurve]:
+        """
+        Draws a regression curve.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document
+            curve_kind (CurveKind): Curve kind.
+            styles (Sequence[StyleT], optional): Styles to apply to the curve. Defaults to ``None``.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            XPropertySet: Regression curve property set.
+
+        Hint:
+            Styles that can be applied are found in the following subpackages:
+
+                - :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>`
+                - :doc:`ooodev.format.chart2.direct.general.numbers </src/format/ooodev.format.chart2.direct.general.numbers>`
+
+        .. versionchanged:: 0.9.4
+            Added ``styles`` argument, and now returns the regression curve property set.
+        """
+        from com.sun.star.chart2 import XRegressionCurveContainer
+
+        try:
+            data_series_arr = self.get_data_series()
+            rc_con = self.lo_inst.qi(XRegressionCurveContainer, data_series_arr[0].component, True)
+            curve = self.create_curve(curve_kind)
+            rc_con.addRegressionCurve(curve.component)
+
+            ps = curve.get_equation_properties()
+            ps.set_property(ShowCorrelationCoefficient=True, ShowEquation=True)
+
+            key = self.get_number_format_key(nf_str="0.00")  # 2 dp
+            if key != -1:
+                ps.set_property(NumberFormat=key)
+            if styles:
+                supported = (
+                    "com.sun.star.chart2.RegressionEquation",
+                    "com.sun.star.drawing.FillProperties",
+                    "com.sun.star.drawing.LineProperties",
+                    "com.sun.star.style.CharacterProperties",
+                )
+
+                for style in styles:
+                    if style.support_service(*supported):
+                        style.apply(ps)
+            return ps
+        except mEx.ChartError:
+            raise
+        except Exception as e:
+            raise mEx.ChartError("Error drawing regression curve") from e
+
     @property
     def first_diagram(self) -> ChartDiagram:
         """Gets the first diagram."""
@@ -211,6 +462,19 @@ class ChartDoc(
         return self._axis_x
 
     @property
+    def axis2_x(self) -> ChartAxis | None:
+        """Gets the X Axis Component."""
+        if self._axis2_x is None:
+            from .chart_axis import ChartAxis
+
+            try:
+                axis = mChart2.Chart2.get_x_axis2(self.component)
+            except mEx.ChartError:
+                return None
+            self._axis2_x = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
+        return self._axis2_x
+
+    @property
     def axis_y(self) -> ChartAxis:
         """Gets the Y Axis Component."""
         if self._axis_y is None:
@@ -219,5 +483,18 @@ class ChartDoc(
             axis = mChart2.Chart2.get_y_axis(self.component)
             self._axis_y = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
         return self._axis_y
+
+    @property
+    def axis2_y(self) -> ChartAxis | None:
+        """Gets the Y Axis Component."""
+        if self._axis2_y is None:
+            from .chart_axis import ChartAxis
+
+            try:
+                axis = mChart2.Chart2.get_y_axis2(self.component)
+            except mEx.ChartError:
+                return None
+            self._axis2_y = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
+        return self._axis2_y
 
     # endregion Methods

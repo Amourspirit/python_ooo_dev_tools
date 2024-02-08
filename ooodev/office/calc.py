@@ -8598,11 +8598,11 @@ class Calc:
                 val = args[0]
 
             if val:
-                if isinstance(val, mRngObj.RangeObj):
+                if mInfo.Info.is_instance(val, mRngObj.RangeObj):
                     return val
-                if isinstance(val, str):
+                if mInfo.Info.is_instance(val, str):
                     return mRngObj.RangeObj.from_range(val)
-                if isinstance(val, mCellObj.CellObj):
+                if mInfo.Info.is_instance(val, mCellObj.CellObj):
                     return val.get_range_obj()
         range_name = cls.get_range_str(*args, **kwargs)
         return mRngObj.RangeObj.from_range(range_val=range_name)

@@ -1,17 +1,17 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
-from com.sun.star.document import XEmbeddedObjectSupplier
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.adapter.table.table_chart_comp import TableChartComp
-from ooodev.loader import lo as mLo
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.table.table_chart_comp import TableChartComp
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
+from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from .chart_doc import ChartDoc
 
 
@@ -19,12 +19,13 @@ if TYPE_CHECKING:
     from ooodev.calc import CalcSheet
     from ooodev.loader.inst.lo_inst import LoInst
     from .chart_draw_page import ChartDrawPage
-    from ooodev.draw.shapes.ole2_shape import OLE2Shape
+    from .chart_shape import ChartShape
 
 
 class TableChart(
     LoInstPropsPartial,
     TableChartComp,
+    EventsPartial,
     PropPartial,
     QiPartial,
     ServicePartial,
@@ -41,11 +42,13 @@ class TableChart(
 
         Args:
             component (XTableChart): UNO Component that supports ``com.sun.star.table.TableChart`` service.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TableChartComp.__init__(self, component)
+        EventsPartial.__init__(self)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
@@ -84,13 +87,13 @@ class TableChart(
         return self._chart_doc
 
     @property
-    def shape(self) -> OLE2Shape[TableChart]:
+    def shape(self) -> ChartShape:
         """OLE2 Shape."""
         if self._shape is None:
-            from ooodev.draw.shapes.ole2_shape import OLE2Shape
+            from .chart_shape import ChartShape
 
             shape = mChart2.Chart2.get_chart_shape(sheet=self.calc_sheet.component, chart_name=self.name)
-            self._shape = OLE2Shape(owner=self, component=shape, lo_inst=self.lo_inst)
+            self._shape = ChartShape(owner=self, component=shape, lo_inst=self.lo_inst)
         return self._shape  # type: ignore
 
     @property
