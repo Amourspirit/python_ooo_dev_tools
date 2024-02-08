@@ -8,6 +8,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
+from ooodev.utils import gui as mGui
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -59,6 +60,23 @@ class TableChart(
         self._chart_doc = None
         self._shape = None
         self._draw_page = None
+
+    def copy_chart(self) -> None:
+        """
+        Copies the chart to the clipboard using a dispatch command.
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            None:
+        """
+        try:
+            supp = mGui.GUI.get_selection_supplier(self.calc_sheet.calc_doc.component)
+            supp.select(self.shape.component)
+            self.lo_inst.dispatch_cmd("Copy")
+        except Exception as e:
+            raise mEx.ChartError("Error in attempt to copy chart") from e
 
     # region Properties
     @property

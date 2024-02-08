@@ -3,21 +3,24 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypeVar, Generic, Tuple
 
 from ooodev.adapter.chart2.chart_type_comp import ChartTypeComp
-from ooodev.loader import lo as mLo
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.exceptions import ex as mEx
+from ooodev.loader import lo as mLo
+from ooodev.utils import color as mColor
+from ooodev.utils.comp.prop import Prop
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
-    from .coordinate.coordinate_general import CoordinateGeneral
     from .chart_data_series import ChartDataSeries
 else:
     CoordinateGeneral = Any
 
-_T = TypeVar("_T", bound="CoordinateGeneral")
+_T = TypeVar("_T", bound="ComponentT")
 
 
 class ChartType(
@@ -66,7 +69,42 @@ class ChartType(
 
     # endregion DataSeriesContainerPartial overrides
 
+    def color_stock_bars(self, white_day_color: mColor.Color, black_day_color: mColor.Color) -> None:
+        """
+        Set color of stock bars for a ``CandleStickChartType`` chart.
+
+        Args:
+            white_day_color (~ooodev.utils.color.Color): Chart white day color
+            black_day_color (~ooodev.utils.color.Color): Chart black day color
+
+        Raises:
+            NotSupportedError: If Chart is not of type ``CandleStickChartType``
+            ChartError: If any other error occurs.
+
+        Returns:
+            None:
+
+        See Also:
+            :py:class:`~.color.CommonColor`
+        """
+        if self.chart_type != "com.sun.star.chart2.StockBarChart":
+            raise mEx.NotSupportedError(f'Only candle stick charts supported. "{self.chart_type}" not supported.')
+        try:
+            white_day_ps = Prop(owner=self, component=self.get_property("WhiteDay"), lo_inst=self.lo_inst)
+            black_day_ps = Prop(owner=self, component=self.get_property("BlackDay"), lo_inst=self.lo_inst)
+            white_day_ps.set_property(FillColor=int(white_day_color))
+            black_day_ps.set_property(FillColor=int(black_day_color))
+        except Exception as e:
+            raise mEx.ChartError("Error coloring stock bars") from e
+
     @property
-    def coordinate_sys(self) -> _T:
-        """Chart Document"""
+    def owner(self) -> _T:
+        """Gets Owner object for this Chart Type"""
         return self._owner
+
+    @property
+    def chart_type(self) -> str:
+        """
+        Gets chart type such as ``com.sun.star.chart2.StockBarChart``.
+        """
+        return self.get_chart_type()

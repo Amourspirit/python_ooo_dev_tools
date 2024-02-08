@@ -17,8 +17,10 @@ Subpackages
    ooodev.adapter.datatransfer
    ooodev.adapter.document
    ooodev.adapter.drawing
+   ooodev.adapter.embed
    ooodev.adapter.form
    ooodev.adapter.frame
+   ooodev.adapter.graphic
    ooodev.adapter.io
    ooodev.adapter.lang
    ooodev.adapter.presentation

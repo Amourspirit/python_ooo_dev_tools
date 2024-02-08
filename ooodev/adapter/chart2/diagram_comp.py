@@ -238,7 +238,7 @@ class DiagramComp(ComponentBase, DiagramPartial, CoordinateSystemContainerPartia
     @property
     def rotation_horizontal(self) -> int | None:
         """
-        Gets/Sets horizontal rotation of 3D charts in degrees ( ]-180,180] ).
+        Gets/Sets horizontal rotation of 3D charts in degrees ( [-180,180] ).
 
         **optional**
         """

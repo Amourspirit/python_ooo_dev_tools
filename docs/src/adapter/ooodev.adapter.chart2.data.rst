@@ -9,6 +9,7 @@ Submodules
 
    ooodev.adapter.chart2.data.data_receiver_partial
    ooodev.adapter.chart2.data.data_sink_partial
+   ooodev.adapter.chart2.data.data_source_comp
    ooodev.adapter.chart2.data.data_source_partial
 
 Module contents

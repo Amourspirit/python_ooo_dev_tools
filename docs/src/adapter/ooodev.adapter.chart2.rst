@@ -35,8 +35,10 @@ Submodules
    ooodev.adapter.chart2.data_series_partial
    ooodev.adapter.chart2.diagram_comp
    ooodev.adapter.chart2.diagram_partial
+   ooodev.adapter.chart2.error_bar_comp
    ooodev.adapter.chart2.legend_comp
    ooodev.adapter.chart2.property_pool_comp
+   ooodev.adapter.chart2.regression_curve_partial
    ooodev.adapter.chart2.title_comp
    ooodev.adapter.chart2.title_partial
    ooodev.adapter.chart2.titled_partial

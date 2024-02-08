@@ -9,12 +9,13 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 from ooodev.adapter.chart2.regression_curve_partial import RegressionCurvePartial
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
+from ooodev.office import chart2 as mChart2
 from ooodev.utils import info as mInfo
+from ooodev.utils.comp.prop import Prop
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.comp.prop import Prop
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -80,6 +81,16 @@ class RegressionCurve(
 
     # endregion RegressionCurvePartial overrides
     # endregion Overrides
+
+    def eval_curve(self) -> None:
+        """
+        Uses ``XRegressionCurve.getCalculator()`` to access the ``XRegressionCurveCalculator`` interface.
+        It sets up the data and parameters for a particular curve, and prints the results of curve fitting to the console.
+
+        Returns:
+            None:
+        """
+        mChart2.Chart2.eval_curve(self.owner.component, self.component)
 
     @property
     def component(self) -> UnoRegressionCurve:

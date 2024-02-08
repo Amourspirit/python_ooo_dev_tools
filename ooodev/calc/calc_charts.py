@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
 
+from ooodev.utils.context.lo_context import LoContext
 from ooodev.exceptions import ex as mEx
 from ooodev.adapter.table.table_charts_comp import TableChartsComp
 from ooodev.utils import gen_util as mGenUtil
@@ -58,12 +59,15 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
     def __len__(self) -> int:
         return self.component.getCount()
 
-    def __delitem__(self, _item: str | TableChart) -> None:
+    def __delitem__(self, _item: int | str | TableChart) -> None:
         # using remove_sheet here instead of remove_by_name. This will force Calc module event to be fired.
         if isinstance(_item, str):
             self.remove_by_name(_item)
         elif isinstance(_item, TableChart):
             self.remove_by_name(_item.name)
+        elif isinstance(_item, int):
+            tc = self.get_by_index(idx=_item)
+            self.remove_by_name(tc.name)
         else:
             raise TypeError(f"Invalid type for __delitem__: {type(_item)}")
 
@@ -140,17 +144,18 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
         from ooodev.office.chart2 import Chart2
 
         # from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
-        _ = Chart2.insert_chart(
-            sheet=self.calc_sheet.component,
-            cells_range=rng_obj.get_cell_range_address(),
-            cell_name=cell_name,
-            width=width,
-            height=height,
-            diagram_name=diagram_name,
-            color_bg=color_bg,
-            color_wall=color_wall,
-            **kwargs,
-        )
+        with LoContext(self.lo_inst):
+            _ = Chart2.insert_chart(
+                sheet=self.calc_sheet.component,
+                cells_range=rng_obj.get_cell_range_address(),
+                cell_name=cell_name,
+                width=width,
+                height=height,
+                diagram_name=diagram_name,
+                color_bg=color_bg,
+                color_wall=color_wall,
+                **kwargs,
+            )
         return self.get_by_index(-1)
 
     def remove_chart(self, chart_name: str) -> bool:
@@ -165,6 +170,16 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
             bool: ``True`` if chart was removed; Otherwise, ``False``
         """
         return mCharts.Chart2.remove_chart(sheet=self.calc_sheet.component, chart_name=chart_name)
+
+    def clear(self) -> None:
+        """
+        Removes all charts from the sheet.
+        """
+        names = set()
+        for chart in self:
+            names.add(chart.name)
+        for name in names:
+            self.remove_chart(chart_name=name)
 
     # region Properties
     @property

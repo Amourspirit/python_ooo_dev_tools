@@ -20,6 +20,7 @@ from ooodev.utils.color import Color
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import ChartDocument  # service
+    from com.sun.star.chart2 import XRegressionCurve
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
     from ooodev.utils.comp.prop import Prop
@@ -384,6 +385,21 @@ class ChartDoc(
         except Exception as e:
             raise mEx.ChartError("Error getting number format key") from e
 
+    def dash_lines(self) -> None:
+        """
+        Sets chart data series to dashed lines.
+
+        Args:
+            chart_doc (XChartDocument): Chart Document
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            None:
+        """
+        mChart2.Chart2.dash_lines(self.component)
+
     def draw_regression_curve(
         self, curve_kind: CurveKind, styles: Sequence[StyleT] | None = None
     ) -> Prop[RegressionCurve]:
@@ -440,6 +456,52 @@ class ChartDoc(
             raise
         except Exception as e:
             raise mEx.ChartError("Error drawing regression curve") from e
+
+    def eval_curve(self, curve: XRegressionCurve) -> None:
+        """
+        Uses ``XRegressionCurve.getCalculator()`` to access the ``XRegressionCurveCalculator`` interface.
+        It sets up the data and parameters for a particular curve, and prints the results of curve fitting to the console.
+
+        Args:
+            curve (XRegressionCurve): Regression Curve object.
+
+        Returns:
+            None:
+        """
+        mChart2.Chart2.eval_curve(self.component, curve)
+
+    def calc_regressions(self) -> None:
+        """
+        Calculate regressions.
+
+        Several different regression functions are calculated using the chart's data.
+        Their equations and ``R2`` values are printed to the console
+
+        Raises:
+            ChartError: If error occurs.
+
+        Returns:
+            None:
+        """
+        with LoContext(self.lo_inst):
+            mChart2.Chart2.calc_regressions(self.component)
+
+    def find_chart_type(self, chart_type: ChartTypeNameBase | str) -> ChartType[ChartDoc]:
+        """
+        Finds a chart for a given chart type.
+
+        Args:
+            chart_type (ChartTypeNameBase | str): Chart type.
+
+        Raises:
+            NotFoundError: If chart is not found
+            ChartError: If any other error occurs.
+
+        Returns:
+            ChartType[ChartDoc]: Found chart type.
+        """
+        found_type = mChart2.Chart2.find_chart_type(chart_doc=self.component, chart_type=chart_type)
+        return ChartType(owner=self, component=found_type, lo_inst=self.lo_inst)
 
     @property
     def first_diagram(self) -> ChartDiagram:

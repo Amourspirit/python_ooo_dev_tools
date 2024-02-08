@@ -2972,6 +2972,9 @@ class Chart2:
         Args:
             chart_doc (XChartDocument): Chart Document
             curve (XRegressionCurve): Regression Curve object.
+
+        Returns:
+            None:
         """
         curve_calc = curve.getCalculator()
         ct = cls.get_curve_type(curve)
@@ -3261,7 +3264,7 @@ class Chart2:
     @classmethod
     def copy_chart(cls, ssdoc: XSpreadsheetDocument, sheet: XSpreadsheet, chart_name: str = "") -> None:
         """
-        Copies a chart using a dispatch command.
+        Copies a chart to the clipboard using a dispatch command.
 
         |lo_unsafe|
 
