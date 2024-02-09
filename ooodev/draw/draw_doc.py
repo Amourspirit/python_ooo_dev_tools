@@ -119,6 +119,16 @@ class DrawDoc(
 
     # endregion Lazy Listeners
 
+    # region context manage
+    def __enter__(self) -> DrawDoc:
+        self.lock_controllers()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.unlock_controllers()
+
+    # endregion context manage
+
     # region Overrides
     def get_slides(self) -> DrawPages:
         """

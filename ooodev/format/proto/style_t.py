@@ -1,14 +1,13 @@
 from __future__ import annotations
-from typing import Tuple
-from typing import Any, overload, TYPE_CHECKING, Dict
+from typing import Any, overload, TYPE_CHECKING, Tuple
 import uno
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
-    from ooodev.events.args.cancel_event_args import CancelEventArgs as CancelEventArgs
-    from ooodev.events.args.event_args import EventArgs as EventArgs
-    from ooodev.events.args.key_val_args import KeyValArgs as KeyValArgs
-    from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs as KeyValCancelArgs
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from ooodev.events.args.event_args import EventArgs
+    from ooodev.events.args.key_val_args import KeyValArgs
+    from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
     from ooodev.format.inner.kind.format_kind import FormatKind
     from ooodev.proto.event_observer import EventObserver
 
@@ -22,7 +21,7 @@ else:
 
 
 class StyleT(Protocol):
-    """Font Effect Protocol"""
+    """Style base Protocol"""
 
     @overload
     def apply(self, obj: Any) -> None:  # type: ignore

@@ -12,7 +12,8 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
-from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -31,6 +32,7 @@ class ChartDataSeries(
     ServicePartial,
     StylePartial,
     FontEffectsPartial,
+    FontOnlyPartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -53,6 +55,9 @@ class ChartDataSeries(
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
         FontEffectsPartial.__init__(
+            self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
+        )
+        FontOnlyPartial.__init__(
             self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
         )
         self._owner = owner

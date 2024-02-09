@@ -11,7 +11,8 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.kind.curve_kind import CurveKind
 
@@ -27,6 +28,7 @@ class ChartAxis(
     AxisComp,
     PropPartial,
     FontEffectsPartial,
+    FontOnlyPartial,
     EventsPartial,
     QiPartial,
     ServicePartial,
@@ -50,6 +52,7 @@ class ChartAxis(
         AxisComp.__init__(self, component=component)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
+        FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
         EventsPartial.__init__(self)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)

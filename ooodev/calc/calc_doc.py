@@ -109,6 +109,16 @@ class CalcDoc(
         self._draw_pages = None
         self._current_controller = None
 
+    # region context manage
+    def __enter__(self) -> CalcDoc:
+        self.lock_controllers()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.unlock_controllers()
+
+    # endregion context manage
+
     def create_cell_style(self, style_name: str) -> XStyle:
         """
         Creates a style

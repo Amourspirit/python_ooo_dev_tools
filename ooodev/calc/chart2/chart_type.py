@@ -56,7 +56,7 @@ class ChartType(
         self.get_data_series()
 
     # region DataSeriesContainerPartial overrides
-    def get_data_series(self) -> Tuple[ChartDataSeries[ChartType], ...]:
+    def get_data_series(self) -> Tuple[ChartDataSeries[ChartType[_T]], ...]:
         """
         retrieve all data series
         """

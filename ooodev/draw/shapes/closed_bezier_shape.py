@@ -9,8 +9,8 @@ from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.exceptions import ex as mEx
 from ..partial.draw_shape_partial import DrawShapePartial
+from .partial.styled_shape_partial import StyledShapePartial
 from .shape_base import ShapeBase, _T
 
 
@@ -30,6 +30,7 @@ class ClosedBezierShape(
     VetoableChangeImplement,
     PropPartial,
     StylePartial,
+    StyledShapePartial,
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
         self._owner = owner
@@ -43,6 +44,7 @@ class ClosedBezierShape(
         QiPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         PropPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         StylePartial.__init__(self, component=component)
+        StyledShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
 
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.ClosedBezierShape``."""

@@ -4,7 +4,8 @@ import uno
 
 from ooodev.loader import lo as mLo
 from ooodev.adapter.beans.property_set_comp import PropertySetComp
-from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.adapter.chart2.data_point_properties_partial import DataPointPropertiesPartial
 from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
@@ -20,6 +21,7 @@ class ChartDataPoint(
     LoInstPropsPartial,
     PropertySetComp,
     FontEffectsPartial,
+    FontOnlyPartial,
     DataPointPropertiesPartial,
     FillPropertiesPartial,
     QiPartial,
@@ -44,6 +46,9 @@ class ChartDataPoint(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         PropertySetComp.__init__(self, component)
         FontEffectsPartial.__init__(
+            self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
+        )
+        FontOnlyPartial.__init__(
             self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
         )
         DataPointPropertiesPartial.__init__(self, component=component)

@@ -7,6 +7,8 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Legend  # service
@@ -14,7 +16,16 @@ if TYPE_CHECKING:
     from .chart_diagram import ChartDiagram
 
 
-class ChartLegend(LoInstPropsPartial, LegendComp, EventsPartial, QiPartial, ServicePartial, PropPartial):
+class ChartLegend(
+    LoInstPropsPartial,
+    LegendComp,
+    FontEffectsPartial,
+    FontOnlyPartial,
+    EventsPartial,
+    QiPartial,
+    ServicePartial,
+    PropPartial,
+):
     """
     Class for managing Chart2 Legend Component.
     """
@@ -30,6 +41,8 @@ class ChartLegend(LoInstPropsPartial, LegendComp, EventsPartial, QiPartial, Serv
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         LegendComp.__init__(self, lo_inst=self.lo_inst, component=component)
+        FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
+        FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
         PropPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
         QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)

@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, overload, List, Sequence, TYPE_CHECKING, Tuple
 from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
 from ooodev.adapter.chart2.chart_document_comp import ChartDocumentComp
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -17,10 +16,19 @@ from ooodev.adapter.document.storage_change_event_events import StorageChangeEve
 from ooodev.office import chart2 as mChart2
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.color import Color
+from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
+from ooodev.format.inner.partial.area.chart2.chart_fill_gradient_partial import ChartFillGradientPartial
+from ooodev.format.inner.partial.area.chart2.chart_fill_img_partial import ChartFillImgPartial
+from ooodev.format.inner.partial.area.chart2.chart_fill_pattern_partial import ChartFillPatternPartial
+from ooodev.format.inner.partial.area.chart2.chart_fill_hatch_partial import ChartFillHatchPartial
+from ooodev.format.inner.partial.borders.draw.line_properties_partial import LinePropertiesPartial
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
+    from com.sun.star.chart2 import XChartDocument
     from com.sun.star.chart2 import ChartDocument  # service
     from com.sun.star.chart2 import XRegressionCurve
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
     from ooodev.utils.comp.prop import Prop
@@ -48,10 +56,17 @@ class ChartDoc(
     PropPartial,
     QiPartial,
     ServicePartial,
+    EventsPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
     CloseEvents,
     StorageChangeEventEvents,
+    FillColorPartial,
+    ChartFillGradientPartial,
+    ChartFillImgPartial,
+    ChartFillPatternPartial,
+    ChartFillHatchPartial,
+    LinePropertiesPartial,
 ):
     """
     Class for managing Chart2 ChartDocument Component.
@@ -72,6 +87,7 @@ class ChartDoc(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        EventsPartial.__init__(self)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         CloseEvents.__init__(self, trigger_args=generic_args, cb=self._on_close_events_add_remove)
@@ -80,11 +96,19 @@ class ChartDoc(
         )
         PropertyChangeImplement.__init__(self, component=component, trigger_args=generic_args)  # type: ignore
         VetoableChangeImplement.__init__(self, component=component, trigger_args=generic_args)  # type: ignore
+        FillColorPartial.__init__(self, factory_name="ooodev.chart2.general", component=component, lo_inst=lo_inst)
+        pg_bg = self.component.getPageBackground()
+        ChartFillGradientPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
+        ChartFillImgPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
+        ChartFillPatternPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
+        ChartFillHatchPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
+        LinePropertiesPartial.__init__(self, factory_name="ooodev.chart2.line", component=pg_bg, lo_inst=lo_inst)
         self._axis_x = None
         self._axis2_x = None
         self._axis_y = None
         self._axis2_y = None
         self._first_diagram = None
+        self._init_events()
 
     # region Lazy Listeners
 
@@ -114,6 +138,46 @@ class ChartDoc(
         self.unlock_controllers()
 
     # endregion context manage
+
+    # region Events
+    def _init_events(self) -> None:
+        """
+        Initialize Events
+        """
+        self._fn_on_area_fill_color_changing = self._on_area_fill_color_changing
+        self.subscribe_event("before_style_area_color", self._fn_on_area_fill_color_changing)
+
+    def _on_area_fill_color_changing(self, source: Any, event: CancelEventArgs) -> None:
+        """
+        On Area Fill Color Changing
+        """
+        event.event_data["component"] = self.component.getPageBackground()
+
+    # endregion Events
+
+    # region ChartFillGradientPartial Overrides
+    def _ChartFillGradientPartial__get_chart_doc(self) -> XChartDocument:
+        return self.component
+
+    # endregion ChartFillGradientPartial Overrides
+
+    # region ChartFillImgPartial Overrides
+    def _ChartFillImgPartial__get_chart_doc(self) -> XChartDocument:
+        return self.component
+
+    # endregion ChartFillImgPartial Overrides
+
+    # region ChartFillPatternPartial Overrides
+    def _ChartFillPatternPartial__get_chart_doc(self) -> XChartDocument:
+        return self.component
+
+    # endregion ChartFillPatternPartial Overrides
+
+    # region ChartFillHatchPartial Overrides
+    def _ChartFillHatchPartial__get_chart_doc(self) -> XChartDocument:
+        return self.component
+
+    # endregion ChartFillHatchPartial Overrides
 
     # region Methods
     def set_title(self, title: str) -> ChartTitle[ChartDoc]:

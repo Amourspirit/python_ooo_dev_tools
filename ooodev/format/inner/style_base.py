@@ -36,6 +36,11 @@ if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
     from com.sun.star.style import CellStyle
     from ooodev.proto.event_observer import EventObserver
+    from ooodev.format.proto.style_t import StyleT
+else:
+    PropertyValue = Any
+    CellStyle = Any
+    StyleT = Any
 
 # endregion Imports
 
@@ -442,6 +447,12 @@ class StyleBase(metaclass=MetaStyle):
         Returns:
             None:
 
+        Note:
+            If Event data ``obj`` or ``data_values`` is changed then the new values are used.
+
+        .. versionchanged:: 0.27.0
+            Event data is now a dictionary with keys ``source``, ``obj``, and ``data_values``.
+
         .. versionchanged:: 0.9.4
             Added ``validate`` keyword arguments.
         """
@@ -453,10 +464,13 @@ class StyleBase(metaclass=MetaStyle):
         if len(data_values) > 0:
             if not validate or self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
-                cargs.event_data = self
+                event_data = {"source": self, "obj": obj, "data_values": data_values}
+                cargs.event_data = event_data
                 self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
                 if cargs.cancel:
                     return
+                data_values = cargs.event_data["data_values"]
+                the_obj = cargs.event_data["obj"]
                 with event_ctx(
                     (PropsNamedEvent.PROP_SETTING, _on_props_setting),
                     (PropsNamedEvent.PROP_SET, _on_props_set),
@@ -464,7 +478,7 @@ class StyleBase(metaclass=MetaStyle):
                     source=self,
                     lo_observe=True,
                 ):
-                    self._props_set(obj, **data_values)
+                    self._props_set(the_obj, **data_values)
                 eargs = EventArgs.from_args(cargs)
                 self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
@@ -904,7 +918,7 @@ class _StyleMultiArgs:
 
 
 class _StyleInfo(NamedTuple):
-    style: StyleBase
+    style: StyleT
     args: _StyleMultiArgs | None
 
 
@@ -1034,7 +1048,7 @@ class StyleMulti(StyleBase):
 
     # region Internal Methods
 
-    def _set_style(self, key: str, style: StyleBase, *attrs, **kwargs) -> None:
+    def _set_style(self, key: str, style: StyleT, *attrs, **kwargs) -> None:
         """
         Sets style
 
@@ -1052,7 +1066,7 @@ class StyleMulti(StyleBase):
         if kvargs.cancel:
             return
         styles = self._get_multi_styles()
-        if style._prop_parent is None:
+        if style._prop_parent is None:  # type: ignore
             style._prop_parent = self  # type: ignore
         if len(attrs) + len(kwargs) == 0:
             styles[key] = _StyleInfo(style, None)
@@ -1088,7 +1102,7 @@ class StyleMulti(StyleBase):
     def _get_style(self, key: str) -> _StyleInfo | None:
         return self._get_multi_styles().get(key)
 
-    def _get_style_inst(self, key: str) -> StyleBase | None:
+    def _get_style_inst(self, key: str) -> StyleT | None:
         style = self._get_style(key)
         return None if style is None else style.style
 

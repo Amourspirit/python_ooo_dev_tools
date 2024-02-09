@@ -174,7 +174,7 @@ class CharacterPropertiesPartial:
             self.__component.CharBottomBorderDistance = value
 
     @property
-    def CharCaseMap(self) -> int | None:
+    def char_case_map(self) -> int | None:
         """
         Gets/Sets - This optional property contains the value of the case-mapping of the text for formatting and displaying.
 
@@ -184,8 +184,8 @@ class CharacterPropertiesPartial:
             return self.__component.CharCaseMap
         return None
 
-    @CharCaseMap.setter
-    def CharCaseMap(self, value: int) -> None:
+    @char_case_map.setter
+    def char_case_map(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
             self.__component.CharCaseMap = value
 

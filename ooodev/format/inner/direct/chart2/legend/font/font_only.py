@@ -1,9 +1,14 @@
 # region Import
 from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 import uno
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as CharFontOnly, FontLang
 from ooodev.units import UnitT
 
+if TYPE_CHECKING:
+    from ooodev.format.proto.font.font_lang_t import FontLangT
+else:
+    FontLangT = Any
 # endregion Import
 
 
@@ -28,7 +33,7 @@ class FontOnly(CharFontOnly):
         name: str | None = None,
         size: float | UnitT | None = None,
         font_style: str | None = None,
-        lang: FontLang | None = None,
+        lang: FontLangT | None = None,
     ) -> None:
         """
         Font options used in styles.

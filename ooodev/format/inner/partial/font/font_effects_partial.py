@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ooodev.utils.color import Color
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.format.inner.proto.font_effects_t import FontEffectsT
+    from ooodev.format.proto.font.font_effects_t import FontEffectsT
 
 
 class FontEffectsPartial:
@@ -30,7 +30,7 @@ class FontEffectsPartial:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         self.__lo_inst = lo_inst
-        self.__styler = font_effects_factory(factory_name)
+        self.__factory_name = factory_name
         self.__component = component
 
     def style_font_effect(
@@ -48,7 +48,32 @@ class FontEffectsPartial:
         hidden: bool | None = None,
         shadowed: bool | None = None,
     ) -> FontEffectsT | None:
+        """
+        Style Font options.
+
+        Args:
+            color (:py:data:`~.utils.color.Color`, optional): The value of the text color.
+                If value is ``-1`` the automatic color is applied.
+            transparency (Intensity, int, optional): The transparency value from ``0`` to ``100`` for the font color.
+            overline (FontLine, optional): Character overline values.
+            underline (FontLine, optional): Character underline values.
+            strike (FontStrikeoutEnum, optional): Determines the type of the strike out of the character.
+            word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied
+                to white spaces.
+            case (CaseMapEnum, optional): Specifies the case of the font.
+            relief (FontReliefEnum, optional): Specifies the relief of the font.
+            outline (bool, optional): Specifies if the font is outlined.
+            hidden (bool, optional): Specifies if the font is hidden.
+            shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
+
+        Raises:
+            CancelEventError: If the event ``before_style_font_effect`` is cancelled and not handled.
+
+        Returns:
+            None:
+        """
         comp = self.__component
+        factory_name = self.__factory_name
         has_events = False
         cargs = None
         if isinstance(self, EventsPartial):
@@ -66,7 +91,8 @@ class FontEffectsPartial:
                 "outline": outline,
                 "hidden": hidden,
                 "shadowed": shadowed,
-                "component": self.__component,
+                "factory_name": factory_name,
+                "component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_font_effect", cargs)
@@ -91,9 +117,11 @@ class FontEffectsPartial:
             outline = cargs.event_data.get("outline", outline)
             hidden = cargs.event_data.get("hidden", hidden)
             shadowed = cargs.event_data.get("shadowed", shadowed)
+            factory_name = cargs.event_data.get("factory_name", factory_name)
             comp = cargs.event_data.get("component", comp)
 
-        fe = self.__styler(
+        styler = font_effects_factory(factory_name)
+        fe = styler(
             color=color,
             transparency=transparency,
             overline=overline,

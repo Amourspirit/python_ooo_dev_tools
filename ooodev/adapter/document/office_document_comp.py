@@ -5,6 +5,7 @@ from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.adapter.frame.model_partial import ModelPartial
 
 
 if TYPE_CHECKING:
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
 
 
-class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, PrintJobEvents):
+class OfficeDocumentComp(ComponentBase, ModelPartial, DocumentEventEvents, ModifyEvents, PrintJobEvents):
     """
     Class for managing Sheet Cell Component.
     """
@@ -27,6 +28,7 @@ class OfficeDocumentComp(ComponentBase, DocumentEventEvents, ModifyEvents, Print
             component (XComponent): UNO Component that supports ``com.sun.star.document.OfficeDocument`` service.
         """
         ComponentBase.__init__(self, component)
+        ModelPartial.__init__(self, component=component, interface=None)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)

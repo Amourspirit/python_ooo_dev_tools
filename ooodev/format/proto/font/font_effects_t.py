@@ -5,9 +5,9 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
 from ooo.dyn.style.case_map import CaseMapEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum
 
-from .sytle_t import StyleT
+from ..style_t import StyleT
 from ooodev.utils.color import Color
-from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.utils.data_type.intensity import Intensity
 
 if TYPE_CHECKING:
     try:

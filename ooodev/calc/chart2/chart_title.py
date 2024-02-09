@@ -10,7 +10,8 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
-from ooodev.format.inner.partial.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.units import Angle
@@ -30,6 +31,7 @@ class ChartTitle(
     TitleComp,
     PropPartial,
     FontEffectsPartial,
+    FontOnlyPartial,
     QiPartial,
     ServicePartial,
     StylePartial,
@@ -56,6 +58,7 @@ class ChartTitle(
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
+        FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         self._owner = owner
         self._init_events()
 
