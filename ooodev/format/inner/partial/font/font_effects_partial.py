@@ -140,6 +140,7 @@ class FontEffectsPartial:
 
         with LoContext(self.__lo_inst):
             fe.apply(comp)
+        fe.set_update_obj(comp)
         if has_events:
             self.trigger_event("after_style_font_effect", EventArgs.from_args(cargs))  # type: ignore
         return fe

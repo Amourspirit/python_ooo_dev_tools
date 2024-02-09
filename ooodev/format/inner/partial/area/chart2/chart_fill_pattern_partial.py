@@ -115,6 +115,7 @@ class ChartFillPatternPartial:
 
         with LoContext(self.__lo_inst):
             fe.apply(comp)
+        fe.set_update_obj(comp)
         if has_events:
             self.trigger_event("after_style_area_pattern", EventArgs.from_args(cargs))  # type: ignore
         return fe
@@ -164,6 +165,7 @@ class ChartFillPatternPartial:
 
         with LoContext(self.__lo_inst):
             fe.apply(comp)
+        fe.set_update_obj(comp)
         if has_events:
             self.trigger_event("after_style_area_pattern_from_preset", EventArgs.from_args(cargs))  # type: ignore
         return fe

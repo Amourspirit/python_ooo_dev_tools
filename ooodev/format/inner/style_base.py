@@ -92,6 +92,7 @@ class StyleBase(metaclass=MetaStyle):
 
         self._is_default_inst = False
         self._prop_parent: Any = None
+        self._update_obj = None
 
         self._dv = {}
         self._dv_bak = None
@@ -104,6 +105,76 @@ class StyleBase(metaclass=MetaStyle):
                 self._dv[key] = value
         super().__init__()
         self._set_style_internal_events()
+
+    # region Update Methods
+    def has_update_obj(self) -> bool:
+        """
+        Gets if the update object is set for the style instance.
+
+        Returns:
+            bool: ``True`` if the update object is set; Otherwise, ``False``.
+
+        .. versionadded:: 0.27.0
+        """
+        return self._update_obj is not None
+
+    def set_update_obj(self, obj: Any) -> None:
+        """
+        Sets the update object for the style instance.
+
+        Args:
+            obj (Any): Object used to apply style to when update is called.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.27.0
+        """
+        # cannot set a weak ref to to a pyuno object.
+        self._update_obj = obj
+
+    @overload
+    def update(self) -> bool:
+        """
+        Applies the style to the update object.
+
+        Returns:
+            bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def update(self, **kwargs: Any) -> bool:
+        """
+        Applies the style to the update object.
+
+        Returns:
+            bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
+            **kwargs: Expandable list of key value pairs that may be used in child classes.
+        """
+        ...
+
+    def update(self, **kwargs: Any) -> bool:
+        """
+        Applies the style to the update object.
+
+        Returns:
+            bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
+            **kwargs: Expandable list of key value pairs that may be used in child classes.
+
+        Note:
+            If the ``apply()`` method has been called then usually the style will set the update object.
+            For some style it may be necessary to set the update object manually using the ``set_update_obj()`` method.
+            The ``has_update_obj()`` method can be used to get the update object as been set
+
+        .. versionadded:: 0.27.0
+        """
+        if self._update_obj is None:
+            return False
+        self.apply(obj=self._update_obj, **kwargs)
+        return True
+
+    # endregion Update Methods
 
     def _get_mm100_obj_from_mm(self, value: UnitT | float, min_value: int = -9999) -> UnitMM100:
         """
@@ -448,14 +519,17 @@ class StyleBase(metaclass=MetaStyle):
             None:
 
         Note:
-            If Event data ``obj`` or ``data_values`` is changed then the new values are used.
+            If Event data ``obj``, ``data_values`` or ``allow_update`` are changed then the new values are used.
+
+            Add update object to instance if not already set and ``allow_update`` is ``True`` (default).
 
         .. versionchanged:: 0.27.0
-            Event data is now a dictionary with keys ``source``, ``obj``, and ``data_values``.
+            Event data is now a dictionary with keys ``source``, ``obj``, ``data_values`` and ``allow_update``.
 
         .. versionchanged:: 0.9.4
             Added ``validate`` keyword arguments.
         """
+        allow_update = True
         validate = bool(kwargs.get("validate", True))
         if "override_dv" in kwargs:
             data_values = kwargs["override_dv"]
@@ -464,13 +538,14 @@ class StyleBase(metaclass=MetaStyle):
         if len(data_values) > 0:
             if not validate or self._is_valid_obj(obj):
                 cargs = CancelEventArgs(source=f"{self.apply.__qualname__}")
-                event_data = {"source": self, "obj": obj, "data_values": data_values}
+                event_data = {"source": self, "obj": obj, "data_values": data_values, "allow_update": allow_update}
                 cargs.event_data = event_data
                 self._events.trigger(FormatNamedEvent.STYLE_APPLYING, cargs)
                 if cargs.cancel:
                     return
                 data_values = cargs.event_data["data_values"]
                 the_obj = cargs.event_data["obj"]
+                allow_update = cargs.event_data.get("allow_update", allow_update)
                 with event_ctx(
                     (PropsNamedEvent.PROP_SETTING, _on_props_setting),
                     (PropsNamedEvent.PROP_SET, _on_props_set),
@@ -479,6 +554,9 @@ class StyleBase(metaclass=MetaStyle):
                     lo_observe=True,
                 ):
                     self._props_set(the_obj, **data_values)
+                # set for update.
+                if allow_update is True and not self.has_update_obj():
+                    self.set_update_obj(the_obj)
                 eargs = EventArgs.from_args(cargs)
                 self._events.trigger(FormatNamedEvent.STYLE_APPLIED, eargs)
             else:
@@ -971,6 +1049,48 @@ class StyleMulti(StyleBase):
         self._events.on(FormatNamedEvent.MULTI_STYLE_UPDATED, self._fn_on_multi_style_updated)
         self._events.on(FormatNamedEvent.STYLE_MULTI_CHILD_APPLYING, self._fn_on_multi_child_style_applying)
         self._events.on(FormatNamedEvent.STYLE_MULTI_CHILD_APPLIED, self._fn_on_multi_child_style_applied)
+
+    # region Update Methods
+    def has_update_obj(self) -> bool:
+        """Gets if the update object is set. for the style instance."""
+        styles = self._get_multi_styles()
+        if not styles:
+            return False
+        result = True
+        for style, _ in styles.values():
+            result = result and style.has_update_obj()
+
+        return result
+
+    def set_update_obj(self, obj: Any) -> None:
+        """
+        Sets the update object for the styles instances.
+
+        Args:
+            obj (Any): Object used to apply style to when update is called.
+        """
+        styles = self._get_multi_styles()
+        for style, _ in styles.values():
+            style.set_update_obj(obj)
+
+    def update(self, **kwargs: Any) -> bool:
+        """
+        Applies the styles to the update object.
+
+        Returns:
+            bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
+            **kwargs: Expandable list of key value pairs that may be used in child classes.
+        """
+        styles = self._get_multi_styles()
+        if not styles:
+            return False
+        result = True
+        for style, _ in styles.values():
+            result = result and style.update(**kwargs)
+
+        return result
+
+    # endregion Update Methods
 
     # region apply()
 

@@ -23,6 +23,43 @@ else:
 class StyleT(Protocol):
     """Style base Protocol"""
 
+    # region Update Methods
+    def set_update_obj(self, obj: Any) -> None:
+        """
+        Sets the update object for the style instance.
+
+        Args:
+            obj (Any): Object used to apply style to when update is called.
+        """
+        ...
+
+    def has_update_obj(self) -> bool:
+        """Gets if the update object is set. for the style instance."""
+        ...
+
+    @overload
+    def update(self) -> bool:
+        """
+        Applies the style to the update object.
+
+        Returns:
+            bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
+        """
+        ...
+
+    @overload
+    def update(self, **kwargs: Any) -> bool:
+        """
+        Applies the style to the update object.
+
+        Returns:
+            bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
+            **kwargs: Expandable list of key value pairs that may be used in child classes.
+        """
+        ...
+
+    # endregion Update Methods
+
     @overload
     def apply(self, obj: Any) -> None:  # type: ignore
         """
