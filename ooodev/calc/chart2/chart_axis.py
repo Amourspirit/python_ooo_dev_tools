@@ -100,7 +100,7 @@ class ChartAxis(
 
     # region NumbersNumbersPartial overrides
     def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
-        return self._owner.component
+        return self.chart_doc.component
 
     # endregion NumbersNumbersPartial overrides
 

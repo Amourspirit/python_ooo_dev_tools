@@ -14,8 +14,10 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
 
 if TYPE_CHECKING:
+    from com.sun.star.chart2 import XChartDocument
     from ooodev.loader.inst.lo_inst import LoInst
     from .chart_doc import ChartDoc
     from .chart_data_point import ChartDataPoint
@@ -34,6 +36,7 @@ class ChartDataSeries(
     StylePartial,
     FontEffectsPartial,
     FontOnlyPartial,
+    NumbersNumbersPartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -63,6 +66,9 @@ class ChartDataSeries(
         FontOnlyPartial.__init__(
             self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
         )
+        NumbersNumbersPartial.__init__(
+            self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
+        )
         self._owner = owner
         self._chart_doc = chart_doc
 
@@ -83,6 +89,12 @@ class ChartDataSeries(
         return ChartDataPoint(owner=self, chart_doc=self.chart_doc, component=dp, lo_inst=self.lo_inst)
 
     # endregion DataSeriesPartial Overrides
+
+    # region NumbersNumbersPartial overrides
+    def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
+        return self.chart_doc.component
+
+    # endregion NumbersNumbersPartial overrides
 
     def get_data_source(self) -> DataSource:
         """
