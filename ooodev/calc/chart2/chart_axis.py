@@ -15,6 +15,19 @@ from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPar
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.kind.curve_kind import CurveKind
+from ooodev.format.inner.partial.borders.chart2.axis_line_properties_partial import AxisLinePropertiesPartial
+from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_axis_line_partial import (
+    Chart2AxisPosAxisLinePartial,
+)
+from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_interval_marks_partial import (
+    Chart2AxisPosIntervalMarksPartial,
+)
+from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_label_position_partial import (
+    Chart2AxisPosLabelPositionPartial,
+)
+from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_position_axis_partial import (
+    Chart2AxisPosPositionAxisPartial,
+)
 
 if TYPE_CHECKING:
     from .chart_doc import ChartDoc
@@ -26,13 +39,18 @@ if TYPE_CHECKING:
 class ChartAxis(
     LoInstPropsPartial,
     AxisComp,
-    PropPartial,
-    FontEffectsPartial,
-    FontOnlyPartial,
     EventsPartial,
+    PropPartial,
     QiPartial,
     ServicePartial,
     StylePartial,
+    FontOnlyPartial,
+    FontEffectsPartial,
+    AxisLinePropertiesPartial,
+    Chart2AxisPosAxisLinePartial,
+    Chart2AxisPosIntervalMarksPartial,
+    Chart2AxisPosLabelPositionPartial,
+    Chart2AxisPosPositionAxisPartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -50,13 +68,28 @@ class ChartAxis(
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         AxisComp.__init__(self, component=component)
-        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
-        FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
-        FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
         EventsPartial.__init__(self)
+        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
+        FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
+        FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
+        AxisLinePropertiesPartial.__init__(
+            self, factory_name="ooodev.chart2.axis.line", component=component, lo_inst=lo_inst
+        )
+        Chart2AxisPosAxisLinePartial.__init__(
+            self, factory_name="ooodev.chart2.axis.pos.line", component=component, lo_inst=lo_inst
+        )
+        Chart2AxisPosIntervalMarksPartial.__init__(
+            self, factory_name="ooodev.chart2.axis.pos.interval_marks", component=component, lo_inst=lo_inst
+        )
+        Chart2AxisPosLabelPositionPartial.__init__(
+            self, factory_name="oodev.chart2.axis.pos.position", component=component, lo_inst=lo_inst
+        )
+        Chart2AxisPosPositionAxisPartial.__init__(
+            self, factory_name="ooodev.chart2.axis.line", component=component, lo_inst=lo_inst
+        )
         self._owner = owner
 
     # region StylePartial Overrides

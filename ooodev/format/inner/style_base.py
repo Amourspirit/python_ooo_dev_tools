@@ -92,7 +92,7 @@ class StyleBase(metaclass=MetaStyle):
 
         self._is_default_inst = False
         self._prop_parent: Any = None
-        self._update_obj = None
+        self.__update_obj = None
 
         self._dv = {}
         self._dv_bak = None
@@ -116,7 +116,7 @@ class StyleBase(metaclass=MetaStyle):
 
         .. versionadded:: 0.27.0
         """
-        return self._update_obj is not None
+        return self.__update_obj is not None
 
     def set_update_obj(self, obj: Any) -> None:
         """
@@ -131,7 +131,7 @@ class StyleBase(metaclass=MetaStyle):
         .. versionadded:: 0.27.0
         """
         # cannot set a weak ref to to a pyuno object.
-        self._update_obj = obj
+        self.__update_obj = obj
 
     @overload
     def update(self) -> bool:
@@ -169,9 +169,9 @@ class StyleBase(metaclass=MetaStyle):
 
         .. versionadded:: 0.27.0
         """
-        if self._update_obj is None:
+        if self.__update_obj is None:
             return False
-        self.apply(obj=self._update_obj, **kwargs)
+        self.apply(obj=self.__update_obj, **kwargs)
         return True
 
     # endregion Update Methods
@@ -623,6 +623,8 @@ class StyleBase(metaclass=MetaStyle):
                         new_class._set(nu_val, self._get(key))
             else:
                 new_class._update(self._get_properties())
+        if self.__update_obj is not None:
+            new_class.set_update_obj(self.__update_obj)
         return new_class
 
     # endregion Copy()
@@ -1051,16 +1053,6 @@ class StyleMulti(StyleBase):
         self._events.on(FormatNamedEvent.STYLE_MULTI_CHILD_APPLIED, self._fn_on_multi_child_style_applied)
 
     # region Update Methods
-    def has_update_obj(self) -> bool:
-        """Gets if the update object is set. for the style instance."""
-        styles = self._get_multi_styles()
-        if not styles:
-            return False
-        result = True
-        for style, _ in styles.values():
-            result = result and style.has_update_obj()
-
-        return result
 
     def set_update_obj(self, obj: Any) -> None:
         """
@@ -1069,6 +1061,7 @@ class StyleMulti(StyleBase):
         Args:
             obj (Any): Object used to apply style to when update is called.
         """
+        super().set_update_obj(obj)
         styles = self._get_multi_styles()
         for style, _ in styles.values():
             style.set_update_obj(obj)
@@ -1081,13 +1074,11 @@ class StyleMulti(StyleBase):
             bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
             **kwargs: Expandable list of key value pairs that may be used in child classes.
         """
-        styles = self._get_multi_styles()
-        if not styles:
-            return False
         result = True
+        styles = self._get_multi_styles()
         for style, _ in styles.values():
             result = result and style.update(**kwargs)
-
+        result = result and super().update(**kwargs)
         return result
 
     # endregion Update Methods

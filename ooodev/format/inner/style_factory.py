@@ -16,6 +16,12 @@ if TYPE_CHECKING:
     from ..proto.position_size.draw.position_t import PositionT as DrawPositionT
     from ..proto.position_size.draw.protect_t import ProtectT as DrawProtectT
     from ..proto.borders.line_properties_t import LinePropertiesT as BorderLinePropertiesT
+    from ..proto.area.transparency.transparency_t import TransparencyT as TransparencyTransparencyT
+    from ..proto.area.transparency.gradient_t import GradientT as TransparencyGradientT
+    from ..proto.chart2.axis.positioning.axis_line_t import AxisLineT as Chart2AxisLineT
+    from ..proto.chart2.axis.positioning.interval_marks_t import IntervalMarksT as Chart2IntervalMarksT
+    from ..proto.chart2.axis.positioning.label_position_t import LabelPositionT as Chart2LabelPositionT
+    from ..proto.chart2.axis.positioning.position_axis_t import PositionAxisT as Chart2PositionAxisT
 else:
     FontEffectsT = Any
     FontOnlyT = Any
@@ -96,6 +102,48 @@ def area_color_factory(name: str) -> Type[FillColorT]:
     raise ValueError(f"Invalid name: {name}")
 
 
+def area_transparency_transparency_factory(name: str) -> Type[TransparencyTransparencyT]:
+    if name == "ooodev.area.transparency":
+        from ooodev.format.draw.direct.transparency.transparency import Transparency
+
+        return Transparency
+    if name == "ooodev.write.para.transparency":
+        from ooodev.format.writer.direct.para.transparency import Transparency
+
+        return Transparency
+
+    if name == "ooodev.write.shape.area.transparency":
+        from ooodev.format.writer.direct.shape.transparency import Transparency
+
+        return Transparency
+
+    if name == "ooodev.chart2.general":
+        from ooodev.format.chart2.direct.general.transparency import Transparency
+
+        return Transparency
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def area_transparency_gradient_factory(name: str) -> Type[TransparencyGradientT]:
+    if name == "ooodev.area.transparency":
+        from ooodev.format.draw.direct.transparency.gradient import Gradient
+
+        return Gradient
+
+    if name == "ooodev.write.shape.area.transparency":
+        from ooodev.format.writer.direct.shape.transparency import Gradient
+
+        return Gradient
+
+    if name == "ooodev.chart2.general":
+        from ooodev.format.chart2.direct.general.transparency import Gradient
+
+        return Gradient
+
+    raise ValueError(f"Invalid name: {name}")
+
+
 # def area_gradient_factory(name: str) -> Type[FillGradientT]:
 #     if name == "ooodev.chart2.general":
 #         # from ooodev.format.chart2.direct.general.area import Gradient
@@ -164,6 +212,49 @@ def chart2_position_size_size_factory(name: str) -> Type[Chart2SizeT]:
     raise ValueError(f"Invalid name: {name}")
 
 
+# region Chart2 Axis
+# region Chart2 Axis Positioning
+def chart2_axis_pos_line_factory(name: str) -> Type[Chart2AxisLineT]:
+    if name == "ooodev.chart2.axis.pos.line":
+        from ooodev.format.inner.direct.chart2.axis.positioning.axis_line import AxisLine
+
+        return AxisLine
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def chart2_axis_pos_interval_factory(name: str) -> Type[Chart2IntervalMarksT]:
+    if name == "ooodev.chart2.axis.pos.interval_marks":
+        from ooodev.format.inner.direct.chart2.axis.positioning.interval_marks import IntervalMarks
+
+        return IntervalMarks
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def chart2_axis_pos_label_position_factory(name: str) -> Type[Chart2LabelPositionT]:
+    if name == "ooodev.chart2.axis.pos.label_position":
+        from ooodev.format.inner.direct.chart2.axis.positioning.label_position import LabelPosition
+
+        return LabelPosition
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def chart2_axis_pos_position_axis_factory(name: str) -> Type[Chart2PositionAxisT]:
+    if name == "ooodev.chart2.axis.pos.position":
+        from ooodev.format.inner.direct.chart2.axis.positioning.position_axis import PositionAxis
+
+        return PositionAxis
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+# endregion Chart2 Axis Positioning
+
+# endregion Chart2 Axis
+
+
 def draw_position_size_position_factory(name: str) -> Type[DrawPositionT]:
     if name == "ooodev.draw.position":
         from ooodev.format.draw.direct.position_size.position_size.position import Position
@@ -199,6 +290,11 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
 
     if name == "ooodev.chart2.line":
         from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties
+
+        return LineProperties
+
+    if name == "ooodev.chart2.axis.line":
+        from ooodev.format.chart2.direct.axis.line import LineProperties
 
         return LineProperties
 

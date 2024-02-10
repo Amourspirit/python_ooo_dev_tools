@@ -21,7 +21,9 @@ from ooodev.format.inner.partial.area.chart2.chart_fill_gradient_partial import 
 from ooodev.format.inner.partial.area.chart2.chart_fill_img_partial import ChartFillImgPartial
 from ooodev.format.inner.partial.area.chart2.chart_fill_pattern_partial import ChartFillPatternPartial
 from ooodev.format.inner.partial.area.chart2.chart_fill_hatch_partial import ChartFillHatchPartial
-from ooodev.format.inner.partial.borders.draw.line_properties_partial import LinePropertiesPartial
+from ooodev.format.inner.partial.borders.chart2.border_line_properties_partial import BorderLinePropertiesPartial
+from ooodev.format.inner.partial.area.transparency.transparency_partial import TransparencyPartial
+from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial
 from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
@@ -66,7 +68,9 @@ class ChartDoc(
     ChartFillImgPartial,
     ChartFillPatternPartial,
     ChartFillHatchPartial,
-    LinePropertiesPartial,
+    BorderLinePropertiesPartial,
+    TransparencyPartial,
+    GradientPartial,
 ):
     """
     Class for managing Chart2 ChartDocument Component.
@@ -102,7 +106,9 @@ class ChartDoc(
         ChartFillImgPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
         ChartFillPatternPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
         ChartFillHatchPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
-        LinePropertiesPartial.__init__(self, factory_name="ooodev.chart2.line", component=pg_bg, lo_inst=lo_inst)
+        BorderLinePropertiesPartial.__init__(self, factory_name="ooodev.chart2.line", component=pg_bg, lo_inst=lo_inst)
+        TransparencyPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
+        GradientPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
         self._axis_x = None
         self._axis2_x = None
         self._axis_y = None
@@ -178,6 +184,11 @@ class ChartDoc(
         return self.component
 
     # endregion ChartFillHatchPartial Overrides
+    # region GradientPartial Overrides
+    def _GradientPartial_transparency_get_chart_doc(self) -> XChartDocument | None:
+        return self.component
+
+    # endregion GradientPartial Overrides
 
     # region Methods
     def set_title(self, title: str) -> ChartTitle[ChartDoc]:

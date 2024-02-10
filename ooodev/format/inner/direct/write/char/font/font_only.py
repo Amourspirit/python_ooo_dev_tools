@@ -299,6 +299,7 @@ class FontOnly(StyleMulti):
         with contextlib.suppress(mEx.PropertyNotFoundError):
             lang = FontLang.from_obj(obj)
             inst._set_style("lang", lang, *lang.get_attrs())
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

@@ -11,6 +11,7 @@ from ooodev.format.inner.style_factory import draw_border_line_factory
 from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
 from ooodev.utils.context.lo_context import LoContext
+from .line_properties import LineProperties
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -32,9 +33,7 @@ class LinePropertiesPartial:
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self.__lo_inst = lo_inst
-        self.__factory_name = factory_name
-        self.__component = component
+        self.__styler = LineProperties(factory_name=factory_name, component=component, lo_inst=lo_inst)
 
     def style_border_line(
         self,
@@ -44,7 +43,7 @@ class LinePropertiesPartial:
         style: BorderLineKind = BorderLineKind.CONTINUOUS,
     ) -> LinePropertiesT | None:
         """
-        Style Font.
+        Style Border.
 
         Args:
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
@@ -58,55 +57,4 @@ class LinePropertiesPartial:
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        cargs = None
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_border_line.__qualname__)
-            event_data: Dict[str, Any] = {
-                "style": style,
-                "color": color,
-                "width": width,
-                "transparency": transparency,
-                "factory_name": factory_name,
-                "component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_border_line", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_border_line")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
-                    else:
-                        return None
-                else:
-                    return None
-            style = cargs.event_data.get("style", style)
-            color = cargs.event_data.get("color", color)
-            width = cargs.event_data.get("width", width)
-            transparency = cargs.event_data.get("transparency", transparency)
-            comp = cargs.event_data.get("component", comp)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-
-        styler = draw_border_line_factory(factory_name)
-        fe = styler(
-            style=style,
-            color=color,
-            width=width,
-            transparency=transparency,
-        )
-        # fe.factory_name = factory_name
-
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
-
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_border_line", EventArgs.from_args(cargs))  # type: ignore
-        return fe
+        return self.__styler.style(color=color, width=width, transparency=transparency, style=style)

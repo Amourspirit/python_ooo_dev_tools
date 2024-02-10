@@ -8,14 +8,12 @@ if TYPE_CHECKING:
     except ImportError:
         from typing_extensions import Protocol
     from ..style_t import StyleT
-    from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties
     from ooodev.format.inner.preset.preset_border_line import BorderLineKind
     from ooodev.units import UnitT, UnitMM
     from ooodev.utils.color import Color
     from ooodev.utils.data_type.intensity import Intensity
 else:
     Protocol = object
-    LineProperties = Any
     BorderLineKind = Any
     UnitT = Any
     UnitMM = Any
