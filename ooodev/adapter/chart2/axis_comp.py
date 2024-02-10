@@ -37,6 +37,7 @@ class AxisComp(
         ComponentBase.__init__(self, component)
         LinePropertiesPartial.__init__(self, component=component)
         CharacterPropertiesPartial.__init__(self, component=component)
+        AxisPartial.__init__(self, component=component, interface=None)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

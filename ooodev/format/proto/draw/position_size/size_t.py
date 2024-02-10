@@ -7,7 +7,7 @@ if TYPE_CHECKING:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ..chart2.position_t import PositionT as ChartPositionT
+    from ooodev.format.proto.chart2.position_size.size_t import SizeT as Chart2SizeT
 
     from ooodev.units import UnitT, UnitMM
     from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
@@ -18,61 +18,59 @@ else:
     ShapeBasePointKind = Any
 
 
-class PositionT(ChartPositionT, Protocol):
-    """Fill Image Protocol"""
+class SizeT(Chart2SizeT, Protocol):
+    """Size Protocol"""
 
     def __init__(
         self,
         *,
-        pos_x: float | UnitT,
-        pos_y: float | UnitT,
+        width: float | UnitT,
+        height: float | UnitT,
         base_point: ShapeBasePointKind = ...,
     ) -> None:
         """
         Constructor
 
         Args:
-            pos_x (float | UnitT): Specifies the x-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
-            pos_y (float | UnitT): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            width (float | UnitT): Specifies the width of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+            height (float | UnitT): Specifies the height of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
             base_point (ShapeBasePointKind): Specifies the base point of the shape used to calculate the X and Y coordinates. Default is ``TOP_LEFT``.
 
         Returns:
             None:
         """
-
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> PositionT:
+    def from_obj(cls, obj: Any) -> SizeT:
         """
-        Creates a new instance from ``obj``.
+        Gets size from ``obj``
 
         Args:
             obj (Any): UNO Shape object.
 
         Returns:
-            PositionT: New instance.
+            Size: New instance.
         """
         ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> PositionT:
+    def from_obj(cls, obj: Any, **kwargs) -> SizeT:
         """
-        Creates a new instance from ``obj``.
+        Gets size from ``obj``
 
         Args:
             obj (Any): UNO Shape object.
             **kwargs: Additional arguments.
 
         Returns:
-            PositionT: New instance.
+            Size: New instance.
         """
         ...
 
-    # region Properties
-
+    # region properties
     @property
     def prop_base_point(self) -> ShapeBasePointKind:
         """
@@ -86,4 +84,4 @@ class PositionT(ChartPositionT, Protocol):
     @prop_base_point.setter
     def prop_base_point(self, value: ShapeBasePointKind) -> None: ...
 
-    # endregion Properties
+    # endregion properties

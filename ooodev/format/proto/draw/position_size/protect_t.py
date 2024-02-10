@@ -7,7 +7,7 @@ if TYPE_CHECKING:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ...style_t import StyleT
+    from ooodev.format.proto.style_t import StyleT
 else:
     Protocol = object
 

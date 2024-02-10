@@ -12,7 +12,7 @@ from ooodev.utils.context.lo_context import LoContext
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.format.proto.position_size.draw.protect_t import ProtectT
+    from ooodev.format.proto.draw.position_size.protect_t import ProtectT
 else:
     ProtectT = Any
 

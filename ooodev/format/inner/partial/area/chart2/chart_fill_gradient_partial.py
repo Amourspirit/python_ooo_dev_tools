@@ -19,7 +19,7 @@ from ooodev.utils.data_type.offset import Offset
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.format.proto.area.chart2.chart_fill_gradient_t import ChartFillGradientT
+    from ooodev.format.proto.chart2.area.chart_fill_gradient_t import ChartFillGradientT
     from ooodev.units import Angle
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.format.inner.preset.preset_gradient import PresetGradientKind

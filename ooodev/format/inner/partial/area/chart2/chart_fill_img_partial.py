@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from com.sun.star.awt import XBitmap
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.format.proto.area.chart2.chart_fill_img_t import ChartFillImgT
+    from ooodev.format.proto.chart2.area.chart_fill_img_t import ChartFillImgT
     from ooodev.format.inner.preset.preset_image import PresetImageKind
     from ooodev.format.inner.common.format_types.size_percent import SizePercent
     from ooodev.utils.data_type.size_mm import SizeMM

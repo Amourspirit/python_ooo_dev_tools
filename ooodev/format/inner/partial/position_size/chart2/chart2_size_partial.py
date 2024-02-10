@@ -12,7 +12,7 @@ from ooodev.utils.context.lo_context import LoContext
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.format.proto.position_size.chart2.size_t import SizeT
+    from ooodev.format.proto.chart2.position_size.size_t import SizeT
     from ooodev.units import UnitT
 else:
     SizeT = Any

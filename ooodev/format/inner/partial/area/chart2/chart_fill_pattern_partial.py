@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from com.sun.star.awt import XBitmap
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.format.proto.area.chart2.chart_fill_pattern_t import ChartFillPatternT
+    from ooodev.format.proto.chart2.area.chart_fill_pattern_t import ChartFillPatternT
     from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
 else:
     XChartDocument = Any

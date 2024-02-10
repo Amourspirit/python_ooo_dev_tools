@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from com.sun.star.awt import XBitmap
     from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
-    from ..fill_pattern_t import FillPatternT
+    from ...area.fill_pattern_t import FillPatternT
 
 else:
     Protocol = object

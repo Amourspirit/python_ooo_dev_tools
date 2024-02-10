@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.offset import Offset
     from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
     from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
-    from ..fill_gradient_t import FillGradientT
+    from ...area.fill_gradient_t import FillGradientT
 else:
     Protocol = object
     XChartDocument = Any

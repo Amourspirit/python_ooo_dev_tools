@@ -8,7 +8,7 @@ if TYPE_CHECKING:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ..fill_img_t import FillImgT
+    from ...area.fill_img_t import FillImgT
     from com.sun.star.chart2 import XChartDocument
     from com.sun.star.awt import XBitmap
     from ooo.dyn.drawing.rectangle_point import RectanglePoint

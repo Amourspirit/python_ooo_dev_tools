@@ -17,7 +17,7 @@ from ooodev.utils import color as mColor
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
-    from ooodev.format.proto.area.chart2.chart_fill_hatch_t import ChartFillHatchT
+    from ooodev.format.proto.chart2.area.chart_fill_hatch_t import ChartFillHatchT
     from ooodev.units import UnitT
     from ooodev.units import Angle
     from ooodev.loader.inst.lo_inst import LoInst

@@ -19,9 +19,9 @@ else:
     Intensity = Any
 
 
-class BorderLinePropertiesPartial:
+class Chart2GridLinePartial:
     """
-    Partial class for Chart2 Axis Line Properties.
+    Partial class for Chart2 Grid Line.
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
@@ -30,10 +30,10 @@ class BorderLinePropertiesPartial:
         self.__styler = LineProperties(factory_name=factory_name, component=component, lo_inst=lo_inst)
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_chart_border_line"
-        self.__styler.before_event_name = "before_style_chart_border_line"
+        self.__styler.after_event_name = "after_style_chart_grid_line"
+        self.__styler.before_event_name = "before_style_chart_gird_line"
 
-    def style_border_line(
+    def style_gird_line(
         self,
         color: mColor.Color = mColor.Color(0),
         width: float | UnitT = 0,
@@ -50,7 +50,7 @@ class BorderLinePropertiesPartial:
             style (BorderLineKind, optional): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
 
         Raises:
-            CancelEventError: If the event ``before_style_chart_border_line`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_chart_gird_line`` is cancelled and not handled.
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.

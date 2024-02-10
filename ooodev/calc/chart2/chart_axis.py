@@ -30,9 +30,9 @@ from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_positio
     Chart2AxisPosPositionAxisPartial,
 )
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
+from ooodev.format.inner.partial.chart2.grid.chart2_grid_line_partial import Chart2GridLinePartial
 
 if TYPE_CHECKING:
-    from com.sun.star.chart2 import XChartDocument
     from .chart_doc import ChartDoc
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
@@ -56,6 +56,7 @@ class ChartAxis(
     Chart2AxisPosLabelPositionPartial,
     Chart2AxisPosPositionAxisPartial,
     NumbersNumbersPartial,
+    Chart2GridLinePartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -98,6 +99,10 @@ class ChartAxis(
         )
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
+        )
+        grid_props = self.get_grid_properties()
+        Chart2GridLinePartial.__init__(
+            self, factory_name="ooodev.chart2.grid.line", component=grid_props, lo_inst=lo_inst
         )
 
     # region StylePartial Overrides
