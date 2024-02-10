@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ..chart_diagram import ChartDiagram
     from ..chart_type import ChartType
+    from ..chart_doc import ChartDoc
 
 
 class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemPartial, ChartTypeContainerPartial):
@@ -21,7 +22,9 @@ class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemParti
 
     # pylint: disable=unused-argument
 
-    def __init__(self, owner: ChartDiagram, component: XCoordinateSystem, lo_inst: LoInst | None = None) -> None:
+    def __init__(
+        self, owner: ChartDiagram, chart_doc: ChartDoc, component: XCoordinateSystem, lo_inst: LoInst | None = None
+    ) -> None:
         """
         Constructor
 
@@ -37,6 +40,7 @@ class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemParti
         CoordinateSystemPartial.__init__(self, component=component)
         ChartTypeContainerPartial.__init__(self, component=component, interface=None)  # type: ignore
         self.__owner = owner
+        self.__chart_doc = chart_doc
         self.__chart_type = None
 
     # region Overrides
@@ -63,7 +67,10 @@ class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemParti
             c_types = super().get_chart_types()
             if not c_types:
                 return ()
-            return tuple(ChartType(owner=self, component=c_type, lo_inst=self.lo_inst) for c_type in c_types)
+            return tuple(
+                ChartType(owner=self, chart_doc=self.__chart_doc, component=c_type, lo_inst=self.lo_inst)
+                for c_type in c_types
+            )
         except Exception as e:
             raise mEx.ChartError("Error getting chart types") from e
 
@@ -74,6 +81,11 @@ class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemParti
     def component(self) -> XCoordinateSystem:
         """Coordinate General Component"""
         return self._ComponentBase__get_component()  # type: ignore
+
+    @property
+    def chart_doc(self) -> ChartDoc:
+        """Chart Document"""
+        return self.__chart_doc
 
     @property
     def chart_diagram(self) -> ChartDiagram:

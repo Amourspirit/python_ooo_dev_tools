@@ -17,6 +17,7 @@ from ooodev.proto.component_proto import ComponentT
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from .chart_data_series import ChartDataSeries
+    from .chart_doc import ChartDoc
 else:
     CoordinateGeneral = Any
 
@@ -36,7 +37,7 @@ class ChartType(
     Class for managing Chart2 Chart Title Component.
     """
 
-    def __init__(self, owner: _T, component: Any, lo_inst: LoInst | None = None) -> None:
+    def __init__(self, owner: _T, chart_doc: ChartDoc, component: Any, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -53,6 +54,7 @@ class ChartType(
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self._owner = owner
+        self._chart_doc = chart_doc
         self.get_data_series()
 
     # region DataSeriesContainerPartial overrides
@@ -65,7 +67,7 @@ class ChartType(
         d_series = super().get_data_series()
         if not d_series:
             return ()
-        return tuple(ChartDataSeries(owner=self, component=ds) for ds in d_series)
+        return tuple(ChartDataSeries(owner=self, chart_doc=self.chart_doc, component=ds) for ds in d_series)
 
     # endregion DataSeriesContainerPartial overrides
 
@@ -108,3 +110,8 @@ class ChartType(
         Gets chart type such as ``com.sun.star.chart2.StockBarChart``.
         """
         return self.get_chart_type()
+
+    @property
+    def chart_doc(self) -> ChartDoc:
+        """Chart Document."""
+        return self._chart_doc

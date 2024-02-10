@@ -209,7 +209,7 @@ class ChartDoc(
 
         titled = self.qi(XTitled, True)
         titled.setTitleObject(x_title)
-        return ChartTitle(owner=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
+        return ChartTitle(owner=self, chart_doc=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
 
     def get_title(self) -> ChartTitle[ChartDoc] | None:
         """Gets the Chart Title Component."""
@@ -220,7 +220,7 @@ class ChartDoc(
         comp = titled.getTitleObject()
         if comp is None:
             return None
-        return ChartTitle(owner=self, component=comp, lo_inst=self.lo_inst)
+        return ChartTitle(owner=self, chart_doc=self, component=comp, lo_inst=self.lo_inst)
 
     def set_bg_color(self, color: Color) -> None:
         """Sets the background color."""
@@ -288,7 +288,9 @@ class ChartDoc(
         from .chart_data_series import ChartDataSeries
 
         data_series = mChart2.Chart2.get_data_series(chart_doc=self.component, chart_type=chart_type)
-        series = tuple(ChartDataSeries(owner=self, component=comp, lo_inst=self.lo_inst) for comp in data_series)
+        series = tuple(
+            ChartDataSeries(owner=self, chart_doc=self, component=comp, lo_inst=self.lo_inst) for comp in data_series
+        )
         return series  # type: ignore
 
     # endregion get_data_series()
@@ -320,7 +322,7 @@ class ChartDoc(
         from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind
 
         try:
-            eb = ChartErrorBar(lo_inst=self.lo_inst)
+            eb = ChartErrorBar(chart_doc=self, lo_inst=self.lo_inst)
             eb.set_property(ShowPositiveError=True, ShowNegativeError=True, ErrorBarStyle=ErrorBarStyle.FROM_DATA)
             dp = self.get_data_provider()
             with LoContext(self.lo_inst):
@@ -377,7 +379,7 @@ class ChartDoc(
             if coord_sys is None:
                 raise mEx.ChartError("Coordinate System not found")
             coord_sys.add_chart_type(ct)
-            return ChartType(owner=coord_sys, component=ct, lo_inst=self.lo_inst)
+            return ChartType(owner=coord_sys, chart_doc=self, component=ct, lo_inst=self.lo_inst)
         except mEx.ChartError:
             raise
         except Exception as e:
@@ -576,7 +578,7 @@ class ChartDoc(
             ChartType[ChartDoc]: Found chart type.
         """
         found_type = mChart2.Chart2.find_chart_type(chart_doc=self.component, chart_type=chart_type)
-        return ChartType(owner=self, component=found_type, lo_inst=self.lo_inst)
+        return ChartType(owner=self, chart_doc=self, component=found_type, lo_inst=self.lo_inst)
 
     @property
     def first_diagram(self) -> ChartDiagram:

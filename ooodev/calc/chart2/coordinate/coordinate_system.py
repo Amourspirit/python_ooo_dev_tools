@@ -8,12 +8,15 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ..chart_diagram import ChartDiagram
     from ..chart_type import ChartType
+    from ..chart_doc import ChartDoc
 
 
 class CoordinateSystem(CoordinateGeneral):
     """Coordinate System Component."""
 
-    def __init__(self, owner: ChartDiagram, component: XCoordinateSystem, lo_inst: LoInst) -> None:
+    def __init__(
+        self, owner: ChartDiagram, chart_doc: ChartDoc, component: XCoordinateSystem, lo_inst: LoInst
+    ) -> None:
         """
         Constructor
 
@@ -22,7 +25,7 @@ class CoordinateSystem(CoordinateGeneral):
             component (XCoordinateSystem): UNO Chart2 ``XCoordinateSystem``.
             lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
         """
-        CoordinateGeneral.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
+        CoordinateGeneral.__init__(self, owner=owner, chart_doc=chart_doc, component=component, lo_inst=lo_inst)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

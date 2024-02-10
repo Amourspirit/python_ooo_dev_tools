@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
     from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from .chart_doc import ChartDoc
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -40,7 +41,7 @@ class ChartTitle(
     Class for managing Chart2 Chart Title Component.
     """
 
-    def __init__(self, owner: _T, component: Any, lo_inst: LoInst | None = None) -> None:
+    def __init__(self, owner: _T, chart_doc: ChartDoc, component: Any, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -60,6 +61,7 @@ class ChartTitle(
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         self._owner = owner
+        self._chart_doc = chart_doc
         self._init_events()
 
     # region Events
@@ -105,6 +107,11 @@ class ChartTitle(
     def owner(self) -> _T:
         """Chart Document"""
         return self._owner
+
+    @property
+    def chart_doc(self) -> ChartDoc:
+        """Chart Document"""
+        return self._chart_doc
 
     @property
     def rotation(self) -> Angle:

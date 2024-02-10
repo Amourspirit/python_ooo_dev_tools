@@ -46,7 +46,7 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
         comp = self.get_title_object()
         if comp is None:
             return None
-        return ChartTitle(owner=self, component=comp, lo_inst=self.lo_inst)
+        return ChartTitle(owner=self, chart_doc=self.chart_doc, component=comp, lo_inst=self.lo_inst)
 
     def set_title(self, title: str) -> ChartTitle[ChartDiagram]:
         """Adds a Chart Title."""
@@ -66,7 +66,9 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
 
         titled = self.qi(XTitled, True)
         titled.setTitleObject(x_title)
-        return ChartTitle(owner=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
+        return ChartTitle(
+            owner=self, chart_doc=self.chart_doc, component=titled.getTitleObject(), lo_inst=self.lo_inst
+        )
 
     def get_coordinate_system(self) -> CoordinateGeneral | None:
         """Gets the first Coordinate System Component."""
@@ -78,11 +80,11 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
         if mInfo.Info.support_service(first, "com.sun.star.chart2.CoordinateSystem"):
             from .coordinate.coordinate_system import CoordinateSystem
 
-            result = CoordinateSystem(owner=self, component=first, lo_inst=self.lo_inst)
+            result = CoordinateSystem(owner=self, chart_doc=self.chart_doc, component=first, lo_inst=self.lo_inst)
         else:
             from .coordinate.coordinate_general import CoordinateGeneral
 
-            result = CoordinateGeneral(owner=self, component=first, lo_inst=self.lo_inst)
+            result = CoordinateGeneral(owner=self, chart_doc=self.chart_doc, component=first, lo_inst=self.lo_inst)
 
         return result
 
@@ -98,9 +100,17 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
         coord_sys = super().get_coordinate_systems()
         for sys in coord_sys:
             if mInfo.Info.support_service(sys, "com.sun.star.chart2.CoordinateSystem"):
-                result.append(CoordinateSystem(owner=self, component=coord_sys[0], lo_inst=self.lo_inst))
+                result.append(
+                    CoordinateSystem(
+                        owner=self, chart_doc=self.chart_doc, component=coord_sys[0], lo_inst=self.lo_inst
+                    )
+                )
             else:
-                result.append(CoordinateGeneral(owner=self, component=coord_sys[0], lo_inst=self.lo_inst))
+                result.append(
+                    CoordinateGeneral(
+                        owner=self, chart_doc=self.chart_doc, component=coord_sys[0], lo_inst=self.lo_inst
+                    )
+                )
         return tuple(result)
 
     # endregion CoordinateSystemContainerPartial overrides
@@ -117,7 +127,7 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
             return None
         from .chart_legend import ChartLegend
 
-        return ChartLegend(owner=self, component=legend, lo_inst=self.lo_inst)  # type: ignore
+        return ChartLegend(owner=self, chart_doc=self.chart_doc, component=legend, lo_inst=self.lo_inst)  # type: ignore
 
     def view_legend(self, visible: bool) -> None:
         """
@@ -138,7 +148,7 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
             from ooo.dyn.drawing.line_style import LineStyle
             from ooo.dyn.drawing.fill_style import FillStyle
 
-            legend = ChartLegend(owner=self, lo_inst=self.lo_inst)
+            legend = ChartLegend(owner=self, chart_doc=self.chart_doc, lo_inst=self.lo_inst)
             legend.set_property(LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
             self.set_legend(legend.component)
 

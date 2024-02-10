@@ -139,7 +139,7 @@ class ChartAxis(
             comp = titled.getTitleObject()
             if comp is None:
                 return None
-            return ChartTitle(owner=self, component=comp, lo_inst=self.lo_inst)
+            return ChartTitle(owner=self, chart_doc=self.chart_doc, component=comp, lo_inst=self.lo_inst)
         except Exception as e:
             raise mEx.ChartError("Error getting axis title") from e
 
@@ -173,7 +173,9 @@ class ChartAxis(
 
             titled = self.qi(XTitled, True)
             titled.setTitleObject(x_title)
-            return ChartTitle(owner=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
+            return ChartTitle(
+                owner=self, chart_doc=self.chart_doc, component=titled.getTitleObject(), lo_inst=self.lo_inst
+            )
         except Exception as e:
             raise mEx.ChartError("Error setting axis title") from e
 

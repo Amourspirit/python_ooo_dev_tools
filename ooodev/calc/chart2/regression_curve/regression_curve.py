@@ -90,7 +90,7 @@ class RegressionCurve(
         Returns:
             None:
         """
-        mChart2.Chart2.eval_curve(self.owner.component, self.component)
+        mChart2.Chart2.eval_curve(self.chart_doc.component, self.component)
 
     @property
     def component(self) -> UnoRegressionCurve:
@@ -98,5 +98,5 @@ class RegressionCurve(
         return cast("UnoRegressionCurve", self._ComponentBase__get_component())  # type: ignore
 
     @property
-    def owner(self) -> ChartDoc:
+    def chart_doc(self) -> ChartDoc:
         return self._owner

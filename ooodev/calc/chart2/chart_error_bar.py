@@ -12,6 +12,7 @@ from ooodev.adapter.chart2.data.data_sink_partial import DataSinkPartial
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySet
     from ooodev.loader.inst.lo_inst import LoInst
+    from .chart_doc import ChartDoc
 
 
 class ChartErrorBar(LoInstPropsPartial, ErrorBarComp, DataSinkPartial, PropPartial, QiPartial, ServicePartial):
@@ -19,7 +20,9 @@ class ChartErrorBar(LoInstPropsPartial, ErrorBarComp, DataSinkPartial, PropParti
     Class for managing Chart2 ErrorBar.
     """
 
-    def __init__(self, lo_inst: LoInst | None = None, component: XPropertySet | None = None) -> None:
+    def __init__(
+        self, chart_doc: ChartDoc, lo_inst: LoInst | None = None, component: XPropertySet | None = None
+    ) -> None:
         """
         Constructor
 
@@ -35,3 +38,9 @@ class ChartErrorBar(LoInstPropsPartial, ErrorBarComp, DataSinkPartial, PropParti
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        self._chart_doc = chart_doc
+
+    @property
+    def chart_doc(self) -> ChartDoc:
+        """Chart Document."""
+        return self._chart_doc

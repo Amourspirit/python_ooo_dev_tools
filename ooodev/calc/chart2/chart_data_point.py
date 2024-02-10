@@ -15,6 +15,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from .chart_data_series import ChartDataSeries
+    from .chart_doc import ChartDoc
 
 
 class ChartDataPoint(
@@ -33,7 +34,9 @@ class ChartDataPoint(
 
     # pylint: disable=unused-argument
 
-    def __init__(self, owner: ChartDataSeries, component: Any, lo_inst: LoInst | None = None) -> None:
+    def __init__(
+        self, owner: ChartDataSeries, chart_doc: ChartDoc, component: Any, lo_inst: LoInst | None = None
+    ) -> None:
         """
         Constructor
 
@@ -56,8 +59,14 @@ class ChartDataPoint(
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self._owner = owner
+        self._chart_doc = chart_doc
 
     @property
     def owner(self) -> ChartDataSeries:
         """Gets the owner of this Chart Data Point."""
         return self._owner
+
+    @property
+    def chart_doc(self) -> ChartDoc:
+        """Chart Document."""
+        return self._chart_doc

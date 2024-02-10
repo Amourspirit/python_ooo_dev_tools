@@ -17,6 +17,7 @@ from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
+    from .chart_doc import ChartDoc
     from .chart_data_point import ChartDataPoint
     from .data.data_source import DataSource
 
@@ -38,7 +39,9 @@ class ChartDataSeries(
     Class for managing Chart2 Chart Title Component.
     """
 
-    def __init__(self, owner: _T, component: Any | None = None, lo_inst: LoInst | None = None) -> None:
+    def __init__(
+        self, owner: _T, chart_doc: ChartDoc, component: Any | None = None, lo_inst: LoInst | None = None
+    ) -> None:
         """
         Constructor
 
@@ -61,6 +64,7 @@ class ChartDataSeries(
             self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
         )
         self._owner = owner
+        self._chart_doc = chart_doc
 
     def __getitem__(self, index: int) -> ChartDataPoint:
         return self.get_data_point_by_index(index)
@@ -76,7 +80,7 @@ class ChartDataSeries(
         from .chart_data_point import ChartDataPoint
 
         dp = super().get_data_point_by_index(idx)
-        return ChartDataPoint(owner=self, component=dp, lo_inst=self.lo_inst)
+        return ChartDataPoint(owner=self, chart_doc=self.chart_doc, component=dp, lo_inst=self.lo_inst)
 
     # endregion DataSeriesPartial Overrides
 
@@ -100,5 +104,10 @@ class ChartDataSeries(
 
     @property
     def owner(self) -> _T:
-        """Chart Document"""
+        """Owner"""
         return self._owner
+
+    @property
+    def chart_doc(self) -> ChartDoc:
+        """Chart Document"""
+        return self._chart_doc

@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from com.sun.star.chart2 import Legend  # service
     from ooodev.loader.inst.lo_inst import LoInst
     from .chart_diagram import ChartDiagram
+    from .chart_doc import ChartDoc
 
 
 class ChartLegend(
@@ -30,7 +31,9 @@ class ChartLegend(
     Class for managing Chart2 Legend Component.
     """
 
-    def __init__(self, owner: ChartDiagram, component: Legend | None = None, lo_inst: LoInst | None = None) -> None:
+    def __init__(
+        self, owner: ChartDiagram, chart_doc: ChartDoc, component: Legend | None = None, lo_inst: LoInst | None = None
+    ) -> None:
         """
         Constructor
 
@@ -48,11 +51,17 @@ class ChartLegend(
         QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         self._owner = owner
+        self._chart_doc = chart_doc
 
     # region Properties
     @property
     def owner(self) -> ChartDiagram:
         """Owner Chart Diagram"""
         return self._owner
+
+    @property
+    def chart_doc(self) -> ChartDoc:
+        """Chart Document."""
+        return self._chart_doc
 
     # endregion Properties
