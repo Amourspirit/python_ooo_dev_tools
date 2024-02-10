@@ -19,7 +19,8 @@ from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import 
 from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
-
+from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
+from ooodev.format.inner.partial.chart2.legend.position.chart2_legend_pos_partial import Chart2LegendPosPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Legend  # service
@@ -46,6 +47,8 @@ class ChartLegend(
     ChartFillHatchPartial,
     ChartFillImgPartial,
     ChartFillPatternPartial,
+    BorderLinePropertiesPartial,
+    Chart2LegendPosPartial,
 ):
     """
     Class for managing Chart2 Legend Component.
@@ -86,6 +89,10 @@ class ChartLegend(
         ChartFillPatternPartial.__init__(
             self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst
         )
+        BorderLinePropertiesPartial.__init__(
+            self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst
+        )
+        Chart2LegendPosPartial.__init__(self, component=component)
         self._owner = owner
 
     # region GradientPartial Overrides

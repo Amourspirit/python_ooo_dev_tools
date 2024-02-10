@@ -393,4 +393,9 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
 
         return LineProperties
 
+    if name == "ooodev.chart2.legend":
+        from ooodev.format.inner.direct.chart2.legend.borders.line_properties import LineProperties
+
+        return LineProperties
+
     raise ValueError(f"Invalid name: {name}")
