@@ -5,7 +5,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
-from ooodev.format.inner.partial.borders.draw.line_properties import LineProperties
+from ooodev.format.inner.partial.draw.borders.line_properties import LineProperties
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -19,7 +19,7 @@ else:
     Intensity = Any
 
 
-class AxisLinePropertiesPartial:
+class BorderLinePropertiesPartial:
     """
     Partial class for Chart2 Axis Line Properties.
     """
@@ -30,10 +30,10 @@ class AxisLinePropertiesPartial:
         self.__styler = LineProperties(factory_name=factory_name, component=component, lo_inst=lo_inst)
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_axis_line"
-        self.__styler.before_event_name = "before_style_axis_line"
+        self.__styler.after_event_name = "after_style_chart_border_line"
+        self.__styler.before_event_name = "before_style_chart_border_line"
 
-    def style_axis_line(
+    def style_border_line(
         self,
         color: mColor.Color = mColor.Color(0),
         width: float | UnitT = 0,
@@ -50,7 +50,7 @@ class AxisLinePropertiesPartial:
             style (BorderLineKind, optional): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
 
         Raises:
-            CancelEventError: If the event ``before_style_axis_line`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_chart_border_line`` is cancelled and not handled.
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.

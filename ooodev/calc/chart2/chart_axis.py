@@ -16,7 +16,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.format.inner.partial.borders.chart2.axis_line_properties_partial import AxisLinePropertiesPartial
+from ooodev.format.inner.partial.chart2.borders.axis_line_properties_partial import AxisLinePropertiesPartial
 from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_axis_line_partial import (
     Chart2AxisPosAxisLinePartial,
 )

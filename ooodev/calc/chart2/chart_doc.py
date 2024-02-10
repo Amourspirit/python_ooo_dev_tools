@@ -17,11 +17,11 @@ from ooodev.office import chart2 as mChart2
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.color import Color
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
-from ooodev.format.inner.partial.area.chart2.chart_fill_gradient_partial import ChartFillGradientPartial
-from ooodev.format.inner.partial.area.chart2.chart_fill_img_partial import ChartFillImgPartial
-from ooodev.format.inner.partial.area.chart2.chart_fill_pattern_partial import ChartFillPatternPartial
-from ooodev.format.inner.partial.area.chart2.chart_fill_hatch_partial import ChartFillHatchPartial
-from ooodev.format.inner.partial.borders.chart2.border_line_properties_partial import BorderLinePropertiesPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import ChartFillGradientPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
+from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
 from ooodev.format.inner.partial.area.transparency.transparency_partial import TransparencyPartial
 from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial
 from ooodev.events.partial.events_partial import EventsPartial

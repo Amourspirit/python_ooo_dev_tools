@@ -1,16 +1,9 @@
 from __future__ import annotations
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
-from ooodev.format.inner.style_factory import draw_border_line_factory
 from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
-from ooodev.utils.context.lo_context import LoContext
 from .line_properties import LineProperties
 
 if TYPE_CHECKING:

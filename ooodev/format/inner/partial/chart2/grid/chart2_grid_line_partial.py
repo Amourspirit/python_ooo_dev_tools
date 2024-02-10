@@ -5,7 +5,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
-from ooodev.format.inner.partial.borders.draw.line_properties import LineProperties
+from ooodev.format.inner.partial.draw.borders.line_properties import LineProperties
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst

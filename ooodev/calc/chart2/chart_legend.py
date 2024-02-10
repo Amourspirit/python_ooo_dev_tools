@@ -15,10 +15,10 @@ from ooodev.format.inner.partial.area.transparency.transparency_partial import (
     TransparencyPartial as TransparencyTransparency,
 )
 from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial as TransparencyGradient
-from ooodev.format.inner.partial.area.chart2.chart_fill_gradient_partial import ChartFillGradientPartial
-from ooodev.format.inner.partial.area.chart2.chart_fill_img_partial import ChartFillImgPartial
-from ooodev.format.inner.partial.area.chart2.chart_fill_pattern_partial import ChartFillPatternPartial
-from ooodev.format.inner.partial.area.chart2.chart_fill_hatch_partial import ChartFillHatchPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import ChartFillGradientPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
 
 
 if TYPE_CHECKING:
