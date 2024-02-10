@@ -44,6 +44,14 @@ class FactoryNameBase(EventsPartial):
         self._factory_name = value
 
     @property
+    def component(self) -> Any:
+        return self._component
+
+    @component.setter
+    def component(self, value: Any) -> None:
+        self._component = value
+
+    @property
     def after_event_name(self) -> str:
         return self._after_event_name
 

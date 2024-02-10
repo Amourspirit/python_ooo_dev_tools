@@ -28,8 +28,10 @@ from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_label_p
 from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_position_axis_partial import (
     Chart2AxisPosPositionAxisPartial,
 )
+from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
 
 if TYPE_CHECKING:
+    from com.sun.star.chart2 import XChartDocument
     from .chart_doc import ChartDoc
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
@@ -51,6 +53,7 @@ class ChartAxis(
     Chart2AxisPosIntervalMarksPartial,
     Chart2AxisPosLabelPositionPartial,
     Chart2AxisPosPositionAxisPartial,
+    NumbersNumbersPartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -85,12 +88,21 @@ class ChartAxis(
             self, factory_name="ooodev.chart2.axis.pos.interval_marks", component=component, lo_inst=lo_inst
         )
         Chart2AxisPosLabelPositionPartial.__init__(
-            self, factory_name="oodev.chart2.axis.pos.position", component=component, lo_inst=lo_inst
+            self, factory_name="ooodev.chart2.axis.pos.position", component=component, lo_inst=lo_inst
         )
         Chart2AxisPosPositionAxisPartial.__init__(
             self, factory_name="ooodev.chart2.axis.line", component=component, lo_inst=lo_inst
         )
+        NumbersNumbersPartial.__init__(
+            self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
+        )
         self._owner = owner
+
+    # region NumbersNumbersPartial overrides
+    def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
+        return self._owner.component
+
+    # endregion NumbersNumbersPartial overrides
 
     # region StylePartial Overrides
 

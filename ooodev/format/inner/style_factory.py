@@ -22,6 +22,9 @@ if TYPE_CHECKING:
     from ..proto.chart2.axis.positioning.interval_marks_t import IntervalMarksT as Chart2IntervalMarksT
     from ..proto.chart2.axis.positioning.label_position_t import LabelPositionT as Chart2LabelPositionT
     from ..proto.chart2.axis.positioning.position_axis_t import PositionAxisT as Chart2PositionAxisT
+    from ..proto.calc.numbers.numbers_t import NumbersT as CalcNumbersT
+    from ..proto.chart2.numbers.numbers_t import NumbersT as Chart2NumbersT
+    from ..proto.chart2.series.data_labels.data_labels.numbers_t import NumbersT as Chart2SeriesDataLabelsNumbersT
 else:
     FontEffectsT = Any
     FontOnlyT = Any
@@ -34,6 +37,15 @@ else:
     DrawSizeT = Any
     DrawPositionT = Any
     DrawProtectT = Any
+    BorderLinePropertiesT = Any
+    TransparencyTransparencyT = Any
+    TransparencyGradientT = Any
+    Chart2AxisLineT = Any
+    Chart2IntervalMarksT = Any
+    Chart2LabelPositionT = Any
+    Chart2PositionAxisT = Any
+    CalcNumbersT = Any
+    Chart2NumbersT = Any
 
 
 def font_only_factory(name: str) -> Type[FontOnlyT]:
@@ -91,6 +103,48 @@ def font_effects_factory(name: str) -> Type[FontEffectsT]:
         return FontEffects
 
     raise ValueError(f"Invalid name: {name}")
+
+
+# region numbers format
+# region general numbers format
+def numbers_numbers_factory(name: str) -> Type[CalcNumbersT]:
+    if name == "ooodev.number.numbers":
+        from ooodev.format.inner.direct.calc.numbers.numbers import Numbers
+
+        return Numbers
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+# endregion general numbers format
+
+
+# region chart2 numbers format
+def chart2_numbers_numbers_factory(name: str) -> Type[Chart2NumbersT]:
+    if name == "ooodev.chart2.number.numbers":
+        from ooodev.format.inner.direct.chart2.chart.numbers.numbers import Numbers
+
+        return Numbers
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def chart2_series_data_labels_numbers_factory(name: str) -> Type[Chart2SeriesDataLabelsNumbersT]:
+    if name == "ooodev.chart2.series.data_labels.number.numbers":
+        from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.number_format import NumberFormat
+
+        return NumberFormat
+
+    if name == "ooodev.chart2.axis.numbers.numbers":
+        from ooodev.format.inner.direct.chart2.axis.numbers.numbers import Numbers
+
+        return Numbers
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+# endregion chart2 numbers format
+# endregion numbers format
 
 
 def area_color_factory(name: str) -> Type[FillColorT]:
