@@ -16,6 +16,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 class RegressionCurve(
     LoInstPropsPartial,
     ComponentBase,
+    ChartDocPropPartial,
     RegressionCurvePartial,
     PropertySetPartial,
     PropPartial,
@@ -40,6 +42,7 @@ class RegressionCurve(
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         ComponentBase.__init__(self, component=component)
+        ChartDocPropPartial.__init__(self, chart_doc=owner)
         RegressionCurvePartial.__init__(self, component=component, interface=None)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         PropertySetPartial.__init__(self, component=component, interface=None)
@@ -48,7 +51,6 @@ class RegressionCurve(
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        self._owner = owner
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
@@ -96,7 +98,3 @@ class RegressionCurve(
     def component(self) -> UnoRegressionCurve:
         """RegressionCurve Component"""
         return cast("UnoRegressionCurve", self._ComponentBase__get_component())  # type: ignore
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        return self._owner

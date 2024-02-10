@@ -6,6 +6,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.loader import lo as mLo
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner import style_factory
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -38,6 +39,8 @@ class NumbersNumbersPartial:
         self.__styler.before_event_name = "before_style_number_number"
 
     def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
+        if isinstance(self, ChartDocPropPartial):
+            return self.chart_doc.component
         raise NotImplementedError
 
     def style_numbers_numbers(

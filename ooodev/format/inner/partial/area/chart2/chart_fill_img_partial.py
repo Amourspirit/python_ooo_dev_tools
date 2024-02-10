@@ -1,16 +1,17 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 from ooodev.format.inner.style_factory import chart2_area_img_factory
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.offset import Offset
-from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -47,6 +48,9 @@ class ChartFillImgPartial:
         self.__component = component
 
     def _ChartFillImgPartial__get_chart_doc(self) -> XChartDocument:
+        if isinstance(self, ChartDocPropPartial):
+            return self.chart_doc.component
+
         raise NotImplementedError
 
     def style_area_image(

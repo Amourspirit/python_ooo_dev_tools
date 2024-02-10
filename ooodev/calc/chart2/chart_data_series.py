@@ -12,6 +12,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
@@ -30,6 +31,7 @@ class ChartDataSeries(
     Generic[_T],
     LoInstPropsPartial,
     DataSeriesComp,
+    ChartDocPropPartial,
     PropPartial,
     QiPartial,
     ServicePartial,
@@ -56,6 +58,7 @@ class ChartDataSeries(
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DataSeriesComp.__init__(self, lo_inst=self.lo_inst, component=component)
+        ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
@@ -70,7 +73,6 @@ class ChartDataSeries(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
         )
         self._owner = owner
-        self._chart_doc = chart_doc
 
     def __getitem__(self, index: int) -> ChartDataPoint:
         return self.get_data_point_by_index(index)
@@ -89,12 +91,6 @@ class ChartDataSeries(
         return ChartDataPoint(owner=self, chart_doc=self.chart_doc, component=dp, lo_inst=self.lo_inst)
 
     # endregion DataSeriesPartial Overrides
-
-    # region NumbersNumbersPartial overrides
-    def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
-        return self.chart_doc.component
-
-    # endregion NumbersNumbersPartial overrides
 
     def get_data_source(self) -> DataSource:
         """
@@ -118,8 +114,3 @@ class ChartDataSeries(
     def owner(self) -> _T:
         """Owner"""
         return self._owner
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document"""
-        return self._chart_doc

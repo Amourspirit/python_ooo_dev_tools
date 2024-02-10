@@ -3,18 +3,19 @@ from typing import Any, TYPE_CHECKING
 import uno
 from com.sun.star.chart2 import XScaling
 from ooodev.adapter.chart2.axis_comp import AxisComp
-from ooodev.loader import lo as mLo
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
-from ooodev.office import chart2 as mChart2
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.format.inner.style_partial import StylePartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
-from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.loader import lo as mLo
+from ooodev.office import chart2 as mChart2
 from ooodev.utils.kind.curve_kind import CurveKind
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.partial.borders.chart2.axis_line_properties_partial import AxisLinePropertiesPartial
 from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_axis_line_partial import (
     Chart2AxisPosAxisLinePartial,
@@ -42,6 +43,7 @@ class ChartAxis(
     LoInstPropsPartial,
     AxisComp,
     EventsPartial,
+    ChartDocPropPartial,
     PropPartial,
     QiPartial,
     ServicePartial,
@@ -72,6 +74,7 @@ class ChartAxis(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         AxisComp.__init__(self, component=component)
         EventsPartial.__init__(self)
+        ChartDocPropPartial.__init__(self, chart_doc=owner)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
@@ -96,13 +99,6 @@ class ChartAxis(
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
         )
-        self._owner = owner
-
-    # region NumbersNumbersPartial overrides
-    def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
-        return self.chart_doc.component
-
-    # endregion NumbersNumbersPartial overrides
 
     # region StylePartial Overrides
 
@@ -214,8 +210,3 @@ class ChartAxis(
             self.set_scale_data(sd)
         except Exception as e:
             raise mEx.ChartError("Error setting axis scale") from e
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document"""
-        return self._owner

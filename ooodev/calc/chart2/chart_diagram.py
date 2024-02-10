@@ -8,6 +8,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from .chart_legend import ChartLegend
 
 
-class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, StylePartial):
+class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiPartial, ServicePartial, StylePartial):
     """
     Class for managing Chart2 Diagram.
     """
@@ -34,10 +35,10 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DiagramComp.__init__(self, component=component)
+        ChartDocPropPartial.__init__(self, chart_doc=owner)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
-        self._owner = owner
 
     def get_title(self) -> ChartTitle[ChartDiagram] | None:
         """Gets the Title Diagram Component. This might be considered to be a subtitle."""
@@ -151,8 +152,3 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, QiPartial, ServicePartial, S
             legend = ChartLegend(owner=self, chart_doc=self.chart_doc, lo_inst=self.lo_inst)
             legend.set_property(LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
             self.set_legend(legend.component)
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document"""
-        return self._owner

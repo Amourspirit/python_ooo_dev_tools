@@ -3,16 +3,17 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypeVar, Generic, Tuple
 
 from ooodev.adapter.chart2.chart_type_comp import ChartTypeComp
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import color as mColor
 from ooodev.utils.comp.prop import Prop
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -29,6 +30,7 @@ class ChartType(
     LoInstPropsPartial,
     ChartTypeComp,
     EventsPartial,
+    ChartDocPropPartial,
     PropPartial,
     QiPartial,
     ServicePartial,
@@ -50,11 +52,11 @@ class ChartType(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         ChartTypeComp.__init__(self, component=component)
         EventsPartial.__init__(self)
+        ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self._owner = owner
-        self._chart_doc = chart_doc
         self.get_data_series()
 
     # region DataSeriesContainerPartial overrides
@@ -110,8 +112,3 @@ class ChartType(
         Gets chart type such as ``com.sun.star.chart2.StockBarChart``.
         """
         return self.get_chart_type()
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document."""
-        return self._chart_doc

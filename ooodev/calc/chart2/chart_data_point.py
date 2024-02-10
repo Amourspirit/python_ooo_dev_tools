@@ -12,6 +12,7 @@ from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 class ChartDataPoint(
     LoInstPropsPartial,
     PropertySetComp,
+    ChartDocPropPartial,
     FontEffectsPartial,
     FontOnlyPartial,
     DataPointPropertiesPartial,
@@ -51,6 +53,7 @@ class ChartDataPoint(
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         PropertySetComp.__init__(self, component)
+        ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
         FontEffectsPartial.__init__(
             self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
         )
@@ -65,20 +68,8 @@ class ChartDataPoint(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
         )
         self._owner = owner
-        self._chart_doc = chart_doc
-
-    # region NumbersNumbersPartial overrides
-    def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
-        return self.chart_doc.component
-
-    # endregion NumbersNumbersPartial overrides
 
     @property
     def owner(self) -> ChartDataSeries:
         """Gets the owner of this Chart Data Point."""
         return self._owner
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document."""
-        return self._chart_doc

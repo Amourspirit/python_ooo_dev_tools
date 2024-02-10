@@ -6,6 +6,7 @@ from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.adapter.chart2.chart_type_container_partial import ChartTypeContainerPartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XCoordinateSystem
@@ -15,7 +16,9 @@ if TYPE_CHECKING:
     from ..chart_doc import ChartDoc
 
 
-class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemPartial, ChartTypeContainerPartial):
+class CoordinateGeneral(
+    LoInstPropsPartial, ComponentBase, ChartDocPropPartial, CoordinateSystemPartial, ChartTypeContainerPartial
+):
     """
     Class for managing Chart2 Coordinate General.
     """
@@ -37,6 +40,7 @@ class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemParti
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         ComponentBase.__init__(self, component)
+        ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
         CoordinateSystemPartial.__init__(self, component=component)
         ChartTypeContainerPartial.__init__(self, component=component, interface=None)  # type: ignore
         self.__owner = owner
@@ -81,11 +85,6 @@ class CoordinateGeneral(LoInstPropsPartial, ComponentBase, CoordinateSystemParti
     def component(self) -> XCoordinateSystem:
         """Coordinate General Component"""
         return self._ComponentBase__get_component()  # type: ignore
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document"""
-        return self.__chart_doc
 
     @property
     def chart_diagram(self) -> ChartDiagram:

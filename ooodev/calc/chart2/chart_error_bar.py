@@ -8,6 +8,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.adapter.chart2.data.data_sink_partial import DataSinkPartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySet
@@ -15,7 +16,9 @@ if TYPE_CHECKING:
     from .chart_doc import ChartDoc
 
 
-class ChartErrorBar(LoInstPropsPartial, ErrorBarComp, DataSinkPartial, PropPartial, QiPartial, ServicePartial):
+class ChartErrorBar(
+    LoInstPropsPartial, ErrorBarComp, ChartDocPropPartial, DataSinkPartial, PropPartial, QiPartial, ServicePartial
+):
     """
     Class for managing Chart2 ErrorBar.
     """
@@ -34,13 +37,8 @@ class ChartErrorBar(LoInstPropsPartial, ErrorBarComp, DataSinkPartial, PropParti
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         ErrorBarComp.__init__(self, lo_inst=lo_inst, component=component)  # type: ignore
+        ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
         DataSinkPartial.__init__(self, component=component)  # type: ignore
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
-        self._chart_doc = chart_doc
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document."""
-        return self._chart_doc

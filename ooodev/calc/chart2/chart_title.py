@@ -2,19 +2,20 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypeVar, Generic
 
 from ooodev.adapter.chart2.title_comp import TitleComp
-from ooodev.loader import lo as mLo
-from ooodev.office import chart2 as mChart2
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.loader import lo as mLo
+from ooodev.office import chart2 as mChart2
+from ooodev.proto.component_proto import ComponentT
 from ooodev.units import Angle
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -30,6 +31,7 @@ class ChartTitle(
     LoInstPropsPartial,
     EventsPartial,
     TitleComp,
+    ChartDocPropPartial,
     PropPartial,
     FontEffectsPartial,
     FontOnlyPartial,
@@ -54,6 +56,7 @@ class ChartTitle(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EventsPartial.__init__(self)
         TitleComp.__init__(self, component=component)
+        ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
@@ -61,7 +64,6 @@ class ChartTitle(
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         self._owner = owner
-        self._chart_doc = chart_doc
         self._init_events()
 
     # region Events
@@ -107,11 +109,6 @@ class ChartTitle(
     def owner(self) -> _T:
         """Chart Document"""
         return self._owner
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document"""
-        return self._chart_doc
 
     @property
     def rotation(self) -> Angle:

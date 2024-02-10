@@ -25,6 +25,7 @@ from ooodev.format.inner.partial.borders.chart2.border_line_properties_partial i
 from ooodev.format.inner.partial.area.transparency.transparency_partial import TransparencyPartial
 from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial
 from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -59,6 +60,7 @@ class ChartDoc(
     QiPartial,
     ServicePartial,
     EventsPartial,
+    ChartDocPropPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
     CloseEvents,
@@ -92,6 +94,7 @@ class ChartDoc(
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
+        ChartDocPropPartial.__init__(self, chart_doc=self)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         CloseEvents.__init__(self, trigger_args=generic_args, cb=self._on_close_events_add_remove)
@@ -161,29 +164,6 @@ class ChartDoc(
 
     # endregion Events
 
-    # region ChartFillGradientPartial Overrides
-    def _ChartFillGradientPartial__get_chart_doc(self) -> XChartDocument:
-        return self.component
-
-    # endregion ChartFillGradientPartial Overrides
-
-    # region ChartFillImgPartial Overrides
-    def _ChartFillImgPartial__get_chart_doc(self) -> XChartDocument:
-        return self.component
-
-    # endregion ChartFillImgPartial Overrides
-
-    # region ChartFillPatternPartial Overrides
-    def _ChartFillPatternPartial__get_chart_doc(self) -> XChartDocument:
-        return self.component
-
-    # endregion ChartFillPatternPartial Overrides
-
-    # region ChartFillHatchPartial Overrides
-    def _ChartFillHatchPartial__get_chart_doc(self) -> XChartDocument:
-        return self.component
-
-    # endregion ChartFillHatchPartial Overrides
     # region GradientPartial Overrides
     def _GradientPartial_transparency_get_chart_doc(self) -> XChartDocument | None:
         return self.component

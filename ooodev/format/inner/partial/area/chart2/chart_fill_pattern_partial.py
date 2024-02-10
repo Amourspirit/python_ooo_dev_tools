@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.gbl_named_event import GblNamedEvent
@@ -36,6 +37,9 @@ class ChartFillPatternPartial:
         self.__component = component
 
     def _ChartFillPatternPartial__get_chart_doc(self) -> XChartDocument:
+        if isinstance(self, ChartDocPropPartial):
+            return self.chart_doc.component
+
         raise NotImplementedError
 
     def style_area_pattern(

@@ -7,6 +7,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 class ChartLegend(
     LoInstPropsPartial,
     LegendComp,
+    ChartDocPropPartial,
     FontEffectsPartial,
     FontOnlyPartial,
     EventsPartial,
@@ -44,6 +46,7 @@ class ChartLegend(
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         LegendComp.__init__(self, lo_inst=self.lo_inst, component=component)
+        ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
         PropPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
@@ -51,17 +54,11 @@ class ChartLegend(
         QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         self._owner = owner
-        self._chart_doc = chart_doc
 
     # region Properties
     @property
     def owner(self) -> ChartDiagram:
         """Owner Chart Diagram"""
         return self._owner
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document."""
-        return self._chart_doc
 
     # endregion Properties
