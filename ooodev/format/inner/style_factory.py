@@ -202,6 +202,11 @@ def area_transparency_transparency_factory(name: str) -> Type[TransparencyTransp
         from ooodev.format.inner.direct.chart2.wall.transparent.transparency import Transparency
 
         return Transparency
+
+    if name in {"ooodev.char2.series.data_series.transparency", "ooodev.char2.series.data_point.transparency"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.transparent.transparency import Transparency
+
+        return Transparency
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -228,6 +233,11 @@ def area_transparency_gradient_factory(name: str) -> Type[TransparencyGradientT]
 
     if name == "ooodev.chart2.wall.transparency":
         from ooodev.format.inner.direct.chart2.wall.transparent.gradient import Gradient
+
+        return Gradient
+
+    if name in {"ooodev.char2.series.data_series.transparency", "ooodev.char2.series.data_point.transparency"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.transparent.gradient import Gradient
 
         return Gradient
 
@@ -456,6 +466,11 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
 
     if name == "ooodev.chart2.wall.borders":
         from ooodev.format.inner.direct.chart2.wall.borders.line_properties import LineProperties
+
+        return LineProperties
+
+    if name in {"ooodev.char2.series.data_series.borders", "ooodev.char2.series.data_point.borders"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.borders.line_properties import LineProperties
 
         return LineProperties
 

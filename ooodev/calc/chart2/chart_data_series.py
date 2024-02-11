@@ -21,8 +21,14 @@ from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import 
 from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
+from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
+from ooodev.format.inner.partial.area.transparency.transparency_partial import (
+    TransparencyPartial as TransparencyTransparency,
+)
+from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial as TransparencyGradient
 
 if TYPE_CHECKING:
+    from com.sun.star.chart2 import XChartDocument
     from ooodev.loader.inst.lo_inst import LoInst
     from .chart_doc import ChartDoc
     from .chart_data_point import ChartDataPoint
@@ -48,6 +54,9 @@ class ChartDataSeries(
     ChartFillHatchPartial,
     ChartFillImgPartial,
     ChartFillPatternPartial,
+    BorderLinePropertiesPartial,
+    TransparencyTransparency,
+    TransparencyGradient,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -96,6 +105,15 @@ class ChartDataSeries(
         ChartFillPatternPartial.__init__(
             self, factory_name="ooodev.char2.series.data_series.area", component=component, lo_inst=lo_inst
         )
+        BorderLinePropertiesPartial.__init__(
+            self, factory_name="ooodev.char2.series.data_series.borders", component=component, lo_inst=lo_inst
+        )
+        TransparencyTransparency.__init__(
+            self, factory_name="ooodev.char2.series.data_series.transparency", component=component, lo_inst=lo_inst
+        )
+        TransparencyGradient.__init__(
+            self, factory_name="ooodev.char2.series.data_series.transparency", component=component, lo_inst=lo_inst
+        )
         self._owner = owner
 
     def __getitem__(self, index: int) -> ChartDataPoint:
@@ -115,6 +133,13 @@ class ChartDataSeries(
         return ChartDataPoint(owner=self, chart_doc=self.chart_doc, component=dp, lo_inst=self.lo_inst)
 
     # endregion DataSeriesPartial Overrides
+
+    # region GradientPartial Overrides
+
+    def _GradientPartial_transparency_get_chart_doc(self) -> XChartDocument | None:
+        return self.chart_doc.component
+
+    # endregion GradientPartial Overrides
 
     def get_data_source(self) -> DataSource:
         """
