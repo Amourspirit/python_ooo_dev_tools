@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic
-
+import uno
+from com.sun.star.beans import XPropertySet
 from ooodev.adapter.beans.property_set_comp import PropertySetComp
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
@@ -29,6 +30,8 @@ class Prop(Generic[_T], LoInstPropsPartial, PropPartial, PropertySetComp):
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
+        # validate that component is a PropertySet
+        _ = lo_inst.qi(XPropertySet, component, True)
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         PropertySetComp.__init__(self, component)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
@@ -37,8 +40,8 @@ class Prop(Generic[_T], LoInstPropsPartial, PropPartial, PropertySetComp):
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        # PropertySetPartial will validate
-        return ("com.sun.star.beans.PropertySet",)
+        # property set many not support service names.
+        return ()
 
     # endregion Overrides
     # region Properties

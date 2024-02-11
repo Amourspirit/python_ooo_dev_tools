@@ -47,6 +47,7 @@ else:
     Chart2PositionAxisT = Any
     CalcNumbersT = Any
     Chart2NumbersT = Any
+    Chart2SeriesDataLabelsNumbersT = Any
 
 
 def font_only_factory(name: str) -> Type[FontOnlyT]:
@@ -159,6 +160,11 @@ def area_color_factory(name: str) -> Type[FillColorT]:
 
         return Color
 
+    if name == "ooodev.char2.wall.area":
+        from ooodev.format.inner.direct.chart2.wall.area.color import Color
+
+        return Color
+
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -187,6 +193,10 @@ def area_transparency_transparency_factory(name: str) -> Type[TransparencyTransp
 
         return Transparency
 
+    if name == "ooodev.chart2.wall":
+        from ooodev.format.inner.direct.chart2.wall.transparent.transparency import Transparency
+
+        return Transparency
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -208,6 +218,11 @@ def area_transparency_gradient_factory(name: str) -> Type[TransparencyGradientT]
 
     if name == "ooodev.chart2.legend":
         from ooodev.format.inner.direct.chart2.legend.transparent.gradient import Gradient
+
+        return Gradient
+
+    if name == "ooodev.chart2.wall.transparency":
+        from ooodev.format.inner.direct.chart2.wall.transparent.gradient import Gradient
 
         return Gradient
 
@@ -235,6 +250,11 @@ def chart2_area_gradient_factory(name: str) -> Type[ChartFillGradientT]:
 
         return Gradient
 
+    if name == "ooodev.char2.wall.area":
+        from ooodev.format.inner.direct.chart2.wall.area.gradient import Gradient
+
+        return Gradient
+
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -249,19 +269,27 @@ def chart2_area_img_factory(name: str) -> Type[ChartFillImgT]:
 
         return Img
 
+    if name == "ooodev.char2.wall.area":
+        from ooodev.format.inner.direct.chart2.wall.area.img import Img
+
+        return Img
+
     raise ValueError(f"Invalid name: {name}")
 
 
 def chart2_area_pattern_factory(name: str) -> Type[ChartFillPatternT]:
     if name == "ooodev.chart2.general":
-        # from ooodev.format.chart2.direct.general.area import Gradient
         from ooodev.format.inner.direct.chart2.chart.area.pattern import Pattern
 
         return Pattern
 
     if name == "ooodev.chart2.legend":
-        # from ooodev.format.chart2.direct.general.area import Gradient
         from ooodev.format.inner.direct.chart2.legend.area.pattern import Pattern
+
+        return Pattern
+
+    if name == "ooodev.char2.wall.area":
+        from ooodev.format.inner.direct.chart2.wall.area.pattern import Pattern
 
         return Pattern
 
@@ -270,14 +298,17 @@ def chart2_area_pattern_factory(name: str) -> Type[ChartFillPatternT]:
 
 def chart2_area_hatch_factory(name: str) -> Type[ChartFillHatchT]:
     if name == "ooodev.chart2.general":
-        # from ooodev.format.chart2.direct.general.area import Gradient
         from ooodev.format.inner.direct.chart2.chart.area.hatch import Hatch
 
         return Hatch
 
     if name == "ooodev.chart2.legend":
-        # from ooodev.format.chart2.direct.general.area import Gradient
         from ooodev.format.inner.direct.chart2.legend.area.hatch import Hatch
+
+        return Hatch
+
+    if name == "ooodev.char2.wall.area":
+        from ooodev.format.inner.direct.chart2.wall.area.hatch import Hatch
 
         return Hatch
 
@@ -395,6 +426,11 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
 
     if name == "ooodev.chart2.legend":
         from ooodev.format.inner.direct.chart2.legend.borders.line_properties import LineProperties
+
+        return LineProperties
+
+    if name == "ooodev.chart2.wall.borders":
+        from ooodev.format.inner.direct.chart2.wall.borders.line_properties import LineProperties
 
         return LineProperties
 

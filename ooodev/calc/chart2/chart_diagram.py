@@ -16,6 +16,8 @@ if TYPE_CHECKING:
     from .coordinate.coordinate_general import CoordinateGeneral
     from .chart_title import ChartTitle
     from .chart_legend import ChartLegend
+    from .chart_wall import ChartWall
+    from .chart_floor import ChartFloor
 
 
 class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiPartial, ServicePartial, StylePartial):
@@ -39,6 +41,8 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
+        self._wall = None
+        self._floor = None
 
     def get_title(self) -> ChartTitle[ChartDiagram] | None:
         """Gets the Title Diagram Component. This might be considered to be a subtitle."""
@@ -152,3 +156,19 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
             legend = ChartLegend(owner=self, chart_doc=self.chart_doc, lo_inst=self.lo_inst)
             legend.set_property(LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
             self.set_legend(legend.component)
+
+    @property
+    def wall(self) -> ChartWall:
+        if self._wall is None:
+            from .chart_wall import ChartWall
+
+            self._wall = ChartWall(owner=self, component=self.component.getWall(), lo_inst=self.lo_inst)
+        return self._wall
+
+    @property
+    def floor(self) -> ChartFloor:
+        if self._floor is None:
+            from .chart_floor import ChartFloor
+
+            self._floor = ChartFloor(owner=self, component=self.component.getFloor(), lo_inst=self.lo_inst)
+        return self._floor

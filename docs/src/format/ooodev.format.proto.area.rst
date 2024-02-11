@@ -7,7 +7,6 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   ooodev.format.proto.area.chart2
    ooodev.format.proto.area.transparency
 
 Submodules

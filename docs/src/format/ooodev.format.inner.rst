@@ -13,7 +13,6 @@ Subpackages
    ooodev.format.inner.modify
    ooodev.format.inner.partial
    ooodev.format.inner.preset
-   ooodev.format.inner.proto
 
 Submodules
 ----------
