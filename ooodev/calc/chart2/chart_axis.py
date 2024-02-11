@@ -144,7 +144,7 @@ class ChartAxis(
         except Exception as e:
             raise mEx.ChartError("Error getting axis title") from e
 
-    def set_title(self, title: str) -> ChartTitle:
+    def set_title(self, title: str) -> ChartTitle[ChartAxis]:
         """
         Sets Chart Title.
 

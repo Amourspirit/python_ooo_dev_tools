@@ -16,6 +16,14 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.format.inner.partial.chart2.title.alignment.chart2_title_orientation_partial import (
+    Chart2TitleOrientationPartial,
+)
+from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import ChartFillGradientPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -33,11 +41,17 @@ class ChartTitle(
     TitleComp,
     ChartDocPropPartial,
     PropPartial,
-    FontEffectsPartial,
-    FontOnlyPartial,
     QiPartial,
     ServicePartial,
     StylePartial,
+    FontOnlyPartial,
+    FontEffectsPartial,
+    Chart2TitleOrientationPartial,
+    FillColorPartial,
+    ChartFillGradientPartial,
+    ChartFillHatchPartial,
+    ChartFillImgPartial,
+    ChartFillPatternPartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -63,6 +77,14 @@ class ChartTitle(
         StylePartial.__init__(self, component=component)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
+        Chart2TitleOrientationPartial.__init__(self, component=component)
+        FillColorPartial.__init__(self, factory_name="ooodev.char2.title.area", component=component, lo_inst=lo_inst)
+        ChartFillGradientPartial.__init__(
+            self, factory_name="ooodev.char2.title", component=component, lo_inst=lo_inst
+        )
+        ChartFillHatchPartial.__init__(self, factory_name="ooodev.char2.title", component=component, lo_inst=lo_inst)
+        ChartFillPatternPartial.__init__(self, factory_name="ooodev.char2.title", component=component, lo_inst=lo_inst)
+        ChartFillImgPartial.__init__(self, factory_name="ooodev.char2.title", component=component, lo_inst=lo_inst)
         self._owner = owner
         self._init_events()
 

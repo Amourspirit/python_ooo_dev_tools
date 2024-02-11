@@ -26,6 +26,19 @@ from ooodev.format.inner.partial.area.transparency.gradient_partial import Gradi
 from ooodev.format.inner.partial.chart2.series.data_labels.borders.data_label_border_partial import (
     DataLabelBorderPartial,
 )
+from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_data_label_attrib_opt_partial import (
+    Chart2DataLabelAttribOptPartial,
+)
+
+from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_data_label_percent_format_partial import (
+    Chart2DataLabelPercentFormatPartial,
+)
+from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_data_label_orientation_partial import (
+    Chart2DataLabelOrientationPartial,
+)
+from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_data_label_text_attribute_partial import (
+    Chart2DataLabelTextAttributePartial,
+)
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -54,6 +67,10 @@ class ChartDataPoint(
     TransparencyTransparency,
     TransparencyGradient,
     DataLabelBorderPartial,
+    Chart2DataLabelAttribOptPartial,
+    Chart2DataLabelPercentFormatPartial,
+    Chart2DataLabelOrientationPartial,
+    Chart2DataLabelTextAttributePartial,
 ):
     """
     Class for managing Chart2 Chart Data Point Component.
@@ -116,6 +133,10 @@ class ChartDataPoint(
         DataLabelBorderPartial.__init__(
             self, factory_name="ooodev.char2.series.data_point.label.borders", component=component, lo_inst=lo_inst
         )
+        Chart2DataLabelAttribOptPartial.__init__(self, component=self)
+        Chart2DataLabelPercentFormatPartial.__init__(self, component=self)
+        Chart2DataLabelOrientationPartial.__init__(self, component=self)
+        Chart2DataLabelTextAttributePartial.__init__(self, component=self)
         self._owner = owner
 
     # region GradientPartial Overrides

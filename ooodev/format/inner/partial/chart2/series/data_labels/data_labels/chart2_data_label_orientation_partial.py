@@ -9,78 +9,71 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
 
 if TYPE_CHECKING:
-    from ooodev.format.inner.direct.chart2.legend.position.position import Position
-    from ooo.dyn.chart2.legend_position import LegendPosition
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation import Orientation
+    from ooodev.units import Angle
     from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind
-else:
-    LegendPosition = Any
-    DirectionModeKind = Any
 
 
-class Chart2LegendPosPartial:
+class Chart2DataLabelOrientationPartial:
     """
-    Partial class for Chart2 Legend Position.
+    Partial class for Chart2 Data Labels Orientation.
     """
 
     def __init__(self, component: Any) -> None:
         self.__component = component
 
-    def style_position(
-        self,
-        *,
-        pos: LegendPosition | None = None,
-        mode: DirectionModeKind | None = None,
-        no_overlap: bool | None = None,
-    ) -> Position | None:
+    def style_orientation(
+        self, angle: int | Angle | None = None, mode: DirectionModeKind | None = None, leaders: bool | None = None
+    ) -> Orientation | None:
         """
-        Style Area Color.
+        Style Chart2 Data Series Text Attributes.
 
         Args:
-            pos (LegendPosition | None, optional): Specifies the position of the legend.
+            angle (int, Angle, optional): Rotation in degrees of the text.
             mode (DirectionModeKind, optional): Specifies the writing direction.
-            no_overlap (bool | None, optional): Show the legend without overlapping the chart.
+            leaders (bool, optional): Leader Lines. Connect displaced data points to data points.
 
         Raises:
-            CancelEventError: If the event ``before_style_chart2_legend_pos`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_chart2_data_label_orientation`` is cancelled and not handled.
 
         Returns:
-            PositionT | None: Chart Legend Position style instance or ``None`` if cancelled.
+            Orientation | None: Orientation Style instance or ``None`` if cancelled.
         """
-        from ooodev.format.inner.direct.chart2.legend.position.position import Position
+        from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation import Orientation
 
         comp = self.__component
         has_events = False
         cargs = None
         if isinstance(self, EventsPartial):
             has_events = True
-            cargs = CancelEventArgs(self.style_position.__qualname__)
+            cargs = CancelEventArgs(self.style_orientation.__qualname__)
             event_data: Dict[str, Any] = {
-                "pos": pos,
+                "angle": angle,
                 "mode": mode,
-                "no_overlap": no_overlap,
+                "leaders": leaders,
                 "this_component": comp,
             }
             cargs.event_data = event_data
-            self.trigger_event("before_style_chart2_legend_pos", cargs)
+            self.trigger_event("before_style_chart2_data_label_orientation", cargs)
             if cargs.cancel is True:
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_chart2_legend_pos")
+                    cargs.set("initial_event", "before_style_chart2_data_label_orientation")
                     self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                     if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Gradient has been cancelled.")
+                        raise mEx.CancelEventError(cargs, "Style has been cancelled.")
                     else:
                         return None
                 else:
                     return None
-            pos = cargs.event_data.get("pos", pos)
+            angle = cargs.event_data.get("angle", angle)
             mode = cargs.event_data.get("mode", mode)
-            no_overlap = cargs.event_data.get("no_overlap", no_overlap)
+            leaders = cargs.event_data.get("leaders", leaders)
             comp = cargs.event_data.get("this_component", comp)
 
-        fe = Position(
-            pos=pos,
+        fe = Orientation(
+            angle=angle,
             mode=mode,
-            no_overlap=no_overlap,
+            leaders=leaders,
         )
 
         if has_events:
@@ -89,5 +82,5 @@ class Chart2LegendPosPartial:
         fe.apply(comp)
         fe.set_update_obj(comp)
         if has_events:
-            self.trigger_event("after_style_chart2_legend_pos", EventArgs.from_args(cargs))  # type: ignore
+            self.trigger_event("after_style_chart2_data_label_orientation", EventArgs.from_args(cargs))  # type: ignore
         return fe

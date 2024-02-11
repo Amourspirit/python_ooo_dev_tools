@@ -1,12 +1,10 @@
 from __future__ import annotations
-from typing import Any, cast, TypeVar, Tuple
+from typing import cast, TypeVar, Tuple
 import uno
 
-from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.title_alignment_orientation_props import TitleAlignmentOrientationProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.loader import lo as mLo
 from ooodev.units import Angle
 
 _TOrientation = TypeVar("_TOrientation", bound="Orientation")
