@@ -11,3 +11,4 @@ chart2
     coordinate/index
     data/index
     regression_curve/index
+    partial/index

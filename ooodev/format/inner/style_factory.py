@@ -165,6 +165,11 @@ def area_color_factory(name: str) -> Type[FillColorT]:
 
         return Color
 
+    if name in {"ooodev.char2.series.data_series.area", "ooodev.char2.series.data_point.area"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.area.color import Color
+
+        return Color
+
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -255,6 +260,11 @@ def chart2_area_gradient_factory(name: str) -> Type[ChartFillGradientT]:
 
         return Gradient
 
+    if name in {"ooodev.char2.series.data_series.area", "ooodev.char2.series.data_point.area"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.area.gradient import Gradient
+
+        return Gradient
+
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -271,6 +281,11 @@ def chart2_area_img_factory(name: str) -> Type[ChartFillImgT]:
 
     if name == "ooodev.char2.wall.area":
         from ooodev.format.inner.direct.chart2.wall.area.img import Img
+
+        return Img
+
+    if name in {"ooodev.char2.series.data_series.area", "ooodev.char2.series.data_point.area"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.area.img import Img
 
         return Img
 
@@ -293,6 +308,11 @@ def chart2_area_pattern_factory(name: str) -> Type[ChartFillPatternT]:
 
         return Pattern
 
+    if name in {"ooodev.char2.series.data_series.area", "ooodev.char2.series.data_point.area"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.area.pattern import Pattern
+
+        return Pattern
+
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -309,6 +329,11 @@ def chart2_area_hatch_factory(name: str) -> Type[ChartFillHatchT]:
 
     if name == "ooodev.char2.wall.area":
         from ooodev.format.inner.direct.chart2.wall.area.hatch import Hatch
+
+        return Hatch
+
+    if name in {"ooodev.char2.series.data_series.area", "ooodev.char2.series.data_point.area"}:
+        from ooodev.format.inner.direct.chart2.series.data_series.area.hatch import Hatch
 
         return Hatch
 

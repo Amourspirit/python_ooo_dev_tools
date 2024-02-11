@@ -16,9 +16,13 @@ from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartia
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
+from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import ChartFillGradientPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.chart2 import XChartDocument
     from ooodev.loader.inst.lo_inst import LoInst
     from .chart_doc import ChartDoc
     from .chart_data_point import ChartDataPoint
@@ -39,6 +43,11 @@ class ChartDataSeries(
     FontEffectsPartial,
     FontOnlyPartial,
     NumbersNumbersPartial,
+    FillColorPartial,
+    ChartFillGradientPartial,
+    ChartFillHatchPartial,
+    ChartFillImgPartial,
+    ChartFillPatternPartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -71,6 +80,21 @@ class ChartDataSeries(
         )
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
+        )
+        FillColorPartial.__init__(
+            self, factory_name="ooodev.char2.series.data_series.area", component=component, lo_inst=lo_inst
+        )
+        ChartFillGradientPartial.__init__(
+            self, factory_name="ooodev.char2.series.data_series.area", component=component, lo_inst=lo_inst
+        )
+        ChartFillHatchPartial.__init__(
+            self, factory_name="ooodev.char2.series.data_series.area", component=component, lo_inst=lo_inst
+        )
+        ChartFillImgPartial.__init__(
+            self, factory_name="ooodev.char2.series.data_series.area", component=component, lo_inst=lo_inst
+        )
+        ChartFillPatternPartial.__init__(
+            self, factory_name="ooodev.char2.series.data_series.area", component=component, lo_inst=lo_inst
         )
         self._owner = owner
 
