@@ -474,4 +474,9 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
 
         return LineProperties
 
+    if name in {"ooodev.char2.series.data_series.label.borders", "ooodev.char2.series.data_point.label.borders"}:
+        from ooodev.format.inner.direct.chart2.series.data_labels.borders.line_properties import LineProperties
+
+        return LineProperties
+
     raise ValueError(f"Invalid name: {name}")

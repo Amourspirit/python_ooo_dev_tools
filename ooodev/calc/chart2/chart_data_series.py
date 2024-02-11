@@ -26,6 +26,9 @@ from ooodev.format.inner.partial.area.transparency.transparency_partial import (
     TransparencyPartial as TransparencyTransparency,
 )
 from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial as TransparencyGradient
+from ooodev.format.inner.partial.chart2.series.data_labels.borders.data_label_border_partial import (
+    DataLabelBorderPartial,
+)
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -57,6 +60,7 @@ class ChartDataSeries(
     BorderLinePropertiesPartial,
     TransparencyTransparency,
     TransparencyGradient,
+    DataLabelBorderPartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -113,6 +117,9 @@ class ChartDataSeries(
         )
         TransparencyGradient.__init__(
             self, factory_name="ooodev.char2.series.data_series.transparency", component=component, lo_inst=lo_inst
+        )
+        DataLabelBorderPartial.__init__(
+            self, factory_name="ooodev.char2.series.data_series.label.borders", component=component, lo_inst=lo_inst
         )
         self._owner = owner
 

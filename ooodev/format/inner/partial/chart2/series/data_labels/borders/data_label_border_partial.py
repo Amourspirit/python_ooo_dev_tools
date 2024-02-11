@@ -19,9 +19,9 @@ else:
     Intensity = Any
 
 
-class AxisLinePropertiesPartial:
+class DataLabelBorderPartial:
     """
-    Partial class for Chart2 Axis Line Properties.
+    Partial class for Chart2 Data Series Data Label Border Line Style.
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
@@ -30,10 +30,10 @@ class AxisLinePropertiesPartial:
         self.__styler = LineProperties(factory_name=factory_name, component=component, lo_inst=lo_inst)
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_axis_line"
-        self.__styler.before_event_name = "before_style_axis_line"
+        self.__styler.after_event_name = "after_style_data_label_border_line"
+        self.__styler.before_event_name = "before_style_data_label_border_line"
 
-    def style_axis_line(
+    def style_label_border_line(
         self,
         color: mColor.Color = mColor.Color(0),
         width: float | UnitT = 0,
@@ -41,7 +41,7 @@ class AxisLinePropertiesPartial:
         style: BorderLineKind = BorderLineKind.CONTINUOUS,
     ) -> LinePropertiesT | None:
         """
-        Style Axis Line.
+        Style Label Border Line.
 
         Args:
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
@@ -50,7 +50,7 @@ class AxisLinePropertiesPartial:
             style (BorderLineKind, optional): Line style. Defaults to ``BorderLineKind.CONTINUOUS``.
 
         Raises:
-            CancelEventError: If the event ``before_style_axis_line`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_data_label_border_line`` is cancelled and not handled.
 
         Returns:
             LinePropertiesT | None: Border Line Style or ``None`` if cancelled.
