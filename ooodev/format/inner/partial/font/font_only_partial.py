@@ -68,7 +68,7 @@ class FontOnlyPartial:
                 "font_style": font_style,
                 "lang": lang,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_font_only", cargs)
@@ -87,7 +87,7 @@ class FontOnlyPartial:
             font_style = cargs.event_data.get("font_style", font_style)
             lang = cargs.event_data.get("lang", lang)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = font_only_factory(factory_name)
         fe = styler(

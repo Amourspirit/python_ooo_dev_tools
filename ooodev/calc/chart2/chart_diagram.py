@@ -9,6 +9,9 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+from .kind.chart_title_kind import ChartTitleKind
+from .kind.chart_diagram_kind import ChartDiagramKind
+
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -25,7 +28,9 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
     Class for managing Chart2 Diagram.
     """
 
-    def __init__(self, owner: ChartDoc, component: Any, lo_inst: LoInst | None = None) -> None:
+    def __init__(
+        self, owner: ChartDoc, component: Any, diagram_kind: ChartDiagramKind, lo_inst: LoInst | None = None
+    ) -> None:
         """
         Constructor
 
@@ -43,6 +48,7 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
         StylePartial.__init__(self, component=component)
         self._wall = None
         self._floor = None
+        self._diagram_kind = diagram_kind
 
     def get_title(self) -> ChartTitle[ChartDiagram] | None:
         """Gets the Title Diagram Component. This might be considered to be a subtitle."""
@@ -51,7 +57,13 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
         comp = self.get_title_object()
         if comp is None:
             return None
-        return ChartTitle(owner=self, chart_doc=self.chart_doc, component=comp, lo_inst=self.lo_inst)
+        if self.diagram_kind == ChartDiagramKind.FIRST:
+            chart_title_kind = ChartTitleKind.TITLE
+        else:
+            chart_title_kind = ChartTitleKind.UNKNOWN
+        return ChartTitle(
+            owner=self, chart_doc=self.chart_doc, component=comp, title_kind=chart_title_kind, lo_inst=self.lo_inst
+        )
 
     def set_title(self, title: str) -> ChartTitle[ChartDiagram]:
         """Adds a Chart Title."""
@@ -71,8 +83,17 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
 
         titled = self.qi(XTitled, True)
         titled.setTitleObject(x_title)
+        if self.diagram_kind == ChartDiagramKind.FIRST:
+            chart_title_kind = ChartTitleKind.TITLE
+        else:
+            chart_title_kind = ChartTitleKind.UNKNOWN
+
         return ChartTitle(
-            owner=self, chart_doc=self.chart_doc, component=titled.getTitleObject(), lo_inst=self.lo_inst
+            owner=self,
+            chart_doc=self.chart_doc,
+            component=titled.getTitleObject(),
+            title_kind=chart_title_kind,
+            lo_inst=self.lo_inst,
         )
 
     def get_coordinate_system(self) -> CoordinateGeneral | None:
@@ -172,3 +193,8 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
 
             self._floor = ChartFloor(owner=self, component=self.component.getFloor(), lo_inst=self.lo_inst)
         return self._floor
+
+    @property
+    def diagram_kind(self) -> ChartDiagramKind:
+        """Gets the diagram kind."""
+        return self._diagram_kind

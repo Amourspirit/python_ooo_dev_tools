@@ -1,31 +1,34 @@
 from __future__ import annotations
 from typing import Any, overload, List, Sequence, TYPE_CHECKING, Tuple
-from ooodev.loader import lo as mLo
-from ooodev.exceptions import ex as mEx
-from ooodev.adapter.chart2.chart_document_comp import ChartDocumentComp
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.chart2.chart_document_comp import ChartDocumentComp
 from ooodev.adapter.document.storage_change_event_events import StorageChangeEventEvents
-from ooodev.office import chart2 as mChart2
-from ooodev.utils.context.lo_context import LoContext
-from ooodev.utils.color import Color
+from ooodev.adapter.util.close_events import CloseEvents
+from ooodev.adapter.util.modify_events import ModifyEvents
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
+from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial
+from ooodev.format.inner.partial.area.transparency.transparency_partial import TransparencyPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import ChartFillGradientPartial
+from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
-from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
 from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
-from ooodev.format.inner.partial.area.transparency.transparency_partial import TransparencyPartial
-from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+from ooodev.loader import lo as mLo
+from ooodev.office import chart2 as mChart2
+from ooodev.utils.color import Color
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
+from .kind.chart_axis_kind import ChartAxisKind
+from .kind.chart_title_kind import ChartTitleKind
+from .kind.chart_diagram_kind import ChartDiagramKind
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -189,7 +192,13 @@ class ChartDoc(
 
         titled = self.qi(XTitled, True)
         titled.setTitleObject(x_title)
-        return ChartTitle(owner=self, chart_doc=self, component=titled.getTitleObject(), lo_inst=self.lo_inst)
+        return ChartTitle(
+            owner=self,
+            chart_doc=self,
+            component=titled.getTitleObject(),
+            title_kind=ChartTitleKind.TITLE,
+            lo_inst=self.lo_inst,
+        )
 
     def get_title(self) -> ChartTitle[ChartDoc] | None:
         """Gets the Chart Title Component."""
@@ -200,7 +209,9 @@ class ChartDoc(
         comp = titled.getTitleObject()
         if comp is None:
             return None
-        return ChartTitle(owner=self, chart_doc=self, component=comp, lo_inst=self.lo_inst)
+        return ChartTitle(
+            owner=self, chart_doc=self, component=comp, title_kind=ChartTitleKind.TITLE, lo_inst=self.lo_inst
+        )
 
     def set_bg_color(self, color: Color) -> None:
         """Sets the background color."""
@@ -567,7 +578,9 @@ class ChartDoc(
             from .chart_diagram import ChartDiagram
 
             diagram = self.get_first_diagram()
-            self._first_diagram = ChartDiagram(owner=self, component=diagram, lo_inst=self.lo_inst)
+            self._first_diagram = ChartDiagram(
+                owner=self, component=diagram, diagram_kind=ChartDiagramKind.FIRST, lo_inst=self.lo_inst
+            )
         return self._first_diagram
 
     @property
@@ -577,7 +590,7 @@ class ChartDoc(
             from .chart_axis import ChartAxis
 
             axis = mChart2.Chart2.get_x_axis(self.component)
-            self._axis_x = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
+            self._axis_x = ChartAxis(owner=self, axis_kind=ChartAxisKind.X, component=axis, lo_inst=self.lo_inst)
         return self._axis_x
 
     @property
@@ -590,7 +603,7 @@ class ChartDoc(
                 axis = mChart2.Chart2.get_x_axis2(self.component)
             except mEx.ChartError:
                 return None
-            self._axis2_x = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
+            self._axis2_x = ChartAxis(owner=self, axis_kind=ChartAxisKind.X2, component=axis, lo_inst=self.lo_inst)
         return self._axis2_x
 
     @property
@@ -600,7 +613,7 @@ class ChartDoc(
             from .chart_axis import ChartAxis
 
             axis = mChart2.Chart2.get_y_axis(self.component)
-            self._axis_y = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
+            self._axis_y = ChartAxis(owner=self, component=axis, axis_kind=ChartAxisKind.Y, lo_inst=self.lo_inst)
         return self._axis_y
 
     @property
@@ -613,7 +626,7 @@ class ChartDoc(
                 axis = mChart2.Chart2.get_y_axis2(self.component)
             except mEx.ChartError:
                 return None
-            self._axis2_y = ChartAxis(owner=self, component=axis, lo_inst=self.lo_inst)
+            self._axis2_y = ChartAxis(owner=self, component=axis, axis_kind=ChartAxisKind.Y2, lo_inst=self.lo_inst)
         return self._axis2_y
 
     # endregion Methods

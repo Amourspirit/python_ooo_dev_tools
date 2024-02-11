@@ -381,6 +381,11 @@ def chart2_position_size_position_factory(name: str) -> Type[Chart2PositionT]:
 
         return Position
 
+    if name == "ooodev.chart2.title":
+        from ooodev.format.inner.direct.chart2.title.position_size.position import Position
+
+        return Position
+
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -501,6 +506,11 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
 
     if name in {"ooodev.char2.series.data_series.label.borders", "ooodev.char2.series.data_point.label.borders"}:
         from ooodev.format.inner.direct.chart2.series.data_labels.borders.line_properties import LineProperties
+
+        return LineProperties
+
+    if name == "ooodev.char2.title":
+        from ooodev.format.inner.direct.chart2.title.borders.line_properties import LineProperties
 
         return LineProperties
 

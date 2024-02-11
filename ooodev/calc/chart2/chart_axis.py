@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
 from com.sun.star.chart2 import XScaling
+from .kind.chart_axis_kind import ChartAxisKind
+from .kind.chart_title_kind import ChartTitleKind
 from ooodev.adapter.chart2.axis_comp import AxisComp
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
@@ -62,7 +64,9 @@ class ChartAxis(
     Class for managing Chart2 Chart Title Component.
     """
 
-    def __init__(self, owner: ChartDoc, component: Any, lo_inst: LoInst | None = None) -> None:
+    def __init__(
+        self, owner: ChartDoc, component: Any, axis_kind: ChartAxisKind, lo_inst: LoInst | None = None
+    ) -> None:
         """
         Constructor
 
@@ -104,6 +108,7 @@ class ChartAxis(
         Chart2GridLinePartial.__init__(
             self, factory_name="ooodev.chart2.grid.line", component=grid_props, lo_inst=lo_inst
         )
+        self._axis_kind = axis_kind
 
     # region StylePartial Overrides
 
@@ -140,7 +145,10 @@ class ChartAxis(
             comp = titled.getTitleObject()
             if comp is None:
                 return None
-            return ChartTitle(owner=self, chart_doc=self.chart_doc, component=comp, lo_inst=self.lo_inst)
+            kind = ChartTitleKind(self.axis_kind.value)
+            return ChartTitle(
+                owner=self, chart_doc=self.chart_doc, component=comp, title_kind=kind, lo_inst=self.lo_inst
+            )
         except Exception as e:
             raise mEx.ChartError("Error getting axis title") from e
 
@@ -174,8 +182,13 @@ class ChartAxis(
 
             titled = self.qi(XTitled, True)
             titled.setTitleObject(x_title)
+            kind = ChartTitleKind(self.axis_kind.value)
             return ChartTitle(
-                owner=self, chart_doc=self.chart_doc, component=titled.getTitleObject(), lo_inst=self.lo_inst
+                owner=self,
+                chart_doc=self.chart_doc,
+                component=titled.getTitleObject(),
+                title_kind=kind,
+                lo_inst=self.lo_inst,
             )
         except Exception as e:
             raise mEx.ChartError("Error setting axis title") from e
@@ -215,3 +228,8 @@ class ChartAxis(
             self.set_scale_data(sd)
         except Exception as e:
             raise mEx.ChartError("Error setting axis scale") from e
+
+    @property
+    def axis_kind(self) -> ChartAxisKind:
+        """Gets the axis kind."""
+        return self._axis_kind

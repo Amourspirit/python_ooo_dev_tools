@@ -56,7 +56,7 @@ class Chart2PositionPartial:
                 "x": x,
                 "y": y,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_position", cargs)
@@ -73,7 +73,7 @@ class Chart2PositionPartial:
             x = cargs.event_data.get("x", x)
             y = cargs.event_data.get("y", y)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_position_size_position_factory(factory_name)
         fe = styler(pos_x=x, pos_y=y)

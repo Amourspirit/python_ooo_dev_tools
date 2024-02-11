@@ -92,7 +92,7 @@ class FontEffectsPartial:
                 "hidden": hidden,
                 "shadowed": shadowed,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_font_effect", cargs)
@@ -118,7 +118,7 @@ class FontEffectsPartial:
             hidden = cargs.event_data.get("hidden", hidden)
             shadowed = cargs.event_data.get("shadowed", shadowed)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = font_effects_factory(factory_name)
         fe = styler(

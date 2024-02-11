@@ -12,3 +12,4 @@ chart2
     data/index
     regression_curve/index
     partial/index
+    kind/index
