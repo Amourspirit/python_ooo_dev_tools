@@ -1,12 +1,14 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.container import XEnumeration
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from ooodev.utils.type_var import UnoInterface
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import UnoInterface
 
 
 class EnumerationPartial:

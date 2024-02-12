@@ -174,6 +174,16 @@ class WriteDoc(
 
     # endregion Lazy Listeners
 
+    # region context manage
+    def __enter__(self) -> WriteDoc:
+        self.lock_controllers()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.unlock_controllers()
+
+    # endregion context manage
+
     def get_controller(self) -> XController:
         """
         Gets controller from document.
@@ -181,8 +191,8 @@ class WriteDoc(
         Returns:
             XController: Controller.
         """
-        model = self.qi(XModel, True)
-        return model.getCurrentController()
+        return self.get_current_controller()
+
 
     # region get_cursor()
     @overload

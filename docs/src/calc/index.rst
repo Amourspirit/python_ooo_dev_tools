@@ -8,6 +8,7 @@ calc
     :glob:
 
     *
+    chart2/index
     export/index
     filter/index
     partial/index

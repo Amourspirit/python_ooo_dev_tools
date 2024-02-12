@@ -184,7 +184,11 @@ class FontEffects(StyleBase):
     def apply(self, obj: Any) -> None:  # type: ignore
         ...
 
-    def apply(self, obj: Any, **kwargs) -> None:
+    @overload
+    def apply(self, obj: Any, **kwargs: Any) -> None:  # type: ignore
+        ...
+
+    def apply(self, obj: Any, **kwargs: Any) -> None:
         """
         Applies styles to object
 

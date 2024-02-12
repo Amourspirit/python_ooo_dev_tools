@@ -44,8 +44,8 @@ class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StyleP
         # don't use owner.get_cell() here because it will be recursive.
         sheet_cell = mCalc.Calc.get_cell(sheet=owner.component, cell_obj=self._cell_obj)
         SheetCellComp.__init__(self, sheet_cell)  # type: ignore
-        QiPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
-        PropPartial.__init__(self, component=sheet_cell, lo_inst=mLo.Lo.current_lo)
+        QiPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
+        PropPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet_cell)
         ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
 

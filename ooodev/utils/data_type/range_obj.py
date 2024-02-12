@@ -6,9 +6,13 @@ from dataclasses import dataclass, field
 from weakref import ref
 import uno
 
+from ooodev.events.event_singleton import _Events
+from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.loader import lo as mLo
+from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.exceptions import ex as mEx
 from .. import table_helper as mTb
-from ...office import calc as mCalc
+from ooodev.office import calc as mCalc
 from ..decorator import enforce
 
 
@@ -106,6 +110,26 @@ class RangeObj:
         Returns:
             RangeObj: Object that represents the name range.
         """
+        cargs = CancelEventArgs("RangeObj.from_range")
+        event_data = {"range_val": range_val, "sheet_index": -1}
+        cargs.event_data = event_data
+        _Events().trigger(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, cargs)
+
+        if cargs.cancel:
+            if cargs.handled is False:
+                cargs.set("initial_event", "before_style_font_effect")
+                _Events().trigger(GblNamedEvent.EVENT_CANCELED, cargs)
+
+            if cargs.handled is True:
+                if "result" in cargs.event_data:
+                    return cargs.event_data["result"]
+                else:
+                    raise mEx.CancelEventError(cargs, "Operation canceled, no result data to return.")
+            else:
+                raise mEx.CancelEventError(cargs, "Operation canceled")
+
+        sheet_idx = int(cargs.event_data.get("sheet_index", -1))
+
         if hasattr(range_val, "typeName") and getattr(range_val, "typeName") == "com.sun.star.table.CellRangeAddress":
             rng = mRngValues.RangeValues.from_range(cast("CellRangeAddress", range_val))
         else:
@@ -117,6 +141,8 @@ class RangeObj:
             col_end = mTb.TableHelper.make_column_name(rng.col_end, True)
             row_start = rng.row_start + 1
             row_end = rng.row_end + 1
+            if sheet_idx < 0:
+                sheet_idx = rng.sheet_idx
             sheet_idx = rng.sheet_idx
         else:
             parts = mTb.TableHelper.get_range_parts(str(rng))
@@ -125,8 +151,7 @@ class RangeObj:
             row_start = parts.row_start
             row_end = parts.row_end
             sheet_name = parts.sheet
-            sheet_idx = -1
-            if sheet_name and mLo.Lo.is_loaded:
+            if sheet_idx < 0 and sheet_name and mLo.Lo.is_loaded:
                 with contextlib.suppress(Exception):
                     sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
                     sheet_idx = mCalc.Calc.get_sheet_index(sheet)

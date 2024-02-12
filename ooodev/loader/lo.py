@@ -2256,7 +2256,7 @@ class Lo(metaclass=StaticProperty):
         |lo_unsafe|
 
         Returns:
-            LoInst: Lo Instance
+            TheDesktop: Desktop instance.
         """
         if cls._lo_inst is None:
             # for macro mode auto load office

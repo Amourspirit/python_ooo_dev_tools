@@ -31,6 +31,9 @@ class Size(StyleBase):
         Args:
             width (float | UnitT): Specifies the width of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
             height (float | UnitT): Specifies the height of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
+
+        Returns:
+            None:
         """
         super().__init__()
         # self._chart_doc = chart_doc

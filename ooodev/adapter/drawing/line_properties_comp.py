@@ -2,12 +2,13 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 
+from .line_properties_partial import LinePropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import LineProperties  # service
 
 
-class LinePropertiesComp(ComponentBase):
+class LinePropertiesComp(ComponentBase, LinePropertiesPartial):
     """
     Class for managing table LineProperties Component.
     """
@@ -22,11 +23,13 @@ class LinePropertiesComp(ComponentBase):
             component (LineProperties): UNO LineProperties Component.
         """
         ComponentBase.__init__(self, component)
+        LinePropertiesPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.drawing.LineProperties",)
+        # Validated by LinePropertiesPartial
+        return ()
 
     # endregion Overrides
     # region Properties

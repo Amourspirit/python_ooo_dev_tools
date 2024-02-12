@@ -6,6 +6,7 @@ utils
     :glob:
 
     context/index
+    comp/index
     data_type/index
     dispatch/index
     factory/index

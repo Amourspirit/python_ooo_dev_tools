@@ -30,22 +30,30 @@ if TYPE_CHECKING:
     from ooodev.units import UnitT
     from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
     from .calc_doc import CalcDoc
+    from .calc_charts import CalcCharts
+    from .spreadsheet_draw_page import SpreadsheetDrawPage
 
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.lo_events import event_ctx
+from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_events import observe_events
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.office import calc as mCalc
 from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.office import calc as mCalc
+from ooodev.utils import info as mInfo
 from ooodev.utils import props as mProps
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .spreadsheet_draw_page import SpreadsheetDrawPage
+
+
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
@@ -58,6 +66,7 @@ class CalcSheet(
     LoInstPropsPartial,
     SpreadsheetComp,
     mSheetCellPartial.SheetCellPartial,
+    EventsPartial,
     QiPartial,
     PropPartial,
     ServicePartial,
@@ -78,12 +87,167 @@ class CalcSheet(
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SpreadsheetComp.__init__(self, sheet)  # type: ignore
+        EventsPartial.__init__(self)
         QiPartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
         PropPartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet)
         mSheetCellPartial.SheetCellPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._draw_page = None
+        self._charts = None
+        self._init_events()
+
+    # region Events
+    def _init_events(self) -> None:
+        self._fn_on_range_before_from_obj = self._on_range_before_from_obj
+        # self.subscribe_event(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, self._fn_on_range_before_from_obj)
+
+    def _on_range_before_from_obj(self, source: Any, args: CancelEventArgs) -> None:
+        # set the sheet index when the range object is being created from a range within this class.
+        idx = self.get_sheet_index()
+        args.event_data["sheet_index"] = idx
+
+    # endregion Events
+
+    # region make_range_obj()
+    @overload
+    def rng(self, range_name: str) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            range_name (str): Cell range as string.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def rng(self, cell_range: XCellRange) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def rng(self, cr_addr: CellRangeAddress) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cr_addr (CellRangeAddress): Cell Range Address.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def rng(self, range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            range_obj (RangeObj): Range Object. If passed in the same RangeObj is returned.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def rng(self, cell_obj: mCellObj.CellObj) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def rng(self, cell_range: XCellRange) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+            sheet (XSpreadsheet): Spreadsheet.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def rng(self, col_start: int, row_start: int, col_end: int, row_end: int) -> mRngObj.RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    def rng(self, *args, **kwargs) -> mRngObj.RangeObj:
+        """
+        Makes a range object.
+
+        Args:
+            sheet (XSpreadsheet): Spreadsheet
+            range_name (str): Range name such as 'A1:D7'.
+            range_obj (RangeObj): Range object.
+            start_col (int): Zero-base start column index.
+            start_row (int): Zero-base start row index.
+            end_col (int): Zero-base end column index.
+            end_row (int): Zero-base end row index.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        # use context manage to get this sheet index for the range
+        with event_ctx(
+            (GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, self._fn_on_range_before_from_obj),
+            source=self,
+            lo_observe=True,
+        ):
+            kargs_len = len(kwargs)
+            count = len(args) + kargs_len
+            if count == 1:
+                val = None
+                for v in kwargs.values():
+                    val = v
+                if val is None and args:
+                    val = args[0]
+
+                if val:
+                    if mInfo.Info.is_instance(val, mRngObj.RangeObj):
+                        return val
+                    if mInfo.Info.is_instance(val, str):
+                        return mRngObj.RangeObj.from_range(val)
+                    if mInfo.Info.is_instance(val, mCellObj.CellObj):
+                        return val.get_range_obj()
+
+            range_name = mCalc.Calc.get_range_str(*args, **kwargs)
+            return mRngObj.RangeObj.from_range(range_val=range_name)
+
+    # endregion make_range_obj()
 
     # region get_address()
     @overload
@@ -512,7 +676,14 @@ class CalcSheet(
         if kwargs.keys() & sheet_names:
             if "sheet" not in kwargs:
                 kwargs["sheet"] = self.component
-        range_obj = mCalc.Calc.get_range_obj(**kwargs)
+
+        # use context manage to get this sheet index for the range
+        with event_ctx(
+            (GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, self._fn_on_range_before_from_obj),
+            source=self,
+            lo_observe=True,
+        ):
+            range_obj = mCalc.Calc.get_range_obj(**kwargs)
         return mCalcCellRange.CalcCellRange(owner=self, rng=range_obj, lo_inst=self.lo_inst)
 
     # endregion get_range()
@@ -3690,9 +3861,25 @@ class CalcSheet(
             SpreadsheetDrawPage: Draw Page
         """
         if self._draw_page is None:
+            from .spreadsheet_draw_page import SpreadsheetDrawPage
+
             supp = self.qi(XDrawPageSupplier, True)
             draw_page = supp.getDrawPage()
             self._draw_page = SpreadsheetDrawPage(owner=self, component=draw_page, lo_inst=self.lo_inst)
         return self._draw_page  # type: ignore
+
+    @property
+    def charts(self) -> CalcCharts:
+        """
+        Gets charts.
+
+        Returns:
+            CalcCharts: Calc Charts
+        """
+        if self._charts is None:
+            from .calc_charts import CalcCharts
+
+            self._charts = CalcCharts(owner=self, charts=self.component.getCharts(), lo_inst=self.lo_inst)
+        return self._charts
 
     # endregion Properties

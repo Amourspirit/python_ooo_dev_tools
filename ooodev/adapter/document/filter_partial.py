@@ -25,7 +25,7 @@ class FilterPartial:
         Constructor
 
         Args:
-            component (XFilter): UNO Component that implements ``com.sun.star.container.XFilter`` interface.
+            component (XFilter): UNO Component that implements ``com.sun.star.document.XFilter`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XFilter``.
         """
 

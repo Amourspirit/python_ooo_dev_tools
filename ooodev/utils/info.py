@@ -1196,7 +1196,7 @@ class Info(metaclass=StaticProperty):
             if si is None:
                 return result
             for srv in service:
-                result = si.supportsService(srv)
+                result = si.supportsService(srv)  # type: ignore
                 if result:
                     break
         except Exception as e:

@@ -22,7 +22,6 @@ from ooodev.format.inner.preset.preset_gradient import (
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as FillGradient
 from ooodev.meta.deleted_attrib import DeletedAttrib
-from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 

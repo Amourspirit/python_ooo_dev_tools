@@ -1,10 +1,15 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple
+from typing import Any, Tuple, TYPE_CHECKING
 import uno
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang, FontOnly as CharFontOnly
 from ooodev.units.unit_obj import UnitT
 from ooodev.units.unit_pt import UnitPT
+
+if TYPE_CHECKING:
+    from ooodev.format.proto.font.font_lang_t import FontLangT
+else:
+    FontLangT = Any
 
 # endregion Import
 
@@ -33,9 +38,9 @@ class FontOnly(CharFontOnly):
         self,
         *,
         name: str | None = None,
-        size: int | UnitT | None = None,
+        size: float | UnitT | None = None,
         font_style: str | None = None,
-        lang: FontLang | None = None,
+        lang: FontLangT | None = None,
     ) -> None:
         """
         Font options used in styles.

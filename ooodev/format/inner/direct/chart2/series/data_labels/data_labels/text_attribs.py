@@ -63,7 +63,7 @@ class TextAttribs(StyleMulti):
             show_custom_label=show_custom_label,
             show_series_name=show_series_name,
         )
-        self._set_style("dp_struct", struct)
+        self._set_style("dp_struct", struct)  # type: ignore
 
     # region Internal Methods
     def _get_struct_type(self) -> Type[DataPointLabelStruct]:

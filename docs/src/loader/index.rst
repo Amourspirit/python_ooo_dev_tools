@@ -7,5 +7,6 @@ loader
     :titlesonly:
     :glob:
 
+    comp/index
     inst/index
     *

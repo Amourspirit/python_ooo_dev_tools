@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
+from .character_properties_partial import CharacterPropertiesPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.style import CharacterProperties  # service
 
 
-class CharacterPropertiesComp(ComponentBase):
+class CharacterPropertiesComp(ComponentBase, CharacterPropertiesPartial):
     """
     Class for managing table CharacterProperties Component.
     """
@@ -22,6 +23,7 @@ class CharacterPropertiesComp(ComponentBase):
             component (CharacterProperties): UNO CharacterProperties Component.
         """
         ComponentBase.__init__(self, component)
+        CharacterPropertiesPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

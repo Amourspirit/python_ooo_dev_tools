@@ -1,10 +1,13 @@
 from __future__ import annotations
 import contextlib
-from typing import TypeVar, Type
+from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
 
 from ..utils.decorator import enforce
 from .unit_convert import UnitConvert, UnitLength
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 _TUnitMM100 = TypeVar(name="_TUnitMM100", bound="UnitMM100")
 
@@ -148,6 +151,15 @@ class UnitMM100:
             int: Value in ``mm`` units.
         """
         return UnitConvert.convert_mm100_mm(self.value)
+
+    def get_value_mm10(self) -> float:
+        """
+        Gets instance value in ``1/10th mm`` units.
+
+        Returns:
+            float: Value in ``1/10th mm`` units.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM100, to=UnitLength.MM10)
 
     def get_value_mm100(self) -> int:
         """
@@ -326,3 +338,20 @@ class UnitMM100:
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.MM100)))
         return inst
+
+    @classmethod
+    def from_unit_val(cls: Type[_TUnitMM100], value: UnitT | float) -> _TUnitMM100:
+        """
+        Get instance from ``UnitT`` or float value.
+
+        Args:
+            value (UnitT, float): ``UnitT`` or float value. If float then it is assumed to be in ``1/100th mm`` units.
+
+        Returns:
+            UnitMM100:
+        """
+        try:
+            unit_100 = value.get_value_mm100()  # type: ignore
+            return cls.from_mm100(unit_100)
+        except AttributeError:
+            return cls.from_mm100(round(value))  # type: ignore

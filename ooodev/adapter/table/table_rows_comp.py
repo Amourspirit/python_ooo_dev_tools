@@ -2,15 +2,14 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
-from ooodev.adapter.container.element_access_partial import ElementAccessPartial
-from ooodev.adapter.container.index_access_partial import IndexAccessPartial
+from .table_rows_partial import TableRowsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.table import TableRows  # service
     from com.sun.star.table import XTableRows
 
 
-class TableRowsComp(ComponentBase, EnumerationAccessPartial, IndexAccessPartial):
+class TableRowsComp(ComponentBase, TableRowsPartial, EnumerationAccessPartial):
     """
     Class for managing TableRows Component.
 
@@ -27,8 +26,8 @@ class TableRowsComp(ComponentBase, EnumerationAccessPartial, IndexAccessPartial)
             component (XCell): UNO Component that implements ``com.sun.star.table.TableRows`` service.
         """
         ComponentBase.__init__(self, component)
-        ElementAccessPartial.__init__(self, component=self.component)
-        EnumerationAccessPartial.__init__(self, component=self.component)
+        TableRowsPartial.__init__(self, component=self.component, interface=None)
+        EnumerationAccessPartial.__init__(self, component=self.component, interface=None)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
@@ -36,32 +35,11 @@ class TableRowsComp(ComponentBase, EnumerationAccessPartial, IndexAccessPartial)
         return ("com.sun.star.table.TableRows",)
 
     # endregion Overrides
-    # region XTableRows
-    def insert_by_index(self, index: int, count: int) -> None:
-        """
-        Inserts a new column at the specified index.
 
-        Args:
-            index (int): The index at which the column will be inserted.
-            count (int): The number of columns to insert.
-        """
-        self.component.insertByIndex(index, count)
-
-    def remove_by_index(self, index: int, count: int) -> None:
-        """
-        Removes columns from the specified index.
-
-        Args:
-            index (int): The index at which the column will be removed.
-            count (int): The number of columns to remove.
-        """
-        self.component.removeByIndex(index, count)
-
-    # endregion XTableRows
     # region Properties
     @property
     def component(self) -> TableRows:
-        """Cell Component"""
+        """TableRows Component"""
         return cast("TableRows", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

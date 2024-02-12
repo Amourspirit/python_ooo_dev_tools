@@ -6,13 +6,13 @@ from com.sun.star.frame import XDesktop
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from ooodev.utils.type_var import UnoInterface
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XTerminateListener
     from com.sun.star.container import XEnumerationAccess
     from com.sun.star.lang import XComponent
     from com.sun.star.frame import XFrame
+    from ooodev.utils.type_var import UnoInterface
 
 
 class DesktopPartial:

@@ -2,7 +2,7 @@
 from __future__ import annotations
 import contextlib
 from random import random
-from typing import List, Sequence, Tuple, cast, overload, TYPE_CHECKING
+from typing import Any, List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 
 import uno
 
@@ -54,7 +54,6 @@ from ..events.args.cancel_event_args import CancelEventArgs
 from ..events.args.event_args import EventArgs
 from ..events.chart2_named_event import Chart2NamedEvent
 from ..exceptions import ex as mEx
-from ..proto.style_obj import StyleT
 from ..units import Angle as Angle
 from ..utils import color as mColor
 from ..utils import file_io as mFileIo
@@ -82,9 +81,11 @@ from ooo.dyn.lang.locale import Locale
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 
 if TYPE_CHECKING:
-    from ooo.lo.chart2.data_point_properties import DataPointProperties
     from com.sun.star.drawing import OLE2Shape
     from com.sun.star.chart2 import DataPointLabel
+    from ..proto.style_obj import StyleT
+else:
+    StyleT = Any
 # endregion Imports
 
 # https://wiki.documentfoundation.org/Documentation/DevGuide/Charts
@@ -99,6 +100,7 @@ class Chart2:
     @classmethod
     def insert_chart(
         cls,
+        *,
         sheet: XSpreadsheet | None = None,
         cells_range: CellRangeAddress | None = None,
         cell_name: str = "",
@@ -110,7 +112,9 @@ class Chart2:
         **kwargs,
     ) -> XChartDocument:
         """
-        Insert a new chart
+        Insert a new chart.
+
+        |lo_unsafe|
 
         Args:
             sheet (XSpreadsheet, optional): Spreadsheet
@@ -260,6 +264,8 @@ class Chart2:
         """
         Adds a new table chart at a given cell name and size, using cells range.
 
+        |lo_safe|
+
         Args:
             sheet (XSpreadsheet): Spreadsheet
             chart_name (str): Chart name.
@@ -295,7 +301,9 @@ class Chart2:
         chart_doc: XChartDocument, diagram: XDiagram, diagram_name: ChartTemplateBase | str
     ) -> XChartTypeTemplate:
         """
-        Sets template of chart
+        Sets template of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -357,10 +365,12 @@ class Chart2:
     @staticmethod
     def has_categories(diagram_name: ChartTemplateBase | str) -> bool:
         """
-        Gets if diagram name has categories
+        Gets if diagram name has categories.
+
+        |lo_safe|
 
         Args:
-            diagram_name (ChartTemplateBase | str): Diagram Name
+            diagram_name (ChartTemplateBase | str): Diagram Name/
 
         Returns:
             bool: ``True`` if has categories; Otherwise, ``False``.
@@ -383,7 +393,9 @@ class Chart2:
     @staticmethod
     def remove_chart(sheet: XSpreadsheet, chart_name: str) -> bool:
         """
-        Removes a chart from Spreadsheet
+        Removes a chart from Spreadsheet.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -407,14 +419,16 @@ class Chart2:
     @classmethod
     def get_chart_doc(cls, sheet: XSpreadsheet, chart_name: str) -> XChartDocument:
         """
-        Gets the chart document from the sheet
+        Gets the chart document from the sheet.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            chart_name (str): Chart Name
+            sheet (XSpreadsheet): Spreadsheet.
+            chart_name (str): Chart Name.
 
         Raises:
-            ChartError: If error occurs
+            ChartError: If error occurs.
 
         Returns:
             XChartDocument: Spreadsheet document.
@@ -431,17 +445,19 @@ class Chart2:
     @staticmethod
     def get_table_chart(sheet: XSpreadsheet, chart_name: str) -> XTableChart:
         """
-        Gets the named table chart from the sheet
+        Gets the named table chart from the sheet.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
-            chart_name (str): Chart Name
+            sheet (XSpreadsheet): Spreadsheet.
+            chart_name (str): Chart Name.
 
         Raises:
             ChartError: If error occurs.
 
         Returns:
-            XTableChart: Table Chart
+            XTableChart: Table Chart.
         """
         try:
             charts_supp = mLo.Lo.qi(XTableChartsSupplier, sheet, True)
@@ -455,6 +471,8 @@ class Chart2:
     def get_chart_templates(chart_doc: XChartDocument) -> List[str]:
         """
         Gets a list of chart templates (services).
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -477,7 +495,9 @@ class Chart2:
     @classmethod
     def set_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
-        Sets the title of chart
+        Sets the title of chart.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -512,6 +532,7 @@ class Chart2:
 
     @classmethod
     def _create_title(cls, title: str, font_size: int, styles: Sequence[StyleT] | None = None) -> XTitle:
+        """LO UN-Safe method."""
         try:
             x_title = mLo.Lo.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
             x_title_str = mLo.Lo.create_instance_mcf(
@@ -537,7 +558,9 @@ class Chart2:
     @classmethod
     def create_title(cls, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
-        Creates a title object
+        Creates a title object.
+
+        |lo_unsafe|
 
         Args:
             title (str): Title text.
@@ -563,6 +586,8 @@ class Chart2:
         """
         Sets X title font.
 
+        |lo_safe|
+
         Args:
             xtitle (XTitle): Title instance.
             font_name (str): Font Name
@@ -587,7 +612,9 @@ class Chart2:
     @staticmethod
     def get_title(chart_doc: XChartDocument) -> XTitle:
         """
-        Gets Title from chart
+        Gets Title from chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -607,7 +634,9 @@ class Chart2:
     @classmethod
     def set_subtitle(cls, chart_doc: XChartDocument, subtitle: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
-        Gets subtitle
+        Gets subtitle.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -615,14 +644,14 @@ class Chart2:
             styles (Sequence[StyleT], optional): Styles to apply to subtitle.
 
         Raises:
-            ChartError: If error occurs
+            ChartError: If error occurs.
 
         Returns:
-            XTitle: Title object
+            XTitle: Title object.
 
         Note:
             The subtitle is set to a font size of ``12`` and the font applied is
-            the font returned by :py:meth:`.Info.get_font_general_name`
+            the font returned by :py:meth:`.Info.get_font_general_name`.
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
@@ -641,7 +670,9 @@ class Chart2:
     @staticmethod
     def get_subtitle(chart_doc: XChartDocument) -> XTitle:
         """
-        Gets subtitle from chart
+        Gets subtitle from chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -665,7 +696,9 @@ class Chart2:
     @classmethod
     def get_axis(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XAxis:
         """
-        Gets axis
+        Gets axis.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -694,6 +727,8 @@ class Chart2:
         """
         Get Chart X axis.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
 
@@ -712,6 +747,8 @@ class Chart2:
     def get_y_axis(cls, chart_doc: XChartDocument) -> XAxis:
         """
         Get Chart Y axis.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -732,6 +769,8 @@ class Chart2:
         """
         Get Chart X axis2.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
 
@@ -750,6 +789,8 @@ class Chart2:
     def get_y_axis2(cls, chart_doc: XChartDocument) -> XAxis:
         """
         Get Chart Y axis2.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -776,6 +817,8 @@ class Chart2:
     ) -> XTitle:
         """
         Sets axis title.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -816,7 +859,9 @@ class Chart2:
     @classmethod
     def set_x_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
-        Sets X axis Title
+        Sets X axis Title.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -824,7 +869,7 @@ class Chart2:
             styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Returns:
-            XTitle: Title object
+            XTitle: Title object.
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
@@ -837,7 +882,9 @@ class Chart2:
     @classmethod
     def set_y_axis_title(cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None) -> XTitle:
         """
-        Sets Y axis Title
+        Sets Y axis Title.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -860,7 +907,9 @@ class Chart2:
         cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None
     ) -> XTitle:
         """
-        Sets X axis2 Title
+        Sets X axis2 Title.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -868,7 +917,7 @@ class Chart2:
             styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Returns:
-            XTitle: Title object
+            XTitle: Title object.
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
@@ -883,7 +932,9 @@ class Chart2:
         cls, chart_doc: XChartDocument, title: str, styles: Sequence[StyleT] | None = None
     ) -> XTitle:
         """
-        Sets Y axis2 Title
+        Sets Y axis2 Title.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -891,7 +942,7 @@ class Chart2:
             styles (Sequence[StyleT], optional): Styles to apply to title.
 
         Returns:
-            XTitle: Title object
+            XTitle: Title object.
 
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>` subpackages.
@@ -904,15 +955,17 @@ class Chart2:
     @classmethod
     def get_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int) -> XTitle:
         """
-        Gets axis Title
+        Gets axis Title.
+
+        |lo_safe|
 
         Args:
-            chart_doc (XChartDocument): Chart Document
+            chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis Kind.
-            idx (int): Index
+            idx (int): Index.
 
         Raises:
-            ChartError: If error occurs
+            ChartError: If error occurs.
 
         Returns:
             XTitle: Title object.
@@ -937,6 +990,8 @@ class Chart2:
         """
         Gets X axis title.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document
 
@@ -955,6 +1010,8 @@ class Chart2:
     def get_y_axis_title(cls, chart_doc: XChartDocument) -> XTitle:
         """
         Gets Y axis title.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -975,6 +1032,8 @@ class Chart2:
         """
         Gets X axis2 title.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document
 
@@ -994,6 +1053,8 @@ class Chart2:
         """
         Gets Y axis2 title.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document
 
@@ -1012,6 +1073,8 @@ class Chart2:
     def rotate_axis_title(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, angle: Angle | int) -> None:
         """
         Rotates axis title.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1039,6 +1102,8 @@ class Chart2:
         """
         Rotates X axis title.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             angle (Angle, int): Angle
@@ -1058,6 +1123,8 @@ class Chart2:
     def rotate_y_axis_title(cls, chart_doc: XChartDocument, angle: Angle | int) -> None:
         """
         Rotates Y axis title.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1079,6 +1146,8 @@ class Chart2:
         """
         Rotates X axis2 title.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             angle (Angle, int): Angle
@@ -1099,6 +1168,8 @@ class Chart2:
         """
         Rotates Y axis2 title.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             angle (Angle, int): Angle
@@ -1118,6 +1189,8 @@ class Chart2:
     def show_axis_label(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, is_visible: bool) -> None:
         """
         Sets the visibility for chart axis label.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1144,6 +1217,8 @@ class Chart2:
         """
         Sets the visibility for chart X axis label.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             is_visible (bool): Visible state
@@ -1163,6 +1238,8 @@ class Chart2:
     def show_y_axis_label(cls, chart_doc: XChartDocument, is_visible: bool) -> None:
         """
         Sets the visibility for chart Y axis label.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1184,6 +1261,8 @@ class Chart2:
         """
         Sets the visibility for chart X axis2 label.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             is_visible (bool): Visible state
@@ -1204,6 +1283,8 @@ class Chart2:
         """
         Sets the visibility for chart Y axis2 label.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             is_visible (bool): Visible state
@@ -1223,6 +1304,8 @@ class Chart2:
     def scale_axis(cls, chart_doc: XChartDocument, axis_val: AxisKind, idx: int, scale_type: CurveKind) -> XAxis:
         """
         Scales the chart axis.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1268,6 +1351,8 @@ class Chart2:
         """
         Scales the chart X axis.
 
+        |lo_unsafe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             scale_type (CurveKind): Scale kind
@@ -1292,6 +1377,8 @@ class Chart2:
         """
         Scales the chart Y axis.
 
+        |lo_unsafe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             scale_type (CurveKind): Scale kind
@@ -1314,7 +1401,9 @@ class Chart2:
     @classmethod
     def print_scale_data(cls, axis_name: str, axis: XAxis) -> None:
         """
-        Prints axis info to console
+        Prints axis info to console.
+
+        |lo_safe|
 
         Args:
             axis_name (str): Axis Name
@@ -1341,6 +1430,8 @@ class Chart2:
     def get_axis_type_string(axis_type: AxisTypeKind) -> str:
         """
         Gets axis type as string.
+
+        |lo_safe|
 
         Args:
             axis_type (AxisTypeKind): Axis Type
@@ -1395,6 +1486,8 @@ class Chart2:
         """
         Set the grid lines for a chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             axis_val (AxisKind): Axis kind.
@@ -1437,6 +1530,8 @@ class Chart2:
         """
         Sets charts legend visibility.
 
+        |lo_unsafe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             is_visible (bool): Visible State
@@ -1463,6 +1558,8 @@ class Chart2:
         """
         Gets chart legend.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
 
@@ -1486,7 +1583,9 @@ class Chart2:
     @classmethod
     def style_grid(cls, chart_doc: XChartDocument, axis_val: AxisKind, styles: Sequence[StyleT], idx: int = 0) -> None:
         """
-        Style Grid
+        Style Grid.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1516,7 +1615,9 @@ class Chart2:
     @staticmethod
     def style_background(chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
-        Styles background of chart
+        Styles background of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1546,7 +1647,9 @@ class Chart2:
     @staticmethod
     def style_wall(chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
-        Styles Wall of chart
+        Styles Wall of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1572,6 +1675,8 @@ class Chart2:
         """
         Styles Floor of 3D chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             styles (Sequence[StyleT]): One or more styles to apply chart floor.
@@ -1594,7 +1699,9 @@ class Chart2:
     @classmethod
     def style_data_point(cls, chart_doc: XChartDocument, series_idx: int, idx: int, styles: Sequence[StyleT]) -> None:
         """
-        Styles a data point of chart
+        Styles a data point of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1628,6 +1735,8 @@ class Chart2:
     def style_data_series(cls, chart_doc: XChartDocument, styles: Sequence[StyleT], idx: int = -1) -> None:
         """
         Styles one or more data series of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1670,6 +1779,8 @@ class Chart2:
         """
         Styles legend of chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             styles (Sequence[StyleT]): One or more styles to apply chart legend.
@@ -1709,6 +1820,7 @@ class Chart2:
 
     @classmethod
     def _style_title(cls, xtitle: XTitle, styles: Sequence[StyleT]) -> None:
+        """LO Safe Method"""
         # sourcery skip: last-if-guard, move-assign, use-named-expression
         title_styles = [style for style in styles if not style.support_service("com.sun.star.drawing.Shape")]
         applied_styles = 0
@@ -1730,6 +1842,8 @@ class Chart2:
     def style_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles title of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1764,6 +1878,8 @@ class Chart2:
         """
         Styles subtitle of chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             styles (Sequence[StyleT]): One or more styles to apply chart subtitle.
@@ -1795,6 +1911,8 @@ class Chart2:
         """
         Styles X axis of chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             styles (Sequence[StyleT]): One or more styles to apply chart X axis.
@@ -1822,6 +1940,8 @@ class Chart2:
     def style_x_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis2 of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1851,6 +1971,8 @@ class Chart2:
         """
         Styles Y axis of chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             styles (Sequence[StyleT]): One or more styles to apply chart Y axis.
@@ -1878,6 +2000,8 @@ class Chart2:
     def style_y_axis2(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles Y axis2 of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1907,6 +2031,8 @@ class Chart2:
         """
         Styles X axis title of chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             styles (Sequence[StyleT]): One or more styles to apply chart X axis title.
@@ -1933,6 +2059,8 @@ class Chart2:
     def style_y_axis_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis title of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -1962,6 +2090,8 @@ class Chart2:
         """
         Styles X axis2 title of chart.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             styles (Sequence[StyleT]): One or more styles to apply chart X axis2 title.
@@ -1983,6 +2113,8 @@ class Chart2:
     def style_y_axis2_title(cls, chart_doc: XChartDocument, styles: Sequence[StyleT]) -> None:
         """
         Styles X axis2 title of chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -2008,12 +2140,14 @@ class Chart2:
     @staticmethod
     def set_background_colors(chart_doc: XChartDocument, bg_color: mColor.Color, wall_color: mColor.Color) -> None:
         """
-        Set the background colors for a chart
+        Set the background colors for a chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            bg_color (~ooodev.utils.color.Color): Color Value for background
-            wall_color (~ooodev.utils.color.Color): Color Value for wall
+            bg_color (~ooodev.utils.color.Color): Color Value for background.
+            wall_color (~ooodev.utils.color.Color): Color Value for wall.
 
         Raises:
             ChartError: If error occurs.
@@ -2066,6 +2200,8 @@ class Chart2:
         """
         Gets an instance of Chart2 DataSeries.
 
+        |lo_unsafe|
+
         Raises:
             ChartError: If error occurs.
 
@@ -2097,12 +2233,13 @@ class Chart2:
         """
         Gets data series for a chart of a given chart type.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document
-            chart_type (ChartTypeNameBase | str, optional): Chart Type.
+            chart_type (ChartTypeNameBase, str, optional): Chart Type.
 
         Raises:
-            NotFoundError: If chart is not found
             ChartError: If any other error occurs.
 
         Returns:
@@ -2147,16 +2284,18 @@ class Chart2:
         This method assumes that the programmer wants the first data source in the data series.
         This is adequate for most charts which only use one data source.
 
+        |lo_safe|
+
         Args:
-            chart_doc (XChartDocument): Chart Document
+            chart_doc (XChartDocument): Chart Document.
             chart_type (ChartTypeNameBase | str): Chart type.
 
         Raises:
-            NotFoundError: If chart is not found
+            NotFoundError: If chart is not found.
             ChartError: If any other error occurs.
 
         Returns:
-            XDataSource: Chart data source
+            XDataSource: Chart data source.
 
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_name.rst
@@ -2182,7 +2321,9 @@ class Chart2:
     @staticmethod
     def get_coord_system(chart_doc: XChartDocument) -> XCoordinateSystem:
         """
-        Gets coordinate system
+        Gets coordinate system.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -2209,6 +2350,8 @@ class Chart2:
     def get_chart_types(cls, chart_doc: XChartDocument) -> Tuple[XChartType, ...]:
         """
         Gets chart types for a chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -2237,7 +2380,9 @@ class Chart2:
     @classmethod
     def get_chart_type(cls, chart_doc: XChartDocument) -> XChartType:
         """
-        Gets a chart type for a chart
+        Gets a chart type for a chart.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -2263,6 +2408,8 @@ class Chart2:
     def find_chart_type(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase | str) -> XChartType:
         """
         Finds a chart for a given chart type.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -2299,7 +2446,9 @@ class Chart2:
     @classmethod
     def print_chart_types(cls, chart_doc: XChartDocument) -> None:
         """
-        Prints chart types to the console
+        Prints chart types to the console.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -2326,6 +2475,8 @@ class Chart2:
     def add_chart_type(cls, chart_doc: XChartDocument, chart_type: ChartTypeNameBase | str) -> XChartType:
         """
         Adds a chart type.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -2362,7 +2513,9 @@ class Chart2:
     @staticmethod
     def show_data_source_args(chart_doc: XChartDocument, data_source: XDataSource) -> None:
         """
-        Prints data information to console
+        Prints data information to console.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
@@ -2379,6 +2532,8 @@ class Chart2:
     def print_labeled_seqs(data_source: XDataSource) -> None:
         """
         Prints labeled sequence information to console.
+
+        |lo_safe|
 
         A diagnostic function for printing all the labeled data sequences stored in an XDataSource:
 
@@ -2402,9 +2557,11 @@ class Chart2:
         print()
 
     @staticmethod
-    def get_chart_data(data_source: XDataSource, idx: int) -> Tuple[float]:
+    def get_chart_data(data_source: XDataSource, idx: int) -> Tuple[float, ...]:
         """
-        Gets chart data
+        Gets chart data.
+
+        |lo_safe|
 
         Args:
             data_source (XDataSource): Data Source.
@@ -2436,11 +2593,13 @@ class Chart2:
     @classmethod
     def get_data_points_props(cls, chart_doc: XChartDocument, idx: int) -> List[XPropertySet]:
         """
-        Gets all the properties for the data in the specified series
+        Gets all the properties for the data in the specified series.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            idx (int): Index
+            idx (int): Index.
 
         Raises:
             IndexError: If idx is out of range.
@@ -2478,6 +2637,8 @@ class Chart2:
         """
         Get the proprieties for a specific index within the data points.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document.
             series_idx (int): Series Index
@@ -2514,11 +2675,13 @@ class Chart2:
     @classmethod
     def set_data_point_labels(cls, chart_doc: XChartDocument, label_type: DataPointLabelTypeKind) -> None:
         """
-        Sets the data point label of a chart
+        Sets the data point label of a chart.
+
+        |lo_safe|
 
         Args:
-            chart_doc (XChartDocument): Chart Document
-            label_type (DataPointLabelTypeKind): Label Type
+            chart_doc (XChartDocument): Chart Document.
+            label_type (DataPointLabelTypeKind): Label Type.
 
         Raises:
             ChartError: If error occurs.
@@ -2554,11 +2717,13 @@ class Chart2:
     @classmethod
     def set_chart_shape_3d(cls, chart_doc: XChartDocument, shape: DataPointGeometry3DEnum) -> None:
         """
-        Sets chart 3d shape
+        Sets chart 3d shape.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            shape (DataPointGeometry3DEnum): Shape kind
+            shape (DataPointGeometry3DEnum): Shape kind.
 
         Raises:
             ChartError: If an error occurs.
@@ -2579,6 +2744,8 @@ class Chart2:
     def dash_lines(cls, chart_doc: XChartDocument) -> None:
         """
         Sets chart data series to dashed lines.
+
+        |lo_safe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -2603,6 +2770,8 @@ class Chart2:
     def color_stock_bars(ct: XChartType, w_day_color: mColor.Color, b_day_color: mColor.Color) -> None:
         """
         Set color of stock bars for a ``CandleStickChartType`` chart.
+
+        |lo_safe|
 
         Args:
             ct (XChartType): Chart Type.
@@ -2650,6 +2819,8 @@ class Chart2:
 
         Matches the regression constants defined in ``curve_kind`` to regression services offered by the API:
 
+        |lo_unsafe|
+
         Args:
             curve_kind (CurveKind): Curve kind.
 
@@ -2670,6 +2841,8 @@ class Chart2:
     ) -> XPropertySet:
         """
         Draws a regression curve.
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -2726,6 +2899,8 @@ class Chart2:
         Converts a number format string into a number format key, which can be assigned to
         ``NumberFormat`` property.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document
             nf_str (str): Number format string.
@@ -2759,6 +2934,8 @@ class Chart2:
         """
         Gets curve kind from regression object.
 
+        |lo_safe|
+
         Args:
             curve (XRegressionCurve): Regression curve object.
 
@@ -2790,9 +2967,14 @@ class Chart2:
         Uses ``XRegressionCurve.getCalculator()`` to access the ``XRegressionCurveCalculator`` interface.
         It sets up the data and parameters for a particular curve, and prints the results of curve fitting to the console.
 
+        |lo_safe|
+
         Args:
             chart_doc (XChartDocument): Chart Document
             curve (XRegressionCurve): Regression Curve object.
+
+        Returns:
+            None:
         """
         curve_calc = curve.getCalculator()
         ct = cls.get_curve_type(curve)
@@ -2820,6 +3002,8 @@ class Chart2:
         """
         Several different regression functions are calculated using the chart's data.
         Their equations and ``R2`` values are printed to the console
+
+        |lo_unsafe|
 
         Args:
             chart_doc (XChartDocument): Chart Document
@@ -2851,6 +3035,8 @@ class Chart2:
 
         The ``XDataSequence`` object representing the data must have its "Role" property
         set to indicate the type of the data.
+
+        |lo_unsafe|
 
         Args:
             dp (XDataProvider): Data Provider
@@ -2893,12 +3079,14 @@ class Chart2:
     @classmethod
     def set_y_error_bars(cls, chart_doc: XChartDocument, data_label: str, data_range: str) -> None:
         """
-        Sets Y error Bars
+        Sets Y error Bars.
+
+        |lo_unsafe|
 
         Args:
-            chart_doc (XChartDocument): Chart Document
-            data_label (str): Data Label
-            data_range (str): Data Range
+            chart_doc (XChartDocument): Chart Document.
+            data_label (str): Data Label.
+            data_range (str): Data Range.
 
         Raises:
             ChartError: If error occurs.
@@ -2950,6 +3138,8 @@ class Chart2:
         """
         Add stock line to chart.
 
+        |lo_unsafe|
+
         Args:
             chart_doc (XChartDocument): Chart Document
             data_label (str): Data label
@@ -2988,12 +3178,14 @@ class Chart2:
     @classmethod
     def add_cat_labels(cls, chart_doc: XChartDocument, data_label: str, data_range: str) -> None:
         """
-        Add Category Labels
+        Add Category Labels.
+
+        |lo_unsafe|
 
         Args:
-            chart_doc (XChartDocument): Chart Document
-            data_label (str): Data label
-            data_range (str): Data range
+            chart_doc (XChartDocument): Chart Document.
+            data_label (str): Data label.
+            data_range (str): Data range.
 
         Raises:
             ChartError: If error occurs.
@@ -3012,7 +3204,7 @@ class Chart2:
             sd.Categories = dl_seq
             axis.setScaleData(sd)
 
-            # abel the data points with these category values
+            # label the data points with these category values
             cls.set_data_point_labels(chart_doc=chart_doc, label_type=DataPointLabelTypeKind.CATEGORY)
         except mEx.ChartError:
             raise
@@ -3025,10 +3217,12 @@ class Chart2:
     @staticmethod
     def get_chart_shape(sheet: XSpreadsheet, chart_name: str = "") -> XShape:
         """
-        Gets chart shape
+        Gets chart shape.
+
+        |lo_safe|
 
         Args:
-            sheet (XSpreadsheet): Spreadsheet
+            sheet (XSpreadsheet): Spreadsheet.
             chart_name (str, optional): Chart name. Defaults to "". If ``""`` then first chart is returned.
 
         Raises:
@@ -3070,7 +3264,9 @@ class Chart2:
     @classmethod
     def copy_chart(cls, ssdoc: XSpreadsheetDocument, sheet: XSpreadsheet, chart_name: str = "") -> None:
         """
-        Copies a chart using a dispatch command.
+        Copies a chart to the clipboard using a dispatch command.
+
+        |lo_unsafe|
 
         Args:
             ssdoc (XSpreadsheetDocument): Spreadsheet Document.
@@ -3099,6 +3295,8 @@ class Chart2:
     def get_chart_draw_page(cls, sheet: XSpreadsheet, chart_name: str = "") -> XDrawPage:
         """
         Gets chart draw page.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet
@@ -3130,6 +3328,8 @@ class Chart2:
     def get_chart_image(cls, sheet: XSpreadsheet, chart_name: str = "") -> XGraphic:
         """
         Get chart image as ``XGraphic``.
+
+        |lo_safe|
 
         Args:
             sheet (XSpreadsheet): Spreadsheet.
@@ -3171,6 +3371,8 @@ class Chart2:
         While there is at least one lock remaining, some notifications for
         display updates are not broadcast.
 
+        |lo_safe|
+
         Returns:
             bool: False if ``CONTROLLERS_LOCKING`` event is canceled; Otherwise, True
 
@@ -3205,6 +3407,8 @@ class Chart2:
         may be nested and even overlapping, but they must be in pairs.
         While there is at least one lock remaining, some notifications for
         display updates are not broadcast.
+
+        |lo_safe|
 
         Returns:
             bool: False if ``CONTROLLERS_UNLOCKING`` event is canceled; Otherwise, True

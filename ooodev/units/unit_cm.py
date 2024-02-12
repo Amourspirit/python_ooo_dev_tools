@@ -1,9 +1,12 @@
 from __future__ import annotations
 import contextlib
-from typing import TypeVar, Type
+from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from .unit_convert import UnitConvert, UnitLength
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 _TUnitCM = TypeVar(name="_TUnitCM", bound="UnitCM")
 
@@ -424,3 +427,23 @@ class UnitCM(BaseFloatValue):
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(value)
         return inst
+
+    @classmethod
+    def from_unit_val(cls: Type[_TUnitCM], value: UnitT | float) -> _TUnitCM:
+        """
+        Get instance from ``UnitT`` or float value.
+
+        Args:
+            value (UnitT, float): ``UnitT`` or float value. If float then it is assumed to be in ``cm`` units.
+
+        Returns:
+            UnitCM:
+        """
+        try:
+            if hasattr(value, "get_value_cm"):
+                return cls.from_cm(value.get_value_cm())  # type: ignore
+
+            unit_100 = value.get_value_mm100()  # type: ignore
+            return cls.from_mm100(unit_100)
+        except AttributeError:
+            return cls.from_cm(float(value))  # type: ignore

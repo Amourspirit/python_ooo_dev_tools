@@ -190,6 +190,15 @@ class Hatch(StyleMulti):
     # endregion Overridden Methods
 
     # region Static Methods
+    # region from_preset()
+    @overload
+    @classmethod
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetHatchKind) -> Hatch: ...
+
+    @overload
+    @classmethod
+    def from_preset(cls, chart_doc: XChartDocument, preset: PresetHatchKind, **kwargs) -> Hatch: ...
+
     @classmethod
     def from_preset(cls, chart_doc: XChartDocument, preset: PresetHatchKind, **kwargs) -> Hatch:
         """
@@ -208,6 +217,8 @@ class Hatch(StyleMulti):
         kargs = mPreset.get_preset(preset)
         kargs.update(**kwargs)
         return cls(chart_doc=chart_doc, _cattribs=cattribs, **kargs)  # type: ignore
+
+    # endregion from_preset()
 
     # endregion Static Methods
 

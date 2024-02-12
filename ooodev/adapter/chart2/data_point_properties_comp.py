@@ -4,6 +4,7 @@ from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImp
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
+from .data_point_properties_partial import DataPointPropertiesPartial
 
 
 if TYPE_CHECKING:
@@ -11,7 +12,11 @@ if TYPE_CHECKING:
 
 
 class DataPointPropertiesComp(
-    ComponentBase, PropertiesChangeImplement, PropertyChangeImplement, VetoableChangeImplement
+    ComponentBase,
+    DataPointPropertiesPartial,
+    PropertiesChangeImplement,
+    PropertyChangeImplement,
+    VetoableChangeImplement,
 ):
     """
     Class for managing Chart2 DataPointProperties Component.
@@ -27,6 +32,7 @@ class DataPointPropertiesComp(
             component (DataPointProperties): UNO Chart2 DataPointProperties Component.
         """
         ComponentBase.__init__(self, component)
+        DataPointPropertiesPartial.__init__(self, component=component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
