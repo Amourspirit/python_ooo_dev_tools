@@ -203,6 +203,9 @@ class ChartDataSeries(
 
         Returns:
             None:
+
+        Hint:
+            - ``DataPointLabelTypeKind`` can be imported from ``ooodev.utils.kind.data_point_label_type_kind``
         """
         try:
             dp_label = self.label

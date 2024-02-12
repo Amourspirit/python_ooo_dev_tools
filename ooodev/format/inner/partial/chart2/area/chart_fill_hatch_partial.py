@@ -72,6 +72,10 @@ class ChartFillHatchPartial:
 
         Returns:
             ChartFillHatchT | None: Fill Image instance or ``None`` if cancelled.
+
+        Hint:
+            - ``Angle`` can be imported from ``ooodev.units``
+            - ``HatchStyle`` can be imported from ``ooo.dyn.drawing.hatch_style``
         """
         doc = self._ChartFillHatchPartial__get_chart_doc()
         comp = self.__component
@@ -139,6 +143,9 @@ class ChartFillHatchPartial:
 
         Returns:
             ChartFillHatchT | None: Chart Fill Hatch instance or ``None`` if ``before_style_area_hatch_from_preset`` event is cancelled.
+
+        Hint:
+            - ``PresetHatchKind`` can be imported from ``ooodev.format.inner.preset.preset_hatch``
         """
         doc = self._ChartFillHatchPartial__get_chart_doc()
         cargs = None

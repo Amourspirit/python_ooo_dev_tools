@@ -2,13 +2,14 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 import uno
 
+from ooodev.mock.mock_g import DOCS_BUILDING
+from ...area.fill_img_t import FillImgT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ...area.fill_img_t import FillImgT
     from com.sun.star.chart2 import XChartDocument
     from com.sun.star.awt import XBitmap
     from ooo.dyn.drawing.rectangle_point import RectanglePoint

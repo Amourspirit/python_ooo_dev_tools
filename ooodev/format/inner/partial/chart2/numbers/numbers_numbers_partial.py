@@ -66,6 +66,11 @@ class NumbersNumbersPartial:
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+
+        Hint:
+            - ``Locale`` can be imported from ``ooo.dyn.lang.locale``
+            - ``NumberFormatEnum`` can be imported from ``ooo.dyn.util.number_format``
+            - ``NumberFormatIndexEnum`` can be imported from ``ooo.dyn.i18n.number_format_index``
         """
         factory = style_factory.chart2_series_data_labels_numbers_factory
         kwargs = {

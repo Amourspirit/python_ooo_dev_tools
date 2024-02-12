@@ -12,6 +12,7 @@ Subpackages
    ooodev.format.inner.direct.chart2.grid
    ooodev.format.inner.direct.chart2.legend
    ooodev.format.inner.direct.chart2.position_size
+   ooodev.format.inner.direct.chart2.title
    ooodev.format.inner.direct.chart2.wall
 
 Module contents

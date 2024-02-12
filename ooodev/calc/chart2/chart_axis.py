@@ -212,6 +212,9 @@ class ChartAxis(
         Note:
             Supported types of ``scale_type`` are ``LINEAR``, ``LOGARITHMIC``, ``EXPONENTIAL`` and ``POWER``.
             If ``scale_type``  is not supported then the ``Scaling`` is not set.
+
+        Hint:
+            - ``CurveKind`` can be imported from ``ooodev.utils.kind.curve_kind``.
         """
         try:
             sd = self.get_scale_data()

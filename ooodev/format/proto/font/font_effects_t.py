@@ -1,23 +1,34 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING, Type
 import uno
-from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
-from ooo.dyn.style.case_map import CaseMapEnum
-from ooo.dyn.awt.font_relief import FontReliefEnum
 
+from ooodev.mock.mock_g import DOCS_BUILDING
 from ..style_t import StyleT
-from ooodev.utils.color import Color
-from ooodev.utils.data_type.intensity import Intensity
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
+    from typing_extensions import Self
+
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
     from ooo.dyn.awt.font_underline import FontUnderlineEnum
+    from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
+    from ooo.dyn.style.case_map import CaseMapEnum
+    from ooo.dyn.awt.font_relief import FontReliefEnum
+    from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
+    from ooodev.utils.color import Color
+    from ooodev.utils.data_type.intensity import Intensity
 else:
     Protocol = object
+    Self = Any
+    FontUnderlineEnum = Any
+    FontStrikeoutEnum = Any
+    CaseMapEnum = Any
+    FontReliefEnum = Any
+    FontLine = Any
+    Color = Any
+    Intensity = Any
 
 
 class FontEffectsT(StyleT, Protocol):
@@ -48,7 +59,7 @@ class FontEffectsT(StyleT, Protocol):
     def from_obj(cls: Type[FontEffectsT], obj: Any, **kwargs) -> FontEffectsT: ...
 
     # region Format Methods
-    def fmt_color(self: FontEffectsT, value: Color | None = None) -> FontEffectsT:
+    def fmt_color(self, value: Color | None = None) -> FontEffectsT:
         """
         Gets copy of instance with text color set or removed.
 
@@ -57,11 +68,11 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
-    def fmt_transparency(self: FontEffectsT, value: bool | None = None) -> FontEffectsT:
+    def fmt_transparency(self, value: bool | None = None) -> Self:
         """
         Gets copy of instance with text background transparency set or removed.
 
@@ -70,11 +81,11 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
-    def fmt_overline(self: FontEffectsT, value: FontUnderlineEnum | None = None) -> FontEffectsT:
+    def fmt_overline(self, value: FontUnderlineEnum | None = None) -> Self:
         """
         Gets copy of instance with overline set or removed.
 
@@ -83,11 +94,14 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed.
+
+        Hint:
+            - ``FontUnderlineEnum`` can be imported from ``ooo.dyn.awt.font_underline``
         """
         ...
 
-    def fmt_overline_color(self: FontEffectsT, value: Color | None = None) -> FontEffectsT:
+    def fmt_overline_color(self, value: Color | None = None) -> Self:
         """
         Gets copy of instance with text overline color set or removed.
 
@@ -96,11 +110,11 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
-    def fmt_strike(self: FontEffectsT, value: FontStrikeoutEnum | None = None) -> FontEffectsT:
+    def fmt_strike(self, value: FontStrikeoutEnum | None = None) -> Self:
         """
         Gets copy of instance with strike set or removed.
 
@@ -109,11 +123,14 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed.
+
+        Hint:
+            - ``FontStrikeoutEnum`` can be imported from ``ooo.dyn.awt.font_strikeout``
         """
         ...
 
-    def fmt_underline(self: FontEffectsT, value: FontUnderlineEnum | None = None) -> FontEffectsT:
+    def fmt_underline(self, value: FontUnderlineEnum | None = None) -> Self:
         """
         Gets copy of instance with underline set or removed.
 
@@ -122,11 +139,14 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed.
+
+        Hint:
+            - ``FontUnderlineEnum`` can be imported from ``ooo.dyn.awt.font_underline``
         """
         ...
 
-    def fmt_underline_color(self: FontEffectsT, value: Color | None = None) -> FontEffectsT:
+    def fmt_underline_color(self, value: Color | None = None) -> Self:
         """
         Gets copy of instance with text underline color set or removed.
 
@@ -135,11 +155,11 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
-    def fmt_word_mode(self: FontEffectsT, value: bool | None = None) -> FontEffectsT:
+    def fmt_word_mode(self, value: bool | None = None) -> Self:
         """
         Gets copy of instance with word mode set or removed.
 
@@ -150,11 +170,11 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
-    def fmt_case(self: FontEffectsT, value: CaseMapEnum | None = None) -> FontEffectsT:
+    def fmt_case(self, value: CaseMapEnum | None = None) -> Self:
         """
         Gets copy of instance with case set or removed.
 
@@ -163,11 +183,14 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed.
+
+        Hint:
+            - ``CaseMapEnum`` can be imported from ``ooo.dyn.style.case_map``
         """
         ...
 
-    def fmt_relief(self: FontEffectsT, value: FontReliefEnum | None = None) -> FontEffectsT:
+    def fmt_relief(self, value: FontReliefEnum | None = None) -> Self:
         """
         Gets copy of instance with relief set or removed.
 
@@ -176,11 +199,14 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed.
+
+        Hint:
+            - ``FontReliefEnum`` can be imported from ``ooo.dyn.awt.font_relief``
         """
         ...
 
-    def fmt_outline(self: FontEffectsT, value: bool | None = None) -> FontEffectsT:
+    def fmt_outline(self, value: bool | None = None) -> Self:
         """
         Gets copy of instance with outline set or removed.
 
@@ -189,11 +215,11 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
-    def fmt_hidden(self: FontEffectsT, value: bool | None = None) -> FontEffectsT:
+    def fmt_hidden(self, value: bool | None = None) -> Self:
         """
         Gets copy of instance with hidden set or removed.
 
@@ -202,11 +228,11 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
-    def fmt_shadowed(self: FontEffectsT, value: bool | None = None) -> FontEffectsT:
+    def fmt_shadowed(self, value: bool | None = None) -> Self:
         """
         Gets copy of instance with shadowed set or removed.
 
@@ -215,7 +241,7 @@ class FontEffectsT(StyleT, Protocol):
                 If ``None`` style is removed. Default ``None``
 
         Returns:
-            FontEffects: Font with style added or removed
+            FontEffectsT: Font with style added or removed
         """
         ...
 
@@ -223,92 +249,92 @@ class FontEffectsT(StyleT, Protocol):
 
     # region Style Properties
     @property
-    def color_auto(self: FontEffectsT) -> FontEffectsT:
+    def color_auto(self) -> FontEffectsT:
         """Gets copy of instance with color set to automatic"""
         ...
 
     @property
-    def overline(self: FontEffectsT) -> FontEffectsT:
+    def overline(self) -> FontEffectsT:
         """Gets copy of instance with overline set"""
         ...
 
     @property
-    def overline_color_auto(self: FontEffectsT) -> FontEffectsT:
+    def overline_color_auto(self) -> FontEffectsT:
         """Gets copy of instance with overline color set to automatic"""
         ...
 
     @property
-    def underline(self: FontEffectsT) -> FontEffectsT:
+    def underline(self) -> FontEffectsT:
         """Gets copy of instance with underline set"""
         ...
 
     @property
-    def under_color_auto(self: FontEffectsT) -> FontEffectsT:
+    def under_color_auto(self) -> FontEffectsT:
         """Gets copy of instance with underline color set to automatic"""
         ...
 
     @property
-    def strike(self: FontEffectsT) -> FontEffectsT:
+    def strike(self) -> FontEffectsT:
         """Gets copy of instance with strike set"""
         ...
 
     @property
-    def word_mode(self: FontEffectsT) -> FontEffectsT:
+    def word_mode(self) -> FontEffectsT:
         """Gets copy of instance with word mode set"""
         ...
 
     @property
-    def outline(self: FontEffectsT) -> FontEffectsT:
+    def outline(self) -> FontEffectsT:
         """Gets copy of instance with outline set"""
         ...
 
     @property
-    def hidden(self: FontEffectsT) -> FontEffectsT:
+    def hidden(self) -> FontEffectsT:
         """Gets copy of instance with hidden set"""
         ...
 
     @property
-    def shadowed(self: FontEffectsT) -> FontEffectsT:
+    def shadowed(self) -> FontEffectsT:
         """Gets copy of instance with shadow set"""
         ...
 
     @property
-    def case_upper(self: FontEffectsT) -> FontEffectsT:
+    def case_upper(self) -> FontEffectsT:
         """Gets copy of instance with case set to upper"""
         ...
 
     @property
-    def case_lower(self: FontEffectsT) -> FontEffectsT:
+    def case_lower(self) -> FontEffectsT:
         """Gets copy of instance with case set to lower"""
         ...
 
     @property
-    def case_title(self: FontEffectsT) -> FontEffectsT:
+    def case_title(self) -> FontEffectsT:
         """Gets copy of instance with case set to title"""
         ...
 
     @property
-    def case_small_caps(self: FontEffectsT) -> FontEffectsT:
+    def case_small_caps(self) -> FontEffectsT:
         """Gets copy of instance with case set to small caps"""
         ...
 
     @property
-    def case_none(self: FontEffectsT) -> FontEffectsT:
+    def case_none(self) -> FontEffectsT:
         """Gets copy of instance with no case set"""
         ...
 
     @property
-    def relief_none(self: FontEffectsT) -> FontEffectsT:
+    def relief_none(self) -> FontEffectsT:
         """Gets copy of instance with no relief set"""
         ...
 
     @property
-    def relief_embossed(self: FontEffectsT) -> FontEffectsT:
+    def relief_embossed(self) -> FontEffectsT:
         """Gets copy of instance with relief set to embossed"""
         ...
 
     @property
-    def relief_engraved(self: FontEffectsT) -> FontEffectsT:
+    def relief_engraved(self) -> FontEffectsT:
         """Gets copy of instance with relief set to engraved"""
         ...
 
@@ -326,7 +352,13 @@ class FontEffectsT(StyleT, Protocol):
 
     @property
     def prop_transparency(self) -> Intensity | None:
-        """Gets/Sets The transparency value"""
+        """
+        Gets/Sets The transparency value
+
+        Hint:
+            - The transparency value from ``0`` to ``100``.
+            - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
+        """
         ...
 
     @prop_transparency.setter
@@ -334,7 +366,12 @@ class FontEffectsT(StyleT, Protocol):
 
     @property
     def prop_overline(self) -> FontLine:
-        """This property contains the value for the character overline."""
+        """
+        This property contains the value for the character overline.
+
+        Hint:
+            - ``FontLine`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_effects``
+        """
         ...
 
     @prop_overline.setter
@@ -342,7 +379,12 @@ class FontEffectsT(StyleT, Protocol):
 
     @property
     def prop_underline(self) -> FontLine:
-        """This property contains the value for the character underline."""
+        """
+        This property contains the value for the character underline.
+
+        Hint:
+            - ``FontLine`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_effects``
+        """
         ...
 
     @prop_underline.setter
@@ -350,7 +392,12 @@ class FontEffectsT(StyleT, Protocol):
 
     @property
     def prop_strike(self) -> FontStrikeoutEnum | None:
-        """Gets/Sets the type of the strike out of the character."""
+        """
+        Gets/Sets the type of the strike out of the character.
+
+        Hint:
+            - ``FontStrikeoutEnum`` can be imported from ``ooo.dyn.awt.font_strikeout``
+        """
         ...
 
     @prop_strike.setter
@@ -366,7 +413,12 @@ class FontEffectsT(StyleT, Protocol):
 
     @property
     def prop_case(self) -> CaseMapEnum | None:
-        """Gets/Sets Font Case Value"""
+        """
+        Gets/Sets Font Case Value.
+
+        Hint:
+            - ``CaseMapEnum`` can be imported from ``ooo.dyn.style.case_map``
+        """
         ...
 
     @prop_case.setter
@@ -374,7 +426,12 @@ class FontEffectsT(StyleT, Protocol):
 
     @property
     def prop_relief(self) -> FontReliefEnum | None:
-        """Gets/Sets Font Relief Value"""
+        """
+        Gets/Sets Font Relief Value.
+
+        Hint:
+            - ``FontReliefEnum`` can be imported from ``ooo.dyn.awt.font_relief``
+        """
         ...
 
     @prop_relief.setter
@@ -405,7 +462,7 @@ class FontEffectsT(StyleT, Protocol):
     def prop_shadowed(self, value: bool | None) -> None: ...
 
     @property
-    def default(self: FontEffectsT) -> FontEffectsT:  # type: ignore[misc]
+    def default(self) -> FontEffectsT:  # type: ignore[misc]
         """Gets Font Position default."""
         ...
 

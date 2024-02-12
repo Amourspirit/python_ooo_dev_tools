@@ -38,6 +38,11 @@ class Chart2DataLabelOrientationPartial:
 
         Returns:
             Orientation | None: Orientation Style instance or ``None`` if cancelled.
+
+        Hint:
+            - ``Angle`` can be imported from ``ooodev.units``
+            - ``DirectionModeKind`` can be imported from ``ooodev.format.inner.direct.chart2.title.alignment.direction``
+            - ``Orientation`` can be imported from ``ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation``
         """
         from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation import Orientation
 

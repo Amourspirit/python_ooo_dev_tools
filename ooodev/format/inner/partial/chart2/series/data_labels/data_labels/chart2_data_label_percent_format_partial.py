@@ -47,6 +47,11 @@ class Chart2DataLabelPercentFormatPartial:
 
         Returns:
             PercentFormat | None: Percent Format Style instance or ``None`` if cancelled.
+
+        Hint:
+            - ``NumberFormatEnum`` can be imported from ``ooo.dyn.util.number_format``
+            - ``NumberFormatIndexEnum`` can be imported from ``ooo.dyn.i18n.number_format_index``
+            - ``PercentFormat`` can be imported from ``ooodev.format.inner.direct.chart2.series.data_labels.data_labels.percent_format``
         """
         from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.percent_format import PercentFormat
 

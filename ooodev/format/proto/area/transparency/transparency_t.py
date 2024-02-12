@@ -2,13 +2,14 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 import uno
 
+from ...style_multi_t import StyleMultiT
+from ooodev.mock.mock_g import DOCS_BUILDING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ...style_t import StyleT
 
     from ooodev.utils.data_type.intensity import Intensity
 else:
@@ -16,7 +17,7 @@ else:
     Intensity = None
 
 
-class TransparencyT(StyleT, Protocol):
+class TransparencyT(StyleMultiT, Protocol):
     """Fill Area Transparency Protocol"""
 
     def __init__(self, value: Intensity | int = ...) -> None: ...

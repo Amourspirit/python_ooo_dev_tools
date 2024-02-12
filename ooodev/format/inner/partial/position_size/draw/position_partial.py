@@ -48,6 +48,9 @@ class PositionPartial:
 
         Returns:
             PositionT | None: Position instance or ``None`` if cancelled.
+
+        Hint:
+            - ``ShapeBasePointKind`` can be imported from ``ooodev.utils.kind.shape_base_point_kind``
         """
         comp = self.__component
         factory_name = self.__factory_name

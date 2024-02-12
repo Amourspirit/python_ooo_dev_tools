@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.27.1
+==============
+
+Update documentation for Chart2 Calc related classes.
+
+Other minor updates and bug fixes.
+
 Version 0.27.0
 ==============
 

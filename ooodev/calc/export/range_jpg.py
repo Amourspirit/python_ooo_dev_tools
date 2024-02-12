@@ -126,13 +126,17 @@ class RangeJpg(LoInstPropsPartial, ExportBase, EventsPartial):
 
     def _export_as_img(self, url: str, args: tuple) -> None:
         # capture the current selection.
-        current_sel = self._cell_range.calc_sheet.get_selected()
+        # current_sel = self._cell_range.calc_sheet.get_selected()
+        # clear any selection
+        self._cell_range.calc_sheet.deselect_cells()
         self._cell_range.select()
 
         storable = self._cell_range.calc_sheet.calc_doc.qi(XStorable, True)
         storable.storeToURL(url, args)  # save PNG
+        # deselect all cells.
+        self._cell_range.calc_sheet.deselect_cells()
         # restore previous selection.
-        current_sel.select()
+        # current_sel.select()
 
     # region Events
     def subscribe_event_exporting(self, callback: Callable[[Any, CancelEventArgsExport[ExportJpgT]], None]) -> None:

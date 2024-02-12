@@ -54,6 +54,9 @@ class FontOnlyPartial:
 
         Returns:
             FontOnlyT | None: Font Only instance or ``None`` if cancelled.
+
+        See Also:
+            :py:class:`~ooodev.format.inner.direct.write.char.font.font_only.FontLang`
         """
         comp = self.__component
         factory_name = self.__factory_name

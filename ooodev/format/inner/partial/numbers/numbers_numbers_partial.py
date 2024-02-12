@@ -57,6 +57,11 @@ class NumbersNumbersPartial:
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+
+        Hint:
+            - ``NumberFormatEnum`` can be imported from ``ooo.dyn.util.number_format``
+            - ``NumberFormatIndexEnum`` can be imported from ``ooo.dyn.i18n.number_format_index``
+            - ``Locale`` can be imported from ``ooo.dyn.lang.locale``
         """
         factory = numbers_numbers_factory
         kwargs = {

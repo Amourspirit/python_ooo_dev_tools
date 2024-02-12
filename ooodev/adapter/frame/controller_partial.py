@@ -91,7 +91,7 @@ class ControllerPartial(ComponentPartial):
         Is called to prepare the controller for closing the view.
 
         Args:
-            suspend (bool): ``True`` Force the controller to suspend his work, ``False``Try to reactivate the controller.
+            suspend (bool): ``True`` Force the controller to suspend his work, ``False`` Try to reactivate the controller.
 
         Returns:
             bool: ``True`` If request was accepted and successfully finished; Otherwise, ``False``.

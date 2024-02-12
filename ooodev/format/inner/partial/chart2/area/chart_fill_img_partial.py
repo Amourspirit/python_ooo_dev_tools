@@ -86,6 +86,15 @@ class ChartFillImgPartial:
 
         Returns:
             ChartFillImgT | None: Fill Image instance or ``None`` if cancelled.
+
+        Hint:
+            - ``RectanglePoint`` can be imported from ``ooo.dyn.drawing.rectangle_point``
+            - ``ImgStyleKind`` can be imported from ``ooodev.format.inner.direct.write.fill.area.img``
+            - ``SizePercent`` can be imported from ``ooodev.format.inner.common.format_types.size_percent``
+            - ``SizeMM`` can be imported from ``ooodev.utils.data_type.size_mm``
+            - ``OffsetColumn`` can be imported from ``ooodev.format.inner.common.format_types.offset_column``
+            - ``OffsetRow`` can be imported from ``ooodev.format.inner.common.format_types.offset_row``
+            - ``Offset`` can be imported from ``ooodev.utils.data_type.offset``
         """
         doc = self._ChartFillImgPartial__get_chart_doc()
         comp = self.__component
@@ -162,6 +171,9 @@ class ChartFillImgPartial:
 
         Returns:
             ChartFillImgT: Chart Fill Image instance.
+
+        Hint:
+            - ``PresetImageKind`` can be imported from ``ooodev.format.inner.preset.preset_image``
         """
         doc = self._ChartFillImgPartial__get_chart_doc()
         cargs = None

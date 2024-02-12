@@ -2,13 +2,16 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 import uno
 
+from ooodev.mock.mock_g import DOCS_BUILDING
+from ooodev.format.proto.style_multi_t import StyleMultiT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
+    from typing_extensions import Self
+
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ooodev.format.proto.style_multi_t import StyleMultiT
     from ooo.dyn.awt.gradient_style import GradientStyle
     from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
     from ooodev.units import Angle
@@ -18,6 +21,14 @@ if TYPE_CHECKING:
     from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 else:
     Protocol = object
+    Self = Any
+    GradientStyle = Any
+    KeyValCancelArgs = Any
+    Angle = Any
+    Intensity = Any
+    IntensityRange = Any
+    Offset = Any
+    GradientStruct = Any
 
 
 class FillGradientT(StyleMultiT, Protocol):
@@ -57,11 +68,11 @@ class FillGradientT(StyleMultiT, Protocol):
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> FillGradientT: ...
+    def from_obj(cls, obj: Any) -> Self: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> FillGradientT: ...
+    def from_obj(cls, obj: Any, **kwargs) -> Self: ...
 
     @property
     def prop_inner(self) -> GradientStruct:
@@ -69,6 +80,6 @@ class FillGradientT(StyleMultiT, Protocol):
         ...
 
     @property
-    def default(self) -> FillGradientT:
+    def default(self) -> Self:
         """Gets Gradient empty. Static Property."""
         ...

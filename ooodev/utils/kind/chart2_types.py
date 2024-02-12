@@ -1,5 +1,4 @@
 from __future__ import annotations
-from abc import abstractclassmethod
 from enum import Enum
 
 
@@ -7,9 +6,8 @@ class ChartBaseTypeEnum(str, Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    @abstractclassmethod
     def to_namespace(self) -> str:
-        ...
+        raise NotImplementedError
 
 
 class ChartTemplateBase(ChartBaseTypeEnum):

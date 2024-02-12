@@ -2,31 +2,29 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 import uno
 
+from ooodev.mock.mock_g import DOCS_BUILDING
+from ooodev.format.proto.style_multi_t import StyleMultiT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ooodev.format.proto.style_multi_t import StyleMultiT
     from ooo.dyn.awt.gradient_style import GradientStyle
     from ooodev.units import Angle
     from ooodev.utils.data_type.color_range import ColorRange
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.intensity_range import IntensityRange
     from ooodev.utils.data_type.offset import Offset as Offset
-    from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
     from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 else:
     Protocol = object
-    StyleMultiT = Any
     GradientStyle = Any
     Angle = Any
     ColorRange = Any
     Intensity = Any
     IntensityRange = Any
     Offset = Any
-    PresetGradientKind = Any
     GradientStruct = Any
 
 

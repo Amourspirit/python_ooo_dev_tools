@@ -46,6 +46,9 @@ class Chart2AxisPosLabelPositionPartial:
 
         Returns:
             LabelPositionT | None: Label Position instance or ``None`` if cancelled.
+
+        Hint:
+            - ``ChartAxisLabelPosition`` can be imported from ``ooo.dyn.chart.chart_axis_label_position``
         """
         comp = self.__component
         factory_name = self.__factory_name

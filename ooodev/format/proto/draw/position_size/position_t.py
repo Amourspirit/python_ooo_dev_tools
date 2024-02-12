@@ -1,20 +1,19 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 
+from ooodev.mock.mock_g import DOCS_BUILDING
+from ooodev.format.proto.chart2.position_size.position_t import PositionT as ChartPositionT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ooodev.format.proto.chart2.position_size.position_t import PositionT as ChartPositionT
-
-    from ooodev.units import UnitT, UnitMM
+    from ooodev.units import UnitT
     from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 else:
     Protocol = object
     UnitT = Any
-    UnitMM = Any
     ShapeBasePointKind = Any
 
 

@@ -90,8 +90,8 @@ class ComponentLoaderPartial:
 
 
         See Also:
-            - ``FrameSearchFlag <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1frame_1_1FrameSearchFlag.html>``__
-            - ``XComponentLoader <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XComponentLoader.html>``__
+            - `FrameSearchFlag <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1frame_1_1FrameSearchFlag.html>`__
+            - `XComponentLoader <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XComponentLoader.html>`__
         """
         return self.__component.loadComponentFromURL(url, target_frame_name, search_flags, args)
 

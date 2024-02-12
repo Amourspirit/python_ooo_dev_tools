@@ -4,9 +4,12 @@ import uno
 
 from com.sun.star.awt import XControl
 
-from ooodev.adapter.lang.component_partial import ComponentPartial
+# should inherit from ComponentPartial, however, a circular import is occurring when
+# docs are being built. So, we implement XEventListener methods here.
+# from ooodev.adapter.lang.component_partial import ComponentPartial
 
 if TYPE_CHECKING:
+    from com.sun.star.lang import XEventListener
     from com.sun.star.awt import XControlModel
     from com.sun.star.awt import XToolkit
     from com.sun.star.awt import XView
@@ -15,7 +18,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
 
-class ControlPartial(ComponentPartial):
+class ControlPartial:
     """
     Partial Class for XControl.
     """
@@ -30,7 +33,6 @@ class ControlPartial(ComponentPartial):
             component (XControl): UNO Component that implements ``com.sun.star.awt.XControl`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XControl``.
         """
-        ComponentPartial.__init__(self, component, interface)
         self.__component = component
 
     # region XControl
@@ -99,3 +101,30 @@ class ControlPartial(ComponentPartial):
         return self.__component.setModel(model)
 
     # endregion XControl
+
+    # region XComponent
+    def add_event_listener(self, listener: XEventListener) -> None:
+        """
+        Adds an event listener to the component.
+
+        Args:
+            listener (XEventListener): The event listener to be added.
+        """
+        self.__component.addEventListener(listener)
+
+    def remove_event_listener(self, listener: XEventListener) -> None:
+        """
+        Removes an event listener from the component.
+
+        Args:
+            listener (XEventListener): The event listener to be removed.
+        """
+        self.__component.removeEventListener(listener)
+
+    def dispose(self) -> None:
+        """
+        Disposes the component.
+        """
+        self.__component.dispose()
+
+    # endregion XComponent

@@ -770,7 +770,7 @@ In |odev| ``0.9.8`` a new :ref:`ooodev.loader.inst.LoInst` was added. With this 
 This is accomplished by creating a new instance of the :ref:`ooodev.loader.inst.LoInst` and then passing the bridge connection to the
 :py:meth:`LoInst.load_office <ooodev.utils.inst.lo.lo_inst.LoInst.load_office>` method.
 
-The :ref:`ooodev.loader.inst.LoInst` mirrors the :ref:`utils_lo` in is methods and properties, see :ref:`utils_lo` for any undocumented methods and properties of the :ref:`ooodev.loader.inst.LoInst`.
+The :ref:`ooodev.loader.inst.LoInst` mirrors the :ref:`ooodev.loader.Lo` in is methods and properties, see :ref:`ooodev.loader.Lo` for any undocumented methods and properties of the :ref:`ooodev.loader.inst.LoInst`.
 
 The following code example demonstrates how to use the :ref:`ooodev.loader.inst.LoInst` to open multiple documents from a single LibreOffice bridge connection.
 

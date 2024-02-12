@@ -56,6 +56,10 @@ class LineProperties(FactoryNameBase):
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+
+        Hint:
+            - ``BorderLineKind`` can be imported from ``ooodev.format.inner.preset.preset_border_line``
+            - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         comp = self._component
         factory_name = self._factory_name

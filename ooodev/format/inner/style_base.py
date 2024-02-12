@@ -150,7 +150,7 @@ class StyleBase(metaclass=MetaStyle):
 
         Returns:
             bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
-            **kwargs: Expandable list of key value pairs that may be used in child classes.
+            \**kwargs: Expandable list of key value pairs that may be used in child classes.
         """
         ...
 
@@ -160,7 +160,7 @@ class StyleBase(metaclass=MetaStyle):
 
         Returns:
             bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
-            **kwargs: Expandable list of key value pairs that may be used in child classes.
+            \**kwargs: Expandable list of key value pairs that may be used in child classes.
 
         Note:
             If the ``apply()`` method has been called then usually the style will set the update object.
@@ -1072,7 +1072,7 @@ class StyleMulti(StyleBase):
 
         Returns:
             bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
-            **kwargs: Expandable list of key value pairs that may be used in child classes.
+            \**kwargs: Expandable list of key value pairs that may be used in child classes.
         """
         result = True
         styles = self._get_multi_styles()

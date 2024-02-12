@@ -7,6 +7,8 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.chart2.data.data_provider_comp
+   ooodev.adapter.chart2.data.data_provider_partial
    ooodev.adapter.chart2.data.data_receiver_partial
    ooodev.adapter.chart2.data.data_sink_partial
    ooodev.adapter.chart2.data.data_source_comp

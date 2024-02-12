@@ -50,6 +50,10 @@ class Chart2AxisPosIntervalMarksPartial:
 
         Returns:
             IntervalMarksT | None: Interval Marks instance or ``None`` if cancelled.
+
+        Hint:
+            - ``MarkKind`` can be imported from ``ooodev.format.inner.direct.chart2.axis.positioning.interval_marks``
+            - ``ChartAxisMarkPosition`` can be imported from ``ooo.dyn.chart.chart_axis_mark_position``
         """
         comp = self.__component
         factory_name = self.__factory_name

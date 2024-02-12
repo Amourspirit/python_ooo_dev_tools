@@ -168,6 +168,9 @@ class CalcDoc(
 
         See Also:
             :ref:`ch23_gen_func`
+
+        Hint:
+            - ``GeneralFunction`` can be imported from ``ooo.dyn.sheet.general_function``
         """
         return mCalc.Calc.compute_function(fn=fn, cell_range=cell_range)
 
@@ -843,6 +846,9 @@ class CalcDoc(
         Returns:
             None:
 
+        Hint:
+            - ``ViewState`` can be imported from ``ooodev.utils.view_state``
+
         See Also:
             :ref:`ch23_view_states_top_pane`
         """
@@ -860,8 +866,11 @@ class CalcDoc(
         Returns:
             None:
 
+        Hint:
+            - ``ViewState`` can be imported from ``ooodev.utils.view_state``
+
         See Also:
-            :ref:`ch23_view_states_top_pane`
+            :ref:`ch23_view_states_top_pane`.
         """
         with LoContext(self.lo_inst):
             mCalc.Calc.set_view_states(doc=self.component, states=states)
@@ -956,6 +965,9 @@ class CalcDoc(
 
         Args:
             type (ZoomKind, optional): Type of Zoom to set. Default is ``ZoomKind.ZOOM_100_PERCENT``.
+
+        Hint:
+            - ``ZoomKind`` can be imported from ``ooodev.utils.kind.zoom_kind``
         """
         with LoContext(self.lo_inst):
             mCalc.Calc.zoom(doc=self.component, type=type)

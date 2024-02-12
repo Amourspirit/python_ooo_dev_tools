@@ -49,5 +49,9 @@ class LinePropertiesPartial:
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+
+        Hint:
+            - ``BorderLineKind`` can be imported from ``ooodev.format.inner.preset.preset_border_line``
+            - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         return self.__styler.style(color=color, width=width, transparency=transparency, style=style)

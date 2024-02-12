@@ -1,21 +1,24 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 
+from ooodev.mock.mock_g import DOCS_BUILDING
+from ooodev.format.proto.chart2.numbers.numbers_t import NumbersT as ChartNumbersT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
+    from typing_extensions import Self
+
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ooodev.format.proto.chart2.numbers.numbers_t import NumbersT as ChartNumbersT
     from com.sun.star.chart2 import XChartDocument
     from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
     from ooo.dyn.lang.locale import Locale
     from ooo.dyn.util.number_format import NumberFormatEnum
 else:
     Protocol = object
-    XChartDocument = any
-    ChartNumbersT = Any
+    Self = Any
+    XChartDocument = Any
     NumberFormatIndexEnum = Any
     Locale = Any
     NumberFormatEnum = Any
@@ -77,57 +80,57 @@ class NumbersT(ChartNumbersT, Protocol):
     # region Instance Properties
 
     @property
-    def general(self) -> NumbersT:
+    def general(self) -> Self:
         """Gets general format"""
         ...
 
     @property
-    def date(self) -> NumbersT:
+    def date(self) -> Self:
         """Gets date format"""
         ...
 
     @property
-    def time(self) -> NumbersT:
+    def time(self) -> Self:
         """Gets time format"""
         ...
 
     @property
-    def currency(self) -> NumbersT:
+    def currency(self) -> Self:
         """Gets currency format"""
         ...
 
     @property
-    def number(self) -> NumbersT:
+    def number(self) -> Self:
         """Gets number format"""
         ...
 
     @property
-    def scientific(self) -> NumbersT:
+    def scientific(self) -> Self:
         """Gets scientific format"""
         ...
 
     @property
-    def fraction(self) -> NumbersT:
+    def fraction(self) -> Self:
         """Gets fraction format"""
         ...
 
     @property
-    def percent(self) -> NumbersT:
+    def percent(self) -> Self:
         """Gets percent format"""
         ...
 
     @property
-    def text(self) -> NumbersT:
+    def text(self) -> Self:
         """Gets text format"""
         ...
 
     @property
-    def datetime(self) -> NumbersT:
+    def datetime(self) -> Self:
         """Gets datetime format"""
         ...
 
     @property
-    def boolean(self) -> NumbersT:
+    def boolean(self) -> Self:
         """Gets boolean format"""
         ...
 

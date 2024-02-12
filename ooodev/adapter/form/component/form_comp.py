@@ -17,11 +17,9 @@ from ooodev.adapter.lang.component_partial import ComponentPartial
 from ooodev.adapter.lang.event_events import EventEvents
 from ooodev.adapter.script.event_attacher_manager_partial import EventAttacherManagerPartial
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.container.index_access_t import IndexAccessT
 from ooodev.adapter.container.element_index_partial import ElementIndexPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.container import XNamed
     from com.sun.star.form.component import Form  # service
 
 

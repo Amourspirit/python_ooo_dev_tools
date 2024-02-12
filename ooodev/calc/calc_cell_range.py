@@ -87,10 +87,47 @@ class CalcCellRange(
         width: int = 16,
         height: int = 9,
         diagram_name: ChartTemplateBase | str = "Column",
-        color_bg: Color = CommonColor.PALE_BLUE,
-        color_wall: Color = CommonColor.LIGHT_BLUE,
+        color_bg: Color | None = CommonColor.PALE_BLUE,
+        color_wall: Color | None = CommonColor.LIGHT_BLUE,
         **kwargs,
     ) -> TableChart:
+        """
+        Insert a new chart.
+
+
+        Args:
+            cell_name (str, optional): Cell name such as ``A1``.
+            width (int, optional): Width. Default ``16``.
+            height (int, optional): Height. Default ``9``.
+            diagram_name (ChartTemplateBase | str): Diagram Name. Defaults to ``Column``.
+            color_bg (:py:data:`~.utils.color.Color`, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
+                If set to ``None`` then no color is applied.
+            color_wall (:py:data:`~.utils.color.Color`, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
+                If set to ``None`` then no color is applied.
+
+        Keyword Arguments:
+            chart_name (str, optional): Chart name
+            is_row (bool, optional): Determines if the data is row data or column data.
+            first_cell_as_label (bool, optional): Set is first row is to be used as a label.
+            set_data_point_labels (bool, optional): Determines if the data point labels are set.
+
+        Raises:
+            ChartError: If error occurs
+
+        Returns:
+            TableChart: Chart Document that was created and inserted into the sheet.
+
+        Note:
+            **Keyword Arguments** are to mostly be ignored.
+            If finer control over chart creation is needed then **Keyword Arguments** can be used.
+
+        Note:
+            See **Open Office Wiki** - `The Structure of Charts <https://wiki.openoffice.org/wiki/Documentation/BASIC_Guide/Structure_of_Charts>`__ for more information.
+
+        See Also:
+            - :py:class:`~.color.CommonColor`
+            - :ref:`ooodev.utils.kind.chart2_types`
+        """
         from ooodev.office.chart2 import Chart2
 
         # from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
@@ -148,6 +185,9 @@ class CalcCellRange(
             Events arg for this method have a ``cell`` type of ``XCellRange``.
 
             Events arg ``event_data`` is a dictionary containing ``cell_flags``.
+
+        Hint:
+            - ``CellFlagsEnum`` can be imported from ``ooo.dyn.sheet.cell_flags``
         """
         if cell_flags is None:
             result = mCalc.Calc.clear_cells(sheet=self.calc_sheet.component, range_val=self._range_obj)

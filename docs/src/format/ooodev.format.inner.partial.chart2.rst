@@ -13,6 +13,8 @@ Subpackages
    ooodev.format.inner.partial.chart2.grid
    ooodev.format.inner.partial.chart2.legend
    ooodev.format.inner.partial.chart2.numbers
+   ooodev.format.inner.partial.chart2.series
+   ooodev.format.inner.partial.chart2.title
 
 Module contents
 ---------------

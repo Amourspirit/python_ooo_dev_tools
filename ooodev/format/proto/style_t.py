@@ -2,7 +2,9 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING, Tuple
 import uno
 
-if TYPE_CHECKING:
+from ooodev.mock.mock_g import DOCS_BUILDING
+
+if TYPE_CHECKING or DOCS_BUILDING:
     from com.sun.star.beans import PropertyValue
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
@@ -18,6 +20,13 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import EventCallback
 else:
     Protocol = object
+    PropertyValue = Any
+    CancelEventArgs = Any
+    EventArgs = Any
+    KeyValArgs = Any
+    KeyValCancelArgs = Any
+    FormatKind = Any
+    EventObserver = Any
 
 
 class StyleT(Protocol):
