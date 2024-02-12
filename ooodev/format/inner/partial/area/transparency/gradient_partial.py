@@ -87,7 +87,7 @@ class GradientPartial:
                 "border": border,
                 "grad_intensity": grad_intensity,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_transparency_gradient", cargs)
@@ -107,7 +107,7 @@ class GradientPartial:
             border = cargs.event_data.get("border", border)
             grad_intensity = cargs.event_data.get("grad_intensity", grad_intensity)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = area_transparency_gradient_factory(factory_name)
         if doc is None:

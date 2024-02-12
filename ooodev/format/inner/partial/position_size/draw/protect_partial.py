@@ -54,7 +54,7 @@ class ProtectPartial:
                 "position": position,
                 "size": size,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_protect", cargs)
@@ -71,7 +71,7 @@ class ProtectPartial:
             position = cargs.event_data.get("position", position)
             size = cargs.event_data.get("size", size)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = draw_position_size_protect_factory(factory_name)
         fe = styler(position=position, size=size)

@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING, Type
 import uno
 
-from ..style_multi_t import StyleMultiT
-from .font_lang_t import FontLangT
+from ooodev.format.proto.style_multi_t import StyleMultiT
+from ooodev.format.proto.font.font_lang_t import FontLangT
 
 if TYPE_CHECKING:
     try:

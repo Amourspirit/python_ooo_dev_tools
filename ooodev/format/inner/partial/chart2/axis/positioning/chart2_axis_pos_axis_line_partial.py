@@ -62,7 +62,7 @@ class Chart2AxisPosAxisLinePartial:
                 "cross": cross,
                 "value": value,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_axis_pos_axis_line", cargs)
@@ -79,7 +79,7 @@ class Chart2AxisPosAxisLinePartial:
             cross = cargs.event_data.get("cross", cross)
             value = cargs.event_data.get("value", value)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_axis_pos_line_factory(factory_name)
         fe = styler(cross=cross, value=value)

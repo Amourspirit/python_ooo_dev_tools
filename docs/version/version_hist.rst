@@ -2,6 +2,39 @@
 Version History
 ***************
 
+Version 0.27.0
+==============
+
+Big update for charts. Now charts can be created and modified in a much easier way.
+
+Charts are now accessible via ``CalcSheet`` and ``CalcDoc`` classes.
+
+Styling of most all chart objects is built into the chart objects themselves.
+
+.. code-block:: python
+
+    sheet = doc.sheets[0] # get the first sheet from the Calc doc
+    range_addr = sheet.rng("A2:B8")
+    tbl_chart = sheet.charts.insert_chart(
+        rng_obj=range_addr,
+        cell_name="C3",
+        width=15,
+        height=11,
+        diagram_name=ChartTypes.Column.TEMPLATE_STACKED.COLUMN,
+    )
+    sheet["A1"].goto()
+
+    chart_doc = tbl_chart.chart_doc
+    _ = chart_doc.set_title(sheet["A1"].value)
+    _ = chart_doc.axis_x.set_title(sheet["A2"].value)
+    y_axis_title = chart_doc.axis_y.set_title(sheet["B2"].value)
+    y_axis_title.style_orientation(angle=90)
+    chart_doc.style_border_line(color=CommonColor.DARK_BLUE, width=0.8)
+
+See :ref:`ns_calc_chart2`
+
+Other minor updates and bug fixes.
+
 Version 0.26.0
 ==============
 

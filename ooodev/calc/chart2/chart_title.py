@@ -9,6 +9,7 @@ from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
@@ -54,6 +55,7 @@ class ChartTitle(
     StylePartial,
     FontOnlyPartial,
     FontEffectsPartial,
+    FontPartial,
     Chart2TitleOrientationPartial,
     FillColorPartial,
     ChartFillGradientPartial,
@@ -94,6 +96,7 @@ class ChartTitle(
         StylePartial.__init__(self, component=component)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
+        FontPartial.__init__(self, factory_name="ooodev.general_style.text", component=component, lo_inst=lo_inst)
         Chart2TitleOrientationPartial.__init__(self, component=component)
         FillColorPartial.__init__(self, factory_name="ooodev.char2.title.area", component=component, lo_inst=lo_inst)
         ChartFillGradientPartial.__init__(
@@ -117,6 +120,8 @@ class ChartTitle(
         self._fn_on_global_cancel = self._on_global_cancel
         self._fn_on_before_style_position = self._on_before_style_position
         self.subscribe_event("before_style_font_effect", self._fn_on_apply_style_text)
+        self.subscribe_event("before_style_font_only", self._fn_on_apply_style_text)
+        self.subscribe_event("before_style_general_font", self._fn_on_apply_style_text)
         self.subscribe_event(GblNamedEvent.EVENT_CANCELED, self._fn_on_global_cancel)
         self.subscribe_event("before_style_position", self._fn_on_before_style_position)
 
@@ -130,7 +135,7 @@ class ChartTitle(
     def _on_global_cancel(self, source: Any, args: CancelEventArgs) -> None:
         initial_event = args.get("initial_event", "")
 
-        if initial_event == "before_style_font_effect":
+        if initial_event in {"before_style_font_effect", "before_style_font_only", "before_style_general_font"}:
             args.handled = True
 
     def _on_before_style_position(self, source: Any, args: CancelEventArgs) -> None:
@@ -150,6 +155,10 @@ class ChartTitle(
                 doc = self.lo_inst.qi(XChartDocument, self.chart_doc.component, True)
                 shape = doc.getSubTitle()  # shape
                 args.event_data["this_component"] = shape
+        else:
+            # cancel the event, No Shape to work with.
+            args.cancel = True
+            args.handled = True
 
     # endregion Events
 

@@ -91,7 +91,7 @@ class ChartType(
         See Also:
             :py:class:`~.color.CommonColor`
         """
-        if self.chart_type != "com.sun.star.chart2.StockBarChart":
+        if self.chart_type != "com.sun.star.chart2.CandleStickChartType":
             raise mEx.NotSupportedError(f'Only candle stick charts supported. "{self.chart_type}" not supported.')
         try:
             white_day_ps = Prop(owner=self, component=self.get_property("WhiteDay"), lo_inst=self.lo_inst)

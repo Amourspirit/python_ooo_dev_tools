@@ -58,7 +58,7 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
         if comp is None:
             return None
         if self.diagram_kind == ChartDiagramKind.FIRST:
-            chart_title_kind = ChartTitleKind.TITLE
+            chart_title_kind = ChartTitleKind.SUBTITLE
         else:
             chart_title_kind = ChartTitleKind.UNKNOWN
         return ChartTitle(
@@ -84,7 +84,7 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
         titled = self.qi(XTitled, True)
         titled.setTitleObject(x_title)
         if self.diagram_kind == ChartDiagramKind.FIRST:
-            chart_title_kind = ChartTitleKind.TITLE
+            chart_title_kind = ChartTitleKind.SUBTITLE
         else:
             chart_title_kind = ChartTitleKind.UNKNOWN
 

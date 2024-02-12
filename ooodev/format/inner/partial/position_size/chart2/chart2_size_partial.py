@@ -57,7 +57,7 @@ class Chart2SizePartial:
                 "width": width,
                 "height": height,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_size", cargs)
@@ -74,7 +74,7 @@ class Chart2SizePartial:
             width = cargs.event_data.get("width", width)
             height = cargs.event_data.get("height", height)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_position_size_size_factory(factory_name)
         fe = styler(width=width, height=height)

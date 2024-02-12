@@ -65,7 +65,7 @@ class Chart2PositionPartial:
                     cargs.set("initial_event", "before_style_position")
                     self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                     if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
+                        raise mEx.CancelEventError(cargs, "Style Position has been cancelled.")
                     else:
                         return None
                 else:

@@ -11,10 +11,8 @@ from ooodev.format.inner.partial.factory_name_base import FactoryNameBase
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.proto.callable_any_t import CallableAnyT
 else:
     LoInst = Any
-    CallableAnyT = Any
 
 
 class FactoryStyler(FactoryNameBase):

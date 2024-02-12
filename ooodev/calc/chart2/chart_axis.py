@@ -10,6 +10,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
@@ -52,6 +53,7 @@ class ChartAxis(
     StylePartial,
     FontOnlyPartial,
     FontEffectsPartial,
+    FontPartial,
     AxisLinePropertiesPartial,
     Chart2AxisPosAxisLinePartial,
     Chart2AxisPosIntervalMarksPartial,
@@ -86,6 +88,7 @@ class ChartAxis(
         StylePartial.__init__(self, component=component)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
+        FontPartial.__init__(self, factory_name="ooodev.general_style.text", component=component, lo_inst=lo_inst)
         AxisLinePropertiesPartial.__init__(
             self, factory_name="ooodev.chart2.axis.line", component=component, lo_inst=lo_inst
         )

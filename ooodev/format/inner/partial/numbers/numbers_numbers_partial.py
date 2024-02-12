@@ -53,7 +53,7 @@ class NumbersNumbersPartial:
             lang_locale (Locale, optional): Locale of the number format. Defaults to ``None`` which used current Locale.
 
         Raises:
-            CancelEventError: If the event ``after_style_number_number`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_number_number`` is cancelled and not handled.
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.

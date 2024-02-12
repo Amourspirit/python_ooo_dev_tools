@@ -70,7 +70,7 @@ class LineProperties(FactoryNameBase):
                 "width": width,
                 "transparency": transparency,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event(self.before_event_name, cargs)
@@ -88,7 +88,7 @@ class LineProperties(FactoryNameBase):
             color = cargs.event_data.get("color", color)
             width = cargs.event_data.get("width", width)
             transparency = cargs.event_data.get("transparency", transparency)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
             factory_name = cargs.event_data.get("factory_name", factory_name)
 
         styler = draw_border_line_factory(factory_name)

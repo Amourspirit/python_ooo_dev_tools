@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from ..proto.font.font_effects_t import FontEffectsT
     from ..proto.font.font_only_t import FontOnlyT
     from ..proto.area.fill_color_t import FillColorT
+    from ..proto.write.char.font.font_t import FontT
     from ..proto.area.fill_gradient_t import FillGradientT
 
     from ..proto.chart2.area.chart_fill_gradient_t import ChartFillGradientT
@@ -75,6 +76,20 @@ def font_only_factory(name: str) -> Type[FontOnlyT]:
         from ooodev.format.chart2.direct.legend.font import FontOnly
 
         return FontOnly
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def font_factory(name: str) -> Type[FontT]:
+    if name == "ooodev.write.char":
+        from ooodev.format.inner.direct.write.char.font.font import Font
+
+        return Font
+
+    if name == "ooodev.general_style.text":
+        from ooodev.format.inner.direct.general_style.text.font import Font
+
+        return Font
 
     raise ValueError(f"Invalid name: {name}")
 

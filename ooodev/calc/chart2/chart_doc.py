@@ -40,6 +40,7 @@ if TYPE_CHECKING:
     from ooodev.utils.comp.prop import Prop
     from ooodev.utils.kind.chart2_types import ChartTypeNameBase
     from ooodev.utils.kind.curve_kind import CurveKind
+    from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind
     from .chart_axis import ChartAxis
     from .chart_data_series import ChartDataSeries
     from .chart_diagram import ChartDiagram
@@ -48,6 +49,7 @@ if TYPE_CHECKING:
     from .chart_type import ChartType
     from .coordinate.coordinate_general import CoordinateGeneral
     from .regression_curve.regression_curve import RegressionCurve
+    from .data.data_provider import DataProvider
 else:
     CoordinateGeneral = Any
     StyleT = Any
@@ -163,7 +165,7 @@ class ChartDoc(
         """
         On Area Fill Color Changing
         """
-        event.event_data["component"] = self.component.getPageBackground()
+        event.event_data["this_component"] = self.component.getPageBackground()
 
     # endregion Events
 
@@ -172,6 +174,20 @@ class ChartDoc(
         return self.component
 
     # endregion GradientPartial Overrides
+
+    # region ChartDocumentPartial Overrides
+    def get_data_provider(self) -> DataProvider:
+        """
+        Returns the currently set data provider.
+
+        This may be an internal one, if createInternalDataProvider() has been called before, or an external one if XDataReceiver.attachDataProvider() has been called.
+        """
+        from .data.data_provider import DataProvider
+
+        dp = self.component.getDataProvider()
+        return DataProvider(owner=self, component=dp, lo_inst=self.lo_inst)
+
+    # endregion ChartDocumentPartial Overrides
 
     # region Methods
     def set_title(self, title: str) -> ChartTitle[ChartDoc]:
@@ -318,10 +334,16 @@ class ChartDoc(
             dp = self.get_data_provider()
             with LoContext(self.lo_inst):
                 pos_err_seq = mChart2.Chart2.create_ld_seq(
-                    dp=dp, role=DataRoleKind.ERROR_BARS_Y_POSITIVE, data_label=data_label, data_range=data_range
+                    dp=dp.component,
+                    role=DataRoleKind.ERROR_BARS_Y_POSITIVE,
+                    data_label=data_label,
+                    data_range=data_range,
                 )
                 neg_err_seq = mChart2.Chart2.create_ld_seq(
-                    dp=dp, role=DataRoleKind.ERROR_BARS_Y_NEGATIVE, data_label=data_label, data_range=data_range
+                    dp=dp.component,
+                    role=DataRoleKind.ERROR_BARS_Y_NEGATIVE,
+                    data_label=data_label,
+                    data_range=data_range,
                 )
             ld_seq = (pos_err_seq, neg_err_seq)
             eb.set_data(ld_seq)
@@ -390,8 +412,8 @@ class ChartDoc(
         Returns:
             None:
         """
-        with LoContext(self.lo_inst):
-            mChart2.Chart2.add_cat_labels(self.component, data_label, data_range)
+        dp = self.get_data_provider()
+        dp.add_cat_labels(data_label, data_range)
 
     def create_curve(self, curve_kind: CurveKind) -> RegressionCurve:
         """
@@ -568,8 +590,27 @@ class ChartDoc(
         Returns:
             ChartType[ChartDoc]: Found chart type.
         """
+        from .chart_type import ChartType
+
         found_type = mChart2.Chart2.find_chart_type(chart_doc=self.component, chart_type=chart_type)
         return ChartType(owner=self, chart_doc=self, component=found_type, lo_inst=self.lo_inst)
+
+    def set_data_point_labels(self, label_type: DataPointLabelTypeKind) -> None:
+        """
+        Set data point labels for a given chart type.
+
+        Args:
+            label_type (DataPointLabelTypeKind): Data point label type.
+
+        Raises:
+            ChartError: If any error occurs.
+
+        Returns:
+            None:
+        """
+        ds_arr = self.get_data_series()
+        for ds in ds_arr:
+            ds.set_data_point_labels(label_type=label_type)
 
     @property
     def first_diagram(self) -> ChartDiagram:

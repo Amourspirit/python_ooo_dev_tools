@@ -4,6 +4,8 @@ from ooodev.adapter.chart2.data.data_source_comp import DataSourceComp
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+
 
 if TYPE_CHECKING:
     from com.sun.star.chart2.data import XDataSource
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
     from ..chart_doc import ChartDoc
 
 
-class DataSource(LoInstPropsPartial, DataSourceComp):
+class DataSource(LoInstPropsPartial, DataSourceComp, ChartDocPropPartial):
     """
     Class for managing Chart2 Data Data Source.
     """
@@ -30,6 +32,7 @@ class DataSource(LoInstPropsPartial, DataSourceComp):
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DataSourceComp.__init__(self, component)  # type: ignore
+        ChartDocPropPartial.__init__(self, chart_doc=owner.chart_doc)
         self.__owner = owner
 
     # region Properties
@@ -54,10 +57,5 @@ class DataSource(LoInstPropsPartial, DataSourceComp):
     def owner(self) -> ChartDataSeries:
         """Chart Diagram"""
         return self.__owner
-
-    @property
-    def chart_doc(self) -> ChartDoc:
-        """Chart Document"""
-        return self.owner.chart_doc
 
     # endregion Properties

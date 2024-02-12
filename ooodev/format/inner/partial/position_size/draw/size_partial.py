@@ -61,7 +61,7 @@ class SizePartial:
                 "height": height,
                 "base_point": base_point,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_size", cargs)
@@ -79,7 +79,7 @@ class SizePartial:
             height = cargs.event_data.get("height", height)
             base_point = cargs.event_data.get("base_point", base_point)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = draw_position_size_size_factory(factory_name)
         fe = styler(width=width, height=height, base_point=base_point)

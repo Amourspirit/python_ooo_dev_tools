@@ -53,7 +53,7 @@ class FillColorPartial:
             event_data: Dict[str, Any] = {
                 "color": color,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_color", cargs)
@@ -69,7 +69,7 @@ class FillColorPartial:
                     return None
             color = cargs.event_data.get("color", color)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = area_color_factory(factory_name)
         fe = styler(color=color)

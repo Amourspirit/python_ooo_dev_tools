@@ -82,7 +82,7 @@ class ChartFillPatternPartial:
                 "stretch": stretch,
                 "auto_name": auto_name,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_pattern", cargs)
@@ -102,7 +102,7 @@ class ChartFillPatternPartial:
             stretch = cargs.event_data.get("stretch", stretch)
             auto_name = cargs.event_data.get("auto_name", auto_name)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_pattern_factory(factory_name)
         fe = styler(
@@ -146,7 +146,7 @@ class ChartFillPatternPartial:
             event_data: Dict[str, Any] = {
                 "preset": preset,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_pattern_from_preset", cargs)
@@ -162,7 +162,7 @@ class ChartFillPatternPartial:
                     return None
             preset = cargs.event_data.get("preset", preset)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_pattern_factory(factory_name)
         fe = styler.from_preset(chart_doc=doc, preset=preset)

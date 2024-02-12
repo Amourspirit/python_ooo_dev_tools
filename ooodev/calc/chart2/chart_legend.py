@@ -10,6 +10,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
 from ooodev.format.inner.partial.area.transparency.transparency_partial import (
     TransparencyPartial as TransparencyTransparency,
@@ -40,6 +41,7 @@ class ChartLegend(
     PropPartial,
     FontEffectsPartial,
     FontOnlyPartial,
+    FontPartial,
     FillColorPartial,
     TransparencyTransparency,
     TransparencyGradient,
@@ -74,6 +76,7 @@ class ChartLegend(
         ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
+        FontPartial.__init__(self, factory_name="ooodev.general_style.text", component=component, lo_inst=lo_inst)
         FillColorPartial.__init__(
             self, factory_name="ooodev.char2.legend.area.color", component=component, lo_inst=lo_inst
         )

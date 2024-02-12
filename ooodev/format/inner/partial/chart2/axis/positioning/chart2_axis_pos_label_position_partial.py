@@ -57,7 +57,7 @@ class Chart2AxisPosLabelPositionPartial:
             event_data: Dict[str, Any] = {
                 "pos": pos,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_axis_pos_label_position", cargs)
@@ -73,7 +73,7 @@ class Chart2AxisPosLabelPositionPartial:
                     return None
             pos = cargs.event_data.get("pos", pos)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_axis_pos_label_position_factory(factory_name)
         fe = styler(pos=pos)

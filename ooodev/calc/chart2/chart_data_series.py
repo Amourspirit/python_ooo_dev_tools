@@ -3,6 +3,7 @@ from typing import Any, TYPE_CHECKING, TypeVar, Generic
 import uno
 from com.sun.star.chart2.data import XDataSource
 
+from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind
 from ooodev.adapter.chart2.data_series_comp import DataSeriesComp
 from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
@@ -15,6 +16,7 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import ChartFillGradientPartial
@@ -64,6 +66,7 @@ class ChartDataSeries(
     StylePartial,
     FontEffectsPartial,
     FontOnlyPartial,
+    FontPartial,
     NumbersNumbersPartial,
     FillColorPartial,
     ChartFillGradientPartial,
@@ -108,6 +111,7 @@ class ChartDataSeries(
         FontOnlyPartial.__init__(
             self, factory_name="ooodev.chart2.series.data_labels", component=component, lo_inst=lo_inst
         )
+        FontPartial.__init__(self, factory_name="ooodev.general_style.text", component=component, lo_inst=lo_inst)
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
         )
@@ -138,10 +142,10 @@ class ChartDataSeries(
         DataLabelBorderPartial.__init__(
             self, factory_name="ooodev.char2.series.data_series.label.borders", component=component, lo_inst=lo_inst
         )
-        Chart2DataLabelAttribOptPartial.__init__(self, component=self)
-        Chart2DataLabelPercentFormatPartial.__init__(self, component=self)
-        Chart2DataLabelOrientationPartial.__init__(self, component=self)
-        Chart2DataLabelTextAttributePartial.__init__(self, component=self)
+        Chart2DataLabelAttribOptPartial.__init__(self, component=component)
+        Chart2DataLabelPercentFormatPartial.__init__(self, component=component)
+        Chart2DataLabelOrientationPartial.__init__(self, component=component)
+        Chart2DataLabelTextAttributePartial.__init__(self, component=component)
         self._owner = owner
 
     def __getitem__(self, index: int) -> ChartDataPoint:
@@ -186,6 +190,40 @@ class ChartDataSeries(
             return DataSource(owner=self, component=src, lo_inst=self.lo_inst)
         except Exception as e:
             raise mEx.ChartError("Error getting data source", e)
+
+    def set_data_point_labels(self, label_type: DataPointLabelTypeKind) -> None:
+        """
+        Set data point labels for a given chart type.
+
+        Args:
+            label_type (DataPointLabelTypeKind): Data point label type.
+
+        Raises:
+            ChartError: If any error occurs.
+
+        Returns:
+            None:
+        """
+        try:
+            dp_label = self.label
+
+            dp_label.ShowNumber = False
+            dp_label.ShowCategoryName = False
+            dp_label.ShowLegendSymbol = False
+            if label_type == DataPointLabelTypeKind.NUMBER:
+                dp_label.ShowNumber = True
+            elif label_type == DataPointLabelTypeKind.PERCENT:
+                dp_label.ShowNumber = True
+                dp_label.ShowNumberInPercent = True
+            elif label_type == DataPointLabelTypeKind.CATEGORY:
+                dp_label.ShowCategoryName = True
+            elif label_type == DataPointLabelTypeKind.SYMBOL:
+                dp_label.ShowLegendSymbol = True
+            elif label_type != DataPointLabelTypeKind.NONE:
+                raise mEx.UnKnownError("label_type is of unknown type")
+            self.label = dp_label
+        except Exception as e:
+            raise mEx.ChartError("Error setting data point labels") from e
 
     @property
     def owner(self) -> _T:

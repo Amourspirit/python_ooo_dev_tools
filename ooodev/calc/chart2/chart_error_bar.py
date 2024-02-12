@@ -36,9 +36,10 @@ class ChartErrorBar(
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        # ErrorBarComp will create component if not provided.
         ErrorBarComp.__init__(self, lo_inst=lo_inst, component=component)  # type: ignore
         ChartDocPropPartial.__init__(self, chart_doc=chart_doc)
-        DataSinkPartial.__init__(self, component=component)  # type: ignore
-        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
-        QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
-        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        DataSinkPartial.__init__(self, component=self.component)  # type: ignore
+        PropPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
+        QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
+        ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)

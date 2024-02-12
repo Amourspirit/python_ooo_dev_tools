@@ -35,7 +35,6 @@ if TYPE_CHECKING:
 
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.event_singleton import _Events
 from ooodev.events.lo_events import event_ctx
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_events import observe_events
@@ -112,7 +111,7 @@ class CalcSheet(
 
     # region make_range_obj()
     @overload
-    def make_range_obj(self, range_name: str) -> mRngObj.RangeObj:
+    def rng(self, range_name: str) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
 
@@ -125,7 +124,7 @@ class CalcSheet(
         ...
 
     @overload
-    def make_range_obj(self, cell_range: XCellRange) -> mRngObj.RangeObj:
+    def rng(self, cell_range: XCellRange) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
 
@@ -138,7 +137,7 @@ class CalcSheet(
         ...
 
     @overload
-    def make_range_obj(self, cr_addr: CellRangeAddress) -> mRngObj.RangeObj:
+    def rng(self, cr_addr: CellRangeAddress) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
 
@@ -151,7 +150,7 @@ class CalcSheet(
         ...
 
     @overload
-    def make_range_obj(self, range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
+    def rng(self, range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
 
@@ -164,7 +163,7 @@ class CalcSheet(
         ...
 
     @overload
-    def make_range_obj(self, cell_obj: mCellObj.CellObj) -> mRngObj.RangeObj:
+    def rng(self, cell_obj: mCellObj.CellObj) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
 
@@ -177,7 +176,7 @@ class CalcSheet(
         ...
 
     @overload
-    def make_range_obj(self, cell_range: XCellRange) -> mRngObj.RangeObj:
+    def rng(self, cell_range: XCellRange) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
 
@@ -191,7 +190,7 @@ class CalcSheet(
         ...
 
     @overload
-    def make_range_obj(self, col_start: int, row_start: int, col_end: int, row_end: int) -> mRngObj.RangeObj:
+    def rng(self, col_start: int, row_start: int, col_end: int, row_end: int) -> mRngObj.RangeObj:
         """
         Gets a range Object representing a range.
 
@@ -206,7 +205,7 @@ class CalcSheet(
         """
         ...
 
-    def make_range_obj(self, *args, **kwargs) -> mRngObj.RangeObj:
+    def rng(self, *args, **kwargs) -> mRngObj.RangeObj:
         """
         Makes a range object.
 

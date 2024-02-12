@@ -88,7 +88,7 @@ class ChartFillHatchPartial:
                 "angle": angle,
                 "bg_color": bg_color,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_hatch", cargs)
@@ -108,7 +108,7 @@ class ChartFillHatchPartial:
             angle = cargs.event_data.get("angle", angle)
             bg_color = cargs.event_data.get("bg_color", bg_color)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_hatch_factory(factory_name)
         fe = styler(
@@ -152,7 +152,7 @@ class ChartFillHatchPartial:
             event_data: Dict[str, Any] = {
                 "preset": preset,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_hatch_from_preset", cargs)
@@ -168,7 +168,7 @@ class ChartFillHatchPartial:
                     return None
             preset = cargs.event_data.get("preset", preset)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_hatch_factory(factory_name)
         fe = styler.from_preset(chart_doc=doc, preset=preset)

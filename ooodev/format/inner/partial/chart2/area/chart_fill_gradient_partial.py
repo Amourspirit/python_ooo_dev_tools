@@ -101,7 +101,7 @@ class ChartFillGradientPartial:
                 "grad_intensity": grad_intensity,
                 "name": name,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_gradient", cargs)
@@ -124,7 +124,7 @@ class ChartFillGradientPartial:
             grad_intensity = cargs.event_data.get("grad_intensity", grad_intensity)
             name = cargs.event_data.get("name", name)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_gradient_factory(factory_name)
         fe = styler(
@@ -171,7 +171,7 @@ class ChartFillGradientPartial:
             event_data: Dict[str, Any] = {
                 "preset": preset,
                 "factory_name": factory_name,
-                "component": comp,
+                "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event("before_style_area_gradient_from_preset", cargs)
@@ -187,7 +187,7 @@ class ChartFillGradientPartial:
                     return None
             preset = cargs.event_data.get("preset", preset)
             factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("component", comp)
+            comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_gradient_factory(factory_name)
         fe = styler.from_preset(chart_doc=doc, preset=preset)
