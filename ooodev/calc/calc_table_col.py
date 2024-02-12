@@ -9,7 +9,6 @@ from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM100
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
-from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
     from com.sun.star.table import TableColumn  # service
     from com.sun.star.table import XCellRange
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.units import UnitT
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.cell_values import CellValues

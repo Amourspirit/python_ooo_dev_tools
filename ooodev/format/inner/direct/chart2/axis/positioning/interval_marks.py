@@ -14,7 +14,7 @@ from ooodev.format.inner.style_base import StyleBase
 
 
 class MarkKind(IntFlag):
-    """Tickmark Style"""
+    """Tick mark Style"""
 
     NONE = 0
     """No marks"""

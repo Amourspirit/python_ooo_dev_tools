@@ -13,6 +13,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.draw.shapes.const import KNOWN_SHAPES
 from ..partial.draw_shape_partial import DrawShapePartial
+from .partial.styled_shape_partial import StyledShapePartial
 from .shape_base import ShapeBase, _T
 
 
@@ -31,6 +32,7 @@ class DrawShape(
     QiPartial,
     PropPartial,
     StylePartial,
+    StyledShapePartial,
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
         ShapeBase.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
@@ -44,6 +46,7 @@ class DrawShape(
         DrawShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         PropPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         StylePartial.__init__(self, component=component)
+        StyledShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
 
     # region Overrides
     def _ComponentBase__get_is_supported(self, component: Any) -> bool:

@@ -16,6 +16,7 @@ Subpackages
    ooodev.format.draw
    ooodev.format.impress
    ooodev.format.inner
+   ooodev.format.proto
    ooodev.format.writer
 
 Submodules

@@ -8,7 +8,6 @@ from ooodev.format.inner.direct.chart2.title.alignment.direction import Directio
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.units import Angle
-from ooodev.utils import props as mProps
 
 
 class Orientation(StyleBase):

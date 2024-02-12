@@ -7,6 +7,7 @@ Module for managing character fonts.
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, TypeVar
+import contextlib
 import uno
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
@@ -83,7 +84,7 @@ class Font(StyleBase):
         subscript: bool | None = None,
         superscript: bool | None = None,
         underline: FontLine | None = None,
-        weight: FontWeightEnum | None = None,
+        weight: FontWeightEnum | float | None = None,
         word_mode: bool | None = None,
     ) -> None:
         """
@@ -114,7 +115,7 @@ class Font(StyleBase):
             subscript (bool, optional): Subscript option.
             superscript (bool, optional): Superscript option.
             underline (FontLine, optional): Character underline values.
-            weight (FontWeightEnum, optional): The value of the font weight.
+            weight (FontWeightEnum, float, optional): The value of the font weight.
             word_mode(bool, optional): If ``True``, the underline and strike-through properties are not applied to
                 white spaces.
 
@@ -192,6 +193,10 @@ class Font(StyleBase):
     # region apply()
     @overload
     def apply(self, obj: Any) -> None:  # type: ignore
+        ...
+
+    @overload
+    def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         ...
 
     def apply(self, obj: Any, **kwargs) -> None:
@@ -847,11 +852,14 @@ class Font(StyleBase):
         return FontWeightEnum(pv) if pv is not None else None
 
     @prop_weight.setter
-    def prop_weight(self, value: FontWeightEnum | None) -> None:
+    def prop_weight(self, value: FontWeightEnum | float | None) -> None:
         if value is None:
             self._remove("CharWeight")
             return
-        self._set("CharWeight", value.value)
+        with contextlib.suppress(AttributeError):
+            self._set("CharWeight", value.value)  # type: ignore
+            return
+        self._set("CharWeight", float(value))  # type: ignore
 
     @property
     def prop_slant(self) -> FontSlant | None:

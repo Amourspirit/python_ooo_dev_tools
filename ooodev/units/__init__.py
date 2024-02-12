@@ -2,6 +2,8 @@ from .angle import Angle as Angle
 from .angle_unit_obj import AngleUnitT as AngleUnitT
 from .angle10 import Angle10 as Angle10
 from .angle100 import Angle100 as Angle100
+from .size_mm100 import SizeMM100 as SizeMM100
+from .size_px import SizePX as SizePX
 from .unit_cm import UnitCM as UnitCM
 from .unit_convert import UnitConvert as UnitConvert
 from .unit_convert import UnitLength as UnitLength
@@ -22,6 +24,8 @@ __all__ = [
     "Angle10",
     "Angle100",
     "AngleUnitT",
+    "SizeMM100",
+    "SizePX",
     "UnitCM",
     "UnitConvert",
     "UnitInch",

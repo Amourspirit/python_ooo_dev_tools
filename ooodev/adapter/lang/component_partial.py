@@ -6,10 +6,10 @@ from com.sun.star.lang import XComponent
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from ooodev.utils.type_var import UnoInterface
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XEventListener
+    from ooodev.utils.type_var import UnoInterface
 
 
 class ComponentPartial:
@@ -22,7 +22,7 @@ class ComponentPartial:
         Constructor
 
         Args:
-            component (XComponent): UNO Component that implements ``com.sun.star.container.XComponent`` interface.
+            component (XComponent): UNO Component that implements ``com.sun.star.lang.XComponent`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XComponent``.
         """
         self.__interface = interface

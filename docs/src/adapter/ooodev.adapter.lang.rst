@@ -10,6 +10,7 @@ Submodules
    ooodev.adapter.lang.component_partial
    ooodev.adapter.lang.event_events
    ooodev.adapter.lang.event_listener
+   ooodev.adapter.lang.initialization_partial
 
 Module contents
 ---------------

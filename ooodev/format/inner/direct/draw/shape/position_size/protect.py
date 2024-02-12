@@ -25,8 +25,8 @@ class Protect(StyleBase):
         Constructor
 
         Args:
-            size (bool, optional): Specifies size protection.
             position (bool, optional): Specifies position protection.
+            size (bool, optional): Specifies size protection.
 
         Returns:
             None:
@@ -58,13 +58,11 @@ class Protect(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProtect], obj: object) -> _TProtect:
-        ...
+    def from_obj(cls: Type[_TProtect], obj: object) -> _TProtect: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect:
-        ...
+    def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect: ...
 
     @classmethod
     def from_obj(cls: Type[_TProtect], obj: object, **kwargs) -> _TProtect:

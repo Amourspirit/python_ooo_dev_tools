@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, cast, overload, TYPE_CHECKING
 import uno
 from com.sun.star.drawing import XShape
 from com.sun.star.awt import Rectangle
@@ -166,6 +166,35 @@ class Position(ShapePosition):
     # endregion Overridden Methods
 
     # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any) -> Position:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            Position: New instance.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any, **kwargs) -> Position:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Position: New instance.
+        """
+        ...
+
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> Position:
         """

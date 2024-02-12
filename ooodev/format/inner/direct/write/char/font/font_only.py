@@ -7,7 +7,7 @@ Module for managing character font.
 # region Import
 from __future__ import annotations
 import contextlib
-from typing import Any, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
 from com.sun.star.beans import XPropertySet
 
@@ -27,6 +27,10 @@ from ooodev.format.inner.common.props.font_only_props import FontOnlyProps
 from ooodev.format.inner.direct.structs.locale_struct import LocaleStruct
 from ooodev.mock import mock_g
 
+if TYPE_CHECKING:
+    from ooodev.format.proto.font.font_lang_t import FontLangT
+else:
+    FontLangT = Any
 # endregion Import
 
 if mock_g.DOCS_BUILDING:
@@ -150,7 +154,7 @@ class FontOnly(StyleMulti):
         name: str | None = None,
         size: float | UnitT | None = None,
         font_style: str | None = None,
-        lang: FontLang | None = None,
+        lang: FontLangT | None = None,
     ) -> None:
         """
         Font options used in styles.
@@ -295,6 +299,7 @@ class FontOnly(StyleMulti):
         with contextlib.suppress(mEx.PropertyNotFoundError):
             lang = FontLang.from_obj(obj)
             inst._set_style("lang", lang, *lang.get_attrs())
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

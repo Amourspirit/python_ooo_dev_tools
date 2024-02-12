@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Tuple, Type, TypeVar, overload
+from typing import Any, Tuple, Type, TypeVar, overload, TYPE_CHECKING
 import uno
-from com.sun.star.chart2 import XChartDocument
 
 from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
 from ooo.dyn.lang.locale import Locale
@@ -11,6 +10,11 @@ from ooodev.format.inner.direct.calc.numbers.numbers import Numbers as CalcNumbe
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
+
+if TYPE_CHECKING:
+    from com.sun.star.chart2 import XChartDocument
+else:
+    XChartDocument = Any
 
 _TNumbers = TypeVar(name="_TNumbers", bound="Numbers")
 
@@ -60,12 +64,10 @@ class Numbers(CalcNumbers):
 
     # region Copy()
     @overload
-    def copy(self: _TNumbers) -> _TNumbers:
-        ...
+    def copy(self: _TNumbers) -> _TNumbers: ...
 
     @overload
-    def copy(self: _TNumbers, **kwargs) -> _TNumbers:
-        ...
+    def copy(self: _TNumbers, **kwargs) -> _TNumbers: ...
 
     def copy(self: _TNumbers, **kwargs) -> _TNumbers:
         """
@@ -85,13 +87,11 @@ class Numbers(CalcNumbers):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNumbers], chart_doc: XChartDocument, obj: object) -> _TNumbers:
-        ...
+    def from_obj(cls: Type[_TNumbers], chart_doc: XChartDocument, obj: object) -> _TNumbers: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TNumbers], chart_doc: XChartDocument, obj: object, **kwargs) -> _TNumbers:
-        ...
+    def from_obj(cls: Type[_TNumbers], chart_doc: XChartDocument, obj: object, **kwargs) -> _TNumbers: ...
 
     @classmethod
     def from_obj(cls: Type[_TNumbers], chart_doc: XChartDocument, obj: object, **kwargs) -> _TNumbers:

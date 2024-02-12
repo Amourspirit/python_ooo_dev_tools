@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.frame.model_partial import ModelPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.text import GenericTextDocument  # service
 
 
-class GenericTextDocumentComp(ComponentBase):
+class GenericTextDocumentComp(ComponentBase, ModelPartial):
     """
     Class for managing GenericTextDocument Component.
     """
@@ -23,6 +24,7 @@ class GenericTextDocumentComp(ComponentBase):
         """
 
         ComponentBase.__init__(self, component)
+        ModelPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

@@ -15,7 +15,6 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
 from ooodev.loader import lo as mLo
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
-from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as WriteGradient
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.units import Angle as Angle

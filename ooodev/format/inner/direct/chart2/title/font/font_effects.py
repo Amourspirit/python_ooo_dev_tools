@@ -92,5 +92,6 @@ class FontEffects(CharFontEffects):
             self._supported_services_values = (
                 "com.sun.star.beans.PropertySet",
                 "com.sun.star.style.CharacterProperties",
+                "com.sun.star.chart2.FormattedString",
             )
         return self._supported_services_values

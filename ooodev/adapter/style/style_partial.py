@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from com.sun.star.style import XStyle
 from ooodev.adapter.container.named_partial import NamedPartial
-from ooodev.utils.type_var import UnoInterface
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import UnoInterface
 
 
 class StylePartial(NamedPartial):

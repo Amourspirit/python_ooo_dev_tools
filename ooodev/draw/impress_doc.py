@@ -112,6 +112,16 @@ class ImpressDoc(
 
     # endregion Lazy Listeners
 
+    # region context manage
+    def __enter__(self) -> ImpressDoc:
+        self.lock_controllers()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.unlock_controllers()
+
+    # endregion context manage
+
     # region DrawDocPartial Overrides
 
     def get_slides(self) -> ImpressPages[ImpressDoc]:

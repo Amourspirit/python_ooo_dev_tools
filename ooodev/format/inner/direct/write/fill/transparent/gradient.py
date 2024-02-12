@@ -71,6 +71,9 @@ class Gradient(StyleMulti):
                 Defaults to ``0``.
             grad_intensity (IntensityRange, optional): Specifies the intensity at the start point and stop point of
                 the gradient. Defaults to ``IntensityRange(0, 0)``.
+
+        Returns:
+            None:
         """
 
         start_color = int(mColor.get_gray_rgb(grad_intensity.start))

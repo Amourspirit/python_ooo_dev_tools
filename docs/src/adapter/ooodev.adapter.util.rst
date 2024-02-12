@@ -14,6 +14,7 @@ Submodules
    ooodev.adapter.util.close_listener
    ooodev.adapter.util.modify_events
    ooodev.adapter.util.modify_listener
+   ooodev.adapter.util.number_formats_supplier_partial
    ooodev.adapter.util.refresh_events
    ooodev.adapter.util.refresh_listener
 

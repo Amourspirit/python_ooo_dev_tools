@@ -1,13 +1,15 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+import uno
 from ooodev.adapter.component_base import ComponentBase
 
+from .paragraph_properties_partial import ParagraphPropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.style import ParagraphProperties  # service
 
 
-class ParagraphPropertiesComp(ComponentBase):
+class ParagraphPropertiesComp(ComponentBase, ParagraphPropertiesPartial):
     """
     Class for managing table ParagraphProperties Component.
     """
@@ -22,6 +24,7 @@ class ParagraphPropertiesComp(ComponentBase):
             component (ParagraphProperties): UNO ParagraphProperties Component.
         """
         ComponentBase.__init__(self, component)
+        ParagraphPropertiesPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
