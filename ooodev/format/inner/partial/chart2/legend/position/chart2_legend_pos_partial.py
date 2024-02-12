@@ -8,7 +8,9 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
 
-if TYPE_CHECKING:
+from ooodev.mock.mock_g import DOCS_BUILDING
+
+if TYPE_CHECKING or DOCS_BUILDING:
     from ooodev.format.inner.direct.chart2.legend.position.position import Position
     from ooo.dyn.chart2.legend_position import LegendPosition
     from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind
@@ -45,6 +47,10 @@ class Chart2LegendPosPartial:
 
         Returns:
             PositionT | None: Chart Legend Position style instance or ``None`` if cancelled.
+
+        Hint:
+            - ``LegendPosition`` can be imported from ``ooo.dyn.chart2.legend_position``.
+            - ``DirectionModeKind`` can be imported from ``ooodev.format.inner.direct.chart2.title.alignment.direction``.
         """
         from ooodev.format.inner.direct.chart2.legend.position.position import Position
 
