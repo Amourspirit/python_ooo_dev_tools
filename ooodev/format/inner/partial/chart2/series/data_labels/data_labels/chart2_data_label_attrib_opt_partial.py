@@ -42,6 +42,10 @@ class Chart2DataLabelAttribOptPartial:
 
         Returns:
             AttribOptions | None: Attribute Options Style instance or ``None`` if cancelled.
+
+        Hint:
+            ``PlacementKind``, ``SeparatorKind`` and ``AttribOptions`` can be imported from ``ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options``
+
         """
         from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options import AttribOptions
 

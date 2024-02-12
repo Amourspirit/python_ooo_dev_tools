@@ -82,6 +82,14 @@ class ChartFillGradientPartial:
 
         Returns:
             ChartFillGradientT | None: Chart Fill Gradient instance or ``None`` if cancelled.
+
+        Hint:
+            - ``GradientStyle`` can be imported from ``ooo.dyn.awt.gradient_style``
+            - ``Angle`` can be imported from ``ooodev.units``
+            - ``ColorRange`` can be imported from ``ooodev.utils.data_type.color_range``
+            - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
+            - ``IntensityRange`` can be imported from ``ooodev.utils.data_type.intensity_range``
+            - ``Offset`` can be imported from ``ooodev.utils.data_type.offset``
         """
         doc = self._ChartFillGradientPartial__get_chart_doc()
         comp = self.__component
@@ -158,6 +166,9 @@ class ChartFillGradientPartial:
 
         Returns:
             ChartFillGradientT: Chart Fill Gradient instance.
+
+        Hint:
+            - ``PresetGradientKind`` can be imported from ``ooodev.format.inner.preset.preset_gradient``
         """
         doc = self._ChartFillGradientPartial__get_chart_doc()
         cargs = None

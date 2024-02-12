@@ -107,8 +107,8 @@ class Chart2:
         width: int = 16,
         height: int = 9,
         diagram_name: ChartTemplateBase | str = "Column",
-        color_bg: mColor.Color = mColor.CommonColor.PALE_BLUE,
-        color_wall: mColor.Color = mColor.CommonColor.LIGHT_BLUE,
+        color_bg: mColor.Color | None = mColor.CommonColor.PALE_BLUE,
+        color_wall: mColor.Color | None = mColor.CommonColor.LIGHT_BLUE,
         **kwargs,
     ) -> XChartDocument:
         """
@@ -124,7 +124,9 @@ class Chart2:
             height (int, optional): Height. Default ``9``.
             diagram_name (ChartTemplateBase | str): Diagram Name. Defaults to ``Column``.
             color_bg (:py:data:`~.utils.color.Color`, optional): Color Background. Defaults to ``CommonColor.PALE_BLUE``.
+                If set to ``None`` then no color is applied.
             color_wall (:py:data:`~.utils.color.Color`, optional): Color Wall. Defaults to ``CommonColor.LIGHT_BLUE``.
+                If set to ``None`` then no color is applied.
 
         Keyword Arguments:
             chart_name (str, optional): Chart name
@@ -146,7 +148,8 @@ class Chart2:
             See **Open Office Wiki** - `The Structure of Charts <https://wiki.openoffice.org/wiki/Documentation/BASIC_Guide/Structure_of_Charts>`__ for more information.
 
         See Also:
-            :py:class:`~.color.CommonColor`
+            - :py:class:`~.color.CommonColor`
+            - :ref:`ooodev.utils.kind.chart2_types`
 
         Hint:
             .. include:: ../../resources/utils/chart2_lookup_chart_tmpl.rst
@@ -246,6 +249,10 @@ class Chart2:
 
             # apply style settings to chart doc
             # background and wall colors
+            if color_bg is None:
+                color_bg = mColor.Color(-1)
+            if color_wall is None:
+                color_wall = mColor.Color(-1)
             cls.set_background_colors(chart_doc, color_bg, color_wall)
 
             if has_cats:
@@ -2146,8 +2153,8 @@ class Chart2:
 
         Args:
             chart_doc (XChartDocument): Chart Document.
-            bg_color (~ooodev.utils.color.Color): Color Value for background.
-            wall_color (~ooodev.utils.color.Color): Color Value for wall.
+            bg_color (~ooodev.utils.color.Color): Color Value for background. If value < ``0`` then no color is set.
+            wall_color (~ooodev.utils.color.Color): Color Value for wall. If value < ``0`` then no color is set.
 
         Raises:
             ChartError: If error occurs.
@@ -2159,7 +2166,7 @@ class Chart2:
             :py:class:`~.color.CommonColor`
         """
         try:
-            if int(bg_color) > 0:
+            if int(bg_color) >= 0:
                 bg_ps = chart_doc.getPageBackground()
                 # bg_dpp = cast("DataPointProperties", bg_ps)
                 # bg_dpp.FillBackground = True
@@ -2174,7 +2181,7 @@ class Chart2:
                 # mProps.Props.show_props("Background", bg_ps)
                 mProps.Props.set(bg_ps, FillBackground=True, FillStyle=FillStyle.SOLID, FillColor=int(bg_color))
 
-            if int(wall_color) > 0:
+            if int(wall_color) >= 0:
                 diagram = chart_doc.getFirstDiagram()
                 wall_ps = diagram.getWall()
                 # wall_dpp = cast("DataPointProperties", wall_ps)

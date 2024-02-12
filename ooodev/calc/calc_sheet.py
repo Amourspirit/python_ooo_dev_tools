@@ -2507,6 +2507,9 @@ class CalcSheet(
 
         Returns:
             bool: ``True`` if cells are cleared; Otherwise, ``False``.
+
+        Hint:
+            - ``CellFlagsEnum`` can be imported from ``ooo.dyn.sheet.cell_flags``
         """
         ...
 
@@ -2536,6 +2539,9 @@ class CalcSheet(
 
         Returns:
             bool: ``True`` if cells are cleared; Otherwise, ``False``.
+
+        Hint:
+            - ``CellFlagsEnum`` can be imported from ``ooo.dyn.sheet.cell_flags``
         """
         ...
 
@@ -2550,6 +2556,9 @@ class CalcSheet(
 
         Returns:
             bool: ``True`` if cells are cleared; Otherwise, ``False``.
+
+        Hint:
+            - ``CellFlagsEnum`` can be imported from ``ooo.dyn.sheet.cell_flags``
         """
         ...
 
@@ -2579,6 +2588,9 @@ class CalcSheet(
 
         Returns:
             bool: ``True`` if cells are cleared; Otherwise, ``False``.
+
+        Hint:
+            - ``CellFlagsEnum`` can be imported from ``ooo.dyn.sheet.cell_flags``
         """
         ...
 
@@ -2607,6 +2619,9 @@ class CalcSheet(
 
         Returns:
             bool: ``True`` if cells are cleared; Otherwise, ``False``.
+
+        Hint:
+            - ``CellFlagsEnum`` can be imported from ``ooo.dyn.sheet.cell_flags``
 
         Note:
             Events arg for this method have a ``cell`` type of ``XCellRange``.
@@ -3743,6 +3758,9 @@ class CalcSheet(
 
         Returns:
             SolverConstraint: Solver constraint that can be use in a solver model.
+
+        Hint:
+            - ``SolverConstraintOperator`` can be imported from ``ooo.dyn.sheet.solver_constraint_operator``
         """
 
         ...
@@ -3793,6 +3811,9 @@ class CalcSheet(
 
         Returns:
             SolverConstraint: Solver constraint that can be use in a solver model.
+
+        Hint:
+            - ``SolverConstraintOperator`` can be imported from ``ooo.dyn.sheet.solver_constraint_operator``
         """
         ...
 
@@ -3809,6 +3830,9 @@ class CalcSheet(
 
         Returns:
             SolverConstraint: Solver constraint that can be use in a solver model.
+
+        Hint:
+            - ``SolverConstraintOperator`` can be imported from ``ooo.dyn.sheet.solver_constraint_operator``
         """
         sheet_names = {"cell_name", "cell_obj"}
         if kwargs.keys() & sheet_names:

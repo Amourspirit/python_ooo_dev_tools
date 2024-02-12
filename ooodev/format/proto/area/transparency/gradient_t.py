@@ -1,14 +1,15 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 import uno
+from ooodev.mock.mock_g import DOCS_BUILDING
 
+from ...style_multi_t import StyleMultiT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
-    from ...style_multi_t import StyleMultiT
 
     from ooo.dyn.awt.gradient_style import GradientStyle
     from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct

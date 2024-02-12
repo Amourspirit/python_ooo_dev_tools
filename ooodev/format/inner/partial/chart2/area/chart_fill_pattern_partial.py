@@ -133,6 +133,9 @@ class ChartFillPatternPartial:
 
         Returns:
             ChartFillPatternT: Chart Fill Image instance.
+
+        Hint:
+            - ``PresetPatternKind`` can be imported from ``ooodev.format.inner.preset.preset_pattern``
         """
         doc = self._ChartFillPatternPartial__get_chart_doc()
         cargs = None

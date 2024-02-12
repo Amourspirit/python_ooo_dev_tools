@@ -7,8 +7,6 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import SolverConstraint  # struct
     from com.sun.star.sheet import XGoalSeek
     from com.sun.star.sheet import XSheetAnnotation
-    from com.sun.star.sheet import XSpreadsheet
-    from com.sun.star.table import CellAddress
     from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
     from .calc_sheet import CalcSheet
     from ooodev.proto.style_obj import StyleT
@@ -427,6 +425,9 @@ class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StyleP
 
         Returns:
             SolverConstraint: Solver constraint that can be use in a solver model.
+
+        Hint:
+            - ``SolverConstraintOperator`` can be imported from ``ooo.dyn.sheet.solver_constraint_operator``
         """
         ...
 
@@ -440,6 +441,9 @@ class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StyleP
 
         Returns:
             SolverConstraint: Solver constraint that can be use in a solver model.
+
+        Hint:
+            - ``SolverConstraintOperator`` can be imported from ``ooo.dyn.sheet.solver_constraint_operator``
         """
         if isinstance(op, str):
             return mCalc.Calc.make_constraint(num=num, op=op, sheet=self.calc_sheet.component, cell_obj=self._cell_obj)

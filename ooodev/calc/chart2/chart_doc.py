@@ -260,6 +260,8 @@ class ChartDoc(
         Returns:
             Tuple[XDataSeries, ...]: Data Series
 
+        See Also:
+            :ref:`ooodev.utils.kind.chart2_types`
         """
         ...
 
@@ -290,7 +292,8 @@ class ChartDoc(
             Tuple[XDataSeries, ...]: Data Series
 
         See Also:
-            :py:meth:`ooodev.office.chart2.get_data_series`
+            - :py:meth:`ooodev.office.chart2.get_data_series`
+            - :ref:`ooodev.utils.kind.chart2_types`
         """
         from .chart_data_series import ChartDataSeries
 
@@ -382,6 +385,9 @@ class ChartDoc(
 
         Returns:
             None:
+
+        See Also:
+            :ref:`ooodev.utils.kind.chart2_types`
         """
         from .chart_type import ChartType
         from com.sun.star.chart2 import XChartType
@@ -429,6 +435,9 @@ class ChartDoc(
 
         Returns:
             XRegressionCurve: Regression Curve object.
+        
+        Hint:
+            - ``CurveKind`` can be imported from ``ooodev.utils.kind.curve_kind``.
         """
         from .regression_curve.regression_curve import RegressionCurve
         from com.sun.star.chart2 import XRegressionCurve
@@ -512,6 +521,8 @@ class ChartDoc(
 
                 - :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>`
                 - :doc:`ooodev.format.chart2.direct.general.numbers </src/format/ooodev.format.chart2.direct.general.numbers>`
+            
+            - ``CurveKind`` can be imported from ``ooodev.utils.kind.curve_kind``.
 
         .. versionchanged:: 0.9.4
             Added ``styles`` argument, and now returns the regression curve property set.
@@ -589,6 +600,9 @@ class ChartDoc(
 
         Returns:
             ChartType[ChartDoc]: Found chart type.
+
+        See Also:
+            :ref:`ooodev.utils.kind.chart2_types`
         """
         from .chart_type import ChartType
 
@@ -607,6 +621,10 @@ class ChartDoc(
 
         Returns:
             None:
+        
+        
+        Hint:
+            - ``DataPointLabelTypeKind`` can be imported from ``ooodev.utils.kind.data_point_label_type_kind``.
         """
         ds_arr = self.get_data_series()
         for ds in ds_arr:

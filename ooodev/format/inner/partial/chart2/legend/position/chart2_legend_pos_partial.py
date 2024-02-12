@@ -10,7 +10,7 @@ from ooodev.exceptions import ex as mEx
 
 from ooodev.mock.mock_g import DOCS_BUILDING
 
-if TYPE_CHECKING or DOCS_BUILDING:
+if TYPE_CHECKING:  # or DOCS_BUILDING:
     from ooodev.format.inner.direct.chart2.legend.position.position import Position
     from ooo.dyn.chart2.legend_position import LegendPosition
     from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind

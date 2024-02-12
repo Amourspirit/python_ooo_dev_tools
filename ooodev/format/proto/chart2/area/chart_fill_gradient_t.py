@@ -3,7 +3,10 @@ from typing import Any, overload, TYPE_CHECKING
 import uno
 
 
-if TYPE_CHECKING:
+from ooodev.mock.mock_g import DOCS_BUILDING
+from ...area.fill_gradient_t import FillGradientT
+
+if TYPE_CHECKING or DOCS_BUILDING:
     try:
         from typing import Protocol
     except ImportError:
@@ -17,7 +20,6 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.offset import Offset
     from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
     from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
-    from ...area.fill_gradient_t import FillGradientT
 else:
     Protocol = object
     XChartDocument = Any

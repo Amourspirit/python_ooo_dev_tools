@@ -71,6 +71,13 @@ class GradientPartial:
 
         Returns:
             GradientT | None: FillColor instance or ``None`` if cancelled.
+
+        Hint:
+            - ``GradientStyle`` can be imported from ``ooo.dyn.awt.gradient_style``
+            - ``IntensityRange`` can be imported from ``ooodev.utils.data_type.intensity_range``
+            - ``Offset`` can be imported from ``ooodev.utils.data_type.offset``
+            - ``Angle`` can be imported from ``ooodev.units``
+            - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         doc = self._GradientPartial_transparency_get_chart_doc()
         comp = self.__component

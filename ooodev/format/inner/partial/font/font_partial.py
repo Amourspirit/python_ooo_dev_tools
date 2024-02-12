@@ -67,7 +67,7 @@ class FontPartial:
         word_mode: bool | None = None,
     ) -> FontT | None:
         """
-        Style Axis Line.
+        Style Font.
 
         Args:
             b (bool, optional): Shortcut to set ``weight`` to bold.
@@ -102,7 +102,18 @@ class FontPartial:
             CancelEventError: If the event ``before_style_general_font`` is cancelled and not handled.
 
         Returns:
-            LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+            FontT | None: Font instance or ``None`` if cancelled.
+
+
+        Hint:
+            - ``FontFamilyEnum`` can be imported from ``ooo.dyn.awt.font_family``
+            - ``CharSetEnum`` can be imported from ``ooo.dyn.awt.char_set``
+            - ``ShadowFormat`` can be imported from ``ooo.dyn.table.shadow_format``
+            - ``FontSlant`` can be imported from ``ooo.dyn.awt.font_slant``
+            - ``FontStrikeoutEnum`` can be imported from ``ooo.dyn.awt.font_strikeout``
+            - ``FontWeightEnum`` can be imported from ``ooo.dyn.awt.font_weight``
+            - ``FontLine`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_effects``
+            - ``CharSpacingKind`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_position``
         """
         factory = font_factory
         kwargs = {

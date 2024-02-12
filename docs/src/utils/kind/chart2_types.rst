@@ -1,3 +1,5 @@
+.. _ooodev.utils.kind.chart2_types:
+
 Module chart2_types
 ===================
 

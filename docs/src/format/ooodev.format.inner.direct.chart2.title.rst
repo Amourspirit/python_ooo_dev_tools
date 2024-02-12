@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.inner.direct.chart2.title.alignment
    ooodev.format.inner.direct.chart2.title.area
    ooodev.format.inner.direct.chart2.title.borders
    ooodev.format.inner.direct.chart2.title.font

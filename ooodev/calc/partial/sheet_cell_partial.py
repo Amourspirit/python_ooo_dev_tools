@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
 
 class SheetCellPartial:
+    """Partial Class for sheet Cell"""
+
     def __init__(self, owner: mCalcSheet.CalcSheet, lo_inst: LoInst | None = None) -> None:
         self.__owner = owner
         if lo_inst is None:

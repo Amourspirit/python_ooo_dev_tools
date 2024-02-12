@@ -9,6 +9,7 @@ Submodules
 
    ooodev.format.inner.partial.font.font_effects_partial
    ooodev.format.inner.partial.font.font_only_partial
+   ooodev.format.inner.partial.font.font_partial
 
 Module contents
 ---------------

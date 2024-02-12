@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from com.sun.star.chart2.data import XDataSource
     from ooodev.loader.inst.lo_inst import LoInst
     from ..chart_data_series import ChartDataSeries
-    from ..chart_doc import ChartDoc
 
 
 class DataSource(LoInstPropsPartial, DataSourceComp, ChartDocPropPartial):

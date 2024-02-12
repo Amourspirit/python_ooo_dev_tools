@@ -50,6 +50,9 @@ class Chart2AxisPosAxisLinePartial:
 
         Returns:
             AxisLineT | None: Axis Line instance or ``None`` if cancelled.
+
+        Hint:
+            - ``ChartAxisPosition`` can be imported from ``ooo.dyn.chart.chart_axis_position``
         """
         comp = self.__component
         factory_name = self.__factory_name

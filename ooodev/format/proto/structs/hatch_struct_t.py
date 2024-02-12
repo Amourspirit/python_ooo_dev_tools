@@ -2,15 +2,16 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 import uno
 
+from ooodev.mock.mock_g import DOCS_BUILDING
 from ..style_t import StyleT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
     from ooodev.utils.color import Color
-    from ooodev.units import Angle as Angle
+    from ooodev.units import Angle
     from ooodev.units import UnitT
     from ooodev.units import UnitMM
     from ooo.dyn.drawing.hatch import Hatch

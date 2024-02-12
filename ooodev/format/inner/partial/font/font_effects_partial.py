@@ -70,7 +70,13 @@ class FontEffectsPartial:
             CancelEventError: If the event ``before_style_font_effect`` is cancelled and not handled.
 
         Returns:
-            None:
+            FontEffectsT | None: Font Effects instance or ``None`` if cancelled.
+
+        Hint:
+            - ``CaseMapEnum`` can be imported from ``ooo.dyn.style.case_map``
+            - ``FontReliefEnum`` can be imported from ``ooo.dyn.awt.font_relief``
+            - ``FontStrikeoutEnum`` can be imported from ``ooo.dyn.awt.font_strikeout``
+            - ``FontLine`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_effects``
         """
         comp = self.__component
         factory_name = self.__factory_name

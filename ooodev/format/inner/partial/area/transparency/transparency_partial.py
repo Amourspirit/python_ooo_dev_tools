@@ -44,6 +44,11 @@ class TransparencyPartial:
 
         Returns:
             TransparencyT | None: FillColor instance or ``None`` if cancelled.
+
+        Hint:
+            - The value of ``0`` is fully opaque.
+            - The value of ``100`` is fully transparent.
+            - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         comp = self.__component
         factory_name = self.__factory_name

@@ -1,19 +1,24 @@
 from __future__ import annotations
-from typing import Any, overload, TYPE_CHECKING, Type
+from typing import Any, overload, TYPE_CHECKING
 import uno
 
+from ooodev.mock.mock_g import DOCS_BUILDING
 from ooodev.format.proto.style_multi_t import StyleMultiT
-from ooodev.format.proto.font.font_lang_t import FontLangT
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
+    from typing_extensions import Self
+
     try:
         from typing import Protocol
     except ImportError:
         from typing_extensions import Protocol
+    from ooodev.format.proto.font.font_lang_t import FontLangT
     from ooodev.units import UnitT
     from ooodev.units import UnitPT
 else:
     Protocol = object
+    Self = Any
+    FontLangT = Any
     UnitT = Any
     UnitPT = Any
 
@@ -39,7 +44,7 @@ class FontOnlyT(StyleMultiT, Protocol):
     def from_obj(cls, obj: Any, **kwargs) -> FontOnlyT: ...
 
     # region Format Methods
-    def fmt_size(self, value: float | UnitT | None = None) -> FontOnlyT:
+    def fmt_size(self, value: float | UnitT | None = None) -> Self:
         """
         Get copy of instance with text size set.
 
@@ -51,7 +56,7 @@ class FontOnlyT(StyleMultiT, Protocol):
         """
         ...
 
-    def fmt_name(self, value: str | None = None) -> FontOnlyT:
+    def fmt_name(self, value: str | None = None) -> Self:
         """
         Get copy of instance with name set.
 
@@ -63,7 +68,7 @@ class FontOnlyT(StyleMultiT, Protocol):
         """
         ...
 
-    def fmt_style_name(self, value: str | None = None) -> FontOnlyT:
+    def fmt_style_name(self, value: str | None = None) -> Self:
         """
         Get copy of instance with style name set.
 
