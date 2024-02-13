@@ -120,11 +120,13 @@ class AbstractWritingMode(StyleBase):
         Returns:
             WritingMode: ``WritingMode`` instance that represents ``obj`` writing mode.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         inst._set("WritingMode", int(mProps.Props.get(obj, inst._get_property_name())))
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

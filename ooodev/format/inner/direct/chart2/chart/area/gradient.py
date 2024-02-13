@@ -156,6 +156,7 @@ class Gradient(FillGradient):
         end_color: Color,
         end_intensity: Intensity | int,
     ) -> _TitleGradientStruct:
+        # pylint: disable=unexpected-keyword-arg
         return _TitleGradientStruct(
             style=style,
             step_count=step_count,
@@ -197,6 +198,7 @@ class Gradient(FillGradient):
         Returns:
             Gradient: Instance that represents Gradient color.
         """
+        # pylint: disable=protected-access
         # return super().from_obj(obj=obj, chart_doc=chart_doc, **kwargs)
         inst = cls(name="__constructor_default__", chart_doc=chart_doc, **kwargs)
         if not inst._is_valid_obj(obj):
@@ -204,7 +206,9 @@ class Gradient(FillGradient):
 
         step_count = cast(int, mProps.Props.get(obj, inst._props.step_count))
         name = cast(str, mProps.Props.get(obj, inst._props.name))
-        return cls(name=name, step_count=step_count, chart_doc=chart_doc, **kwargs)
+        result = cls(name=name, step_count=step_count, chart_doc=chart_doc, **kwargs)
+        result.set_update_obj(obj)
+        return result
 
     # endregion from_obj()
 

@@ -116,7 +116,9 @@ class AbstractColor(StyleBase):
 
         color = mProps.Props.get(obj, new_class._props.color, None)
 
-        return cls(**kwargs) if color is None else cls(color=color, **kwargs)
+        result = cls(**kwargs) if color is None else cls(color=color, **kwargs)
+        result.set_update_obj(obj)
+        return result
 
     # endregion from_obj()
 

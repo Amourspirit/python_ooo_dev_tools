@@ -53,7 +53,7 @@ class TableChart(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
-        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore # pylint: disable=no-member
         PropertyChangeImplement.__init__(self, component=component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=component, trigger_args=generic_args)
         self._owner = owner
@@ -108,6 +108,7 @@ class TableChart(
     def shape(self) -> ChartShape:
         """OLE2 Shape."""
         if self._shape is None:
+            # pylint: disable=import-outside-toplevel
             from .chart_shape import ChartShape
 
             shape = mChart2.Chart2.get_chart_shape(sheet=self.calc_sheet.component, chart_name=self.name)
@@ -118,6 +119,7 @@ class TableChart(
     def draw_page(self) -> ChartDrawPage:
         """Draw Page."""
         if self._draw_page is None:
+            # pylint: disable=import-outside-toplevel
             from com.sun.star.drawing import XDrawPageSupplier
             from com.sun.star.embed import XComponentSupplier
             from .chart_draw_page import ChartDrawPage

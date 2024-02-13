@@ -50,6 +50,8 @@ else:
     Chart2NumbersT = Any
     Chart2SeriesDataLabelsNumbersT = Any
 
+# pylint: disable=import-outside-toplevel
+
 
 def font_only_factory(name: str) -> Type[FontOnlyT]:
     if name == "ooodev.write.char":

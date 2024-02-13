@@ -166,6 +166,7 @@ class AbstractPadding(StyleBase):
         Returns:
             BorderPadding: BorderPadding that represents ``obj`` padding.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -174,7 +175,7 @@ class AbstractPadding(StyleBase):
         inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
         inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
         inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

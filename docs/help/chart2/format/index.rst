@@ -8,3 +8,4 @@ Chart2 Formatting and Style
     :glob:
 
     direct/index
+    direct_static/index

@@ -100,7 +100,7 @@ class ChartDoc(
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
         ChartDocPropPartial.__init__(self, chart_doc=self)
-        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
+        generic_args = self._ComponentBase__get_generic_args()  # type: ignore # pylint: disable=no-member
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         CloseEvents.__init__(self, trigger_args=generic_args, cb=self._on_close_events_add_remove)
         StorageChangeEventEvents.__init__(
@@ -160,6 +160,7 @@ class ChartDoc(
         """
         self._fn_on_area_fill_color_changing = self._on_area_fill_color_changing
         self.subscribe_event("before_style_area_color", self._fn_on_area_fill_color_changing)
+        self.subscribe_event("before_style_area_color_get", self._fn_on_area_fill_color_changing)
 
     def _on_area_fill_color_changing(self, source: Any, event: CancelEventArgs) -> None:
         """
@@ -435,7 +436,7 @@ class ChartDoc(
 
         Returns:
             XRegressionCurve: Regression Curve object.
-        
+
         Hint:
             - ``CurveKind`` can be imported from ``ooodev.utils.kind.curve_kind``.
         """
@@ -521,7 +522,7 @@ class ChartDoc(
 
                 - :doc:`ooodev.format.chart2.direct.title </src/format/ooodev.format.chart2.direct.title>`
                 - :doc:`ooodev.format.chart2.direct.general.numbers </src/format/ooodev.format.chart2.direct.general.numbers>`
-            
+
             - ``CurveKind`` can be imported from ``ooodev.utils.kind.curve_kind``.
 
         .. versionchanged:: 0.9.4
@@ -621,8 +622,8 @@ class ChartDoc(
 
         Returns:
             None:
-        
-        
+
+
         Hint:
             - ``DataPointLabelTypeKind`` can be imported from ``ooodev.utils.kind.data_point_label_type_kind``.
         """

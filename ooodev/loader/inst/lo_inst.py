@@ -144,7 +144,6 @@ class LoInst(EventsPartial):
         self._fn_on_lo_loaded = self.on_lo_loaded
         self._fn_on_lo_disposed = self.on_lo_disposed
         self._fn_on_lo_disposing_bridge = self.on_lo_disposing_bridge
-        self._fn_on_context_changed = self.on_context_changed
         self._fn_on_document_event = self.on_global_document_event
 
         self._event_listener = EventListener()
@@ -184,19 +183,12 @@ class LoInst(EventsPartial):
             if hasattr(self, "_bridge_component") and self.bridge is not None:
                 self.bridge.removeEventListener(self._event_listener)
 
-    def on_context_changed(
-        self, src: Any, event: EventArgs, *args, **kwargs
-    ) -> None:  # pylint: disable=unused-argument
-        print("Context Changed")
-        # print(event.event_data)
-
     def on_global_document_event(
         self, src: Any, event: EventArgs, *args, **kwargs
     ) -> None:  # pylint: disable=unused-argument
         with contextlib.suppress(Exception):
             doc_event = cast("DocumentEvent", event.event_data)
             name = doc_event.EventName
-            print("Doc Event", name, id(self))
             if name == "OnUnfocus":
                 self._clear_cache()
                 print("Cleared Cache")

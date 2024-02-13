@@ -1,3 +1,5 @@
+.. _ooodev.calc.chart2.chart_doc.ChartDoc:
+
 Class ChartDoc
 ==============
 
