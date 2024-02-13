@@ -36,6 +36,7 @@ from ..conn import cache as mCache
 from ..conn import connectors
 from ..events.event_singleton import _Events
 from ..events.lo_named_event import LoNamedEvent
+from ..events.gbl_named_event import GblNamedEvent
 from ..formatters.formatter_table import FormatterTable
 from ..meta.static_meta import StaticProperty, classproperty
 from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
@@ -59,6 +60,8 @@ if TYPE_CHECKING:
     from ooo.dyn.beans.property_value import PropertyValue
     from ooodev.proto.office_document_t import OfficeDocumentT
     from ooodev.loader.comp.the_desktop import TheDesktop
+    from ooodev.loader.comp.the_global_event_broadcaster import TheGlobalEventBroadcaster
+    from ooodev.events.args.event_args import EventArgs
 
 
 # PathOrStr = type_var.PathOrStr
@@ -630,14 +633,15 @@ class Lo(metaclass=StaticProperty):
         ):
             return cls._lo_inst.loader_current
 
-        cls._lo_inst = lo_inst.LoInst(opt=opt, events=_Events())
+        # set the instance as default by setting is_singleton so the connection cannot be accidentally closed or overridden.
+        cls._lo_inst = lo_inst.LoInst(opt=opt, events=_Events(), is_singleton=True)
         # cls._lo_inst.events.add_observer(_Events())
         # _Events().add_observer(cls._lo_inst.events)
 
         try:
             result = cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
-            # set the instance as default so the connection cannot be accidentally closed or overridden.
-            cls._lo_inst._is_default = True
+            # register global events
+            cls._lo_inst.global_event_broadcaster.add_event_document_event_occurred(_on_global_document_event)
             return result
         except Exception:
             raise SystemExit(1)  # pylint: disable=W0707
@@ -2263,9 +2267,29 @@ class Lo(metaclass=StaticProperty):
             cls.load_office()
         return cls._lo_inst.desktop
 
+    @classproperty
+    def global_event_broadcaster(cls) -> TheGlobalEventBroadcaster:
+        """
+        Get the current Global Events Broadcaster instance.
+
+        |lo_unsafe|
+
+        Returns:
+            TheGlobalEventBroadcaster: Global Event Broadcaster instance.
+        """
+        if cls._lo_inst is None:
+            # for macro mode auto load office
+            cls.load_office()
+        return cls._lo_inst.global_event_broadcaster
+
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
     setattr(Lo, "_lo_inst", None)
+
+
+def _on_global_document_event(src: Any, event: EventArgs, *args, **kwargs) -> None:  # pylint: disable=unused-argument
+    # see Lo.load_office()
+    _Events().trigger(GblNamedEvent.DOCUMENT_EVENT, event)
 
 
 _Events().on(LoNamedEvent.BRIDGE_DISPOSED, _on_connect_dispose)
