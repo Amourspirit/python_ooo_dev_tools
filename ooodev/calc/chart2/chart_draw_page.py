@@ -17,6 +17,8 @@ from ooodev.adapter.drawing.shape_collection_comp import ShapeCollectionComp
 from ooodev.adapter.lang.component_partial import ComponentPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.events.partial.events_partial import EventsPartial
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -31,6 +33,8 @@ class ChartDrawPage(
     Shapes2Partial,
     Shapes3Partial,
     ComponentPartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
     QiPartial,
     ServicePartial,
     EventsPartial,
@@ -58,6 +62,8 @@ class ChartDrawPage(
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
         ComponentPartial.__init__(self, component=component, interface=None)  # type: ignore
+        CalcDocPropPartial.__init__(self, owner.calc_doc)
+        CalcSheetPropPartial.__init__(self, owner.calc_sheet)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         EventsPartial.__init__(self)

@@ -59,20 +59,80 @@ class NumbersT(CalcNumbersT, Protocol):
         lang_locale: Locale | None = None,
         auto_add: bool = False,
         **kwargs,
-    ) -> NumbersT: ...
+    ) -> NumbersT:
+        """
+        Gets instance from format string
+
+        Args:
+            chart_doc (XChartDocument): Chart document.
+            nf_str (str): Format string.
+            lang_locale (Locale, optional): Locale. Defaults to ``None``.
+            auto_add (bool, optional): If True, format string will be added to document if not found. Defaults to ``False``.
+
+        Keyword Args:
+            source_format (bool, optional): If ``True``, the number format will be linked to the source format. Defaults to ``False``.
+
+        Returns:
+            NumbersT: Instance that represents numbers format.
+        """
+        ...
 
     @classmethod
     def from_index(
         cls, chart_doc: XChartDocument, index: int, lang_locale: Locale | None = None, **kwargs
-    ) -> NumbersT: ...
+    ) -> NumbersT:
+        """
+        Gets instance from number format index. This is the index that is assigned to the ``NumberFormat`` property of an object such as a cell.
+
+        Args:
+            chart_doc (XChartDocument): Chart document.
+            index (int): Format (``NumberFormat``) index.
+            lang_locale (Locale, optional): Locale. Defaults to ``None``.
+
+        Keyword Args:
+            source_format (bool, optional): If ``True``, the number format will be linked to the source format. Defaults to ``False``.
+
+        Returns:
+            NumbersT: Instance that represents numbers format.
+        """
+        ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> NumbersT: ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any) -> NumbersT:
+        """
+        Gets instance from object
+
+        Args:
+            chart_doc (XChartDocument): Chart document.
+            obj (object): UNO Object.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            NumberFormat: Instance that represents numbers format.
+        """
+        ...
 
     @overload
     @classmethod
-    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> NumbersT: ...
+    def from_obj(cls, chart_doc: XChartDocument, obj: Any, **kwargs) -> NumbersT:
+        """
+        Gets instance from object
+
+        Args:
+            chart_doc (XChartDocument): Chart document.
+            obj (object): UNO Object.
+            kwargs (dict): Keyword arguments.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            NumberFormat: Instance that represents numbers format.
+        """
+        ...
 
     # region Instance Properties
 

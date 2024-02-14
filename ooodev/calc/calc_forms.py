@@ -11,6 +11,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .calc_form import CalcForm
 
 if TYPE_CHECKING:
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from .spreadsheet_draw_page import SpreadsheetDrawPage
 
 
-class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial):
+class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDocPropPartial):
     """
     Class for managing Calc Forms.
 
@@ -65,6 +66,7 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial):
         FormsComp.__init__(self, forms)  # type: ignore
         ServicePartial.__init__(self, component=forms, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     def __next__(self) -> CalcForm:
         return CalcForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)

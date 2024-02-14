@@ -1,13 +1,17 @@
 from __future__ import annotations
-from typing import Any, cast, Tuple, overload
-import uno
+from typing import Any, cast, Tuple, overload, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.point import Point as UnoPoint
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.loader import lo as mLo
-from ooodev.exceptions import ex as mEx
+from ooodev.utils import props as mProps
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitT, UnitConvert, UnitMM
+from ooodev.units import UnitT, UnitConvert, UnitMM, UnitMM100
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+else:
+    Self = Any
 
 
 class Position(StyleBase):
@@ -44,6 +48,10 @@ class Position(StyleBase):
         return "Position"
 
     # region Overridden Methods
+    def _container_get_service_name(self) -> str:
+        # override to keep type checker happy.
+        raise NotImplementedError
+
     def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies position properties to ``obj``
@@ -72,14 +80,6 @@ class Position(StyleBase):
             self._supported_services_values = ("com.sun.star.drawing.Shape",)
         return self._supported_services_values
 
-    def _props_set(self, obj: Any, **kwargs: Any) -> None:
-        try:
-            super()._props_set(obj, **kwargs)
-        except mEx.MultiError as e:
-            mLo.Lo.print(f"{self.__class__.__name__}.apply(): Unable to set Property")
-            for err in e.errors:
-                mLo.Lo.print(f"  {err}")
-
     # region copy()
     @overload
     def copy(self) -> Position: ...
@@ -102,6 +102,60 @@ class Position(StyleBase):
 
     # endregion copy()
     # endregion Overridden Methods
+
+    # region from_obj()
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any) -> Self:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            Position: New instance.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any, **kwargs) -> Self:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Position: New instance.
+        """
+        ...
+
+    @classmethod
+    def from_obj(cls, obj: Any, **kwargs) -> Self:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            Position: New instance.
+        """
+        # pylint: disable=protected-access
+        inst = cls(pos_x=0, pos_y=0, **kwargs)
+        name = inst._get_property_name()
+        if not name:
+            raise ValueError("No property name to retrieve.")
+
+        pt = cast(UnoPoint, mProps.Props.get(obj, name))
+        nu = cls(pos_x=UnitMM100(pt.X), pos_y=UnitMM100(pt.Y), **kwargs)
+        nu.set_update_obj(obj)
+        return nu
+
+    # endregion from_obj()
 
     # region Properties
     @property

@@ -53,10 +53,22 @@ class AxisLinePropertiesPartial:
             CancelEventError: If the event ``before_style_axis_line`` is cancelled and not handled.
 
         Returns:
-            LinePropertiesT | None: Border Line Style or ``None`` if cancelled.
+            LinePropertiesT | None: Axis Line Style or ``None`` if cancelled.
 
         Hint:
             - ``BorderLineKind`` can be imported from ``ooodev.format.inner.preset.preset_border_line``
             - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         return self.__styler.style(color=color, width=width, transparency=transparency, style=style)
+
+    def style_border_line_get(self) -> LinePropertiesT | None:
+        """
+        Gets the axis line properties style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_axis_line_get`` is cancelled and not handled.
+
+        Returns:
+            LinePropertiesT | None: Line properties style or ``None`` if cancelled.
+        """
+        return self.__styler.style_get()

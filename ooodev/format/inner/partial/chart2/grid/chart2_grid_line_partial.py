@@ -60,3 +60,15 @@ class Chart2GridLinePartial:
             - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         return self.__styler.style(color=color, width=width, transparency=transparency, style=style)
+
+    def style_gird_line_get(self) -> LinePropertiesT | None:
+        """
+        Gets the grid line style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_chart_gird_line_get`` is cancelled and not handled.
+
+        Returns:
+            LinePropertiesT | None: Grid line style or ``None`` if cancelled.
+        """
+        return self.__styler.style_get()

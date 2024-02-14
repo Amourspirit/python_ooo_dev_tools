@@ -197,7 +197,11 @@ class ChartFillImgPartial:
             comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_img_factory(factory_name)
-        style = styler.from_obj(chart_doc=doc, obj=comp)
+        try:
+            style = styler.from_obj(chart_doc=doc, obj=comp)
+        except mEx.DisabledMethodError:
+            return None
+
         style.set_update_obj(comp)
         return style
 
@@ -231,13 +235,12 @@ class ChartFillImgPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_area_img_from_preset", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_area_img_from_preset")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_area_img_from_preset")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Image has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Area Image has been cancelled.")
                 else:
                     return None
             preset = cargs.event_data.get("preset", preset)

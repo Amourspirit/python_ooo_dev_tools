@@ -13,6 +13,8 @@ Overview
 
 The :py:mod:`ooodev.format.chart2.direct.general.area` module is used to set the background of a Chart.
 
+Since version ``0.28.0`` it is recommended to use the built in methods for setting the background of a Chart.
+See :ref:`help_chart2_format_direct_general_area`.
 
 Setup
 -----

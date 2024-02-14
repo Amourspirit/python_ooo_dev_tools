@@ -29,6 +29,8 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from .kind.chart_axis_kind import ChartAxisKind
 from .kind.chart_title_kind import ChartTitleKind
 from .kind.chart_diagram_kind import ChartDiagramKind
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -47,6 +49,7 @@ if TYPE_CHECKING:
     from .chart_error_bar import ChartErrorBar
     from .chart_title import ChartTitle
     from .chart_type import ChartType
+    from .table_chart import TableChart
     from .coordinate.coordinate_general import CoordinateGeneral
     from .regression_curve.regression_curve import RegressionCurve
     from .data.data_provider import DataProvider
@@ -78,12 +81,14 @@ class ChartDoc(
     BorderLinePropertiesPartial,
     TransparencyPartial,
     GradientPartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
 ):
     """
     Class for managing Chart2 ChartDocument Component.
     """
 
-    def __init__(self, component: ChartDocument, lo_inst: LoInst | None = None) -> None:
+    def __init__(self, owner: TableChart, component: ChartDocument, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -117,6 +122,9 @@ class ChartDoc(
         BorderLinePropertiesPartial.__init__(self, factory_name="ooodev.chart2.line", component=pg_bg, lo_inst=lo_inst)
         TransparencyPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
         GradientPartial.__init__(self, factory_name="ooodev.chart2.general", component=pg_bg, lo_inst=lo_inst)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
+        self._owner = owner
         self._axis_x = None
         self._axis2_x = None
         self._axis_y = None
@@ -183,6 +191,7 @@ class ChartDoc(
 
         This may be an internal one, if createInternalDataProvider() has been called before, or an external one if XDataReceiver.attachDataProvider() has been called.
         """
+        # pylint: disable=import-outside-toplevel
         from .data.data_provider import DataProvider
 
         dp = self.component.getDataProvider()
@@ -193,6 +202,7 @@ class ChartDoc(
     # region Methods
     def set_title(self, title: str) -> ChartTitle[ChartDoc]:
         """Adds a Chart Title."""
+        # pylint: disable=import-outside-toplevel
         from com.sun.star.chart2 import XTitled
         from com.sun.star.chart2 import XTitle
         from com.sun.star.chart2 import XFormattedString
@@ -219,6 +229,7 @@ class ChartDoc(
 
     def get_title(self) -> ChartTitle[ChartDoc] | None:
         """Gets the Chart Title Component."""
+        # pylint: disable=import-outside-toplevel
         from com.sun.star.chart2 import XTitled
         from .chart_title import ChartTitle
 
@@ -296,6 +307,7 @@ class ChartDoc(
             - :py:meth:`ooodev.office.chart2.get_data_series`
             - :ref:`ooodev.utils.kind.chart2_types`
         """
+        # pylint: disable=import-outside-toplevel
         from .chart_data_series import ChartDataSeries
 
         data_series = mChart2.Chart2.get_data_series(chart_doc=self.component, chart_type=chart_type)
@@ -328,6 +340,7 @@ class ChartDoc(
         Returns:
             ChartErrorBar: Chart Error Bar
         """
+        # pylint: disable=import-outside-toplevel
         from .chart_error_bar import ChartErrorBar
         from ooo.dyn.chart.error_bar_style import ErrorBarStyle
         from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind
@@ -390,6 +403,7 @@ class ChartDoc(
         See Also:
             :ref:`ooodev.utils.kind.chart2_types`
         """
+        # pylint: disable=import-outside-toplevel
         from .chart_type import ChartType
         from com.sun.star.chart2 import XChartType
 
@@ -440,6 +454,7 @@ class ChartDoc(
         Hint:
             - ``CurveKind`` can be imported from ``ooodev.utils.kind.curve_kind``.
         """
+        # pylint: disable=import-outside-toplevel
         from .regression_curve.regression_curve import RegressionCurve
         from com.sun.star.chart2 import XRegressionCurve
 
@@ -471,6 +486,7 @@ class ChartDoc(
             but there's little documentation on them. Probably the best approach is to use the Format
             Cells menu item in a spreadsheet document, and examine the dialog
         """
+        # pylint: disable=import-outside-toplevel
         from ooo.dyn.lang.locale import Locale
 
         try:
@@ -528,6 +544,7 @@ class ChartDoc(
         .. versionchanged:: 0.9.4
             Added ``styles`` argument, and now returns the regression curve property set.
         """
+        # pylint: disable=import-outside-toplevel
         from com.sun.star.chart2 import XRegressionCurveContainer
 
         try:
@@ -605,6 +622,7 @@ class ChartDoc(
         See Also:
             :ref:`ooodev.utils.kind.chart2_types`
         """
+        # pylint: disable=import-outside-toplevel
         from .chart_type import ChartType
 
         found_type = mChart2.Chart2.find_chart_type(chart_doc=self.component, chart_type=chart_type)
@@ -632,9 +650,15 @@ class ChartDoc(
             ds.set_data_point_labels(label_type=label_type)
 
     @property
+    def owner(self) -> TableChart:
+        """Gets the owner."""
+        return self._owner
+
+    @property
     def first_diagram(self) -> ChartDiagram:
         """Gets the first diagram."""
         if self._first_diagram is None:
+            # pylint: disable=import-outside-toplevel
             from .chart_diagram import ChartDiagram
 
             diagram = self.get_first_diagram()
@@ -647,6 +671,7 @@ class ChartDoc(
     def axis_x(self) -> ChartAxis:
         """Gets the X Axis Component."""
         if self._axis_x is None:
+            # pylint: disable=import-outside-toplevel
             from .chart_axis import ChartAxis
 
             axis = mChart2.Chart2.get_x_axis(self.component)
@@ -657,6 +682,7 @@ class ChartDoc(
     def axis2_x(self) -> ChartAxis | None:
         """Gets the X Axis Component."""
         if self._axis2_x is None:
+            # pylint: disable=import-outside-toplevel
             from .chart_axis import ChartAxis
 
             try:
@@ -670,6 +696,7 @@ class ChartDoc(
     def axis_y(self) -> ChartAxis:
         """Gets the Y Axis Component."""
         if self._axis_y is None:
+            # pylint: disable=import-outside-toplevel
             from .chart_axis import ChartAxis
 
             axis = mChart2.Chart2.get_y_axis(self.component)
@@ -680,6 +707,7 @@ class ChartDoc(
     def axis2_y(self) -> ChartAxis | None:
         """Gets the Y Axis Component."""
         if self._axis2_y is None:
+            # pylint: disable=import-outside-toplevel
             from .chart_axis import ChartAxis
 
             try:

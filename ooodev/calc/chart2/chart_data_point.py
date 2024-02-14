@@ -40,6 +40,8 @@ from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_da
 from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_data_label_text_attribute_partial import (
     Chart2DataLabelTextAttributePartial,
 )
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -59,6 +61,8 @@ class ChartDataPoint(
     FillPropertiesPartial,
     QiPartial,
     ServicePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
     NumbersNumbersPartial,
     FillColorPartial,
     ChartFillGradientPartial,
@@ -106,6 +110,8 @@ class ChartDataPoint(
         FillPropertiesPartial.__init__(self, component=component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=chart_doc.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=chart_doc.calc_sheet)
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
         )

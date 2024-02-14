@@ -1,16 +1,20 @@
 from __future__ import annotations
-from typing import Any, Tuple, overload, TYPE_CHECKING
-import uno
+from typing import Any, cast, Tuple, overload, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.size import Size as UnoSize
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
+from ooodev.utils import props as mProps
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitConvert, UnitMM
+from ooodev.units import UnitConvert, UnitMM, UnitMM100
 
 if TYPE_CHECKING:
     from ooodev.units import UnitT
+    from typing_extensions import Self
+else:
+    Self = Any
 
 
 class Size(StyleBase):
@@ -50,6 +54,10 @@ class Size(StyleBase):
         return "Size"
 
     # region Overridden Methods
+    def _container_get_service_name(self) -> str:
+        # keep type checker happy.
+        raise NotImplementedError
+
     def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies properties to ``obj``
@@ -98,8 +106,9 @@ class Size(StyleBase):
         Copy the current instance.
 
         Returns:
-            Position: The copied instance.
+            Size: The copied instance.
         """
+        # pylint: disable=protected-access
         cp = super().copy(width=0, height=0, **kwargs)
         cp._width = self._width
         cp._height = self._height
@@ -107,6 +116,57 @@ class Size(StyleBase):
 
     # endregion copy()
     # endregion Overridden Methods
+
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any) -> Self:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            Size: New instance.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any, **kwargs) -> Self:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+            **kwargs: Additional arguments.
+
+        Returns:
+            Size: New instance.
+        """
+        ...
+
+    @classmethod
+    def from_obj(cls, obj: Any, **kwargs) -> Self:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            Size: New instance.
+        """
+        # pylint: disable=protected-access
+        inst = cls(width=0, height=0, **kwargs)
+        name = inst._get_property_name()
+        if not name:
+            raise ValueError("No property name to retrieve.")
+
+        sz = cast(UnoSize, mProps.Props.get(obj, name))
+        nu = cls(width=UnitMM100(sz.Width), height=UnitMM100(sz.Height), **kwargs)
+        nu.set_update_obj(obj)
+        return nu
 
     # region Properties
     @property

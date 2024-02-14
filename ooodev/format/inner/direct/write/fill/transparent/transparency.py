@@ -105,13 +105,15 @@ class Transparency(StyleBase):
             Gradient: Instance that represents Gradient color.
         """
         # this nu is only used to get Property Name
-
+        # pylint: disable=protected-access
         nu = cls(value=0, **kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         tp = cast(int, mProps.Props.get(obj, nu._props.transparence, None))
-        return nu if tp is None else cls(value=tp, **kwargs)
+        result = nu if tp is None else cls(value=tp, **kwargs)
+        result.set_update_obj(obj)
+        return result
 
     # endregion from_obj()
     @property
@@ -148,6 +150,7 @@ class Transparency(StyleBase):
         try:
             return self._DEFAULT_INST
         except AttributeError:
+            # pylint: disable=unexpected-keyword-arg
             inst = self.__class__(value=0, _cattribs=self._get_internal_cattribs())
             inst._is_default_inst = True
             self._DEFAULT_INST = inst

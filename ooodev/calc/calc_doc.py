@@ -56,6 +56,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from . import calc_sheet as mCalcSheet
 from . import calc_sheets as mCalcSheets
 from . import calc_sheet_view as mCalcSheetView
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .spreadsheet_draw_pages import SpreadsheetDrawPages
 
 
@@ -71,6 +72,7 @@ class CalcDoc(
     DocIoPartial["CalcDoc"],
     CreateDialogPartial,
     DispatchPartial,
+    CalcDocPropPartial,
 ):
     """Defines a Calc Document"""
 
@@ -105,6 +107,7 @@ class CalcDoc(
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
         DispatchPartial.__init__(self, lo_inst=self.lo_inst, events=self)
+        CalcDocPropPartial.__init__(self, obj=self)
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None

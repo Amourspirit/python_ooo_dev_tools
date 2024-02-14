@@ -9,6 +9,8 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.adapter.chart2.data.data_sink_partial import DataSinkPartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySet
@@ -17,7 +19,15 @@ if TYPE_CHECKING:
 
 
 class ChartErrorBar(
-    LoInstPropsPartial, ErrorBarComp, ChartDocPropPartial, DataSinkPartial, PropPartial, QiPartial, ServicePartial
+    LoInstPropsPartial,
+    ErrorBarComp,
+    ChartDocPropPartial,
+    DataSinkPartial,
+    PropPartial,
+    QiPartial,
+    ServicePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
 ):
     """
     Class for managing Chart2 ErrorBar.
@@ -43,3 +53,5 @@ class ChartErrorBar(
         PropPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=chart_doc.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=chart_doc.calc_sheet)

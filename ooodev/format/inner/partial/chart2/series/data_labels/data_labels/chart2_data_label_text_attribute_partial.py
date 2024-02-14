@@ -54,6 +54,7 @@ class Chart2DataLabelTextAttributePartial:
         Returns:
             AttribOptions | None: Text Attribute Style instance or ``None`` if cancelled.
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.text_attribs import TextAttribs
 
         comp = self.__component
@@ -75,13 +76,12 @@ class Chart2DataLabelTextAttributePartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_chart2_data_label_text_attribs", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_chart2_data_label_text_attribs")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_chart2_data_label_text_attribs")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style has been cancelled.")
                 else:
                     return None
             show_number = cargs.event_data.get("show_number", show_number)

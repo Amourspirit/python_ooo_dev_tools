@@ -16,6 +16,8 @@ from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as Char
 from ooodev.office import chart2 as mCharts
 from ooodev.utils.color import CommonColor
 from .chart2.table_chart import TableChart
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
+from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
 if TYPE_CHECKING:
@@ -24,7 +26,9 @@ if TYPE_CHECKING:
     from .calc_sheet import CalcSheet
 
 
-class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial):
+class CalcCharts(
+    LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial, CalcSheetPropPartial, CalcDocPropPartial
+):
     """
     Class for managing Calc Charts.
 
@@ -41,15 +45,16 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TableChartsComp.__init__(self, component=charts)  # type: ignore
         QiPartial.__init__(self, component=charts, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=charts, lo_inst=self.lo_inst)
+        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     # region Iterable and Index Access
     def __next__(self) -> TableChart:
-        return TableChart(owner=self._owner, component=super().__next__(), lo_inst=self.lo_inst)
+        return TableChart(owner=self.calc_sheet, component=super().__next__(), lo_inst=self.lo_inst)
 
     def __getitem__(self, index: str | int) -> TableChart:
         if isinstance(index, int):
@@ -178,6 +183,7 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
             - :py:meth:`ooodev.office.chart2.Chart2.insert_chart`
             - :ref:`ooodev.utils.kind.chart2_types`
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.office.chart2 import Chart2
 
         # from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
@@ -221,11 +227,3 @@ class CalcCharts(LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial)
             names.add(chart.name)
         for name in names:
             self.remove_chart(chart_name=name)
-
-    # region Properties
-    @property
-    def calc_sheet(self) -> CalcSheet:
-        """Sheet that owns this cell."""
-        return self._owner
-
-    # endregion Properties

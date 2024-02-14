@@ -103,13 +103,12 @@ class FontEffectsPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_font_effect", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_font_effect")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_font_effect")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
                 else:
                     return None
             color = cargs.event_data.get("color", color)
@@ -150,3 +149,45 @@ class FontEffectsPartial:
         if has_events:
             self.trigger_event("after_style_font_effect", EventArgs.from_args(cargs))  # type: ignore
         return fe
+
+    def style_font_effect_get(self) -> FontEffectsT | None:
+        """
+        Gets the font effect Style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_font_effect_get`` is cancelled and not handled.
+
+        Returns:
+            FontEffectsT | None: Font Effect style or ``None`` if cancelled.
+        """
+        comp = self.__component
+        factory_name = self.__factory_name
+        cargs = None
+        if isinstance(self, EventsPartial):
+            cargs = CancelEventArgs(self.style_font_effect_get.__qualname__)
+            event_data: Dict[str, Any] = {
+                "factory_name": factory_name,
+                "this_component": comp,
+            }
+            cargs.event_data = event_data
+            self.trigger_event("before_style_font_effect_get", cargs)
+            if cargs.cancel is True:
+                if cargs.handled is True:
+                    return None
+                cargs.set("initial_event", "before_style_font_effect_get")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
+                if cargs.handled is False:
+                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
+                else:
+                    return None
+            factory_name = cargs.event_data.get("factory_name", factory_name)
+            comp = cargs.event_data.get("this_component", comp)
+
+        styler = font_effects_factory(factory_name)
+        try:
+            style = styler.from_obj(comp)
+        except mEx.DisabledMethodError:
+            return None
+
+        style.set_update_obj(comp)
+        return style

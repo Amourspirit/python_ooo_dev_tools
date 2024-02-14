@@ -11,7 +11,7 @@ Chart2 Direct General Transparency
 Overview
 --------
 
-Classes in the :py:mod:`ooodev.format.chart2.direct.general.transparency` module can be used to set the transparency of a chart.
+The ``style_area_transparency_*()`` method can be used to set chart transparency.
 
 Setup
 -----
@@ -22,41 +22,30 @@ General setup for examples.
 
     .. code-tab:: python
 
+        from __future__ import annotations
         import uno
-        from ooodev.format.chart2.direct.general.area import Color as ChartColor
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.transparency import Transparency as ChartTransparency
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
+        from pathlib import Path
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
         from ooodev.loader.lo import Lo
 
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("col_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "col_chart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
-
-                chart_color = ChartColor(color=StandardColor.GREEN_LIGHT2)
-                chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=0.7)
-                chart_transparency = ChartTransparency(value=50)
-                Chart2.style_background(
-                    chart_doc=chart_doc, styles=[chart_color, chart_bdr_line, chart_transparency]
-                )
-
-                f_style = ChartTransparency.from_obj(chart_doc.getPageBackground())
-                assert f_style is not None
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_area_color(color=StandardColor.GREEN_LIGHT2)
+                _ = chart_doc.style_area_transparency_transparency(50)
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
 
@@ -77,19 +66,14 @@ Before setting the background transparency of the chart is seen in :numref:`2368
 Setting Transparency
 ^^^^^^^^^^^^^^^^^^^^
 
-The :py:class:`ooodev.format.chart2.direct.general.transparency.Transparency` class can be used to set the transparency of a chart.
+The ``style_area_transparency_transparency()`` method can be used to set the transparency of a chart.
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 3,4,5,6
 
-        chart_color = ChartColor(color=StandardColor.GREEN_LIGHT2)
-        chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=0.7)
-        chart_transparency = ChartTransparency(value=50)
-        Chart2.style_background(
-            chart_doc=chart_doc, styles=[chart_color, chart_bdr_line, chart_transparency]
-        )
+        _ = chart_doc.style_area_color(color=StandardColor.GREEN_LIGHT2)
+        _ = chart_doc.style_area_transparency_transparency(50)
 
     .. only:: html
 
@@ -97,11 +81,11 @@ The :py:class:`ooodev.format.chart2.direct.general.transparency.Transparency` cl
 
             .. group-tab:: None
 
-The results can bee seen in :numref:`236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27c11` and :numref:`236953723-96edce28-2476-4abb-af3d-223723c4fd1a`.
+The results can bee seen in :numref:`236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27c11_1` and :numref:`236953723-96edce28-2476-4abb-af3d-223723c4fd1a_1`.
 
 .. cssclass:: screen_shot
 
-    .. _236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27c11:
+    .. _236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27c11_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27c11.png
         :alt: Chart with border, color and  transparency
@@ -112,7 +96,7 @@ The results can bee seen in :numref:`236953627-38d0f2c5-e19a-402e-942c-d7f1c1a27
 
 .. cssclass:: screen_shot
 
-    .. _236953723-96edce28-2476-4abb-af3d-223723c4fd1a:
+    .. _236953723-96edce28-2476-4abb-af3d-223723c4fd1a_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236953723-96edce28-2476-4abb-af3d-223723c4fd1a.png
         :alt: Chart Area Transparency Dialog
@@ -130,7 +114,7 @@ Getting the transparency from a Chart
 
         # ... other code
 
-        f_style = ChartTransparency.from_obj(chart_doc.getPageBackground())
+        f_style = chart_doc.style_area_transparency_transparency_get()
         assert f_style is not None
 
     .. only:: html
@@ -148,6 +132,8 @@ Setting Gradient
 ^^^^^^^^^^^^^^^^
 
 The :py:class:`ooodev.format.chart2.direct.general.transparency.Gradient` class can be used to set the gradient transparency of a chart.
+The ``style_area_transparency_transparency()`` method can be used to set the transparency of a chart.
+
 
 .. tabs::
 

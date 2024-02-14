@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, overload, TYPE_CHECKING
 
+# pylint: disable=ungrouped-imports
 from ooodev.mock.mock_g import DOCS_BUILDING
 from ooodev.format.proto.style_t import StyleT
 
@@ -17,6 +18,7 @@ else:
     UnitMM = Any
 
 
+# see ooodev.format.inner.direct.chart2.position_size.position.Position
 class PositionT(StyleT, Protocol):
     """Position Protocol"""
 
@@ -34,6 +36,35 @@ class PositionT(StyleT, Protocol):
             pos_y (float, UnitT): Specifies the y-coordinate of the position of the shape (in ``mm`` units) or :ref:`proto_unit_obj`.
         """
 
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any) -> PositionT:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+
+        Returns:
+            PositionT: New instance.
+        """
+        ...
+
+    @overload
+    @classmethod
+    def from_obj(cls, obj: Any, **kwargs) -> PositionT:
+        """
+        Creates a new instance from ``obj``.
+
+        Args:
+            obj (Any): UNO Shape object.
+            **kwargs: Additional arguments.
+
+        Returns:
+            PositionT: New instance.
+        """
         ...
 
     # region Properties

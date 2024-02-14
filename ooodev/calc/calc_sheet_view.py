@@ -16,6 +16,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 from . import calc_cell_cursor as mCalcCellCursor
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheetView
@@ -33,11 +34,11 @@ class CalcSheetView(
     PropPartial,
     StylePartial,
     ServicePartial,
+    CalcDocPropPartial,
 ):
     def __init__(self, owner: CalcDoc, view: XSpreadsheetView, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SpreadsheetViewComp.__init__(self, view)  # type: ignore
         SpreadsheetViewSettingsComp.__init__(self, view)  # type: ignore
@@ -45,6 +46,7 @@ class CalcSheetView(
         PropPartial.__init__(self, component=view, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=view)
         ServicePartial.__init__(self, component=view, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     @overload
     def select(self, selection: mCalcCellRange.CalcCellRange) -> bool:
@@ -116,15 +118,3 @@ class CalcSheetView(
             Any: Selection
         """
         return self.component.getSelection()
-
-    # region Properties
-
-    @property
-    def calc_doc(self) -> CalcDoc:
-        """
-        Returns:
-            CalcDoc: Calc doc
-        """
-        return self._owner
-
-    # endregion Properties

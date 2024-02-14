@@ -35,6 +35,7 @@ class Chart2TitleOrientationPartial:
         Returns:
             Orientation | None: Orientation Style instance or ``None`` if cancelled.
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.format.inner.direct.chart2.title.alignment.orientation import Orientation
 
         comp = self.__component
@@ -51,13 +52,12 @@ class Chart2TitleOrientationPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_chart2_text_orientation", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_chart2_text_orientation")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_chart2_text_orientation")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style has been cancelled.")
                 else:
                     return None
             angle = cargs.event_data.get("angle", angle)

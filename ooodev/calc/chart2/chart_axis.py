@@ -34,6 +34,8 @@ from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_positio
 )
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
 from ooodev.format.inner.partial.chart2.grid.chart2_grid_line_partial import Chart2GridLinePartial
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from .chart_doc import ChartDoc
@@ -50,6 +52,8 @@ class ChartAxis(
     PropPartial,
     QiPartial,
     ServicePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
     StylePartial,
     FontOnlyPartial,
     FontEffectsPartial,
@@ -85,6 +89,9 @@ class ChartAxis(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
+
         StylePartial.__init__(self, component=component)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.axis", component=component, lo_inst=lo_inst)

@@ -158,7 +158,10 @@ class ChartFillPatternPartial:
             comp = cargs.event_data.get("this_component", comp)
 
         styler = chart2_area_pattern_factory(factory_name)
-        style = styler.from_obj(chart_doc=doc, obj=comp)
+        try:
+            style = styler.from_obj(chart_doc=doc, obj=comp)
+        except mEx.DisabledMethodError:
+            return None
         style.set_update_obj(comp)
         return style
 

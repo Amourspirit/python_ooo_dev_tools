@@ -85,7 +85,7 @@ class FillColorPartial:
 
     def style_area_color_get(self) -> FillColorT | None:
         """
-        Gets the Area Area Color Style.
+        Gets the Area Color Style.
 
         Raises:
             CancelEventError: If the event ``before_style_area_color_get`` is cancelled and not handled.
@@ -117,6 +117,9 @@ class FillColorPartial:
             comp = cargs.event_data.get("this_component", comp)
 
         styler = area_color_factory(factory_name)
-        style = styler.from_obj(comp)
+        try:
+            style = styler.from_obj(comp)
+        except mEx.DisabledMethodError:
+            return None
         style.set_update_obj(comp)
         return cast(FillColorT, style)

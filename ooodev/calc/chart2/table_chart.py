@@ -13,6 +13,8 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from .chart_doc import ChartDoc
 
 
@@ -32,6 +34,8 @@ class TableChart(
     ServicePartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
+    CalcSheetPropPartial,
+    CalcDocPropPartial,
 ):
     """
     Class for managing table Chart.
@@ -56,7 +60,8 @@ class TableChart(
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore # pylint: disable=no-member
         PropertyChangeImplement.__init__(self, component=component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=component, trigger_args=generic_args)
-        self._owner = owner
+        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         self._chart_doc = None
         self._shape = None
         self._draw_page = None
@@ -79,10 +84,6 @@ class TableChart(
             raise mEx.ChartError("Error in attempt to copy chart") from e
 
     # region Properties
-    @property
-    def calc_sheet(self) -> CalcSheet:
-        """Sheet that owns this cell."""
-        return self._owner
 
     @property
     def name(self) -> str:
@@ -101,7 +102,7 @@ class TableChart(
             embedded = self.get_property("EmbeddedObject")
             if embedded is None:
                 raise mEx.PropertyNotFoundError("EmbeddedObject")
-            self._chart_doc = ChartDoc(component=embedded, lo_inst=self.lo_inst)
+            self._chart_doc = ChartDoc(owner=self, component=embedded, lo_inst=self.lo_inst)
         return self._chart_doc
 
     @property

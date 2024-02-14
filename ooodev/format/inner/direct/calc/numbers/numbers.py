@@ -175,6 +175,7 @@ class Numbers(StyleBase):
         Returns:
             Numbers: Copy of the instance.
         """
+        # pylint: disable=protected-access
         inst = self.__class__(**kwargs)
         inst._format_key_prop = self.prop_format_key
         return inst
@@ -205,6 +206,7 @@ class Numbers(StyleBase):
         Returns:
             Numbers: Instance that represents numbers format.
         """
+        # pylint: disable=protected-access
         nu = cls(num_format=0, lang_locale=lang_locale, **kwargs)
         key = nu._query_key(nf_str)
         if key == -1:
@@ -240,6 +242,7 @@ class Numbers(StyleBase):
         Returns:
             Numbers: Instance that represents numbers format.
         """
+        # pylint: disable=protected-access
         inst = cls(lang_locale=lang_locale, **kwargs)
         inst._format_key_prop = index
         return inst
@@ -272,6 +275,7 @@ class Numbers(StyleBase):
         Returns:
             Numbers: Instance that represents numbers format.
         """
+        # pylint: disable=protected-access
         nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -283,6 +287,7 @@ class Numbers(StyleBase):
         locale = mProps.Props.get(obj, "CharLocale", None)
         inst = cls(lang_locale=locale, **kwargs)
         inst._format_key_prop = nf
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

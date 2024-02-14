@@ -45,9 +45,6 @@ General setup for examples.
                 _ = chart_doc.style_area_color(StandardColor.GREEN_LIGHT2)
                 _ = chart_doc.style_border_line(color=StandardColor.GREEN_DARK3, width=0.7)
 
-                f_style = chart_doc.style_area_color_get()
-                assert f_style is not None
-
                 Lo.delay(1_000)
                 doc.close()
             return 0
@@ -76,7 +73,6 @@ Apply the background color to a Chart
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 5,6
 
         # ... other code
 
@@ -268,7 +264,6 @@ The :py:class:`~ooodev.format.inner.preset.preset_image.PresetImageKind` enum is
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 5,6
 
         from ooodev.format.inner.preset.preset_image import PresetImageKind
         # ... other code
@@ -341,7 +336,6 @@ The :py:class:`~ooodev.format.inner.preset.preset_pattern.PresetPatternKind` enu
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 5,6
 
         from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
         # ... other code
@@ -414,7 +408,6 @@ The :py:class:`~ooodev.format.inner.preset.preset_hatch.PresetHatchKind` enum is
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 5,6
 
         from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
         # ... other code
@@ -468,6 +461,4 @@ Related Topics
         - :ref:`help_chart2_format_direct_wall_floor_area`
         - :ref:`ooodev.calc.chart2.chart_doc.ChartDoc`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`

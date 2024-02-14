@@ -52,6 +52,7 @@ class Chart2LegendPosPartial:
             - ``LegendPosition`` can be imported from ``ooo.dyn.chart2.legend_position``.
             - ``DirectionModeKind`` can be imported from ``ooodev.format.inner.direct.chart2.title.alignment.direction``.
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.format.inner.direct.chart2.legend.position.position import Position
 
         comp = self.__component
@@ -69,13 +70,12 @@ class Chart2LegendPosPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_chart2_legend_pos", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_chart2_legend_pos")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_chart2_legend_pos")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Gradient has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Area Gradient has been cancelled.")
                 else:
                     return None
             pos = cargs.event_data.get("pos", pos)

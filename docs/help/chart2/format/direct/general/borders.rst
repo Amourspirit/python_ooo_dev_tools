@@ -11,13 +11,15 @@ Chart2 Direct General Borders
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.general.borders.LineProperties` class gives the same options as the Chart Area Borders dialog
-as seen in :numref:`236867528-6d4b235a-7239-486b-9c61-63e9a5877e81`.
+As seen in :ref:`help_chart2_format_direct_general_area` the border are set using ``style_border_line()`` method of :ref:`ooodev.calc.chart2.chart_doc.ChartDoc`
+
+The ``style_border_line()`` method gives the same options as the Chart Area Borders dialog
+as seen in :numref:`236867528-6d4b235a-7239-486b-9c61-63e9a5877e81_1`.
 
 
 .. cssclass:: screen_shot
 
-    .. _236867528-6d4b235a-7239-486b-9c61-63e9a5877e81:
+    .. _236867528-6d4b235a-7239-486b-9c61-63e9a5877e81_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236867528-6d4b235a-7239-486b-9c61-63e9a5877e81.png
         :alt: Chart Area Borders Default Dialog
@@ -32,39 +34,36 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 22, 23
 
+        from __future__ import annotations
         import uno
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
+        from pathlib import Path
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
         from ooodev.loader.lo import Lo
 
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("col_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "col_chart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=2.2)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_bdr_line])
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(color=StandardColor.GREEN_DARK3, width=2.2)
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
 
         if __name__ == "__main__":
             SystemExit(main())
+
 
     .. only:: html
 
@@ -75,7 +74,7 @@ Setup
 Setting Line Properties
 -----------------------
 
-The :py:class:`~ooodev.format.chart2.direct.general.borders.LineProperties` class is used to set the border line properties.
+The ``style_area_color()`` method is used to set to set the border line properties.
 
 Before setting the border line properties the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
@@ -83,8 +82,7 @@ Before setting the border line properties the chart is seen in :numref:`23687476
 
     .. code-tab:: python
 
-        chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=2.2)
-        Chart2.style_background(chart_doc=chart_doc, styles=[chart_bdr_line])
+        _ = chart_doc.style_border_line(color=StandardColor.GREEN_DARK3, width=2.2)
 
     .. only:: html
 
@@ -92,12 +90,12 @@ Before setting the border line properties the chart is seen in :numref:`23687476
 
             .. group-tab:: None
 
-The results are seen in :numref:`236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c` and :numref:`236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1`
+The results are seen in :numref:`236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c_1` and :numref:`236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c:
+    .. _236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c.png
         :alt: Chart with border set to green
@@ -108,7 +106,7 @@ The results are seen in :numref:`236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c`
 
 .. cssclass:: screen_shot
 
-    .. _236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1:
+    .. _236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236869677-f1d98fb1-4d71-4197-b13b-26e3ef6b35f1.png
         :alt: Chart Area Borders Default Dialog
@@ -116,6 +114,24 @@ The results are seen in :numref:`236869888-8057b9ea-cc8a-4e65-bcd5-24a36fd67d8c`
         :width: 450px
 
         Chart Area Borders Default Dialog
+
+Getting the border style
+------------------------
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+
+        f_style = chart_doc.style_border_line_get()
+        assert f_style is not None
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Related Topics
 --------------
@@ -129,9 +145,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_wall_floor_borders`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :ref:`ooodev.calc.chart2.chart_doc.ChartDoc`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.general.borders.LineProperties`

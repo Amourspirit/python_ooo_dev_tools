@@ -70,13 +70,12 @@ class Chart2AxisPosAxisLinePartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_axis_pos_axis_line", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_axis_pos_axis_line")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_axis_pos_axis_line")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style event has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style event has been cancelled.")
                 else:
                     return None
             cross = cargs.event_data.get("cross", cross)

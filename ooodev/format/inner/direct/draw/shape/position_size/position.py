@@ -128,10 +128,9 @@ class Position(ShapePosition):
         offset_x = 0
         offset_y = 0
         parent = cast("DrawPage", mProps.Props.get(shape, "Parent", None))
-        if parent is not None:
-            if mInfo.Info.support_service(parent, "com.sun.star.drawing.DrawPage"):
-                offset_x = parent.BorderLeft
-                offset_y = parent.BorderTop
+        if parent is not None and mInfo.Info.support_service(parent, "com.sun.star.drawing.DrawPage"):
+            offset_x = parent.BorderLeft
+            offset_y = parent.BorderTop
         if self._base_point != ShapeBasePointKind.TOP_LEFT:
             sz = shape.getSize()
             pt = calculate_point_from_point_kind(
@@ -206,6 +205,7 @@ class Position(ShapePosition):
         Returns:
             Position: New instance.
         """
+        # pylint: disable=protected-access
         shape = mLo.Lo.qi(XShape, obj, True)
 
         inst = cls(pos_x=0, pos_y=0, **kwargs)
@@ -220,10 +220,9 @@ class Position(ShapePosition):
         # However when reading the position of a shape the page borders are not subtracted from the position.
         # For this reason the page borders must be subtracted from the position when reading the position of a shape.
         parent = cast("DrawPage", mProps.Props.get(shape, "Parent", None))
-        if parent is not None:
-            if mInfo.Info.support_service(parent, "com.sun.star.drawing.DrawPage"):
-                offset_x = parent.BorderLeft
-                offset_y = parent.BorderTop
+        if parent is not None and mInfo.Info.support_service(parent, "com.sun.star.drawing.DrawPage"):
+            offset_x = parent.BorderLeft
+            offset_y = parent.BorderTop
         # 'com.sun.star.drawing.DrawPage'
 
         # Position is affected by rotation and may not be what is expected.
@@ -235,6 +234,7 @@ class Position(ShapePosition):
         if rect is not None:
             inst._pos_x = rect.X - offset_x
             inst._pos_y = rect.Y - offset_y
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

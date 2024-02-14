@@ -72,13 +72,12 @@ class Chart2AxisPosIntervalMarksPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_axis_pos_interval_marks", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_axis_pos_interval_marks")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_axis_pos_interval_marks")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Event has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Event has been cancelled.")
                 else:
                     return None
             major = cargs.event_data.get("major", major)

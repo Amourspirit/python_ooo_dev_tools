@@ -11,6 +11,8 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from .kind.chart_title_kind import ChartTitleKind
 from .kind.chart_diagram_kind import ChartDiagramKind
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
 if TYPE_CHECKING:
@@ -23,7 +25,16 @@ if TYPE_CHECKING:
     from .chart_floor import ChartFloor
 
 
-class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiPartial, ServicePartial, StylePartial):
+class ChartDiagram(
+    LoInstPropsPartial,
+    DiagramComp,
+    ChartDocPropPartial,
+    QiPartial,
+    ServicePartial,
+    StylePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
+):
     """
     Class for managing Chart2 Diagram.
     """
@@ -46,6 +57,8 @@ class ChartDiagram(LoInstPropsPartial, DiagramComp, ChartDocPropPartial, QiParti
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
         self._wall = None
         self._floor = None
         self._diagram_kind = diagram_kind

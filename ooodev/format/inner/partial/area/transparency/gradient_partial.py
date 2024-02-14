@@ -79,6 +79,7 @@ class GradientPartial:
             - ``Angle`` can be imported from ``ooodev.units``
             - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
+        # pylint: disable=assignment-from-none
         doc = self._GradientPartial_transparency_get_chart_doc()
         comp = self.__component
         factory_name = self.__factory_name
@@ -99,13 +100,12 @@ class GradientPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_area_transparency_gradient", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_area_transparency_gradient")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_area_transparency_gradient")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
                 else:
                     return None
             style = cargs.event_data.get("style", style)
@@ -133,3 +133,49 @@ class GradientPartial:
         if has_events:
             self.trigger_event("after_style_area_transparency_gradient", EventArgs.from_args(cargs))  # type: ignore
         return fe
+
+    def style_area_transparency_gradient_get(self) -> GradientT | None:
+        """
+        Gets the Area Transparency Gradient Style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_area_transparency_gradient_get`` is cancelled and not handled.
+
+        Returns:
+            GradientT | None: Area transparency style or ``None`` if cancelled.
+        """
+        # pylint: disable=assignment-from-none
+        doc = self._GradientPartial_transparency_get_chart_doc()
+        comp = self.__component
+        factory_name = self.__factory_name
+        cargs = None
+        if isinstance(self, EventsPartial):
+            cargs = CancelEventArgs(self.style_area_transparency_gradient_get.__qualname__)
+            event_data: Dict[str, Any] = {
+                "factory_name": factory_name,
+                "this_component": comp,
+            }
+            cargs.event_data = event_data
+            self.trigger_event("before_style_area_transparency_gradient_get", cargs)
+            if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_area_transparency_gradient_get")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
+                if cargs.handled is False:
+                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
+                else:
+                    return None
+            factory_name = cargs.event_data.get("factory_name", factory_name)
+            comp = cargs.event_data.get("this_component", comp)
+
+        styler = area_transparency_gradient_factory(factory_name)
+        try:
+            if doc is None:
+                style = styler.from_obj(obj=comp)
+            else:
+                style = styler.from_obj(chart_doc=doc, obj=comp)
+        except mEx.DisabledMethodError:
+            return None
+        style.set_update_obj(comp)
+        return style

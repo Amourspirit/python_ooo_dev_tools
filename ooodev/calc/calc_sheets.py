@@ -17,6 +17,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from . import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
@@ -32,6 +33,7 @@ class CalcSheets(
     QiPartial,
     ServicePartial,
     ElementIndexPartial,
+    CalcDocPropPartial,
 ):
     """
     Class for managing Calc Sheets.
@@ -86,6 +88,7 @@ class CalcSheets(
         QiPartial.__init__(self, component=sheets, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=sheets, lo_inst=self.lo_inst)
         ElementIndexPartial.__init__(self, component=self)  # type: ignore
+        CalcDocPropPartial.__init__(self, obj=owner)
 
     def __next__(self) -> mCalcSheet.CalcSheet:
         return mCalcSheet.CalcSheet(owner=self._owner, sheet=super().__next__(), lo_inst=self.lo_inst)
@@ -94,8 +97,8 @@ class CalcSheets(
         if isinstance(index, int):
             if index < 0:
                 index = len(self) + index
-                if index < 0:
-                    raise IndexError("list index out of range")
+            if index < 0:
+                raise IndexError("list index out of range")
             return self.get_by_index(index)
         return self.get_by_name(index)
 
@@ -461,14 +464,3 @@ class CalcSheets(
         return self.calc_doc.remove_sheet(*args, **kwargs)
 
     # endregion remove_sheet()
-
-    # region Properties
-    @property
-    def calc_doc(self) -> CalcDoc:
-        """
-        Returns:
-            CalcDoc: Calc doc
-        """
-        return self._owner
-
-    # endregion Properties

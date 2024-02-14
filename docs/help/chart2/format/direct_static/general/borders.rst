@@ -14,6 +14,8 @@ Overview
 The :py:class:`ooodev.format.chart2.direct.general.borders.LineProperties` class gives the same options as the Chart Area Borders dialog
 as seen in :numref:`236867528-6d4b235a-7239-486b-9c61-63e9a5877e81`.
 
+Since version ``0.28.0`` it is recommended to use the built in methods for setting the Borders of a Chart.
+See :ref:`help_chart2_format_direct_general_borders`.
 
 .. cssclass:: screen_shot
 
