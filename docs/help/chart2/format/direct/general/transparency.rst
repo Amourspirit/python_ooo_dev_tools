@@ -131,29 +131,16 @@ Before setting the background gradient transparency of the chart is seen in :num
 Setting Gradient
 ^^^^^^^^^^^^^^^^
 
-The :py:class:`ooodev.format.chart2.direct.general.transparency.Gradient` class can be used to set the gradient transparency of a chart.
-The ``style_area_transparency_transparency()`` method can be used to set the transparency of a chart.
-
+The ``style_area_transparency_gradient()`` method can be used to set the gradient transparency of a chart.
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 8,9,10,11,12,13,14
 
-        from ooodev.format.chart2.direct.general.transparency import Gradient as ChartGradientTransparency
-        from ooodev.format.chart2.direct.general.transparency import IntensityRange
-        from ooodev.utils.data_type.angle import Angle
+        from ooodev.utils.data_type.intensity_range import IntensityRange
         # ... other code
 
-        chart_color = ChartColor(color=StandardColor.GREEN_LIGHT2)
-        chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK3, width=0.7)
-        chart_grad_transparent = ChartGradientTransparency(
-            chart_doc=chart_doc, angle=Angle(30), grad_intensity=IntensityRange(0, 100)
-        )
-        Chart2.style_background(
-            chart_doc=chart_doc,
-            styles=[chart_color, chart_bdr_line, chart_grad_transparent]
-        )
+        _ = chart_doc.style_area_transparency_gradient(angle=30, grad_intensity=IntensityRange(0, 100))
 
     .. only:: html
 
@@ -161,11 +148,11 @@ The ``style_area_transparency_transparency()`` method can be used to set the tra
 
             .. group-tab:: None
 
-The results can bee seen in :numref:`236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131baf` and :numref:`236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84`.
+The results can bee seen in :numref:`236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131baf_1` and :numref:`236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84_1`.
 
 .. cssclass:: screen_shot
 
-    .. _236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131baf:
+    .. _236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131baf_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131baf.png
         :alt: Chart with border, color and  transparency
@@ -176,7 +163,7 @@ The results can bee seen in :numref:`236955053-0dba0e1e-6bbf-4b22-921b-5e19e2131
 
 .. cssclass:: screen_shot
 
-    .. _236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84:
+    .. _236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236955121-cad9d1e7-c86d-435f-920c-02e0bb451c84.png
         :alt: Chart Area Transparency Dialog
@@ -197,10 +184,8 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_wall_floor_transparency`
-        - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.general.transparency.Transparency`
         - :py:class:`ooodev.format.chart2.direct.general.transparency.Gradient`
