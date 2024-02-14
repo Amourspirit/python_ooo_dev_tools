@@ -11,10 +11,9 @@ Chart2 Direct Legend Font Effects
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.legend.font.FontEffects` class gives you the similar options
-as :numref:`dc7dfc17-6b99-4d07-86a4-b9539f3d61f9` Font Effects Dialog, but without the dialog.
+The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
 
-Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+Here we will see how to set options that are seen in :numref:`dc7dfc17-6b99-4d07-86a4-b9539f3d61f9`.
 
 Setup
 -----
@@ -24,58 +23,61 @@ General setup for this example.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 40, 41, 42, 43
+        :emphasize-lines: 39,40,41,42,43,44,45
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.legend.font import (
-            FontEffects as LegendFontEffects,
-            FontLine,
-            FontUnderlineEnum,
-        )
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
-        from ooodev.utils.kind.zoom_kind import ZoomKind
+        from ooo.dyn.awt.font_underline import FontUnderlineEnum
+        from ooo.dyn.awt.gradient_style import GradientStyle
+        from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.utils.color import StandardColor
+        from ooodev.utils.data_type.color_range import ColorRange
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("pie_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "piechart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, ZoomKind.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="pie_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BRICK, width=1)
-                chart_grad = ChartGradient(
-                    chart_doc=chart_doc,
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.BRICK,
+                    width=1,
+                )
+                _ = chart_doc.style_area_gradient(
                     step_count=64,
                     style=GradientStyle.SQUARE,
                     angle=45,
-                    grad_color=ColorRange(StandardColor.GREEN_DARK4, StandardColor.TEAL_LIGHT2),
+                    grad_color=ColorRange(
+                        StandardColor.GREEN_DARK4,
+                        StandardColor.TEAL_LIGHT2,
+                    ),
                 )
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
-
-                legend_font_effects_style = LegendFontEffects(
+                legend = chart_doc.first_diagram.get_legend()
+                if legend is None:
+                    raise ValueError("Legend is None")
+                _ = legend.style_font_effect(
                     color=StandardColor.PURPLE,
-                    underline=FontLine(line=FontUnderlineEnum.BOLDWAVE, color=StandardColor.GREEN_DARK2),
+                    underline=FontLine(
+                        line=FontUnderlineEnum.BOLDWAVE,
+                        color=StandardColor.GREEN_DARK2,
+                    ),
                 )
-                Chart2.style_legend(chart_doc=chart_doc, styles=[legend_font_effects_style])
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
             SystemExit(main())
+
 
     .. only:: html
 
@@ -93,18 +95,17 @@ Before formatting the chart is visible in :numref:`ce52cea5-2b22-4d2a-a158-9e223
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.legend.font import (
-            FontEffects as LegendFontEffects,
-            FontLine,
-            FontUnderlineEnum,
-        )
+        from ooo.dyn.awt.font_underline import FontUnderlineEnum
+        from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
         # ... other code
 
-        legend_font_effects_style = LegendFontEffects(
+        _ = legend.style_font_effect(
             color=StandardColor.PURPLE,
-            underline=FontLine(line=FontUnderlineEnum.BOLDWAVE, color=StandardColor.GREEN_DARK2),
+            underline=FontLine(
+                line=FontUnderlineEnum.BOLDWAVE,
+                color=StandardColor.GREEN_DARK2,
+            ),
         )
-        Chart2.style_legend(chart_doc=chart_doc, styles=[legend_font_effects_style])
 
     .. only:: html
 
@@ -112,11 +113,11 @@ Before formatting the chart is visible in :numref:`ce52cea5-2b22-4d2a-a158-9e223
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`c53a62d3-75dd-456f-ae95-8a62f1160feb` and :numref:`dc7dfc17-6b99-4d07-86a4-b9539f3d61f9`.
+Running the above code will produce the following output in :numref:`c53a62d3-75dd-456f-ae95-8a62f1160feb_1` and :numref:`dc7dfc17-6b99-4d07-86a4-b9539f3d61f9_1`.
 
 .. cssclass:: screen_shot
 
-    .. _c53a62d3-75dd-456f-ae95-8a62f1160feb:
+    .. _c53a62d3-75dd-456f-ae95-8a62f1160feb_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/c53a62d3-75dd-456f-ae95-8a62f1160feb
         :alt: Chart with Legend font effects applied
@@ -125,7 +126,7 @@ Running the above code will produce the following output in :numref:`c53a62d3-75
 
         Chart with Legend font effects applied
 
-    .. _dc7dfc17-6b99-4d07-86a4-b9539f3d61f9:
+    .. _dc7dfc17-6b99-4d07-86a4-b9539f3d61f9_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/dc7dfc17-6b99-4d07-86a4-b9539f3d61f9
         :alt: Chart Legend Font Effects Dialog
@@ -133,6 +134,24 @@ Running the above code will produce the following output in :numref:`c53a62d3-75
         :width: 450px
 
         Chart Legend Font Effects Dialog
+
+Get the font effects for the Legend
+-----------------------------------
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+
+        f_style = legend.style_font_effect_get()
+        assert f_style is not None
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Related Topics
 --------------
@@ -146,8 +165,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_legend_font`
         - :ref:`help_chart2_format_direct_legend_font_only`
-        - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.legend.font.FontEffects`
