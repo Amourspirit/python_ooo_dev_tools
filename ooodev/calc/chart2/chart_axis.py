@@ -1,9 +1,7 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.chart2 import XScaling
-from .kind.chart_axis_kind import ChartAxisKind
-from .kind.chart_title_kind import ChartTitleKind
 from ooodev.adapter.chart2.axis_comp import AxisComp
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
@@ -14,6 +12,7 @@ from ooodev.format.inner.partial.font.font_partial import FontPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
+from ooodev.utils.comp.prop import Prop
 from ooodev.utils.kind.curve_kind import CurveKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
@@ -34,6 +33,8 @@ from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_positio
 )
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
 from ooodev.format.inner.partial.chart2.grid.chart2_grid_line_partial import Chart2GridLinePartial
+from .kind.chart_axis_kind import ChartAxisKind
+from .kind.chart_title_kind import ChartTitleKind
 from ..partial.calc_doc_prop_partial import CalcDocPropPartial
 from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
@@ -114,7 +115,7 @@ class ChartAxis(
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst
         )
-        grid_props = self.get_grid_properties()
+        grid_props = self.component.getGridProperties()
         Chart2GridLinePartial.__init__(
             self, factory_name="ooodev.chart2.grid.line", component=grid_props, lo_inst=lo_inst
         )
@@ -137,6 +138,30 @@ class ChartAxis(
 
     # endregion
 
+    # region AxisPartial Overrides
+
+    def get_grid_properties(self) -> Prop[ChartAxis]:
+        """
+        Gets the returned property set.
+        """
+        ps = self.component.getGridProperties()
+        return Prop(owner=self, component=ps, lo_inst=self.lo_inst)
+
+    def get_sub_grid_properties(self) -> Tuple[Prop[ChartAxis], ...]:
+        """
+        Gets the sub grid properties.
+        """
+        ps_arr = self.component.getSubGridProperties()
+        return tuple(Prop(owner=self, component=p, lo_inst=self.lo_inst) for p in ps_arr)
+
+    def get_sub_tick_properties(self) -> Tuple[Prop[ChartAxis], ...]:
+        """
+        Gets the sub tick properties.
+        """
+        ps_arr = self.component.getSubTickProperties()
+        return tuple(Prop(owner=self, component=p, lo_inst=self.lo_inst) for p in ps_arr)
+
+    # endregion AxisPartial Overrides
     def get_title(self) -> ChartTitle[ChartAxis] | None:
         """
         Gets the Chart Title Component.

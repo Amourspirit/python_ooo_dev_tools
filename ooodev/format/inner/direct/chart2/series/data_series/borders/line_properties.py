@@ -123,7 +123,7 @@ class LineProperties(StyleBase):
             LineProperties: New instance.
         """
         inst = cls(**kwargs)
-
+        # pylint: disable=protected-access
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not supported for conversion to Line Properties")
 
@@ -143,7 +143,7 @@ class LineProperties(StyleBase):
 
         for prop in props:
             set_property(prop)
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
