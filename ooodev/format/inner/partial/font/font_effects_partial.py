@@ -77,6 +77,8 @@ class FontEffectsPartial:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.awt.font_relief``
             - ``FontStrikeoutEnum`` can be imported from ``ooo.dyn.awt.font_strikeout``
             - ``FontLine`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_effects``
+            - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
+            - ``FontUnderlineEnum`` can be imported from ``ooo.dyn.awt.font_underline``
         """
         comp = self.__component
         factory_name = self.__factory_name

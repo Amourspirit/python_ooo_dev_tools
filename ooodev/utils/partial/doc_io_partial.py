@@ -84,9 +84,8 @@ class DocIoPartial(Generic[_T]):
         cargs = CancelEventArgs(self.close.__qualname__)
         cargs.event_data = event_data
         self._on_io_closing(cargs)
-        if cargs.cancel:
-            if cargs.handled:
-                raise mEx.CancelEventError(cargs, "Doc closing event was canceled")
+        if cargs.cancel and cargs.handled:
+            raise mEx.CancelEventError(cargs, "Doc closing event was canceled")
         closable = self.__lo_inst.qi(XCloseable, self.__owner.component, True)
         result = self.__lo_inst.close(closable, deliver_ownership)
         self._on_io_closed(EventArgs.from_args(cargs))

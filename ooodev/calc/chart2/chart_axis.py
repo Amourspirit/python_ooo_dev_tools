@@ -106,10 +106,10 @@ class ChartAxis(
             self, factory_name="ooodev.chart2.axis.pos.interval_marks", component=component, lo_inst=lo_inst
         )
         Chart2AxisPosLabelPositionPartial.__init__(
-            self, factory_name="ooodev.chart2.axis.pos.position", component=component, lo_inst=lo_inst
+            self, factory_name="ooodev.chart2.axis.pos.label_position", component=component, lo_inst=lo_inst
         )
         Chart2AxisPosPositionAxisPartial.__init__(
-            self, factory_name="ooodev.chart2.axis.line", component=component, lo_inst=lo_inst
+            self, factory_name="ooodev.chart2.axis.pos.position", component=component, lo_inst=lo_inst
         )
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.chart2.axis.numbers.numbers", component=component, lo_inst=lo_inst

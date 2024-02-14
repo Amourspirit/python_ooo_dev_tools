@@ -61,7 +61,7 @@ class AxisLinePropertiesPartial:
         """
         return self.__styler.style(color=color, width=width, transparency=transparency, style=style)
 
-    def style_border_line_get(self) -> LinePropertiesT | None:
+    def style_axis_line_get(self) -> LinePropertiesT | None:
         """
         Gets the axis line properties style.
 

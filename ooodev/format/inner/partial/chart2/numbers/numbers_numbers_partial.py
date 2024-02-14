@@ -76,10 +76,13 @@ class NumbersNumbersPartial:
         kwargs = {
             "chart_doc": self._NumbersNumbersPartial_get_chart_doc(),
             "source_format": source_format,
-            "num_format": num_format,
-            "num_format_index": num_format_index,
-            "lang_locale": lang_locale,
         }
+        if lang_locale is not None:
+            kwargs["lang_locale"] = lang_locale
+        if num_format_index != -1:
+            kwargs["num_format_index"] = num_format_index
+        if num_format != 0:
+            kwargs["num_format_index"] = num_format_index
         return self.__styler.style(factory=factory, **kwargs)
 
     def style_numbers_numbers_get(self) -> NumbersT | None:
