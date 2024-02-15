@@ -541,12 +541,23 @@ class DocIoPartial(Generic[_T]):
             doc = mLo.Lo.current_doc
         else:
             doc_service_name = str(doc_type.get_service())
-            for comp in mLo.Lo.desktop.components:
-                module = mLo.Lo.qi(XModule, comp, True)
+            # if the current doc is a match the prefer it.
+            comp = mLo.Lo.desktop.component.getCurrentComponent()
+            module = mLo.Lo.qi(XModule, comp)
+            if module is not None:
                 identifier = module.getIdentifier()
                 if identifier == doc_service_name:
                     doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
-                    break
+
+            if doc is None:
+                for comp in mLo.Lo.desktop.components:
+                    # if there is more then on component then the first match is used.
+                    # It seems the last opened document is the first in the list.
+                    module = mLo.Lo.qi(XModule, comp, True)
+                    identifier = module.getIdentifier()
+                    if identifier == doc_service_name:
+                        doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
+                        break
         if doc is None:
             raise mEx.NotSupportedDocumentError("No supported document found")
         args = EventArgs(cls.from_current_doc.__qualname__)

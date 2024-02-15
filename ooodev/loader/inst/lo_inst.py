@@ -191,7 +191,7 @@ class LoInst(EventsPartial):
             name = doc_event.EventName
             if name == "OnUnfocus":
                 self._clear_cache()
-                print("Cleared Cache")
+                # print("Cleared Cache")
 
     # endregion Events
 
