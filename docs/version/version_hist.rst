@@ -2,6 +2,12 @@
 Version History
 ***************
 
+
+Version 0.28.1
+==============
+
+Minor fix for getting the current document in muilti document usage.
+
 Version 0.28.0
 ==============
 
