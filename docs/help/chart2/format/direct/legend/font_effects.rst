@@ -166,5 +166,5 @@ Related Topics
         - :ref:`help_chart2_format_direct_legend_font`
         - :ref:`help_chart2_format_direct_legend_font_only`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.legend.font.FontEffects`

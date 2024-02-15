@@ -205,3 +205,4 @@ Related Topics
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_series_series_borders`
         - :py:class:`~ooodev.loader.Lo`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

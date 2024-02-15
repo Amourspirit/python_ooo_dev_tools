@@ -132,7 +132,7 @@ Apply to Subtitle
     .. code-tab:: python
 
         # ... other code
-         Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_pos])
+        Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_pos])
 
     .. only:: html
 

@@ -32,7 +32,7 @@ class AbstractWritingMode(StyleBase):
         Constructor
 
         Args:
-            mode (WritingMode2Enum, optional): Determines the writing direction
+            mode (WritingMode2Enum, optional): Determines the writing direction.
 
         Returns:
             None:
@@ -159,6 +159,8 @@ class AbstractWritingMode(StyleBase):
     @property
     def default(self: _TAbstractWritingMode) -> _TAbstractWritingMode:
         """Gets ``WritingMode`` default."""
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         try:
             return self._default_inst
         except AttributeError:

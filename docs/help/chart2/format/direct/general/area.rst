@@ -461,4 +461,4 @@ Related Topics
         - :ref:`help_chart2_format_direct_wall_floor_area`
         - :ref:`ooodev.calc.chart2.chart_doc.ChartDoc`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

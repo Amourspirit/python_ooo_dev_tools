@@ -406,4 +406,4 @@ Related Topics
         - :ref:`help_chart2_format_direct_general_area`
         - :ref:`help_chart2_format_direct_legend_transparency`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

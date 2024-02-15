@@ -394,12 +394,4 @@ Related Topics
         - :ref:`help_chart2_format_direct_general`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.options.Orientation`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.options.AlignSeries`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.options.Settings`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.options.PlotSimple`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.options.Plot`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.options.LegendEntry`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

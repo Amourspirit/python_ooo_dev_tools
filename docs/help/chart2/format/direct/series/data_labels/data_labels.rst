@@ -562,6 +562,7 @@ Related Topics
         - :ref:`help_chart2_format_direct_general`
         - |num_fmt|_
         - |num_fmt_index|_
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`
 
 .. |num_fmt| replace:: API NumberFormat
 .. _num_fmt: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1NumberFormat.html
