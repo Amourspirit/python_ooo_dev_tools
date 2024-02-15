@@ -3,6 +3,7 @@ Module for managing character border side.
 
 .. versionadded:: 0.9.0
 """
+
 # region imports
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
@@ -116,13 +117,11 @@ class AbstractSides(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: Any) -> _TAbstractSides:
-        ...
+    def from_obj(cls: Type[_TAbstractSides], obj: Any) -> _TAbstractSides: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAbstractSides], obj: Any, **kwargs) -> _TAbstractSides:
-        ...
+    def from_obj(cls: Type[_TAbstractSides], obj: Any, **kwargs) -> _TAbstractSides: ...
 
     @classmethod
     def from_obj(cls: Type[_TAbstractSides], obj: Any, **kwargs) -> _TAbstractSides:
@@ -138,6 +137,7 @@ class AbstractSides(StyleMulti):
         Returns:
             Sides: Instance that represents ``BorderLine2``.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -154,7 +154,7 @@ class AbstractSides(StyleMulti):
 
         b2 = cast(BorderLine2, getattr(obj, inst._props.right, empty))
         inst.prop_right = Side.from_uno_struct(b2)
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

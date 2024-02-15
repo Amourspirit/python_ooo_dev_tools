@@ -79,13 +79,12 @@ class LineProperties(FactoryNameBase):
             cargs.event_data = event_data
             self.trigger_event(self.before_event_name, cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", self.before_event_name)
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", self.before_event_name)
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
                 else:
                     return None
             style = cargs.event_data.get("style", style)
@@ -113,3 +112,45 @@ class LineProperties(FactoryNameBase):
         if has_events:
             self.trigger_event(self.after_event_name, EventArgs.from_args(cargs))  # type: ignore
         return fe
+
+    def style_get(self) -> LinePropertiesT | None:
+        """
+        Gets the Style.
+
+        Raises:
+            CancelEventError: If the event is cancelled and not handled.
+
+        Returns:
+            LinePropertiesT | None: Line style or ``None`` if cancelled.
+        """
+        comp = self._component
+        factory_name = self._factory_name
+        cargs = None
+        event_name = f"{self.before_event_name}_get"
+        if isinstance(self, EventsPartial):
+            cargs = CancelEventArgs(self.style_get.__qualname__)
+            event_data: Dict[str, Any] = {
+                "factory_name": factory_name,
+                "this_component": comp,
+            }
+            cargs.event_data = event_data
+            self.trigger_event(event_name, cargs)
+            if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", event_name)
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
+                if cargs.handled is False:
+                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
+                else:
+                    return None
+            factory_name = cargs.event_data.get("factory_name", factory_name)
+            comp = cargs.event_data.get("this_component", comp)
+
+        styler = draw_border_line_factory(factory_name)
+        try:
+            style = styler.from_obj(comp)
+        except mEx.DisabledMethodError:
+            return None
+        style.set_update_obj(comp)
+        return style

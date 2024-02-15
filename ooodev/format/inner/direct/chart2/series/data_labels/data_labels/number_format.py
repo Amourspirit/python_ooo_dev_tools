@@ -118,6 +118,7 @@ class NumberFormat(ChartNumbers):
         Returns:
             Numbers: Copy of the instance.
         """
+        # pylint: disable=protected-access
         inst = super().copy(**kwargs)
         inst._source_format = self._source_format
         return inst
@@ -148,6 +149,7 @@ class NumberFormat(ChartNumbers):
         Returns:
             NumberFormat: Instance that represents numbers format.
         """
+        # pylint: disable=protected-access
         nu = cls(chart_doc=chart_doc, source_format=False, **kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -160,6 +162,7 @@ class NumberFormat(ChartNumbers):
         src_format = bool(mProps.Props.get(obj, "LinkNumberFormatToSource", True))
         inst = cls(chart_doc=chart_doc, source_format=src_format, lang_locale=locale, **kwargs)
         inst._format_key_prop = nf
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -189,6 +192,7 @@ class NumberFormat(ChartNumbers):
         Returns:
             NumberFormat: Instance that represents numbers format.
         """
+        # pylint: disable=protected-access
         num_chart = ChartNumbers.from_str(
             chart_doc=chart_doc, nf_str=nf_str, lang_locale=lang_locale, auto_add=auto_add, **kwargs
         )
@@ -220,7 +224,7 @@ class NumberFormat(ChartNumbers):
         Returns:
             NumberFormat: Instance that represents numbers format.
         """
-
+        # pylint: disable=protected-access
         source_format = kwargs.pop("source_format", False)
         inst = cls(chart_doc=chart_doc, source_format=source_format, lang_locale=lang_locale, **kwargs)
         inst._format_key_prop = index

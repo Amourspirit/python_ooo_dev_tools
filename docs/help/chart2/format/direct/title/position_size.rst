@@ -11,10 +11,7 @@ Chart2 Direct Title/Subtitle Position
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.title.position_size.Position` class is used to set the position of the chart title.
-
-Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
-:py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle formatting of a Chart.
+The ``style_position()`` method is called to set the position of the chart title.
 
 Setup
 -----
@@ -24,46 +21,50 @@ General setup used to run the examples in this page.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 34,35
+        :emphasize-lines: 39
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooo.dyn.awt.gradient_style import GradientStyle
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.utils.color import StandardColor
+        from ooodev.utils.data_type.color_range import ColorRange
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("pie_flat_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "piechart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="pie_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.PURPLE_DARK1, width=0.7)
-                chart_grad = ChartGradient(
-                    chart_doc=chart_doc,
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.PURPLE_DARK1,
+                    width=0.7,
+                )
+                _ = chart_doc.style_area_gradient(
                     step_count=64,
                     style=GradientStyle.SQUARE,
                     angle=45,
-                    grad_color=ColorRange(StandardColor.BLUE_DARK1, StandardColor.PURPLE_LIGHT2),
+                    grad_color=ColorRange(
+                        StandardColor.BLUE_DARK1,
+                        StandardColor.PURPLE_LIGHT2,
+                    ),
                 )
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
 
-                title_pos = TitlePosition(7.1, 66.3)
-                Chart2.style_title(chart_doc=chart_doc, styles=[title_pos])
+                title = chart_doc.get_title()
+                if title is None:
+                    raise ValueError("Title not found")
+
+                title.style_position(7.1, 66.3)
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
@@ -89,11 +90,12 @@ Apply to Title
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
         # ... other code
+        title = chart_doc.get_title()
+        if title is None:
+            raise ValueError("Title not found")
 
-        title_pos = TitlePosition(7.1, 66.3)
-        Chart2.style_title(chart_doc=chart_doc, styles=[title_pos])
+        title.style_position(7.1, 66.3)
 
     .. only:: html
 
@@ -101,11 +103,11 @@ Apply to Title
 
             .. group-tab:: None
 
-The results are seen in :numref:`3c13137c-0b86-47b5-9b34-ee52902aff0f` and :numref:`e92ab05a-6093-43ce-a83b-14862827ec35`.
+The results are seen in :numref:`3c13137c-0b86-47b5-9b34-ee52902aff0f_1` and :numref:`e92ab05a-6093-43ce-a83b-14862827ec35_1`.
 
 .. cssclass:: screen_shot
 
-    .. _3c13137c-0b86-47b5-9b34-ee52902aff0f:
+    .. _3c13137c-0b86-47b5-9b34-ee52902aff0f_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3c13137c-0b86-47b5-9b34-ee52902aff0f
         :alt: Chart with title position set
@@ -116,7 +118,7 @@ The results are seen in :numref:`3c13137c-0b86-47b5-9b34-ee52902aff0f` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _bfd22d03-f4d8-4d1e-9759-b773051c79df:
+    .. _bfd22d03-f4d8-4d1e-9759-b773051c79df_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bfd22d03-f4d8-4d1e-9759-b773051c79df
         :alt: Chart Title Position and Size Dialog
@@ -132,7 +134,12 @@ Apply to Subtitle
     .. code-tab:: python
 
         # ... other code
-         Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_pos])
+        sub_title = chart_doc.first_diagram.get_title()
+        if sub_title is None:
+            raise ValueError("Title not found")
+
+        sub_title.style_position(7.1, 66.3)
+
 
     .. only:: html
 
@@ -140,11 +147,11 @@ Apply to Subtitle
 
             .. group-tab:: None
 
-The results are seen in :numref:`3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f`.
+The results are seen in :numref:`3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f_1`.
 
 .. cssclass:: screen_shot
 
-    .. _3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f:
+    .. _3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3ee5c63f-f82e-4958-9d6c-cde4eaaf3f4f
         :alt: Chart with subtitle position set
@@ -164,11 +171,6 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_title`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>`
-        - :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.title.position_size.Position`

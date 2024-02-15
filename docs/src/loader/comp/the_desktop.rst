@@ -1,3 +1,5 @@
+.. _the_desktop:
+
 Class TheDesktop
 ================
 

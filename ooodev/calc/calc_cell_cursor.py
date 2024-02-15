@@ -23,11 +23,22 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
+from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
 
 
-class CalcCellCursor(LoInstPropsPartial, SheetCellCursorComp, QiPartial, PropPartial, StylePartial, ServicePartial):
+class CalcCellCursor(
+    LoInstPropsPartial,
+    SheetCellCursorComp,
+    QiPartial,
+    PropPartial,
+    StylePartial,
+    ServicePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
+):
     def __init__(self, owner: CalcSheet, cursor: XSheetCellCursor, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
@@ -38,6 +49,8 @@ class CalcCellCursor(LoInstPropsPartial, SheetCellCursorComp, QiPartial, PropPar
         PropPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cursor)
         ServicePartial.__init__(self, component=cursor, lo_inst=self.lo_inst)
+        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     def find_used_cursor(self) -> mCalcCellRange.CalcCellRange:
         """
@@ -279,11 +292,3 @@ class CalcCellCursor(LoInstPropsPartial, SheetCellCursorComp, QiPartial, PropPar
         return self.calc_sheet.create_cursor_by_range(cell_obj=cell)
 
     # endregion Cursor Move Movement
-
-    # region Properties
-    @property
-    def calc_sheet(self) -> CalcSheet:
-        """Sheet that owns this cell."""
-        return self._owner
-
-    # endregion Properties

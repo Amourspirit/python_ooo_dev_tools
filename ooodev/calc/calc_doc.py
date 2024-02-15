@@ -1,3 +1,4 @@
+# pylint: wrong-import-position
 from __future__ import annotations
 from typing import Any, cast, List, Tuple, overload, Sequence, TYPE_CHECKING
 import uno
@@ -7,21 +8,6 @@ from com.sun.star.frame import XModel
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XSpreadsheetDocument
-
-
-if TYPE_CHECKING:
-    from com.sun.star.beans import PropertyValue
-    from com.sun.star.frame import XController
-    from com.sun.star.sheet import XViewPane
-    from com.sun.star.style import XStyle
-    from com.sun.star.table import CellAddress
-    from com.sun.star.table import XCellRange
-    from ooo.dyn.sheet.general_function import GeneralFunction
-    from ooo.dyn.table.cell_range_address import CellRangeAddress
-    from ooodev.loader.inst import LoInst
-else:
-    CellRangeAddress = Any
-    SpreadsheetDocument = Any
 
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
@@ -56,7 +42,22 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from . import calc_sheet as mCalcSheet
 from . import calc_sheets as mCalcSheets
 from . import calc_sheet_view as mCalcSheetView
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .spreadsheet_draw_pages import SpreadsheetDrawPages
+
+if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
+    from com.sun.star.frame import XController
+    from com.sun.star.sheet import XViewPane
+    from com.sun.star.style import XStyle
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import XCellRange
+    from ooo.dyn.sheet.general_function import GeneralFunction
+    from ooo.dyn.table.cell_range_address import CellRangeAddress
+    from ooodev.loader.inst import LoInst
+else:
+    CellRangeAddress = Any
+    SpreadsheetDocument = Any
 
 
 class CalcDoc(
@@ -71,6 +72,7 @@ class CalcDoc(
     DocIoPartial["CalcDoc"],
     CreateDialogPartial,
     DispatchPartial,
+    CalcDocPropPartial,
 ):
     """Defines a Calc Document"""
 
@@ -105,6 +107,7 @@ class CalcDoc(
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
         DispatchPartial.__init__(self, lo_inst=self.lo_inst, events=self)
+        CalcDocPropPartial.__init__(self, obj=self)
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None

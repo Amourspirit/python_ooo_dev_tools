@@ -84,6 +84,18 @@ class StyleT(Protocol):
         """
         ...
 
+    def set_update_obj(self, obj: Any) -> None:
+        """
+        Sets the update object for the style instance.
+
+        Args:
+            obj (Any): Object used to apply style to when update is called.
+
+        Returns:
+            None:
+        """
+        ...
+
     # don't know why but pyright complains about this if properties are specific types.
     # May be a bug in pyright. May only be for child classes.
 

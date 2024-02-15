@@ -60,3 +60,15 @@ class DataLabelBorderPartial:
             - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         return self.__styler.style(color=color, width=width, transparency=transparency, style=style)
+
+    def style_label_border_line_get(self) -> LinePropertiesT | None:
+        """
+        Gets the line properties style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_data_label_border_line_get`` is cancelled and not handled.
+
+        Returns:
+            LinePropertiesT | None: Line properties style or ``None`` if cancelled.
+        """
+        return self.__styler.style_get()

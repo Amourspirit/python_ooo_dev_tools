@@ -63,13 +63,12 @@ class Chart2DataLabelAttribOptPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_chart2_data_label_attribute_opt", cargs)
             if cargs.cancel is True:
+                if cargs.handled is True:
+                    return None
+                cargs.set("initial_event", "before_style_chart2_data_label_attribute_opt")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_chart2_data_label_attribute_opt")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style has been cancelled.")
                 else:
                     return None
             placement = cargs.event_data.get("placement", placement)

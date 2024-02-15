@@ -12,6 +12,8 @@ from ooodev.loader import lo as mLo
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
@@ -25,7 +27,15 @@ if TYPE_CHECKING:
     from .calc_sheet import CalcSheet
 
 
-class CalcTableCol(LoInstPropsPartial, TableColumnComp, QiPartial, ServicePartial, StylePartial):
+class CalcTableCol(
+    LoInstPropsPartial,
+    TableColumnComp,
+    QiPartial,
+    ServicePartial,
+    StylePartial,
+    CalcSheetPropPartial,
+    CalcDocPropPartial,
+):
     """Represents a calc table column."""
 
     def __init__(self, owner: CalcSheet, col_obj: TableColumn | int, lo_inst: LoInst | None = None) -> None:
@@ -38,7 +48,6 @@ class CalcTableCol(LoInstPropsPartial, TableColumnComp, QiPartial, ServicePartia
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         if mInfo.Info.is_instance(col_obj, int):
             comp = mCalc.Calc.get_col_range(sheet=self.calc_sheet.component, idx=col_obj)
@@ -50,6 +59,8 @@ class CalcTableCol(LoInstPropsPartial, TableColumnComp, QiPartial, ServicePartia
         QiPartial.__init__(self, component=comp, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=comp, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=comp)
+        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         # self.__doc = doc
 
     # region contains()
@@ -128,10 +139,6 @@ class CalcTableCol(LoInstPropsPartial, TableColumnComp, QiPartial, ServicePartia
     # endregion contains()
 
     # region Properties
-    @property
-    def calc_sheet(self) -> CalcSheet:
-        """Sheet that owns this cell."""
-        return self._owner
 
     @property
     def range_obj(self) -> RangeObj:

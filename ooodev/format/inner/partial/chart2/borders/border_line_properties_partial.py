@@ -41,7 +41,7 @@ class BorderLinePropertiesPartial:
         style: BorderLineKind = BorderLineKind.CONTINUOUS,
     ) -> LinePropertiesT | None:
         """
-        Style Axis Line.
+        Style border line.
 
         Args:
             color (Color, optional): Line Color. Defaults to ``Color(0)``.
@@ -53,10 +53,22 @@ class BorderLinePropertiesPartial:
             CancelEventError: If the event ``before_style_chart_border_line`` is cancelled and not handled.
 
         Returns:
-            LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+            LinePropertiesT | None: Line properties style or ``None`` if cancelled.
 
         Hint:
             - ``BorderLineKind`` can be imported from ``ooodev.format.inner.preset.preset_border_line``
             - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
         """
         return self.__styler.style(color=color, width=width, transparency=transparency, style=style)
+
+    def style_border_line_get(self) -> LinePropertiesT | None:
+        """
+        Gets the line properties style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_chart_border_line_get`` is cancelled and not handled.
+
+        Returns:
+            LinePropertiesT | None: Line properties style or ``None`` if cancelled.
+        """
+        return self.__styler.style_get()

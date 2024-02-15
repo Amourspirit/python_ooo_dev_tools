@@ -15,60 +15,56 @@ Overview
 The :py:class:`ooodev.format.chart2.direct.axis.line.LineProperties` class gives the same options
 as seen in :numref:`ee039628-896d-4ab2-a4c8-843d643a5579`.
 
-Methods for formatting the number of an axis are:
-
-    - :py:meth:`Chart2.style_x_axis() <ooodev.office.chart2.Chart2.style_x_axis>`
-    - :py:meth:`Chart2.style_x_axis2() <ooodev.office.chart2.Chart2.style_x_axis2>`
-    - :py:meth:`Chart2.style_y_axis() <ooodev.office.chart2.Chart2.style_y_axis>`
-    - :py:meth:`Chart2.style_y_axis2() <ooodev.office.chart2.Chart2.style_y_axis2>`
-
 Setup
 -----
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 34,35
+        :emphasize-lines: 35,36,37
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.axis.line import LineProperties as AxisLineProperties
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange, Offset
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
+        from ooo.dyn.awt.gradient_style import GradientStyle
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
         from ooodev.loader.lo import Lo
+        from ooodev.utils.data_type.color_range import ColorRange
+        from ooodev.utils.data_type.offset import Offset
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc(Path.cwd() / "tmp" / "bon_voyage.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "bon_voyage.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="Object 1")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.GREEN_DARK2, width=0.9)
-                chart_grad = ChartGradient(
-                    chart_doc=chart_doc,
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.GREEN_DARK2,
+                    width=0.9,
+                )
+                _ = chart_doc.style_area_gradient(
                     step_count=0,
                     offset=Offset(41, 50),
                     style=GradientStyle.RADIAL,
-                    grad_color=ColorRange(StandardColor.TEAL, StandardColor.YELLOW_DARK1),
+                    grad_color=ColorRange(
+                        StandardColor.TEAL,
+                        StandardColor.YELLOW_DARK1,
+                    ),
                 )
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
-
-                axis_line_props = AxisLineProperties(color=StandardColor.TEAL, width=0.75)
-                Chart2.style_x_axis(chart_doc=chart_doc, styles=[axis_line_props])
+                _ = chart_doc.axis_y.style_axis_line(
+                    color=StandardColor.TEAL, width=0.75
+                )
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
+
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -82,7 +78,7 @@ Setup
 Apply Line to Axis
 ------------------
 
-The :py:class:`~ooodev.format.chart2.direct.axis.line.LineProperties` class is used to set the Axis line properties.
+The ``style_axis_line()`` method is used to set the Axis line properties.
 
 Before formatting the chart is seen in :numref:`3adb4ebc-83d9-44c6-9bba-6c92e11f3b0a`.
 
@@ -93,11 +89,10 @@ Apply to Y-Axis
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.axis.line import LineProperties as AxisLineProperties
         # ... other code
-
-        axis_line_props = AxisLineProperties(color=StandardColor.TEAL, width=0.75)
-        Chart2.style_y_axis(chart_doc=chart_doc, styles=[axis_line_props])
+        _ = chart_doc.axis_y.style_axis_line(
+            color=StandardColor.TEAL, width=0.75
+        )
 
     .. only:: html
 
@@ -105,12 +100,12 @@ Apply to Y-Axis
 
             .. group-tab:: None
 
-The results are seen in :numref:`1c1711ce-1169-4106-8925-c7790dbad0e0` and :numref:`ee039628-896d-4ab2-a4c8-843d643a5579`
+The results are seen in :numref:`1c1711ce-1169-4106-8925-c7790dbad0e0_1` and :numref:`ee039628-896d-4ab2-a4c8-843d643a5579_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _1c1711ce-1169-4106-8925-c7790dbad0e0:
+    .. _1c1711ce-1169-4106-8925-c7790dbad0e0_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1c1711ce-1169-4106-8925-c7790dbad0e0
         :alt: Chart with Y-Axis line set
@@ -121,7 +116,7 @@ The results are seen in :numref:`1c1711ce-1169-4106-8925-c7790dbad0e0` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _ee039628-896d-4ab2-a4c8-843d643a5579:
+    .. _ee039628-896d-4ab2-a4c8-843d643a5579_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/ee039628-896d-4ab2-a4c8-843d643a5579
         :alt: Chart Y-Axis Line Dialog
@@ -139,7 +134,10 @@ Apply to X-Axis
 
         # ... other code
 
-        Chart2.style_x_axis(chart_doc=chart_doc, styles=[axis_line_props])
+        # ... other code
+        _ = chart_doc.axis_x.style_axis_line(
+            color=StandardColor.TEAL, width=0.75
+        )
 
     .. only:: html
 
@@ -147,12 +145,12 @@ Apply to X-Axis
 
             .. group-tab:: None
 
-The results are seen in :numref:`ae063a29-1ebc-442e-9f9b-7d9dba8f64ad`
+The results are seen in :numref:`ae063a29-1ebc-442e-9f9b-7d9dba8f64ad_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _ae063a29-1ebc-442e-9f9b-7d9dba8f64ad:
+    .. _ae063a29-1ebc-442e-9f9b-7d9dba8f64ad_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/ae063a29-1ebc-442e-9f9b-7d9dba8f64ad
         :alt: Chart with Y-Axis line set
@@ -160,6 +158,26 @@ The results are seen in :numref:`ae063a29-1ebc-442e-9f9b-7d9dba8f64ad`
         :width: 450px
 
         Chart with Y-Axis line set
+
+Getting the Axis Line style
+"""""""""""""""""""""""""""
+
+For for all the Axis properties you can get the line style using the ``style_axis_line()`` method.
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        f_style = chart_doc.axis_y.style_axis_line()
+        assert f_style is not None
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 Related Topics
 --------------
@@ -172,13 +190,6 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_axis`
-        - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_x_axis() <ooodev.office.chart2.Chart2.style_x_axis>`
-        - :py:meth:`Chart2.style_x_axis2() <ooodev.office.chart2.Chart2.style_x_axis2>`
-        - :py:meth:`Chart2.style_y_axis() <ooodev.office.chart2.Chart2.style_y_axis>`
-        - :py:meth:`Chart2.style_y_axis2() <ooodev.office.chart2.Chart2.style_y_axis2>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.axis.line.LineProperties`

@@ -31,6 +31,8 @@ from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial i
 
 from ooodev.format.inner.partial.position_size.chart2.chart2_position_partial import Chart2PositionPartial
 from .kind.chart_title_kind import ChartTitleKind
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 # from ooodev.format.inner.partial.position_size.draw.position_partial import PositionPartial
 
@@ -52,6 +54,8 @@ class ChartTitle(
     PropPartial,
     QiPartial,
     ServicePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
     StylePartial,
     FontOnlyPartial,
     FontEffectsPartial,
@@ -93,6 +97,8 @@ class ChartTitle(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=chart_doc.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=chart_doc.calc_sheet)
         StylePartial.__init__(self, component=component)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.title", component=component, lo_inst=lo_inst)

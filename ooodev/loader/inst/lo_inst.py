@@ -44,6 +44,7 @@ from ooodev.mock import mock_g
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
+from .lo_loader import LoLoader
 from ooodev.adapter.lang.event_listener import EventListener
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
@@ -52,6 +53,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
 from ooodev.events.args.event_args import EventArgs
+from ooodev.events.event_singleton import _Events
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_events import Events
 from ooodev.events.lo_named_event import LoNamedEvent
@@ -59,6 +61,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.formatters.formatter_table import FormatterTable
 from ooodev.loader.comp.the_desktop import TheDesktop
+from ooodev.loader.comp.the_global_event_broadcaster import TheGlobalEventBroadcaster
 from ooodev.loader.inst.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
 from ooodev.loader.inst.options import Options as LoOptions
 from ooodev.utils import file_io as mFileIO
@@ -68,7 +71,6 @@ from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
 from ooodev.utils.factory.doc_factory import doc_factory
 from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
-from .lo_loader import LoLoader
 
 
 if TYPE_CHECKING:
@@ -89,6 +91,7 @@ if TYPE_CHECKING:
     from com.sun.star.util import Date as UnoDate
     from ooodev.proto.event_observer import EventObserver
     from ooodev.proto.office_document_t import OfficeDocumentT
+    from com.sun.star.document import DocumentEvent
 
     # from ooodev.events.events_t import EventsT
 
@@ -104,7 +107,7 @@ class LoInst(EventsPartial):
     This class mirrors the properties and methods of the ``Lo`` class so for documentation see :py:class:`ooodev.utils.lo.Lo`,
     """
 
-    def __init__(self, opt: LoOptions | None = None, events: EventObserver | None = None) -> None:
+    def __init__(self, opt: LoOptions | None = None, events: EventObserver | None = None, **kwargs) -> None:
         """
         Constructor
 
@@ -112,13 +115,16 @@ class LoInst(EventsPartial):
             opt (LoOptions, optional): Options
             events (EventObserver, optional): Event observer
         """
+        self._singleton_instance = kwargs.get("is_singleton", False)
+        self._is_default = False
+        self._current_doc = None
         _events = Events(source=self) if events is None else events
         EventsPartial.__init__(self, _events)
-        self._is_default = False
         # self.trigger_event = Events(self)
         self._xcc: XComponentContext | None = None
         """remote component context"""
         self._xdesktop: TheDesktop | None = None
+        self._glb_event_broadcaster: TheGlobalEventBroadcaster | None = None
         """remote desktop UNO service"""
         self._mc_factory: XMultiComponentFactory | None = None
         self._is_office_terminated: bool = False
@@ -138,7 +144,7 @@ class LoInst(EventsPartial):
         self._fn_on_lo_loaded = self.on_lo_loaded
         self._fn_on_lo_disposed = self.on_lo_disposed
         self._fn_on_lo_disposing_bridge = self.on_lo_disposing_bridge
-        self._fn_on_context_changed = self.on_context_changed
+        self._fn_on_document_event = self.on_global_document_event
 
         self._event_listener = EventListener()
         self._event_listener.on("disposing", self._fn_on_lo_disposing_bridge)
@@ -147,6 +153,7 @@ class LoInst(EventsPartial):
         self.subscribe_event(LoNamedEvent.OFFICE_LOADING, self._fn_on_lo_loading)
         self.subscribe_event(LoNamedEvent.OFFICE_LOADED, self._fn_on_lo_loaded)
         self.subscribe_event(LoNamedEvent.BRIDGE_DISPOSED, self._fn_on_lo_disposed)
+        _Events().on(GblNamedEvent.DOCUMENT_EVENT, self._fn_on_document_event)
 
     def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:  # pylint: disable=unused-argument
         # clears Lo Attributes that are dynamically created
@@ -176,11 +183,15 @@ class LoInst(EventsPartial):
             if hasattr(self, "_bridge_component") and self.bridge is not None:
                 self.bridge.removeEventListener(self._event_listener)
 
-    def on_context_changed(
+    def on_global_document_event(
         self, src: Any, event: EventArgs, *args, **kwargs
     ) -> None:  # pylint: disable=unused-argument
-        print("Context Changed")
-        # print(event.event_data)
+        with contextlib.suppress(Exception):
+            doc_event = cast("DocumentEvent", event.event_data)
+            name = doc_event.EventName
+            if name == "OnUnfocus":
+                self._clear_cache()
+                print("Cleared Cache")
 
     # endregion Events
 
@@ -228,6 +239,12 @@ class LoInst(EventsPartial):
         return result
 
     # endregion qi()
+
+    # region    cache
+    def _clear_cache(self) -> None:
+        self._current_doc = None
+
+    # endregion cache
 
     def get_context(self) -> XComponentContext:
         """
@@ -496,7 +513,9 @@ class LoInst(EventsPartial):
 
         b_connector = cargs.event_data["connector"]
         lo_loader = LoLoader(connector=b_connector, cache_obj=cache_obj, opt=opt)
-        loader =  self.load_from_lo_loader(lo_loader)
+        loader = self.load_from_lo_loader(lo_loader)
+        if self._singleton_instance:
+            self._is_default = True
         self.trigger_event(LoNamedEvent.OFFICE_LOADED, eargs)
         return loader
 
@@ -530,9 +549,11 @@ class LoInst(EventsPartial):
             raise mEx.LoadingError("Office Service Manager is unavailable")
         desktop: Any = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
         self._xdesktop = TheDesktop(desktop)
+        gb = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theGlobalEventBroadcaster")  # type: ignore
+        self._glb_event_broadcaster = TheGlobalEventBroadcaster(gb)
         if self._xdesktop is None:
             raise mEx.LoadingError("Could not create a desktop service")
-        self._xdesktop.add_event_frame_action(self._fn_on_context_changed)
+        # self._xdesktop.add_event_frame_action(self._fn_on_context_changed)
         self._loader = self.qi(XComponentLoader, self._xdesktop.component)
         if self._loader is None:
             raise mEx.LoadingError("Unable to access XComponentLoader")
@@ -1812,7 +1833,9 @@ class LoInst(EventsPartial):
 
         This property does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
         """
-        return doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
+        if self._current_doc is None:
+            self._current_doc = doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
+        return self._current_doc
 
     @property
     def desktop(self) -> TheDesktop:
@@ -1822,10 +1845,20 @@ class LoInst(EventsPartial):
                 # attempt to connect direct
                 # failure will result in script error and then exit
                 self.load_office()
-            desktop: Any = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
-            self._xdesktop = TheDesktop(desktop)
-            self._xdesktop.add_event_frame_action(self._fn_on_context_changed)
+            if self._xdesktop is None:
+                raise mEx.LoadingError("Could not access desktop")
         return self._xdesktop
+
+    @property
+    def global_event_broadcaster(self) -> TheGlobalEventBroadcaster:
+        if self._glb_event_broadcaster is None:
+            if self.is_loaded is False:
+                # attempt to connect direct
+                # failure will result in script error and then exit
+                self.load_office()
+            if self._glb_event_broadcaster is None:
+                raise mEx.LoadingError("Could not access the Global Event Broadcaster")
+        return self._glb_event_broadcaster
 
 
 __all__ = ("LoInst",)

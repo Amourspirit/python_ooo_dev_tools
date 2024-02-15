@@ -224,6 +224,7 @@ class FontEffects(StyleBase):
         Returns:
             FontEffects: ``FontEffects`` instance that represents ``obj`` font effects.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -249,6 +250,7 @@ class FontEffects(StyleBase):
         set_prop("CharStrikeout", inst)
         set_prop("CharCaseMap", inst)
         set_prop("CharRelief", inst)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -787,6 +789,8 @@ class FontEffects(StyleBase):
         try:
             return self._default_inst
         except AttributeError:
+            # pylint: disable=protected-access
+            # pylint: disable=unexpected-keyword-arg
             fe = self.__class__(_cattribs=self._get_internal_cattribs())
             fe._set("CharColor", -1)
             fe._set("CharOverline", 0)

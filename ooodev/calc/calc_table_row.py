@@ -12,6 +12,8 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 
 
 if TYPE_CHECKING:
@@ -25,7 +27,9 @@ if TYPE_CHECKING:
     from .calc_sheet import CalcSheet
 
 
-class CalcTableRow(LoInstPropsPartial, TableRowComp, QiPartial, ServicePartial, StylePartial):
+class CalcTableRow(
+    LoInstPropsPartial, TableRowComp, QiPartial, ServicePartial, StylePartial, CalcSheetPropPartial, CalcDocPropPartial
+):
     """Represents a calc table row."""
 
     def __init__(self, owner: CalcSheet, row_obj: TableRow | int, lo_inst: LoInst | None = None) -> None:
@@ -38,7 +42,6 @@ class CalcTableRow(LoInstPropsPartial, TableRowComp, QiPartial, ServicePartial, 
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         if mInfo.Info.is_instance(row_obj, int):
             comp = mCalc.Calc.get_row_range(sheet=self.calc_sheet.component, idx=row_obj)
@@ -50,6 +53,8 @@ class CalcTableRow(LoInstPropsPartial, TableRowComp, QiPartial, ServicePartial, 
         QiPartial.__init__(self, component=comp, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=comp)
         ServicePartial.__init__(self, component=comp, lo_inst=self.lo_inst)
+        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     #     self.__current_cell = None
 
@@ -143,10 +148,6 @@ class CalcTableRow(LoInstPropsPartial, TableRowComp, QiPartial, ServicePartial, 
     # endregion contains()
 
     # region Properties
-    @property
-    def calc_sheet(self) -> CalcSheet:
-        """Sheet that owns this cell."""
-        return self._owner
 
     @property
     def range_obj(self) -> RangeObj:

@@ -8,6 +8,7 @@ from ..events.args.event_args import AbstractEvent
 from ..events.lo_events import Events, EventCallback
 from ..events.args.generic_args import GenericArgs as GenericArgs
 from ..mock import mock_g
+from ooodev.events.partial.events_partial import EventsPartial
 
 if mock_g.DOCS_BUILDING:
     from ..mock import unohelper
@@ -15,9 +16,12 @@ else:
     import unohelper
 
 
-class AdapterBase(unohelper.Base):  # type: ignore
+class AdapterBase(unohelper.Base, EventsPartial):  # type: ignore
     """
     Base Class for Listeners in the ``adapter`` name space.
+
+    .. versionchanged:: 0.27.2
+        Now inherits from EventsPartial.
     """
 
     def __init__(self, trigger_args: GenericArgs | None) -> None:
@@ -28,7 +32,8 @@ class AdapterBase(unohelper.Base):  # type: ignore
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
         """
         super().__init__()
-        self._events = Events(source=self, trigger_args=trigger_args)
+        self.__events = Events(source=self, trigger_args=trigger_args)
+        EventsPartial.__init__(self, events=self.__events)
 
     def _trigger_event(self, name: str, event: Any) -> None:
         """
@@ -38,9 +43,11 @@ class AdapterBase(unohelper.Base):  # type: ignore
             name (str): Event Name
             event (Any): An event instance to trigger.
         """
+
         event_arg = EventArgs(self.__class__.__qualname__)
         event_arg.event_data = event
-        self._events.trigger(name, event_arg)
+        self.trigger_event(name, event_arg)
+        # self._events.trigger(name, event_arg)
 
     def _trigger_direct_event(self, name: str, event: AbstractEvent) -> None:
         """
@@ -50,7 +57,8 @@ class AdapterBase(unohelper.Base):  # type: ignore
             name (str): Event Name
             event (AbstractEvent): An event instance to trigger.
         """
-        self._events.trigger(name, event)
+        self.trigger_event(name, event)
+        # self._events.trigger(name, event)
 
     def on(self, event_name: str, cb: EventCallback) -> None:
         """
@@ -60,7 +68,8 @@ class AdapterBase(unohelper.Base):  # type: ignore
             event_name (str): Event name to add listener for. Usually the name of the method being listened to such as ``windowOpened``
             cb (EventCallback): Callback event.
         """
-        self._events.on(event_name, cb)
+        self.subscribe_event(event_name, cb)
+        # self._events.on(event_name, cb)
 
     def off(self, event_name: str, cb: EventCallback) -> None:
         """
@@ -70,7 +79,8 @@ class AdapterBase(unohelper.Base):  # type: ignore
             event_name (str): Event Name
             cb (EventCallback): Callback event
         """
-        self._events.remove(event_name, cb)
+        self.unsubscribe_event(event_name, cb)
+        # self._events.remove(event_name, cb)
 
     def clear(self) -> None:
         """
@@ -78,4 +88,5 @@ class AdapterBase(unohelper.Base):  # type: ignore
 
         .. versionadded:: 0.13.7
         """
-        self._events.clear()
+
+        self.__events.clear()

@@ -15,6 +15,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .calc_forms import CalcForms
 
 if TYPE_CHECKING:
@@ -35,6 +36,7 @@ class SpreadsheetDrawPage(
     ServicePartial,
     QiPartial,
     StylePartial,
+    CalcDocPropPartial,
     ShapeFactoryPartial["SpreadsheetDrawPage[_T]"],
 ):
     """Represents a draw page."""
@@ -54,6 +56,9 @@ class SpreadsheetDrawPage(
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
+        if not isinstance(owner, CalcDocPropPartial):
+            raise TypeError("Owner must inherit from CalcDocPropPartial")
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         ShapeFactoryPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._forms = None
 

@@ -248,6 +248,7 @@ class Pattern(StyleBase):
         Returns:
             Pattern: ``Pattern`` instance that represents ``obj`` fill pattern.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -267,6 +268,7 @@ class Pattern(StyleBase):
         set_prop(inst._props.stretch, inst)
         set_prop(inst._props.bitmap, inst)
         set_prop(inst._props.style, inst)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

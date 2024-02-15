@@ -162,8 +162,9 @@ class AbstractHF(StyleBase):
         Returns:
             LineNum: ``LineNum`` instance that represents ``obj`` properties.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
-        if not inst._is_valid_obj(obj):
+        if not inst._is_valid_obj(obj):  # type: ignore
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         def set_prop(key: str, o: AbstractHF):
@@ -171,7 +172,7 @@ class AbstractHF(StyleBase):
             if not key:
                 return
             val = mProps.Props.get(obj, key, None)
-            if not val is None:
+            if val is not None:
                 o._set(key, val)
 
         set_prop(inst._props.on, inst)
@@ -183,6 +184,8 @@ class AbstractHF(StyleBase):
         set_prop(inst._props.spacing_dyn, inst)
         set_prop(inst._props.height, inst)
         set_prop(inst._props.height_auto, inst)
+
+        inst.set_update_obj(obj)
 
         return inst
 

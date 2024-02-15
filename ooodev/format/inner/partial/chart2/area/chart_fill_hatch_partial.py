@@ -97,13 +97,12 @@ class ChartFillHatchPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_area_hatch", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_area_hatch")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_area_hatch")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Hatch has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Area Hatch has been cancelled.")
                 else:
                     return None
             style = cargs.event_data.get("style", style)
@@ -164,13 +163,12 @@ class ChartFillHatchPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_area_hatch_from_preset", cargs)
             if cargs.cancel is True:
+                if cargs.handled is not False:
+                    return None
+                cargs.set("initial_event", "before_style_area_hatch_from_preset")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_area_hatch_from_preset")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Hatch has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Area Hatch has been cancelled.")
                 else:
                     return None
             preset = cargs.event_data.get("preset", preset)

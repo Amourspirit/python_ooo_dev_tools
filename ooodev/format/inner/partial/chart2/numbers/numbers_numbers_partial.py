@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, Dict, TYPE_CHECKING
 import uno
 
 from ooodev.events.partial.events_partial import EventsPartial
@@ -62,7 +62,7 @@ class NumbersNumbersPartial:
             lang_locale (Locale, optional): Locale of the number format. Defaults to ``None`` which used current Locale.
 
         Raises:
-            CancelEventError: If the event ``after_style_number_number`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_number_number`` is cancelled and not handled.
 
         Returns:
             LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
@@ -76,8 +76,77 @@ class NumbersNumbersPartial:
         kwargs = {
             "chart_doc": self._NumbersNumbersPartial_get_chart_doc(),
             "source_format": source_format,
-            "num_format": num_format,
-            "num_format_index": num_format_index,
-            "lang_locale": lang_locale,
         }
+        if lang_locale is not None:
+            kwargs["lang_locale"] = lang_locale
+        if num_format_index != -1:
+            kwargs["num_format_index"] = num_format_index
+        if num_format != 0:
+            kwargs["num_format_index"] = num_format_index
         return self.__styler.style(factory=factory, **kwargs)
+
+    def style_numbers_numbers_get(self) -> NumbersT | None:
+        """
+        Gets the Numbers Style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_number_number_get`` is cancelled and not handled.
+
+        Returns:
+            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+        """
+        return self.__styler.style_get(
+            factory=style_factory.chart2_series_data_labels_numbers_factory,
+            chart_doc=self._NumbersNumbersPartial_get_chart_doc(),
+        )
+
+    def style_numbers_numbers_get_from_index(self, idx: int, locale: Locale | None = None) -> NumbersT | None:
+        """
+        Gets the Numbers Style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
+
+        Returns:
+            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+        """
+        kwargs: Dict[str, Any] = {"index": idx}
+        if locale is not None:
+            kwargs["lang_locale"] = locale
+        return self.__styler.style_get(
+            factory=style_factory.chart2_series_data_labels_numbers_factory,
+            chart_doc=self._NumbersNumbersPartial_get_chart_doc(),
+            call_method_name="from_index",
+            event_name_suffix="_from_index",
+            obj_arg_name="",
+            **kwargs,
+        )
+
+    def style_numbers_numbers_get_from_str(
+        self, nf_str: str, locale: Locale | None = None, auto_add: bool = False, source_format: bool = False
+    ) -> NumbersT | None:
+        """
+        Gets the Numbers Style.
+
+        Args:
+            nf_str (str): Format string.
+            lang_locale (Locale, optional): Locale. Defaults to ``None``.
+            auto_add (bool, optional): If True, format string will be added to document if not found. Defaults to ``False``.
+            source_format (bool, optional): If ``True``, the number format will be linked to the source format. Defaults to ``False``.
+
+        Raises:
+            CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
+
+        Returns:
+            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+        """
+        kwargs: Dict[str, Any] = {"nf_str": nf_str, "auto_add": auto_add, "source_format": source_format}
+        if locale is not None:
+            kwargs["lang_locale"] = locale
+        return self.__styler.style_get(
+            factory=style_factory.chart2_series_data_labels_numbers_factory,
+            chart_doc=self._NumbersNumbersPartial_get_chart_doc(),
+            call_method_name="from_str",
+            event_name_suffix="_from_index",
+            **kwargs,
+        )

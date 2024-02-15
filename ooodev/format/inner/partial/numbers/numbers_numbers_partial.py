@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, Dict, TYPE_CHECKING
 import uno
 
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.loader import lo as mLo
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner.style_factory import numbers_numbers_factory
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 
 if TYPE_CHECKING:
     from ooo.dyn.lang.locale import Locale
@@ -71,3 +72,73 @@ class NumbersNumbersPartial:
             "component": self.__styler.component,
         }
         return self.__styler.style(factory=factory, **kwargs)
+
+    def style_numbers_numbers_get(self) -> NumbersT | None:
+        """
+        Gets the Numbers Style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_number_number_get`` is cancelled and not handled.
+
+        Returns:
+            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+        """
+        if isinstance(self, CalcDocPropPartial):
+            return self.__styler.style_get(
+                factory=numbers_numbers_factory,
+                component=self.calc_doc.component,
+            )
+        return self.__styler.style_get(factory=numbers_numbers_factory)
+
+    def style_numbers_numbers_get_from_index(self, idx: int, locale: Locale | None = None) -> NumbersT | None:
+        """
+        Gets the Numbers Style.
+
+        Raises:
+            CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
+
+        Returns:
+            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+        """
+        kwargs: Dict[str, Any] = {"index": idx}
+        if locale is not None:
+            kwargs["lang_locale"] = locale
+        if isinstance(self, CalcDocPropPartial):
+            kwargs["component"] = self.calc_doc.component
+        return self.__styler.style_get(
+            factory=numbers_numbers_factory,
+            call_method_name="from_index",
+            event_name_suffix="_from_index",
+            obj_arg_name="",
+            **kwargs,
+        )
+
+    def style_numbers_numbers_get_from_str(
+        self, nf_str: str, locale: Locale | None = None, auto_add: bool = False
+    ) -> NumbersT | None:
+        """
+        Gets the Numbers Style.
+
+        Args:
+            nf_str (str): Format string.
+            lang_locale (Locale, optional): Locale. Defaults to ``None``.
+            auto_add (bool, optional): If True, format string will be added to document if not found. Defaults to ``False``.
+            source_format (bool, optional): If ``True``, the number format will be linked to the source format. Defaults to ``False``.
+
+        Raises:
+            CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
+
+        Returns:
+            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+        """
+        kwargs: Dict[str, Any] = {"nf_str": nf_str, "auto_add": auto_add}
+        if locale is not None:
+            kwargs["lang_locale"] = locale
+        if isinstance(self, CalcDocPropPartial):
+            kwargs["component"] = self.calc_doc.component
+        return self.__styler.style_get(
+            factory=numbers_numbers_factory,
+            call_method_name="from_str",
+            event_name_suffix="_from_index",
+            **kwargs,
+        )

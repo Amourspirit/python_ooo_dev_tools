@@ -306,6 +306,7 @@ class Img(StyleBase):
         Returns:
             Img: ``Img`` instance that represents ``obj`` fill image.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not support to convert to Img")
@@ -337,6 +338,7 @@ class Img(StyleBase):
         # The FillBitmapMode property can be used instead to set all supported bitmap modes.
         # set_prop("FillBitmapStretch", inst)
         # set_prop("FillBitmapTile", inst)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

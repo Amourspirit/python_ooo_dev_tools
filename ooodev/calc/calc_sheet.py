@@ -60,6 +60,8 @@ from . import calc_cell_cursor as mCalcCellCursor
 from . import calc_table_col as mCalcTableCol
 from . import calc_table_row as mCalcTableRow
 from .partial import sheet_cell_partial as mSheetCellPartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
+from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
 class CalcSheet(
@@ -71,6 +73,8 @@ class CalcSheet(
     PropPartial,
     ServicePartial,
     StylePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
 ):
     """Class for managing Calc Sheet"""
 
@@ -84,7 +88,6 @@ class CalcSheet(
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SpreadsheetComp.__init__(self, sheet)  # type: ignore
         EventsPartial.__init__(self)
@@ -93,6 +96,8 @@ class CalcSheet(
         ServicePartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet)
         mSheetCellPartial.SheetCellPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=owner)
+        CalcSheetPropPartial.__init__(self, obj=self)
         self._draw_page = None
         self._charts = None
         self._init_events()
@@ -3842,13 +3847,6 @@ class CalcSheet(
     # endregion make_constraint()
 
     # region Properties
-    @property
-    def calc_doc(self) -> CalcDoc:
-        """
-        Returns:
-            CalcDoc: Calc doc
-        """
-        return self._owner
 
     @property
     def name(self) -> str:

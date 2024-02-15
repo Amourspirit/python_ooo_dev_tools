@@ -25,6 +25,7 @@ else:
     NumberFormatEnum = Any
 
 
+# see ooodev.format.inner.direct.calc.numbers.numbers.Numbers
 class NumbersT(StyleT, Protocol):
     """Numbers Protocol"""
 
@@ -53,12 +54,39 @@ class NumbersT(StyleT, Protocol):
         ...
 
     @classmethod
-    def from_str(
-        cls, nf_str: str, lang_locale: Locale | None = None, auto_add: bool = False, **kwargs
-    ) -> NumbersT: ...
+    def from_str(cls, nf_str: str, lang_locale: Locale | None = None, auto_add: bool = False, **kwargs) -> NumbersT:
+        """
+        Gets instance from format string
+
+        Args:
+            nf_str (str): Format string.
+            lang_locale (Locale, optional): Locale. Defaults to ``None``.
+            auto_add (bool, optional): If True, format string will be added to document if not found. Defaults to ``False``.
+
+        Keyword Args:
+            component (XComponent): Calc document. Default is current document.
+
+        Returns:
+            Numbers: Instance that represents numbers format.
+        """
+        ...
 
     @classmethod
-    def from_index(cls, index: int, lang_locale: Locale | None = None, **kwargs) -> NumbersT: ...
+    def from_index(cls, index: int, lang_locale: Locale | None = None, **kwargs) -> NumbersT:
+        """
+        Gets instance from number format index. This is the index that is assigned to the ``NumberFormat`` property of an object such as a cell.
+
+        Args:
+            index (int): Format (``NumberFormat``) index.
+            lang_locale (Locale, optional): Locale. Defaults to ``None``.
+
+        Keyword Args:
+            component (XComponent): Calc document. Default is current document.
+
+        Returns:
+            Numbers: Instance that represents numbers format.
+        """
+        ...
 
     @overload
     @classmethod
@@ -66,7 +94,23 @@ class NumbersT(StyleT, Protocol):
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> NumbersT: ...
+    def from_obj(cls, obj: Any, **kwargs) -> NumbersT:
+        """
+        Gets instance from object
+
+        Args:
+            obj (object): UNO Object.
+
+        Keyword Args:
+            component (XComponent): Calc document. Default is current document.
+
+        Raises:
+            NotSupportedError: If ``obj`` is not supported.
+
+        Returns:
+            Numbers: Instance that represents numbers format.
+        """
+        ...
 
     # region Instance Properties
 

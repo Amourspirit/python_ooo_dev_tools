@@ -1,12 +1,12 @@
 from __future__ import annotations
 from enum import Enum
+from typing import Tuple, cast
 import uno
 from ooo.dyn.text.writing_mode2 import WritingMode2
-from typing import Tuple, cast
+from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_writing_mode import AbstractWritingMode
-from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 
 
 class DirectionModeKind(Enum):
@@ -73,6 +73,10 @@ class Direction(AbstractWritingMode):
         super().__init__(mode=WritingMode2Enum(mode.value))
 
     # region overrides
+    def _container_get_service_name(self) -> str:
+        # keep type hinting happy
+        raise NotImplementedError
+
     def _supported_services(self) -> Tuple[str, ...]:
         try:
             return self._supported_services_values

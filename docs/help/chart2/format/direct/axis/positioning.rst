@@ -11,7 +11,7 @@ Chart2 Direct Axis Positioning
 Overview
 --------
 
-The :py:mod:`ooodev.format.chart2.direct.axis.positioning` namespace gives you the similar options for axis positioning
+The ``style_axis_pos_*`` methods gives similar options for axis positioning
 as :numref:`9800e630-952c-4947-ba95-f4d5c456284f` Axis Positioning Dialog, but without the dialog.
 
 
@@ -98,18 +98,19 @@ Apply Axis Line
 Before formatting the chart is seen in :numref:`3adb4ebc-83d9-44c6-9bba-6c92e11f3b0a`.
 
 In this example the axis line is positioned at the value ``2000`` and applied to the x-axis.
-The axis position is set using the :py:class:`ooodev.format.chart2.direct.axis.positioning.AxisLine` class.
+The axis position is set using the ``style_axis_pos_axis_line()`` method.
 
 .. tabs::
 
     .. code-tab:: python
 
 
-        from ooodev.format.chart2.direct.axis.positioning import AxisLine, ChartAxisPosition
+        from ooo.dyn.chart.chart_axis_position import ChartAxisPosition
         # ... other code
 
-        axis_line_style = AxisLine(cross=ChartAxisPosition.VALUE, value=2000)
-        Chart2.style_x_axis(chart_doc=chart_doc, styles=[axis_line_style])
+        chart_doc.axis_x.style_axis_pos_axis_line(
+            cross=ChartAxisPosition.VALUE, value=2000
+        )
 
     .. only:: html
 
@@ -117,11 +118,11 @@ The axis position is set using the :py:class:`ooodev.format.chart2.direct.axis.p
 
             .. group-tab:: None
 
-The result of running the above can be seen in :numref:`8a888665-d494-402a-9301-4a045a5233b9` and  :numref:`28b188cb-e601-4a0f-99c4-45255e78f92a`.
+The result of running the above can be seen in :numref:`8a888665-d494-402a-9301-4a045a5233b9_1` and  :numref:`28b188cb-e601-4a0f-99c4-45255e78f92a_1`.
 
 .. cssclass:: screen_shot
 
-    .. _8a888665-d494-402a-9301-4a045a5233b9:
+    .. _8a888665-d494-402a-9301-4a045a5233b9_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8a888665-d494-402a-9301-4a045a5233b9
         :alt: Chart X-Axis Positioning with Axis Line set to value of 2000
@@ -132,7 +133,7 @@ The result of running the above can be seen in :numref:`8a888665-d494-402a-9301-
 
 .. cssclass:: screen_shot
 
-    .. _28b188cb-e601-4a0f-99c4-45255e78f92a:
+    .. _28b188cb-e601-4a0f-99c4-45255e78f92a_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/28b188cb-e601-4a0f-99c4-45255e78f92a
         :alt: Chart X-Axis Positioning Dialog with Axis Line set
@@ -146,18 +147,15 @@ Apply Axis Position
 
 Before formatting the chart is seen in :numref:`3adb4ebc-83d9-44c6-9bba-6c92e11f3b0a`.
 
-For x-axis Position Dialog the Axis position can be set using the :py:class:`ooodev.format.chart2.direct.axis.positioning.PositionAxis` class.
+For x-axis Position Dialog the Axis position can be set using the ``style_axis_pos_position_axis()`` method.
 
 .. tabs::
 
     .. code-tab:: python
 
 
-        from ooodev.format.chart2.direct.axis.positioning import PositionAxis
         # ... other code
-
-        position_axis_style = PositionAxis(False)
-        Chart2.style_x_axis(chart_doc=chart_doc, styles=[position_axis_style])
+        chart_doc.axis_x.style_axis_pos_position_axis(on_mark=False)
 
     .. only:: html
 
@@ -166,11 +164,11 @@ For x-axis Position Dialog the Axis position can be set using the :py:class:`ooo
             .. group-tab:: None
 
 
-The result of running the above can be seen in :numref:`baaab89e-eb06-4436-848d-5bbb19b3b906`.
+The result of running the above can be seen in :numref:`baaab89e-eb06-4436-848d-5bbb19b3b906_1`.
 
 .. cssclass:: screen_shot
 
-    .. _baaab89e-eb06-4436-848d-5bbb19b3b906:
+    .. _baaab89e-eb06-4436-848d-5bbb19b3b906_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/baaab89e-eb06-4436-848d-5bbb19b3b906
         :alt: Chart X-Axis Positioning Dialog with Axis Line set
@@ -184,18 +182,19 @@ Apply Positioning Labels
 
 Before formatting the chart is seen in :numref:`3adb4ebc-83d9-44c6-9bba-6c92e11f3b0a`.
 
-The Label position can be set using the :py:class:`ooodev.format.chart2.direct.axis.positioning.LabelPosition` class.
+The Label position can be set using the ``style_axis_pos_label_position()`` method.
 
 .. tabs::
 
     .. code-tab:: python
 
 
-        from ooodev.format.chart2.direct.axis.positioning import LabelPosition, ChartAxisLabelPosition
+        from ooo.dyn.chart.chart_axis_label_position import ChartAxisLabelPosition
         # ... other code
 
-        label_position_style = LabelPosition(ChartAxisLabelPosition.NEAR_AXIS_OTHER_SIDE)
-        Chart2.style_y_axis(chart_doc=chart_doc, styles=[label_position_style])
+        chart_doc.axis_y.style_axis_pos_label_position(
+            ChartAxisLabelPosition.NEAR_AXIS_OTHER_SIDE
+        )
 
     .. only:: html
 
@@ -203,11 +202,11 @@ The Label position can be set using the :py:class:`ooodev.format.chart2.direct.a
 
             .. group-tab:: None
 
-The result of running the above can be seen in :numref:`486ad4fd-c710-4d42-a512-ea0084ea232b` and :numref:`500f2097-72bd-48e1-b21d-dec6a14f722f`.
+The result of running the above can be seen in :numref:`486ad4fd-c710-4d42-a512-ea0084ea232b_1` and :numref:`500f2097-72bd-48e1-b21d-dec6a14f722f_1`.
 
 .. cssclass:: screen_shot
 
-    .. _486ad4fd-c710-4d42-a512-ea0084ea232b:
+    .. _486ad4fd-c710-4d42-a512-ea0084ea232b_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/486ad4fd-c710-4d42-a512-ea0084ea232b
         :alt: Chart with Y-Axis Label set other side
@@ -218,7 +217,7 @@ The result of running the above can be seen in :numref:`486ad4fd-c710-4d42-a512-
 
 .. cssclass:: screen_shot
 
-    .. _500f2097-72bd-48e1-b21d-dec6a14f722f:
+    .. _500f2097-72bd-48e1-b21d-dec6a14f722f_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/500f2097-72bd-48e1-b21d-dec6a14f722f
         :alt: Chart Y-Axis Positioning Dialog with Labels set
@@ -230,23 +229,21 @@ The result of running the above can be seen in :numref:`486ad4fd-c710-4d42-a512-
 Apply Interval Marks
 ^^^^^^^^^^^^^^^^^^^^
 
-Interval marks can be set using the :py:class:`ooodev.format.chart2.direct.axis.positioning.IntervalMarks` class.
+Interval marks can be set using the ``style_axis_pos_interval_marks()`` method.
 
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 1,7,8,9
 
-        from ooodev.format.chart2.direct.axis.positioning import IntervalMarks
-        from ooodev.format.chart2.direct.axis.positioning import MarkKind, ChartAxisMarkPosition
-        from ooodev.format.chart2.direct.axis.positioning import LabelPosition, ChartAxisLabelPosition
+        from ooo.dyn.chart.chart_axis_mark_position import ChartAxisMarkPosition
+        from ooodev.format.inner.direct.chart2.axis.positioning.interval_marks import MarkKind
         # ... other code
 
-        label_position_style = LabelPosition(ChartAxisLabelPosition.NEAR_AXIS_OTHER_SIDE)
-        interval_marks_style = IntervalMarks(
-            major=MarkKind.OUTSIDE, minor=MarkKind.NONE, pos=ChartAxisMarkPosition.AT_LABELS_AND_AXIS
+        chart_doc.axis_y.style_axis_pos_interval_marks(
+            major=MarkKind.OUTSIDE,
+            minor=MarkKind.NONE,
+            pos=ChartAxisMarkPosition.AT_LABELS_AND_AXIS,
         )
-        Chart2.style_y_axis(chart_doc=chart_doc, styles=[label_position_style, interval_marks_style])
 
     .. only:: html
 
@@ -254,11 +251,11 @@ Interval marks can be set using the :py:class:`ooodev.format.chart2.direct.axis.
 
             .. group-tab:: None
 
-The result of running the above can be seen in :numref:`5df9a764-17be-4714-8541-2d672a076845`.
+The result of running the above can be seen in :numref:`5df9a764-17be-4714-8541-2d672a076845_1`.
 
 .. cssclass:: screen_shot
 
-    .. _5df9a764-17be-4714-8541-2d672a076845:
+    .. _5df9a764-17be-4714-8541-2d672a076845_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/5df9a764-17be-4714-8541-2d672a076845
         :alt: Chart Y-Axis Positioning Dialog with Labels set
@@ -278,16 +275,5 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_axis`
-        - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_x_axis() <ooodev.office.chart2.Chart2.style_x_axis>`
-        - :py:meth:`Chart2.style_x_axis2() <ooodev.office.chart2.Chart2.style_x_axis2>`
-        - :py:meth:`Chart2.style_y_axis() <ooodev.office.chart2.Chart2.style_y_axis>`
-        - :py:meth:`Chart2.style_y_axis2() <ooodev.office.chart2.Chart2.style_y_axis2>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.axis.positioning.AxisLine`
-        - :py:class:`ooodev.format.chart2.direct.axis.positioning.PositionAxis`
-        - :py:class:`ooodev.format.chart2.direct.axis.positioning.LabelPosition`
-        - :py:class:`ooodev.format.chart2.direct.axis.positioning.IntervalMarks`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

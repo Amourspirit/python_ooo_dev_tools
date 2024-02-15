@@ -17,7 +17,8 @@ from ooodev.format.inner.partial.area.transparency.transparency_partial import (
     TransparencyPartial as TransparencyTransparency,
 )
 from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial as TransparencyGradient
-
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -28,6 +29,8 @@ if TYPE_CHECKING:
 class ChartWall(
     Prop["ChartWall"],
     ChartDocPropPartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
     FillPropertiesPartial,
     LinePropertiesPartial,
     FillColorPartial,
@@ -55,6 +58,8 @@ class ChartWall(
             lo_inst = mLo.Lo.current_lo
         Prop.__init__(self, owner=self, component=component, lo_inst=lo_inst)
         ChartDocPropPartial.__init__(self, chart_doc=owner.chart_doc)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
         FillPropertiesPartial.__init__(self, component=component)
         LinePropertiesPartial.__init__(self, component=component)
         FillColorPartial.__init__(self, factory_name="ooodev.char2.wall.area", component=component, lo_inst=lo_inst)

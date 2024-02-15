@@ -11,10 +11,10 @@ Chart2 Direct Legend Font
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.legend.font.Font` combines some of the option of :ref:`help_chart2_format_direct_legend_font_only`
-and :ref:`help_chart2_format_direct_legend_font_effects` into a single class. Also a few more options are added.
+The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class:`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
 
-Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+The ``style_font_general()`` method combines some of the option of ``style_font()`` and ``style_font_effects()`` into a single class. Also a few more options are added.
+
 
 Setup
 -----
@@ -24,51 +24,56 @@ General setup for this example.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 35,36
+        :emphasize-lines: 37
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.legend.font import Font as LegendFont
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
-        from ooodev.utils.kind.zoom_kind import ZoomKind
+        from ooo.dyn.awt.gradient_style import GradientStyle
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.utils.color import StandardColor
+        from ooodev.utils.data_type.color_range import ColorRange
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc(Path.cwd() / "tmp" / "pie_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "piechart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, ZoomKind.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="pie_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BRICK, width=1)
-                chart_grad = ChartGradient(
-                    chart_doc=chart_doc,
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.BRICK,
+                    width=1,
+                )
+                _ = chart_doc.style_area_gradient(
                     step_count=64,
                     style=GradientStyle.SQUARE,
                     angle=45,
-                    grad_color=ColorRange(StandardColor.GREEN_DARK4, StandardColor.TEAL_LIGHT2),
+                    grad_color=ColorRange(
+                        StandardColor.GREEN_DARK4,
+                        StandardColor.TEAL_LIGHT2,
+                    ),
                 )
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
+                legend = chart_doc.first_diagram.get_legend()
+                if legend is None:
+                    raise ValueError("Legend is None")
+                _ = legend.style_font_general(b=True, color=StandardColor.PURPLE, size=12)
 
-                legend_font_style = LegendFont(b=True, color=StandardColor.PURPLE, size=12)
-                Chart2.style_legend(chart_doc=chart_doc, styles=[legend_font_style])
+                # f_style = legend.style_font_get()
+                # assert f_style is not None
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
             SystemExit(main())
+
 
     .. only:: html
 
@@ -86,11 +91,8 @@ Before formatting the chart is visible in :numref:`ce52cea5-2b22-4d2a-a158-9e223
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.legend.font import Font as LegendFont
         # ... other code
-
-        legend_font_style = LegendFont(b=True, color=StandardColor.PURPLE, size=12)
-        Chart2.style_legend(chart_doc=chart_doc, styles=[legend_font_style])
+        _ = legend.style_font_general(b=True, color=StandardColor.PURPLE, size=12)
 
     .. only:: html
 
@@ -98,11 +100,11 @@ Before formatting the chart is visible in :numref:`ce52cea5-2b22-4d2a-a158-9e223
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`b120a95d-fa1c-4ef1-89f1-5308464b2962`.
+Running the above code will produce the following output in :numref:`b120a95d-fa1c-4ef1-89f1-5308464b2962_1`.
 
 .. cssclass:: screen_shot
 
-    .. _b120a95d-fa1c-4ef1-89f1-5308464b2962:
+    .. _b120a95d-fa1c-4ef1-89f1-5308464b2962_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/b120a95d-fa1c-4ef1-89f1-5308464b2962
         :alt: Chart with Legend font applied
@@ -124,8 +126,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_legend_font_only`
         - :ref:`help_chart2_format_direct_legend_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
         - :py:class:`~ooodev.utils.lo.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.legend.font.Font`

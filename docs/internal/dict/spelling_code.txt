@@ -55,6 +55,7 @@ Occured
 odoc
 odt
 overline
+pathlib
 PathSubstitution
 preformatted
 PropertyValue

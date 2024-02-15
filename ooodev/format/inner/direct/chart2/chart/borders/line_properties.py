@@ -85,13 +85,11 @@ class LineProperties(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLineProperties], obj: object) -> _TLineProperties:
-        ...
+    def from_obj(cls: Type[_TLineProperties], obj: object) -> _TLineProperties: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLineProperties], obj: object, **kwargs) -> _TLineProperties:
-        ...
+    def from_obj(cls: Type[_TLineProperties], obj: object, **kwargs) -> _TLineProperties: ...
 
     @classmethod
     def from_obj(cls: Type[_TLineProperties], obj: Any, **kwargs) -> _TLineProperties:
@@ -104,6 +102,7 @@ class LineProperties(StyleBase):
         Returns:
             LineProperties: New instance.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
 
         if not inst._is_valid_obj(obj):
@@ -127,19 +126,17 @@ class LineProperties(StyleBase):
 
         for prop in props:
             set_property(prop)
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
 
     # region copy()
     @overload
-    def copy(self) -> LineProperties:
-        ...
+    def copy(self) -> LineProperties: ...
 
     @overload
-    def copy(self, **kwargs) -> LineProperties:
-        ...
+    def copy(self, **kwargs) -> LineProperties: ...
 
     def copy(self, **kwargs) -> LineProperties:
         """

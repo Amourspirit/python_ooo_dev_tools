@@ -44,11 +44,21 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
+from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from . import calc_cell as mCalcCell
 
 
 class CalcCellRange(
-    LoInstPropsPartial, SheetCellRangeComp, QiPartial, PropPartial, StylePartial, EventsPartial, ServicePartial
+    LoInstPropsPartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
+    SheetCellRangeComp,
+    QiPartial,
+    PropPartial,
+    StylePartial,
+    EventsPartial,
+    ServicePartial,
 ):
     """Represents a calc cell range."""
 
@@ -62,8 +72,9 @@ class CalcCellRange(
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         if self.lo_inst.is_uno_interfaces(rng, XCellRange):
             with LoContext(self.lo_inst):
                 self._range_obj = mCalc.Calc.get_range_obj(cell_range=rng)
@@ -816,10 +827,6 @@ class CalcCellRange(
         _ = mCalc.Calc.remove_border(sheet=self.calc_sheet.component, range_obj=self._range_obj)
 
     # region Properties
-    @property
-    def calc_sheet(self) -> CalcSheet:
-        """Sheet that owns this cell."""
-        return self._owner
 
     @property
     def range_obj(self) -> RangeObj:

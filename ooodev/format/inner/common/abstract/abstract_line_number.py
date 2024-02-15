@@ -130,6 +130,7 @@ class AbstractLineNumber(StyleBase):
         Returns:
             LineNum: ``LineNum`` instance that represents ``obj`` properties.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -142,7 +143,7 @@ class AbstractLineNumber(StyleBase):
 
         set_prop(inst._props.value, inst)
         set_prop(inst._props.count, inst)
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

@@ -52,7 +52,6 @@ def test_get_sheet(loader) -> None:
 def test_get_other_cells(loader) -> None:
     # get_sheet is overload method.
     # testing each overload.
-    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     doc = CalcDoc.create_doc(loader)
@@ -126,7 +125,6 @@ def test_get_other_cells(loader) -> None:
 
 
 def test_insert_remove_sheet(loader) -> None:
-    from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
     doc = CalcDoc.create_doc(loader)

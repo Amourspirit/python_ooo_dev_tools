@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.28.0
+==============
+
+Added :ref:`the_global_event_broadcaster`.
+
+Added ``style_*get`` methods to many partial style classes.
+
+Updated help docs for Chart2 styling.
+
 Version 0.27.1
 ==============
 

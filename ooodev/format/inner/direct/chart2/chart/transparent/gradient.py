@@ -111,6 +111,7 @@ class Gradient(WriteGradient):
         end_color: int,
         end_intensity: Intensity | int,
     ) -> _GradientStruct:
+        # pylint: disable=unexpected-keyword-arg
         return _GradientStruct(
             style=style,
             step_count=step_count,
@@ -154,6 +155,7 @@ class Gradient(WriteGradient):
         Returns:
             Hatch: The copied instance.
         """
+        # pylint: disable=protected-access
         cp = super().copy(**kwargs)
         cp._chart_doc = self._chart_doc
         return cp

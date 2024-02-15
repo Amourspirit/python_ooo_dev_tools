@@ -30,13 +30,23 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
+from .partial.calc_doc_prop_partial import CalcDocPropPartial
+from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
-class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StylePartial, ServicePartial):
+class CalcCell(
+    LoInstPropsPartial,
+    SheetCellComp,
+    QiPartial,
+    PropPartial,
+    StylePartial,
+    ServicePartial,
+    CalcSheetPropPartial,
+    CalcDocPropPartial,
+):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         self._cell_obj = mCellObj.CellObj.from_cell(cell)
         # don't use owner.get_cell() here because it will be recursive.
@@ -46,6 +56,8 @@ class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StyleP
         PropPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet_cell)
         ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
+        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
@@ -455,10 +467,6 @@ class CalcCell(LoInstPropsPartial, SheetCellComp, QiPartial, PropPartial, StyleP
     # endregion make_constraint()
 
     # region Properties
-    @property
-    def calc_sheet(self) -> CalcSheet:
-        """Sheet that owns this cell."""
-        return self._owner
 
     @property
     def cell_obj(self) -> mCellObj.CellObj:

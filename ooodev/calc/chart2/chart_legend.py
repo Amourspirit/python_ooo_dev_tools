@@ -22,6 +22,9 @@ from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import C
 from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
 from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
 from ooodev.format.inner.partial.chart2.legend.position.chart2_legend_pos_partial import Chart2LegendPosPartial
+from ..partial.calc_doc_prop_partial import CalcDocPropPartial
+from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Legend  # service
@@ -38,6 +41,8 @@ class ChartLegend(
     EventsPartial,
     QiPartial,
     ServicePartial,
+    CalcDocPropPartial,
+    CalcSheetPropPartial,
     PropPartial,
     FontEffectsPartial,
     FontOnlyPartial,
@@ -74,6 +79,8 @@ class ChartLegend(
         EventsPartial.__init__(self)
         QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
+        CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)
         FontPartial.__init__(self, factory_name="ooodev.general_style.text", component=component, lo_inst=lo_inst)

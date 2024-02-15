@@ -11,12 +11,9 @@ Chart2 Direct Series Data Series Transparency
 Overview
 --------
 
-Classes in the :py:mod:`ooodev.format.chart2.direct.series.data_series.transparency` module contains classes that are used to set the data series transparency of a chart.
+The Data Series and Data Point of a Chart can be styled using the various ``style_*`` methods of
+the :py:class:`~ooodev.calc.chart2.chart_data_series.ChartDataSeries` and :py:class:`~ooodev.calc.chart2.chart_data_point.ChartDataPoint` classes.
 
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data series transparency of a Chart.
-
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
-and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data series transparency of a Chart.
 
 Setup
 -----
@@ -26,39 +23,40 @@ General setup for examples.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 27, 28
+        :emphasize-lines: 29
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.series.data_series.transparency import Transparency as SeriesTransparency
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient, PresetGradientKind
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.utils.color import StandardColor
+        from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("col_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "col_chart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.BLUE_LIGHT3,
+                    width=0.7,
+                )
+                _ = chart_doc.style_area_gradient_from_preset(
+                    preset=PresetGradientKind.TEAL_BLUE,
+                )
 
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_LIGHT3, width=0.7)
-                chart_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.TEAL_BLUE)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
-
-                data_series_transparency = SeriesTransparency(value=50)
-                Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_transparency])
+                ds = chart_doc.get_data_series()[0]
+                ds.style_area_transparency_transparency(50)
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
@@ -78,7 +76,7 @@ Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971
 Setting Transparency
 ^^^^^^^^^^^^^^^^^^^^
 
-The :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Transparency` class can be used to set the data series transparency of a chart.
+The ``style_area_transparency_transparency()`` method can be called to set the data series transparency of a chart.
 
 Style Data Series
 """""""""""""""""
@@ -87,11 +85,10 @@ Style Data Series
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.series.data_series.transparency import Transparency as SeriesTransparency
         # ... other code
 
-        data_series_transparency = SeriesTransparency(value=50)
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_transparency])
+        ds = chart_doc.get_data_series()[0]
+        ds.style_area_transparency_transparency(50)
 
     .. only:: html
 
@@ -99,11 +96,11 @@ Style Data Series
 
             .. group-tab:: None
 
-The results can bee seen in :numref:`1c71f71a-ea08-4d47-abbb-55738998a182` and :numref:`ea9c0a9a-d069-49dd-99a7-314894eea02e`.
+The results can bee seen in :numref:`1c71f71a-ea08-4d47-abbb-55738998a182_1` and :numref:`ea9c0a9a-d069-49dd-99a7-314894eea02e_1`.
 
 .. cssclass:: screen_shot
 
-    .. _1c71f71a-ea08-4d47-abbb-55738998a182:
+    .. _1c71f71a-ea08-4d47-abbb-55738998a182_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1c71f71a-ea08-4d47-abbb-55738998a182
         :alt: Chart with data series transparency set
@@ -114,7 +111,7 @@ The results can bee seen in :numref:`1c71f71a-ea08-4d47-abbb-55738998a182` and :
 
 .. cssclass:: screen_shot
 
-    .. _ea9c0a9a-d069-49dd-99a7-314894eea02e:
+    .. _ea9c0a9a-d069-49dd-99a7-314894eea02e_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/ea9c0a9a-d069-49dd-99a7-314894eea02e
         :alt: Chart Data Series Area Transparency Dialog
@@ -131,9 +128,9 @@ Style Data Point
     .. code-tab:: python
 
         # ... other code
-        Chart2.style_data_point(
-            chart_doc=chart_doc, series_idx=0, idx=-1, styles=[data_series_transparency]
-        )
+        ds = chart_doc.get_data_series()[0]
+        dp = ds[-1]
+        dp.style_area_transparency_transparency(50)
 
     .. only:: html
 
@@ -141,11 +138,11 @@ Style Data Point
 
             .. group-tab:: None
 
-The results can bee seen in :numref:`7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae`.
+The results can bee seen in :numref:`7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae_1`.
 
 .. cssclass:: screen_shot
 
-    .. _7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae:
+    .. _7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/7cbe60a0-cbc8-4c50-8d79-f69fe0c055ae
         :alt: Chart with data point transparency set
@@ -163,7 +160,7 @@ Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971
 Setting Gradient
 ^^^^^^^^^^^^^^^^
 
-The :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Gradient` class can be used to set the data series gradient transparency of a chart.
+The ``style_area_transparency_gradient()`` method can be called to set the data series gradient transparency of a chart.
 
 Style Data Series
 """""""""""""""""
@@ -172,15 +169,15 @@ Style Data Series
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.series.data_series.transparency import Gradient as SeriesGradient
-        from ooodev.format.chart2.direct.series.data_series.transparency import IntensityRange
+        from ooodev.utils.data_type.intensity_range import IntensityRange
         from ooodev.utils.data_type.angle import Angle
         # ... other code
 
-        data_series_grad_transparency = SeriesGradient(
-            chart_doc=chart_doc, angle=Angle(30), grad_intensity=IntensityRange(0, 100)
+        ds = chart_doc.get_data_series()[0]
+        ds.style_area_transparency_gradient(
+            angle=30,
+            grad_intensity=IntensityRange(0, 100),
         )
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_grad_transparency])
 
     .. only:: html
 
@@ -188,11 +185,11 @@ Style Data Series
 
             .. group-tab:: None
 
-The results can bee seen in :numref:`f2eea034-d414-4e70-9fe8-701968ad1304` and :numref:`392d7295-8cbb-4eed-8955-8ba481ea0db8`.
+The results can bee seen in :numref:`f2eea034-d414-4e70-9fe8-701968ad1304_1` and :numref:`392d7295-8cbb-4eed-8955-8ba481ea0db8_1`.
 
 .. cssclass:: screen_shot
 
-    .. _f2eea034-d414-4e70-9fe8-701968ad1304:
+    .. _f2eea034-d414-4e70-9fe8-701968ad1304_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f2eea034-d414-4e70-9fe8-701968ad1304
         :alt: Chart data series with gradient transparency set
@@ -203,7 +200,7 @@ The results can bee seen in :numref:`f2eea034-d414-4e70-9fe8-701968ad1304` and :
 
 .. cssclass:: screen_shot
 
-    .. _392d7295-8cbb-4eed-8955-8ba481ea0db8:
+    .. _392d7295-8cbb-4eed-8955-8ba481ea0db8_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/392d7295-8cbb-4eed-8955-8ba481ea0db8
         :alt: Chart Data Series Area Transparency Dialog
@@ -219,9 +216,14 @@ Style Data Point
 
     .. code-tab:: python
 
+        from ooodev.utils.data_type.intensity_range import IntensityRange
+
         # ... other code
-        Chart2.style_data_point(
-            chart_doc=chart_doc, series_idx=0, idx=-1, styles=[data_series_grad_transparency]
+        ds = chart_doc.get_data_series()[0]
+        dp = ds[-1]
+        dp.style_area_transparency_gradient(
+            angle=30,
+            grad_intensity=IntensityRange(0, 100),
         )
 
     .. only:: html
@@ -230,11 +232,11 @@ Style Data Point
 
             .. group-tab:: None
 
-The results can bee seen in :numref:`bd61630d-0f6d-45ed-bcb0-f194c233b81e`.
+The results can bee seen in :numref:`bd61630d-0f6d-45ed-bcb0-f194c233b81e_1`.
 
 .. cssclass:: screen_shot
 
-    .. _bd61630d-0f6d-45ed-bcb0-f194c233b81e:
+    .. _bd61630d-0f6d-45ed-bcb0-f194c233b81e_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bd61630d-0f6d-45ed-bcb0-f194c233b81e
         :alt: Chart data point with gradient transparency set
@@ -255,12 +257,5 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_wall_floor_area`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
-        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Transparency`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.transparency.Gradient`
+        - :py:class:`~ooodev.loader.Lo`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

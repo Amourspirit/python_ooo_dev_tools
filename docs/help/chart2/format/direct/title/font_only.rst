@@ -11,11 +11,9 @@ Chart2 Direct Title/Subtitle Font Only
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.title.font.FontOnly` class gives you the similar options
+The ``style_font()`` method is used to set the font of the Title and Subtitle of a Chart,
+similar options
 as :numref:`0c6b3393-b925-42c1-9bc5-8b604459de9a` Font Dialog, but without the dialog.
-
-Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
-:py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle font of a Chart.
 
 Setup
 -----
@@ -25,46 +23,53 @@ General setup for this example.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 34,35
+        :emphasize-lines: 39,40,41,42,43
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.title.font import FontOnly as TitleFontOnly
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient
-        from ooodev.format.chart2.direct.general.area import GradientStyle, ColorRange
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooo.dyn.awt.gradient_style import GradientStyle
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.utils.color import StandardColor
+        from ooodev.utils.data_type.color_range import ColorRange
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("pie_flat_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "piechart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="pie_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.PURPLE_DARK1, width=0.7)
-                chart_grad = ChartGradient(
-                    chart_doc=chart_doc,
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.PURPLE_DARK1,
+                    width=0.7,
+                )
+                _ = chart_doc.style_area_gradient(
                     step_count=64,
                     style=GradientStyle.SQUARE,
                     angle=45,
-                    grad_color=ColorRange(StandardColor.BLUE_DARK1, StandardColor.PURPLE_LIGHT2),
+                    grad_color=ColorRange(
+                        StandardColor.BLUE_DARK1,
+                        StandardColor.PURPLE_LIGHT2,
+                    ),
                 )
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
 
-                title_font = TitleFontOnly(name="Lucida Calligraphy", size=14, font_style="italic")
-                Chart2.style_title(chart_doc=chart_doc, styles=[title_font])
+                title = chart_doc.get_title()
+                if title is None:
+                    raise ValueError("Title not found")
 
+                title.style_font(
+                    name="Lucida Calligraphy",
+                    size=14,
+                    font_style="italic",
+                )
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
@@ -89,11 +94,16 @@ Apply to Title
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.title.font import FontOnly as TitleFontOnly
-
         # ... other code
-        title_font = TitleFontOnly(name="Lucida Calligraphy", size=14, font_style="italic")
-        Chart2.style_title(chart_doc=chart_doc, styles=[title_font])
+        title = chart_doc.get_title()
+        if title is None:
+            raise ValueError("Title not found")
+
+        title.style_font(
+            name="Lucida Calligraphy",
+            size=14,
+            font_style="italic",
+        )
 
     .. only:: html
 
@@ -101,11 +111,11 @@ Apply to Title
 
             .. group-tab:: None
 
-Running the above code will produce the following output shown in :numref:`0bd83e10-35ea-4ba3-bff9-04548d2ad0e0` and :numref:`0c6b3393-b925-42c1-9bc5-8b604459de9a`.
+Running the above code will produce the following output shown in :numref:`0bd83e10-35ea-4ba3-bff9-04548d2ad0e0_1` and :numref:`0c6b3393-b925-42c1-9bc5-8b604459de9a_1`.
 
 .. cssclass:: screen_shot
 
-    .. _0bd83e10-35ea-4ba3-bff9-04548d2ad0e0:
+    .. _0bd83e10-35ea-4ba3-bff9-04548d2ad0e0_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/0bd83e10-35ea-4ba3-bff9-04548d2ad0e0
         :alt: Chart with Title Font set
@@ -117,7 +127,7 @@ Running the above code will produce the following output shown in :numref:`0bd83
 
 .. cssclass:: screen_shot
 
-    .. _0c6b3393-b925-42c1-9bc5-8b604459de9a:
+    .. _0c6b3393-b925-42c1-9bc5-8b604459de9a_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/0c6b3393-b925-42c1-9bc5-8b604459de9a
         :alt: Chart Data Labels Dialog Font
@@ -134,7 +144,15 @@ Apply to Subtitle
     .. code-tab:: python
 
         # ... other code
-        Chart2.style_subtitle(chart_doc=chart_doc, styles=[title_font])
+        sub_title = chart_doc.first_diagram.get_title()
+        if sub_title is None:
+            raise ValueError("Title not found")
+
+        sub_title.style_font(
+            name="Lucida Calligraphy",
+            size=14,
+            font_style="italic",
+        )
 
     .. only:: html
 
@@ -142,11 +160,11 @@ Apply to Subtitle
 
             .. group-tab:: None
 
-Running the above code will produce the following output shown in :numref:`6427af0a-2fad-4f6a-b390-813c9503eced`.
+Running the above code will produce the following output shown in :numref:`6427af0a-2fad-4f6a-b390-813c9503eced_1`.
 
 .. cssclass:: screen_shot
 
-    .. _6427af0a-2fad-4f6a-b390-813c9503eced:
+    .. _6427af0a-2fad-4f6a-b390-813c9503eced_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/6427af0a-2fad-4f6a-b390-813c9503eced
         :alt: Chart with Subtitle Font set
@@ -168,10 +186,5 @@ Related Topics
         - :ref:`help_chart2_format_direct_title_font_effects`
         - :ref:`help_chart2_format_direct_title_font`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>`
-        - :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.title.font.FontOnly`

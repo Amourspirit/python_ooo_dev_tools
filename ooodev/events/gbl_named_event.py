@@ -24,3 +24,6 @@ class GblNamedEvent(NamedTuple):
     """Global Event Canceled Event."""
 
     RANGE_OBJ_BEFORE_FROM_RANGE = "global_range_obj_before_from_range"
+
+    DOCUMENT_EVENT = "global_document_event"
+    """Event is raise when a global document event is triggered."""
