@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_wall_floor_area:
 
-Chart2 Direct Wall/Floor Area
-=============================
+Chart2 Direct Wall/Floor Area (Static)
+======================================
 
 .. contents:: Table of Contents
     :local:
@@ -13,6 +13,9 @@ Overview
 
 The :py:mod:`ooodev.format.chart2.direct.wall` module is used to format the wall/floor of a Chart.
 
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_wall_floor_area`
 
 Setup
 -----
@@ -500,6 +503,7 @@ Related Topics
 
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_wall_floor_area`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

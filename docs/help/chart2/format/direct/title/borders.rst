@@ -11,11 +11,8 @@ Chart2 Direct Title/Subtitle Borders
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.title.borders.LineProperties` class gives the same options as the Chart Data Series Borders dialog
+The ``style_border_line()`` method has the same options as the Chart Data Series Borders dialog
 as seen in :numref:`a31ee22f-14cc-43ef-844f-7a078ec1abd9`.
-
-Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
-:py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle borders of a Chart.
 
 Setup
 -----

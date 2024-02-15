@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_general_transparency:
 
-Chart2 Direct General Transparency
-==================================
+Chart2 Direct General Transparency (Static)
+===========================================
 
 .. contents:: Table of Contents
     :local:
@@ -12,6 +12,10 @@ Overview
 --------
 
 Classes in the :py:mod:`ooodev.format.chart2.direct.general.transparency` module can be used to set the transparency of a chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_general_transparency`
 
 Setup
 -----
@@ -207,6 +211,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_general_transparency`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

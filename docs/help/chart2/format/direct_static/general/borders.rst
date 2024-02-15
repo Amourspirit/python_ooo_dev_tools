@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_general_borders:
 
-Chart2 Direct General Borders
-=============================
+Chart2 Direct General Borders (Static)
+======================================
 
 .. contents:: Table of Contents
     :local:
@@ -27,6 +27,10 @@ See :ref:`help_chart2_format_direct_general_borders`.
         :width: 450px
 
         Chart Area Borders Default Dialog
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_general_borders`
 
 Setup
 -----
@@ -127,6 +131,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_general_borders`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_title_alignment:
 
-Chart2 Direct Title/Subtitle Alignment
-======================================
+Chart2 Direct Title/Subtitle Alignment (Static)
+===============================================
 
 .. contents:: Table of Contents
     :local:
@@ -17,6 +17,9 @@ classes are used to set the alignment of the chart title.
 Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
 :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle formatting of a Chart.
 
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_title_alignment`
 
 Setup
 -----
@@ -165,6 +168,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_title_alignment`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_title`

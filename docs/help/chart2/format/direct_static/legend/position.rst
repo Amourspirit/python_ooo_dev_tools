@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_legend_position:
 
-Chart2 Direct Legend Position
-=============================
+Chart2 Direct Legend Position (Static)
+======================================
 
 .. contents:: Table of Contents
     :local:
@@ -14,6 +14,10 @@ Overview
 The :py:class:`ooodev.format.chart2.direct.legend.position_size.Position` class is used to specify the position of the legend.
 
 Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_legend_position`
 
 Setup
 -----
@@ -139,6 +143,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_legend_position`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

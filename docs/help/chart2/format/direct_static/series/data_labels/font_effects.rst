@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_series_labels_font_effects:
 
-Chart2 Direct Series Data Labels Font Effects
-=============================================
+Chart2 Direct Series Data Labels Font Effects (Static)
+======================================================
 
 .. contents:: Table of Contents
     :local:
@@ -16,6 +16,10 @@ as :numref:`c6c13eb7-cf41-4aab-a88e-1bf6ac0b77b5` Font Effects Dialog, but witho
 
 Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
 and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data labels font effects of a Chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_series_labels_font_effects`
 
 Setup
 -----
@@ -164,6 +168,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_series_labels_font_effects`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

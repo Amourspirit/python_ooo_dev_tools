@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_series_labels_font_only:
 
-Chart2 Direct Series Data Labels Font Only
-==========================================
+Chart2 Direct Series Data Labels Font Only (Static)
+===================================================
 
 .. contents:: Table of Contents
     :local:
@@ -16,6 +16,10 @@ as :numref:`f4bbd523-c10f-483c-a9c8-3d370dd19433` Font Dialog, but without the d
 
 Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
 and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data labels font of a Chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_series_labels_font_only`
 
 Setup
 -----
@@ -155,6 +159,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_series_labels_font_only`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

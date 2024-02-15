@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_general_area:
 
-Chart2 Direct General Area
-==========================
+Chart2 Direct General Area (Static)
+===================================
 
 .. contents:: Table of Contents
     :local:
@@ -15,6 +15,10 @@ The :py:mod:`ooodev.format.chart2.direct.general.area` module is used to set the
 
 Since version ``0.28.0`` it is recommended to use the built in methods for setting the background of a Chart.
 See :ref:`help_chart2_format_direct_general_area`.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_general_area`
 
 Setup
 -----
@@ -475,6 +479,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_general_area`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

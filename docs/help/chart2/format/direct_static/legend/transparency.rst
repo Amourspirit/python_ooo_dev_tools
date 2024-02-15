@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_legend_transparency:
 
-Chart2 Direct Legend Transparency
-=================================
+Chart2 Direct Legend Transparency (Static)
+==========================================
 
 .. contents:: Table of Contents
     :local:
@@ -14,6 +14,10 @@ Overview
 Classes in the :py:mod:`ooodev.format.chart2.direct.legend.transparency` module can be used to set the legend transparency.
 
 Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_legend_transparency`
 
 Setup
 -----
@@ -208,6 +212,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_legend_transparency`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

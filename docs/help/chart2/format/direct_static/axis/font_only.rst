@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_axis_font_only:
 
-Chart2 Direct Axis Font Only
-============================
+Chart2 Direct Axis Font Only (Static)
+=====================================
 
 .. contents:: Table of Contents
     :local:
@@ -20,6 +20,10 @@ Methods for formatting the number of an axis are:
     - :py:meth:`Chart2.style_x_axis2() <ooodev.office.chart2.Chart2.style_x_axis2>`
     - :py:meth:`Chart2.style_y_axis() <ooodev.office.chart2.Chart2.style_y_axis>`
     - :py:meth:`Chart2.style_y_axis2() <ooodev.office.chart2.Chart2.style_y_axis2>`
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_axis_font_only`
 
 Setup
 -----
@@ -167,6 +171,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_axis_font_only`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_axis`

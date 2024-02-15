@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_series_labels_borders:
 
-Chart2 Direct Series Data Labels Borders
-========================================
+Chart2 Direct Series Data Labels Borders (Static)
+=================================================
 
 .. contents:: Table of Contents
     :local:
@@ -27,6 +27,10 @@ and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_
         :width: 450px
 
         Chart Data Labels Borders Default Dialog
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_series_labels_borders`
 
 Setup
 -----
@@ -164,6 +168,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_series_labels_borders`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

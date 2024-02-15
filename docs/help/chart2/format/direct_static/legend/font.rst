@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_legend_font:
 
-Chart2 Direct Legend Font
-=========================
+Chart2 Direct Legend Font (Static)
+==================================
 
 .. contents:: Table of Contents
     :local:
@@ -15,6 +15,10 @@ The :py:class:`ooodev.format.chart2.direct.legend.font.Font` combines some of th
 and :ref:`help_chart2_format_direct_legend_font_effects` into a single class. Also a few more options are added.
 
 Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_legend_font`
 
 Setup
 -----
@@ -120,6 +124,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_legend_font`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_legend_font_only`

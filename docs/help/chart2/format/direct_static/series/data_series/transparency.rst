@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_series_series_transparency:
 
-Chart2 Direct Series Data Series Transparency
-=============================================
+Chart2 Direct Series Data Series Transparency (Static)
+======================================================
 
 .. contents:: Table of Contents
     :local:
@@ -17,6 +17,10 @@ Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.s
 
 Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
 and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data series transparency of a Chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_series_series_transparency`
 
 Setup
 -----
@@ -251,6 +255,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_series_series_transparency`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

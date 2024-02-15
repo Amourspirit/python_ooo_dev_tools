@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_series_series_options:
 
-Chart2 Direct Series Data Series Options
-========================================
+Chart2 Direct Series Data Series Options (Static)
+=================================================
 
 .. contents:: Table of Contents
     :local:
@@ -18,6 +18,10 @@ whereas  a column chart will have a dialog similar to :numref:`1510f063-94f3-4b7
 The :py:mod:`ooodev.format.chart2.direct.series.data_series.options` module contains classes for the various options.
 
 Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>` method are used to set the data series options of a Chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_series_series_options`
 
 Figures
 ^^^^^^^
@@ -382,6 +386,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_series_series_options`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

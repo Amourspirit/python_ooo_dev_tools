@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_legend_area:
 
-Chart2 Direct Legend Area
-=========================
+Chart2 Direct Legend Area (Static)
+==================================
 
 .. contents:: Table of Contents
     :local:
@@ -14,6 +14,10 @@ Overview
 The :py:mod:`ooodev.format.chart2.direct.legend.area` module is used to format the Legend parts of a Chart.
 
 Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_legend_area`
 
 Setup
 -----
@@ -434,6 +438,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_legend_area`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

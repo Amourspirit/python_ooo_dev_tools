@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_legend_font_effects:
 
-Chart2 Direct Legend Font Effects
-=================================
+Chart2 Direct Legend Font Effects (Static)
+==========================================
 
 .. contents:: Table of Contents
     :local:
@@ -15,6 +15,10 @@ The :py:class:`ooodev.format.chart2.direct.legend.font.FontEffects` class gives 
 as :numref:`dc7dfc17-6b99-4d07-86a4-b9539f3d61f9` Font Effects Dialog, but without the dialog.
 
 Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_legend_font_effects`
 
 Setup
 -----
@@ -142,6 +146,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_legend_font_effects`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_legend_font`

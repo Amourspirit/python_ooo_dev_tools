@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_legend_borders:
 
-Chart2 Direct Legend Border
-===========================
+Chart2 Direct Legend Border (Static)
+====================================
 
 .. contents:: Table of Contents
     :local:
@@ -15,6 +15,10 @@ The :py:class:`ooodev.format.chart2.direct.legend.borders.LineProperties` class 
 as seen in :numref:`41bf0361-0952-4c53-adbe-14dae5a2e2f3`.
 
 Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_legend_borders`
 
 Setup
 -----
@@ -132,6 +136,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_legend_borders`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`

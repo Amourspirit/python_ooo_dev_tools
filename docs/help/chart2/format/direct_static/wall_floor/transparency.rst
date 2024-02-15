@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_wall_floor_transparency:
 
-Chart2 Direct Wall/Floor Transparency
-=====================================
+Chart2 Direct Wall/Floor Transparency (Static)
+==============================================
 
 .. contents:: Table of Contents
     :local:
@@ -12,6 +12,10 @@ Overview
 --------
 
 Classes in the :py:mod:`ooodev.format.chart2.direct.wall.transparency` module can be used to set the chart wall and floor transparency.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_wall_floor_transparency`
 
 Setup
 -----
@@ -216,6 +220,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_wall_floor_transparency`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

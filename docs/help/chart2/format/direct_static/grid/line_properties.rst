@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_grid_line_properties:
 
-Chart2 Direct Grid Line Properties
-==================================
+Chart2 Direct Grid Line Properties (Static)
+===========================================
 
 .. contents:: Table of Contents
     :local:
@@ -12,6 +12,10 @@ Overview
 --------
 
 The :py:class:`ooodev.format.chart2.direct.grid.LineProperties` class can be used to set the line properties of a chart grid.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_grid_line_properties`
 
 Setup
 -----
@@ -127,6 +131,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_grid_line_properties`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

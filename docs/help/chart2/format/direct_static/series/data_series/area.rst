@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_series_series_area:
 
-Chart2 Direct series Data Series Area
-=====================================
+Chart2 Direct series Data Series Area (Static)
+==============================================
 
 .. contents:: Table of Contents
     :local:
@@ -15,6 +15,10 @@ The :py:mod:`ooodev.format.chart2.direct.series.data_series.area` module contain
 
 Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
 and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data series area of a Chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_series_series_area`
 
 Setup
 -----
@@ -561,6 +565,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_series_series_area`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

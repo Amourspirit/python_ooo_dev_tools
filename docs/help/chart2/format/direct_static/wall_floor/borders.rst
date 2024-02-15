@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_wall_floor_borders:
 
-Chart2 Direct Wall/Floor Borders
-================================
+Chart2 Direct Wall/Floor Borders (Static)
+=========================================
 
 .. contents:: Table of Contents
     :local:
@@ -25,6 +25,10 @@ as seen in :numref:`b608a83b-aa0a-4389-aee0-6d65a2b5536e`.
         :width: 450px
 
         Chart Area Borders Default Dialog
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_wall_floor_borders`
 
 Setup
 -----
@@ -155,6 +159,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_wall_floor_borders`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`

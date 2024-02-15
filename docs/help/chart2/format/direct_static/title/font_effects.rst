@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_title_font_effects:
 
-Chart2 Direct Title/Subtitle Font Effects
-=========================================
+Chart2 Direct Title/Subtitle Font Effects (Static)
+==================================================
 
 .. contents:: Table of Contents
     :local:
@@ -16,6 +16,10 @@ as :numref:`efd83001-e9a2-41c4-9c00-7771ec355a1e` Font Effects Dialog, but witho
 
 Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
 :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle font effects of a Chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_title_font_effects`
 
 Setup
 -----
@@ -170,6 +174,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_title_font_effects`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_title_font_only`

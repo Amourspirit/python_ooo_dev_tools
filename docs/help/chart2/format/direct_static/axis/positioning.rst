@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_axis_positioning:
 
-Chart2 Direct Axis Positioning
-==============================
+Chart2 Direct Axis Positioning (Static)
+=======================================
 
 .. contents:: Table of Contents
     :local:
@@ -26,6 +26,9 @@ as :numref:`9800e630-952c-4947-ba95-f4d5c456284f` Axis Positioning Dialog, but w
 
         Chart Axis Positioning Dialog
 
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_axis_positioning`
 
 Setup
 -----
@@ -275,6 +278,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_axis_positioning`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_axis`

@@ -1,7 +1,7 @@
 .. _help_chart2_format_direct_static_title_borders:
 
-Chart2 Direct Title/Subtitle Borders
-====================================
+Chart2 Direct Title/Subtitle Borders (Static)
+=============================================
 
 .. contents:: Table of Contents
     :local:
@@ -16,6 +16,10 @@ as seen in :numref:`a31ee22f-14cc-43ef-844f-7a078ec1abd9`.
 
 Calls to the :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>` and
 :py:meth:`Chart2.style_subtitle() <ooodev.office.chart2.Chart2.style_subtitle>` methods are used to set the Title and Subtitle borders of a Chart.
+
+.. seealso::
+
+    - :ref:`help_chart2_format_direct_title_borders`
 
 Setup
 -----
@@ -163,6 +167,7 @@ Related Topics
     .. cssclass:: ul-list
 
         - :ref:`part05`
+        - :ref:`help_chart2_format_direct_title_borders`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`
