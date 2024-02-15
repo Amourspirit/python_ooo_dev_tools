@@ -11,7 +11,7 @@ Chart2 Direct Wall/Floor Area
 Overview
 --------
 
-The :py:mod:`ooodev.format.chart2.direct.wall` module is used to format the wall/floor of a Chart.
+The various ``style_*`` methods are used to format the wall/floor of a Chart.
 
 
 Setup
@@ -22,36 +22,36 @@ General setup for examples.
 .. tabs::
 
     .. code-tab:: python
+        :emphasize-lines: 25
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.wall.area import Color as WallColor
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.utils.color import StandardColor
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("col_chart3d.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "col_chart3d.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.PURPLE_DARK1,
+                    width=0.7,
+                )
 
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_DARK1, width=1.0)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_bdr_line])
-
-                wall_color = WallColor(color=StandardColor.DEFAULT_BLUE)
-                Chart2.style_wall(chart_doc=chart_doc, styles=[wall_color])
+                wall = chart_doc.first_diagram.wall
+                wall.style_area_color(StandardColor.DEFAULT_BLUE)
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
@@ -66,7 +66,7 @@ General setup for examples.
 Color
 -----
 
-The :py:class:`ooodev.format.chart2.direct.general.area.Color` class is used to set the background color of a Chart.
+The ``style_area_color()`` method is used to set the background color the chart wall and floor.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -79,12 +79,11 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Color as WallColor
-        # ... other code
+        from ooodev.utils.color import StandardColor
 
-        # wall color
-        wall_color = WallColor(color=StandardColor.DEFAULT_BLUE)
-        Chart2.style_wall(chart_doc=chart_doc, styles=[wall_color])
+        # ... other code
+        wall = chart_doc.first_diagram.wall
+        wall.style_area_color(StandardColor.DEFAULT_BLUE)
 
     .. only:: html
 
@@ -98,9 +97,11 @@ Apply to floor.
 
     .. code-tab:: python
 
-        # floor color
-        floor_color = WallColor(color=StandardColor.BLUE_DARK1)
-        Chart2.style_floor(chart_doc=chart_doc, styles=[floor_color])
+        from ooodev.utils.color import StandardColor
+
+        # ... other code
+        floor = chart_doc.first_diagram.floor
+        floor.style_area_color(StandardColor.DEFAULT_BLUE)
 
     .. only:: html
 
@@ -108,12 +109,12 @@ Apply to floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`181c5c98-e4e1-4519-b91a-ffc39f5fa430` and :numref:`21408192-4819-4557-beba-b48d881312ee`
+The results are seen in :numref:`181c5c98-e4e1-4519-b91a-ffc39f5fa430_` and :numref:`21408192-4819-4557-beba-b48d881312ee_`
 
 
 .. cssclass:: screen_shot
 
-    .. _181c5c98-e4e1-4519-b91a-ffc39f5fa430:
+    .. _181c5c98-e4e1-4519-b91a-ffc39f5fa430_:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/181c5c98-e4e1-4519-b91a-ffc39f5fa430
         :alt: Chart with Wall and Floor color set
@@ -124,7 +125,7 @@ The results are seen in :numref:`181c5c98-e4e1-4519-b91a-ffc39f5fa430` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _21408192-4819-4557-beba-b48d881312ee:
+    .. _21408192-4819-4557-beba-b48d881312ee_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/21408192-4819-4557-beba-b48d881312ee
         :alt: Chart Wall Color Dialog
@@ -136,7 +137,7 @@ The results are seen in :numref:`181c5c98-e4e1-4519-b91a-ffc39f5fa430` and :numr
 Gradient
 --------
 
-The :py:class:`ooodev.format.chart2.direct.wall.area.Gradient` class is used to set the background gradient of a Chart.
+The ``style_area_gradient_from_preset()`` method is called to set the background gradient of a Chart Wall/Floor.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -154,11 +155,13 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Gradient as WallGradient, PresetGradientKind
+        from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
 
         # ... other code
-        wall_grad = WallGradient.from_preset(chart_doc, PresetGradientKind.DEEP_OCEAN)
-        Chart2.style_wall(chart_doc=chart_doc, styles=[wall_grad])
+        wall = chart_doc.first_diagram.wall
+        wall.style_area_gradient_from_preset(
+            preset=PresetGradientKind.DEEP_OCEAN,
+        )
 
     .. only:: html
 
@@ -172,8 +175,13 @@ Apply to Floor.
 
     .. code-tab:: python
 
-        floor_grad = WallGradient.from_preset(chart_doc, PresetGradientKind.MIDNIGHT)
-        Chart2.style_floor(chart_doc=chart_doc, styles=[floor_grad])
+        from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+
+        # ... other code
+        floor = chart_doc.first_diagram.floor
+        floor.style_area_gradient_from_preset(
+            preset=PresetGradientKind.DEEP_OCEAN,
+        )
 
     .. only:: html
 
@@ -181,12 +189,12 @@ Apply to Floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`3f60aea8-ab07-4831-9f2c-ba13c69bef55` and :numref:`a1ca65eb-8f71-4113-b5d9-57f11e1a88d3`
+The results are seen in :numref:`3f60aea8-ab07-4831-9f2c-ba13c69bef55_1` and :numref:`a1ca65eb-8f71-4113-b5d9-57f11e1a88d3_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _3f60aea8-ab07-4831-9f2c-ba13c69bef55:
+    .. _3f60aea8-ab07-4831-9f2c-ba13c69bef55_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3f60aea8-ab07-4831-9f2c-ba13c69bef55
         :alt: Chart with gradient wall and floor
@@ -197,7 +205,7 @@ The results are seen in :numref:`3f60aea8-ab07-4831-9f2c-ba13c69bef55` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _a1ca65eb-8f71-4113-b5d9-57f11e1a88d3:
+    .. _a1ca65eb-8f71-4113-b5d9-57f11e1a88d3_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/a1ca65eb-8f71-4113-b5d9-57f11e1a88d3
         :alt: Chart Wall Gradient Dialog
@@ -210,7 +218,7 @@ The results are seen in :numref:`3f60aea8-ab07-4831-9f2c-ba13c69bef55` and :numr
 Apply a custom Gradient
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Demonstrates how to create a custom gradient.
+The ``style_area_gradient()`` method is called to set the background gradient of a Chart Wall/Floor.
 
 Apply the preset gradient to wall and floor
 """""""""""""""""""""""""""""""""""""""""""
@@ -221,17 +229,17 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Gradient as WallGradient, GradientStyle
-        from ooodev.format.chart2.direct.wall.area import ColorRange
+        from ooo.dyn.awt.gradient_style import GradientStyle
+        from ooodev.utils.data_type.color_range import ColorRange
+        from ooodev.utils.color import StandardColor
 
         # ... other code
-        wall_grad = WallGradient(
-            chart_doc=chart_doc,
+        wall = chart_doc.first_diagram.wall
+        wall.style_area_gradient(
             style=GradientStyle.LINEAR,
             angle=45,
             grad_color=ColorRange(StandardColor.BLUE_DARK3, StandardColor.BLUE_LIGHT2),
         )
-        Chart2.style_wall(chart_doc=chart_doc, styles=[wall_grad])
 
     .. only:: html
 
@@ -245,13 +253,17 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_grad = WallGradient(
-            chart_doc=chart_doc,
+        from ooo.dyn.awt.gradient_style import GradientStyle
+        from ooodev.utils.data_type.color_range import ColorRange
+        from ooodev.utils.color import StandardColor
+
+        # ... other code
+        floor = chart_doc.first_diagram.floor
+        floor.style_area_gradient(
             style=GradientStyle.LINEAR,
-            angle=-10,
-            grad_color=ColorRange(StandardColor.BLUE_DARK4, StandardColor.BLUE),
+            angle=45,
+            grad_color=ColorRange(StandardColor.BLUE_DARK3, StandardColor.BLUE_LIGHT2),
         )
-        Chart2.style_floor(chart_doc=chart_doc, styles=[floor_grad])
 
     .. only:: html
 
@@ -259,12 +271,12 @@ Apply to floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`1790240c-ce82-4e42-b115-1a41bff70db7`
+The results are seen in :numref:`1790240c-ce82-4e42-b115-1a41bff70db7_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _1790240c-ce82-4e42-b115-1a41bff70db7:
+    .. _1790240c-ce82-4e42-b115-1a41bff70db7_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1790240c-ce82-4e42-b115-1a41bff70db7
         :alt: Chart with custom gradient background
@@ -277,7 +289,7 @@ The results are seen in :numref:`1790240c-ce82-4e42-b115-1a41bff70db7`
 Image
 -----
 
-The :py:class:`ooodev.format.chart2.direct.wall.area.Img` class is used to set the background image of the wall and floor.
+The ``style_area_image_from_preset()`` or ``style_area_image()`` methods are called to set the background image of the Chart Wall/Floor.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -293,11 +305,11 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Img as WallImg, PresetImageKind
-        # ... other code
+        from ooodev.format.inner.preset.preset_image import PresetImageKind
 
-        wall_img = WallImg.from_preset(chart_doc, PresetImageKind.ICE_LIGHT)
-        Chart2.style_wall(chart_doc=chart_doc, styles=[wall_img])
+        # ... other code
+        wall = chart_doc.first_diagram.wall
+        wall.style_area_image_from_preset(preset=PresetImageKind.ICE_LIGHT)
 
     .. only:: html
 
@@ -311,8 +323,11 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_img = WallImg.from_preset(chart_doc, PresetImageKind.MARBLE)
-        Chart2.style_floor(chart_doc=chart_doc, styles=[floor_img])
+        from ooodev.format.inner.preset.preset_image import PresetImageKind
+
+        # ... other code
+        floor = chart_doc.first_diagram.floor
+        floor.style_area_image_from_preset(preset=PresetImageKind.ICE_LIGHT)
 
     .. only:: html
 
@@ -320,12 +335,12 @@ Apply to floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`17e4da98-46c0-47a0-84e0-6d5ba1f13a57` and :numref:`7db6608b-e2bc-4c75-a41a-39d3ebf4e05c`
+The results are seen in :numref:`17e4da98-46c0-47a0-84e0-6d5ba1f13a57_1` and :numref:`7db6608b-e2bc-4c75-a41a-39d3ebf4e05c_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _17e4da98-46c0-47a0-84e0-6d5ba1f13a57:
+    .. _17e4da98-46c0-47a0-84e0-6d5ba1f13a57_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/17e4da98-46c0-47a0-84e0-6d5ba1f13a57
         :alt: Chart with wall and floor image
@@ -336,7 +351,7 @@ The results are seen in :numref:`17e4da98-46c0-47a0-84e0-6d5ba1f13a57` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _7db6608b-e2bc-4c75-a41a-39d3ebf4e05c:
+    .. _7db6608b-e2bc-4c75-a41a-39d3ebf4e05c_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/7db6608b-e2bc-4c75-a41a-39d3ebf4e05c
         :alt: Chart Area Image Dialog
@@ -348,7 +363,7 @@ The results are seen in :numref:`17e4da98-46c0-47a0-84e0-6d5ba1f13a57` and :numr
 Pattern
 -------
 
-The :py:class:`ooodev.format.chart2.direct.wall.area.Pattern` class is used to set the background pattern of a Chart.
+The ``style_area_pattern_from_preset()`` or ``style_area_pattern()`` methods are called to set the background pattern of a Chart Wall/Floor.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -364,11 +379,11 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Pattern as WallPattern, PresetPatternKind
-        # ... other code
+        from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
 
-        wall_pattern = WallPattern.from_preset(chart_doc, PresetPatternKind.ZIG_ZAG)
-        Chart2.style_wall(chart_doc=chart_doc, styles=[wall_pattern])
+        # ... other code
+        wall = chart_doc.first_diagram.wall
+        wall.style_area_pattern_from_preset(preset=PresetPatternKind.ZIG_ZAG)
 
 
     .. only:: html
@@ -383,8 +398,11 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_pattern = WallPattern.from_preset(chart_doc, PresetPatternKind.PERCENT_20)
-        Chart2.style_floor(chart_doc=chart_doc, styles=[floor_pattern])
+        from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
+
+        # ... other code
+        floor = chart_doc.first_diagram.floor
+        floor.style_area_pattern_from_preset(preset=PresetPatternKind.ZIG_ZAG)
 
 
     .. only:: html
@@ -422,7 +440,7 @@ The results are seen in :numref:`9cc6eeae-d204-4f6d-b10d-18d7434fe156` and :numr
 Hatch
 -----
 
-The :py:class:`ooodev.format.chart2.direct.wall.area.Hatch` class is used to set the background hatch of a Chart.
+The ``style_area_hatch_from_preset()`` or ``style_area_hatch()`` methods are called to set the background hatch of a Chart Wall/Floor.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -438,11 +456,11 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.area import Hatch as WallHatch, PresetHatchKind
-        # ... other code
+        from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
 
-        wall_hatch = WallHatch.from_preset(chart_doc, PresetHatchKind.BLUE_45_DEGREES_CROSSED)
-        Chart2.style_wall(chart_doc=chart_doc, styles=[wall_hatch])
+        # ... other code
+        wall = chart_doc.first_diagram.wall
+        wall.style_area_hatch_from_preset(preset=PresetHatchKind.BLUE_45_DEGREES)
 
     .. only:: html
 
@@ -456,8 +474,11 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_hatch = WallHatch.from_preset(chart_doc, PresetHatchKind.BLUE_45_DEGREES)
-        Chart2.style_floor(chart_doc=chart_doc, styles=[floor_hatch])
+        from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
+
+        # ... other code
+        floor = chart_doc.first_diagram.floor
+        floor.style_area_hatch_from_preset(preset=PresetHatchKind.BLUE_45_DEGREES)
 
     .. only:: html
 
@@ -465,12 +486,12 @@ Apply to floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`cec9bb9e-9edb-46dc-96c1-5fc57069973a` and :numref:`92b60156-00b7-4c75-bbb2-a7fa829992b3`
+The results are seen in :numref:`cec9bb9e-9edb-46dc-96c1-5fc57069973a_1` and :numref:`92b60156-00b7-4c75-bbb2-a7fa829992b3_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _cec9bb9e-9edb-46dc-96c1-5fc57069973a:
+    .. _cec9bb9e-9edb-46dc-96c1-5fc57069973a_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/cec9bb9e-9edb-46dc-96c1-5fc57069973a
         :alt: Chart with wall and floor hatch
@@ -481,7 +502,7 @@ The results are seen in :numref:`cec9bb9e-9edb-46dc-96c1-5fc57069973a` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _92b60156-00b7-4c75-bbb2-a7fa829992b3:
+    .. _92b60156-00b7-4c75-bbb2-a7fa829992b3_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/92b60156-00b7-4c75-bbb2-a7fa829992b3
         :alt: Chart Area Hatch Dialog
@@ -504,16 +525,5 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_general_area`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_wall() <ooodev.office.chart2.Chart2.style_wall>`
-        - :py:meth:`Chart2.style_floor() <ooodev.office.chart2.Chart2.style_floor>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:mod:`ooodev.format.chart2.direct.wall`
-        - :py:class:`ooodev.format.chart2.direct.wall.area.Color`
-        - :py:class:`ooodev.format.chart2.direct.wall.area.Gradient`
-        - :py:class:`ooodev.format.chart2.direct.wall.area.Img`
-        - :py:class:`ooodev.format.chart2.direct.wall.area.Pattern`
-        - :py:class:`ooodev.format.chart2.direct.wall.area.Hatch`
+        - :py:class:`~ooodev.loader.Lo`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

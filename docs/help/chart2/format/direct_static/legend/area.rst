@@ -440,7 +440,7 @@ Related Topics
         - :ref:`help_chart2_format_direct_general_area`
         - :ref:`help_chart2_format_direct_legend_transparency`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.legend.area.Color`

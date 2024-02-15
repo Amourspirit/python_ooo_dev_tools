@@ -159,21 +159,6 @@ class ChartDiagram(
 
     # endregion CoordinateSystemContainerPartial overrides
 
-    def get_legend(self) -> ChartLegend | None:
-        """
-        Gets the Legend Component.
-
-        Returns:
-            ChartLegend | None: Legend Component if found, otherwise ``None``.
-        """
-        # pylint: disable=import-outside-toplevel
-        legend = super().get_legend()
-        if legend is None:
-            return None
-        from .chart_legend import ChartLegend
-
-        return ChartLegend(owner=self, chart_doc=self.chart_doc, component=legend, lo_inst=self.lo_inst)  # type: ignore
-
     def view_legend(self, visible: bool) -> None:
         """
         Shows or hides the legend.
@@ -198,8 +183,45 @@ class ChartDiagram(
             legend.set_property(LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
             self.set_legend(legend.component)
 
+    # region DiagramPartial (XDiagram) Overrides
+    def get_legend(self) -> ChartLegend | None:
+        """
+        Gets the Legend Component.
+
+        Returns:
+            ChartLegend | None: Legend Component if found, otherwise ``None``.
+        """
+        # pylint: disable=import-outside-toplevel
+        legend = self.component.getLegend()
+        if legend is None:
+            return None
+        from .chart_legend import ChartLegend
+
+        return ChartLegend(owner=self, chart_doc=self.chart_doc, component=legend, lo_inst=self.lo_inst)  # type: ignore
+
+    def get_wall(self) -> ChartWall:
+        """
+        Gets the ``ChartWall`` that contains the property set that determines the visual appearance of the wall.
+
+        Returns:
+            ChartWall: Wall Component.
+        """
+        return self.wall
+
+    def get_floor(self) -> ChartFloor:
+        """
+        Gets the ``ChartFloor`` that contains the property set that determines the visual appearance of the wall.
+
+        Returns:
+            ChartFloor: Floor Component.
+        """
+        return self.floor
+
+    # endregion DiagramPartial (XDiagram) Overrides
+
     @property
     def wall(self) -> ChartWall:
+        """Gets the ``ChartFloor`` that contains the property set that determines the visual appearance of the wall."""
         # pylint: disable=import-outside-toplevel
         if self._wall is None:
             from .chart_wall import ChartWall
@@ -209,6 +231,7 @@ class ChartDiagram(
 
     @property
     def floor(self) -> ChartFloor:
+        """Gets the ``ChartFloor`` that contains the property set that determines the visual appearance of the wall."""
         # pylint: disable=import-outside-toplevel
         if self._floor is None:
             from .chart_floor import ChartFloor

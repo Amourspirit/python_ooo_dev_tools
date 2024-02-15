@@ -11,13 +11,13 @@ Chart2 Direct Wall/Floor Borders
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.wall.borders.LineProperties` class gives the same options as the Chart Wall Borders dialog
-as seen in :numref:`b608a83b-aa0a-4389-aee0-6d65a2b5536e`.
+The ``style_border_line()`` method gives the same options as the Chart Wall Borders dialog
+as seen in :numref:`b608a83b-aa0a-4389-aee0-6d65a2b5536e_1`.
 
 
 .. cssclass:: screen_shot
 
-    .. _b608a83b-aa0a-4389-aee0-6d65a2b5536e:
+    .. _b608a83b-aa0a-4389-aee0-6d65a2b5536e_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/b608a83b-aa0a-4389-aee0-6d65a2b5536e
         :alt: Chart Area Borders Default Dialog
@@ -32,49 +32,43 @@ Setup
 .. tabs::
 
     .. code-tab:: python
+        :emphasize-lines: 25,26,27
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.wall.borders import LineProperties as WallLineProperties
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
-
+        from ooodev.utils.color import StandardColor
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("col_chart3d.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "col_chart3d.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
-
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_DARK1, width=1.0)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_bdr_line])
-
-                wall_bdr_line = WallLineProperties(
-                    color=StandardColor.PURPLE_DARK2, width=1.2, transparency=30
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.PURPLE_DARK1,
+                    width=0.7,
                 )
-                Chart2.style_wall(chart_doc=chart_doc, styles=[wall_bdr_line])
 
-                floor_bdr_line = WallLineProperties(
-                    color=StandardColor.PURPLE_DARK1, width=0.8, transparency=20
+                wall = chart_doc.first_diagram.wall
+                wall.style_border_line(
+                    StandardColor.PURPLE_DARK1, width=0.8, transparency=20
                 )
-                Chart2.style_floor(chart_doc=chart_doc, styles=[floor_bdr_line])
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
+
 
     .. only:: html
 
@@ -85,7 +79,7 @@ Setup
 Setting Line Properties
 -----------------------
 
-The :py:class:`~ooodev.format.chart2.direct.wall.borders.LineProperties` class is used to set the border line properties.
+The ``style_border_line()`` method is called to set the border line properties.
 
 Before applying formatting is seen in :numref:`fceab75a-31d7-4742-a331-83a79232b783`.
 
@@ -95,11 +89,13 @@ Apply to wall.
 
     .. code-tab:: python
 
-        from ooodev.format.chart2.direct.wall.borders import LineProperties as WallLineProperties
-        # ... other code
+        from ooodev.utils.color import StandardColor
 
-        wall_bdr_line = WallLineProperties(color=StandardColor.PURPLE_DARK2, width=1.2, transparency=30)
-        Chart2.style_wall(chart_doc=chart_doc, styles=[wall_bdr_line])
+        # ... other code
+        wall = chart_doc.first_diagram.wall
+        wall.style_border_line(
+            StandardColor.PURPLE_DARK1, width=0.8, transparency=20
+        )
 
     .. only:: html
 
@@ -113,8 +109,13 @@ Apply to floor.
 
     .. code-tab:: python
 
-        floor_bdr_line = WallLineProperties(color=StandardColor.PURPLE_DARK1, width=0.8, transparency=20)
-        Chart2.style_floor(chart_doc=chart_doc, styles=[floor_bdr_line])
+        from ooodev.utils.color import StandardColor
+
+        # ... other code
+        floor = chart_doc.first_diagram.floor
+        floor.style_border_line(
+            StandardColor.PURPLE_DARK1, width=0.8, transparency=20
+        )
 
     .. only:: html
 
@@ -122,12 +123,12 @@ Apply to floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`36619546-8646-4d90-90eb-ed1cac18f986` and :numref:`2568b994-2e62-4401-bb8d-29c3b07a005e`
+The results are seen in :numref:`36619546-8646-4d90-90eb-ed1cac18f986_1` and :numref:`2568b994-2e62-4401-bb8d-29c3b07a005e_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _36619546-8646-4d90-90eb-ed1cac18f986:
+    .. _36619546-8646-4d90-90eb-ed1cac18f986_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/36619546-8646-4d90-90eb-ed1cac18f986
         :alt: Chart with wall and floor border set
@@ -138,7 +139,7 @@ The results are seen in :numref:`36619546-8646-4d90-90eb-ed1cac18f986` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _2568b994-2e62-4401-bb8d-29c3b07a005e:
+    .. _2568b994-2e62-4401-bb8d-29c3b07a005e_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/2568b994-2e62-4401-bb8d-29c3b07a005e
         :alt: Chart Area Borders Default Dialog Modified
@@ -159,11 +160,5 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_general_borders`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_wall() <ooodev.office.chart2.Chart2.style_wall>`
-        - :py:meth:`Chart2.style_floor() <ooodev.office.chart2.Chart2.style_floor>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.wall.borders.LineProperties`
+        - :py:class:`~ooodev.loader.Lo`
+        - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`

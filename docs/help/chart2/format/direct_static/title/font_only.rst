@@ -168,7 +168,7 @@ Related Topics
         - :ref:`help_chart2_format_direct_title_font_effects`
         - :ref:`help_chart2_format_direct_title_font`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_title() <ooodev.office.chart2.Chart2.style_title>`
