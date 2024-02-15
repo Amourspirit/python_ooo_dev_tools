@@ -195,13 +195,12 @@ class ChartFillPatternPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_area_pattern_from_preset", cargs)
             if cargs.cancel is True:
+                if cargs.handled is True:
+                    return None
+                cargs.set("initial_event", "before_style_area_pattern_from_preset")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_area_pattern_from_preset")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Image has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style Area Image has been cancelled.")
                 else:
                     return None
             preset = cargs.event_data.get("preset", preset)

@@ -11,22 +11,8 @@ Chart2 Direct Series Data Series Borders
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.series.data_series.borders.LineProperties` class gives the same options as the Chart Data Series Borders dialog
-as seen in :numref:`c4cc6299-704d-40be-8a8b-68daff8c5eef`.
-
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
-and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data series borders of a Chart.
-
-.. cssclass:: screen_shot
-
-    .. _c4cc6299-704d-40be-8a8b-68daff8c5eef:
-
-    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/c4cc6299-704d-40be-8a8b-68daff8c5eef
-        :alt: Chart Data Series Borders Default Dialog
-        :figclass: align-center
-        :width: 450px
-
-        Chart Data Series Borders Default Dialog
+The Data Series and Data Point of a Chart can be styled using the various ``style_*`` methods of
+the :py:class:`~ooodev.calc.chart2.chart_data_series.ChartDataSeries` and :py:class:`~ooodev.calc.chart2.chart_data_point.ChartDataPoint` classes.
 
 Setup
 -----
@@ -34,39 +20,43 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 27, 28
+        :emphasize-lines: 29,30,31,32
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.series.data_series.borders import LineProperties as SeriesLineProperties
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient, PresetGradientKind
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.utils.color import StandardColor
+        from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("col_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "col_chart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.BLUE_LIGHT3,
+                    width=0.7,
+                )
+                _ = chart_doc.style_area_gradient_from_preset(
+                    preset=PresetGradientKind.TEAL_BLUE,
+                )
 
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_LIGHT3, width=0.7)
-                chart_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.TEAL_BLUE)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
-
-                data_series_border = SeriesLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
-                Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_border])
+                ds = chart_doc.get_data_series()[0]
+                ds.style_border_line(
+                    color=StandardColor.MAGENTA_DARK1,
+                    width=0.75,
+                )
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
@@ -81,7 +71,7 @@ Setup
 Setting Line Properties
 -----------------------
 
-The :py:class:`~ooodev.format.chart2.direct.general.borders.LineProperties` class is used to set the data series border line properties.
+The ``style_border_line()`` method is called to set the data series border line properties.
 
 Before formatting the chart is seen in :numref:`236874763-f2b763db-c294-4496-971e-d4982e6d7b68`.
 
@@ -93,8 +83,11 @@ Style Data Series
     .. code-tab:: python
 
         # ... other code
-        data_series_border = SeriesLineProperties(color=StandardColor.MAGENTA_DARK1, width=0.75)
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[data_series_border])
+        ds = chart_doc.get_data_series()[0]
+        ds.style_border_line(
+            color=StandardColor.MAGENTA_DARK1,
+            width=0.75,
+        )
 
     .. only:: html
 
@@ -102,12 +95,12 @@ Style Data Series
 
             .. group-tab:: None
 
-The results are seen in :numref:`f462c874-3624-4eaa-898f-ea79e4b98bc4` and :numref:`cc6bba18-1fcd-4188-a0c5-14e8dbed654d`.
+The results are seen in :numref:`f462c874-3624-4eaa-898f-ea79e4b98bc4_1` and :numref:`cc6bba18-1fcd-4188-a0c5-14e8dbed654d_1`.
 
 
 .. cssclass:: screen_shot
 
-    .. _f462c874-3624-4eaa-898f-ea79e4b98bc4:
+    .. _f462c874-3624-4eaa-898f-ea79e4b98bc4_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f462c874-3624-4eaa-898f-ea79e4b98bc4
         :alt: Chart with data series border set
@@ -118,7 +111,7 @@ The results are seen in :numref:`f462c874-3624-4eaa-898f-ea79e4b98bc4` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _cc6bba18-1fcd-4188-a0c5-14e8dbed654d:
+    .. _cc6bba18-1fcd-4188-a0c5-14e8dbed654d_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/cc6bba18-1fcd-4188-a0c5-14e8dbed654d
         :alt: Chart Data Series Borders Default Dialog
@@ -135,7 +128,12 @@ Style Data Point
     .. code-tab:: python
 
         # ... other code
-        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=1, styles=[data_series_border])
+        ds = chart_doc.get_data_series()[0]
+        dp = ds[1]
+        dp.style_border_line(
+            color=StandardColor.MAGENTA_DARK1,
+            width=0.75,
+        )
 
     .. only:: html
 
@@ -143,12 +141,12 @@ Style Data Point
 
             .. group-tab:: None
 
-The results are seen in :numref:`8a2b209b-b856-43fb-9df1-9f74bad97d96`.
+The results are seen in :numref:`8a2b209b-b856-43fb-9df1-9f74bad97d96_1`.
 
 
 .. cssclass:: screen_shot
 
-    .. _8a2b209b-b856-43fb-9df1-9f74bad97d96:
+    .. _8a2b209b-b856-43fb-9df1-9f74bad97d96_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8a2b209b-b856-43fb-9df1-9f74bad97d96
         :alt: Chart with data point border set
@@ -170,11 +168,4 @@ Related Topics
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_wall_floor_area`
         - :ref:`help_chart2_format_direct_series_labels_borders`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
-        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.series.data_series.borders.LineProperties`
+        - :py:class:`~ooodev.loader.Lo`

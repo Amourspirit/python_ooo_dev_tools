@@ -12,8 +12,8 @@ Overview
 --------
 
 Depending on the chart type the Data Series Options dialog will have different options.
-For example a Pie chart will have a options dialog similar to :numref:`bb11ad9f-1220-41e7-921a-a69e96a47880`
-whereas  a column chart will have a dialog similar to :numref:`1510f063-94f3-4b7c-a8ba-6be4c222f32e`.
+For example a Pie chart will have a options dialog similar to :numref:`bb11ad9f-1220-41e7-921a-a69e96a47880_1`
+whereas  a column chart will have a dialog similar to :numref:`1510f063-94f3-4b7c-a8ba-6be4c222f32e_1`.
 
 The :py:mod:`ooodev.format.chart2.direct.series.data_series.options` module contains classes for the various options.
 
@@ -24,7 +24,7 @@ Figures
 
 .. cssclass:: screen_shot
 
-    .. _bb11ad9f-1220-41e7-921a-a69e96a47880:
+    .. _bb11ad9f-1220-41e7-921a-a69e96a47880_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bb11ad9f-1220-41e7-921a-a69e96a47880
         :alt: Data Series Options Dialog Simple
@@ -35,7 +35,7 @@ Figures
 
 .. cssclass:: screen_shot
 
-    .. _1510f063-94f3-4b7c-a8ba-6be4c222f32e:
+    .. _1510f063-94f3-4b7c-a8ba-6be4c222f32e_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1510f063-94f3-4b7c-a8ba-6be4c222f32e
         :alt: Data Series Options Dialog Complex
@@ -52,45 +52,50 @@ General setup for examples.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 28, 29
+        :emphasize-lines: 30, 31
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.series.data_series.options import Orientation
-        from ooodev.utils.data_type.angle import Angle
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient, PresetGradientKind
-        from ooodev.office.calc import Calc
+        from ooodev.calc import CalcDoc, ZoomKind
+        from ooodev.loader.lo import Lo
         from ooodev.office.chart2 import Chart2
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
+        from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+        from ooodev.format.chart2.direct.series.data_series.options import Orientation
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("pie_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "piechart_3d.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.BLUE_LIGHT3,
+                    width=0.7,
+                )
+                _ = chart_doc.style_area_gradient_from_preset(
+                    preset=PresetGradientKind.TEAL_BLUE,
+                )
 
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="pie_chart")
+                orient = Orientation(chart_doc=chart_doc.component, clockwise=True, angle=45)
+                Chart2.style_data_series(chart_doc=chart_doc.component, styles=[orient])
 
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_LIGHT3, width=0.7)
-                chart_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.TEAL_BLUE)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
-
-                orient = Orientation(chart_doc=chart_doc, clockwise=True, angle=Angle(45))
-                Chart2.style_data_series(chart_doc=chart_doc, styles=[orient])
+                # f_style = ds.style_label_border_line_get()
+                # assert f_style is not None
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
+
 
     .. only:: html
 
@@ -101,7 +106,7 @@ General setup for examples.
 Options for Orientation
 -----------------------
 
-Charts such as Pie and Donut have a Orientation option as shown in :numref:`bb11ad9f-1220-41e7-921a-a69e96a47880`.
+Charts such as Pie and Donut have a Orientation option as shown in :numref:`bb11ad9f-1220-41e7-921a-a69e96a47880_1`.
 
 With the :py:class:`~ooodev.format.chart2.direct.series.data_series.options.Orientation` class we can set the angle and direction of the chart.
 
@@ -114,8 +119,8 @@ Before formatting the chart is seen in :numref:`ce52cea5-2b22-4d2a-a158-9e22364d
         from ooodev.format.chart2.direct.series.data_series.options import Orientation
         # ... other code
 
-        orient = Orientation(chart_doc=chart_doc, clockwise=True, angle=Angle(45))
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[orient])
+        orient = Orientation(chart_doc=chart_doc.component, clockwise=True, angle=45)
+        Chart2.style_data_series(chart_doc=chart_doc.component, styles=[orient])
 
     .. only:: html
 
@@ -123,11 +128,11 @@ Before formatting the chart is seen in :numref:`ce52cea5-2b22-4d2a-a158-9e22364d
 
             .. group-tab:: None
 
-The results are seen in :numref:`6066b9d9-a91a-4a58-855d-754a7fe24de6` and :numref:`44d8288f-2902-4951-84a7-2417e79181dd`.
+The results are seen in :numref:`6066b9d9-a91a-4a58-855d-754a7fe24de6_1` and :numref:`44d8288f-2902-4951-84a7-2417e79181dd_1`.
 
 .. cssclass:: screen_shot
 
-    .. _6066b9d9-a91a-4a58-855d-754a7fe24de6:
+    .. _6066b9d9-a91a-4a58-855d-754a7fe24de6_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/6066b9d9-a91a-4a58-855d-754a7fe24de6
         :alt: Chart with orientation set to clockwise and angle set to 45 degrees
@@ -138,7 +143,7 @@ The results are seen in :numref:`6066b9d9-a91a-4a58-855d-754a7fe24de6` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _44d8288f-2902-4951-84a7-2417e79181dd:
+    .. _44d8288f-2902-4951-84a7-2417e79181dd_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/44d8288f-2902-4951-84a7-2417e79181dd
         :alt: Chart Data Series options Dialog
@@ -164,8 +169,8 @@ If ``True`` this the primary y-axis is used, if ``False`` the secondary y-axis i
         from ooodev.format.chart2.direct.series.data_series.options import AlignSeries
         # ... other code
 
-        align_options = AlignSeries(chart_doc, primary_y_axis=False)
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[align_options])
+        align_options = AlignSeries(chart_doc.component, primary_y_axis=False)
+        Chart2.style_data_series(chart_doc=chart_doc.component, styles=[align_options])
 
     .. only:: html
 
@@ -173,11 +178,11 @@ If ``True`` this the primary y-axis is used, if ``False`` the secondary y-axis i
 
             .. group-tab:: None
 
-The results are seen in :numref:`4b1bd75c-e191-46a2-8e5e-381619f2ca7a` and :numref:`d051087e-7c53-4f3d-aecc-827bd725ef4f`.
+The results are seen in :numref:`4b1bd75c-e191-46a2-8e5e-381619f2ca7a_1` and :numref:`d051087e-7c53-4f3d-aecc-827bd725ef4f_1`.
 
 .. cssclass:: screen_shot
 
-    .. _4b1bd75c-e191-46a2-8e5e-381619f2ca7a:
+    .. _4b1bd75c-e191-46a2-8e5e-381619f2ca7a_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/4b1bd75c-e191-46a2-8e5e-381619f2ca7a
         :alt: Chart with data series alignment set to secondary y-axis
@@ -188,7 +193,7 @@ The results are seen in :numref:`4b1bd75c-e191-46a2-8e5e-381619f2ca7a` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _d051087e-7c53-4f3d-aecc-827bd725ef4f:
+    .. _d051087e-7c53-4f3d-aecc-827bd725ef4f_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/d051087e-7c53-4f3d-aecc-827bd725ef4f
         :alt: Chart Data Series options Dialog
@@ -212,9 +217,9 @@ In this example we set the plot options of a column chart as seen in :numref:`23
         # ... other code
 
         setting_options = Settings(
-            chart_doc=chart_doc, spacing=150, overlap=22, side_by_side=True
+            chart_doc=chart_doc.component, spacing=150, overlap=22, side_by_side=True
         )
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[setting_options])
+        Chart2.style_data_series(chart_doc=chart_doc.component, styles=[setting_options])
 
     .. only:: html
 
@@ -222,11 +227,11 @@ In this example we set the plot options of a column chart as seen in :numref:`23
 
             .. group-tab:: None
 
-The results are seen in :numref:`6b406b23-68c3-4d75-a36c-a7a7f2df7d02` and :numref:`5d5bd1bf-5232-4847-9996-a24596c5bfd8`.
+The results are seen in :numref:`6b406b23-68c3-4d75-a36c-a7a7f2df7d02_1` and :numref:`5d5bd1bf-5232-4847-9996-a24596c5bfd8_1`.
 
 .. cssclass:: screen_shot
 
-    .. _6b406b23-68c3-4d75-a36c-a7a7f2df7d02:
+    .. _6b406b23-68c3-4d75-a36c-a7a7f2df7d02_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/6b406b23-68c3-4d75-a36c-a7a7f2df7d02
         :alt: Chart with data series without legend
@@ -237,7 +242,7 @@ The results are seen in :numref:`6b406b23-68c3-4d75-a36c-a7a7f2df7d02` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _5d5bd1bf-5232-4847-9996-a24596c5bfd8:
+    .. _5d5bd1bf-5232-4847-9996-a24596c5bfd8_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/5d5bd1bf-5232-4847-9996-a24596c5bfd8
         :alt: Chart Data Series options Dialog
@@ -249,9 +254,9 @@ The results are seen in :numref:`6b406b23-68c3-4d75-a36c-a7a7f2df7d02` and :numr
 Options for Plot
 ----------------
 
-Some charts such as Pie and Donut have simple Plot options as shown in :numref:`bb11ad9f-1220-41e7-921a-a69e96a47880`.
+Some charts such as Pie and Donut have simple Plot options as shown in :numref:`bb11ad9f-1220-41e7-921a-a69e96a47880_1`.
 
-Other charts have more complex Plot options as shown in :numref:`1510f063-94f3-4b7c-a8ba-6be4c222f32e`.
+Other charts have more complex Plot options as shown in :numref:`1510f063-94f3-4b7c-a8ba-6be4c222f32e_1`.
 
 Before formatting the chart is seen in :numref:`ce52cea5-2b22-4d2a-a158-9e22364d4544`.
 
@@ -267,8 +272,8 @@ The :py:class:`~ooodev.format.chart2.direct.series.data_series.options.PlotSimpl
         from ooodev.format.chart2.direct.series.data_series.options import PlotSimple
         # ... other code
 
-        plot_options = PlotSimple(chart_doc=chart_doc, hidden_cell_values=False)
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[plot_options])
+        plot_options = PlotSimple(chart_doc=chart_doc.component, hidden_cell_values=False)
+        Chart2.style_data_series(chart_doc=chart_doc.component, styles=[plot_options])
 
     .. only:: html
 
@@ -276,11 +281,11 @@ The :py:class:`~ooodev.format.chart2.direct.series.data_series.options.PlotSimpl
 
             .. group-tab:: None
 
-The results are seen in :numref:`4d67d921-c574-4fe9-9505-543608a600b7`.
+The results are seen in :numref:`4d67d921-c574-4fe9-9505-543608a600b7_1`.
 
 .. cssclass:: screen_shot
 
-    .. _4d67d921-c574-4fe9-9505-543608a600b7:
+    .. _4d67d921-c574-4fe9-9505-543608a600b7_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/4d67d921-c574-4fe9-9505-543608a600b7
         :alt: Chart Data Series options Dialog
@@ -304,9 +309,11 @@ In this example we set the plot options of a column chart as seen in :numref:`23
         # ... other code
 
         plot_options = Plot(
-            chart_doc=chart_doc, missing_values=MissingValueKind.USE_ZERO, hidden_cell_values=False
+            chart_doc=chart_doc.component,
+            missing_values=MissingValueKind.USE_ZERO,
+            hidden_cell_values=False,
         )
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[plot_options])
+        Chart2.style_data_series(chart_doc=chart_doc.component, styles=[plot_options])
 
     .. only:: html
 
@@ -314,11 +321,11 @@ In this example we set the plot options of a column chart as seen in :numref:`23
 
             .. group-tab:: None
 
-The results are seen in :numref:`4b69ef08-775e-4574-a552-db1cb001b4c8`.
+The results are seen in :numref:`4b69ef08-775e-4574-a552-db1cb001b4c8_1`.
 
 .. cssclass:: screen_shot
 
-    .. _4b69ef08-775e-4574-a552-db1cb001b4c8:
+    .. _4b69ef08-775e-4574-a552-db1cb001b4c8_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/4b69ef08-775e-4574-a552-db1cb001b4c8
         :alt: Chart Data Series options Dialog
@@ -341,8 +348,8 @@ In this example we set the plot options of a column chart as seen in :numref:`23
         from ooodev.format.chart2.direct.series.data_series.options import LegendEntry
         # ... other code
 
-        legend_options = LegendEntry(chart_doc, hide_legend=True)
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[legend_options])
+        legend_options = LegendEntry(chart_doc.component, hide_legend=True)
+        Chart2.style_data_series(chart_doc=chart_doc.component, styles=[legend_options])
 
     .. only:: html
 
@@ -350,11 +357,11 @@ In this example we set the plot options of a column chart as seen in :numref:`23
 
             .. group-tab:: None
 
-The results are seen in :numref:`42e38398-7258-4bd2-9de7-232fc8e8df7a` and :numref:`bf56acb0-5486-4ff8-898b-d4a1d5e14661`.
+The results are seen in :numref:`42e38398-7258-4bd2-9de7-232fc8e8df7a_1` and :numref:`bf56acb0-5486-4ff8-898b-d4a1d5e14661_1`.
 
 .. cssclass:: screen_shot
 
-    .. _42e38398-7258-4bd2-9de7-232fc8e8df7a:
+    .. _42e38398-7258-4bd2-9de7-232fc8e8df7a_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/42e38398-7258-4bd2-9de7-232fc8e8df7a
         :alt: Chart with data series without legend
@@ -365,7 +372,7 @@ The results are seen in :numref:`42e38398-7258-4bd2-9de7-232fc8e8df7a` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _bf56acb0-5486-4ff8-898b-d4a1d5e14661:
+    .. _bf56acb0-5486-4ff8-898b-d4a1d5e14661_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/bf56acb0-5486-4ff8-898b-d4a1d5e14661
         :alt: Chart Data Series options Dialog
@@ -385,8 +392,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
         - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`

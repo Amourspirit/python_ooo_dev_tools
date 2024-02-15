@@ -204,4 +204,4 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_series_series_borders`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
