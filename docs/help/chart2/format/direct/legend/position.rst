@@ -11,9 +11,9 @@ Chart2 Direct Legend Position
 Overview
 --------
 
-The :py:class:`ooodev.format.chart2.direct.legend.position_size.Position` class is used to specify the position of the legend.
+The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class:`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
 
-Calls to the :py:meth:`Chart2.style_legend() <ooodev.office.chart2.Chart2.style_legend>` and method is used to style legend.
+Here we will see how the ``style_position()`` method can be used to set the position of the legend.
 
 Setup
 -----

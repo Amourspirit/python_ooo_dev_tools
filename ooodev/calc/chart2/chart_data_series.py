@@ -1,29 +1,30 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, TypeVar, Generic
+from typing import Any, TYPE_CHECKING, List, TypeVar, Generic
 import uno
 from com.sun.star.chart2.data import XDataSource
 
-from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind
 from ooodev.adapter.chart2.data_series_comp import DataSeriesComp
-from ooodev.loader import lo as mLo
-from ooodev.exceptions import ex as mEx
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
-from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
-from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
-from ooodev.format.inner.partial.font.font_partial import FontPartial
-from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
+from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_gradient_partial import ChartFillGradientPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_img_partial import ChartFillImgPartial
 from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import ChartFillPatternPartial
 from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
+from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
+from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
+from ooodev.format.inner.style_partial import StylePartial
+from ooodev.loader import lo as mLo
+from ooodev.proto.component_proto import ComponentT
+from ooodev.utils import gen_util as mGenUtil
+from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.partial.area.transparency.transparency_partial import (
     TransparencyPartial as TransparencyTransparency,
 )
@@ -81,10 +82,10 @@ class ChartDataSeries(
     TransparencyTransparency,
     TransparencyGradient,
     DataLabelBorderPartial,
+    Chart2DataLabelTextAttributePartial,
     Chart2DataLabelAttribOptPartial,
     Chart2DataLabelPercentFormatPartial,
     Chart2DataLabelOrientationPartial,
-    Chart2DataLabelTextAttributePartial,
 ):
     """
     Class for managing Chart2 Chart Title Component.
@@ -148,26 +149,70 @@ class ChartDataSeries(
         DataLabelBorderPartial.__init__(
             self, factory_name="ooodev.char2.series.data_series.label.borders", component=component, lo_inst=lo_inst
         )
+        Chart2DataLabelTextAttributePartial.__init__(self, component=component)
         Chart2DataLabelAttribOptPartial.__init__(self, component=component)
         Chart2DataLabelPercentFormatPartial.__init__(self, component=component)
         Chart2DataLabelOrientationPartial.__init__(self, component=component)
-        Chart2DataLabelTextAttributePartial.__init__(self, component=component)
+
         self._owner = owner
 
     def __getitem__(self, index: int) -> ChartDataPoint:
         return self.get_data_point_by_index(index)
 
+    def get_data_points(self) -> List[ChartDataPoint]:
+        """ "
+        Gets all the data points of the series.
+
+        Returns:
+            List[ChartDataPoint]: List of data points.
+        """
+        # pylint: disable=import-outside-toplevel
+        from .chart_data_point import ChartDataPoint
+
+        lst = []
+        i = 0
+        comp = self.component
+        while True:
+            try:
+                props = comp.getDataPointByIndex(i)
+                if props is not None:
+                    lst.append(
+                        ChartDataPoint(owner=self, chart_doc=self.chart_doc, component=props, lo_inst=self.lo_inst)
+                    )
+                i += 1
+            except Exception:
+                props = None
+
+            if props is None:
+                break
+        return lst
+
     # region DataSeriesPartial Overrides
 
     def get_data_point_by_index(self, idx: int) -> ChartDataPoint:
         """
+        Gets a data point by index.
+
+        Args:
+            idx (int): Index of data point. Can be a negative value to index from the end of the list.
 
         Raises:
-            com.sun.star.lang.IndexOutOfBoundsException: ``IndexOutOfBoundsException``
+            IndexError: If index is out of range.
         """
+        if idx < 0:
+            points = self.get_data_points()
+            count = len(points)
+            if count == 0:
+                raise IndexError("Index out of range")
+            index = mGenUtil.Util.get_index(idx, count, False)
+            return points[index]
+
+        # pylint: disable=import-outside-toplevel
         from .chart_data_point import ChartDataPoint
 
         dp = super().get_data_point_by_index(idx)
+        if dp is None:
+            raise IndexError("Index out of range")
         return ChartDataPoint(owner=self, chart_doc=self.chart_doc, component=dp, lo_inst=self.lo_inst)
 
     # endregion DataSeriesPartial Overrides
@@ -189,13 +234,14 @@ class ChartDataSeries(
         Returns:
             DataSource: Chart data source
         """
+        # pylint: disable=import-outside-toplevel
         from .data.data_source import DataSource
 
         try:
             src = self.qi(XDataSource, True)
             return DataSource(owner=self, component=src, lo_inst=self.lo_inst)
         except Exception as e:
-            raise mEx.ChartError("Error getting data source", e)
+            raise mEx.ChartError("Error getting data source") from e
 
     def set_data_point_labels(self, label_type: DataPointLabelTypeKind) -> None:
         """

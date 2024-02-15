@@ -11,7 +11,7 @@ Chart2 Direct Legend Border
 Overview
 --------
 
-The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
+The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class:`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
 
 Here we will see how to set options that are seen in :numref:`41bf0361-0952-4c53-adbe-14dae5a2e2f3`.
 

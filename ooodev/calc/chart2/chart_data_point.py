@@ -142,10 +142,10 @@ class ChartDataPoint(
         DataLabelBorderPartial.__init__(
             self, factory_name="ooodev.char2.series.data_point.label.borders", component=component, lo_inst=lo_inst
         )
-        Chart2DataLabelAttribOptPartial.__init__(self, component=self)
-        Chart2DataLabelPercentFormatPartial.__init__(self, component=self)
-        Chart2DataLabelOrientationPartial.__init__(self, component=self)
-        Chart2DataLabelTextAttributePartial.__init__(self, component=self)
+        Chart2DataLabelAttribOptPartial.__init__(self, component=component)
+        Chart2DataLabelPercentFormatPartial.__init__(self, component=component)
+        Chart2DataLabelOrientationPartial.__init__(self, component=component)
+        Chart2DataLabelTextAttributePartial.__init__(self, component=component)
         self._owner = owner
 
     # region GradientPartial Overrides

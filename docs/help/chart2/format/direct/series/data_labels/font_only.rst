@@ -25,44 +25,44 @@ General setup for this example.
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 27,28
+        :emphasize-lines: 29
 
+        from __future__ import annotations
+        from pathlib import Path
         import uno
-        from ooodev.format.chart2.direct.series.data_labels.font import FontOnly as LblFontOnly
-        from ooodev.format.chart2.direct.general.borders import LineProperties as ChartLineProperties
-        from ooodev.format.chart2.direct.general.area import Gradient as ChartGradient, PresetGradientKind
-        from ooodev.office.calc import Calc
-        from ooodev.office.chart2 import Chart2
-        from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.calc import CalcDoc, ZoomKind
         from ooodev.loader.lo import Lo
+        from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+        from ooodev.utils.color import StandardColor
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectPipe()):
-                doc = Calc.open_doc("col_chart.ods")
-                GUI.set_visible(True, doc)
+                fnm = Path.cwd() / "tmp" / "col_chart.ods"
+                doc = CalcDoc.open_doc(fnm=fnm, visible=True)
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-                sheet = Calc.get_active_sheet()
+                sheet = doc.sheets[0]
+                sheet["A1"].goto()
+                chart_table = sheet.charts[0]
+                chart_doc = chart_table.chart_doc
+                _ = chart_doc.style_border_line(
+                    color=StandardColor.BLUE_LIGHT3,
+                    width=0.7,
+                )
+                _ = chart_doc.style_area_gradient_from_preset(
+                    preset=PresetGradientKind.TEAL_BLUE,
+                )
 
-                Calc.goto_cell(cell_name="A1", doc=doc)
-                chart_doc = Chart2.get_chart_doc(sheet=sheet, chart_name="col_chart")
-
-                chart_bdr_line = ChartLineProperties(color=StandardColor.BLUE_LIGHT3, width=0.7)
-                chart_grad = ChartGradient.from_preset(chart_doc, PresetGradientKind.TEAL_BLUE)
-                Chart2.style_background(chart_doc=chart_doc, styles=[chart_grad, chart_bdr_line])
-
-                data_lbl_font = LblFontOnly(name="Lucida Calligraphy", size=14, font_style="italic")
-                Chart2.style_data_series(chart_doc=chart_doc, styles=[data_lbl_font])
+                ds = chart_doc.get_data_series()[0]
+                ds.style_font(name="Lucida Calligraphy", size=14, font_style="italic")
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
 
         if __name__ == "__main__":
             SystemExit(main())
-
 
     .. only:: html
 
@@ -84,8 +84,8 @@ Style Data Series
     .. code-tab:: python
 
         # ... other code
-        data_lbl_font = LblFontOnly(name="Lucida Calligraphy", size=14, font_style="italic")
-        Chart2.style_data_series(chart_doc=chart_doc, styles=[data_lbl_font])
+        ds = chart_doc.get_data_series()[0]
+        ds.style_font(name="Lucida Calligraphy", size=14, font_style="italic")
 
     .. only:: html
 
@@ -93,11 +93,11 @@ Style Data Series
 
             .. group-tab:: None
 
-Running the above code will produce the following output shown in :numref:`f4bbd523-c10f-483c-a9c8-3d370dd19433` and :numref:`2641c2d6-6efb-4c59-a747-13f7e0c3ed5c`.
+Running the above code will produce the following output shown in :numref:`f4bbd523-c10f-483c-a9c8-3d370dd19433_1` and :numref:`2641c2d6-6efb-4c59-a747-13f7e0c3ed5c_1`.
 
 .. cssclass:: screen_shot
 
-    .. _f4bbd523-c10f-483c-a9c8-3d370dd19433:
+    .. _f4bbd523-c10f-483c-a9c8-3d370dd19433_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/f4bbd523-c10f-483c-a9c8-3d370dd19433
         :alt: Chart with Data Series Labels Font set
@@ -109,7 +109,7 @@ Running the above code will produce the following output shown in :numref:`f4bbd
 
 .. cssclass:: screen_shot
 
-    .. _2641c2d6-6efb-4c59-a747-13f7e0c3ed5c:
+    .. _2641c2d6-6efb-4c59-a747-13f7e0c3ed5c_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/2641c2d6-6efb-4c59-a747-13f7e0c3ed5c
         :alt: Chart Data Labels Dialog Font
@@ -126,7 +126,9 @@ Style Data Point
     .. code-tab:: python
 
         # ... other code
-        Chart2.style_data_point(chart_doc=chart_doc, series_idx=0, idx=0, styles=[data_lbl_font])
+        ds = chart_doc.get_data_series()[0]
+        dp = ds[0]
+        dp.style_font(name="Lucida Calligraphy", size=14, font_style="italic")
 
     .. only:: html
 
@@ -134,11 +136,11 @@ Style Data Point
 
             .. group-tab:: None
 
-Running the above code will produce the following output shown in :numref:`93bf56fc-d122-4fa0-8630-a3a2ae87ef80`.
+Running the above code will produce the following output shown in :numref:`93bf56fc-d122-4fa0-8630-a3a2ae87ef80_1`.
 
 .. cssclass:: screen_shot
 
-    .. _93bf56fc-d122-4fa0-8630-a3a2ae87ef80:
+    .. _93bf56fc-d122-4fa0-8630-a3a2ae87ef80_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/93bf56fc-d122-4fa0-8630-a3a2ae87ef80
         :alt: Chart with Data Point Label Font set
@@ -159,11 +161,4 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_series_labels_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:class:`~ooodev.office.chart2.Chart2`
-        - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`
-        - :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
-        - :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>`
-        - :py:meth:`Calc.dispatch_recalculate() <ooodev.office.calc.Calc.dispatch_recalculate>`
-        - :py:class:`ooodev.format.chart2.direct.series.data_labels.font.FontOnly`
+        - :py:class:`~ooodev.loader.Lo`

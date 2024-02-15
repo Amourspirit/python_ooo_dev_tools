@@ -11,7 +11,7 @@ Chart2 Direct Legend Transparency
 Overview
 --------
 
-The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
+The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class:`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
 
 Here we will see how the ``style_area_transparency_transparency()`` method can be used to set the transparency of the legend.
 

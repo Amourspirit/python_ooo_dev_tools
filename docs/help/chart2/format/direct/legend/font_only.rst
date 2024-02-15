@@ -11,7 +11,7 @@ Chart2 Direct Legend Font Only
 Overview
 --------
 
-The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
+The Legend parts of a Chart can be styled using the various ``style_*`` methods of the :py:class:`~ooodev.calc.chart2.chart_legend.ChartLegend` class.
 
 Here we will see how to set options that are seen in :numref:`166f287c-eb64-4d22-9502-2d72c46adfb8`.
 

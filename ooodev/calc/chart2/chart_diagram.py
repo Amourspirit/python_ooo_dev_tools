@@ -65,6 +65,7 @@ class ChartDiagram(
 
     def get_title(self) -> ChartTitle[ChartDiagram] | None:
         """Gets the Title Diagram Component. This might be considered to be a subtitle."""
+        # pylint: disable=import-outside-toplevel
         from .chart_title import ChartTitle
 
         comp = self.get_title_object()
@@ -80,6 +81,7 @@ class ChartDiagram(
 
     def set_title(self, title: str) -> ChartTitle[ChartDiagram]:
         """Adds a Chart Title."""
+        # pylint: disable=import-outside-toplevel
         from com.sun.star.chart2 import XTitled
         from com.sun.star.chart2 import XTitle
         from com.sun.star.chart2 import XFormattedString
@@ -111,11 +113,13 @@ class ChartDiagram(
 
     def get_coordinate_system(self) -> CoordinateGeneral | None:
         """Gets the first Coordinate System Component."""
+        # sourcery skip: lift-return-into-if
 
         coord_sys = super().get_coordinate_systems()
         if not coord_sys:
             return None
         first = coord_sys[0]
+        # pylint: disable=import-outside-toplevel
         if mInfo.Info.support_service(first, "com.sun.star.chart2.CoordinateSystem"):
             from .coordinate.coordinate_system import CoordinateSystem
 
@@ -132,6 +136,7 @@ class ChartDiagram(
         """
         Gets all coordinate systems
         """
+        # pylint: disable=import-outside-toplevel
         from .coordinate.coordinate_system import CoordinateSystem
         from .coordinate.coordinate_general import CoordinateGeneral
 
@@ -161,6 +166,7 @@ class ChartDiagram(
         Returns:
             ChartLegend | None: Legend Component if found, otherwise ``None``.
         """
+        # pylint: disable=import-outside-toplevel
         legend = super().get_legend()
         if legend is None:
             return None
@@ -178,14 +184,15 @@ class ChartDiagram(
         Note:
             If the legend is not found then it will be created if ``visible`` is ``True``.
         """
+        # pylint: disable=import-outside-toplevel
         legend = self.get_legend()
         if legend is not None:
             legend.show = visible
             return
         if visible:
-            from .chart_legend import ChartLegend
             from ooo.dyn.drawing.line_style import LineStyle
             from ooo.dyn.drawing.fill_style import FillStyle
+            from .chart_legend import ChartLegend
 
             legend = ChartLegend(owner=self, chart_doc=self.chart_doc, lo_inst=self.lo_inst)
             legend.set_property(LineStyle=LineStyle.NONE, FillStyle=FillStyle.SOLID, FillTransparence=100)
@@ -193,6 +200,7 @@ class ChartDiagram(
 
     @property
     def wall(self) -> ChartWall:
+        # pylint: disable=import-outside-toplevel
         if self._wall is None:
             from .chart_wall import ChartWall
 
@@ -201,6 +209,7 @@ class ChartDiagram(
 
     @property
     def floor(self) -> ChartFloor:
+        # pylint: disable=import-outside-toplevel
         if self._floor is None:
             from .chart_floor import ChartFloor
 
