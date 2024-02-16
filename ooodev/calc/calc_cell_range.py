@@ -52,6 +52,7 @@ from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import 
 from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
 from ooodev.format.inner.partial.calc.borders.calc_borders_partial import CalcBordersPartial
+from ooodev.format.inner.partial.calc.cell_protection.cell_protection_partial import CellProtectionPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from . import calc_cell as mCalcCell
@@ -75,6 +76,7 @@ class CalcCellRange(
     AlignPropertiesPartial,
     FillColorPartial,
     CalcBordersPartial,
+    CellProtectionPartial,
 ):
     """Represents a calc cell range."""
 
@@ -123,6 +125,7 @@ class CalcCellRange(
         )
         FillColorPartial.__init__(self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=lo_inst)
         CalcBordersPartial.__init__(self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=lo_inst)
+        CellProtectionPartial.__init__(self, component=cell_range)
 
     # region Chart2
     def insert_chart(

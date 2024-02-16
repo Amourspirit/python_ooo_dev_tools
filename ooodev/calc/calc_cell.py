@@ -38,6 +38,7 @@ from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import 
 from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
 from ooodev.format.inner.partial.calc.borders.calc_borders_partial import CalcBordersPartial
+from ooodev.format.inner.partial.calc.cell_protection.cell_protection_partial import CellProtectionPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
@@ -59,6 +60,7 @@ class CalcCell(
     AlignPropertiesPartial,
     FillColorPartial,
     CalcBordersPartial,
+    CellProtectionPartial,
 ):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -88,6 +90,7 @@ class CalcCell(
         )
         FillColorPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=lo_inst)
         CalcBordersPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=lo_inst)
+        CellProtectionPartial.__init__(self, component=sheet_cell)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
