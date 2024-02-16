@@ -7,6 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.proto.calc.alignment
+   ooodev.format.proto.calc.borders
    ooodev.format.proto.calc.numbers
 
 Module contents

@@ -8,37 +8,40 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XGoalSeek
     from com.sun.star.sheet import XSheetAnnotation
     from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
-    from .calc_sheet import CalcSheet
     from ooodev.proto.style_obj import StyleT
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from .calc_sheet import CalcSheet
     from . import calc_cell_cursor as mCalcCellCursor
 else:
     XSheetAnnotation = object
 
 from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
+from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
+from ooodev.format.inner.partial.calc.alignment.text_align_partial import TextAlignPartial
+from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import TextOrientationPartial
+from ooodev.format.inner.partial.calc.borders.calc_borders_partial import CalcBordersPartial
+from ooodev.format.inner.partial.calc.cell_protection.cell_protection_partial import CellProtectionPartial
+from ooodev.format.inner.partial.calc.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
+from ooodev.format.inner.partial.numbers.numbers_numbers_partial import NumbersNumbersPartial
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM
 from ooodev.units import UnitT
-from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
-from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
-from ooodev.format.inner.partial.calc.font.font_effects_partial import FontEffectsPartial
-from ooodev.format.inner.partial.font.font_partial import FontPartial
-from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
-from ooodev.format.inner.partial.calc.alignment.text_align_partial import TextAlignPartial
-from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import TextOrientationPartial
-from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
-from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
-from ooodev.format.inner.partial.calc.borders.calc_borders_partial import CalcBordersPartial
-from ooodev.format.inner.partial.calc.cell_protection.cell_protection_partial import CellProtectionPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
@@ -49,6 +52,7 @@ class CalcCell(
     QiPartial,
     PropPartial,
     StylePartial,
+    EventsPartial,
     ServicePartial,
     CalcSheetPropPartial,
     CalcDocPropPartial,
@@ -61,6 +65,7 @@ class CalcCell(
     FillColorPartial,
     CalcBordersPartial,
     CellProtectionPartial,
+    NumbersNumbersPartial,
 ):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -73,6 +78,7 @@ class CalcCell(
         QiPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         PropPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet_cell)
+        EventsPartial.__init__(self)
         ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         CalcSheetPropPartial.__init__(self, obj=owner)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
@@ -91,6 +97,17 @@ class CalcCell(
         FillColorPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=lo_inst)
         CalcBordersPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=lo_inst)
         CellProtectionPartial.__init__(self, component=sheet_cell)
+        NumbersNumbersPartial.__init__(
+            self, factory_name="ooodev.number.numbers", component=sheet_cell, lo_inst=lo_inst
+        )
+        self._init_events()
+
+    def _init_events(self) -> None:
+        self._fn_on_before_style_number_number = self._on_before_style_number_number
+        self.subscribe_event(event_name="before_style_number_number", callback=self._fn_on_before_style_number_number)
+
+    def _on_before_style_number_number(self, src: Any, event: CancelEventArgs) -> None:
+        event.event_data["component"] = self.calc_doc.component
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """

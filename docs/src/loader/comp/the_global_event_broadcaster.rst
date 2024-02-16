@@ -12,6 +12,7 @@ This is a simpler way to add listeners to the global event broadcaster that are 
 
     - :ref:`ooodev.loader.Lo`
     - `LibreOffice API - theGlobalEventBroadcaster <https://api.libreoffice.org/docs/idl/ref/singletoncom_1_1sun_1_1star_1_1frame_1_1theGlobalEventBroadcaster.html>`__
+    - `LibreOffice Help - Document Event-Driven Macros <https://help.libreoffice.org/latest/en-US/text/sbasic/shared/01040000.html>`__ for a list of events.
 
 Example Usage
 -------------

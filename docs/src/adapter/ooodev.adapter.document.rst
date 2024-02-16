@@ -7,9 +7,11 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.document.document_event_broadcaster_partial
    ooodev.adapter.document.document_event_events
    ooodev.adapter.document.document_event_listener
    ooodev.adapter.document.embedded_object_supplier_partial
+   ooodev.adapter.document.events_supplier_partial
    ooodev.adapter.document.exporter_partial
    ooodev.adapter.document.filter_partial
    ooodev.adapter.document.global_document_comp

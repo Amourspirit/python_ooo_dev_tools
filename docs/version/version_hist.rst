@@ -2,6 +2,10 @@
 Version History
 ***************
 
+Version 0.28.2
+==============
+
+Added many style methods to Calc clases such as ``CalcCell`` and ``CalcCellRange``.
 
 Version 0.28.1
 ==============

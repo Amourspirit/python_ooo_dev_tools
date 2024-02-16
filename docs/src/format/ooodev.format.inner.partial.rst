@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.format.inner.partial.area
+   ooodev.format.inner.partial.calc
    ooodev.format.inner.partial.chart2
    ooodev.format.inner.partial.draw
    ooodev.format.inner.partial.font

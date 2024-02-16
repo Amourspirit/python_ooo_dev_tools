@@ -10,10 +10,11 @@ from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 
 if TYPE_CHECKING:
     from ooo.dyn.lang.locale import Locale
-    from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.format.proto.calc.numbers.numbers_t import NumbersT
     from ooo.dyn.util.number_format import NumberFormatEnum
     from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
+    from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.format.proto.calc.numbers.numbers_t import NumbersT
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
 else:
     NumbersT = Any
     LoInst = Any
@@ -72,6 +73,157 @@ class NumbersNumbersPartial:
             "component": self.__styler.component,
         }
         return self.__styler.style(factory=factory, **kwargs)
+
+    def __get_style_numbers(self) -> NumbersT | None:
+        def on_style(src: Any, events: CancelEventArgs) -> None:
+            # this will stop the style from being applied.
+            # not critical but style is being applied later via style.empty.update()
+            events.event_data["cancel_apply"] = True
+
+        factory = numbers_numbers_factory
+        if isinstance(self, EventsPartial):
+            self.subscribe_event(event_name=self.__styler.before_event_name, callback=on_style)
+        return self.__styler.style(factory=factory)
+
+    def style_numbers_general(self) -> NumbersT | None:
+        """
+        Style numbers general.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.date
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_currency(self) -> NumbersT | None:
+        """
+        Style numbers currency.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.currency
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_date(self) -> NumbersT | None:
+        """
+        Style numbers date.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.date
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_time(self) -> NumbersT | None:
+        """
+        Style numbers time.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.time
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_number(self) -> NumbersT | None:
+        """
+        Style numbers number.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.number
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_scientific(self) -> NumbersT | None:
+        """
+        Style numbers scientific.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.scientific
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_fraction(self) -> NumbersT | None:
+        """
+        Style numbers fraction.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.fraction
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_percent(self) -> NumbersT | None:
+        """
+        Style numbers percent.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.percent
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_datetime(self) -> NumbersT | None:
+        """
+        Style numbers datetime.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.datetime
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
+
+    def style_numbers_boolean(self) -> NumbersT | None:
+        """
+        Style numbers boolean.
+        """
+
+        style = self.__get_style_numbers()
+        if style is None:
+            return None
+        new_style = style.boolean
+        if not new_style.has_update_obj():
+            new_style.set_update_obj(style.get_update_obj())
+        new_style.update()
+        return new_style
 
     def style_numbers_numbers_get(self) -> NumbersT | None:
         """

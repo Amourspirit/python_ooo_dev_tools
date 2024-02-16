@@ -9,20 +9,21 @@ from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 
 if TYPE_CHECKING:
-    from com.sun.star.table import CellAddress
     from com.sun.star.sheet import SheetCellRange
+    from com.sun.star.table import CellAddress
     from ooo.dyn.table.cell_range_address import CellRangeAddress
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.proto.style_obj import StyleT
     from ooodev.utils.color import Color
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.cell_values import CellValues
     from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.data_type.size import Size
+    from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
     from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row, PathOrStr
     from . import calc_cell_cursor as mCalcCellCursor
     from .calc_sheet import CalcSheet
     from .chart2.table_chart import TableChart
-    from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
 else:
     CellRangeAddress = Any
     ImgExportT = Any
@@ -31,6 +32,16 @@ from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
 from ooodev.calc import CalcNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
+from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
+from ooodev.format.inner.partial.calc.alignment.text_align_partial import TextAlignPartial
+from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import TextOrientationPartial
+from ooodev.format.inner.partial.calc.borders.calc_borders_partial import CalcBordersPartial
+from ooodev.format.inner.partial.calc.cell_protection.cell_protection_partial import CellProtectionPartial
+from ooodev.format.inner.partial.calc.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
+from ooodev.format.inner.partial.numbers.numbers_numbers_partial import NumbersNumbersPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
@@ -44,15 +55,6 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.format.inner.partial.calc.font.font_effects_partial import FontEffectsPartial
-from ooodev.format.inner.partial.font.font_partial import FontPartial
-from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
-from ooodev.format.inner.partial.calc.alignment.text_align_partial import TextAlignPartial
-from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import TextOrientationPartial
-from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
-from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
-from ooodev.format.inner.partial.calc.borders.calc_borders_partial import CalcBordersPartial
-from ooodev.format.inner.partial.calc.cell_protection.cell_protection_partial import CellProtectionPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from . import calc_cell as mCalcCell
@@ -77,6 +79,7 @@ class CalcCellRange(
     FillColorPartial,
     CalcBordersPartial,
     CellProtectionPartial,
+    NumbersNumbersPartial,
 ):
     """Represents a calc cell range."""
 
@@ -126,6 +129,17 @@ class CalcCellRange(
         FillColorPartial.__init__(self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=lo_inst)
         CalcBordersPartial.__init__(self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=lo_inst)
         CellProtectionPartial.__init__(self, component=cell_range)
+        NumbersNumbersPartial.__init__(
+            self, factory_name="ooodev.number.numbers", component=cell_range, lo_inst=lo_inst
+        )
+        self._init_events()
+
+    def _init_events(self) -> None:
+        self._fn_on_before_style_number_number = self._on_before_style_number_number
+        self.subscribe_event(event_name="before_style_number_number", callback=self._fn_on_before_style_number_number)
+
+    def _on_before_style_number_number(self, src: Any, event: CancelEventArgs) -> None:
+        event.event_data["component"] = self.calc_doc.component
 
     # region Chart2
     def insert_chart(

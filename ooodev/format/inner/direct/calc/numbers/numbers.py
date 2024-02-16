@@ -299,77 +299,110 @@ class Numbers(StyleBase):
     @property
     def general(self: _TNumbers) -> _TNumbers:
         """Gets general format"""
-        return self.__class__(num_format=0, lang_locale=self._lang_locale, component=self._component)
+        result = self.__class__(num_format=0, lang_locale=self._lang_locale, component=self._component)
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def date(self: _TNumbers) -> _TNumbers:
         """Gets date format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.DATE, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def time(self: _TNumbers) -> _TNumbers:
         """Gets time format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.TIME, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def currency(self: _TNumbers) -> _TNumbers:
         """Gets currency format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.CURRENCY, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def number(self: _TNumbers) -> _TNumbers:
         """Gets number format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.NUMBER, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def scientific(self: _TNumbers) -> _TNumbers:
         """Gets scientific format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.SCIENTIFIC, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def fraction(self: _TNumbers) -> _TNumbers:
         """Gets fraction format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.FRACTION, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def percent(self: _TNumbers) -> _TNumbers:
         """Gets percent format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.PERCENT, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def text(self: _TNumbers) -> _TNumbers:
         """Gets text format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.TEXT, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def datetime(self: _TNumbers) -> _TNumbers:
         """Gets datetime format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.DATETIME, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     @property
     def boolean(self: _TNumbers) -> _TNumbers:
         """Gets boolean format"""
-        return self.__class__(
+        result = self.__class__(
             num_format=NumberFormatEnum.LOGICAL, lang_locale=self._lang_locale, component=self._component
         )
+        if self.has_update_obj():
+            result.set_update_obj(self.get_update_obj())
+        return result
 
     # endregion Instance Properties
 
