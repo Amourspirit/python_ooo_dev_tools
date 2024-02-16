@@ -30,12 +30,14 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
-from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.calc.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_partial import FontPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.format.inner.partial.calc.alignment.text_align_partial import TextAlignPartial
 from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import TextOrientationPartial
 from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
+from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
+from ooodev.format.inner.partial.calc.borders.calc_borders_partial import CalcBordersPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
@@ -55,6 +57,8 @@ class CalcCell(
     TextAlignPartial,
     TextOrientationPartial,
     AlignPropertiesPartial,
+    FillColorPartial,
+    CalcBordersPartial,
 ):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -82,6 +86,8 @@ class CalcCell(
         AlignPropertiesPartial.__init__(
             self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=self.lo_inst
         )
+        FillColorPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=lo_inst)
+        CalcBordersPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=lo_inst)
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
