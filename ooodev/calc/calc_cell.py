@@ -30,6 +30,12 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
+from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
+from ooodev.format.inner.partial.font.font_partial import FontPartial
+from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
+from ooodev.format.inner.partial.calc.alignment.text_align_partial import TextAlignPartial
+from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import TextOrientationPartial
+from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
@@ -43,6 +49,12 @@ class CalcCell(
     ServicePartial,
     CalcSheetPropPartial,
     CalcDocPropPartial,
+    FontOnlyPartial,
+    FontEffectsPartial,
+    FontPartial,
+    TextAlignPartial,
+    TextOrientationPartial,
+    AlignPropertiesPartial,
 ):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -58,6 +70,18 @@ class CalcCell(
         ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         CalcSheetPropPartial.__init__(self, obj=owner)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        FontOnlyPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=self.lo_inst)
+        FontEffectsPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=self.lo_inst)
+        FontPartial.__init__(
+            self, factory_name="ooodev.general_style.text", component=sheet_cell, lo_inst=self.lo_inst
+        )
+        TextAlignPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=self.lo_inst)
+        TextOrientationPartial.__init__(
+            self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=self.lo_inst
+        )
+        AlignPropertiesPartial.__init__(
+            self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=self.lo_inst
+        )
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """

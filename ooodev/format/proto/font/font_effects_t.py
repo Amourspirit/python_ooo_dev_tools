@@ -37,17 +37,17 @@ class FontEffectsT(StyleT, Protocol):
     def __init__(
         self,
         *,
-        color: Color | None = None,
-        transparency: Intensity | int | None = None,
-        overline: FontLine | None = None,
-        underline: FontLine | None = None,
-        strike: FontStrikeoutEnum | None = None,
-        word_mode: bool | None = None,
-        case: CaseMapEnum | None = None,
-        relief: FontReliefEnum | None = None,
-        outline: bool | None = None,
-        hidden: bool | None = None,
-        shadowed: bool | None = None,
+        color: Color | None = ...,
+        transparency: Intensity | int | None = ...,
+        overline: FontLine | None = ...,
+        underline: FontLine | None = ...,
+        strike: FontStrikeoutEnum | None = ...,
+        word_mode: bool | None = ...,
+        case: CaseMapEnum | None = ...,
+        relief: FontReliefEnum | None = ...,
+        outline: bool | None = ...,
+        hidden: bool | None = ...,
+        shadowed: bool | None = ...,
     ) -> None: ...
 
     @overload

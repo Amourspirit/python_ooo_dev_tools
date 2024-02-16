@@ -174,6 +174,9 @@ class FontOnly(StyleMulti):
 
             - :ref:`help_writer_format_direct_char_font_only`
             - :ref:`help_writer_format_direct_char_font_effects`
+
+        Hint:
+            - ``FontLang`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_only``
         """
         init_vals = {}
         if name is not None:

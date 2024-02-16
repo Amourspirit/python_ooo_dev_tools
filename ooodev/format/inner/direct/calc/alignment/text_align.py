@@ -168,6 +168,7 @@ class TextAlign(StyleBase):
                 val = mProps.Props.get(obj, prop, None)
                 if val is not None:
                     inst._set(prop, val)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

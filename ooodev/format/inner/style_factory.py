@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     from ..proto.calc.numbers.numbers_t import NumbersT as CalcNumbersT
     from ..proto.chart2.numbers.numbers_t import NumbersT as Chart2NumbersT
     from ..proto.chart2.series.data_labels.data_labels.numbers_t import NumbersT as Chart2SeriesDataLabelsNumbersT
+    from ..proto.calc.alignment.text_align_t import TextAlignT as CalcAlignTextT
+    from ..proto.calc.alignment.text_orientation_t import TextOrientationT as CalcAlignOrientationT
+    from ..proto.calc.alignment.properties_t import PropertiesT as CalcAlignPropertiesT
 else:
     FontEffectsT = Any
     FontOnlyT = Any
@@ -49,6 +52,9 @@ else:
     CalcNumbersT = Any
     Chart2NumbersT = Any
     Chart2SeriesDataLabelsNumbersT = Any
+    CalcAlignTextT = Any
+    CalcAlignOrientationT = Any
+    CalcAlignPropertiesT = Any
 
 # pylint: disable=import-outside-toplevel
 
@@ -76,6 +82,11 @@ def font_only_factory(name: str) -> Type[FontOnlyT]:
 
     if name == "ooodev.chart2.legend":
         from ooodev.format.chart2.direct.legend.font import FontOnly
+
+        return FontOnly
+
+    if name == "ooodev.calc.cell":
+        from ooodev.format.inner.direct.calc.char.font.font_only import FontOnly
 
         return FontOnly
 
@@ -121,7 +132,43 @@ def font_effects_factory(name: str) -> Type[FontEffectsT]:
 
         return FontEffects
 
+    if name == "ooodev.calc.cell":
+        from ooodev.format.inner.direct.calc.char.font.font_effects import FontEffects
+
+        return FontEffects
+
     raise ValueError(f"Invalid name: {name}")
+
+
+# region Calc
+def calc_align_text_factory(name: str) -> Type[CalcAlignTextT]:
+    if name in {"ooodev.calc.cell", "ooodev.calc.cell_rng"}:
+        from ooodev.format.inner.direct.calc.alignment.text_align import TextAlign
+
+        return TextAlign
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def calc_align_orientation_factory(name: str) -> Type[CalcAlignOrientationT]:
+    if name in {"ooodev.calc.cell", "ooodev.calc.cell_rng"}:
+        from ooodev.format.inner.direct.calc.alignment.text_orientation import TextOrientation
+
+        return TextOrientation
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def calc_align_properties_factory(name: str) -> Type[CalcAlignPropertiesT]:
+    if name in {"ooodev.calc.cell", "ooodev.calc.cell_rng"}:
+        from ooodev.format.inner.direct.calc.alignment.properties import Properties
+
+        return Properties
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+# endregion Calc
 
 
 # region numbers format

@@ -43,7 +43,7 @@ class NumbersNumbersPartial:
         lang_locale: Locale | None = None,
     ) -> NumbersT | None:
         """
-        Style Axis Line.
+        Style numbers numbers.
 
         Args:
             num_format (NumberFormatEnum, int, optional): Type of a number format.
@@ -57,7 +57,7 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number`` is cancelled and not handled.
 
         Returns:
-            LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+            NumbersT | None: Style Numbers instance or ``None`` if cancelled.
 
         Hint:
             - ``NumberFormatEnum`` can be imported from ``ooo.dyn.util.number_format``
@@ -81,7 +81,7 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number_get`` is cancelled and not handled.
 
         Returns:
-            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+            NumbersT | None: Numbers style or ``None`` if cancelled.
         """
         if isinstance(self, CalcDocPropPartial):
             return self.__styler.style_get(
@@ -98,7 +98,10 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
 
         Returns:
-            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+            NumbersT | None: Numbers style or ``None`` if cancelled.
+
+        Hint:
+            - ``Locale`` can be imported from ``ooo.dyn.lang.locale``
         """
         kwargs: Dict[str, Any] = {"index": idx}
         if locale is not None:
@@ -129,7 +132,10 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
 
         Returns:
-            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+            NumbersT | None: Numbers style or ``None`` if cancelled.
+
+        Hint:
+            - ``Locale`` can be imported from ``ooo.dyn.lang.locale``
         """
         kwargs: Dict[str, Any] = {"nf_str": nf_str, "auto_add": auto_add}
         if locale is not None:

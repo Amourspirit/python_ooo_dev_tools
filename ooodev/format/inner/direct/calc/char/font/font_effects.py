@@ -45,6 +45,7 @@ class FontEffects(CharFontEffects):
         case: CaseMapEnum | None = None,
         relief: FontReliefEnum | None = None,
         outline: bool | None = None,
+        hidden: bool | None = None,
         shadowed: bool | None = None,
     ) -> None:
         """
@@ -62,6 +63,7 @@ class FontEffects(CharFontEffects):
             case (CaseMapEnum, optional): Specifies the case of the font.
             relief (FontReliefEnum, optional): Specifies the relief of the font.
             outline (bool, optional): Specifies if the font is outlined.
+            hidden (bool, optional): This property is Ignored in Calc. Included for compatibility.
             shadowed (bool, optional): Specifies if the characters are formatted and displayed with a shadow effect.
 
         Returns:
@@ -70,6 +72,7 @@ class FontEffects(CharFontEffects):
         See Also:
             - :ref:`help_calc_format_direct_cell_font_effects`
         """
+        hidden = None  # Included for compatibility with style_factory.font_effects_factory()
         super().__init__(
             color=color,
             transparency=transparency,
@@ -80,5 +83,6 @@ class FontEffects(CharFontEffects):
             case=case,
             relief=relief,
             outline=outline,
+            hidden=hidden,
             shadowed=shadowed,
         )

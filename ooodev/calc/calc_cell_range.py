@@ -44,6 +44,9 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.format.inner.partial.calc.alignment.text_align_partial import TextAlignPartial
+from ooodev.format.inner.partial.calc.alignment.text_orientation_partial import TextOrientationPartial
+from ooodev.format.inner.partial.calc.alignment.properties_partial import PropertiesPartial as AlignPropertiesPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from . import calc_cell as mCalcCell
@@ -59,6 +62,9 @@ class CalcCellRange(
     StylePartial,
     EventsPartial,
     ServicePartial,
+    TextAlignPartial,
+    TextOrientationPartial,
+    AlignPropertiesPartial,
 ):
     """Represents a calc cell range."""
 
@@ -89,6 +95,15 @@ class CalcCellRange(
         StylePartial.__init__(self, component=cell_range)
         EventsPartial.__init__(self)
         ServicePartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)
+        TextAlignPartial.__init__(
+            self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=self.lo_inst
+        )
+        TextOrientationPartial.__init__(
+            self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=self.lo_inst
+        )
+        AlignPropertiesPartial.__init__(
+            self, factory_name="ooodev.calc.cell", component=cell_range, lo_inst=self.lo_inst
+        )
 
     # region Chart2
     def insert_chart(
