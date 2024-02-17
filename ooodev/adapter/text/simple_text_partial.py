@@ -47,7 +47,7 @@ class SimpleTextPartial(TextRangePartial):
 
     def create_text_cursor_by_range(self, text_position: XTextRange) -> XTextCursor:
         """
-        The initial position is set to aTextPosition.
+        The initial position is set to ``text_position``.
 
         Args:
             text_position (XTextRange): The initial position of the new text cursor.

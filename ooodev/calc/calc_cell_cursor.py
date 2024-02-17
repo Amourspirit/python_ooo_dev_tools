@@ -4,15 +4,6 @@ import uno
 
 from com.sun.star.table import XCellRange
 
-if TYPE_CHECKING:
-    from com.sun.star.table import CellAddress
-    from com.sun.star.table import XCell
-    from com.sun.star.sheet import XSheetCellCursor
-    from ooodev.utils.data_type import cell_obj as mCellObj
-    from .calc_sheet import CalcSheet
-else:
-    XSheetCellCursor = object
-
 from ooodev.adapter.sheet.sheet_cell_cursor_comp import SheetCellCursorComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
@@ -27,6 +18,15 @@ from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from . import calc_cell_range as mCalcCellRange
 from . import calc_cell as mCalcCell
+
+if TYPE_CHECKING:
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import XCell
+    from com.sun.star.sheet import XSheetCellCursor
+    from ooodev.utils.data_type import cell_obj as mCellObj
+    from .calc_sheet import CalcSheet
+else:
+    XSheetCellCursor = object
 
 
 class CalcCellCursor(
@@ -49,7 +49,7 @@ class CalcCellCursor(
         PropPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cursor)
         ServicePartial.__init__(self, component=cursor, lo_inst=self.lo_inst)
-        CalcSheetPropPartial.__init__(self, obj=owner)
+        CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     def find_used_cursor(self) -> mCalcCellRange.CalcCellRange:
