@@ -3,7 +3,7 @@
 Class CalcCellTextCursor
 ========================
 
-.. autoclass:: ooodev.calc.CalcCellTextCursor.
+.. autoclass:: ooodev.calc.CalcCellTextCursor
     :members:
     :undoc-members:
     :show-inheritance:

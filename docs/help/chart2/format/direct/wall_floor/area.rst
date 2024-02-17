@@ -109,7 +109,7 @@ Apply to floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`181c5c98-e4e1-4519-b91a-ffc39f5fa430_` and :numref:`21408192-4819-4557-beba-b48d881312ee_`
+The results are seen in :numref:`181c5c98-e4e1-4519-b91a-ffc39f5fa430_` and :numref:`21408192-4819-4557-beba-b48d881312ee_1`
 
 
 .. cssclass:: screen_shot
@@ -411,12 +411,12 @@ Apply to floor.
 
             .. group-tab:: None
 
-The results are seen in :numref:`9cc6eeae-d204-4f6d-b10d-18d7434fe156` and :numref:`8468ed6a-228d-4ec7-8e21-dda0d70dc7ea`
+The results are seen in :numref:`9cc6eeae-d204-4f6d-b10d-18d7434fe156_1` and :numref:`8468ed6a-228d-4ec7-8e21-dda0d70dc7ea_1`
 
 
 .. cssclass:: screen_shot
 
-    .. _9cc6eeae-d204-4f6d-b10d-18d7434fe156:
+    .. _9cc6eeae-d204-4f6d-b10d-18d7434fe156_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9cc6eeae-d204-4f6d-b10d-18d7434fe156
         :alt: Chart with wall and floor pattern
@@ -427,7 +427,7 @@ The results are seen in :numref:`9cc6eeae-d204-4f6d-b10d-18d7434fe156` and :numr
 
 .. cssclass:: screen_shot
 
-    .. _8468ed6a-228d-4ec7-8e21-dda0d70dc7ea:
+    .. _8468ed6a-228d-4ec7-8e21-dda0d70dc7ea_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/8468ed6a-228d-4ec7-8e21-dda0d70dc7ea
         :alt: Chart Wall Pattern Dialog

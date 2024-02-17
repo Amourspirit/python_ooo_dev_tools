@@ -83,7 +83,6 @@ In order for the background color to be visible the transparency of the legend m
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 1,5
 
         # ... other code
         # set the transparency of the legend to 0 and the color to green light2

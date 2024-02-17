@@ -13,7 +13,7 @@ as Calc's Font Effects Dialog, but without the dialog as seen in :numref:`235955
 
 .. cssclass:: screen_shot
 
-    .. _235955376-90701b09-42a9-472b-8b24-13e14bbd0a56:
+    .. _235955376-90701b09-42a9-472b-8b24-13e14bbd0a56_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/235955376-90701b09-42a9-472b-8b24-13e14bbd0a56.png
         :alt: Calc Format Cell dialog Font Effects

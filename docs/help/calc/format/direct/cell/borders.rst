@@ -254,7 +254,7 @@ Apply different top and side colors
 
 .. cssclass:: screen_shot
 
-    .. _210102075-e8d7229b-b480-45cf-b8d2-5782d36ac6c8:
+    .. _210102075-e8d7229b-b480-45cf-b8d2-5782d36ac6c8_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/210102075-e8d7229b-b480-45cf-b8d2-5782d36ac6c8.png
         :alt: Cell with left and right colored border
