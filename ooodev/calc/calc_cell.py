@@ -30,6 +30,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
+from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
@@ -38,6 +39,7 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import SolverConstraint  # struct
     from com.sun.star.sheet import XGoalSeek
     from com.sun.star.sheet import XSheetAnnotation
+    from com.sun.star.text import XTextRange
     from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
     from ooodev.proto.style_obj import StyleT
     from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -45,6 +47,7 @@ if TYPE_CHECKING:
     from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
     from .calc_sheet import CalcSheet
     from . import calc_cell_cursor as mCalcCellCursor
+    from .calc_cell_text_cursor import CalcCellTextCursor
 else:
     XSheetAnnotation = object
 
@@ -57,6 +60,7 @@ class CalcCell(
     StylePartial,
     EventsPartial,
     ServicePartial,
+    CalcCellPropPartial,
     CalcSheetPropPartial,
     CalcDocPropPartial,
     FontOnlyPartial,
@@ -84,6 +88,7 @@ class CalcCell(
         StylePartial.__init__(self, component=sheet_cell)
         EventsPartial.__init__(self)
         ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
+        CalcCellPropPartial.__init__(self, obj=self)
         CalcSheetPropPartial.__init__(self, obj=owner)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         FontOnlyPartial.__init__(self, factory_name="ooodev.calc.cell", component=sheet_cell, lo_inst=self.lo_inst)
@@ -123,6 +128,47 @@ class CalcCell(
         # when property is setting default value this is triggered.
         # In this case we want the style to be set to the default property value.
         event.default = True
+
+    # region SimpleTextPartial Overrides
+
+    def create_text_cursor(self) -> CalcCellTextCursor:
+        """
+        Creates a text cursor to travel in the given range context.
+
+        Cursor can be used to insert text, paragraphs, hyperlinks, and other text content.
+
+        Returns:
+            CalcCellTextCursor: Text cursor
+
+        .. versionadded:: 0.28.4
+        """
+        # pylint: disable=import-outside-toplevel
+        from .calc_cell_text_cursor import CalcCellTextCursor
+
+        cursor = self.component.createTextCursor()
+        return CalcCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
+
+    def create_text_cursor_by_range(self, text_position: XTextRange) -> CalcCellTextCursor:
+        """
+        The initial position is set to ``text_position``.
+
+        Cursor can be used to insert text, paragraphs, hyperlinks, and other text content.
+
+        Args:
+            text_position (XTextRange): The initial position of the new text cursor.
+
+        Returns:
+            CalcCellTextCursor: The new text cursor.
+
+        .. versionadded:: 0.28.4
+        """
+        # pylint: disable=import-outside-toplevel
+        from .calc_cell_text_cursor import CalcCellTextCursor
+
+        cursor = self.component.createTextCursorByRange(text_position)
+        return CalcCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
+
+    # endregion SimpleTextPartial Overrides
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """

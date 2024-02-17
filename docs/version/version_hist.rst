@@ -2,6 +2,25 @@
 Version History
 ***************
 
+Version 0.28.4
+==============
+
+Added ``CalcCellTextCursor`` class that can be used to get the text of a cell. Cursor can be accessed via ``CalcCell.create_text_cursor()``.
+
+.. code-block:: python
+
+    from ooodev.calc import CalcDoc
+    doc = CalcDoc.create_doc(visible=True)
+    sheet = doc.sheets[0]
+    cell = sheet["A1"]
+    cursor = cell.create_text_cursor()
+    cursor.append_para("Text in first line.")
+    cursor.append("And a ")
+    cursor.add_hyperlink(
+        label="hyperlink",
+        url_str="https://github.com/Amourspirit/python_ooo_dev_tools",
+    )
+
 Version 0.28.3
 ==============
 

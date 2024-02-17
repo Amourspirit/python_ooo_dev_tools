@@ -13,6 +13,7 @@ from ..office.calc import Calc as Calc
 from .calc_cell import CalcCell as CalcCell
 from .calc_cell_cursor import CalcCellCursor as CalcCellCursor
 from .calc_cell_range import CalcCellRange as CalcCellRange
+from .calc_cell_text_cursor import CalcCellTextCursor as CalcCellTextCursor
 from .calc_doc import CalcDoc as CalcDoc
 from .calc_form import CalcForm as CalcForm
 from .calc_forms import CalcForms as CalcForms
@@ -26,6 +27,7 @@ __all__ = [
     "CalcCell",
     "CalcCellCursor",
     "CalcCellRange",
+    "CalcCellTextCursor",
     "CalcDoc",
     "CalcForm",
     "CalcForms",
