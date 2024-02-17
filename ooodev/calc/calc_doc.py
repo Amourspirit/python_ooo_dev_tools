@@ -117,7 +117,7 @@ class CalcDoc(
         self.lock_controllers()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(self, *exc) -> None:
         self.unlock_controllers()
 
     # endregion context manage

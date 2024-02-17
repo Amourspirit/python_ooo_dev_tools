@@ -8,12 +8,15 @@ Calc Direct Cell Numbers
     :backlinks: none
     :depth: 2
 
-The :py:class:`ooodev.format.calc.direct.cell.numbers.Numbers` class gives you the similar options
-as Calc's Font Dialog, but without the dialog. as seen in :numref:`236359913-91acf4fe-f6be-4e2b-be71-50a93b4991cb`.
+The ``style_numbers_numbers()`` method gives you the similar options
+as Calc's Font Dialog, but without the dialog. as seen in :numref:`236359913-91acf4fe-f6be-4e2b-be71-50a93b4991cb_1`.
+
+There are several other ``style_numbers_*`` methods that can be used to set the number format of a cell or range
+such as, ``style_numbers_currency()`` and ``style_numbers_percent()``.
 
 .. cssclass:: screen_shot
 
-    .. _236359913-91acf4fe-f6be-4e2b-be71-50a93b4991cb:
+    .. _236359913-91acf4fe-f6be-4e2b-be71-50a93b4991cb_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236359913-91acf4fe-f6be-4e2b-be71-50a93b4991cb.png
         :alt: Calc Format Cell dialog Numbers
@@ -32,34 +35,29 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 17,18
 
+        from __future__ import annotations
         import uno
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.numbers import Numbers
-        from ooodev.format.calc.direct.cell.numbers import NumberFormatEnum, NumberFormatIndexEnum
+        from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom_value(doc, 400)
+                doc.zoom_value(400)
 
-                cell = Calc.get_cell(sheet=sheet, cell_name="A1")
-                num_style = Numbers(num_format_index=NumberFormatIndexEnum.CURRENCY_1000DEC2_RED)
-                Calc.set_val(value=-123.0, cell=cell, styles=[num_style])
-
-                f_style = Numbers.from_obj(cell)
-                assert f_style is not None
+                cell = sheet["A1"]
+                cell.value = -123.0
+                cell.style_numbers_numbers(
+                    num_format_index=NumberFormatIndexEnum.CURRENCY_1000DEC2_RED,
+                )
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -79,8 +77,14 @@ The ``NumberFormatIndexEnum`` contains the values in |num_fmt_index|_ for easy l
 
     .. code-tab:: python
 
-        num_style = Numbers(num_format_index=NumberFormatIndexEnum.CURRENCY_1000DEC2_RED)
-        Calc.set_val(value=-123.0, cell=cell, styles=[num_style])
+        from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
+
+        # ... other code
+        cell = sheet["A1"]
+        cell.value = -123.0
+        cell.style_numbers_numbers(
+            num_format_index=NumberFormatIndexEnum.CURRENCY_1000DEC2_RED,
+        )
 
     .. only:: html
 
@@ -88,11 +92,11 @@ The ``NumberFormatIndexEnum`` contains the values in |num_fmt_index|_ for easy l
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`236360187-29a4270f-d133-4bd8-bd89-3a99436f9b91` and :numref:`236360255-51792c21-2b1c-4b30-9aae-4220aca8a79f`.
+Running the above code will produce the following output in :numref:`236360187-29a4270f-d133-4bd8-bd89-3a99436f9b91_1` and :numref:`236360255-51792c21-2b1c-4b30-9aae-4220aca8a79f_1`.
 
 .. cssclass:: screen_shot
 
-    .. _236360187-29a4270f-d133-4bd8-bd89-3a99436f9b91:
+    .. _236360187-29a4270f-d133-4bd8-bd89-3a99436f9b91_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236360187-29a4270f-d133-4bd8-bd89-3a99436f9b91.png
         :alt: Calc Cell
@@ -101,7 +105,7 @@ Running the above code will produce the following output in :numref:`236360187-2
 
         Calc Cell
 
-    .. _236360255-51792c21-2b1c-4b30-9aae-4220aca8a79f:
+    .. _236360255-51792c21-2b1c-4b30-9aae-4220aca8a79f_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236360255-51792c21-2b1c-4b30-9aae-4220aca8a79f.png
         :alt: Calc Format Cell dialog Number Format set
@@ -120,7 +124,7 @@ Getting the number format from a cell
 
         # ... other code
 
-        f_style = Numbers.from_obj(cell)
+        f_style = cell.style_numbers_numbers_get()
         assert f_style is not None
 
     .. only:: html
@@ -138,36 +142,28 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 19, 20
 
+        from __future__ import annotations
         import uno
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.numbers import Numbers
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom_value(doc, 400)
+                doc.zoom_value(400)
 
-                Calc.set_val(value=0.000000034, sheet=sheet, cell_name="A1")
-                Calc.set_val(value=0.000000013, sheet=sheet, cell_name="B1")
-                rng = Calc.get_cell_range(sheet=sheet, range_name="A1:B1")
+                rng = sheet.rng("A1:B1")
+                sheet.set_array(values=[[0.000000034, 0.000000013]], range_obj=rng)
 
-                num_style = Numbers().scientific
-                num_style.apply(rng)
-
-                f_style = Numbers.from_obj(rng)
-                assert f_style is not None
+                cell_rng = sheet.get_range(range_obj=rng)
+                cell_rng.style_numbers_scientific()
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -187,8 +183,8 @@ Setting the Numbers format
     
 
         # ... other code
-        num_style = Numbers().scientific
-        num_style.apply(rng)
+        cell_rng = sheet.get_range(range_obj=rng)
+        cell_rng.style_numbers_scientific()
 
     .. only:: html
 
@@ -196,11 +192,11 @@ Setting the Numbers format
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`236360796-b4acf0fc-a2d5-4ce3-b303-c1ca5ecfd380` and :numref:`236360836-1554eea4-1386-400e-b5fb-e2879ba9913b`.
+Running the above code will produce the following output in :numref:`236360796-b4acf0fc-a2d5-4ce3-b303-c1ca5ecfd380_1` and :numref:`236360836-1554eea4-1386-400e-b5fb-e2879ba9913b_1`.
 
 .. cssclass:: screen_shot
 
-    .. _236360796-b4acf0fc-a2d5-4ce3-b303-c1ca5ecfd380:
+    .. _236360796-b4acf0fc-a2d5-4ce3-b303-c1ca5ecfd380_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236360796-b4acf0fc-a2d5-4ce3-b303-c1ca5ecfd380.png
         :alt: Calc Cell
@@ -209,7 +205,7 @@ Running the above code will produce the following output in :numref:`236360796-b
 
         Calc Cell
 
-    .. _236360836-1554eea4-1386-400e-b5fb-e2879ba9913b:
+    .. _236360836-1554eea4-1386-400e-b5fb-e2879ba9913b_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236360836-1554eea4-1386-400e-b5fb-e2879ba9913b.png
         :alt: Calc Format Cell dialog Number Format set
@@ -228,7 +224,7 @@ Getting the number format from a range
 
         # ... other code
 
-        f_style = Numbers.from_obj(rng)
+        f_style = cell_rng.style_numbers_numbers_get()
         assert f_style is not None
 
     .. only:: html
@@ -249,10 +245,7 @@ Related Topics
         - :ref:`help_calc_format_modify_cell_numbers`
         - |num_fmt|_
         - |num_fmt_index|_
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
-        - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`
+        - :py:class:`~ooodev.loader.Lo`
 
 .. |num_fmt| replace:: API NumberFormat
 .. _num_fmt: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1NumberFormat.html

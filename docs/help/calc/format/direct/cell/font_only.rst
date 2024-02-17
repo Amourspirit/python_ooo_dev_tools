@@ -9,11 +9,12 @@ Calc Direct Cell Font Only
     :depth: 2
 
 The :py:class:`ooodev.format.calc.direct.cell.font.FontOnly` class gives you the same options
-as Calc's Font Dialog, but without the dialog. as seen in :numref:`235984034-3859d73c-70c8-4623-9f58-1e5d4a792674`.
+as Calc's Font Dialog, but without the dialog. as seen in :numref:`235984034-3859d73c-70c8-4623-9f58-1e5d4a792674_1`.
 
 .. cssclass:: screen_shot
 
-    .. _235984034-3859d73c-70c8-4623-9f58-1e5d4a792674:
+    .. _235984034-3859d73c-70c8-4623-9f58-1e5d4a792674_1:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235984034-3859d73c-70c8-4623-9f58-1e5d4a792674.png
         :alt: Calc Format Cell dialog Font Effects
         :figclass: align-center
@@ -31,37 +32,36 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 16, 17
 
+        from __future__ import annotations
         import uno
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.font import FontOnly
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom_value(doc, 400)
+                doc.zoom_value(400)
 
-                cell = Calc.get_cell(sheet=sheet, cell_name="A1")
-                font_style = FontOnly(name="Lucida Calligraphy", size=20, font_style="italic")
-                Calc.set_val(value="Hello", cell=cell, styles=[font_style])
+                cell = sheet["A1"]
+                cell.value = "Hello"
+                cell.style_font(
+                    name="Lucida Calligraphy",
+                    size=20,
+                    font_style="italic",
+                )
 
-                f_style = FontOnly.from_obj(cell)
-                assert f_style.prop_name == "Lucida Calligraphy"
+                f_style = cell.style_font_get()
+                assert f_style is not None
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
-
 
     .. only:: html
 
@@ -76,8 +76,14 @@ Setting the font
 
     .. code-tab:: python
 
-        font_style = FontOnly(name="Lucida Calligraphy", size=20, font_style="italic")
-        Calc.set_val(value="Hello", cell=cell, styles=[font_style])
+        # ... other code
+        cell = sheet["A1"]
+        cell.value = "Hello"
+        cell.style_font(
+            name="Lucida Calligraphy",
+            size=20,
+            font_style="italic",
+        )
 
     .. only:: html
 
@@ -85,11 +91,12 @@ Setting the font
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`236008924-edb77848-d3e9-479a-816b-e6b46296fc6b`.
+Running the above code will produce the following output in :numref:`236008924-edb77848-d3e9-479a-816b-e6b46296fc6b_1`.
 
 .. cssclass:: screen_shot
 
-    .. _236008924-edb77848-d3e9-479a-816b-e6b46296fc6b:
+    .. _236008924-edb77848-d3e9-479a-816b-e6b46296fc6b_1:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/236008924-edb77848-d3e9-479a-816b-e6b46296fc6b.png
         :alt: Calc Format Cell dialog Font set
         :figclass: align-center
@@ -107,7 +114,7 @@ Getting the font from a cell
 
         # ... other code
 
-        f_style = FontOnly.from_obj(cell)
+        f_style = cell.style_font_get()
         assert f_style.prop_name == "Lucida Calligraphy"
 
     .. only:: html
@@ -125,39 +132,36 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 19, 20
 
+        from __future__ import annotations
         import uno
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.font import FontOnly
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_100_PERCENT)
+                doc.zoom_value(400)
 
-                Calc.set_val(value="Hello", sheet=sheet, cell_name="A1")
-                Calc.set_val(value="World", sheet=sheet, cell_name="B1")
-                rng = Calc.get_cell_range(sheet=sheet, range_name="A1:B1")
+                rng = sheet.rng("A1:B1")
+                sheet.set_array(values=[["Hello", "World"]], range_obj=rng)
 
-                font_style = FontOnly(name="Lucida Calligraphy", size=20, font_style="italic")
-                font_style.apply(rng)
-
-                f_style = FontOnly.from_obj(rng)
-                assert f_style.prop_name == "Lucida Calligraphy"
+                cell_rng = sheet.get_range(range_obj=rng)
+                cell_rng.style_font(
+                    name="Lucida Calligraphy",
+                    size=20,
+                    font_style="italic",
+                )
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
+
 
     .. only:: html
 
@@ -174,8 +178,12 @@ Setting the font
     
 
         # ... other code
-        font_style = FontOnly(name="Lucida Calligraphy", size=20, font_style="italic")
-        font_style.apply(rng)
+        cell_rng = sheet.get_range(range_obj=rng)
+        cell_rng.style_font(
+            name="Lucida Calligraphy",
+            size=20,
+            font_style="italic",
+        )
 
     .. only:: html
 
@@ -195,7 +203,7 @@ Getting the font from a range
 
         # ... other code
 
-        f_style = FontOnly.from_obj(rng)
+        f_style = cell_rng.style_font_get()
         assert f_style.prop_name == "Lucida Calligraphy"
 
     .. only:: html
@@ -216,8 +224,5 @@ Related Topics
         - :ref:`help_calc_format_direct_cell_font`
         - :ref:`help_calc_format_direct_cell_font_effects`
         - :ref:`help_calc_format_modify_cell_font_only`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.direct.cell.font.FontOnly`
-        - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
-        - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`

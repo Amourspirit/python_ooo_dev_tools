@@ -4,16 +4,14 @@ from typing import Any, Dict, TYPE_CHECKING
 from ooodev.format.inner.style_factory import font_effects_factory
 from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.format.inner.partial.factory_styler import FactoryStyler
 
 if TYPE_CHECKING:
     from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
     from ooo.dyn.style.case_map import CaseMapEnum
     from ooo.dyn.awt.font_relief import FontReliefEnum
+    from ooo.dyn.awt.font_underline import FontUnderlineEnum
     from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
     from ooodev.utils.color import Color
     from ooodev.utils.data_type.intensity import Intensity
@@ -29,9 +27,11 @@ class FontEffectsPartial:
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self.__lo_inst = lo_inst
-        self.__factory_name = factory_name
-        self.__component = component
+        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
+        self.__styler.after_event_name = "after_style_font_effect"
+        self.__styler.before_event_name = "before_style_font_effect"
 
     def style_font_effect(
         self,
@@ -80,77 +80,59 @@ class FontEffectsPartial:
             - ``Intensity`` can be imported from ``ooodev.utils.data_type.intensity``
             - ``FontUnderlineEnum`` can be imported from ``ooo.dyn.awt.font_underline``
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        cargs = None
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_font_effect.__qualname__)
-            event_data: Dict[str, Any] = {
-                "color": color,
-                "transparency": transparency,
-                "overline": overline,
-                "underline": underline,
-                "strike": strike,
-                "word_mode": word_mode,
-                "case": case,
-                "relief": relief,
-                "outline": outline,
-                "hidden": hidden,
-                "shadowed": shadowed,
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_font_effect", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", "before_style_font_effect")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
-                else:
-                    return None
-            color = cargs.event_data.get("color", color)
-            transparency = cargs.event_data.get("transparency", transparency)
-            overline = cargs.event_data.get("overline", overline)
-            underline = cargs.event_data.get("underline", underline)
-            strike = cargs.event_data.get("strike", strike)
-            word_mode = cargs.event_data.get("word_mode", word_mode)
-            case = cargs.event_data.get("case", case)
-            relief = cargs.event_data.get("relief", relief)
-            outline = cargs.event_data.get("outline", outline)
-            hidden = cargs.event_data.get("hidden", hidden)
-            shadowed = cargs.event_data.get("shadowed", shadowed)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
+        factory = font_effects_factory
+        kwargs: Dict[str, Any] = {
+            "color": color,
+            "transparency": transparency,
+            "overline": overline,
+            "underline": underline,
+            "strike": strike,
+            "word_mode": word_mode,
+            "case": case,
+            "relief": relief,
+            "outline": outline,
+            "hidden": hidden,
+            "shadowed": shadowed,
+        }
+        return self.__styler.style(factory=factory, **kwargs)
 
-        styler = font_effects_factory(factory_name)
-        fe = styler(
-            color=color,
-            transparency=transparency,
-            overline=overline,
-            underline=underline,
-            strike=strike,
-            word_mode=word_mode,
-            case=case,
-            relief=relief,
-            outline=outline,
-            hidden=hidden,
-            shadowed=shadowed,
-        )
+    def style_font_effect_line(
+        self,
+        line: FontUnderlineEnum | None = None,
+        color: Color | None = None,
+        overline: bool = False,
+    ) -> FontEffectsT | None:
+        """
+        Style Font Underline or Overline.
 
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
+        This method is a subset of ``style_font_effect()`` method for convenience.
 
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_font_effect", EventArgs.from_args(cargs))  # type: ignore
-        return fe
+        Args:
+            color (:py:data:`~.utils.color.Color`, optional): The value of the text color.
+                If value is ``-1`` the automatic color is applied.
+            line (FontUnderlineEnum, optional): Font Line kind.
+            overline (bool, optional): If ``True`` the line is overline, otherwise it is underline.
+
+        Raises:
+            CancelEventError: If the event ``before_style_font_effect`` is cancelled and not handled.
+
+        Returns:
+            FontEffectsT | None: Font Effects instance or ``None`` if cancelled.
+
+        Hint:
+            - ``FontUnderlineEnum`` can be imported from ``ooo.dyn.awt.font_underline``
+        """
+        from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
+
+        factory = font_effects_factory
+        fl = FontLine(line=line, color=color)
+        kwargs: Dict[str, Any] = {"color": color}
+        if overline:
+            kwargs["overline"] = fl
+        else:
+            kwargs["underline"] = fl
+
+        return self.__styler.style(factory=factory, **kwargs)
 
     def style_font_effect_get(self) -> FontEffectsT | None:
         """
@@ -162,34 +144,4 @@ class FontEffectsPartial:
         Returns:
             FontEffectsT | None: Font Effect style or ``None`` if cancelled.
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        cargs = None
-        if isinstance(self, EventsPartial):
-            cargs = CancelEventArgs(self.style_font_effect_get.__qualname__)
-            event_data: Dict[str, Any] = {
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_font_effect_get", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is True:
-                    return None
-                cargs.set("initial_event", "before_style_font_effect_get")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
-                else:
-                    return None
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = font_effects_factory(factory_name)
-        try:
-            style = styler.from_obj(comp)
-        except mEx.DisabledMethodError:
-            return None
-
-        style.set_update_obj(comp)
-        return style
+        return self.__styler.style_get(factory=font_effects_factory)

@@ -40,11 +40,13 @@ class FactoryStyler(FactoryNameBase):
         has_events = False
         cargs = None
         event_data = kwargs.copy()
+        cancel_apply = False
         if isinstance(self, EventsPartial):
             has_events = True
             cargs = CancelEventArgs(self.style.__qualname__)
             event_data["factory_name"] = factory_name
             event_data["this_component"] = comp
+            event_data["cancel_apply"] = cancel_apply
 
             cargs.event_data = event_data
             self.trigger_event(self.before_event_name, cargs)
@@ -59,6 +61,7 @@ class FactoryStyler(FactoryNameBase):
                     return None
             comp = cargs.event_data.pop("this_component", comp)
             factory_name = cargs.event_data.pop("factory_name", factory_name)
+            cancel_apply = cargs.event_data.pop("cancel_apply", cancel_apply)
             event_data = cargs.event_data
 
         styler = factory(factory_name)
@@ -68,8 +71,9 @@ class FactoryStyler(FactoryNameBase):
         if has_events:
             fe.add_event_observer(self.event_observer)  # type: ignore
 
-        with LoContext(self._lo_inst):
-            fe.apply(comp)
+        if not cancel_apply:
+            with LoContext(self._lo_inst):
+                fe.apply(comp)
         fe.set_update_obj(comp)
         if has_events:
             self.trigger_event(self.after_event_name, EventArgs.from_args(cargs))  # type: ignore

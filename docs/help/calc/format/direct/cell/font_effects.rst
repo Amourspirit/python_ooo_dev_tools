@@ -32,42 +32,39 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 17, 18, 19, 20, 21, 22
 
-        from ooodev.format import CommonColor
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.font import FontEffects, FontLine, FontUnderlineEnum
+        from __future__ import annotations
+        import uno
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
+        from ooodev.utils.color import CommonColor
+        from ooodev.format.inner.direct.write.char.font.font_effects import (
+            FontLine, FontUnderlineEnum
+        )
 
         def main() -> int:
-            with Lo.Loader(connector=Lo.ConnectSocket(), opt=Lo.Options(verbose=True)):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+            with Lo.Loader(connector=Lo.ConnectSocket()):
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom_value(doc, 400)
+                doc.zoom_value(400)
 
-                cell = Calc.get_cell(sheet=sheet, cell_name="A1")
-
-                font_effects = FontEffects(
+                cell = sheet["A1"]
+                cell.value = "Hello"
+                cell.style_font_effect(
                     color=CommonColor.RED,
-                    underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.BLUE),
+                    underline=FontLine(
+                        line=FontUnderlineEnum.SINGLE, color=CommonColor.BLUE
+                    ),
                     shadowed=True,
                 )
-                Calc.set_val(value="Hello", cell=cell, styles=[font_effects])
-
-                f_effects = FontEffects.from_obj(cell)
-                assert f_effects.prop_color == CommonColor.RED
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
-
 
     .. only:: html
 
@@ -82,12 +79,14 @@ Setting the font effects
 
     .. code-tab:: python
 
-        font_effects = FontEffects(
+        # ... other code
+        cell = sheet["A1"]
+        cell.value = "Hello"
+        cell.style_font_effect(
             color=CommonColor.RED,
             underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.BLUE),
             shadowed=True,
         )
-        Calc.set_val(value="Hello", cell=cell, styles=[font_effects])
 
     .. only:: html
 
@@ -95,11 +94,12 @@ Setting the font effects
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`235963998-66f9c902-b97c-47ca-b8a2-048670e39511` and :numref:`235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686`.
+Running the above code will produce the following output in :numref:`235963998-66f9c902-b97c-47ca-b8a2-048670e39511_1` and :numref:`235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686_1`.
 
 .. cssclass:: screen_shot
 
-    .. _235963998-66f9c902-b97c-47ca-b8a2-048670e39511:
+    .. _235963998-66f9c902-b97c-47ca-b8a2-048670e39511_1:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235963998-66f9c902-b97c-47ca-b8a2-048670e39511.png
         :alt: Calc Cell
         :figclass: align-center
@@ -107,7 +107,8 @@ Running the above code will produce the following output in :numref:`235963998-6
 
         Calc Cell
 
-    .. _235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686:
+    .. _235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686_1:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686.png
         :alt: Calc Format Cell dialog Font Effects set
         :figclass: align-center
@@ -125,7 +126,7 @@ Getting the font effects from a cell
 
         # ... other code
 
-        f_effects = FontEffects.from_obj(cell)
+        f_style = cell.style_font_effect_get()
         assert f_effects.prop_color == CommonColor.RED
 
     .. only:: html
@@ -143,40 +144,34 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 19, 20, 21, 22, 23, 24
 
-        from ooodev.format import CommonColor
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.font import FontEffects, FontLine, FontUnderlineEnum
+        from __future__ import annotations
+        import uno
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
+        from ooodev.utils.color import CommonColor
+        from ooodev.format.inner.direct.write.char.font.font_effects import FontLine, FontUnderlineEnum
 
         def main() -> int:
-            with Lo.Loader(connector=Lo.ConnectSocket(), opt=Lo.Options(verbose=True)):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+            with Lo.Loader(connector=Lo.ConnectSocket()):
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom_value(doc, 400)
+                doc.zoom_value(400)
 
-                Calc.set_val(value="Hello", sheet=sheet, cell_name="A1")
-                Calc.set_val(value="World", sheet=sheet, cell_name="B1")
-                rng = Calc.get_cell_range(sheet=sheet, range_name="A1:B1")
+                rng = sheet.rng("A1:B1")
+                sheet.set_array(values=[["Hello", "World"]], range_obj=rng)
 
-                font_effects = FontEffects(
+                cell_rng = sheet.get_range(range_obj=rng)
+                cell_rng.style_font_effect(
                     color=CommonColor.RED,
                     underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.BLUE),
                     shadowed=True,
                 )
-                font_effects.apply(rng)
-
-                f_effects = FontEffects.from_obj(rng)
-                assert f_effects.prop_color == CommonColor.RED
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -194,12 +189,13 @@ Setting the font effects
 
     .. code-tab:: python
 
-        font_effects = FontEffects(
+        # ... other code
+        cell_rng = sheet.get_range(range_obj=rng)
+        cell_rng.style_font_effect(
             color=CommonColor.RED,
             underline=FontLine(line=FontUnderlineEnum.SINGLE, color=CommonColor.BLUE),
             shadowed=True,
         )
-        font_effects.apply(rng)
 
     .. only:: html
 
@@ -207,11 +203,12 @@ Setting the font effects
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`235968294-45fd9003-f462-4db1-bc92-982b88659b57` and :numref:`235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686`.
+Running the above code will produce the following output in :numref:`235968294-45fd9003-f462-4db1-bc92-982b88659b57` and :numref:`235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686_1`.
 
 .. cssclass:: screen_shot
 
-    .. _235968294-45fd9003-f462-4db1-bc92-982b88659b57:
+    .. _235968294-45fd9003-f462-4db1-bc92-982b88659b57_1:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235968294-45fd9003-f462-4db1-bc92-982b88659b57.png
         :alt: Calc Range
         :figclass: align-center
@@ -228,7 +225,7 @@ Getting the font effects from a range
 
         # ... other code
 
-        f_effects = FontEffects.from_obj(cell)
+        f_style = cell_rng.style_font_effect_get()
         assert f_effects.prop_color == CommonColor.RED
 
     .. only:: html
@@ -252,8 +249,5 @@ Related Topics
         - :ref:`help_calc_format_direct_cell_font_only`
         - :ref:`help_calc_format_direct_cell_font`
         - :ref:`help_calc_format_modify_cell_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.direct.cell.font.FontEffects`
-        - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
-        - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`

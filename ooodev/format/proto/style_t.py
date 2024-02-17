@@ -42,6 +42,12 @@ class StyleT(Protocol):
         """
         ...
 
+    def get_update_obj(self) -> Any:
+        """
+        Gets the update object for the style instance.
+        """
+        ...
+
     def has_update_obj(self) -> bool:
         """Gets if the update object is set. for the style instance."""
         ...

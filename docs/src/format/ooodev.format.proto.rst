@@ -11,6 +11,7 @@ Subpackages
    ooodev.format.proto.borders
    ooodev.format.proto.calc
    ooodev.format.proto.chart2
+   ooodev.format.proto.common
    ooodev.format.proto.draw
    ooodev.format.proto.font
    ooodev.format.proto.structs

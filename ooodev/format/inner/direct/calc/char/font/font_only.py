@@ -1,8 +1,12 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import uno
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as CharFontOnly
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang
 from ooodev.units import UnitT
+
+if TYPE_CHECKING:
+    from ooodev.format.proto.font.font_lang_t import FontLangT
 
 
 class FontOnly(CharFontOnly):
@@ -26,7 +30,7 @@ class FontOnly(CharFontOnly):
         name: str | None = None,
         size: float | UnitT | None = None,
         font_style: str | None = None,
-        lang: FontLang | None = None,
+        lang: FontLangT | None = None,
     ) -> None:
         """
         Font options used in styles.
@@ -37,7 +41,7 @@ class FontOnly(CharFontOnly):
             size (float, UnitT, optional): This value contains the size of the characters in ``pt`` (point) units
                 or :ref:`proto_unit_obj`.
             font_style (str, optional): Font style name such as ``Bold``.
-            lang (Lang, optional): Font Language
+            lang (FontLangT, optional): Font Language
 
         Returns:
             None:
@@ -45,5 +49,8 @@ class FontOnly(CharFontOnly):
         See Also:
 
             - :ref:`help_calc_format_direct_cell_font_only`
+
+        Hint:
+            - ``FontLang`` can be imported from ``ooodev.format.inner.direct.write.char.font.font_only``
         """
         super().__init__(name=name, size=size, font_style=font_style, lang=lang)

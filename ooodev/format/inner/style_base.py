@@ -118,6 +118,17 @@ class StyleBase(metaclass=MetaStyle):
         """
         return self.__update_obj is not None
 
+    def get_update_obj(self) -> Any:
+        """
+        Gets the update object for the style instance.
+
+        Returns:
+            Any: The update object if set; Otherwise, ``None``.
+
+        .. versionadded:: 0.28.2
+        """
+        return self.__update_obj
+
     def set_update_obj(self, obj: Any) -> None:
         """
         Sets the update object for the style instance.
@@ -150,7 +161,7 @@ class StyleBase(metaclass=MetaStyle):
 
         Returns:
             bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
-            \**kwargs: Expandable list of key value pairs that may be used in child classes.
+            kwargs: Expandable list of key value pairs that may be used in child classes.
         """
         ...
 
@@ -160,7 +171,7 @@ class StyleBase(metaclass=MetaStyle):
 
         Returns:
             bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
-            \**kwargs: Expandable list of key value pairs that may be used in child classes.
+            kwargs: Expandable list of key value pairs that may be used in child classes.
 
         Note:
             If the ``apply()`` method has been called then usually the style will set the update object.
@@ -1072,7 +1083,7 @@ class StyleMulti(StyleBase):
 
         Returns:
             bool: Returns ``True`` if the update object is set and the style is applied; Otherwise, ``False``.
-            \**kwargs: Expandable list of key value pairs that may be used in child classes.
+            kwargs: Expandable list of key value pairs that may be used in child classes.
         """
         result = True
         styles = self._get_multi_styles()

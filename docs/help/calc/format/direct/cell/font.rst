@@ -15,35 +15,34 @@ Setup
 
     .. code-tab:: python
 
-        from ooodev.loader.lo import Lo
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.format.calc.direct.cell.font import Font
-        from ooodev.format import CommonColor, Styler
-
+        from __future__ import annotations
+        import uno
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
+        from ooodev.utils.color import CommonColor
 
         def main() -> int:
-            with Lo.Loader(Lo.ConnectSocket()):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
-                Lo.delay(300)
-                Calc.zoom(doc, GUI.ZoomEnum.ZOOM_200_PERCENT)
+            with Lo.Loader(connector=Lo.ConnectSocket()):
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
+                Lo.delay(500)
+                doc.zoom_value(400)
 
-                cell_obj = Calc.get_cell_obj("A1")
-                Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
-                Calc.set_val(value="World", sheet=sheet, cell_obj=cell_obj.right)
+                a1 = sheet["A1"]
+                a1.value = "Hello"
+                a1.style_font_general(
+                    b=True, color=CommonColor.DARK_GREEN
+                )
 
-                a1 = Calc.get_cell(sheet=sheet, cell_obj=cell_obj)
-                b12 = Calc.get_cell(sheet=sheet, cell_obj=cell_obj.right)
+                b1 = a1.get_cell_right()
+                b1.value = "World"
+                b1.style_font_general(
+                    b=True, u=True, color=CommonColor.DARK_GREEN
+                )
 
-                ft = Font(color=CommonColor.DARK_GREEN)
-                Styler.apply(a1, ft)
-                Styler.apply(b12, ft.bold.underline)
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -64,16 +63,17 @@ Set Text Font
 
     .. code-tab:: python
 
-        cell_obj = Calc.get_cell_obj("A1")
-        Calc.set_val(value="Hello", sheet=sheet, cell_obj=cell_obj)
-        Calc.set_val(value="World", sheet=sheet, cell_obj=cell_obj.right)
+        a1 = sheet["A1"]
+        a1.value = "Hello"
+        a1.style_font_general(
+            b=True, color=CommonColor.DARK_GREEN
+        )
 
-        a1 = Calc.get_cell(sheet=sheet, cell_obj=cell_obj)
-        b12 = Calc.get_cell(sheet=sheet, cell_obj=cell_obj.right)
-
-        ft = Font(color=CommonColor.DARK_GREEN)
-        Styler.apply(a1, ft)
-        Styler.apply(b12, ft.bold.underline)
+        b1 = a1.get_cell_right()
+        b1.value = "World"
+        b1.style_font_general(
+            b=True, u=True, color=CommonColor.DARK_GREEN
+        )
 
     .. only:: html
 
@@ -97,27 +97,27 @@ Set Font based upon values
 
     .. code-tab:: python
 
+
+        from ooodev.format.calc.direct.cell.font import Font
         import random
         # ... other code
 
         num_rng = 5
         data = [[random.randint(-100, 100) for _ in range(num_rng)] for _ in range(num_rng)]
-
-        cell_obj = Calc.get_cell_obj("A1")
-        Calc.set_array(values=data, sheet=sheet, cell_obj=cell_obj)
-        rng_obj = Calc.find_used_range_obj(sheet)
-
+        sheet.set_array(values=data, name="A1")
+        rng_obj = sheet.find_used_range_obj()
         ft_pos = Font(color=CommonColor.DARK_GREEN, b=True)
         ft_neg = ft_pos.fmt_color(CommonColor.DARK_RED).underline
-
-        for cell_objs in rng_obj.get_cells():
-            for co in cell_objs:
-                val = Calc.get_num(sheet=sheet, cell_obj=co)
-                cell = Calc.get_cell(sheet=sheet, cell_obj=co)
-                if val < 0:
-                    Styler.apply(cell, ft_neg)
-                else:
-                    Styler.apply(cell, ft_pos)
+        with doc:
+            # lock controllers for faster processing and avoid flickering.
+            for cell_objs in rng_obj.get_cells():
+                for co in cell_objs:
+                    cell = sheet[co]
+                    val = cell.get_num()
+                    if val < 0:
+                        cell.apply_styles(ft_neg)
+                    else:
+                        cell.apply_styles(ft_pos)
 
     .. only:: html
 
@@ -127,7 +127,8 @@ Set Font based upon values
 
 .. cssclass:: screen_shot
 
-    .. _210923541-b27b63bc-9ffc-4324-b88b-9d05dd1e0dc7:
+    .. _210923541-b27b63bc-9ffc-4324-b88b-9d05dd1e0dc7_1:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210923541-b27b63bc-9ffc-4324-b88b-9d05dd1e0dc7.png
         :alt: Styled Array
         :figclass: align-center

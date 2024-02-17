@@ -34,6 +34,7 @@ Submodules
    ooodev.adapter.container.name_replace_comp
    ooodev.adapter.container.name_replace_partial
    ooodev.adapter.container.named_partial
+   ooodev.adapter.container.set_partial
 
 Module contents
 ---------------

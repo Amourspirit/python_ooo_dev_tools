@@ -11,7 +11,7 @@ Calc Direct Cell Background
 Color
 -----
 
-The :py:class:`ooodev.format.calc.direct.cell.background.Color` class is used to set the background color of a cell.
+The ``style_area_color()`` method is called to set the background color of a cell.
 
 Apply the background color to a cell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -22,34 +22,27 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 17, 18
 
+        from __future__ import annotations
         import uno
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.background import Color as BgColor
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
         from ooodev.utils.color import StandardColor
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom_value(doc, 400)
+                doc.zoom_value(400)
 
-                cell = Calc.get_cell(sheet=sheet, cell_name="A1")
-                style = BgColor(StandardColor.BLUE_LIGHT2)
-                Calc.set_val(value="Hello", cell=cell, styles=[style])
-
-                f_style = BgColor.from_obj(cell)
-                assert f_style.prop_color == StandardColor.BLUE_LIGHT2
+                cell = sheet["A1"]
+                cell.value = "Hello"
+                cell.style_area_color(StandardColor.BLUE_LIGHT2)
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -67,8 +60,10 @@ Setting the color
 
     .. code-tab:: python
 
-        style = BgColor(StandardColor.BLUE_LIGHT2)
-        Calc.set_val(value="Hello", cell=cell, styles=[style])
+        # ... other code
+        cell = sheet["A1"]
+        cell.value = "Hello"
+        cell.style_area_color(StandardColor.BLUE_LIGHT2)
 
     .. only:: html
 
@@ -76,11 +71,11 @@ Setting the color
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`236345774-58cab818-ecde-4211-b4df-d4d239055aea` and :numref:`236345626-40553451-919f-4f8f-ae0f-85e19fcf54c8`.
+Running the above code will produce the following output in :numref:`236345774-58cab818-ecde-4211-b4df-d4d239055aea_1` and :numref:`236345626-40553451-919f-4f8f-ae0f-85e19fcf54c8_1`.
 
 .. cssclass:: screen_shot
 
-    .. _236345774-58cab818-ecde-4211-b4df-d4d239055aea:
+    .. _236345774-58cab818-ecde-4211-b4df-d4d239055aea_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236345774-58cab818-ecde-4211-b4df-d4d239055aea.png
         :alt: Calc Cell Background Color set
@@ -89,7 +84,7 @@ Running the above code will produce the following output in :numref:`236345774-5
 
         Calc Cell Background Color set
 
-    .. _236345626-40553451-919f-4f8f-ae0f-85e19fcf54c8:
+    .. _236345626-40553451-919f-4f8f-ae0f-85e19fcf54c8_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236345626-40553451-919f-4f8f-ae0f-85e19fcf54c8.png
         :alt: Calc Format Cell dialog Background Color set
@@ -107,8 +102,7 @@ Getting the color from a cell
     .. code-tab:: python
 
         # ... other code
-
-        f_style = BgColor.from_obj(cell)
+        f_style = cell.style_area_color_get()
         assert f_style.prop_color == StandardColor.BLUE_LIGHT2
 
     .. only:: html
@@ -126,38 +120,31 @@ Setup
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 17, 18
 
+        from __future__ import annotations
         import uno
-        from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
-        from ooodev.format.calc.direct.cell.background import Color as BgColor
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
         from ooodev.utils.color import StandardColor
 
 
         def main() -> int:
             with Lo.Loader(connector=Lo.ConnectSocket()):
-                doc = Calc.create_doc()
-                sheet = Calc.get_sheet()
-                GUI.set_visible(True, doc)
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
                 Lo.delay(500)
-                Calc.zoom_value(doc, 400)
+                doc.zoom_value(400)
 
-                Calc.set_val(value="Hello", sheet=sheet, cell_name="A1")
-                Calc.set_val(value="World", sheet=sheet, cell_name="B1")
-                rng = Calc.get_cell_range(sheet=sheet, range_name="A1:B1")
-
-                style = BgColor(StandardColor.BLUE_LIGHT2)
-                style.apply(rng)
-
-                f_style = BgColor.from_obj(rng)
-                assert f_style.prop_color == StandardColor.BLUE_LIGHT2
+                rng = sheet.rng("A1:B1")
+                sheet.set_array(
+                    values=[["Hello", "World"]], range_obj=rng
+                )
+                cell_rng = sheet.get_range(range_obj=rng)
+                cell_rng.style_area_color(StandardColor.BLUE_LIGHT2)
 
                 Lo.delay(1_000)
-                Lo.close_doc(doc)
+                doc.close()
             return 0
-
 
         if __name__ == "__main__":
             SystemExit(main())
@@ -175,8 +162,8 @@ Setting the color
 
     .. code-tab:: python
 
-        style = BgColor(StandardColor.BLUE_LIGHT2)
-        style.apply(rng)
+        # ... other code
+        cell_rng.style_area_color(StandardColor.BLUE_LIGHT2)
 
     .. only:: html
 
@@ -184,11 +171,11 @@ Setting the color
 
             .. group-tab:: None
 
-Running the above code will produce the following output in :numref:`236345626-40553451-919f-4f8f-ae0f-85e19fcf54c8` and :numref:`236353030-560861c1-7f6a-4954-b913-81735c139a90`.
+Running the above code will produce the following output in :numref:`236345626-40553451-919f-4f8f-ae0f-85e19fcf54c8` and :numref:`236353030-560861c1-7f6a-4954-b913-81735c139a90_1`.
 
 .. cssclass:: screen_shot
 
-    .. _236353030-560861c1-7f6a-4954-b913-81735c139a90:
+    .. _236353030-560861c1-7f6a-4954-b913-81735c139a90_1:
 
     .. figure:: https://user-images.githubusercontent.com/4193389/236353030-560861c1-7f6a-4954-b913-81735c139a90.png
         :alt: Calc Cell Background Color set
@@ -207,7 +194,7 @@ Getting the color from a range
 
         # ... other code
 
-        f_style = BgColor.from_obj(rng)
+        f_style = cell_rng.style_area_color_get()
         assert f_style.prop_color == StandardColor.BLUE_LIGHT2
 
     .. only:: html
@@ -226,7 +213,4 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_cell_background`
-        - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
-        - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
-        - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`
+        - :py:class:`~ooodev.loader.Lo`

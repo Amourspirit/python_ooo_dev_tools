@@ -11,15 +11,14 @@ from typing import Any, Type, overload, cast, Tuple, TypeVar
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.units import UnitT
-from ooodev.loader import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
 from ooodev.format.inner.common.props.cell_borders_props import CellBordersProps
 from ooodev.format.inner.common.props.prop_pair import PropPair
 from ooodev.format.inner.common.props.struct_border_table_props import StructBorderTableProps
-from ...structs.side import Side as Side
-from ...structs.table_border_struct import TableBorderStruct
+from ooodev.format.inner.direct.structs.side import Side as Side
+from ooodev.format.inner.direct.structs.table_border_struct import TableBorderStruct
 from .padding import Padding as Padding
 from .shadow import Shadow as Shadow
 
@@ -122,7 +121,7 @@ class Borders(StyleMulti):
 
         super().__init__(**init_vals)
         if border_table.prop_has_attribs:
-            self._set_style("border_table", border_table, *border_table.get_attrs())
+            self._set_style("border_table", border_table, *border_table.get_attrs())  # type: ignore
         if padding_fmt is not None:
             self._set_style("padding", padding_fmt, *padding_fmt.get_attrs())
 
@@ -281,7 +280,7 @@ class Borders(StyleMulti):
         if not has_style:
             args = {side: value, "_cattribs": self._get_tb_cattribs()}
             border_table = TableBorderStruct(**args)
-            cp._set_style("border_table", border_table)
+            cp._set_style("border_table", border_table)  # type: ignore
             return (cp, True)
         return (cp, False)
 
@@ -589,6 +588,8 @@ class Borders(StyleMulti):
             self._default_inst = self.__class__(
                 border_side=Side(), padding=Padding(_cattribs=self._get_padding_cattribs()).default  # type: ignore
             )
+            if self.has_update_obj():
+                self._default_inst.set_update_obj(self.get_update_obj())
             self._default_inst._is_default_inst = True
         return self._default_inst
 
@@ -610,6 +611,8 @@ class Borders(StyleMulti):
                 padding=Padding(_cattribs=self._get_padding_cattribs()).default,  # type: ignore
                 _cattribs=self._get_internal_cattribs(),  # type: ignore
             )
+            if self.has_update_obj():
+                self._empty_inst.set_update_obj(self.get_update_obj())
             self._empty_inst._is_default_inst = True
         return self._empty_inst
 

@@ -12,6 +12,7 @@ Subpackages
    ooodev.format.proto.chart2.numbers
    ooodev.format.proto.chart2.position_size
    ooodev.format.proto.chart2.series
+   ooodev.format.proto.chart2.title
 
 Module contents
 ---------------

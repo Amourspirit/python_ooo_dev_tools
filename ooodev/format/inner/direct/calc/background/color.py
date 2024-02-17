@@ -181,4 +181,5 @@ class Color(StyleBase):
             self._empty_inst._is_default_inst = True
         return self._empty_inst
 
+    default = empty  # for protocol compatibility with other classes
     # endregion Properties
