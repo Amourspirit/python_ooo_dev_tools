@@ -83,7 +83,7 @@ Set Text Font
 
 .. cssclass:: screen_shot
 
-    .. _210860379-03298ed5-1228-42fb-8f04-f7749821a755:
+    .. _210860379-03298ed5-1228-42fb-8f04-f7749821a755_1:
     .. figure:: https://user-images.githubusercontent.com/4193389/210860379-03298ed5-1228-42fb-8f04-f7749821a755.png
         :alt: Styled Text
         :figclass: align-center

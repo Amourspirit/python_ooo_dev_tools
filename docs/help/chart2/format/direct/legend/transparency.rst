@@ -163,7 +163,6 @@ Like the Transparency the Gradient Transparency needs a background color in orde
 .. tabs::
 
     .. code-tab:: python
-        :emphasize-lines: 2,3,4,5,9,10,11
 
         from ooodev.utils.data_type.intensity_range import IntensityRange
         # ... other code

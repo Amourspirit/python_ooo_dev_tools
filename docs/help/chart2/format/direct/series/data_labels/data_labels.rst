@@ -11,15 +11,12 @@ Chart2 Direct Series Data Labels
 Overview
 --------
 
-The Data Labels tab of the Chart Data Labels dialog has many options as see in :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d`.
-The :py:mod:`ooodev.format.chart2.direct.series.data_labels.data_labels` module has various classes to set the same options.
-
-Calls to the :py:meth:`Chart2.style_data_series() <ooodev.office.chart2.Chart2.style_data_series>`
-and :py:meth:`Chart2.style_data_point() <ooodev.office.chart2.Chart2.style_data_point>` methods are used to set the data labels options of a Chart.
+The Data Labels tab of the Chart Data Labels dialog has many options as see in :numref:`0c7d3398-34f5-4da3-81f2-79e134fab44d_1`.
+The various ``style_*`` methods are called to set the same options.
 
 .. cssclass:: screen_shot
 
-    .. _0c7d3398-34f5-4da3-81f2-79e134fab44d:
+    .. _0c7d3398-34f5-4da3-81f2-79e134fab44d_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/0c7d3398-34f5-4da3-81f2-79e134fab44d
         :alt: Chart Data Labels Dialog Data Labels Tab

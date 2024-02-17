@@ -12,12 +12,12 @@ Overview
 --------
 
 The ``style_axis_pos_*`` methods gives similar options for axis positioning
-as :numref:`9800e630-952c-4947-ba95-f4d5c456284f` Axis Positioning Dialog, but without the dialog.
+as :numref:`9800e630-952c-4947-ba95-f4d5c456284f_1` Axis Positioning Dialog, but without the dialog.
 
 
 .. cssclass:: screen_shot
 
-    .. _9800e630-952c-4947-ba95-f4d5c456284f:
+    .. _9800e630-952c-4947-ba95-f4d5c456284f_1:
 
     .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/9800e630-952c-4947-ba95-f4d5c456284f
         :alt: Chart Axis Positioning Dialog

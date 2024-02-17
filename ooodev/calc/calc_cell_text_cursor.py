@@ -18,7 +18,6 @@ from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
-    from .calc_sheet import CalcSheet
     from .calc_cell import CalcCell
 else:
     XSheetCellCursor = object
