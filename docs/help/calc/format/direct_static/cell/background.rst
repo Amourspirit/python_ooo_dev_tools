@@ -13,6 +13,10 @@ Color
 
 The :py:class:`ooodev.format.calc.direct.cell.background.Color` class is used to set the background color of a cell.
 
+.. seealso::
+
+    - :ref:`help_calc_format_direct_cell_background`
+
 Apply the background color to a cell
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -223,10 +227,11 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`help_calc_format_direct_cell_background`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_cell_background`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
         - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`

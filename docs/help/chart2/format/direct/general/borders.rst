@@ -146,6 +146,6 @@ Related Topics
         - :ref:`help_chart2_format_direct_general`
         - :ref:`help_chart2_format_direct_wall_floor_borders`
         - :ref:`ooodev.calc.chart2.chart_doc.ChartDoc`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.general.borders.LineProperties`

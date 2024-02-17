@@ -402,7 +402,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.page.page.PaperFormat`
         - :py:class:`ooodev.format.calc.modify.page.page.Margins`
         - :py:class:`ooodev.format.calc.modify.page.page.LayoutSettings`

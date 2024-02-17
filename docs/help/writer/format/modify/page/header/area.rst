@@ -422,7 +422,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_page_footer_area`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.page.header.area.Color`
         - :py:class:`ooodev.format.writer.modify.page.header.area.Gradient`
         - :py:class:`ooodev.format.writer.modify.page.header.area.Img`

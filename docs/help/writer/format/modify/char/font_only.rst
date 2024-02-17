@@ -112,5 +112,5 @@ Related Topics
         - :ref:`help_writer_format_modify_char_font_effects`
         - :ref:`help_writer_format_direct_char_font_only`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.char.font.FontOnly`

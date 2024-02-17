@@ -242,6 +242,6 @@ Related Topics
         - :ref:`help_writer_format_modify_page_footer_transparency`
         - :ref:`help_writer_format_modify_page_transparency`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.page.header.transparency.Transparency`
         - :py:class:`ooodev.format.writer.modify.page.header.transparency.Gradient`

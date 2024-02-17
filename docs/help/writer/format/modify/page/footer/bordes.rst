@@ -270,7 +270,7 @@ Related Topics
         - :ref:`help_writer_format_modify_page_borders`
         - :ref:`help_writer_format_modify_page_header_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.page.footer.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.page.footer.borders.Sides`
         - :py:class:`ooodev.format.writer.modify.page.footer.borders.Shadow`

@@ -480,7 +480,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_para_outline_and_list`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.para.outline_list.Outline`
         - :py:class:`ooodev.format.writer.direct.para.outline_list.LineNum`
         - :py:class:`ooodev.format.writer.direct.para.outline_list.ListStyle`

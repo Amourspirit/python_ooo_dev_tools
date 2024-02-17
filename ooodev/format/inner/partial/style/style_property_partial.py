@@ -103,3 +103,38 @@ class StylePropertyPartial:
 
         if has_events:
             self.trigger_event("after_style_by_name", EventArgs.from_args(cargs))  # type: ignore
+
+    def style_by_name_get(self) -> str:
+        """
+        Get the style name of the component.
+
+        Returns:
+            str: The name of the style.
+        """
+        comp = self.__component
+        prop_name = self.__property_name
+        cancel_set_prop = False
+        cargs = None
+        if isinstance(self, EventsPartial):
+            cargs = CancelEventArgs(self.style_by_name.__qualname__)
+            event_data: Dict[str, Any] = {
+                "prop_name": prop_name,
+                "this_component": comp,
+                "cancel_set_prop": cancel_set_prop,
+            }
+            cargs.event_data = event_data
+            self.trigger_event("before_style_by_name_get", cargs)
+            if cargs.cancel is True:
+                if cargs.handled is True:
+                    return ""
+                cargs.set("initial_event", "before_style_by_name_get")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
+                if cargs.handled is False:
+                    raise mEx.CancelEventError(cargs, "Style Position has been cancelled.")
+                else:
+                    return ""
+            prop_name = cargs.event_data.get("prop_name", prop_name)
+            cancel_set_prop = cargs.event_data.get("cancel_set_prop", cancel_set_prop)
+            comp = cargs.event_data.get("this_component", comp)
+
+        return mProps.Props.get(comp, prop_name, "") if prop_name else ""

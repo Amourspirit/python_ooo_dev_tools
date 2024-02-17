@@ -241,7 +241,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_indent_spacing`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.para.indent_space.Indent`
         - :py:class:`ooodev.format.writer.modify.para.indent_space.LineSpacing`
         - :py:class:`ooodev.format.writer.modify.para.indent_space.Spacing`

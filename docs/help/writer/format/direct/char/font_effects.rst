@@ -141,7 +141,7 @@ Related Topics
         - :ref:`help_writer_format_modify_para_font_effects`
         - :ref:`help_calc_format_direct_cell_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontEffects`
         - :py:class:`ooodev.format.writer.direct.char.font.FontOnly`
         - :py:class:`ooodev.format.writer.direct.char.font.FontLine`

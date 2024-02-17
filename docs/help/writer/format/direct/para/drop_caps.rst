@@ -225,5 +225,5 @@ Related Topics
         - :ref:`ch02`
         - :ref:`help_writer_format_modify_para_drop_caps`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.para.drop_caps.DropCaps`

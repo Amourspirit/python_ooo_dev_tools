@@ -26,6 +26,10 @@ The :py:class:`ooodev.format.calc.direct.cell.borders.Borders` class is used to 
 
         Calc Format Cells Borders dialog.
 
+.. seealso::
+
+    - :ref:`help_calc_format_direct_cell_borders`
+
 Setup
 -----
 
@@ -883,6 +887,7 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`help_calc_format_direct_cell_borders`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_borders`

@@ -172,5 +172,5 @@ Related Topics
         - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_writer_format_modify_para_color`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.para.area.Color`

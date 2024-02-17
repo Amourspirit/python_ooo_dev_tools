@@ -160,7 +160,7 @@ Related Topics
         - :ref:`help_writer_format_modify_char_borders`
         - :ref:`help_calc_format_direct_cell_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.char.borders.Borders`
         - :py:class:`ooodev.format.writer.direct.char.borders.Padding`
         - :py:class:`ooodev.format.writer.direct.char.borders.Shadow`

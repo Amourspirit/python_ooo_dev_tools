@@ -126,7 +126,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_legend_font_only`
         - :ref:`help_chart2_format_direct_legend_font_effects`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`~ooodev.office.chart2.Chart2`
         - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`
         - :py:class:`ooodev.format.chart2.direct.legend.font.Font`

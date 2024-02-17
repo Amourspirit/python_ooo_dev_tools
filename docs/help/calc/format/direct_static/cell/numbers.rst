@@ -8,6 +8,10 @@ Calc Direct Cell Numbers (Static)
     :backlinks: none
     :depth: 2
 
+.. seealso::
+
+    - :ref:`help_calc_format_direct_cell_numbers`
+
 The :py:class:`ooodev.format.calc.direct.cell.numbers.Numbers` class gives you the similar options
 as Calc's Font Dialog, but without the dialog. as seen in :numref:`236359913-91acf4fe-f6be-4e2b-be71-50a93b4991cb`.
 
@@ -244,13 +248,14 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`help_calc_format_direct_cell_numbers`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_cell_numbers`
         - |num_fmt|_
         - |num_fmt_index|_
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
         - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`
 
