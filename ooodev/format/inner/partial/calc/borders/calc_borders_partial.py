@@ -47,7 +47,37 @@ class CalcBordersPartial:
         if isinstance(self, EventsPartial):
             self.subscribe_event(event_name=self.__styler.before_event_name, callback=on_style)
         style = cast("BordersT", self.__styler.style(factory=factory))
-        style.empty.update()
+        if style is not None:
+            empty = style.empty
+            if not empty.has_update_obj():
+                empty.set_update_obj(style.get_update_obj())
+            style.empty.update()
+
+    def style_borders_default(self) -> BordersT | None:
+        """
+        Style default border.
+
+        Returns:
+            BordersT | None: Border instance or ``None`` if cancelled.
+        """
+
+        def on_style(src: Any, events: CancelEventArgs) -> None:
+            # this will stop the style from being applied.
+            # not critical but style is being applied later via style.empty.update()
+            events.event_data["cancel_apply"] = True
+
+        factory = calc_borders_factory
+        if isinstance(self, EventsPartial):
+            self.subscribe_event(event_name=self.__styler.before_event_name, callback=on_style)
+        style = cast("BordersT", self.__styler.style(factory=factory))
+        if style is None:
+            return None
+
+        default = style.default
+        if not default.has_update_obj():
+            default.set_update_obj(style.get_update_obj())
+        default.update()
+        return default
 
     def style_borders(
         self,
@@ -86,12 +116,12 @@ class CalcBordersPartial:
             CancelEventError: If the event ``before_style_calc_borders`` is cancelled and not handled.
 
         Returns:
-            BordersT | None: Font Effects instance or ``None`` if cancelled.
+            BordersT | None: Border instance or ``None`` if cancelled.
 
         Hint:
-            ``Side``, ``Shadow`` and ``Padding`` can be imported from ``ooodev.format.calc.direct.cell.borders``
-            ``BorderLineKind`` can be imported from ``ooodev.format.calc.direct.cell.borders``
-            ``LineSize`` can be imported from ``ooodev.format.calc.direct.cell.borders``
+            - ``Side``, ``Shadow`` and ``Padding`` can be imported from ``ooodev.format.calc.direct.cell.borders``
+            - ``BorderLineKind`` can be imported from ``ooodev.format.calc.direct.cell.borders``
+            - ``LineSize`` can be imported from ``ooodev.format.calc.direct.cell.borders``
         """
         factory = calc_borders_factory
         kwargs: Dict[str, Any] = {
@@ -143,9 +173,11 @@ class CalcBordersPartial:
             BordersT | None: Font Effects instance or ``None`` if cancelled.
 
         Hint:
-            ``BorderLineKind`` can be imported from ``ooodev.format.calc.direct.cell.borders``
-            ``LineSize`` can be imported from ``ooodev.format.calc.direct.cell.borders``
+            - ``Shadow`` and ``Padding`` can be imported from ``ooodev.format.calc.direct.cell.borders``
+            - ``BorderLineKind`` can be imported from ``ooodev.format.calc.direct.cell.borders``
+            - ``LineSize`` can be imported from ``ooodev.format.calc.direct.cell.borders``
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.format.calc.direct.cell.borders import Side
         from ooodev.format.inner.direct.structs.side import BorderLineKind
         from ooodev.format.inner.direct.structs.side import LineSize

@@ -88,7 +88,7 @@ def font_only_factory(name: str) -> Type[FontOnlyT]:
 
         return FontOnly
 
-    if name == "ooodev.calc.cell":
+    if name in {"ooodev.calc.cell", "ooodev.calc.cell_rng"}:
         from ooodev.format.inner.direct.calc.char.font.font_only import FontOnly
 
         return FontOnly

@@ -8,5 +8,6 @@ Calc Formatting and Style
     :glob:
 
     direct/index
+    direct_static/index
     modify/index
     style/index
