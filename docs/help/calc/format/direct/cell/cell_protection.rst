@@ -41,36 +41,36 @@ Setup
 
     .. code-tab:: python
 
-    from __future__ import annotations
-    import uno
-    from ooodev.calc import CalcDoc
-    from ooodev.loader import Lo
+        from __future__ import annotations
+        import uno
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
 
-    def main() -> int:
-        with Lo.Loader(connector=Lo.ConnectSocket()):
-            doc = CalcDoc.create_doc(visible=True)
-            sheet = doc.sheets[0]
-            Lo.delay(500)
-            doc.zoom_value(100)
+        def main() -> int:
+            with Lo.Loader(connector=Lo.ConnectSocket()):
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
+                Lo.delay(500)
+                doc.zoom_value(100)
 
-            cell = sheet["A1"]
-            cell.value = "Hello"
-            cell.style_protection(
-                hide_all=False,
-                hide_formula=True,
-                protected=True,
-                hide_print=True,
-            )
+                cell = sheet["A1"]
+                cell.value = "Hello"
+                cell.style_protection(
+                    hide_all=False,
+                    hide_formula=True,
+                    protected=True,
+                    hide_print=True,
+                )
 
-            f_style = cell.style_protection_get()
-            assert f_style is not None
+                f_style = cell.style_protection_get()
+                assert f_style is not None
 
-            Lo.delay(1_000)
-            doc.close()
-        return 0
+                Lo.delay(1_000)
+                doc.close()
+            return 0
 
-    if __name__ == "__main__":
-        SystemExit(main())
+        if __name__ == "__main__":
+            SystemExit(main())
 
     .. only:: html
 

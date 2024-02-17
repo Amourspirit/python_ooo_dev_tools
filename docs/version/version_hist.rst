@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.28.3
+==============
+
+``CalcCell`` and ``CalcCellRange`` now have ``style_by_name()`` methods that allow setting a cell or range style by name.
+
 Version 0.28.2
 ==============
 

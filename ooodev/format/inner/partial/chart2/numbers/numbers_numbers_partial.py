@@ -82,7 +82,7 @@ class NumbersNumbersPartial:
         if num_format_index != -1:
             kwargs["num_format_index"] = num_format_index
         if num_format != 0:
-            kwargs["num_format_index"] = num_format_index
+            kwargs["num_format"] = num_format
         return self.__styler.style(factory=factory, **kwargs)
 
     def style_numbers_numbers_get(self) -> NumbersT | None:

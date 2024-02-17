@@ -2,31 +2,10 @@ from __future__ import annotations
 from typing import Any, cast, List, overload, Sequence, TYPE_CHECKING
 import uno
 
-
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
-
-if TYPE_CHECKING:
-    from com.sun.star.sheet import SheetCellRange
-    from com.sun.star.table import CellAddress
-    from ooo.dyn.table.cell_range_address import CellRangeAddress
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
-    from ooodev.proto.style_obj import StyleT
-    from ooodev.utils.color import Color
-    from ooodev.utils.data_type.cell_obj import CellObj
-    from ooodev.utils.data_type.cell_values import CellValues
-    from ooodev.utils.data_type.range_obj import RangeObj
-    from ooodev.utils.data_type.size import Size
-    from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
-    from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row, PathOrStr
-    from . import calc_cell_cursor as mCalcCellCursor
-    from .calc_sheet import CalcSheet
-    from .chart2.table_chart import TableChart
-else:
-    CellRangeAddress = Any
-    ImgExportT = Any
 
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
 from ooodev.calc import CalcNamedEvent
@@ -55,9 +34,33 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from . import calc_cell as mCalcCell
+
+
+if TYPE_CHECKING:
+    from com.sun.star.sheet import SheetCellRange
+    from com.sun.star.table import CellAddress
+    from ooo.dyn.table.cell_range_address import CellRangeAddress
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.utils.color import Color
+    from ooodev.utils.data_type.cell_obj import CellObj
+    from ooodev.utils.data_type.cell_values import CellValues
+    from ooodev.utils.data_type.range_obj import RangeObj
+    from ooodev.utils.data_type.size import Size
+    from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
+    from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row, PathOrStr
+    from ooodev.format.calc.style import StyleCellKind
+    from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+    from . import calc_cell_cursor as mCalcCellCursor
+    from .calc_sheet import CalcSheet
+    from .chart2.table_chart import TableChart
+else:
+    CellRangeAddress = Any
+    ImgExportT = Any
 
 
 class CalcCellRange(
@@ -80,6 +83,7 @@ class CalcCellRange(
     CalcBordersPartial,
     CellProtectionPartial,
     NumbersNumbersPartial,
+    StylePropertyPartial,
 ):
     """Represents a calc cell range."""
 
@@ -132,14 +136,47 @@ class CalcCellRange(
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.number.numbers", component=cell_range, lo_inst=lo_inst
         )
+        StylePropertyPartial.__init__(self, component=cell_range, property_name="CellStyle")
         self._init_events()
 
     def _init_events(self) -> None:
         self._fn_on_before_style_number_number = self._on_before_style_number_number
+        self._fn_on_style_by_name_default_prop_setting = self._on_style_by_name_default_prop_setting
         self.subscribe_event(event_name="before_style_number_number", callback=self._fn_on_before_style_number_number)
+        self.subscribe_event(
+            event_name="style_by_name_default_prop_setting", callback=self._fn_on_style_by_name_default_prop_setting
+        )
 
     def _on_before_style_number_number(self, src: Any, event: CancelEventArgs) -> None:
         event.event_data["component"] = self.calc_doc.component
+
+    def _on_style_by_name_default_prop_setting(self, src: Any, event: KeyValCancelArgs) -> None:
+        # this event is triggered by StylePropertyPartial.style_by_name()
+        # when property is setting default value this is triggered.
+        # In this case we want the style to be set to the default property value.
+        event.default = True
+
+    # region StylePropertyPartial overrides
+
+    def style_by_name(self, name: str | StyleCellKind = "") -> None:
+        """
+        Assign a style by name to the component.
+
+        name (str, StyleCellKind, optional): The name of the style to apply. ``StyleCellKind`` contains various style names.
+                If not provided, the default style is applied.
+
+        Raises:
+            CancelEventError: If the event ``before_style_by_name`` is cancelled and not handled.
+
+        Returns:
+            None:
+
+        Hint:
+            - ``StyleCellKind`` can be imported from ``ooodev.format.calc.style``
+        """
+        super().style_by_name(name=str(name))
+
+    # endregion StylePropertyPartial overrides
 
     # region Chart2
     def insert_chart(

@@ -1,7 +1,7 @@
 .. _help_calc_format_direct_cell_alignment:
 
 Calc Direct Cell Alignment
-============================
+==========================
 
 .. contents:: Table of Contents
     :local:
@@ -393,33 +393,33 @@ General setup for the examples in this section.
 
     .. code-tab:: python
 
-    from __future__ import annotations
-    import uno
-    from ooodev.calc import CalcDoc
-    from ooodev.loader import Lo
-    from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind
+        from __future__ import annotations
+        import uno
+        from ooodev.calc import CalcDoc
+        from ooodev.loader import Lo
+        from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind
 
-    def main() -> int:
-        with Lo.Loader(connector=Lo.ConnectSocket()):
-            doc = CalcDoc.create_doc(visible=True)
-            sheet = doc.sheets[0]
-            Lo.delay(500)
-            doc.zoom_value(400)
+        def main() -> int:
+            with Lo.Loader(connector=Lo.ConnectSocket()):
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
+                Lo.delay(500)
+                doc.zoom_value(400)
 
-            cell = sheet["A1"]
-            cell.value = "Hello World! Sunny Day!"
-            cell.style_align_properties(
-                wrap_auto=True,
-                hyphen_active=True,
-                direction=TextDirectionKind.PAGE,
-            )
+                cell = sheet["A1"]
+                cell.value = "Hello World! Sunny Day!"
+                cell.style_align_properties(
+                    wrap_auto=True,
+                    hyphen_active=True,
+                    direction=TextDirectionKind.PAGE,
+                )
 
-            Lo.delay(1_000)
-            doc.close()
-        return 0
+                Lo.delay(1_000)
+                doc.close()
+            return 0
 
-    if __name__ == "__main__":
-        SystemExit(main())
+        if __name__ == "__main__":
+            SystemExit(main())
 
     .. only:: html
 
