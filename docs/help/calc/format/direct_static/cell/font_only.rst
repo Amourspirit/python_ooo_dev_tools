@@ -14,6 +14,7 @@ as Calc's Font Dialog, but without the dialog. as seen in :numref:`235984034-385
 .. cssclass:: screen_shot
 
     .. _235984034-3859d73c-70c8-4623-9f58-1e5d4a792674:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235984034-3859d73c-70c8-4623-9f58-1e5d4a792674.png
         :alt: Calc Format Cell dialog Font Effects
         :figclass: align-center
@@ -21,6 +22,9 @@ as Calc's Font Dialog, but without the dialog. as seen in :numref:`235984034-385
 
         Calc Format Cell dialog Font Effects
 
+.. seealso::
+
+    - :ref:`help_calc_format_direct_cell_font_only`
 
 Apply the font to a cell
 ------------------------
@@ -90,6 +94,7 @@ Running the above code will produce the following output in :numref:`236008924-e
 .. cssclass:: screen_shot
 
     .. _236008924-edb77848-d3e9-479a-816b-e6b46296fc6b:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/236008924-edb77848-d3e9-479a-816b-e6b46296fc6b.png
         :alt: Calc Format Cell dialog Font set
         :figclass: align-center
@@ -211,13 +216,14 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`help_calc_format_direct_cell_font_only`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_direct_cell_font`
         - :ref:`help_calc_format_direct_cell_font_effects`
         - :ref:`help_calc_format_modify_cell_font_only`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.direct.cell.font.FontOnly`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
         - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`

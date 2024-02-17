@@ -22,6 +22,10 @@ In this section we will look the various classed that set the same options.
 
         Calc Format Cell dialog Direct Cell Alignment
 
+.. seealso::
+
+    - :ref:`help_calc_format_direct_cell_alignment`
+
 Text Alignment
 --------------
 
@@ -553,6 +557,7 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`help_calc_format_direct_cell_alignment`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_alignment`

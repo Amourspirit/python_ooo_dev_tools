@@ -331,6 +331,7 @@ def event_ctx(
     Yields:
         Generator[EventObserver, None, None]: events
     """
+    # pylint: disable=no-member
     e_obj = None
     lo_inst = None
     try:
@@ -345,6 +346,7 @@ def event_ctx(
         # a proxy is not able to be added to the LoEvents() observer list
         # yield proxy(e_obj)
         if lo_observe:
+            # pylint: disable=import-outside-toplevel
             from ooodev.loader.lo import Lo
 
             lo_inst = Lo.current_lo

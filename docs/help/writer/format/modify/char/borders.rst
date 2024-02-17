@@ -245,7 +245,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.char.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.char.borders.Sides`
         - :py:class:`ooodev.format.writer.modify.char.borders.Shadow`

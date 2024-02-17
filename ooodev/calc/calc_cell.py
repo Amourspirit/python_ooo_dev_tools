@@ -2,19 +2,6 @@ from __future__ import annotations
 from typing import Any, overload, Sequence, TYPE_CHECKING
 import uno
 
-if TYPE_CHECKING:
-    from com.sun.star.awt import Point
-    from com.sun.star.sheet import SolverConstraint  # struct
-    from com.sun.star.sheet import XGoalSeek
-    from com.sun.star.sheet import XSheetAnnotation
-    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
-    from ooodev.proto.style_obj import StyleT
-    from ooodev.events.args.cancel_event_args import CancelEventArgs
-    from .calc_sheet import CalcSheet
-    from . import calc_cell_cursor as mCalcCellCursor
-else:
-    XSheetAnnotation = object
-
 from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
@@ -42,8 +29,24 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
+from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+
+if TYPE_CHECKING:
+    from com.sun.star.awt import Point
+    from com.sun.star.sheet import SolverConstraint  # struct
+    from com.sun.star.sheet import XGoalSeek
+    from com.sun.star.sheet import XSheetAnnotation
+    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.events.args.cancel_event_args import CancelEventArgs
+    from ooodev.format.calc.style import StyleCellKind
+    from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+    from .calc_sheet import CalcSheet
+    from . import calc_cell_cursor as mCalcCellCursor
+else:
+    XSheetAnnotation = object
 
 
 class CalcCell(
@@ -66,6 +69,7 @@ class CalcCell(
     CalcBordersPartial,
     CellProtectionPartial,
     NumbersNumbersPartial,
+    StylePropertyPartial,
 ):
     def __init__(self, owner: CalcSheet, cell: str | mCellObj.CellObj, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -100,14 +104,25 @@ class CalcCell(
         NumbersNumbersPartial.__init__(
             self, factory_name="ooodev.number.numbers", component=sheet_cell, lo_inst=lo_inst
         )
+        StylePropertyPartial.__init__(self, component=sheet_cell, property_name="CellStyle")
         self._init_events()
 
     def _init_events(self) -> None:
         self._fn_on_before_style_number_number = self._on_before_style_number_number
+        self._fn_on_style_by_name_default_prop_setting = self._on_style_by_name_default_prop_setting
         self.subscribe_event(event_name="before_style_number_number", callback=self._fn_on_before_style_number_number)
+        self.subscribe_event(
+            event_name="style_by_name_default_prop_setting", callback=self._fn_on_style_by_name_default_prop_setting
+        )
 
     def _on_before_style_number_number(self, src: Any, event: CancelEventArgs) -> None:
         event.event_data["component"] = self.calc_doc.component
+
+    def _on_style_by_name_default_prop_setting(self, src: Any, event: KeyValCancelArgs) -> None:
+        # this event is triggered by StylePropertyPartial.style_by_name()
+        # when property is setting default value this is triggered.
+        # In this case we want the style to be set to the default property value.
+        event.default = True
 
     def create_cursor(self) -> mCalcCellCursor.CalcCellCursor:
         """
@@ -117,6 +132,29 @@ class CalcCell(
             CalcCellCursor: Cell cursor
         """
         return self.calc_sheet.create_cursor_by_range(cell_obj=self._cell_obj)
+
+    # region StylePropertyPartial overrides
+
+    def style_by_name(self, name: str | StyleCellKind = "") -> None:
+        """
+        Assign a style by name to the component.
+
+        Args:
+            name (str, StyleCellKind, optional): The name of the style to apply. ``StyleCellKind`` contains various style names.
+                If not provided, the default style is applied.
+
+        Raises:
+            CancelEventError: If the event ``before_style_by_name`` is cancelled and not handled.
+
+        Returns:
+            None:
+
+        Hint:
+            - ``StyleCellKind`` can be imported from ``ooodev.format.calc.style``
+        """
+        super().style_by_name(name=str(name))
+
+    # endregion StylePropertyPartial overrides
 
     # region Cell Properties
 

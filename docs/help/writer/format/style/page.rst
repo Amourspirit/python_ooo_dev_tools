@@ -148,5 +148,5 @@ Related Topics
         - :ref:`help_writer_format_modify_page_area`
         - :py:class:`~ooodev.office.write.Write`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.style.Page`

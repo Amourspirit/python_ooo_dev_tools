@@ -8,6 +8,10 @@ Calc Direct Cell Font Class (Static)
     :backlinks: none
     :depth: 2
 
+.. seealso::
+
+    - :ref:`help_calc_format_direct_cell_font`
+
 Setup
 -----
 
@@ -84,6 +88,7 @@ Set Text Font
 .. cssclass:: screen_shot
 
     .. _210860379-03298ed5-1228-42fb-8f04-f7749821a755:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210860379-03298ed5-1228-42fb-8f04-f7749821a755.png
         :alt: Styled Text
         :figclass: align-center
@@ -128,6 +133,7 @@ Set Font based upon values
 .. cssclass:: screen_shot
 
     .. _210923541-b27b63bc-9ffc-4324-b88b-9d05dd1e0dc7:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/210923541-b27b63bc-9ffc-4324-b88b-9d05dd1e0dc7.png
         :alt: Styled Array
         :figclass: align-center
@@ -141,6 +147,7 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`help_calc_format_direct_cell_font`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_direct_cell_font_only`

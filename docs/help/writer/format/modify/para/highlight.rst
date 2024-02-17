@@ -133,5 +133,5 @@ Related Topics
         - :ref:`help_writer_format_direct_char_highlight`
         - :ref:`help_writer_format_modify_char_highlight`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.para.highlight.Highlight`

@@ -262,7 +262,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_cell_borders`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.page.borders.Padding`
         - :py:class:`ooodev.format.calc.modify.page.borders.Sides`
         - :py:class:`ooodev.format.calc.modify.page.borders.Shadow`

@@ -2,15 +2,20 @@
 Version History
 ***************
 
+Version 0.28.3
+==============
+
+``CalcCell`` and ``CalcCellRange`` now have ``style_by_name()`` methods that allow setting a cell or range style by name.
+
 Version 0.28.2
 ==============
 
-Added many style methods to Calc clases such as ``CalcCell`` and ``CalcCellRange``.
+Added many style methods to Calc classes such as ``CalcCell`` and ``CalcCellRange``.
 
 Version 0.28.1
 ==============
 
-Minor fix for getting the current document in muilti document usage.
+Minor fix for getting the current document in multi document usage.
 
 Version 0.28.0
 ==============

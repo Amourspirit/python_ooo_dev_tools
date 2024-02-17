@@ -22,6 +22,9 @@ as Calc's Font Effects Dialog, but without the dialog as seen in :numref:`235955
 
         Calc Format Cell dialog Font Effects
 
+.. seealso::
+
+    - :ref:`help_calc_format_direct_cell_font_effects`
 
 Apply the font effects to a cell
 --------------------------------
@@ -100,6 +103,7 @@ Running the above code will produce the following output in :numref:`235963998-6
 .. cssclass:: screen_shot
 
     .. _235963998-66f9c902-b97c-47ca-b8a2-048670e39511:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235963998-66f9c902-b97c-47ca-b8a2-048670e39511.png
         :alt: Calc Cell
         :figclass: align-center
@@ -108,6 +112,7 @@ Running the above code will produce the following output in :numref:`235963998-6
         Calc Cell
 
     .. _235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235963671-a3f8f543-26ec-4a91-b3cf-e1ef753de686.png
         :alt: Calc Format Cell dialog Font Effects set
         :figclass: align-center
@@ -212,6 +217,7 @@ Running the above code will produce the following output in :numref:`235968294-4
 .. cssclass:: screen_shot
 
     .. _235968294-45fd9003-f462-4db1-bc92-982b88659b57:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/235968294-45fd9003-f462-4db1-bc92-982b88659b57.png
         :alt: Calc Range
         :figclass: align-center
@@ -244,6 +250,7 @@ Related Topics
 
     .. cssclass:: ul-list
 
+        - :ref:`help_calc_format_direct_cell_font_effects`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_font_effects`
@@ -253,7 +260,7 @@ Related Topics
         - :ref:`help_calc_format_direct_cell_font`
         - :ref:`help_calc_format_modify_cell_font_effects`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.direct.cell.font.FontEffects`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
         - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`

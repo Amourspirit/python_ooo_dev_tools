@@ -146,6 +146,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_page_header_header`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.page.footer.Footer`
         - :py:class:`Calc.set_head_foot() <ooodev.office.calc.Calc.set_head_foot>`

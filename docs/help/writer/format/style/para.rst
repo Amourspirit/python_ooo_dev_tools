@@ -244,7 +244,7 @@ Related Topics
         - :py:class:`~ooodev.units.UnitMM`
         - :py:mod:`ooodev.utils.color`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.style.Para`
 
 .. |story_creator| replace:: Story Creator

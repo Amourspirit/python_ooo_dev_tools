@@ -102,7 +102,7 @@ class LoInst(EventsPartial):
 
     This class is of advanced usage and is not intended for general use.
 
-    In most cases, you should use the :py:class:`~ooodev.utils.lo.Lo` static class instead.
+    In most cases, you should use the :py:class:`~ooodev.loader.Lo` static class instead.
 
     This class mirrors the properties and methods of the ``Lo`` class so for documentation see :py:class:`ooodev.utils.lo.Lo`,
     """
@@ -474,7 +474,7 @@ class LoInst(EventsPartial):
             - :ref:`ch02`
             - :ref:`ch02_multiple_docs`
             - :py:meth:`open_doc`
-            - :py:class:`~ooodev.utils.lo.Lo`
+            - :py:class:`~ooodev.loader.Lo`
             - :py:class:`~ooodev.utils.lo.Lo.Loader`
 
         .. versionchanged:: 0.6.10

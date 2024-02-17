@@ -185,7 +185,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_para_text_flow`
         - :py:class:`~ooodev.utils.gui.GUI`
-        - :py:class:`~ooodev.utils.lo.Lo`
+        - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.para.text_flow.Breaks`
         - :py:class:`ooodev.format.writer.direct.para.text_flow.FlowOptions`
         - :py:class:`ooodev.format.writer.direct.para.text_flow.Hyphenation`
