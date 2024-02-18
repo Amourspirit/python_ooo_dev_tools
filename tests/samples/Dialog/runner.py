@@ -6,6 +6,8 @@ import uno  # pylint: disable=unused-import
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
+from ooo.dyn.awt.font_slant import FontSlant
+from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
 
 from ooodev.dialog import ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind, StateKind
 from ooodev.loader import lo as mLo
@@ -17,6 +19,7 @@ from ooodev.dialog.dl_control.ctl_date_field import CtlDateField
 from ooodev.dialog import TriStateKind
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
+from ooodev.utils.kind.align_kind import AlignKind
 
 if TYPE_CHECKING:
     from com.sun.star.awt import ItemEvent
@@ -148,6 +151,7 @@ class Runner:
             state=TriStateKind.CHECKED,
             border=border_kind,
         )
+        self._ctl_chk1.text_color = StandardColor.RED
         self._set_tab_index(self._ctl_chk1)
 
         sz = self._ctl_chk1.view.getPosSize()
@@ -161,6 +165,7 @@ class Runner:
             state=TriStateKind.NOT_CHECKED,
             border=border_kind,
         )
+        self._ctl_chk2.text_color = StandardColor.GREEN
         self._set_tab_index(self._ctl_chk2)
 
         sz = self._ctl_chk2.view.getPosSize()
@@ -174,10 +179,14 @@ class Runner:
             state=TriStateKind.DONT_KNOW,
             border=border_kind,
         )
+        self._ctl_chk3.text_color = StandardColor.BLUE
         self._set_tab_index(self._ctl_chk3)
         self._ctl_chk1.add_event_item_state_changed(self._fn_on_check_box_state)
         self._ctl_chk2.add_event_item_state_changed(self._fn_on_check_box_state)
         self._ctl_chk3.add_event_item_state_changed(self._fn_on_check_box_state)
+        self._ctl_chk1.font_descriptor.weight = 75
+        self._ctl_chk2.font_descriptor.weight = 75
+        self._ctl_chk3.font_descriptor.weight = 75
 
         sz = self._ctl_chk1.view.getPosSize()
         self._ctl_date = self._dialog.insert_date_field(
@@ -481,6 +490,17 @@ class Runner:
         # self._ctl_button_ok.remove_event_property_change("Enabled")
         # self._ctl_button_ok.remove_event_properties_listener()
         self._ctl_button_ok.enabled = True
+        self._ctl_lbl.font_descriptor.height = 15
+        self._ctl_lbl.font_descriptor.slant = FontSlant.ITALIC
+        self._ctl_lbl.font_descriptor.strikeout = FontStrikeoutEnum.SINGLE
+        self._ctl_lbl.background_color = StandardColor.RED
+        self._ctl_lbl.text_color = StandardColor.YELLOW_LIGHT2
+
+        self._ctl_btn_cancel.font_descriptor.height = 10
+        self._ctl_btn_cancel.text_color = StandardColor.RED_DARK2
+        self._ctl_btn_cancel.font_descriptor.slant = FontSlant.ITALIC
+        self._ctl_btn_cancel.align = AlignKind.RIGHT
+        self._ctl_button_ok.align = AlignKind.LEFT
 
         # self._ctl_button_ok.add_event_properties_change
 
@@ -657,13 +677,13 @@ def main():
     with mLo.Lo.Loader(mLo.Lo.ConnectSocket(), opt=mLo.Lo.Options(verbose=True)):
         doc = CalcDoc.create_doc(visible=True)
 
-        inst2 = mLo.Lo.create_lo_instance()
-        doc2 = CalcDoc.create_doc(lo_inst=inst2, visible=True)
-        run(doc2)
+        # inst2 = mLo.Lo.create_lo_instance()
+        # doc2 = CalcDoc.create_doc(lo_inst=inst2, visible=True)
+        # run(doc2)
 
-        inst3 = mLo.Lo.create_lo_instance()
-        doc3 = WriteDoc.create_doc(lo_inst=inst3, visible=True)
-        run(doc3)
+        # inst3 = mLo.Lo.create_lo_instance()
+        # doc3 = WriteDoc.create_doc(lo_inst=inst3, visible=True)
+        # run(doc3)
         run(doc)
 
 

@@ -9,7 +9,7 @@ from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-
+from ooodev.adapter.awt.uno_control_combo_box_model_partial import UnoControlComboBoxModelPartial
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 from .ctl_base import DialogControlBase
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
+class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvents, ItemEvents, TextEvents):
     """Class for ComboBox Control"""
 
     # pylint: disable=unused-argument
@@ -35,6 +35,7 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlComboBoxModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
@@ -112,40 +113,10 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
         return self.get_model()
 
     @property
-    def drop_down(self) -> bool:
-        """Gets/Sets the combobox has a drop down button."""
-        return self.model.Dropdown
-
-    @drop_down.setter
-    def drop_down(self, value: bool) -> None:
-        self.model.Dropdown = value
-
-    @property
-    def max_text_len(self) -> int:
-        """Gets/Sets the maximum character count."""
-        return self.model.MaxTextLen
-
-    @max_text_len.setter
-    def max_text_len(self, value: int) -> None:
-        self.model.MaxTextLen = value
-
-    @property
-    def text(self) -> str:
-        """Gets/Sets the text"""
-        with contextlib.suppress(Exception):
-            return self.model.Text
-        return ""
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.model.Text = value
-
-    @property
     def list_count(self) -> int:
         """Gets the number of items in the combo box"""
         with contextlib.suppress(Exception):
-            items = self.model.StringItemList
-            if items:
+            if items := self.model.StringItemList:
                 return len(items)
         return 0
 
@@ -161,23 +132,9 @@ class CtlComboBox(DialogControlBase, ActionEvents, ItemEvents, TextEvents):
         if not text:
             return -1
         with contextlib.suppress(Exception):
-            items = self.model.StringItemList
-            if items:
+            if items := self.model.StringItemList:
                 return items.index(text)
         return -1
-
-    @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
-
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
 
     @property
     def row_source(self) -> Tuple[str, ...]:

@@ -25,6 +25,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.events.partial.events_partial import EventsPartial
 
 
 if TYPE_CHECKING:
@@ -38,13 +39,14 @@ if TYPE_CHECKING:
 # pylint: disable=unused-argument
 
 
-class CtlBase(unohelper.Base, LoInstPropsPartial):
+class CtlBase(unohelper.Base, LoInstPropsPartial, EventsPartial):
     """Control Base Class"""
 
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
         unohelper.Base.__init__(self)
         LoInstPropsPartial.__init__(self, lo_inst=mLo.Lo.current_lo)
+        EventsPartial.__init__(self)
         self._set_control(ctl)
 
     def _set_control(self, ctl: Any) -> None:

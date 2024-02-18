@@ -4,6 +4,7 @@ from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
+from ooodev.adapter.awt.uno_control_fixed_text_model_partial import UnoControlFixedTextModelPartial
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlFixedText(DialogControlBase):
+class CtlFixedText(DialogControlBase, UnoControlFixedTextModelPartial):
     """Class for Fixed Text Control"""
 
     # region init
@@ -27,6 +28,7 @@ class CtlFixedText(DialogControlBase):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlFixedTextModelPartial.__init__(self, component=self.model)
 
     # endregion init
 

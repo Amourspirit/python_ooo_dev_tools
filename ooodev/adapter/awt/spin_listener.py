@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
+from com.sun.star.awt import XSpinListener
+
 from ...events.args.event_args import EventArgs as EventArgs
 from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
-
-from com.sun.star.awt import XSpinListener
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
