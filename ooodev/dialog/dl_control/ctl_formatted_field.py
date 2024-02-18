@@ -1,14 +1,12 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import contextlib
 import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.awt.uno_control_formatted_field_model_partial import UnoControlFormattedFieldModelPartial
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -86,13 +84,19 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
         return self.get_model()
 
     @property
-    def value(self) -> float:
-        """Gets/Sets the value"""
-        return self.model.EffectiveValue
+    def value(self) -> Any:
+        """
+        Gets/Sets the value.
+
+        Same as ``effective_value`` property
+
+        This may be a numeric value (float) or a string, depending on the formatting of the field.
+        """
+        return self.effective_value
 
     @value.setter
-    def value(self, value: float) -> None:
-        self.model.EffectiveValue = value
+    def value(self, value: Any) -> None:
+        self.effective_value = value
 
     @property
     def view(self) -> UnoControlFormattedField:

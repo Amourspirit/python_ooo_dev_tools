@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.adapter.awt.uno_control_group_box_model_partial import UnoControlGroupBoxModelPartial
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlGroupBox(DialogControlBase):
+class CtlGroupBox(DialogControlBase, UnoControlGroupBoxModelPartial):
     """Class for Group Box Control"""
 
     # region init
@@ -26,6 +27,7 @@ class CtlGroupBox(DialogControlBase):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlGroupBoxModelPartial.__init__(self, component=self.get_model())
 
     # endregion init
 
@@ -59,14 +61,5 @@ class CtlGroupBox(DialogControlBase):
     @property
     def model(self) -> UnoControlGroupBoxModel:
         return self.get_model()
-
-    @property
-    def label(self) -> str:
-        """Gets/Sets the label"""
-        return self.model.Label
-
-    @label.setter
-    def label(self, value: str) -> None:
-        self.model.Label = value
 
     # endregion Properties

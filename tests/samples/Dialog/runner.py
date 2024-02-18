@@ -324,6 +324,7 @@ class Runner:
             value=3,
             border=border_kind,
         )
+        self._ctl_formatted.text_color = StandardColor.GOLD_DARK2
         self._set_tab_index(self._ctl_formatted)
 
         self._ctl_formatted.add_event_text_changed(self._fn_on_text_changed)

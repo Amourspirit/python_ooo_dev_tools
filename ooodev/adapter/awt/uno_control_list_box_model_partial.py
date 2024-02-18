@@ -1,32 +1,31 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+import contextlib
+from typing import Any, cast, TYPE_CHECKING, Tuple
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
-from ooo.dyn.style.vertical_alignment import VerticalAlignment
 from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum
-from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.utils.color import Color
 from ooodev.utils.kind.align_kind import AlignKind
+from ooodev.utils.kind.border_kind import BorderKind
+from ooodev.utils.color import Color
 from .uno_control_model_partial import UnoControlModelPartial
 from .font_descriptor_comp import FontDescriptorComp
 
 if TYPE_CHECKING:
-    from com.sun.star.util import XNumberFormatsSupplier
-    from com.sun.star.awt import UnoControlFormattedFieldModel  # Service
+    from com.sun.star.awt import UnoControlListBoxModel  # Service
     from com.sun.star.awt import FontDescriptor  # struct
     from ooodev.events.args.key_val_args import KeyValArgs
 
 
-class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
-    """Partial class for UnoControlFormattedFieldModel."""
+class UnoControlListBoxModelPartial(UnoControlModelPartial):
+    """Partial class for UnoControlListBoxModel."""
 
-    def __init__(self, component: UnoControlFormattedFieldModel):
+    def __init__(self, component: UnoControlListBoxModel):
         """
         Constructor
 
         Args:
-            component (Any): Component that implements ``com.sun.star.awt.UnoControlFormattedFieldModel`` service.
+            component (Any): Component that implements ``com.sun.star.awt.UnoControlListBoxModel`` service.
         """
         # pylint: disable=unused-argument
         self.__component = component
@@ -66,19 +65,60 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         return self.__font_descriptor
 
     @property
-    def align(self) -> AlignKind:
+    def selected_items(self) -> Tuple[int, ...]:
+        """Gets specifies the sequence of selected items, identified by the position."""
+        # SelectedItems is a miss reported type in current typings.
+        # It reports as ``uno.ByteSequence`` but it is actually a ``Tuple[int, ...]``.
+        return cast(Tuple[int, ...], self.__component.SelectedItems)
+
+    @selected_items.setter
+    def selected_items(self, value: Tuple[int, ...]) -> None:
+        self.__component.SelectedItems = value  # type: ignore
+
+    @property
+    def string_item_list(self) -> Tuple[str, ...]:
+        """
+        specifies the list of items.
+        """
+        return self.__component.StringItemList
+
+    @string_item_list.setter
+    def string_item_list(self, value: Tuple[str, ...]) -> None:
+        self.__component.StringItemList = value
+
+    @property
+    def typed_item_list(self) -> Tuple[Any, ...]:
+        """
+        Gets/Sets the list of raw typed (not stringized) items.
+
+        This list corresponds with the StringItemList and if given has to be of the same length,
+        the elements' positions matching those of their string representation in ``string_item_list``.
+        """
+        return self.__component.TypedItemList
+
+    @typed_item_list.setter
+    def typed_item_list(self, value: Tuple[Any, ...]) -> None:
+        self.__component.TypedItemList = value
+
+    @property
+    def align(self) -> AlignKind | None:
         """
         Get/Sets the horizontal alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
-        return AlignKind(self.__component.Align)
+        with contextlib.suppress(AttributeError):
+            return AlignKind(self.__component.Align)
+        return None
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
-        self.__component.Align = kind.value
+        with contextlib.suppress(AttributeError):
+            self.__component.Align = kind.value
 
     @property
     def background_color(self) -> Color:
@@ -94,87 +134,49 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
     @property
     def border(self) -> BorderKind:
         """
-        Gets/Sets the border style of the control.
+        Gets/Sets the border style.
 
         Note:
             Value can be set with ``BorderKind`` or ``int``.
 
         Hint:
-            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``
         """
         return BorderKind(self.__component.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
-        kind = BorderKind(int(value))
-        self.__component.Border = kind.value
+        self.__component.Border = int(value)
 
     @property
-    def border_color(self) -> Color:
+    def border_color(self) -> Color | None:
         """
-        Gets/Sets the color of the border, if present
+        Gets/Set the color of the border, if present.
 
-        Not every border style (see Border) may support coloring. For instance, usually a border with 3D effect will ignore the border_color setting.
+        Not every border style (see Border) may support coloring.
+        For instance, usually a border with 3D effect will ignore the ``border_color`` setting.
+
+        **optional**
         """
-        return Color(self.__component.BorderColor)
+        with contextlib.suppress(AttributeError):
+            return Color(self.__component.BorderColor)
+        return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
-        self.__component.BorderColor = value
+        with contextlib.suppress(AttributeError):
+            self.__component.BorderColor = value  # type: ignore
 
     @property
-    def effective_default(self) -> Any:
+    def drop_down(self) -> bool:
         """
-        Gets the default value of the formatted field.
-
-        This may be a numeric value (double) or a string, depending on the formatting of the field.
+        Gets/Sets if the control has a drop down button.
         """
-        return self.__component.EffectiveDefault
+        return self.__component.Dropdown
 
-    @effective_default.setter
-    def effective_default(self, value: Any) -> None:
-        self.__component.EffectiveDefault = value
-
-    @property
-    def effective_max(self) -> float:
-        """
-        Gets/Sets the maximum value that can be entered.
-
-        This property is ignored if the format of the field is no numeric format.
-        """
-        return self.__component.EffectiveMax
-
-    @effective_max.setter
-    def effective_max(self, value: float) -> None:
-        self.__component.EffectiveMax = value
-
-    @property
-    def effective_min(self) -> float:
-        """
-        Gets/Sets the minimum value that can be entered.
-
-        This property is ignored if the format of the field is no numeric format.
-        """
-        return self.__component.EffectiveMin
-
-    @effective_min.setter
-    def effective_min(self, value: float) -> None:
-        self.__component.EffectiveMin = value
-
-    @property
-    def effective_value(self) -> Any:
-        """
-        Gets/Sets specifies the current value of the formatted field.
-
-        This may be a numeric value (float) or a string, depending on the formatting of the field.
-        """
-        # not sure why but UnoControlFormattedFieldModel does not have EffectiveValue property.
-        # however, it is documented in the API.
-        return self.__component.EffectiveValue  # type: ignore
-
-    @effective_value.setter
-    def effective_value(self, value: Any) -> None:
-        self.__component.EffectiveValue = value  # type: ignore
+    @drop_down.setter
+    def drop_down(self, value: bool) -> None:
+        self.__component.Dropdown = value
 
     @property
     def enabled(self) -> bool:
@@ -217,33 +219,9 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         """
         return FontReliefEnum(self.__component.FontRelief)
 
-    @property
-    def format_key(self) -> int:
-        """
-        Gets/Sets the format to be used when formatting the field input and output.
-
-        This value is meaningful relative to the ``formats_supplier`` property only.
-        """
-        return self.__component.FormatKey
-
-    @format_key.setter
-    def format_key(self, value: int) -> None:
-        self.__component.FormatKey = value
-
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
         self.__component.FontRelief = int(value)
-
-    @property
-    def formats_supplier(self) -> XNumberFormatsSupplier:
-        """
-        Gets/Sets - supplies the formats the field should work with.
-        """
-        return self.__component.FormatsSupplier
-
-    @formats_supplier.setter
-    def formats_supplier(self, value: XNumberFormatsSupplier) -> None:
-        self.__component.FormatsSupplier = value
 
     @property
     def help_text(self) -> str:
@@ -268,28 +246,32 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.HelpURL = value
 
     @property
-    def hide_inactive_selection(self) -> bool:
+    def item_separator_pos(self) -> int | None:
         """
-        Gets/Sets whether the selection in the control should be hidden when the control is not active (focused).
-        """
-        return self.__component.HideInactiveSelection
+        specifies where an item separator - a horizontal line - is drawn.
 
-    @hide_inactive_selection.setter
-    def hide_inactive_selection(self, value: bool) -> None:
-        self.__component.HideInactiveSelection = value
+        If this is not NULL, then a horizontal line will be drawn between the item at the given position, and the following item.
+
+        **optional**
+
+        **Maybe None**
+        """
+        return self.__component.ItemSeparatorPos
+
+    @item_separator_pos.setter
+    def item_separator_pos(self, value: int) -> None:
+        self.__component.ItemSeparatorPos = value
 
     @property
-    def max_text_len(self) -> int:
+    def line_count(self) -> int:
         """
-        Gets/Sets the maximum character count.
-
-        There's no limitation, if set to 0.
+        Gets/Sets the maximum line count displayed in the drop down box.
         """
-        return self.__component.MaxTextLen
+        return self.__component.LineCount
 
-    @max_text_len.setter
-    def max_text_len(self, value: int) -> None:
-        self.__component.MaxTextLen = value
+    @line_count.setter
+    def line_count(self, value: int) -> None:
+        self.__component.LineCount = value
 
     @property
     def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum:
@@ -312,6 +294,17 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.MouseWheelBehavior = int(value)
 
     @property
+    def multi_selection(self) -> bool:
+        """
+        Gets/Sets if more than one entry can be selected.
+        """
+        return self.__component.MultiSelection
+
+    @multi_selection.setter
+    def multi_selection(self, value: bool) -> None:
+        self.__component.MultiSelection = value
+
+    @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
@@ -325,62 +318,13 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
     @property
     def read_only(self) -> bool:
         """
-        Gets/Sets if the content of the control cannot be modified by the user.
+        Gets/Sets that the content of the control cannot be modified by the user.
         """
         return self.__component.ReadOnly
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
         self.__component.ReadOnly = value
-
-    @property
-    def repeat(self) -> bool:
-        """
-        Gets/Sets whether the mouse should show repeating behavior, i.e.
-
-        repeatedly trigger an action when keeping pressed.
-        """
-        return self.__component.Repeat
-
-    @repeat.setter
-    def repeat(self, value: bool) -> None:
-        self.__component.Repeat = value
-
-    @property
-    def repeat_delay(self) -> int:
-        """
-        Gets/Sets the mouse repeat delay, in milliseconds.
-
-        When the user presses a mouse in a control area where this triggers an action (such as spinning the value), then usual control implementations allow to repeatedly trigger this action, without the need to release the mouse button and to press it again.
-        The delay between two such triggers is specified with this property.
-        """
-        return self.__component.RepeatDelay
-
-    @repeat_delay.setter
-    def repeat_delay(self, value: int) -> None:
-        self.__component.RepeatDelay = value
-
-    @property
-    def spin(self) -> bool:
-        """
-        Gets/Sets if the control has a spin button.
-        """
-        return self.__component.Spin
-
-    @spin.setter
-    def spin(self, value: bool) -> None:
-        self.__component.Spin = value
-
-    @property
-    def strict_format(self) -> bool:
-        """
-        Gets/Sets if the value is checked during the user input.
-        """
-        return self.__component.StrictFormat
-
-    @strict_format.setter
-    def strict_format(self, value: bool) -> None:
-        self.__component.StrictFormat = value
 
     @property
     def tabstop(self) -> bool:
@@ -392,17 +336,6 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
         self.__component.Tabstop = value
-
-    @property
-    def text(self) -> str:
-        """
-        Gets/Sets the text displayed in the control.
-        """
-        return self.__component.Text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.__component.Text = value
 
     @property
     def text_color(self) -> Color:
@@ -427,41 +360,21 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.TextLineColor = value  # type: ignore
 
     @property
-    def treat_as_number(self) -> bool:
-        """
-        Gets/Sets if the text is treated as a number.
-        """
-        return self.__component.TreatAsNumber
-
-    @treat_as_number.setter
-    def treat_as_number(self, value: bool) -> None:
-        self.__component.TreatAsNumber = value
-
-    @property
-    def vertical_align(self) -> VerticalAlignment:
-        """
-        specifies the vertical alignment of the text in the control.
-
-        Hint:
-            - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
-        """
-        return self.__component.VerticalAlign  # type: ignore
-
-    @vertical_align.setter
-    def vertical_align(self, value: VerticalAlignment) -> None:
-        self.__component.VerticalAlign = value  # type: ignore
-
-    @property
-    def writing_mode(self) -> int:
+    def writing_mode(self) -> int | None:
         """
         Denotes the writing mode used in the control, as specified in the ``com.sun.star.text.WritingMode2`` constants group.
 
         Only LR_TB (``0``) and RL_TB (``1``) are supported at the moment.
+
+        **optional**
         """
-        return self.__component.WritingMode
+        with contextlib.suppress(AttributeError):
+            return self.__component.WritingMode
+        return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
-        self.__component.WritingMode = value
+        with contextlib.suppress(AttributeError):
+            self.__component.WritingMode = value
 
     # endregion Properties
