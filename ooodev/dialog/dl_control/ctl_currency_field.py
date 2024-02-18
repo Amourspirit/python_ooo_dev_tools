@@ -10,6 +10,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.adapter.awt.uno_control_currency_field_model_partial import UnoControlCurrencyFieldModelPartial
 
 from .ctl_base import DialogControlBase
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlCurrencyField(DialogControlBase, SpinEvents, TextEvents):
+class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, SpinEvents, TextEvents):
     """Class for Currency Field Control"""
 
     # pylint: disable=unused-argument
@@ -34,6 +35,7 @@ class CtlCurrencyField(DialogControlBase, SpinEvents, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlCurrencyFieldModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
@@ -81,82 +83,51 @@ class CtlCurrencyField(DialogControlBase, SpinEvents, TextEvents):
     @property
     def accuracy(self) -> int:
         """Gets/Sets the accuracy"""
-        return self.model.DecimalAccuracy
+        return self.decimal_accuracy
 
     @accuracy.setter
     def accuracy(self, value: int) -> None:
-        self.model.DecimalAccuracy = value
-
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
+        self.decimal_accuracy = value
 
     @property
     def increment(self) -> float:
         """Gets/Sets the increment value"""
-        return self.model.ValueStep
+        return self.value_step
 
     @increment.setter
     def increment(self, value: float) -> None:
-        self.model.ValueStep = value
+        self.value_step = value
 
     @property
     def max_value(self) -> float:
-        """Gets/Sets the maximum value"""
-        return self.model.ValueMax
+        """Gets/Sets the maximum value. Same as ``value_max`` property."""
+        return self.value_max
 
     @max_value.setter
     def max_value(self, value: float) -> None:
-        self.model.ValueMax = value
+        self.value_max = value
 
     @property
     def min_value(self) -> float:
-        """Gets/Sets the minimum value"""
-        return self.model.ValueMin
+        """Gets/Sets the minimum value. Same as ``value_min`` property."""
+        return self.value_min
 
     @min_value.setter
     def min_value(self, value: float) -> None:
-        self.model.ValueMin = value
+        self.value_min = value
 
     @property
     def model(self) -> UnoControlCurrencyFieldModel:
         return self.get_model()
 
     @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
-
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
-
-    @property
     def spin_button(self) -> bool:
-        """Gets/Sets the spin button property"""
-        return self.model.Spin
+        """Gets/Sets the spin button property. Same as ``spin`` property."""
+        return self.spin
 
     @spin_button.setter
     def spin_button(self, value: bool) -> None:
-        self.model.Spin = value
-
-    @property
-    def value(self) -> float:
-        """Gets/Sets the value"""
-        return self.model.Value
-
-    @value.setter
-    def value(self, value: float) -> None:
-        self.model.Value = value
+        self.spin = value
 
     @property
     def view(self) -> UnoControlCurrencyField:

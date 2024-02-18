@@ -216,6 +216,8 @@ class Runner:
             spin_button=True,
             border=border_kind,
         )
+        self._ctl_currency.font_descriptor.height = 10
+        self._ctl_currency.text_color = StandardColor.BLUE
         self._set_tab_index(self._ctl_currency)
         sz = self._ctl_currency.view.getPosSize()
         self._ctl_currency.add_event_down(self._fn_on_down)
