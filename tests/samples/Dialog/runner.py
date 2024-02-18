@@ -303,6 +303,7 @@ class Runner:
         )
         self._set_tab_index(self._ctl_file)
         self._ctl_file.text = "file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png"
+        self._ctl_file.text_color = StandardColor.BLUE_LIGHT3
         self._ctl_file.add_event_text_changed(self._fn_on_text_changed)
         sz = self._ctl_file.view.getPosSize()
         self._ctl_ln = self._dialog.insert_fixed_line(
