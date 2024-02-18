@@ -110,6 +110,7 @@ class Runner:
             )
         self._set_tab_index(self._txt_input)
         self._txt_input.add_event_text_changed(self._fn_on_text_changed)
+        self._txt_input.text_color = StandardColor.GREEN_DARK2
 
         self._ctl_btn_cancel = self._dialog.insert_button(
             label=cancel_lbl,

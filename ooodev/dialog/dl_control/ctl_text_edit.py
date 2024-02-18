@@ -16,6 +16,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.adapter.awt.uno_control_edit_model_partial import UnoControlEditModelPartial
 
 from .ctl_base import DialogControlBase
 
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlTextEdit(DialogControlBase, TextEvents):
+class CtlTextEdit(DialogControlBase, UnoControlEditModelPartial, TextEvents):
     """Class for Text Edit Control"""
 
     # pylint: disable=unused-argument
@@ -40,6 +41,7 @@ class CtlTextEdit(DialogControlBase, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlEditModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
@@ -115,71 +117,10 @@ class CtlTextEdit(DialogControlBase, TextEvents):
     # endregion Text Methods
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
-
-    @property
-    def echo_char(self) -> str:
-        """Gets/Sets the echo character as a string"""
-        with contextlib.suppress(Exception):
-            return chr(self.model.EchoChar)
-        return ""
-
-    @echo_char.setter
-    def echo_char(self, value: str) -> None:
-        if len(value) > 0:
-            value = value[0]
-        self.model.EchoChar = ord(value)
-
-    @property
-    def line_end_format(self) -> LineEndFormatEnum:
-        """Gets/Sets the end line format"""
-        return LineEndFormatEnum(self.model.LineEndFormat)
-
-    @line_end_format.setter
-    def line_end_format(self, value: LineEndFormatEnum) -> None:
-        self.model.LineEndFormat = value.value
 
     @property
     def model(self) -> UnoControlEditModel:
         return self.get_model()
-
-    @property
-    def multi_line(self) -> bool:
-        """Gets/Sets the multi line"""
-        return self.model.MultiLine
-
-    @multi_line.setter
-    def multi_line(self, value: bool) -> None:
-        self.model.MultiLine = value
-
-    @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
-
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
-
-    @property
-    def text(self) -> str:
-        """Gets/Sets the text"""
-        return self.view.getText()
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.view.setText(value)
 
     @property
     def view(self) -> UnoControlEdit:
