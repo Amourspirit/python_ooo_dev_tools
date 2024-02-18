@@ -1,5 +1,7 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, TYPE_CHECKING
+import uno
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
@@ -68,19 +70,24 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         return self.__font_descriptor
 
     @property
-    def align(self) -> AlignKind:
+    def align(self) -> AlignKind | None:
         """
         Get/Sets the horizontal alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
-        return AlignKind(self.__component.Align)
+        with contextlib.suppress(AttributeError):
+            return AlignKind(self.__component.Align)
+        return None
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
-        self.__component.Align = kind.value
+        with contextlib.suppress(AttributeError):
+            self.__component.Align = kind.value
 
     @property
     def background_color(self) -> Color:
@@ -219,7 +226,7 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         self.__component.ImageAlign = int(value)
 
     @property
-    def image_position(self) -> ImagePositionEnum:
+    def image_position(self) -> ImagePositionEnum | None:
         """
         Gets/Sets the position of the image, if any, relative to the text, if any
 
@@ -227,17 +234,22 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
 
         If this property is present, it supersedes the ImageAlign property - setting one of both properties sets the other one to the best possible match.
 
+        **optional**
+
         Note:
             Value can be set with ``ImagePositionEnum`` or ``int``.
 
         Hint:
             - ``ImagePositionEnum`` can be imported from ``ooo.dyn.awt.image_position``
         """
-        return ImagePositionEnum(self.__component.ImagePosition)
+        with contextlib.suppress(AttributeError):
+            return ImagePositionEnum(self.__component.ImagePosition)
+        return None
 
     @image_position.setter
     def image_position(self, value: int | ImagePositionEnum) -> None:
-        self.__component.ImagePosition = int(value)
+        with contextlib.suppress(AttributeError):
+            self.__component.ImagePosition = int(value)
 
     @property
     def image_url(self) -> str:
@@ -262,15 +274,20 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         self.__component.Label = value
 
     @property
-    def multi_line(self) -> bool:
+    def multi_line(self) -> bool | None:
         """
         Gets/Sets that the text may be displayed on more than one line.
+
+        **optional**
         """
-        return self.__component.MultiLine
+        with contextlib.suppress(AttributeError):
+            return self.__component.MultiLine
+        return None
 
     @multi_line.setter
     def multi_line(self, value: bool) -> None:
-        self.__component.MultiLine = value
+        with contextlib.suppress(AttributeError):
+            self.__component.MultiLine = value
 
     @property
     def printable(self) -> bool:
@@ -302,32 +319,40 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         self.__component.PushButtonType = val.value  # type: ignore
 
     @property
-    def repeat(self) -> bool:
+    def repeat(self) -> bool | None:
         """
-        Gets/Sets whether the control should show repeating behavior.
+        Gets/Sets whether the mouse should show repeating behavior, i.e.
+        repeatedly trigger an action when keeping pressed.
 
-        Normally, when you click a button with the mouse, you need to release the mouse button, and press it again. With this property set to TRUE, the button is repeatedly pressed while you hold down the mouse button.
+        **optional**
         """
-        return self.__component.Repeat
+        with contextlib.suppress(AttributeError):
+            return self.__component.Repeat
+        return None
 
     @repeat.setter
     def repeat(self, value: bool) -> None:
-        self.__component.Repeat = value
+        with contextlib.suppress(AttributeError):
+            self.__component.Repeat = value
 
     @property
-    def repeat_delay(self) -> int:
+    def repeat_delay(self) -> int | None:
         """
         Gets/Sets the mouse repeat delay, in milliseconds.
 
-        When the user presses a mouse in a control area where this triggers an action (such as pressing the button),
-        then usual control implementations allow to repeatedly trigger this action, without the need to release the mouse button and to press it again.
+        When the user presses a mouse in a control area where this triggers an action (such as spinning the value), then usual control implementations allow to repeatedly trigger this action, without the need to release the mouse button and to press it again.
         The delay between two such triggers is specified with this property.
+
+        **optional**
         """
-        return self.__component.RepeatDelay
+        with contextlib.suppress(AttributeError):
+            return self.__component.RepeatDelay
+        return None
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
-        self.__component.RepeatDelay = value
+        with contextlib.suppress(AttributeError):
+            self.__component.RepeatDelay = value
 
     @property
     def state(self) -> ButtonStateKind:
@@ -382,7 +407,7 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         self.__component.TextLineColor = value  # type: ignore
 
     @property
-    def toggle(self) -> bool:
+    def toggle(self) -> bool | None:
         """
         Gets/Sets whether the button should toggle on a single operation.
 
@@ -391,28 +416,34 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
 
         The default for this property is ``False``, which means the button behaves like a usual push button.
 
-        **since**
-
-            OOo 2.0
+        **optional**
         """
-        return self.__component.Toggle
+        with contextlib.suppress(AttributeError):
+            return self.__component.Toggle
+        return None
 
     @toggle.setter
     def toggle(self, value: bool) -> None:
-        self.__component.Toggle = value
+        with contextlib.suppress(AttributeError):
+            self.__component.Toggle = value
 
     @property
-    def vertical_align(self) -> VerticalAlignment:
+    def vertical_align(self) -> VerticalAlignment | None:
         """
-        specifies the vertical alignment of the text in the control.
+        Gets/Sets the vertical alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
-        return self.__component.VerticalAlign  # type: ignore
+        with contextlib.suppress(AttributeError):
+            return self.__component.VerticalAlign  # type: ignore
+        return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
-        self.__component.VerticalAlign = value  # type: ignore
+        with contextlib.suppress(AttributeError):
+            self.__component.VerticalAlign = value  # type: ignore
 
     # endregion Properties

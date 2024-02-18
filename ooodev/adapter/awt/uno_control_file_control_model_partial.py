@@ -1,10 +1,11 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
 from .uno_control_model_partial import UnoControlModelPartial
@@ -93,17 +94,23 @@ class UnoControlFileControlModelPartial(UnoControlModelPartial):
         self.__component.Border = kind.value
 
     @property
-    def border_color(self) -> Color:
+    def border_color(self) -> Color | None:
         """
         Gets/Sets the color of the border, if present
 
-        Not every border style (see Border) may support coloring. For instance, usually a border with 3D effect will ignore the border_color setting.
+        Not every border style (see Border) may support coloring.
+        For instance, usually a border with 3D effect will ignore the border_color setting.
+
+        **optional**
         """
-        return Color(self.__component.BorderColor)
+        with contextlib.suppress(AttributeError):
+            return Color(self.__component.BorderColor)
+        return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
-        self.__component.BorderColor = value
+        with contextlib.suppress(AttributeError):
+            self.__component.BorderColor = value
 
     @property
     def enabled(self) -> bool:
@@ -173,15 +180,20 @@ class UnoControlFileControlModelPartial(UnoControlModelPartial):
         self.__component.HelpURL = value
 
     @property
-    def hide_inactive_selection(self) -> bool:
+    def hide_inactive_selection(self) -> bool | None:
         """
         Gets/Sets whether the selection in the control should be hidden when the control is not active (focused).
+
+        **optional**
         """
-        return self.__component.HideInactiveSelection
+        with contextlib.suppress(AttributeError):
+            return self.__component.HideInactiveSelection
+        return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
-        self.__component.HideInactiveSelection = value
+        with contextlib.suppress(AttributeError):
+            self.__component.HideInactiveSelection = value
 
     @property
     def printable(self) -> bool:
@@ -250,17 +262,22 @@ class UnoControlFileControlModelPartial(UnoControlModelPartial):
         self.__component.TextLineColor = value  # type: ignore
 
     @property
-    def vertical_align(self) -> VerticalAlignment:
+    def vertical_align(self) -> VerticalAlignment | None:
         """
         Gets/Sets the vertical alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
-        return self.__component.VerticalAlign  # type: ignore
+        with contextlib.suppress(AttributeError):
+            return self.__component.VerticalAlign  # type: ignore
+        return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
-        self.__component.VerticalAlign = value  # type: ignore
+        with contextlib.suppress(AttributeError):
+            self.__component.VerticalAlign = value  # type: ignore
 
     # endregion Properties

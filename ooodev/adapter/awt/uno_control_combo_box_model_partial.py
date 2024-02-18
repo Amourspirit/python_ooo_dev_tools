@@ -1,5 +1,7 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, TYPE_CHECKING
+import uno
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum
@@ -64,19 +66,24 @@ class UnoControlComboBoxModelPartial(UnoControlModelPartial):
         return self.__font_descriptor
 
     @property
-    def align(self) -> AlignKind:
+    def align(self) -> AlignKind | None:
         """
         Get/Sets the horizontal alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
-        return AlignKind(self.__component.Align)
+        with contextlib.suppress(AttributeError):
+            return AlignKind(self.__component.Align)
+        return None
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
-        self.__component.Align = kind.value
+        with contextlib.suppress(AttributeError):
+            self.__component.Align = kind.value
 
     @property
     def autocomplete(self) -> bool:
@@ -118,18 +125,23 @@ class UnoControlComboBoxModelPartial(UnoControlModelPartial):
         self.__component.Border = int(value)
 
     @property
-    def border_color(self) -> Color:
+    def border_color(self) -> Color | None:
         """
-        Gets/Set the color of the border, if present
+        Gets/Sets the color of the border, if present
 
         Not every border style (see Border) may support coloring.
-        For instance, usually a border with 3D effect will ignore the ``border_color`` setting.
+        For instance, usually a border with 3D effect will ignore the border_color setting.
+
+        **optional**
         """
-        return Color(self.__component.BorderColor)
+        with contextlib.suppress(AttributeError):
+            return Color(self.__component.BorderColor)
+        return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
-        self.__component.BorderColor = value  # type: ignore
+        with contextlib.suppress(AttributeError):
+            self.__component.BorderColor = value
 
     @property
     def drop_down(self) -> bool:
@@ -210,15 +222,20 @@ class UnoControlComboBoxModelPartial(UnoControlModelPartial):
         self.__component.HelpURL = value
 
     @property
-    def hide_inactive_selection(self) -> bool:
+    def hide_inactive_selection(self) -> bool | None:
         """
         Gets/Sets whether the selection in the control should be hidden when the control is not active (focused).
+
+        **optional**
         """
-        return self.__component.HideInactiveSelection
+        with contextlib.suppress(AttributeError):
+            return self.__component.HideInactiveSelection
+        return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
-        self.__component.HideInactiveSelection = value
+        with contextlib.suppress(AttributeError):
+            self.__component.HideInactiveSelection = value
 
     @property
     def line_count(self) -> int:
@@ -245,12 +262,14 @@ class UnoControlComboBoxModelPartial(UnoControlModelPartial):
         self.__component.MaxTextLen = value
 
     @property
-    def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum:
+    def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum | None:
         """
         Gets/Sets how the mouse wheel can be used to scroll through the control's content.
 
         Usually, the mouse wheel scroll through the control's entry list.
         Using this property,you can control under which circumstances this is possible.
+
+        **optional**
 
         Note:
             Value can be set with ``MouseWheelBehaviorEnum`` or ``int``.
@@ -258,11 +277,14 @@ class UnoControlComboBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``MouseWheelBehaviorEnum`` can be imported from ``ooo.dyn.awt.mouse_wheel_behavior``
         """
-        return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
+        with contextlib.suppress(AttributeError):
+            return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
+        return None
 
     @mouse_wheel_behavior.setter
     def mouse_wheel_behavior(self, value: int | MouseWheelBehaviorEnum) -> None:
-        self.__component.MouseWheelBehavior = int(value)
+        with contextlib.suppress(AttributeError):
+            self.__component.MouseWheelBehavior = int(value)
 
     @property
     def printable(self) -> bool:
@@ -331,16 +353,21 @@ class UnoControlComboBoxModelPartial(UnoControlModelPartial):
         self.__component.TextLineColor = value  # type: ignore
 
     @property
-    def writing_mode(self) -> int:
+    def writing_mode(self) -> int | None:
         """
         Denotes the writing mode used in the control, as specified in the ``com.sun.star.text.WritingMode2`` constants group.
 
         Only LR_TB (``0``) and RL_TB (``1``) are supported at the moment.
+
+        **optional**
         """
-        return self.__component.WritingMode
+        with contextlib.suppress(AttributeError):
+            return self.__component.WritingMode
+        return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
-        self.__component.WritingMode = value
+        with contextlib.suppress(AttributeError):
+            self.__component.WritingMode = value
 
     # endregion Properties

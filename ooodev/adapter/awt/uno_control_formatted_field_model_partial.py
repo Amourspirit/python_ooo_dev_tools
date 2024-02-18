@@ -1,5 +1,7 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
@@ -110,17 +112,23 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.Border = kind.value
 
     @property
-    def border_color(self) -> Color:
+    def border_color(self) -> Color | None:
         """
         Gets/Sets the color of the border, if present
 
-        Not every border style (see Border) may support coloring. For instance, usually a border with 3D effect will ignore the border_color setting.
+        Not every border style (see Border) may support coloring.
+        For instance, usually a border with 3D effect will ignore the border_color setting.
+
+        **optional**
         """
-        return Color(self.__component.BorderColor)
+        with contextlib.suppress(AttributeError):
+            return Color(self.__component.BorderColor)
+        return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
-        self.__component.BorderColor = value
+        with contextlib.suppress(AttributeError):
+            self.__component.BorderColor = value
 
     @property
     def effective_default(self) -> Any:
@@ -268,15 +276,20 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.HelpURL = value
 
     @property
-    def hide_inactive_selection(self) -> bool:
+    def hide_inactive_selection(self) -> bool | None:
         """
         Gets/Sets whether the selection in the control should be hidden when the control is not active (focused).
+
+        **optional**
         """
-        return self.__component.HideInactiveSelection
+        with contextlib.suppress(AttributeError):
+            return self.__component.HideInactiveSelection
+        return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
-        self.__component.HideInactiveSelection = value
+        with contextlib.suppress(AttributeError):
+            self.__component.HideInactiveSelection = value
 
     @property
     def max_text_len(self) -> int:
@@ -292,12 +305,14 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.MaxTextLen = value
 
     @property
-    def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum:
+    def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum | None:
         """
         Gets/Sets how the mouse wheel can be used to scroll through the control's content.
 
         Usually, the mouse wheel scroll through the control's entry list.
         Using this property,you can control under which circumstances this is possible.
+
+        **optional**
 
         Note:
             Value can be set with ``MouseWheelBehaviorEnum`` or ``int``.
@@ -305,11 +320,14 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``MouseWheelBehaviorEnum`` can be imported from ``ooo.dyn.awt.mouse_wheel_behavior``
         """
-        return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
+        with contextlib.suppress(AttributeError):
+            return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
+        return None
 
     @mouse_wheel_behavior.setter
     def mouse_wheel_behavior(self, value: int | MouseWheelBehaviorEnum) -> None:
-        self.__component.MouseWheelBehavior = int(value)
+        with contextlib.suppress(AttributeError):
+            self.__component.MouseWheelBehavior = int(value)
 
     @property
     def printable(self) -> bool:
@@ -334,31 +352,40 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.ReadOnly = value
 
     @property
-    def repeat(self) -> bool:
+    def repeat(self) -> bool | None:
         """
         Gets/Sets whether the mouse should show repeating behavior, i.e.
-
         repeatedly trigger an action when keeping pressed.
+
+        **optional**
         """
-        return self.__component.Repeat
+        with contextlib.suppress(AttributeError):
+            return self.__component.Repeat
+        return None
 
     @repeat.setter
     def repeat(self, value: bool) -> None:
-        self.__component.Repeat = value
+        with contextlib.suppress(AttributeError):
+            self.__component.Repeat = value
 
     @property
-    def repeat_delay(self) -> int:
+    def repeat_delay(self) -> int | None:
         """
         Gets/Sets the mouse repeat delay, in milliseconds.
 
         When the user presses a mouse in a control area where this triggers an action (such as spinning the value), then usual control implementations allow to repeatedly trigger this action, without the need to release the mouse button and to press it again.
         The delay between two such triggers is specified with this property.
+
+        **optional**
         """
-        return self.__component.RepeatDelay
+        with contextlib.suppress(AttributeError):
+            return self.__component.RepeatDelay
+        return None
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
-        self.__component.RepeatDelay = value
+        with contextlib.suppress(AttributeError):
+            self.__component.RepeatDelay = value
 
     @property
     def spin(self) -> bool:
@@ -438,30 +465,40 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         self.__component.TreatAsNumber = value
 
     @property
-    def vertical_align(self) -> VerticalAlignment:
+    def vertical_align(self) -> VerticalAlignment | None:
         """
-        specifies the vertical alignment of the text in the control.
+        Gets/Sets the vertical alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
-        return self.__component.VerticalAlign  # type: ignore
+        with contextlib.suppress(AttributeError):
+            return self.__component.VerticalAlign  # type: ignore
+        return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
-        self.__component.VerticalAlign = value  # type: ignore
+        with contextlib.suppress(AttributeError):
+            self.__component.VerticalAlign = value  # type: ignore
 
     @property
-    def writing_mode(self) -> int:
+    def writing_mode(self) -> int | None:
         """
         Denotes the writing mode used in the control, as specified in the ``com.sun.star.text.WritingMode2`` constants group.
 
         Only LR_TB (``0``) and RL_TB (``1``) are supported at the moment.
+
+        **optional**
         """
-        return self.__component.WritingMode
+        with contextlib.suppress(AttributeError):
+            return self.__component.WritingMode
+        return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
-        self.__component.WritingMode = value
+        with contextlib.suppress(AttributeError):
+            self.__component.WritingMode = value
 
     # endregion Properties

@@ -1,5 +1,7 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, TYPE_CHECKING
+import uno  # pylint: disable=unused-import
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooodev.events.partial.events_partial import EventsPartial
@@ -172,16 +174,21 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         self.__component.TextLineColor = value  # type: ignore
 
     @property
-    def writing_mode(self) -> int:
+    def writing_mode(self) -> int | None:
         """
         Denotes the writing mode used in the control, as specified in the ``com.sun.star.text.WritingMode2`` constants group.
 
         Only LR_TB (``0``) and RL_TB (``1``) are supported at the moment.
+
+        **optional**
         """
-        return self.__component.WritingMode
+        with contextlib.suppress(AttributeError):
+            return self.__component.WritingMode
+        return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
-        self.__component.WritingMode = value
+        with contextlib.suppress(AttributeError):
+            self.__component.WritingMode = value
 
     # endregion Properties

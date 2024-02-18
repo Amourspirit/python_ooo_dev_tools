@@ -81,26 +81,36 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         self.__component.Align = kind.value
 
     @property
-    def auto_h_scroll(self) -> bool:
+    def auto_h_scroll(self) -> bool | None:
         """
         Gets/Sets - If set to ``True`` an horizontal scrollbar will be added automatically when needed.
+
+        **optional**
         """
-        return self.__component.AutoHScroll
+        with contextlib.suppress(AttributeError):
+            return self.__component.AutoHScroll
+        return None
 
     @auto_h_scroll.setter
     def auto_h_scroll(self, value: bool) -> None:
-        self.__component.AutoHScroll = value
+        with contextlib.suppress(AttributeError):
+            self.__component.AutoHScroll = value
 
     @property
-    def auto_v_scroll(self) -> bool:
+    def auto_v_scroll(self) -> bool | None:
         """
         Gets/Sets - If set to ``True`` a vertical scrollbar will be added automatically when needed.
+
+        **optional**
         """
-        return self.__component.AutoVScroll
+        with contextlib.suppress(AttributeError):
+            return self.__component.AutoVScroll
+        return None
 
     @auto_v_scroll.setter
     def auto_v_scroll(self, value: bool) -> None:
-        self.__component.AutoVScroll = value
+        with contextlib.suppress(AttributeError):
+            self.__component.AutoVScroll = value
 
     @property
     def background_color(self) -> Color:
@@ -248,18 +258,23 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         self.__component.HelpURL = value
 
     @property
-    def hide_inactive_selection(self) -> bool:
+    def hide_inactive_selection(self) -> bool | None:
         """
         Gets/Sets whether the selection in the control should be hidden when the control is not active (focused).
+
+        **optional**
         """
-        return self.__component.HideInactiveSelection
+        with contextlib.suppress(AttributeError):
+            return self.__component.HideInactiveSelection
+        return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
-        self.__component.HideInactiveSelection = value
+        with contextlib.suppress(AttributeError):
+            self.__component.HideInactiveSelection = value
 
     @property
-    def line_end_format(self) -> LineEndFormatEnum:
+    def line_end_format(self) -> LineEndFormatEnum | None:
         """
         specifies which line end type should be used for multi line text
 
@@ -269,17 +284,22 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
 
         Note that this setting is usually not relevant when you set new text via the API. No matter which line end format is used in this new text then, usual control implementations should recognize all line end formats and display them properly.
 
+        **optional**
+
         Note:
             Value can be set with ``LineEndFormatEnum`` or ``int``.
 
         Hint:
             - ``LineEndFormatEnum`` can be imported from ``ooo.dyn.awt.line_end_format``.
         """
-        return LineEndFormatEnum(self.__component.LineEndFormat)
+        with contextlib.suppress(AttributeError):
+            return LineEndFormatEnum(self.__component.LineEndFormat)
+        return None
 
     @line_end_format.setter
     def line_end_format(self, value: int | LineEndFormatEnum) -> None:
-        self.__component.LineEndFormat = int(value)
+        with contextlib.suppress(AttributeError):
+            self.__component.LineEndFormat = int(value)
 
     @property
     def max_text_len(self) -> int:
@@ -306,15 +326,20 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         self.__component.MultiLine = value
 
     @property
-    def paint_transparent(self) -> bool:
+    def paint_transparent(self) -> bool | None:
         """
         Gets/Sets whether the control paints it background or not.
+
+        **optional**
         """
-        return self.__component.PaintTransparent
+        with contextlib.suppress(AttributeError):
+            return self.__component.PaintTransparent
+        return None
 
     @paint_transparent.setter
     def paint_transparent(self, value: bool) -> None:
-        self.__component.PaintTransparent = value
+        with contextlib.suppress(AttributeError):
+            self.__component.PaintTransparent = value
 
     @property
     def printable(self) -> bool:
@@ -394,30 +419,40 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         self.__component.VScroll = value
 
     @property
-    def vertical_align(self) -> VerticalAlignment:
+    def vertical_align(self) -> VerticalAlignment | None:
         """
-        specifies the vertical alignment of the text in the control.
+        Gets/Sets the vertical alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
-        return self.__component.VerticalAlign  # type: ignore
+        with contextlib.suppress(AttributeError):
+            return self.__component.VerticalAlign  # type: ignore
+        return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
-        self.__component.VerticalAlign = value  # type: ignore
+        with contextlib.suppress(AttributeError):
+            self.__component.VerticalAlign = value  # type: ignore
 
     @property
-    def writing_mode(self) -> int:
+    def writing_mode(self) -> int | None:
         """
         Denotes the writing mode used in the control, as specified in the ``com.sun.star.text.WritingMode2`` constants group.
 
         Only LR_TB (``0``) and RL_TB (``1``) are supported at the moment.
+
+        **optional**
         """
-        return self.__component.WritingMode
+        with contextlib.suppress(AttributeError):
+            return self.__component.WritingMode
+        return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
-        self.__component.WritingMode = value
+        with contextlib.suppress(AttributeError):
+            self.__component.WritingMode = value
 
     # endregion Properties

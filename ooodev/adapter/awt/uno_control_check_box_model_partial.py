@@ -1,5 +1,7 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, TYPE_CHECKING
+import uno
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
@@ -67,19 +69,24 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         return self.__font_descriptor
 
     @property
-    def align(self) -> AlignKind:
+    def align(self) -> AlignKind | None:
         """
         Get/Sets the horizontal alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
-        return AlignKind(self.__component.Align)
+        with contextlib.suppress(AttributeError):
+            return AlignKind(self.__component.Align)
+        return None
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
-        self.__component.Align = kind.value
+        with contextlib.suppress(AttributeError):
+            self.__component.Align = kind.value
 
     @property
     def background_color(self) -> Color:
@@ -138,7 +145,7 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         self.__component.FontRelief = int(value)
 
     @property
-    def graphic(self) -> XGraphic:
+    def graphic(self) -> XGraphic | None:
         """
         specifies a graphic to be displayed at the button
 
@@ -146,12 +153,17 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
 
         - If ``image_url`` is set, ``graphic`` will be reset to an object as loaded from the given image URL, or None if ``image_url`` does not point to a valid image file.
         - If ``graphic`` is set, ``image_url`` will be reset to an empty string.
+
+        **optional**
         """
-        return self.__component.Graphic
+        with contextlib.suppress(AttributeError):
+            return self.__component.Graphic
+        return None
 
     @graphic.setter
     def graphic(self, value: XGraphic) -> None:
-        self.__component.Graphic = value
+        with contextlib.suppress(AttributeError):
+            self.__component.Graphic = value
 
     @property
     def help_text(self) -> str:
@@ -176,7 +188,7 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         self.__component.HelpURL = value
 
     @property
-    def image_position(self) -> ImagePositionEnum:
+    def image_position(self) -> ImagePositionEnum | None:
         """
         Gets/Sets the position of the image, if any, relative to the text, if any
 
@@ -184,28 +196,38 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
 
         If this property is present, it supersedes the ImageAlign property - setting one of both properties sets the other one to the best possible match.
 
+        **optional**
+
         Note:
             Value can be set with ``ImagePositionEnum`` or ``int``.
 
         Hint:
             - ``ImagePositionEnum`` can be imported from ``ooo.dyn.awt.image_position``
         """
-        return ImagePositionEnum(self.__component.ImagePosition)
+        with contextlib.suppress(AttributeError):
+            return ImagePositionEnum(self.__component.ImagePosition)
+        return None
 
     @image_position.setter
     def image_position(self, value: int | ImagePositionEnum) -> None:
-        self.__component.ImagePosition = int(value)
+        with contextlib.suppress(AttributeError):
+            self.__component.ImagePosition = int(value)
 
     @property
-    def image_url(self) -> str:
+    def image_url(self) -> str | None:
         """
         Gets/Sets a URL to an image to use for the button.
+
+        **optional**
         """
-        return self.__component.ImageURL
+        with contextlib.suppress(AttributeError):
+            return self.__component.ImageURL
+        return None
 
     @image_url.setter
     def image_url(self, value: str) -> None:
-        self.__component.ImageURL = value
+        with contextlib.suppress(AttributeError):
+            self.__component.ImageURL = value
 
     @property
     def label(self) -> str:
@@ -219,15 +241,20 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         self.__component.Label = value
 
     @property
-    def multi_line(self) -> bool:
+    def multi_line(self) -> bool | None:
         """
         Gets/Sets that the text may be displayed on more than one line.
+
+        **optional**
         """
-        return self.__component.MultiLine
+        with contextlib.suppress(AttributeError):
+            return self.__component.MultiLine
+        return None
 
     @multi_line.setter
     def multi_line(self, value: bool) -> None:
-        self.__component.MultiLine = value
+        with contextlib.suppress(AttributeError):
+            self.__component.MultiLine = value
 
     @property
     def printable(self) -> bool:
@@ -304,25 +331,32 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         self.__component.TriState = value
 
     @property
-    def vertical_align(self) -> VerticalAlignment:
+    def vertical_align(self) -> VerticalAlignment | None:
         """
-        specifies the vertical alignment of the text in the control.
+        Gets/Sets the vertical alignment of the text in the control.
+
+        **optional**
 
         Hint:
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
-        return self.__component.VerticalAlign  # type: ignore
+        with contextlib.suppress(AttributeError):
+            return self.__component.VerticalAlign  # type: ignore
+        return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
-        self.__component.VerticalAlign = value  # type: ignore
+        with contextlib.suppress(AttributeError):
+            self.__component.VerticalAlign = value  # type: ignore
 
     @property
-    def visual_effect(self) -> VisualEffectEnum:
+    def visual_effect(self) -> VisualEffectEnum | None:
         """
         specifies a visual effect to apply to the check box control
 
         Possible values for this property are VisualEffect.FLAT and VisualEffect.LOOK3D.
+
+        **optional**
 
         Note:
             Value can be set with ``VisualEffectEnum`` or ``int``.
@@ -330,23 +364,31 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``VisualEffectEnum`` can be imported from ``ooo.dyn.awt.visual_effect``
         """
-        return VisualEffectEnum(self.__component.VisualEffect)
+        with contextlib.suppress(AttributeError):
+            return VisualEffectEnum(self.__component.VisualEffect)
+        return None
 
     @visual_effect.setter
     def visual_effect(self, value: int | VisualEffectEnum) -> None:
-        self.__component.VisualEffect = int(value)
+        with contextlib.suppress(AttributeError):
+            self.__component.VisualEffect = int(value)
 
     @property
-    def writing_mode(self) -> int:
+    def writing_mode(self) -> int | None:
         """
         Denotes the writing mode used in the control, as specified in the ``com.sun.star.text.WritingMode2`` constants group.
 
         Only LR_TB (``0``) and RL_TB (``1``) are supported at the moment.
+
+        **optional**
         """
-        return self.__component.WritingMode
+        with contextlib.suppress(AttributeError):
+            return self.__component.WritingMode
+        return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
-        self.__component.WritingMode = value
+        with contextlib.suppress(AttributeError):
+            self.__component.WritingMode = value
 
     # endregion Properties
