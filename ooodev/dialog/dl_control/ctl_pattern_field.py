@@ -4,10 +4,10 @@ from typing import Any, cast, TYPE_CHECKING
 import contextlib
 import uno  # pylint: disable=unused-import
 
+from ooodev.adapter.awt.uno_control_pattern_field_model_partial import UnoControlPatternFieldModelPartial
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlPatternField(DialogControlBase, SpinEvents, TextEvents):
+class CtlPatternField(DialogControlBase, UnoControlPatternFieldModelPartial, SpinEvents, TextEvents):
     """Class for Pattern Field Control"""
 
     # pylint: disable=unused-argument
@@ -34,6 +34,7 @@ class CtlPatternField(DialogControlBase, SpinEvents, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlPatternFieldModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
@@ -78,58 +79,10 @@ class CtlPatternField(DialogControlBase, SpinEvents, TextEvents):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
-
-    @property
-    def edit_mask(self) -> str:
-        """Gets/Sets the edit mask"""
-        return self.model.EditMask
-
-    @edit_mask.setter
-    def edit_mask(self, value: str) -> None:
-        self.model.EditMask = value
-
-    @property
-    def literal_mask(self) -> str:
-        """Gets/Sets the literal mask"""
-        return self.model.LiteralMask
-
-    @literal_mask.setter
-    def literal_mask(self, value: str) -> None:
-        self.model.LiteralMask = value
 
     @property
     def model(self) -> UnoControlPatternFieldModel:
         return self.get_model()
-
-    @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
-
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
-
-    @property
-    def text(self) -> str:
-        """Gets/Sets the text"""
-        return self.model.Text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.model.Text = value
 
     @property
     def view(self) -> UnoControlPatternField:
