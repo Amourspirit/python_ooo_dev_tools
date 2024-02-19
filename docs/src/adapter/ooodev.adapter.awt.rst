@@ -28,6 +28,7 @@ Submodules
    ooodev.adapter.awt.enhanced_mouse_click_handler
    ooodev.adapter.awt.focus_events
    ooodev.adapter.awt.focus_listener
+   ooodev.adapter.awt.font_descriptor_comp
    ooodev.adapter.awt.index_container_comp
    ooodev.adapter.awt.item_events
    ooodev.adapter.awt.item_list_events
@@ -53,7 +54,29 @@ Submodules
    ooodev.adapter.awt.top_window_events
    ooodev.adapter.awt.top_window_listener
    ooodev.adapter.awt.top_window_partial
+   ooodev.adapter.awt.uno_control_button_model_partial
+   ooodev.adapter.awt.uno_control_check_box_model_partial
+   ooodev.adapter.awt.uno_control_combo_box_model_partial
+   ooodev.adapter.awt.uno_control_container_model_partial
+   ooodev.adapter.awt.uno_control_currency_field_model_partial
+   ooodev.adapter.awt.uno_control_date_field_model_partial
    ooodev.adapter.awt.uno_control_dialog_partial
+   ooodev.adapter.awt.uno_control_edit_model_partial
+   ooodev.adapter.awt.uno_control_file_control_model_partial
+   ooodev.adapter.awt.uno_control_fixed_hyperlink_model_partial
+   ooodev.adapter.awt.uno_control_fixed_line_model_partial
+   ooodev.adapter.awt.uno_control_fixed_text_model_partial
+   ooodev.adapter.awt.uno_control_formatted_field_model_partial
+   ooodev.adapter.awt.uno_control_group_box_model_partial
+   ooodev.adapter.awt.uno_control_image_control_model_partial
+   ooodev.adapter.awt.uno_control_list_box_model_partial
+   ooodev.adapter.awt.uno_control_model_partial
+   ooodev.adapter.awt.uno_control_numeric_field_model_partial
+   ooodev.adapter.awt.uno_control_pattern_field_model_partial
+   ooodev.adapter.awt.uno_control_progress_bar_model_partial
+   ooodev.adapter.awt.uno_control_radio_button_model_partial
+   ooodev.adapter.awt.uno_control_scroll_bar_model_partial
+   ooodev.adapter.awt.uno_control_time_field_model_partial
    ooodev.adapter.awt.user_input_interception_partial
    ooodev.adapter.awt.window_events
    ooodev.adapter.awt.window_listener
