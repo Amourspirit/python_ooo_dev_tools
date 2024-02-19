@@ -9,27 +9,27 @@ from ooo.dyn.awt.image_position import ImagePositionEnum
 from ooo.dyn.awt.visual_effect import VisualEffectEnum
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.kind.align_kind import AlignKind
-from ooodev.utils.kind.tri_state_kind import TriStateKind
+from ooodev.utils.kind.state_kind import StateKind
 from ooodev.utils.color import Color
 from .uno_control_model_partial import UnoControlModelPartial
 from .font_descriptor_comp import FontDescriptorComp
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlCheckBoxModel  # Service
+    from com.sun.star.awt import UnoControlRadioButtonModel  # Service
     from com.sun.star.awt import FontDescriptor  # struct
     from com.sun.star.graphic import XGraphic
     from ooodev.events.args.key_val_args import KeyValArgs
 
 
-class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
-    """Partial class for UnoControlCheckBoxModel."""
+class UnoControlRadioButtonModelPartial(UnoControlModelPartial):
+    """Partial class for UnoControlRadioButtonModel."""
 
-    def __init__(self, component: UnoControlCheckBoxModel):
+    def __init__(self, component: UnoControlRadioButtonModel):
         """
         Constructor
 
         Args:
-            component (Any): Component that implements ``com.sun.star.awt.UnoControlCheckBoxModel`` service.
+            component (Any): Component that implements ``com.sun.star.awt.UnoControlRadioButtonModel`` service.
         """
         # pylint: disable=unused-argument
         self.__component = component
@@ -89,15 +89,20 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
             self.__component.Align = kind.value
 
     @property
-    def background_color(self) -> Color:
+    def background_color(self) -> Color | None:
         """
         Gets/Set the background color of the control.
+
+        **optional**
         """
-        return Color(self.__component.BackgroundColor)
+        with contextlib.suppress(AttributeError):
+            return Color(self.__component.BackgroundColor)
+        return None
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.__component.BackgroundColor = value  # type: ignore
+        with contextlib.suppress(AttributeError):
+            self.__component.BackgroundColor = value  # type: ignore
 
     @property
     def enabled(self) -> bool:
@@ -268,22 +273,22 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         self.__component.Printable = value
 
     @property
-    def state(self) -> TriStateKind:
+    def state(self) -> StateKind:
         """
         Gets/Sets the state of the control.
 
         If Toggle property is set to ``True``, the pressed state is enabled and its pressed state can be obtained with this property.
 
         Note:
-            Value can be set with ``TriStateKind`` or ``int``.
+            Value can be set with ``StateKind`` or ``int``.
 
         Hint:
-            - ``TriStateKind`` can be imported from ``ooodev.utils.kind.tri_state_kind``
+            - ``StateKind`` can be imported from ``ooodev.utils.kind.state_kind``
         """
-        return TriStateKind(self.__component.State)
+        return StateKind(self.__component.State)
 
     @state.setter
-    def state(self, value: int | TriStateKind) -> None:
+    def state(self, value: int | StateKind) -> None:
         self.__component.State = int(value)
 
     @property
@@ -318,17 +323,6 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
         self.__component.TextLineColor = value  # type: ignore
-
-    @property
-    def tri_state(self) -> bool:
-        """
-        Gets/Sets that the control may have the state ``don't know``.
-        """
-        return self.__component.TriState
-
-    @tri_state.setter
-    def tri_state(self, value: bool) -> None:
-        self.__component.TriState = value
 
     @property
     def vertical_align(self) -> VerticalAlignment | None:

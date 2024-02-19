@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.adapter.awt.uno_control_radio_button_model_partial import UnoControlRadioButtonModelPartial
 from ooodev.adapter.awt.item_events import ItemEvents
 
 # pylint: disable=useless-import-alias
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlRadioButton(DialogControlBase, ItemEvents):
+class CtlRadioButton(DialogControlBase, UnoControlRadioButtonModelPartial, ItemEvents):
     """Class for Radio Button Control"""
 
     # pylint: disable=unused-argument
@@ -36,6 +37,7 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlRadioButtonModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_event_listener_add_remove)
@@ -73,36 +75,10 @@ class CtlRadioButton(DialogControlBase, ItemEvents):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.VisualEffect)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.VisualEffect = value.value
 
     @property
     def model(self) -> UnoControlRadioButtonModel:
         return self.get_model()
-
-    @property
-    def multi_line(self) -> bool:
-        """Gets/Sets the multi-line state"""
-        return self.model.MultiLine
-
-    @multi_line.setter
-    def multi_line(self, value: bool) -> None:
-        self.model.MultiLine = value
-
-    @property
-    def state(self) -> StateKind:
-        """Gets/Sets the state"""
-        return StateKind(self.model.State)
-
-    @state.setter
-    def state(self, value: StateKind) -> None:
-        self.model.State = value.value
 
     @property
     def view(self) -> UnoControlRadioButton:
