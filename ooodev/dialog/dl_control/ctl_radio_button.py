@@ -8,10 +8,8 @@ from ooodev.adapter.awt.item_events import ItemEvents
 
 # pylint: disable=useless-import-alias
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.utils.kind.state_kind import StateKind as StateKind
 
 from .ctl_base import DialogControlBase
 

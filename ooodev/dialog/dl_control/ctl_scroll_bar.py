@@ -3,12 +3,11 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.adapter.awt.uno_control_scroll_bar_model_partial import UnoControlScrollBarModelPartial
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
 
 from .ctl_base import DialogControlBase
 
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlScrollBar(DialogControlBase, AdjustmentEvents):
+class CtlScrollBar(DialogControlBase, UnoControlScrollBarModelPartial, AdjustmentEvents):
     """Class for Scroll Bar Control"""
 
     # pylint: disable=unused-argument
@@ -33,6 +32,7 @@ class CtlScrollBar(DialogControlBase, AdjustmentEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlScrollBarModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         AdjustmentEvents.__init__(self, trigger_args=generic_args, cb=self._on_adjustment_events_listener_add_remove)
@@ -70,45 +70,29 @@ class CtlScrollBar(DialogControlBase, AdjustmentEvents):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
 
     @property
     def max_value(self) -> int:
-        """Gets the maximum value of the scroll bar"""
-        return self.model.ScrollValueMax
+        """Gets the maximum value of the scroll bar. Same as ``scroll_value_max`` property."""
+        return self.scroll_value_max
 
     @max_value.setter
     def max_value(self, value: int) -> None:
-        self.model.ScrollValueMax = value
+        self.scroll_value_max = value
 
     @property
     def min_value(self) -> int:
-        """Gets the minimum value of the scroll bar"""
-        return self.model.ScrollValueMin
+        """Gets the minimum value of the scroll bar. Same as ``scroll_value_min`` property."""
+        value = self.scroll_value_min
+        return 0 if value is None else value
 
     @min_value.setter
     def min_value(self, value: int) -> None:
-        self.model.ScrollValueMin = value
+        self.scroll_value_min = value
 
     @property
     def model(self) -> UnoControlScrollBarModel:
         return self.get_model()
-
-    @property
-    def orientation(self) -> OrientationKind:
-        """Gets or sets the orientation of the scroll bar"""
-        return OrientationKind(self.model.Orientation)
-
-    @orientation.setter
-    def orientation(self, value: OrientationKind) -> None:
-        self.model.Orientation = value.value
 
     @property
     def value(self) -> int:
