@@ -5,16 +5,14 @@ import contextlib
 import datetime
 import uno  # pylint: disable=unused-import
 
+from ooodev.adapter.awt.uno_control_time_field_model_partial import UnoControlTimeFieldModelPartial
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 # pylint: disable=useless-import-alias
-from ooodev.utils.date_time_util import DateUtil
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from .ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
@@ -23,7 +21,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
+class CtlTimeField(DialogControlBase, UnoControlTimeFieldModelPartial, SpinEvents, TextEvents):
     """Class for Time Field Control"""
 
     # pylint: disable=unused-argument
@@ -38,6 +36,7 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlTimeFieldModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
@@ -81,76 +80,24 @@ class CtlTimeField(DialogControlBase, SpinEvents, TextEvents):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
 
     @property
     def model(self) -> UnoControlTimeFieldModel:
         return self.get_model()
 
-    @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
-
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
+    # region UnoControlTimeFieldModelPartial Overrides
 
     @property
     def text(self) -> str:
         """Gets/Sets the text"""
-        return self.model.Text
+        val = super().text
+        return "" if val is None else val
 
     @text.setter
     def text(self, value: str) -> None:
-        self.model.Text = value
+        super().text = value
 
-    @property
-    def time(self) -> datetime.time:
-        """Gets/Sets the time"""
-        return DateUtil.uno_time_to_time(self.model.Time)
-
-    @time.setter
-    def time(self, value: datetime.time) -> None:
-        self.model.Time = DateUtil.time_to_uno_time(value)
-
-    @property
-    def time_format(self) -> TimeFormatKind:
-        """Gets/Sets the format"""
-        return TimeFormatKind(self.model.TimeFormat)
-
-    @time_format.setter
-    def time_format(self, value: TimeFormatKind) -> None:
-        self.model.TimeFormat = value.value
-
-    @property
-    def time_max(self) -> datetime.time:
-        """Gets/Sets the min time"""
-        return DateUtil.uno_time_to_time(self.model.TimeMax)
-
-    @time_max.setter
-    def time_max(self, value: datetime.time) -> None:
-        self.model.TimeMax = DateUtil.time_to_uno_time(value)
-
-    @property
-    def time_min(self) -> datetime.time:
-        """Gets/Sets the min time"""
-        return DateUtil.uno_time_to_time(self.model.TimeMin)
-
-    @time_min.setter
-    def time_min(self, value: datetime.time) -> None:
-        self.model.TimeMin = DateUtil.time_to_uno_time(value)
+    # endregion UnoControlTimeFieldModelPartial Overrides
 
     @property
     def view(self) -> UnoControlTimeField:

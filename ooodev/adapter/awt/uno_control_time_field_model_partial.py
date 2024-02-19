@@ -10,26 +10,26 @@ from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum
 from ooodev.utils.date_time_util import DateUtil
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.utils.kind.date_format_kind import DateFormatKind
+from ooodev.utils.kind.time_format_kind import TimeFormatKind
 from ooodev.utils.color import Color
 from .uno_control_model_partial import UnoControlModelPartial
 from .font_descriptor_comp import FontDescriptorComp
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlDateFieldModel  # Service
+    from com.sun.star.awt import UnoControlTimeFieldModel  # Service
     from com.sun.star.awt import FontDescriptor  # struct
     from ooodev.events.args.key_val_args import KeyValArgs
 
 
-class UnoControlDateFieldModelPartial(UnoControlModelPartial):
-    """Partial class for UnoControlDateFieldModel."""
+class UnoControlTimeFieldModelPartial(UnoControlModelPartial):
+    """Partial class for UnoControlTimeFieldModel."""
 
-    def __init__(self, component: UnoControlDateFieldModel):
+    def __init__(self, component: UnoControlTimeFieldModel):
         """
         Constructor
 
         Args:
-            component (Any): Component that implements ``com.sun.star.awt.UnoControlDateFieldModel`` service.
+            component (Any): Component that implements ``com.sun.star.awt.UnoControlTimeFieldModel`` service.
         """
         # pylint: disable=unused-argument
         self.__component = component
@@ -115,72 +115,6 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
             self.__component.BorderColor = value
-
-    @property
-    def date(self) -> datetime.date:
-        """Gets/Sets the date"""
-        return DateUtil.uno_date_to_date(self.__component.Date)
-
-    @date.setter
-    def date(self, value: datetime.date) -> None:
-        self.__component.Date = DateUtil.date_to_uno_date(value)
-
-    @property
-    def date_format(self) -> DateFormatKind:
-        """
-        Gets/Sets the format.
-
-        Note:
-            Value can be set with ``DateFormatKind`` or ``int``.
-
-        Hint:
-            - ``DateFormatKind`` can be imported from ``ooodev.utils.kind.date_format_kind``
-        """
-        return DateFormatKind(self.__component.DateFormat)
-
-    @date_format.setter
-    def date_format(self, value: DateFormatKind) -> None:
-        self.__component.DateFormat = value.value
-
-    @property
-    def date_max(self) -> datetime.date:
-        """Gets/Sets the max date"""
-        return DateUtil.uno_date_to_date(self.__component.DateMax)
-
-    @property
-    def date_min(self) -> datetime.date:
-        """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.__component.DateMin)
-
-    @date_min.setter
-    def date_min(self, value: datetime.date) -> None:
-        self.__component.DateMin = DateUtil.date_to_uno_date(value)
-
-    @date_max.setter
-    def date_max(self, value: datetime.date) -> None:
-        self.__component.DateMax = DateUtil.date_to_uno_date(value)
-
-    @property
-    def date_show_century(self) -> bool:
-        """
-        Gets/Sets if the date century is displayed.
-        """
-        return self.__component.DateShowCentury
-
-    @date_show_century.setter
-    def date_show_century(self, value: bool) -> None:
-        self.__component.DateShowCentury = value
-
-    @property
-    def dropdown(self) -> bool:
-        """
-        Gets/Sets if the control has a dropdown button.
-        """
-        return self.__component.Dropdown
-
-    @dropdown.setter
-    def dropdown(self, value: bool) -> None:
-        self.__component.Dropdown = value
 
     @property
     def enabled(self) -> bool:
@@ -418,6 +352,50 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
         self.__component.TextLineColor = value  # type: ignore
+
+    @property
+    def time(self) -> datetime.time:
+        """Gets/Sets the time"""
+        return DateUtil.uno_time_to_time(self.__component.Time)
+
+    @time.setter
+    def time(self, value: datetime.time) -> None:
+        self.__component.Time = DateUtil.time_to_uno_time(value)
+
+    @property
+    def time_format(self) -> TimeFormatKind:
+        """
+        Gets/Sets the format.
+
+        Note:
+            Value can be set with ``TimeFormatKind`` or ``int``.
+
+        Hint:
+            - ``TimeFormatKind`` can be imported from ``ooodev.utils.kind.time_format_kind``
+        """
+        return TimeFormatKind(self.__component.TimeFormat)
+
+    @time_format.setter
+    def time_format(self, value: int | TimeFormatKind) -> None:
+        self.__component.TimeFormat = int(value)
+
+    @property
+    def time_max(self) -> datetime.time:
+        """Gets/Sets the min time"""
+        return DateUtil.uno_time_to_time(self.__component.TimeMax)
+
+    @time_max.setter
+    def time_max(self, value: datetime.time) -> None:
+        self.__component.TimeMax = DateUtil.time_to_uno_time(value)
+
+    @property
+    def time_min(self) -> datetime.time:
+        """Gets/Sets the min time"""
+        return DateUtil.uno_time_to_time(self.__component.TimeMin)
+
+    @time_min.setter
+    def time_min(self, value: datetime.time) -> None:
+        self.__component.TimeMin = DateUtil.time_to_uno_time(value)
 
     @property
     def vertical_align(self) -> VerticalAlignment | None:
