@@ -48,6 +48,7 @@ Submodules
    ooodev.adapter.awt.paint_listener
    ooodev.adapter.awt.spin_events
    ooodev.adapter.awt.spin_listener
+   ooodev.adapter.awt.spin_value_partial
    ooodev.adapter.awt.tab_controller_model_partial
    ooodev.adapter.awt.text_events
    ooodev.adapter.awt.text_listener
@@ -60,6 +61,7 @@ Submodules
    ooodev.adapter.awt.uno_control_container_model_partial
    ooodev.adapter.awt.uno_control_currency_field_model_partial
    ooodev.adapter.awt.uno_control_date_field_model_partial
+   ooodev.adapter.awt.uno_control_dialog_element_partial
    ooodev.adapter.awt.uno_control_dialog_partial
    ooodev.adapter.awt.uno_control_edit_model_partial
    ooodev.adapter.awt.uno_control_file_control_model_partial
@@ -76,6 +78,7 @@ Submodules
    ooodev.adapter.awt.uno_control_progress_bar_model_partial
    ooodev.adapter.awt.uno_control_radio_button_model_partial
    ooodev.adapter.awt.uno_control_scroll_bar_model_partial
+   ooodev.adapter.awt.uno_control_spin_button_model_partial
    ooodev.adapter.awt.uno_control_time_field_model_partial
    ooodev.adapter.awt.user_input_interception_partial
    ooodev.adapter.awt.window_events
