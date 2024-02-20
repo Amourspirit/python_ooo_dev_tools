@@ -89,6 +89,7 @@ class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
             `API UnoControlDialogModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogModel.html>`_
         """
         # sourcery skip: raise-specific-error
+        # pylint: disable=protected-access
         try:
             try:
                 x_arg = cast(int, x.get_value_mm100())  # type: ignore

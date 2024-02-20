@@ -18,6 +18,7 @@ from .ctl_pattern_field import CtlPatternField as CtlPatternField
 from .ctl_progress_bar import CtlProgressBar as CtlProgressBar
 from .ctl_radio_button import CtlRadioButton as CtlRadioButton
 from .ctl_scroll_bar import CtlScrollBar as CtlScrollBar
+from .ctl_spin_button import CtlSpinButton as CtlSpinButton
 from .ctl_tab_page import CtlTabPage as CtlTabPage
 from .ctl_tab_page_container import CtlTabPageContainer as CtlTabPageContainer
 from .ctl_text_edit import CtlTextEdit as CtlTextEdit
@@ -45,6 +46,7 @@ __all__ = [
     "CtlProgressBar",
     "CtlRadioButton",
     "CtlScrollBar",
+    "CtlSpinButton",
     "CtlTabPage",
     "CtlTabPageContainer",
     "CtlTextEdit",

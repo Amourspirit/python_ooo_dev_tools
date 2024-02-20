@@ -3,8 +3,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
-from ooodev.utils.color import Color
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
+from ooodev.adapter.awt.uno_control_progress_bar_model_partial import UnoControlProgressBarModelPartial
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlProgressBar(DialogControlBase):
+class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
     """Class for Progress Bar Control"""
 
     # region init
@@ -28,6 +27,7 @@ class CtlProgressBar(DialogControlBase):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlProgressBarModelPartial.__init__(self)
 
     # endregion init
 
@@ -54,27 +54,11 @@ class CtlProgressBar(DialogControlBase):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
-
-    @property
-    def fill_color(self) -> Color:
-        """Gets or sets the fill color of the progress bar"""
-        return Color(self.model.FillColor)
-
-    @fill_color.setter
-    def fill_color(self, value: Color) -> None:
-        self.model.FillColor = value  # type: ignore
 
     @property
     def model(self) -> UnoControlProgressBarModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlProgressBarModel", super().model)
 
     @property
     def value(self) -> int:
@@ -87,6 +71,7 @@ class CtlProgressBar(DialogControlBase):
 
     @property
     def view(self) -> UnoControlProgressBar:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlProgressBar", super().view)
 
     # endregion Properties

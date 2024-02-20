@@ -28,6 +28,7 @@ class DialogControlNamedKind(Enum):
     PROGRESS_BAR = "stardiv.Toolkit.UnoProgressBarControl"
     RADIO_BUTTON = "stardiv.Toolkit.UnoRadioButtonControl"
     SCROLL_BAR = "stardiv.Toolkit.UnoScrollBarControl"
+    SPIN_BUTTON = "stardiv.Toolkit.UnoSpinButtonControl"
     TAB_PAGE_CONTAINER = "stardiv.Toolkit.UnoControlTabPageContainer"
     TAB_PAGE = "stardiv.Toolkit.UnoControlTabPage"
     EDIT = "stardiv.Toolkit.UnoEditControl"

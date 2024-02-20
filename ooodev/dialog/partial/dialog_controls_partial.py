@@ -44,6 +44,7 @@ from ..dl_control import CtlPatternField
 from ..dl_control import CtlProgressBar
 from ..dl_control import CtlRadioButton
 from ..dl_control import CtlScrollBar
+from ..dl_control import CtlSpinButton
 from ..dl_control import CtlTabPage
 from ..dl_control import CtlTabPageContainer
 from ..dl_control import CtlTextEdit
@@ -112,6 +113,9 @@ class DialogControlsPartial:
         Returns:
             CtlButton: Button control.
 
+        Hint:
+            - ``PushButtonType`` can be imported from ``ooo.dyn.awt.push_button_type``.
+
         See Also:
             `API UnoControlButtonModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlButtonModel.html>`_
         """
@@ -170,6 +174,10 @@ class DialogControlsPartial:
 
         Returns:
             CtlCheckBox: Check box control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TriStateKind`` can be imported from ``ooodev.utils.kind.tri_state_kind``.
 
         See Also:
             `API UnoControlCheckBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlCheckBoxModel.html>`_
@@ -235,6 +243,9 @@ class DialogControlsPartial:
         Returns:
             CtlComboBox: Combo box control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         See Also:
             `API UnoControlComboBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlComboBoxModel.html>`_
         """
@@ -297,6 +308,9 @@ class DialogControlsPartial:
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
             props (dict, optional): Extra properties to set for control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         Raises:
             DialogError: If unable to create currency field box control.
@@ -369,6 +383,10 @@ class DialogControlsPartial:
 
         Returns:
             CtlDateField: Date field control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``DateFormatKind`` can be imported from ``ooodev.utils.kind.date_format_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -422,6 +440,9 @@ class DialogControlsPartial:
         Raises:
             DialogError: If unable to create file control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         Returns:
             CtlFile: File Control.
         """
@@ -474,6 +495,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlFixedLine: Fixed Line Control.
+
+        Hint:
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -532,6 +556,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlFormattedField: Formatted Field.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -646,6 +673,11 @@ class DialogControlsPartial:
 
         Returns:
             CtlHyperlinkFixed: Hyperlink Control.
+
+        Hint:
+            - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -708,6 +740,11 @@ class DialogControlsPartial:
 
         Returns:
             CtlImage: Image Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``ImageScaleModeEnum`` can be imported from ``ooo.dyn.awt.image_scale_mode``.
+            - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -822,6 +859,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlListBox: List box control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -888,6 +928,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlNumericField: Numeric Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -946,6 +989,9 @@ class DialogControlsPartial:
         Returns:
             CtlTextEdit: Text Field Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         See Also:
             :py:meth:`~.dialogs.self._DialogControlsPartial_dialogs_class.insert_text_field`.
         """
@@ -1002,6 +1048,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlPatternField: Pattern Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -1059,6 +1108,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlProgressBar: Progress Bar Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -1169,6 +1221,10 @@ class DialogControlsPartial:
 
         Returns:
             CtlScrollBar: Scroll Bar Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -1189,6 +1245,68 @@ class DialogControlsPartial:
         return result
 
     # endregion Insert Scroll Bar
+
+    # region Insert Spin Button
+    def insert_spin_button(
+        self,
+        *,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        min_value: int = 0,
+        max_value: int = 100,
+        orientation: OrientationKind = OrientationKind.HORIZONTAL,
+        border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
+        dialog_ctrl: XControl | None = None,
+        **props: Any,
+    ) -> CtlSpinButton:
+        """
+        Create a new control of type SpinButton in the actual dialog.
+
+        Args:
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int): Height. If ``-1``, the dialog Size is not set.
+            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
+            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
+            orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
+            dialog_ctrl (XControl, optional): control. Defaults to class instance.
+            props (dict, optional): Extra properties to set for control.
+
+        Raises:
+            DialogError: If unable to create scroll bar control.
+
+        Returns:
+            CtlSpinButton: Scroll Bar Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
+        """
+        if dialog_ctrl is None:
+            dialog_ctrl = self.__ctl
+        with LoContext(inst=self.__lo_inst):
+            result = self._DialogControlsPartial_dialogs_class.insert_spin_button(
+                dialog_ctrl,
+                x=x,
+                y=y,
+                width=width,
+                height=height,
+                min_value=min_value,
+                max_value=max_value,
+                orientation=orientation,
+                border=border,
+                name=name,
+                **props,
+            )
+        return result
+
+    # endregion Insert Spin Button
 
     # region Insert Tab Control
 
@@ -1221,6 +1339,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlTabPageContainer: Tab Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         See Also:
             :py:meth:`~.dialogs.self._DialogControlsPartial_dialogs_class.insert_tab_page`.
@@ -1330,6 +1451,10 @@ class DialogControlsPartial:
         Returns:
             CtlGrid: Table Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``HorzVertKind`` can be imported from ``ooodev.utils.kind.horz_ver_kind``.
+
         See Also:
             :py:meth:`~.dialogs.self._DialogControlsPartial_dialogs_class.set_table_data`.
         """
@@ -1389,6 +1514,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlTextEdit: Text Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         See Also:
             `API UnoControlEditModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
@@ -1453,6 +1581,10 @@ class DialogControlsPartial:
 
         Returns:
             CtlTimeField: Time field control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TimeFormatKind`` can be imported from ``ooodev.utils.kind.time_format_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl
@@ -1507,6 +1639,9 @@ class DialogControlsPartial:
 
         Returns:
             CtlTree: Tree Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         if dialog_ctrl is None:
             dialog_ctrl = self.__ctl

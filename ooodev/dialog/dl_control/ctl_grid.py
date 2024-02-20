@@ -16,6 +16,7 @@ from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.type_var import Table
+from ooodev.adapter.awt.grid.uno_control_grid_model_partial import UnoControlGridModelPartial
 from .ctl_base import DialogControlBase
 
 
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlGrid(DialogControlBase, GridSelectionEvents):
+class CtlGrid(DialogControlBase, UnoControlGridModelPartial, GridSelectionEvents):
     """Class for Grid Control"""
 
     # pylint: disable=unused-argument
@@ -40,6 +41,7 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlGridModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         GridSelectionEvents.__init__(self, trigger_args=generic_args, cb=self._on_grid_listener_add_remove)
@@ -296,35 +298,39 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlGrid:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlGridModel:
+        # pylint: disable=no-member
+        return cast("UnoControlGridModel", super().model)
 
     @property
-    def model(self) -> UnoControlGridModel:
-        return self.get_model()
+    def view(self) -> UnoControlGrid:
+        # pylint: disable=no-member
+        return cast("UnoControlGrid", super().view)
 
     @property
     def horizontal_scrollbar(self) -> bool:
         """
         Gets or sets if a horizontal scrollbar should be added to the dialog.
+        Same as ``h_scroll`` property.
         """
-        return self.model.HScroll
+        return self.h_scroll
 
     @horizontal_scrollbar.setter
     def horizontal_scrollbar(self, value: bool) -> None:
         """Sets the horizontal scrollbar"""
-        self.model.HScroll = value
+        self.h_scroll = value
 
     @property
     def vertical_scrollbar(self) -> bool:
         """
         Gets or sets if a vertical scrollbar should be added to the dialog.
+        Same as ``v_scroll`` property.
         """
-        return self.model.VScroll
+        return self.v_scroll
 
     @vertical_scrollbar.setter
     def vertical_scrollbar(self, value: bool) -> None:
-        self.model.VScroll = value
+        self.v_scroll = value
 
     @property
     def list_count(self) -> int:

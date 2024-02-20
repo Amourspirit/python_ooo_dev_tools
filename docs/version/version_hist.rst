@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.29.0
+==============
+
+Added new ``CtlSpinButton`` class for working with Spin Button controls.
+Update all controls to make formatting (font, text color, etc) easier.
+This includes the ability to set font and text color for all controls that support it.
+
 Version 0.28.4
 ==============
 

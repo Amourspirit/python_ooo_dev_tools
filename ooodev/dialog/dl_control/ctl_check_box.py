@@ -10,6 +10,7 @@ from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ooodev.adapter.awt.uno_control_check_box_model_partial import UnoControlCheckBoxModelPartial
 from .ctl_base import DialogControlBase
 
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlCheckBox(DialogControlBase, ItemEvents):
+class CtlCheckBox(DialogControlBase, UnoControlCheckBoxModelPartial, ItemEvents):
     """Class for CheckBox Control"""
 
     # pylint: disable=unused-argument
@@ -34,6 +35,7 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlCheckBoxModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_event_listener_add_remove)
@@ -72,51 +74,26 @@ class CtlCheckBox(DialogControlBase, ItemEvents):
 
     # region Properties
     @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.VisualEffect)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.VisualEffect = value.value
-
-    @property
-    def label(self) -> str:
-        """Gets/Sets the label (text) for the control"""
-        return self.model.Label
-
-    @label.setter
-    def label(self, value: str) -> None:
-        self.model.Label = value
-
-    @property
     def model(self) -> UnoControlCheckBoxModel:
-        return self.get_model()
-
-    @property
-    def state(self) -> TriStateKind:
-        """Gets/Sets the state"""
-        return TriStateKind(self.model.State)
-
-    @state.setter
-    def state(self, value: TriStateKind) -> None:
-        self.model.State = value.value
+        # pylint: disable=no-member
+        return cast("UnoControlCheckBoxModel", super().model)
 
     @property
     def triple_state(self) -> bool:
         """
-        Gets/Sets the triple state.
+        Gets/Sets the triple state Same as ``tri_state`` property.
 
         Specifies if the checkbox control may appear dimmed (grayed) or not.
         """
-        return self.model.TriState
+        return self.tri_state
 
     @triple_state.setter
     def triple_state(self, value: bool) -> None:
-        self.model.TriState = value
+        self.tri_state = value
 
     @property
     def view(self) -> UnoControlCheckBox:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlCheckBox", super().view)
 
     # endregion Properties

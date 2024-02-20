@@ -1,12 +1,12 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, TYPE_CHECKING
-
 import uno
+from com.sun.star.awt import XAdjustmentListener
+
 from ...events.args.event_args import EventArgs as EventArgs
 from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
 
-from com.sun.star.awt import XAdjustmentListener
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

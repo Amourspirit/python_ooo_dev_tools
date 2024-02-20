@@ -1,13 +1,12 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import contextlib
 import uno  # pylint: disable=unused-import
 
+from ooodev.adapter.awt.uno_control_formatted_field_model_partial import UnoControlFormattedFieldModelPartial
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlFormattedField(DialogControlBase, SpinEvents, TextEvents):
+class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial, SpinEvents, TextEvents):
     """Class for Formatted Field Control"""
 
     # pylint: disable=unused-argument
@@ -34,6 +33,7 @@ class CtlFormattedField(DialogControlBase, SpinEvents, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlFormattedFieldModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
@@ -78,53 +78,31 @@ class CtlFormattedField(DialogControlBase, SpinEvents, TextEvents):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
 
     @property
     def model(self) -> UnoControlFormattedFieldModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlFormattedFieldModel", super().model)
 
     @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
+    def value(self) -> Any:
+        """
+        Gets/Sets the value.
 
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
+        Same as ``effective_value`` property
 
-    @property
-    def text(self) -> str:
-        """Gets/Sets the text"""
-        return self.model.Text
-
-    @text.setter
-    def text(self, value: str) -> None:
-        self.model.Text = value
-
-    @property
-    def value(self) -> float:
-        """Gets/Sets the value"""
-        return self.model.EffectiveValue
+        This may be a numeric value (float) or a string, depending on the formatting of the field.
+        """
+        return self.effective_value
 
     @value.setter
-    def value(self, value: float) -> None:
-        self.model.EffectiveValue = value
+    def value(self, value: Any) -> None:
+        self.effective_value = value
 
     @property
     def view(self) -> UnoControlFormattedField:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlFormattedField", super().view)
 
     # endregion Properties
 
