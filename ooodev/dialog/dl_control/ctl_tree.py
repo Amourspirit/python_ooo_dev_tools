@@ -16,6 +16,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.loader import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.adapter.awt.tree.tree_control_model_partial import TreeControlModelPartial
 from ooodev.dialog.search.tree_search import (
     SearchTree,
     RuleDataCompare,
@@ -35,7 +36,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpansionEvents):
+class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents, TreeEditEvents, TreeExpansionEvents):
     """Class for Tree Control"""
 
     DATA_VALUE_KEY = "___data_value___"
@@ -54,6 +55,7 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        TreeControlModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SelectionChangeEvents.__init__(
@@ -404,6 +406,8 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
                     return cast("MutableTreeNode", sel[0])
         return None
 
+    # region TreeControlModelPartial overrides
+
     @property
     def data_model(self) -> TreeDataModelComp | None:
         """Gets the data model for the tree"""
@@ -413,6 +417,7 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
             return TreeDataModelComp(self.model.DataModel)
         return None
 
+    # endregion TreeControlModelPartial overrides
     @property
     def model(self) -> TreeControlModel:
         # pylint: disable=no-member

@@ -36,6 +36,9 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         Gets/Set the background color of the control.
 
         **optional**
+
+        Returns:
+            ~ooodev.utils.color.Color | None: Color or None if not present.
         """
         with contextlib.suppress(AttributeError):
             return Color(self.model.BackgroundColor)
@@ -84,6 +87,9 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         For instance, usually a border with 3D effect will ignore the border_color setting.
 
         **optional**
+
+        Returns:
+            ~ooodev.utils.color.Color | None: Color or None if not present.
         """
         with contextlib.suppress(AttributeError):
             return Color(self.model.BorderColor)

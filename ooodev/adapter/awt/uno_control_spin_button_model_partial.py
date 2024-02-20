@@ -35,6 +35,9 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
     def background_color(self) -> Color:
         """
         Gets/Set the background color of the control.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
         return Color(self.model.BackgroundColor)
 
@@ -69,6 +72,9 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
         For instance, usually a border with 3D effect will ignore the border_color setting.
 
         **optional**
+
+        Returns:
+            ~ooodev.utils.color.Color | None: Color or None if not present.
         """
         with contextlib.suppress(AttributeError):
             return Color(self.model.BorderColor)
@@ -239,6 +245,9 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
     def symbol_color(self) -> Color:
         """
         Gets/Sets the color to be used when painting symbols which are part of the control's appearance, such as the arrow buttons.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
         return Color(self.model.SymbolColor)
 

@@ -29,6 +29,9 @@ class UnoControlContainerModelPartial(UnoControlModelPartial):
     def background_color(self) -> Color:
         """
         Gets/Set the background color of the control.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
         return Color(self.__component.BackgroundColor)
 
@@ -63,6 +66,9 @@ class UnoControlContainerModelPartial(UnoControlModelPartial):
         For instance, usually a border with 3D effect will ignore the border_color setting.
 
         **optional**
+
+        Returns:
+            ~ooodev.utils.color.Color | None: Color or None if not set.
         """
         with contextlib.suppress(AttributeError):
             return Color(self.__component.BorderColor)

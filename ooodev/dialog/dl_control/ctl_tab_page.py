@@ -94,9 +94,7 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
             LibreOffice ``7.1``
         """
-        if mInfo.Info.version_info < (7, 1):
-            return False
-        return self.model.HScroll
+        return False if mInfo.Info.version_info < (7, 1) else self.model.HScroll
 
     @horizontal_scrollbar.setter
     def horizontal_scrollbar(self, value: bool) -> None:
@@ -116,9 +114,7 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
             LibreOffice ``7.1``
         """
-        if mInfo.Info.version_info < (7, 1):
-            return False
-        return self.model.VScroll
+        return False if mInfo.Info.version_info < (7, 1) else self.model.VScroll
 
     @vertical_scrollbar.setter
     def vertical_scrollbar(self, value: bool) -> None:
@@ -137,9 +133,7 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
             LibreOffice ``7.1``
         """
-        if mInfo.Info.version_info < (7, 1):
-            return -1
-        return self.model.ScrollHeight
+        return -1 if mInfo.Info.version_info < (7, 1) else self.model.ScrollHeight
 
     @scroll_height.setter
     def scroll_height(self, value: int) -> None:
@@ -159,9 +153,7 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
             LibreOffice ``7.1``
         """
-        if mInfo.Info.version_info < (7, 1):
-            return -1
-        return self.model.ScrollLeft
+        return -1 if mInfo.Info.version_info < (7, 1) else self.model.ScrollLeft
 
     @scroll_left.setter
     def scroll_left(self, value: int) -> None:
@@ -181,9 +173,7 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
             LibreOffice ``7.1``
         """
-        if mInfo.Info.version_info < (7, 1):
-            return -1
-        return self.model.ScrollTop
+        return -1 if mInfo.Info.version_info < (7, 1) else self.model.ScrollTop
 
     @scroll_top.setter
     def scroll_top(self, value: int) -> None:
@@ -203,9 +193,7 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
             LibreOffice ``7.1``
         """
-        if mInfo.Info.version_info < (7, 1):
-            return -1
-        return self.model.ScrollWidth
+        return -1 if mInfo.Info.version_info < (7, 1) else self.model.ScrollWidth
 
     @scroll_width.setter
     def scroll_width(self, value: int) -> None:

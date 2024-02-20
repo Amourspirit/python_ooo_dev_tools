@@ -56,7 +56,7 @@ class UnoControlFixedHyperlinkModelPartial(UnoControlModelPartial):
         """
         # FontDescriptorComp do not have any state, so we can directly assign the component.
         self.__font_descriptor.component = font_descriptor
-        self.model.FontDescriptor = font_descriptor
+        self.model.FontDescriptor = self.__font_descriptor.component
 
     # region Properties
 
@@ -89,6 +89,9 @@ class UnoControlFixedHyperlinkModelPartial(UnoControlModelPartial):
     def background_color(self) -> Color:
         """
         Gets/Set the background color of the control.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
         return Color(self.model.BackgroundColor)
 
@@ -123,6 +126,9 @@ class UnoControlFixedHyperlinkModelPartial(UnoControlModelPartial):
         For instance, usually a border with 3D effect will ignore the border_color setting.
 
         **optional**
+
+        Returns:
+            ~ooodev.utils.color.Color | None: Color or None if not set.
         """
         with contextlib.suppress(AttributeError):
             return Color(self.model.BorderColor)
@@ -237,6 +243,9 @@ class UnoControlFixedHyperlinkModelPartial(UnoControlModelPartial):
     def text_color(self) -> Color:
         """
         Gets/Sets the text color of the control.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
         return Color(self.model.TextColor)
 
@@ -248,6 +257,9 @@ class UnoControlFixedHyperlinkModelPartial(UnoControlModelPartial):
     def text_line_color(self) -> Color:
         """
         Gets/Sets the text line color (RGB) of the control.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
         return Color(self.model.TextLineColor)
 

@@ -14,6 +14,7 @@
     - [Chapter tables](#chapter-tables)
     - [Note](#note)
   - [Headings](#headings)
+  - [Doc-String namespace args such a Color](#doc-string-namespace-args-such-a-color)
   - [List](#list)
     - [General](#general)
     - [Multi-line list item](#multi-line-list-item)
@@ -132,6 +133,49 @@ See Also:
 <https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html#headings>
 <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/index.html>
 <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#sections>
+
+## Doc-String namespace args such a Color
+
+Sometimes a name such as `Color` can be ambiguous. The full namespace can be used such as `~ooodev.utils.color.Color`
+
+```python
+@classmethod
+def highlight_range(cls, sheet: XSpreadsheet, headline: str, range_obj: mRngObj.RangeObj, color: Color) -> XCell:
+    """
+    Draw a colored border around the range and write a headline in the
+    top-left cell of the range.
+
+    |lo_safe|
+
+    Args:
+        sheet (XSpreadsheet): Spreadsheet.
+        headline (str): Headline.
+        cell_range (XCellRange): Cell Range.
+        range_obj (RangeObj): Range Object
+        color (~ooodev.utils.color.Color): RGB color.
+
+    Returns:
+        XCell: First cell of range that headline ia applied on.
+    """
+    ...
+```
+
+```python
+def get_fill_color(self) -> mColor.Color:
+    """
+    Gets the fill color of a shape.
+
+    Args:
+        shape (XShape): Shape
+
+    Raises:
+        ColorError: If error occurs.
+
+    Returns:
+        ~ooodev.utils.color.Color: Color
+    """
+    return mDraw.Draw.get_fill_color(self.component)  # type: ignore
+```
 
 ## List
 

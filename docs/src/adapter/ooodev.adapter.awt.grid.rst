@@ -13,6 +13,7 @@ Submodules
    ooodev.adapter.awt.grid.grid_data_listener
    ooodev.adapter.awt.grid.grid_selection_events
    ooodev.adapter.awt.grid.grid_selection_listener
+   ooodev.adapter.awt.grid.uno_control_grid_model_partial
 
 Module contents
 ---------------

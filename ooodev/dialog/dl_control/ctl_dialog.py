@@ -11,6 +11,7 @@ from ooodev.adapter.awt.window_events import WindowEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.loader import lo as mLo
 from ooodev.adapter.awt.index_container_comp import UnoControlDialogComp
+from ooodev.adapter.awt.unit_conversion_partial import UnitConversionPartial
 
 from .ctl_base import CtlListenerBase
 
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlDialog(UnoControlDialogComp, CtlListenerBase, TopWindowEvents, WindowEvents):
+class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, TopWindowEvents, WindowEvents):
     """Class for Dialog Control"""
 
     # pylint: disable=unused-argument
@@ -37,6 +38,7 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, TopWindowEvents, WindowEv
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         UnoControlDialogComp.__init__(self, component=ctl)
         CtlListenerBase.__init__(self, ctl)
+        UnitConversionPartial.__init__(self, component=ctl)  # type: ignore
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         TopWindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_top_window_events_listener_add_remove)
