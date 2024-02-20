@@ -27,7 +27,7 @@ class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlProgressBarModelPartial.__init__(self, component=self.get_model())
+        UnoControlProgressBarModelPartial.__init__(self)
 
     # endregion init
 

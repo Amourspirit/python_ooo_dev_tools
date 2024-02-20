@@ -34,7 +34,7 @@ class CtlPatternField(DialogControlBase, UnoControlPatternFieldModelPartial, Spi
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlPatternFieldModelPartial.__init__(self, component=self.get_model())
+        UnoControlPatternFieldModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)

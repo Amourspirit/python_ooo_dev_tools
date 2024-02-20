@@ -9,6 +9,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
+from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from .uno_control_model_partial import UnoControlModelPartial
 from .font_descriptor_comp import FontDescriptorComp
 
@@ -21,23 +22,25 @@ if TYPE_CHECKING:
 class UnoControlEditModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlEditModel."""
 
-    def __init__(self, component: UnoControlEditModel):
+    def __init__(self):
         """
         Constructor
 
         Args:
             component (Any): Component that implements ``com.sun.star.awt.UnoControlEditModel`` service.
         """
+        if not isinstance(self, ModelPropPartial):
+            raise TypeError("This class must be used as a mixin that provides the ModelPropPartial.")
         # pylint: disable=unused-argument
-        self.__component = component
+        self.model: UnoControlEditModel
         event_provider = self if isinstance(self, EventsPartial) else None
-        UnoControlModelPartial.__init__(self, component=component)
-        self.__font_descriptor = FontDescriptorComp(self.__component.FontDescriptor, event_provider)
+        UnoControlModelPartial.__init__(self, component=self.model)
+        self.__font_descriptor = FontDescriptorComp(self.model.FontDescriptor, event_provider)
 
         if event_provider is not None:
 
             def on_font_descriptor_changed(src: Any, event_args: KeyValArgs) -> None:
-                self.__component.FontDescriptor = self.__font_descriptor.component
+                self.model.FontDescriptor = self.__font_descriptor.component
 
             self.__fn_on_font_descriptor_changed = on_font_descriptor_changed
             # pylint: disable=no-member
@@ -52,7 +55,7 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         """
         # FontDescriptorComp do not have any state, so we can directly assign the component.
         self.__font_descriptor.component = font_descriptor
-        self.__component.FontDescriptor = font_descriptor
+        self.model.FontDescriptor = font_descriptor
 
     # region Properties
 
@@ -74,12 +77,12 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         Hint:
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
-        return AlignKind(self.__component.Align)
+        return AlignKind(self.model.Align)
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
-        self.__component.Align = kind.value
+        self.model.Align = kind.value
 
     @property
     def auto_h_scroll(self) -> bool | None:
@@ -89,13 +92,13 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.AutoHScroll
+            return self.model.AutoHScroll
         return None
 
     @auto_h_scroll.setter
     def auto_h_scroll(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.AutoHScroll = value
+            self.model.AutoHScroll = value
 
     @property
     def auto_v_scroll(self) -> bool | None:
@@ -105,24 +108,24 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.AutoVScroll
+            return self.model.AutoVScroll
         return None
 
     @auto_v_scroll.setter
     def auto_v_scroll(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.AutoVScroll = value
+            self.model.AutoVScroll = value
 
     @property
     def background_color(self) -> Color:
         """
         Gets/Set the background color of the control.
         """
-        return Color(self.__component.BackgroundColor)
+        return Color(self.model.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.__component.BackgroundColor = value  # type: ignore
+        self.model.BackgroundColor = value  # type: ignore
 
     @property
     def border(self) -> BorderKind:
@@ -135,12 +138,12 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
-        return BorderKind(self.__component.Border)
+        return BorderKind(self.model.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
         kind = BorderKind(int(value))
-        self.__component.Border = kind.value
+        self.model.Border = kind.value
 
     @property
     def border_color(self) -> Color:
@@ -149,24 +152,24 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
 
         Not every border style (see Border) may support coloring. For instance, usually a border with 3D effect will ignore the border_color setting.
         """
-        return Color(self.__component.BorderColor)
+        return Color(self.model.BorderColor)
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
-        self.__component.BorderColor = value
+        self.model.BorderColor = value
 
     @property
     def echo_char(self) -> str:
         """Gets/Sets the echo character as a string"""
         with contextlib.suppress(Exception):
-            return chr(self.__component.EchoChar)
+            return chr(self.model.EchoChar)
         return ""
 
     @echo_char.setter
     def echo_char(self, value: str) -> None:
         if value != "":
             value = value[0]  # first char
-        self.__component.EchoChar = ord(value)
+        self.model.EchoChar = ord(value)
         ...
 
     @property
@@ -174,11 +177,11 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.__component.Enabled
+        return self.model.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.__component.Enabled = value
+        self.model.Enabled = value
 
     @property
     def font_emphasis_mark(self) -> FontEmphasisEnum:
@@ -191,11 +194,11 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontEmphasisEnum`` can be imported from ``ooo.dyn.text.font_emphasis``.
         """
-        return FontEmphasisEnum(self.__component.FontEmphasisMark)
+        return FontEmphasisEnum(self.model.FontEmphasisMark)
 
     @font_emphasis_mark.setter
     def font_emphasis_mark(self, value: int | FontEmphasisEnum) -> None:
-        self.__component.FontEmphasisMark = int(value)
+        self.model.FontEmphasisMark = int(value)
 
     @property
     def font_relief(self) -> FontReliefEnum:
@@ -208,55 +211,55 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.text.font_relief``.
         """
-        return FontReliefEnum(self.__component.FontRelief)
+        return FontReliefEnum(self.model.FontRelief)
 
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
-        self.__component.FontRelief = int(value)
+        self.model.FontRelief = int(value)
 
     @property
     def h_scroll(self) -> bool:
         """
         Gets/Sets if the content of the control can be scrolled in the horizontal direction.
         """
-        return self.__component.HScroll
+        return self.model.HScroll
 
     @h_scroll.setter
     def h_scroll(self, value: bool) -> None:
-        self.__component.HScroll = value
+        self.model.HScroll = value
 
     @property
     def hard_line_breaks(self) -> bool:
         """
         Gets/Sets if hard line breaks will be returned in the ``XTextComponent.getText()`` method.
         """
-        return self.__component.HardLineBreaks
+        return self.model.HardLineBreaks
 
     @hard_line_breaks.setter
     def hard_line_breaks(self, value: bool) -> None:
-        self.__component.HardLineBreaks = value
+        self.model.HardLineBreaks = value
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.__component.HelpText
+        return self.model.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.__component.HelpText = value
+        self.model.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.__component.HelpURL
+        return self.model.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.__component.HelpURL = value
+        self.model.HelpURL = value
 
     @property
     def hide_inactive_selection(self) -> bool | None:
@@ -266,13 +269,13 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.HideInactiveSelection
+            return self.model.HideInactiveSelection
         return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.HideInactiveSelection = value
+            self.model.HideInactiveSelection = value
 
     @property
     def line_end_format(self) -> LineEndFormatEnum | None:
@@ -294,13 +297,13 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
             - ``LineEndFormatEnum`` can be imported from ``ooo.dyn.awt.line_end_format``.
         """
         with contextlib.suppress(AttributeError):
-            return LineEndFormatEnum(self.__component.LineEndFormat)
+            return LineEndFormatEnum(self.model.LineEndFormat)
         return None
 
     @line_end_format.setter
     def line_end_format(self, value: int | LineEndFormatEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.LineEndFormat = int(value)
+            self.model.LineEndFormat = int(value)
 
     @property
     def max_text_len(self) -> int:
@@ -309,22 +312,22 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
 
         There's no limitation, if set to 0.
         """
-        return self.__component.MaxTextLen
+        return self.model.MaxTextLen
 
     @max_text_len.setter
     def max_text_len(self, value: int) -> None:
-        self.__component.MaxTextLen = value
+        self.model.MaxTextLen = value
 
     @property
     def multi_line(self) -> bool:
         """
         Gets/Sets that the text may be displayed on more than one line.
         """
-        return self.__component.MultiLine
+        return self.model.MultiLine
 
     @multi_line.setter
     def multi_line(self, value: bool) -> None:
-        self.__component.MultiLine = value
+        self.model.MultiLine = value
 
     @property
     def paint_transparent(self) -> bool | None:
@@ -334,90 +337,90 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.PaintTransparent
+            return self.model.PaintTransparent
         return None
 
     @paint_transparent.setter
     def paint_transparent(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.PaintTransparent = value
+            self.model.PaintTransparent = value
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.__component.Printable
+        return self.model.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.__component.Printable = value
+        self.model.Printable = value
 
     @property
     def read_only(self) -> bool:
         """
         Gets/Sets if the content of the control cannot be modified by the user.
         """
-        return self.__component.ReadOnly
+        return self.model.ReadOnly
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
-        self.__component.ReadOnly = value
+        self.model.ReadOnly = value
 
     @property
     def tabstop(self) -> bool:
         """
         Gets/Sets if the control can be reached with the TAB key.
         """
-        return self.__component.Tabstop
+        return self.model.Tabstop
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
-        self.__component.Tabstop = value
+        self.model.Tabstop = value
 
     @property
     def text(self) -> str:
         """
         Gets/Sets the text displayed in the control.
         """
-        return self.__component.Text
+        return self.model.Text
 
     @text.setter
     def text(self, value: str) -> None:
-        self.__component.Text = value
+        self.model.Text = value
 
     @property
     def text_color(self) -> Color:
         """
         Gets/Sets the text color of the control.
         """
-        return Color(self.__component.TextColor)
+        return Color(self.model.TextColor)
 
     @text_color.setter
     def text_color(self, value: Color) -> None:
-        self.__component.TextColor = value  # type: ignore
+        self.model.TextColor = value  # type: ignore
 
     @property
     def text_line_color(self) -> Color:
         """
         Gets/Sets the text line color (RGB) of the control.
         """
-        return Color(self.__component.TextLineColor)
+        return Color(self.model.TextLineColor)
 
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
-        self.__component.TextLineColor = value  # type: ignore
+        self.model.TextLineColor = value  # type: ignore
 
     @property
     def v_scroll(self) -> bool:
         """
         Gets/Sets if the content of the control can be scrolled in the vertical direction.
         """
-        return self.__component.VScroll
+        return self.model.VScroll
 
     @v_scroll.setter
     def v_scroll(self, value: bool) -> None:
-        self.__component.VScroll = value
+        self.model.VScroll = value
 
     @property
     def vertical_align(self) -> VerticalAlignment | None:
@@ -430,13 +433,13 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.VerticalAlign  # type: ignore
+            return self.model.VerticalAlign  # type: ignore
         return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.VerticalAlign = value  # type: ignore
+            self.model.VerticalAlign = value  # type: ignore
 
     @property
     def writing_mode(self) -> int | None:
@@ -448,12 +451,12 @@ class UnoControlEditModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.WritingMode
+            return self.model.WritingMode
         return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.WritingMode = value
+            self.model.WritingMode = value
 
     # endregion Properties

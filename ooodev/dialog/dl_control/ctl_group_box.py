@@ -27,7 +27,7 @@ class CtlGroupBox(DialogControlBase, UnoControlGroupBoxModelPartial):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlGroupBoxModelPartial.__init__(self, component=self.get_model())
+        UnoControlGroupBoxModelPartial.__init__(self)
 
     # endregion init
 

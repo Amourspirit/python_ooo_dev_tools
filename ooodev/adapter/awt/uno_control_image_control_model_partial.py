@@ -5,6 +5,7 @@ import uno
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
+from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from .uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
@@ -15,16 +16,19 @@ if TYPE_CHECKING:
 class UnoControlImageControlModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlImageControlModel."""
 
-    def __init__(self, component: UnoControlImageControlModel):
+    def __init__(self):
         """
         Constructor
 
         Args:
             component (Any): Component that implements ``com.sun.star.awt.UnoControlImageControlModel`` service.
         """
+        if not isinstance(self, ModelPropPartial):
+            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
+
+        self.model: UnoControlImageControlModel
         # pylint: disable=unused-argument
-        self.__component = component
-        UnoControlModelPartial.__init__(self, component=component)
+        UnoControlModelPartial.__init__(self, component=self.model)
 
     # region Properties
     @property
@@ -32,11 +36,11 @@ class UnoControlImageControlModelPartial(UnoControlModelPartial):
         """
         Gets/Set the background color of the control.
         """
-        return Color(self.__component.BackgroundColor)
+        return Color(self.model.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.__component.BackgroundColor = value  # type: ignore
+        self.model.BackgroundColor = value  # type: ignore
 
     @property
     def border(self) -> BorderKind:
@@ -49,12 +53,12 @@ class UnoControlImageControlModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
-        return BorderKind(self.__component.Border)
+        return BorderKind(self.model.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
         kind = BorderKind(int(value))
-        self.__component.Border = kind.value
+        self.model.Border = kind.value
 
     @property
     def border_color(self) -> Color | None:
@@ -67,24 +71,24 @@ class UnoControlImageControlModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.__component.BorderColor)
+            return Color(self.model.BorderColor)
         return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.BorderColor = value
+            self.model.BorderColor = value
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.__component.Enabled
+        return self.model.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.__component.Enabled = value
+        self.model.Enabled = value
 
     @property
     def graphic(self) -> XGraphic | None:
@@ -99,68 +103,68 @@ class UnoControlImageControlModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.Graphic
+            return self.model.Graphic
         return None
 
     @graphic.setter
     def graphic(self, value: XGraphic) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.Graphic = value
+            self.model.Graphic = value
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.__component.HelpText
+        return self.model.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.__component.HelpText = value
+        self.model.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.__component.HelpURL
+        return self.model.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.__component.HelpURL = value
+        self.model.HelpURL = value
 
     @property
     def image_url(self) -> str:
         """
         Gets/Sets a URL to an image to use for the button.
         """
-        return self.__component.ImageURL
+        return self.model.ImageURL
 
     @image_url.setter
     def image_url(self, value: str) -> None:
-        self.__component.ImageURL = value
+        self.model.ImageURL = value
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.__component.Printable
+        return self.model.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.__component.Printable = value
+        self.model.Printable = value
 
     @property
     def scale_image(self) -> bool:
         """
         Gets/Sets if the image is automatically scaled to the size of the control.
         """
-        return self.__component.ScaleImage
+        return self.model.ScaleImage
 
     @scale_image.setter
     def scale_image(self, value: bool) -> None:
-        self.__component.ScaleImage = value
+        self.model.ScaleImage = value
 
     @property
     def scale_mode(self) -> ImageScaleModeEnum | None:
@@ -180,13 +184,13 @@ class UnoControlImageControlModelPartial(UnoControlModelPartial):
             - ``ImageScaleModeEnum`` can be imported from ``ooo.dyn.awt.image_scale_mode``
         """
         with contextlib.suppress(AttributeError):
-            return ImageScaleModeEnum(self.__component.ScaleMode)
+            return ImageScaleModeEnum(self.model.ScaleMode)
         return None
 
     @scale_mode.setter
     def scale_mode(self, value: int | ImageScaleModeEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.ScaleMode = int(value)
+            self.model.ScaleMode = int(value)
 
     @property
     def tabstop(self) -> bool | None:
@@ -196,12 +200,12 @@ class UnoControlImageControlModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.Tabstop
+            return self.model.Tabstop
         return None
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.Tabstop = value
+            self.model.Tabstop = value
 
     # endregion Properties

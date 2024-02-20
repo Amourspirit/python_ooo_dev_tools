@@ -34,7 +34,7 @@ class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlImageControlModelPartial.__init__(self, component=self.get_model())
+        UnoControlImageControlModelPartial.__init__(self)
 
     # endregion init
 

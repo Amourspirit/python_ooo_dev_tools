@@ -33,7 +33,7 @@ class CtlFile(DialogControlBase, UnoControlFileControlModelPartial, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlFileControlModelPartial.__init__(self, self.get_model())
+        UnoControlFileControlModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
 

@@ -28,7 +28,7 @@ class CtlFixedText(DialogControlBase, UnoControlFixedTextModelPartial):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlFixedTextModelPartial.__init__(self, component=self.model)
+        UnoControlFixedTextModelPartial.__init__(self)
 
     # endregion init
 

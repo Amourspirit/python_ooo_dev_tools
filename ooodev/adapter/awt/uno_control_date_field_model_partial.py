@@ -7,11 +7,12 @@ from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
 from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.date_time_util import DateUtil
 from ooodev.utils.kind.border_kind import BorderKind
-from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.kind.date_format_kind import DateFormatKind
 from ooodev.utils.color import Color
+from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from .uno_control_model_partial import UnoControlModelPartial
 from .font_descriptor_comp import FontDescriptorComp
 
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
 class UnoControlDateFieldModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlDateFieldModel."""
 
-    def __init__(self, component: UnoControlDateFieldModel):
+    def __init__(self):
         """
         Constructor
 
@@ -32,15 +33,18 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlDateFieldModel`` service.
         """
         # pylint: disable=unused-argument
-        self.__component = component
+        if not isinstance(self, ModelPropPartial):
+            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
+
+        self.model: UnoControlDateFieldModel
         event_provider = self if isinstance(self, EventsPartial) else None
-        UnoControlModelPartial.__init__(self, component=component)
-        self.__font_descriptor = FontDescriptorComp(self.__component.FontDescriptor, event_provider)
+        UnoControlModelPartial.__init__(self, component=self.model)
+        self.__font_descriptor = FontDescriptorComp(self.model.FontDescriptor, event_provider)
 
         if event_provider is not None:
 
             def on_font_descriptor_changed(src: Any, event_args: KeyValArgs) -> None:
-                self.__component.FontDescriptor = self.__font_descriptor.component
+                self.model.FontDescriptor = self.__font_descriptor.component
 
             self.__fn_on_font_descriptor_changed = on_font_descriptor_changed
             # pylint: disable=no-member
@@ -55,7 +59,7 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         """
         # FontDescriptorComp do not have any state, so we can directly assign the component.
         self.__font_descriptor.component = font_descriptor
-        self.__component.FontDescriptor = font_descriptor
+        self.model.FontDescriptor = font_descriptor
 
     # region Properties
 
@@ -74,11 +78,11 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         """
         Gets/Set the background color of the control.
         """
-        return Color(self.__component.BackgroundColor)
+        return Color(self.model.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.__component.BackgroundColor = value  # type: ignore
+        self.model.BackgroundColor = value  # type: ignore
 
     @property
     def border(self) -> BorderKind:
@@ -91,12 +95,12 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
-        return BorderKind(self.__component.Border)
+        return BorderKind(self.model.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
         kind = BorderKind(int(value))
-        self.__component.Border = kind.value
+        self.model.Border = kind.value
 
     @property
     def border_color(self) -> Color | None:
@@ -109,22 +113,22 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.__component.BorderColor)
+            return Color(self.model.BorderColor)
         return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.BorderColor = value
+            self.model.BorderColor = value
 
     @property
     def date(self) -> datetime.date:
         """Gets/Sets the date"""
-        return DateUtil.uno_date_to_date(self.__component.Date)
+        return DateUtil.uno_date_to_date(self.model.Date)
 
     @date.setter
     def date(self, value: datetime.date) -> None:
-        self.__component.Date = DateUtil.date_to_uno_date(value)
+        self.model.Date = DateUtil.date_to_uno_date(value)
 
     @property
     def date_format(self) -> DateFormatKind:
@@ -137,62 +141,62 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``DateFormatKind`` can be imported from ``ooodev.utils.kind.date_format_kind``
         """
-        return DateFormatKind(self.__component.DateFormat)
+        return DateFormatKind(self.model.DateFormat)
 
     @date_format.setter
     def date_format(self, value: DateFormatKind) -> None:
-        self.__component.DateFormat = value.value
+        self.model.DateFormat = value.value
 
     @property
     def date_max(self) -> datetime.date:
         """Gets/Sets the max date"""
-        return DateUtil.uno_date_to_date(self.__component.DateMax)
+        return DateUtil.uno_date_to_date(self.model.DateMax)
 
     @property
     def date_min(self) -> datetime.date:
         """Gets/Sets the min date"""
-        return DateUtil.uno_date_to_date(self.__component.DateMin)
+        return DateUtil.uno_date_to_date(self.model.DateMin)
 
     @date_min.setter
     def date_min(self, value: datetime.date) -> None:
-        self.__component.DateMin = DateUtil.date_to_uno_date(value)
+        self.model.DateMin = DateUtil.date_to_uno_date(value)
 
     @date_max.setter
     def date_max(self, value: datetime.date) -> None:
-        self.__component.DateMax = DateUtil.date_to_uno_date(value)
+        self.model.DateMax = DateUtil.date_to_uno_date(value)
 
     @property
     def date_show_century(self) -> bool:
         """
         Gets/Sets if the date century is displayed.
         """
-        return self.__component.DateShowCentury
+        return self.model.DateShowCentury
 
     @date_show_century.setter
     def date_show_century(self, value: bool) -> None:
-        self.__component.DateShowCentury = value
+        self.model.DateShowCentury = value
 
     @property
     def dropdown(self) -> bool:
         """
         Gets/Sets if the control has a dropdown button.
         """
-        return self.__component.Dropdown
+        return self.model.Dropdown
 
     @dropdown.setter
     def dropdown(self, value: bool) -> None:
-        self.__component.Dropdown = value
+        self.model.Dropdown = value
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.__component.Enabled
+        return self.model.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.__component.Enabled = value
+        self.model.Enabled = value
 
     @property
     def font_emphasis_mark(self) -> FontEmphasisEnum:
@@ -205,11 +209,11 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontEmphasisEnum`` can be imported from ``ooo.dyn.text.font_emphasis``.
         """
-        return FontEmphasisEnum(self.__component.FontEmphasisMark)
+        return FontEmphasisEnum(self.model.FontEmphasisMark)
 
     @font_emphasis_mark.setter
     def font_emphasis_mark(self, value: int | FontEmphasisEnum) -> None:
-        self.__component.FontEmphasisMark = int(value)
+        self.model.FontEmphasisMark = int(value)
 
     @property
     def font_relief(self) -> FontReliefEnum:
@@ -222,33 +226,33 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.text.font_relief``.
         """
-        return FontReliefEnum(self.__component.FontRelief)
+        return FontReliefEnum(self.model.FontRelief)
 
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
-        self.__component.FontRelief = int(value)
+        self.model.FontRelief = int(value)
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.__component.HelpText
+        return self.model.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.__component.HelpText = value
+        self.model.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.__component.HelpURL
+        return self.model.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.__component.HelpURL = value
+        self.model.HelpURL = value
 
     @property
     def hide_inactive_selection(self) -> bool | None:
@@ -258,13 +262,13 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.HideInactiveSelection
+            return self.model.HideInactiveSelection
         return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.HideInactiveSelection = value
+            self.model.HideInactiveSelection = value
 
     @property
     def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum | None:
@@ -283,35 +287,35 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
             - ``MouseWheelBehaviorEnum`` can be imported from ``ooo.dyn.awt.mouse_wheel_behavior``
         """
         with contextlib.suppress(AttributeError):
-            return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
+            return MouseWheelBehaviorEnum(self.model.MouseWheelBehavior)
         return None
 
     @mouse_wheel_behavior.setter
     def mouse_wheel_behavior(self, value: int | MouseWheelBehaviorEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.MouseWheelBehavior = int(value)
+            self.model.MouseWheelBehavior = int(value)
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.__component.Printable
+        return self.model.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.__component.Printable = value
+        self.model.Printable = value
 
     @property
     def read_only(self) -> bool:
         """
         Gets/Sets if the content of the control cannot be modified by the user.
         """
-        return self.__component.ReadOnly
+        return self.model.ReadOnly
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
-        self.__component.ReadOnly = value
+        self.model.ReadOnly = value
 
     @property
     def repeat(self) -> bool | None:
@@ -322,13 +326,13 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.Repeat
+            return self.model.Repeat
         return None
 
     @repeat.setter
     def repeat(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.Repeat = value
+            self.model.Repeat = value
 
     @property
     def repeat_delay(self) -> int | None:
@@ -341,46 +345,46 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.RepeatDelay
+            return self.model.RepeatDelay
         return None
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.RepeatDelay = value
+            self.model.RepeatDelay = value
 
     @property
     def spin(self) -> bool:
         """
         Gets/Sets if the control has a spin button.
         """
-        return self.__component.Spin
+        return self.model.Spin
 
     @spin.setter
     def spin(self, value: bool) -> None:
-        self.__component.Spin = value
+        self.model.Spin = value
 
     @property
     def strict_format(self) -> bool:
         """
         Gets/Sets if the value is checked during the user input.
         """
-        return self.__component.StrictFormat
+        return self.model.StrictFormat
 
     @strict_format.setter
     def strict_format(self, value: bool) -> None:
-        self.__component.StrictFormat = value
+        self.model.StrictFormat = value
 
     @property
     def tabstop(self) -> bool:
         """
         Gets/Sets that the control can be reached with the TAB key.
         """
-        return self.__component.Tabstop
+        return self.model.Tabstop
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
-        self.__component.Tabstop = value
+        self.model.Tabstop = value
 
     @property
     def text(self) -> str | None:
@@ -390,35 +394,35 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.Text
+            return self.model.Text
         return None
 
     @text.setter
     def text(self, value: str) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.Text = value
+            self.model.Text = value
 
     @property
     def text_color(self) -> Color:
         """
         Gets/Sets the text color of the control.
         """
-        return Color(self.__component.TextColor)
+        return Color(self.model.TextColor)
 
     @text_color.setter
     def text_color(self, value: Color) -> None:
-        self.__component.TextColor = value  # type: ignore
+        self.model.TextColor = value  # type: ignore
 
     @property
     def text_line_color(self) -> Color:
         """
         Gets/Sets the text line color of the control.
         """
-        return Color(self.__component.TextLineColor)
+        return Color(self.model.TextLineColor)
 
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
-        self.__component.TextLineColor = value  # type: ignore
+        self.model.TextLineColor = value  # type: ignore
 
     @property
     def vertical_align(self) -> VerticalAlignment | None:
@@ -431,13 +435,13 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.VerticalAlign  # type: ignore
+            return self.model.VerticalAlign  # type: ignore
         return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.VerticalAlign = value  # type: ignore
+            self.model.VerticalAlign = value  # type: ignore
 
     @property
     def writing_mode(self) -> int | None:
@@ -449,12 +453,12 @@ class UnoControlDateFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.WritingMode
+            return self.model.WritingMode
         return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.WritingMode = value
+            self.model.WritingMode = value
 
     # endregion Properties

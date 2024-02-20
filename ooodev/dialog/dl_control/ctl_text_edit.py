@@ -9,11 +9,8 @@ import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.selection import Selection
 
 # pylint: disable=useless-import-alias
-from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
-
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.adapter.awt.uno_control_edit_model_partial import UnoControlEditModelPartial
@@ -41,7 +38,7 @@ class CtlTextEdit(DialogControlBase, UnoControlEditModelPartial, TextEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlEditModelPartial.__init__(self, component=self.get_model())
+        UnoControlEditModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)

@@ -35,7 +35,7 @@ class CtlRadioButton(DialogControlBase, UnoControlRadioButtonModelPartial, ItemE
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlRadioButtonModelPartial.__init__(self, component=self.get_model())
+        UnoControlRadioButtonModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_event_listener_add_remove)
