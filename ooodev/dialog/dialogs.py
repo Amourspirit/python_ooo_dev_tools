@@ -71,6 +71,7 @@ from .dl_control import CtlPatternField
 from .dl_control import CtlProgressBar
 from .dl_control import CtlRadioButton
 from .dl_control import CtlScrollBar
+from .dl_control import CtlSpinButton
 from .dl_control import CtlTabPage
 from .dl_control import CtlTabPageContainer
 from .dl_control import CtlTextEdit
@@ -119,6 +120,8 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlRadioButtonModel  # service
     from com.sun.star.awt import UnoControlScrollBar  # service
     from com.sun.star.awt import UnoControlScrollBarModel  # service
+    from com.sun.star.awt import UnoControlSpinButton  # service
+    from com.sun.star.awt import UnoControlSpinButtonModel  # service
     from com.sun.star.awt import UnoControlTimeField  # service
     from com.sun.star.awt import UnoControlTimeFieldModel  # service
     from com.sun.star.awt.grid import UnoControlGrid  # service
@@ -292,6 +295,8 @@ class Dialogs:
             return CtlRadioButton(dialog_ctrl)  # type: ignore
         if named == DialogControlNamedKind.SCROLL_BAR:
             return CtlScrollBar(dialog_ctrl)  # type: ignore
+        if named == DialogControlNamedKind.SPIN_BUTTON:
+            return CtlSpinButton(dialog_ctrl)
         if named == DialogControlNamedKind.TAB_PAGE_CONTAINER:
             return CtlTabPageContainer(dialog_ctrl)  # type: ignore
         if named == DialogControlNamedKind.TAB_PAGE:
@@ -651,6 +656,9 @@ class Dialogs:
         Returns:
             CtlButton: Button control.
 
+        Hint:
+            - ``PushButtonType`` can be imported from ``ooo.dyn.awt.push_button_type``.
+
         See Also:
             `API UnoControlButtonModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlButtonModel.html>`_
         """
@@ -733,6 +741,10 @@ class Dialogs:
         Returns:
             CtlCheckBox: Check box control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TriStateKind`` can be imported from ``ooodev.utils.kind.tri_state_kind``.
+
         See Also:
             `API UnoControlCheckBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlCheckBoxModel.html>`_
         """
@@ -812,6 +824,9 @@ class Dialogs:
 
         Returns:
             CtlComboBox: Combo box control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         See Also:
             `API UnoControlComboBoxModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlComboBoxModel.html>`_
@@ -901,6 +916,9 @@ class Dialogs:
 
         Returns:
             CtlCurrencyField: Currency field control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -985,6 +1003,10 @@ class Dialogs:
 
         Returns:
             CtlDateField: Date field control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``DateFormatKind`` can be imported from ``ooodev.utils.kind.date_format_kind``.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1057,6 +1079,9 @@ class Dialogs:
 
         Returns:
             CtlFile: File Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1124,6 +1149,9 @@ class Dialogs:
 
         Returns:
             CtlFixedLine: Fixed Line Control.
+
+        Hint:
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1197,6 +1225,9 @@ class Dialogs:
 
         Returns:
             CtlFormattedField: Formatted Field.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1346,6 +1377,11 @@ class Dialogs:
 
         Returns:
             CtlHyperlinkFixed: Hyperlink Control.
+
+        Hint:
+            - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1429,6 +1465,11 @@ class Dialogs:
 
         Returns:
             CtlImage: Image Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``ImageScaleModeEnum`` can be imported from ``ooo.dyn.awt.image_scale_mode``.
+            - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1584,6 +1625,9 @@ class Dialogs:
 
         Returns:
             CtlListBox: List box control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # sourcery skip: raise-specific-error
         try:
@@ -1663,6 +1707,9 @@ class Dialogs:
 
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_text_field`.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         return cls.insert_text_field(
             dialog_ctrl=dialog_ctrl,
@@ -1714,6 +1761,9 @@ class Dialogs:
 
         Returns:
             CtlPatternField: Pattern Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1795,6 +1845,9 @@ class Dialogs:
 
         Returns:
             CtlNumericField: Numeric Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -1876,6 +1929,9 @@ class Dialogs:
 
         Returns:
             CtlProgressBar: Progress Bar Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -2019,6 +2075,10 @@ class Dialogs:
 
         Returns:
             CtlScrollBar: Scroll Bar Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -2048,6 +2108,94 @@ class Dialogs:
             result = cast("UnoControlScrollBar", ctrl_con.getControl(name))
             cls._set_size_pos(result, x, y, width, height)
             return CtlScrollBar(result)
+        except Exception as e:
+            raise mEx.DialogError(f"Could not create scroll bar control: {e}") from e
+
+    @classmethod
+    def insert_spin_button(
+        cls,
+        dialog_ctrl: XControl,
+        *,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        min_value: int = 0,
+        max_value: int = 100,
+        orientation: OrientationKind = OrientationKind.HORIZONTAL,
+        border: BorderKind = BorderKind.BORDER_3D,
+        name: str = "",
+        **props: Any,
+    ) -> CtlSpinButton:
+        """
+        Create a new control of type Spin Button in the actual dialog.
+
+        |lo_unsafe|
+
+        Args:
+            dialog_ctrl (XControl): control.
+            x (int): X coordinate. If ``-1``, the dialog Position is not set.
+            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
+            width (int): Width. If ``-1``, the dialog Size is not set.
+            height (int): Height. If ``-1``, the dialog Size is not set.
+            min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
+            max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
+            orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
+            border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
+            name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
+            props (dict, optional): Extra properties to set for control.
+
+        Raises:
+            DialogError: If unable to create spin button control.
+
+        Returns:
+            CtlSpinButton: Spin Button Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
+
+        .. versionadded:: 0.29.0
+        """
+        try:
+            msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
+            model = cast("UnoControlSpinButtonModel", msf.createInstance("com.sun.star.awt.UnoControlSpinButtonModel"))
+            name_con = cls.get_dialog_nm_con(dialog_ctrl)
+            if not name:
+                name = cls.create_name(name_con, "SpinButton")
+            # set properties in the model
+            ctl_props = cls.get_control_props(model)
+            ctl_props.setPropertyValue("Border", int(border))
+            ctl_props.setPropertyValue("Orientation", int(orientation))
+            ctl_props.setPropertyValue("SpinValueMax", max_value)
+            ctl_props.setPropertyValue("SpinValueMin", min_value)
+            ctl_props.setPropertyValue("Name", name)
+
+            # set any extra user properties
+            for k, v in props.items():
+                ctl_props.setPropertyValue(k, v)
+
+            # Add the model to the dialog
+            name_con.insertByName(name, model)
+
+            # get the dialog's container holding all the control views
+            ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
+
+            # use the model's name to get its view inside the dialog
+            result = cast("UnoControlSpinButton", ctrl_con.getControl(name))
+            btn = CtlSpinButton(result)
+            # not sure why but this control seems buggy with setting size and position.
+            # Setting Width and height seems to have the best results when setting the model width and height.
+
+            if width > -1 and height > -1:
+                btn.model.Width = width
+                btn.model.Height = height
+
+            # only set position here. Width and height set above.
+            cls._set_size_pos(result, x, y, -1, -1)
+            # cls._set_size_pos(result, x, y, width, height)
+            return btn
+
         except Exception as e:
             raise mEx.DialogError(f"Could not create scroll bar control: {e}") from e
 
@@ -2082,6 +2230,9 @@ class Dialogs:
 
         Returns:
             CtlTabPageContainer: Tab Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         See Also:
             :py:meth:`~.dialogs.Dialogs.insert_tab_page`.
@@ -2251,6 +2402,10 @@ class Dialogs:
         Returns:
             CtlGrid: Table Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``HorzVertKind`` can be imported from ``ooodev.utils.kind.horz_ver_kind``.
+
         See Also:
             :py:meth:`~.dialogs.Dialogs.set_table_data`.
         """
@@ -2334,6 +2489,9 @@ class Dialogs:
         Returns:
             CtlTextEdit: Text Field Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         See Also:
             `API UnoControlEditModel Service <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html>`_
         """
@@ -2406,6 +2564,9 @@ class Dialogs:
 
         Returns:
             CtlTree: Tree Control.
+        
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         try:
             msf = mLo.Lo.qi(XMultiServiceFactory, dialog_ctrl.getModel(), True)
@@ -2492,6 +2653,10 @@ class Dialogs:
 
         Returns:
             CtlTimeField: Time field control.
+        
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TimeFormatKind`` can be imported from ``ooodev.utils.kind.time_format_kind``.
         """
         # sourcery skip: raise-specific-error
         try:

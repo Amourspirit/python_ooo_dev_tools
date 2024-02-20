@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
+from ooodev.adapter.awt.uno_control_fixed_hyperlink_model_partial import UnoControlFixedHyperlinkModelPartial
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlHyperlinkFixed(DialogControlBase, ActionEvents):
+class CtlHyperlinkFixed(DialogControlBase, UnoControlFixedHyperlinkModelPartial, ActionEvents):
     """Class for Fixed Hyperlink Control"""
 
     # pylint: disable=unused-argument
@@ -30,6 +31,7 @@ class CtlHyperlinkFixed(DialogControlBase, ActionEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlFixedHyperlinkModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
@@ -68,33 +70,13 @@ class CtlHyperlinkFixed(DialogControlBase, ActionEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlFixedHyperlink:
-        return self.get_view_ctl()
-
-    @property
     def model(self) -> UnoControlFixedHyperlinkModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlFixedHyperlinkModel", super().model)
 
     @property
-    def label(self) -> str:
-        """
-        Gets/Sets the label of the control.
-        """
-        return self.model.Label
-
-    @label.setter
-    def label(self, value: str) -> None:
-        self.model.Label = value
-
-    @property
-    def url(self) -> str:
-        """
-        Gets/Sets the URL to be opened when the hyperlink is activated.
-        """
-        return self.model.URL
-
-    @url.setter
-    def url(self, value: str) -> None:
-        self.model.URL = value
+    def view(self) -> UnoControlFixedHyperlink:
+        # pylint: disable=no-member
+        return cast("UnoControlFixedHyperlink", super().view)
 
     # endregion Properties

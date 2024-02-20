@@ -8,6 +8,8 @@ from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.type_var import PathOrStr
+from ooodev.adapter.awt.uno_control_button_model_partial import UnoControlButtonModelPartial
+
 
 from .ctl_base import DialogControlBase
 
@@ -17,7 +19,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlButton(DialogControlBase, ActionEvents):
+class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
     """Class for Button Control"""
 
     # pylint: disable=unused-argument
@@ -32,6 +34,7 @@ class CtlButton(DialogControlBase, ActionEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlButtonModelPartial.__init__(self)
         self._generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=self._generic_args, cb=self._on_action_events_listener_add_remove)
@@ -62,12 +65,29 @@ class CtlButton(DialogControlBase, ActionEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlButton:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlButtonModel:
+        # pylint: disable=no-member
+        return cast("UnoControlButtonModel", super().model)
 
     @property
-    def model(self) -> UnoControlButtonModel:
-        return self.get_model()
+    def view(self) -> UnoControlButton:
+        # pylint: disable=no-member
+        return cast("UnoControlButton", super().view)
+
+    # region UnoControlButtonModelPartial overrides
+
+    @property
+    def image_url(self) -> str:
+        """
+        Gets/Sets a URL to an image to use for the button.
+        """
+        return self.picture
+
+    @image_url.setter
+    def image_url(self, value: str) -> None:
+        self.picture = value
+
+    # endregion UnoControlButtonModelPartial overrides
 
     @property
     def picture(self) -> str:
@@ -89,7 +109,7 @@ class CtlButton(DialogControlBase, ActionEvents):
     @picture.setter
     def picture(self, value: PathOrStr) -> None:
         pth_str = str(value)
-        if pth_str == "":
+        if not pth_str:
             self.model.ImageURL = ""
             return
         if isinstance(value, str):
@@ -100,14 +120,5 @@ class CtlButton(DialogControlBase, ActionEvents):
         if not FileIO.is_valid_path_or_str(value):
             raise ValueError(f"Invalid path or str: {value}")
         self.model.ImageURL = FileIO.fnm_to_url(value)
-
-    @property
-    def label(self) -> str:
-        """Gets/Sets the label (text) for the control"""
-        return self.model.Label
-
-    @label.setter
-    def label(self, value: str) -> None:
-        self.model.Label = value
 
     # endregion Properties

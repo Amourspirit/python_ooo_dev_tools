@@ -8,8 +8,8 @@ import uno  # pylint: disable=unused-import
 # pylint: disable=useless-import-alias
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
+from ooodev.adapter.awt.uno_control_image_control_model_partial import UnoControlImageControlModelPartial
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlImage(DialogControlBase):
+class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
     """Class for Image Control"""
 
     # region init
@@ -34,6 +34,7 @@ class CtlImage(DialogControlBase):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlImageControlModelPartial.__init__(self)
 
     # endregion init
 
@@ -60,25 +61,28 @@ class CtlImage(DialogControlBase):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
 
     @property
     def image_scale_mode(self) -> ImageScaleModeEnum:
-        """Gets/Sets the Image ScaleMode"""
-        return ImageScaleModeEnum(self.model.ScaleMode)
+        """
+        Gets/Sets the Image ScaleMode.
+
+        Same as ``scale_mode`` property.
+
+        Note:
+            Value can be set with ``ImageScaleModeEnum`` or ``int``.
+
+        Hint:
+            - ``ImageScaleModeEnum`` can be imported from ``ooo.dyn.awt.image_scale_mode``
+        """
+        return ImageScaleModeEnum.NONE if self.scale_mode is None else self.scale_mode
 
     @image_scale_mode.setter
-    def image_scale_mode(self, value: ImageScaleModeEnum) -> None:
+    def image_scale_mode(self, value: int | ImageScaleModeEnum) -> None:
         """Sets the Image ScaleMode"""
-        self.model.ScaleMode = value.value
+        self.scale_mode = value
 
+    # region UnoControlImageControlModelPartial Overrides
     @property
     def image_url(self) -> str:
         """
@@ -98,9 +102,12 @@ class CtlImage(DialogControlBase):
         """Sets the URL for the image"""
         self.model.ImageURL = value
 
+    # endregion UnoControlImageControlModelPartial Overrides
+
     @property
     def model(self) -> UnoControlImageControlModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlImageControlModel", super().model)
 
     @property
     def picture(self) -> str:
@@ -128,9 +135,10 @@ class CtlImage(DialogControlBase):
 
     @picture.setter
     def picture(self, value: PathOrStr) -> None:
+        # pylint: disable=broad-exception-caught
         try:
             pth_str = str(value)
-            if pth_str == "":
+            if not pth_str:
                 self.model.ImageURL = ""
                 return
             if isinstance(value, str):
@@ -141,21 +149,12 @@ class CtlImage(DialogControlBase):
             if not FileIO.is_valid_path_or_str(value):
                 raise ValueError(f"Invalid path or str: {value}")
             self.model.ImageURL = FileIO.fnm_to_url(value)
-        except:
+        except Exception:
             self.model.ImageURL = ""
 
     @property
-    def scale_image(self) -> bool:
-        """Gets/Sets whether the image should be scaled"""
-        return self.model.ScaleImage
-
-    @scale_image.setter
-    def scale_image(self, value: bool) -> None:
-        """Sets whether the image should be scaled"""
-        self.model.ScaleImage = value
-
-    @property
     def view(self) -> UnoControlImageControl:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlImageControl", super().view)
 
     # endregion Properties

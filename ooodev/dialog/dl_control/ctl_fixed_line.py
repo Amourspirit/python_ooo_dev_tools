@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.adapter.awt.uno_control_fixed_line_model_partial import UnoControlFixedLineModelPartial
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlFixedLine(DialogControlBase):
+class CtlFixedLine(DialogControlBase, UnoControlFixedLineModelPartial):
     """Class for Fixed Line Control"""
 
     # pylint: disable=unused-argument
@@ -29,6 +30,7 @@ class CtlFixedLine(DialogControlBase):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlFixedLineModelPartial.__init__(self)
 
     # endregion init
 
@@ -56,11 +58,13 @@ class CtlFixedLine(DialogControlBase):
 
     # region Properties
     @property
-    def view(self) -> UnoControlFixedLine:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlFixedLineModel:
+        # pylint: disable=no-member
+        return cast("UnoControlFixedLineModel", super().model)
 
     @property
-    def model(self) -> UnoControlFixedLineModel:
-        return self.get_model()
+    def view(self) -> UnoControlFixedLine:
+        # pylint: disable=no-member
+        return cast("UnoControlFixedLine", super().view)
 
     # endregion Properties

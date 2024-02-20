@@ -4,11 +4,11 @@ from typing import Any, cast, Iterable, TYPE_CHECKING, Tuple
 import contextlib
 import uno
 
+from ooodev.adapter.awt.uno_control_list_box_model_partial import UnoControlListBoxModelPartial
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 # endregion imports
 
 
-class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
+class CtlListBox(DialogControlBase, UnoControlListBoxModelPartial, ActionEvents, ItemEvents):
     """Class for ListBox Control"""
 
     # pylint: disable=unused-argument
@@ -35,6 +35,7 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
+        UnoControlListBoxModelPartial.__init__(self)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
@@ -97,24 +98,6 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
     # endregion Methods
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
-
-    @property
-    def drop_down(self) -> bool:
-        """Gets/Sets the DropDown property"""
-        return self.model.Dropdown
-
-    @drop_down.setter
-    def drop_down(self, value: bool) -> None:
-        """Sets the DropDown property"""
-        self.model.Dropdown = value
 
     @property
     def list_count(self) -> int:
@@ -139,30 +122,8 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
 
     @property
     def model(self) -> UnoControlListBoxModel:
-        return self.get_model()
-
-    @property
-    def multi_selection(self) -> bool:
-        """Gets/Sets the MultiSelection property"""
-        return self.model.MultiSelection
-
-    @multi_selection.setter
-    def multi_selection(self, value: bool) -> None:
-        """Sets the MultiSelection property"""
-        self.model.MultiSelection = value
-
-    @property
-    def read_only(self) -> bool:
-        """Gets/Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            return self.model.ReadOnly
-        return False
-
-    @read_only.setter
-    def read_only(self, value: bool) -> None:
-        """Sets the read-only property"""
-        with contextlib.suppress(Exception):
-            self.model.ReadOnly = value
+        # pylint: disable=no-member
+        return cast("UnoControlListBoxModel", super().model)
 
     @property
     def row_source(self) -> Tuple[str, ...]:
@@ -183,13 +144,9 @@ class CtlListBox(DialogControlBase, ActionEvents, ItemEvents):
         self.set_list_data(value)
 
     @property
-    def selected_items(self) -> Tuple[int, ...]:
-        """Gets the selected items"""
-        return cast(Tuple[int, ...], self.model.SelectedItems)
-
-    @property
     def view(self) -> UnoControlListBox:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlListBox", super().view)
 
     # item_count was renamed to list_count in 0.13.2
     item_count = list_count

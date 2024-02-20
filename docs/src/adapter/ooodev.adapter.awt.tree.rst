@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.awt.tree.tree_control_model_partial
    ooodev.adapter.awt.tree.tree_edit_events
    ooodev.adapter.awt.tree.tree_edit_listener
    ooodev.adapter.awt.tree.tree_expansion_events

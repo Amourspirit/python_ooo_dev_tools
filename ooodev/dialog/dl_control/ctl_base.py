@@ -25,6 +25,10 @@ from ooodev.loader import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.utils.partial.model_prop_partial import ModelPropPartial
+from ooodev.utils.partial.view_prop_partial import ViewPropPartial
+from ooodev.adapter.awt.uno_control_dialog_element_partial import UnoControlDialogElementPartial
 
 
 if TYPE_CHECKING:
@@ -38,13 +42,17 @@ if TYPE_CHECKING:
 # pylint: disable=unused-argument
 
 
-class CtlBase(unohelper.Base, LoInstPropsPartial):
+class CtlBase(unohelper.Base, LoInstPropsPartial, ViewPropPartial, ModelPropPartial, EventsPartial):
     """Control Base Class"""
 
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
         unohelper.Base.__init__(self)
         LoInstPropsPartial.__init__(self, lo_inst=mLo.Lo.current_lo)
+        EventsPartial.__init__(self)
+        model = ctl.getModel()
+        ViewPropPartial.__init__(self, obj=ctl)
+        ModelPropPartial.__init__(self, obj=model)
         self._set_control(ctl)
 
     def _set_control(self, ctl: Any) -> None:
@@ -95,17 +103,6 @@ class CtlBase(unohelper.Base, LoInstPropsPartial):
     # endregion Other Methods
 
     # region Properties
-    @property
-    def enabled(self) -> bool:
-        """Gets/Sets the enabled state for the control"""
-        model = cast(Any, self.get_model())
-        return model.Enabled if hasattr(model, "Enabled") else True
-
-    @enabled.setter
-    def enabled(self, value: bool) -> None:
-        model = cast(Any, self.get_model())
-        if hasattr(model, "Enabled"):
-            model.Enabled = value
 
     @property
     def visible(self) -> bool:
@@ -116,31 +113,11 @@ class CtlBase(unohelper.Base, LoInstPropsPartial):
         except Exception:
             return True
 
-    @property
-    def width(self) -> int:
-        """Gets the width of the control"""
-        view = mLo.Lo.qi(XView, self.get_view(), True)
-        return view.getSize().Width
-
-    @width.setter
-    def width(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view(), True)
-        pos_size = win.getPosSize()
-        pos_size.Width = value
-        win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
-
-    @property
-    def height(self) -> int:
-        """Gets/Sets the height of the control"""
-        view = mLo.Lo.qi(XView, self.get_view(), True)
-        return view.getSize().Height
-
-    @height.setter
-    def height(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view(), True)
-        pos_size = win.getPosSize()
-        pos_size.Height = value
-        win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
+    @visible.setter
+    def visible(self, value: bool) -> None:
+        with contextlib.suppress(Exception):
+            model = cast(Any, self.get_model())
+            model.EnableVisible = value
 
     @property
     def x(self) -> int:
@@ -166,25 +143,12 @@ class CtlBase(unohelper.Base, LoInstPropsPartial):
         size = view.getPosSize()
         view.setPosSize(size.X, value, size.Width, size.Height, PosSize.Y)
 
-    @visible.setter
-    def visible(self, value: bool) -> None:
-        with contextlib.suppress(Exception):
-            model = cast(Any, self.get_model())
-            model.EnableVisible = value
-
-    @property
-    def name(self) -> str:
-        """Gets the name for the control model"""
-        with contextlib.suppress(Exception):
-            model = cast(Any, self.get_model())
-            return model.Name
-        return ""
-
     # endregion Properties
 
 
 class CtlListenerBase(
     CtlBase,
+    UnoControlDialogElementPartial,
     FocusEvents,
     KeyEvents,
     MouseEvents,
@@ -200,6 +164,7 @@ class CtlListenerBase(
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
         CtlBase.__init__(self, ctl)
+        UnoControlDialogElementPartial.__init__(self)
         generic_args = self._get_generic_args()
         # The Events callback methods are invoked when any event is added or removed.
         FocusEvents.__init__(self, trigger_args=generic_args, cb=self._on_focus_listener_add_remove)
@@ -276,6 +241,35 @@ class CtlListenerBase(
         return mLo.Lo.qi(XPropertySet, self.get_model(), True)
 
     # endregion other methods
+
+    # region UnoControlDialogElementPartial Overrides
+    @property
+    def width(self) -> int:
+        """Gets the width of the control"""
+        view = mLo.Lo.qi(XView, self.get_view(), True)
+        return view.getSize().Width
+
+    @width.setter
+    def width(self, value: int) -> None:
+        win = mLo.Lo.qi(XWindow, self.get_view(), True)
+        pos_size = win.getPosSize()
+        pos_size.Width = value
+        win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
+
+    @property
+    def height(self) -> int:
+        """Gets/Sets the height of the control"""
+        view = mLo.Lo.qi(XView, self.get_view(), True)
+        return view.getSize().Height
+
+    @height.setter
+    def height(self, value: int) -> None:
+        win = mLo.Lo.qi(XWindow, self.get_view(), True)
+        pos_size = win.getPosSize()
+        pos_size.Height = value
+        win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
+
+    # endregion UnoControlDialogElementPartial Overrides
 
 
 class DialogControlBase(CtlListenerBase):
