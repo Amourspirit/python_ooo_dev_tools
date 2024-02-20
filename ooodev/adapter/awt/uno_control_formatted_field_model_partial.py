@@ -37,7 +37,7 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
 
         self.model: UnoControlFormattedFieldModel
         event_provider = self if isinstance(self, EventsPartial) else None
-        UnoControlModelPartial.__init__(self, component=self.model)
+        UnoControlModelPartial.__init__(self)
         self.__font_descriptor = FontDescriptorComp(self.model.FontDescriptor, event_provider)
 
         if event_provider is not None:

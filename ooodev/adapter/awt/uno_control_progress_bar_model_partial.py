@@ -26,7 +26,7 @@ class UnoControlProgressBarModelPartial(UnoControlModelPartial):
             raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
 
         self.model: UnoControlProgressBarModel
-        UnoControlModelPartial.__init__(self, component=self.model)
+        UnoControlModelPartial.__init__(self)
 
     # region Properties
     @property

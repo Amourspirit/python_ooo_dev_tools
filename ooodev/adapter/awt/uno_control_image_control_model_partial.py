@@ -28,7 +28,7 @@ class UnoControlImageControlModelPartial(UnoControlModelPartial):
 
         self.model: UnoControlImageControlModel
         # pylint: disable=unused-argument
-        UnoControlModelPartial.__init__(self, component=self.model)
+        UnoControlModelPartial.__init__(self)
 
     # region Properties
     @property
