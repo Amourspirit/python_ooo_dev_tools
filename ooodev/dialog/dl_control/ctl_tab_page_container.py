@@ -79,11 +79,13 @@ class CtlTabPageContainer(DialogControlBase, TabPageContainerEvents):
     # region Properties
     @property
     def view(self) -> UnoControlTabPageContainer:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlTabPageContainer", super().view)
 
     @property
     def model(self) -> UnoControlTabPageContainerModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlTabPageContainerModel", super().model)
 
     @property
     def tab_page_count(self) -> int:

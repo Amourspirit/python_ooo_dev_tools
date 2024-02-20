@@ -57,7 +57,8 @@ class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
 
     @property
     def model(self) -> UnoControlProgressBarModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlProgressBarModel", super().model)
 
     @property
     def value(self) -> int:
@@ -70,6 +71,7 @@ class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
 
     @property
     def view(self) -> UnoControlProgressBar:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlProgressBar", super().view)
 
     # endregion Properties

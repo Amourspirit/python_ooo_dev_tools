@@ -117,7 +117,8 @@ class CtlNumericField(DialogControlBase, UnoControlNumericFieldModelPartial, Spi
 
     @property
     def model(self) -> UnoControlNumericFieldModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlNumericFieldModel", super().model)
 
     @property
     def spin_button(self) -> bool:
@@ -130,6 +131,7 @@ class CtlNumericField(DialogControlBase, UnoControlNumericFieldModelPartial, Spi
 
     @property
     def view(self) -> UnoControlNumericField:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlNumericField", super().view)
 
     # endregion Properties

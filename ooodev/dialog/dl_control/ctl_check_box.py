@@ -74,33 +74,26 @@ class CtlCheckBox(DialogControlBase, UnoControlCheckBoxModelPartial, ItemEvents)
 
     # region Properties
     @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.VisualEffect)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.VisualEffect = value.value
-
-    @property
     def model(self) -> UnoControlCheckBoxModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlCheckBoxModel", super().model)
 
     @property
     def triple_state(self) -> bool:
         """
-        Gets/Sets the triple state.
+        Gets/Sets the triple state Same as ``tri_state`` property.
 
         Specifies if the checkbox control may appear dimmed (grayed) or not.
         """
-        return self.TriState
+        return self.tri_state
 
     @triple_state.setter
     def triple_state(self, value: bool) -> None:
-        self.TriState = value
+        self.tri_state = value
 
     @property
     def view(self) -> UnoControlCheckBox:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlCheckBox", super().view)
 
     # endregion Properties

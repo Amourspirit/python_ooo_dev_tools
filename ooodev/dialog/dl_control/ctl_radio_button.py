@@ -76,10 +76,12 @@ class CtlRadioButton(DialogControlBase, UnoControlRadioButtonModelPartial, ItemE
 
     @property
     def model(self) -> UnoControlRadioButtonModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlRadioButtonModel", super().model)
 
     @property
     def view(self) -> UnoControlRadioButton:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlRadioButton", super().view)
 
     # endregion Properties

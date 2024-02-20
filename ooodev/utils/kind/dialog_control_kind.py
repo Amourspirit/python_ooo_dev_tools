@@ -28,6 +28,7 @@ class DialogControlKind(Enum):
     PROGRESS_BAR = "com.sun.star.awt.UnoControlProgressBar"
     RADIO_BUTTON = "com.sun.star.awt.UnoControlRadioButton"
     SCROLL_BAR = "com.sun.star.awt.UnoControlScrollBar"
+    SPIN_BUTTON = "com.sun.star.awt.UnoControlSpinButton"
     TAB_PAGE_CONTAINER = "com.sun.star.awt.tab.UnoControlTabPageContainer"
     TAB_PAGE = "com.sun.star.awt.tab.UnoControlTabPage"
     EDIT = "com.sun.star.awt.UnoControlEdit"

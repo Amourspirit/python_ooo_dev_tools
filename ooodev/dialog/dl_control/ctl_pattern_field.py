@@ -79,14 +79,15 @@ class CtlPatternField(DialogControlBase, UnoControlPatternFieldModelPartial, Spi
     # endregion Overrides
 
     # region Properties
-
     @property
     def model(self) -> UnoControlPatternFieldModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlPatternFieldModel", super().model)
 
     @property
     def view(self) -> UnoControlPatternField:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlPatternField", super().view)
 
     # endregion Properties
 

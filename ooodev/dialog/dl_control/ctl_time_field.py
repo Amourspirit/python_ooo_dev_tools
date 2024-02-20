@@ -83,7 +83,8 @@ class CtlTimeField(DialogControlBase, UnoControlTimeFieldModelPartial, SpinEvent
 
     @property
     def model(self) -> UnoControlTimeFieldModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlTimeFieldModel", super().model)
 
     # region UnoControlTimeFieldModelPartial Overrides
 
@@ -101,6 +102,7 @@ class CtlTimeField(DialogControlBase, UnoControlTimeFieldModelPartial, SpinEvent
 
     @property
     def view(self) -> UnoControlTimeField:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlTimeField", super().view)
 
     # endregion Properties

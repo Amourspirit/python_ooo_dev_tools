@@ -8,10 +8,12 @@ from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 from ooo.dyn.awt.font_slant import FontSlant
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
+from ooo.dyn.awt.font_underline import FontUnderlineEnum
 
 from ooodev.dialog import ImageScaleModeEnum, BorderKind, DateFormatKind, TimeFormatKind, StateKind
 from ooodev.loader import lo as mLo
 from ooodev.calc import CalcDoc
+from ooodev.utils.kind.orientation_kind import OrientationKind
 from ooodev.write import WriteDoc
 from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.color import StandardColor
@@ -20,6 +22,7 @@ from ooodev.dialog import TriStateKind
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.kind.align_kind import AlignKind
+from ooodev.utils.info import Info
 
 if TYPE_CHECKING:
     from com.sun.star.awt import ItemEvent
@@ -58,6 +61,13 @@ class Runner:
         # )
 
         # self._dialog.setModel(dialog_model)
+        # Liberation Serif Regular
+        # print(Info.get_font_names())
+        fd = Info.get_font_descriptor("Liberation Serif", "Regular")
+        if fd is not None:
+            fd.Height = 10
+        print(fd)
+
         border_kind = BorderKind.BORDER_SIMPLE
         self._title = title
         self._width = 800
@@ -86,6 +96,9 @@ class Runner:
             width=self._width - (self._margin * 2),
             height=20,
         )
+        # print(self._ctl_lbl.font_descriptor.component)
+        if fd is not None:
+            self._ctl_lbl.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_lbl)
         self._ctl_lbl.add_event_mouse_entered(self._fn_on_mouse_entered)
         self._ctl_lbl.add_event_mouse_exited(self._fn_on_mouse_exit)
@@ -109,6 +122,8 @@ class Runner:
                 border=border_kind,
             )
         self._set_tab_index(self._txt_input)
+        if fd is not None:
+            self._txt_input.set_font_descriptor(fd)
         self._txt_input.add_event_text_changed(self._fn_on_text_changed)
         self._txt_input.text_color = StandardColor.GREEN_DARK2
 
@@ -120,6 +135,8 @@ class Runner:
             height=self._btn_height,
             # btn_type=PushButtonType.CANCEL,
         )
+        if fd is not None:
+            self._ctl_btn_cancel.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_btn_cancel)
         self._ctl_btn_cancel.view.setActionCommand("Cancel")
         self._ctl_btn_cancel.add_event_action_performed(self._fn_on_action_cancel)
@@ -135,6 +152,8 @@ class Runner:
             btn_type=PushButtonType.OK,
             DefaultButton=True,
         )
+        if fd is not None:
+            self._ctl_button_ok.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_button_ok)
         self._ctl_button_ok.add_event_action_performed(self._fn_on_action_ok)
         self._ctl_button_ok.add_event_mouse_entered(self._fn_on_mouse_entered)
@@ -152,6 +171,8 @@ class Runner:
             state=TriStateKind.CHECKED,
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_chk1.set_font_descriptor(fd)
         self._ctl_chk1.text_color = StandardColor.RED
         self._set_tab_index(self._ctl_chk1)
 
@@ -166,6 +187,8 @@ class Runner:
             state=TriStateKind.NOT_CHECKED,
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_chk2.set_font_descriptor(fd)
         self._ctl_chk2.text_color = StandardColor.GREEN
         self._set_tab_index(self._ctl_chk2)
 
@@ -180,6 +203,8 @@ class Runner:
             state=TriStateKind.DONT_KNOW,
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_chk3.set_font_descriptor(fd)
         self._ctl_chk3.text_color = StandardColor.BLUE
         self._set_tab_index(self._ctl_chk3)
         self._ctl_chk1.add_event_item_state_changed(self._fn_on_check_box_state)
@@ -198,6 +223,8 @@ class Runner:
             date_value=datetime.datetime.now(),
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_date.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_date)
         self._ctl_date.date_format = DateFormatKind.DIN_5008_YY_MM_DD
         dt = datetime.datetime.now()
@@ -217,6 +244,8 @@ class Runner:
             spin_button=True,
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_currency.set_font_descriptor(fd)
         self._ctl_currency.font_descriptor.height = 10
         self._ctl_currency.text_color = StandardColor.BLUE
         self._set_tab_index(self._ctl_currency)
@@ -232,6 +261,8 @@ class Runner:
             literal_mask="__.__.2025",
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_pattern.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_pattern)
         self._ctl_pattern.add_event_down(self._fn_on_down)
         self._ctl_pattern.add_event_up(self._fn_on_up)
@@ -247,6 +278,8 @@ class Runner:
             spin_button=True,
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_num_field.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_num_field)
         self._ctl_num_field.add_event_down(self._fn_on_down)
         self._ctl_num_field.add_event_up(self._fn_on_up)
@@ -262,6 +295,8 @@ class Runner:
             entries=["Item 1", "Item 2", "Item 3"],
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_combo1.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_combo1)
         self._ctl_combo1.add_event_text_changed(self._fn_on_text_changed)
         self._ctl_combo1.add_event_item_state_changed(self._fn_on_item_changed)
@@ -301,6 +336,8 @@ class Runner:
             height=self._box_height,
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_file.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_file)
         self._ctl_file.text = "file:///workspace/ooouno-dev-tools/tests/fixtures/image/img_brick.png"
         self._ctl_file.text_color = StandardColor.BLUE_LIGHT3
@@ -353,6 +390,8 @@ class Runner:
             height=100,
             label="Group Box One",
         )
+        if fd is not None:
+            self._ctl_gb1.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_gb1)
 
         # insert radio buttons into group box one
@@ -364,6 +403,10 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
+        if fd is not None:
+            self._rb1.set_font_descriptor(fd)
+            self._rb1.font_descriptor.underline = FontUnderlineEnum.SINGLE
+            self._rb1.font_descriptor.weight = 150
         self._set_tab_index(self._rb1)
         self._rb1.state = StateKind.CHECKED
         self._rb1.add_event_item_state_changed(self._fn_on_item_changed)
@@ -377,6 +420,8 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
+            radio_btn.set_font_descriptor(self._rb1.font_descriptor.component)
+            radio_btn.text_color = StandardColor.get_random_color()
             self._set_tab_index(radio_btn)
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
             radio_btn.add_event_property_change("State", self._fn_on_property_changed)
@@ -389,6 +434,8 @@ class Runner:
             height=sz.Height,
             label="Group Box Two",
         )
+        if fd is not None:
+            self._ctl_gb2.set_font_descriptor(fd)
         # simplest way to break contiguous tab order and have it work
         self._set_tab_index(self._ctl_gb2)
 
@@ -401,12 +448,15 @@ class Runner:
             width=sz.Width - (self._padding * 2),
             height=20,
         )
+        if fd is not None:
+            self._rb2.set_font_descriptor(fd)
 
         self._set_tab_index(self._rb2)
         self._rb2.state = StateKind.CHECKED
         self._rb2.add_event_item_state_changed(self._fn_on_item_changed)
         self._rb2.add_event_property_change("State", self._fn_on_property_changed)
         rb_sz = self._rb2.view.getPosSize()
+        weight = 120
         for i in range(1, 4):
             radio_btn = self._dialog.insert_radio_button(
                 label=f"Radio Button {i + 1}",
@@ -415,9 +465,13 @@ class Runner:
                 width=rb_sz.Width,
                 height=rb_sz.Height,
             )
+            radio_btn.set_font_descriptor(self._rb2.font_descriptor.component)
+            radio_btn.text_color = StandardColor.get_random_color()
             self._set_tab_index(radio_btn)
             radio_btn.add_event_item_state_changed(self._fn_on_item_changed)
             radio_btn.add_event_property_change("State", self._fn_on_property_changed)
+            radio_btn.font_descriptor.weight = weight
+            weight += 15
 
         sz = self._ctl_gb1.view.getPosSize()
         self._ctl_link = self._dialog.insert_hyperlink(
@@ -442,6 +496,9 @@ class Runner:
             time_value=datetime.datetime.now().time(),
             time_format=TimeFormatKind.LONG_12H,
         )
+        if fd is not None:
+            self._ctl_time.set_font_descriptor(fd)
+
         self._set_tab_index(self._ctl_time)
 
         self._ctl_time.add_event_text_changed(self._fn_on_text_changed)
@@ -476,7 +533,29 @@ class Runner:
             drop_down=False,
             border=border_kind,
         )
+        if fd is not None:
+            self._ctl_list_box.set_font_descriptor(fd)
+            self._ctl_list_box.font_descriptor.strikeout = FontStrikeoutEnum.SINGLE
         self._set_tab_index(self._ctl_list_box)
+
+        sz = self._ctl_list_box.view.getPosSize()
+        y = sz.Y + sz.Height + self._padding
+
+        self._ctl_spin_btn = self._dialog.insert_spin_button(
+            x=self._padding,
+            y=y,
+            width=30,
+            height=15,
+            border=BorderKind.NONE,
+            orientation=OrientationKind.VERTICAL,
+            min_value=self._ctl_progress.model.ProgressValueMin,
+            max_value=self._ctl_progress.model.ProgressValueMax,
+        )
+
+        self._ctl_spin_btn.repeat = True
+        self._ctl_spin_btn.spin_value = self._ctl_progress.value
+        self._ctl_spin_btn.symbol_color = StandardColor.BLUE_LIGHT2
+        self._ctl_spin_btn.add_event_adjustment_value_changed(self._fn_on_spin_adjustment)
 
         self._ctl_list_box.add_event_action_performed(self._fn_on_action_general)
         self._ctl_list_box.add_event_mouse_entered(self._fn_on_mouse_entered)
@@ -542,6 +621,7 @@ class Runner:
         self._fn_on_property_changed = self.on_property_changed
         self._fn_on_button_veto_property_changed = self.on_button_veto_property_changed
         self._fn_on_button_properties_changed = self.on_button_properties_changed
+        self._fn_on_spin_adjustment = self.on_spin_adjustment
 
     def on_check_box_state(self, src: Any, event: EventArgs, control_src: CtlCheckBox, *args, **kwargs) -> None:
         itm_event = cast("ItemEvent", event.event_data)
@@ -609,6 +689,13 @@ class Runner:
     def on_scroll_adjustment(self, src: Any, event: EventArgs, control_src: CtlScrollBar, *args, **kwargs) -> None:
         # print("Scroll:", control_src.name)
         a_event = cast("AdjustmentEvent", event.event_data)
+        self._ctl_spin_btn.spin_value = a_event.Value
+        self._ctl_progress.value = a_event.Value
+
+    def on_spin_adjustment(self, src: Any, event: EventArgs, control_src: CtlScrollBar, *args, **kwargs) -> None:
+        # print("Scroll:", control_src.name)
+        a_event = cast("AdjustmentEvent", event.event_data)
+        self._ctl_scroll_progress.value = a_event.Value
         self._ctl_progress.value = a_event.Value
 
     def on_window_moved(self, src: Any, event: EventArgs, control_src: CtlDialog, *args, **kwargs) -> None:

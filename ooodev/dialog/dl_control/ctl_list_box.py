@@ -122,7 +122,8 @@ class CtlListBox(DialogControlBase, UnoControlListBoxModelPartial, ActionEvents,
 
     @property
     def model(self) -> UnoControlListBoxModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlListBoxModel", super().model)
 
     @property
     def row_source(self) -> Tuple[str, ...]:
@@ -144,7 +145,8 @@ class CtlListBox(DialogControlBase, UnoControlListBoxModelPartial, ActionEvents,
 
     @property
     def view(self) -> UnoControlListBox:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlListBox", super().view)
 
     # item_count was renamed to list_count in 0.13.2
     item_count = list_count

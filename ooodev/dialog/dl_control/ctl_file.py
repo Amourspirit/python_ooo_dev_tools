@@ -73,10 +73,12 @@ class CtlFile(DialogControlBase, UnoControlFileControlModelPartial, TextEvents):
 
     @property
     def model(self) -> UnoControlFileControlModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlFileControlModel", super().model)
 
     @property
     def view(self) -> UnoControlFileControl:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlFileControl", super().view)
 
     # endregion Properties

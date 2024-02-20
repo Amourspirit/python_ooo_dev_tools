@@ -55,6 +55,7 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         """
         # FontDescriptorComp do not have any state, so we can directly assign the component.
         self.__font_descriptor.component = font_descriptor
+        self.__component.FontDescriptor = font_descriptor
 
     # region Properties
 

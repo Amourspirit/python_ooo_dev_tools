@@ -55,11 +55,13 @@ class CtlGroupBox(DialogControlBase, UnoControlGroupBoxModelPartial):
 
     # region Properties
     @property
-    def view(self) -> UnoControlGroupBox:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlGroupBoxModel:
+        # pylint: disable=no-member
+        return cast("UnoControlGroupBoxModel", super().model)
 
     @property
-    def model(self) -> UnoControlGroupBoxModel:
-        return self.get_model()
+    def view(self) -> UnoControlGroupBox:
+        # pylint: disable=no-member
+        return cast("UnoControlGroupBox", super().view)
 
     # endregion Properties

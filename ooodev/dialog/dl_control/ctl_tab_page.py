@@ -74,12 +74,14 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlTabPage:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlTabPageModel:
+        # pylint: disable=no-member
+        return cast("UnoControlTabPageModel", super().model)
 
     @property
-    def model(self) -> UnoControlTabPageModel:
-        return self.get_model()
+    def view(self) -> UnoControlTabPage:
+        # pylint: disable=no-member
+        return cast("UnoControlTabPage", super().view)
 
     @property
     def horizontal_scrollbar(self) -> bool:

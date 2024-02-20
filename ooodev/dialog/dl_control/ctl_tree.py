@@ -2,7 +2,7 @@
 from __future__ import annotations
 from collections import defaultdict
 import contextlib
-from typing import Any, List, cast, Dict, Sequence, TYPE_CHECKING
+from typing import Any, List, cast, Sequence, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
 from com.sun.star.awt.tree import XMutableTreeDataModel
@@ -415,7 +415,8 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
 
     @property
     def model(self) -> TreeControlModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("TreeControlModel", super().model)
 
     @property
     def root_node(self) -> MutableTreeNode | None:
@@ -429,6 +430,7 @@ class CtlTree(DialogControlBase, SelectionChangeEvents, TreeEditEvents, TreeExpa
 
     @property
     def view(self) -> TreeControl:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("TreeControl", super().view)
 
     # endregion Properties

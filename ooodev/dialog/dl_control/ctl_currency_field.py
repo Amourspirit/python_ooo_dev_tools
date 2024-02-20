@@ -118,7 +118,8 @@ class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, S
 
     @property
     def model(self) -> UnoControlCurrencyFieldModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlCurrencyFieldModel", super().model)
 
     @property
     def spin_button(self) -> bool:
@@ -131,7 +132,8 @@ class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, S
 
     @property
     def view(self) -> UnoControlCurrencyField:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlCurrencyField", super().view)
 
     # endregion Properties
 

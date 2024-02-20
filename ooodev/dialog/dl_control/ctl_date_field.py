@@ -83,10 +83,12 @@ class CtlDateField(DialogControlBase, UnoControlDateFieldModelPartial, SpinEvent
 
     @property
     def model(self) -> UnoControlDateFieldModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlDateFieldModel", super().model)
 
     @property
     def view(self) -> UnoControlDateField:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlDateField", super().view)
 
     # endregion Properties

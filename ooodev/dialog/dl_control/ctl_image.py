@@ -10,7 +10,6 @@ from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnu
 
 from ooodev.adapter.awt.uno_control_image_control_model_partial import UnoControlImageControlModelPartial
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from .ctl_base import DialogControlBase
@@ -76,7 +75,7 @@ class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
         Hint:
             - ``ImageScaleModeEnum`` can be imported from ``ooo.dyn.awt.image_scale_mode``
         """
-        return self.scale_mode
+        return ImageScaleModeEnum.NONE if self.scale_mode is None else self.scale_mode
 
     @image_scale_mode.setter
     def image_scale_mode(self, value: int | ImageScaleModeEnum) -> None:
@@ -107,7 +106,8 @@ class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
 
     @property
     def model(self) -> UnoControlImageControlModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlImageControlModel", super().model)
 
     @property
     def picture(self) -> str:
@@ -154,6 +154,7 @@ class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
 
     @property
     def view(self) -> UnoControlImageControl:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlImageControl", super().view)
 
     # endregion Properties

@@ -58,11 +58,13 @@ class CtlFixedLine(DialogControlBase, UnoControlFixedLineModelPartial):
 
     # region Properties
     @property
-    def view(self) -> UnoControlFixedLine:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlFixedLineModel:
+        # pylint: disable=no-member
+        return cast("UnoControlFixedLineModel", super().model)
 
     @property
-    def model(self) -> UnoControlFixedLineModel:
-        return self.get_model()
+    def view(self) -> UnoControlFixedLine:
+        # pylint: disable=no-member
+        return cast("UnoControlFixedLine", super().view)
 
     # endregion Properties

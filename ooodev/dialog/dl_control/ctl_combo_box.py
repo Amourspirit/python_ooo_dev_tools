@@ -105,12 +105,14 @@ class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvent
 
     # region Properties
     @property
-    def view(self) -> UnoControlComboBox:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlComboBoxModel:
+        # pylint: disable=no-member
+        return cast("UnoControlComboBoxModel", super().model)
 
     @property
-    def model(self) -> UnoControlComboBoxModel:
-        return self.get_model()
+    def view(self) -> UnoControlComboBox:
+        # pylint: disable=no-member
+        return cast("UnoControlComboBox", super().view)
 
     @property
     def list_count(self) -> int:

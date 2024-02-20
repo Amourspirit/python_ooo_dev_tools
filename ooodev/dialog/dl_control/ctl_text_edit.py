@@ -120,11 +120,13 @@ class CtlTextEdit(DialogControlBase, UnoControlEditModelPartial, TextEvents):
 
     @property
     def model(self) -> UnoControlEditModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlEditModel", super().model)
 
     @property
     def view(self) -> UnoControlEdit:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlEdit", super().view)
 
     # endregion Properties
 

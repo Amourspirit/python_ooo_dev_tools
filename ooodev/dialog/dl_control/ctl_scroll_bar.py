@@ -92,7 +92,8 @@ class CtlScrollBar(DialogControlBase, UnoControlScrollBarModelPartial, Adjustmen
 
     @property
     def model(self) -> UnoControlScrollBarModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlScrollBarModel", super().model)
 
     @property
     def value(self) -> int:
@@ -105,6 +106,7 @@ class CtlScrollBar(DialogControlBase, UnoControlScrollBarModelPartial, Adjustmen
 
     @property
     def view(self) -> UnoControlScrollBar:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlScrollBar", super().view)
 
     # endregion Properties

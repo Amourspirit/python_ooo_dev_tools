@@ -70,11 +70,13 @@ class CtlHyperlinkFixed(DialogControlBase, UnoControlFixedHyperlinkModelPartial,
 
     # region Properties
     @property
-    def view(self) -> UnoControlFixedHyperlink:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlFixedHyperlinkModel:
+        # pylint: disable=no-member
+        return cast("UnoControlFixedHyperlinkModel", super().model)
 
     @property
-    def model(self) -> UnoControlFixedHyperlinkModel:
-        return self.get_model()
+    def view(self) -> UnoControlFixedHyperlink:
+        # pylint: disable=no-member
+        return cast("UnoControlFixedHyperlink", super().view)
 
     # endregion Properties

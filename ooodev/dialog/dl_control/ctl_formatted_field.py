@@ -81,7 +81,8 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
 
     @property
     def model(self) -> UnoControlFormattedFieldModel:
-        return self.get_model()
+        # pylint: disable=no-member
+        return cast("UnoControlFormattedFieldModel", super().model)
 
     @property
     def value(self) -> Any:
@@ -100,7 +101,8 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
 
     @property
     def view(self) -> UnoControlFormattedField:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlFormattedField", super().view)
 
     # endregion Properties
 

@@ -296,12 +296,14 @@ class CtlGrid(DialogControlBase, GridSelectionEvents):
 
     # region Properties
     @property
-    def view(self) -> UnoControlGrid:
-        return self.get_view_ctl()
+    def model(self) -> UnoControlGridModel:
+        # pylint: disable=no-member
+        return cast("UnoControlGridModel", super().model)
 
     @property
-    def model(self) -> UnoControlGridModel:
-        return self.get_model()
+    def view(self) -> UnoControlGrid:
+        # pylint: disable=no-member
+        return cast("UnoControlGrid", super().view)
 
     @property
     def horizontal_scrollbar(self) -> bool:

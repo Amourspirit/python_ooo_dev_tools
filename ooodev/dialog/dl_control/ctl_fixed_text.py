@@ -55,39 +55,15 @@ class CtlFixedText(DialogControlBase, UnoControlFixedTextModelPartial):
     # endregion Overrides
 
     # region Properties
-    @property
-    def border(self) -> BorderKind:
-        """Gets/Sets the border style"""
-        return BorderKind(self.model.Border)
-
-    @border.setter
-    def border(self, value: BorderKind) -> None:
-        self.model.Border = value.value
-
-    @property
-    def label(self) -> str:
-        """Gets/Sets the label"""
-        return self.model.Label
-
-    @label.setter
-    def label(self, value: str) -> None:
-        self.model.Label = value
 
     @property
     def model(self) -> UnoControlFixedTextModel:
-        return self.get_model()
-
-    @property
-    def multi_line(self) -> bool:
-        """Gets/Sets the multi line"""
-        return self.model.MultiLine
-
-    @multi_line.setter
-    def multi_line(self, value: bool) -> None:
-        self.model.MultiLine = value
+        # pylint: disable=no-member
+        return cast("UnoControlFixedTextModel", super().model)
 
     @property
     def view(self) -> UnoControlFixedText:
-        return self.get_view_ctl()
+        # pylint: disable=no-member
+        return cast("UnoControlFixedText", super().view)
 
     # endregion Properties
