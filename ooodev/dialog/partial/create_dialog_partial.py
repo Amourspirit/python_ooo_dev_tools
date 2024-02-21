@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 
+from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_events import event_ctx
 from ooodev.events.partial.events_partial import EventsPartial
@@ -48,6 +49,7 @@ class CreateDialogPartial:
         Returns:
             Dialog: An empty dialog. The dialog contains methods for adding controls.
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.dialog import Dialog
 
         dlg = Dialog(x=x, y=y, width=width, height=height, title=title, lo_inst=self.__lo_inst)
@@ -225,6 +227,7 @@ class CreateDialogPartial:
             If the event is cancelled, the ``result`` value of ``event_data` if set will be returned.
             Otherwise if the event is not handled, a ``CancelEventError`` is raised.
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.dialog.input import Input
 
         def on_dialog_creating(source: Any, event_args: CancelEventArgs, *args, **kwargs) -> None:
@@ -246,3 +249,8 @@ class CreateDialogPartial:
         return result
 
     # endregion input
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog import Dialog
+    from ooodev.dialog.input import Input

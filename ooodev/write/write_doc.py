@@ -7,6 +7,7 @@ from com.sun.star.style import XStyle
 from com.sun.star.text import XTextFramesSupplier
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
+from ooodev.mock import mock_g
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -82,6 +83,7 @@ if TYPE_CHECKING:
     from ooo.dyn.view.paper_format import PaperFormat
     from ooodev.proto.style_obj import StyleT
     from ooodev.loader.inst import LoInst
+    from .search.write_search import WriteSearch
 
 
 class WriteDoc(
@@ -197,6 +199,21 @@ class WriteDoc(
             XController: Controller.
         """
         return self.get_current_controller()
+
+    # region SearchablePartial Overrides
+
+    def create_search_descriptor(self) -> WriteSearch:
+        """
+        Creates a Search Descriptor which contains properties that specify a search in this container.
+
+        Returns:
+            WriteSearch: The search descriptor.
+        """
+        from .search.write_search import WriteSearch
+
+        return WriteSearch(doc=self)
+
+    # endregion SearchablePartial Overrides
 
     # region get_cursor()
     @overload
@@ -1186,3 +1203,7 @@ class WriteDoc(
         return self._text_frames
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from .search.write_search import WriteSearch

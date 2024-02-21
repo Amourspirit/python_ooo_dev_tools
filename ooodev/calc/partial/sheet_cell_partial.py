@@ -23,10 +23,7 @@ class SheetCellPartial:
 
     def __init__(self, owner: mCalcSheet.CalcSheet, lo_inst: LoInst | None = None) -> None:
         self.__owner = owner
-        if lo_inst is None:
-            self.__lo_inst = mLo.Lo.current_lo
-        else:
-            self.__lo_inst = lo_inst
+        self.__lo_inst = mLo.Lo.current_lo if lo_inst is None else lo_inst
 
     def __getitem__(self, _val: Any) -> mCalcCell.CalcCell:
         # print(f"Getting item at index {index}")
@@ -145,6 +142,7 @@ class SheetCellPartial:
         Returns:
             CalcCell: cell
         """
+        # pylint: disable=protected-access
         # valid overloads
         # def get_cell(self, cell: XCell)
         # def get_cell(self, addr: CellAddress)

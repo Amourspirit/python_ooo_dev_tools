@@ -30,7 +30,8 @@ class TextRangeComp(ComponentBase, mTextRangePartial.TextRangePartial):
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.text.TextRange",)
+        # validated by mTextRangePartial.TextRangePartial
+        return ()  # ("com.sun.star.text.TextRange",)
 
     # endregion Overrides
 
@@ -38,6 +39,7 @@ class TextRangeComp(ComponentBase, mTextRangePartial.TextRangePartial):
     @property
     def component(self) -> TextRange:
         """TextRange Component"""
+        # pylint: disable=no-member
         return cast("TextRange", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

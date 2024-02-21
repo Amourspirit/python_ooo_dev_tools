@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any, overload, List, Sequence, TYPE_CHECKING, Tuple
+from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.chart2.chart_document_comp import ChartDocumentComp
@@ -718,3 +719,23 @@ class ChartDoc(
         return self._axis2_y
 
     # endregion Methods
+
+
+if mock_g.FULL_IMPORT:
+    from com.sun.star.chart2 import XChartType
+    from com.sun.star.chart2 import XFormattedString
+    from com.sun.star.chart2 import XRegressionCurve
+    from com.sun.star.chart2 import XRegressionCurveContainer
+    from com.sun.star.chart2 import XTitle
+    from com.sun.star.chart2 import XTitled
+    from ooo.dyn.chart.error_bar_style import ErrorBarStyle
+    from ooo.dyn.lang.locale import Locale
+    from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind
+    from .chart_axis import ChartAxis
+    from .chart_data_series import ChartDataSeries
+    from .chart_diagram import ChartDiagram
+    from .chart_error_bar import ChartErrorBar
+    from .chart_title import ChartTitle
+    from .chart_type import ChartType
+    from .data.data_provider import DataProvider
+    from .regression_curve.regression_curve import RegressionCurve

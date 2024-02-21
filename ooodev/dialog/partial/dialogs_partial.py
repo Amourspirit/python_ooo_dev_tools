@@ -12,7 +12,7 @@ from com.sun.star.awt import XTopWindow
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 
-
+from ooodev.mock import mock_g
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ..dl_control.ctl_base import DialogControlBase
@@ -205,7 +205,12 @@ class DialogsPartial:
             # avoid circular import.
             return self._DialogsPartial_dialogs_class_instance
         except AttributeError:
+            # pylint: disable=import-outside-toplevel
             from ooodev.dialog import Dialogs
 
             self._DialogsPartial_dialogs_class_instance = Dialogs
         return self._DialogsPartial_dialogs_class_instance
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog import Dialogs

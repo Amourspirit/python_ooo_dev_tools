@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.chart2 import XScaling
+
+from ooodev.mock import mock_g
 from ooodev.adapter.chart2.axis_comp import AxisComp
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
@@ -172,6 +174,7 @@ class ChartAxis(
         Returns:
             ChartTitle: Chart Title Component.
         """
+        # pylint: disable=import-outside-toplevel
         from com.sun.star.chart2 import XTitled
         from .chart_title import ChartTitle
 
@@ -200,6 +203,7 @@ class ChartAxis(
         Returns:
             ChartTitle: Chart Title Component.
         """
+        # pylint: disable=import-outside-toplevel
         from com.sun.star.chart2 import XTitled
         from com.sun.star.chart2 import XTitle
         from com.sun.star.chart2 import XFormattedString
@@ -271,3 +275,10 @@ class ChartAxis(
     def axis_kind(self) -> ChartAxisKind:
         """Gets the axis kind."""
         return self._axis_kind
+
+
+if mock_g.FULL_IMPORT:
+    from com.sun.star.chart2 import XFormattedString
+    from com.sun.star.chart2 import XTitle
+    from com.sun.star.chart2 import XTitled
+    from .chart_title import ChartTitle

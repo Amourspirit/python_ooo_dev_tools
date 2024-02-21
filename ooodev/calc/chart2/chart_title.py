@@ -3,6 +3,7 @@ from typing import Any, TYPE_CHECKING, TypeVar, Generic
 import contextlib
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.adapter.chart2.title_comp import TitleComp
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.gbl_named_event import GblNamedEvent
@@ -204,3 +205,7 @@ class ChartTitle(
     def title_kind(self) -> ChartTitleKind:
         """Gets the title kind."""
         return self._title_kind
+
+
+if mock_g.FULL_IMPORT:
+    from com.sun.star.chart import XChartDocument

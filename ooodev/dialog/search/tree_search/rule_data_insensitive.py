@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
+import uno
+from com.sun.star.awt.tree import XMutableTreeNode
 
 from ooodev.loader import lo as mLo
-
-from com.sun.star.awt.tree import XMutableTreeNode
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tree import XTreeNode

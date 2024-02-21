@@ -4,6 +4,7 @@ import uno
 
 from com.sun.star.text import XTextViewCursor
 
+from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.text_view_cursor_comp import TextViewCursorComp
@@ -293,3 +294,8 @@ class WriteTextViewCursor(
         return self._owner
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from .export.page_png import PagePng
+    from .export.page_jpg import PageJpg

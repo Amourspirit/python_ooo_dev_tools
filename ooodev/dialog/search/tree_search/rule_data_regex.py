@@ -3,9 +3,10 @@ from typing import Any, TYPE_CHECKING
 import re
 import contextlib
 
-from ooodev.loader import lo as mLo
-
+import uno
 from com.sun.star.awt.tree import XMutableTreeNode
+
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tree import XTreeNode

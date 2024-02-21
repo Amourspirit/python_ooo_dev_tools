@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
-from ooodev.exceptions import ex as mEx
 from com.sun.star.graphic import XGraphic
+
+from ooodev.mock import mock_g
+from ooodev.exceptions import ex as mEx
 from ooodev.draw.shapes.ole2_shape import OLE2Shape
 from ooodev.format.inner.partial.position_size.draw.position_partial import PositionPartial
 from ooodev.format.inner.partial.position_size.draw.size_partial import SizePartial
@@ -38,3 +40,7 @@ class ChartShape(OLE2Shape[TableChart], PositionPartial, SizePartial, CalcDocPro
             return ChartImage(owner=self, component=graphic, lo_inst=self.lo_inst)
         except Exception as e:
             raise mEx.ChartError(f"Failed to get chart image: {e}") from e
+
+
+if mock_g.FULL_IMPORT:
+    from .chart_image import ChartImage

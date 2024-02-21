@@ -10,29 +10,7 @@ from com.sun.star.util import XProtectable
 
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
-
-if TYPE_CHECKING:
-    from com.sun.star.sheet import SolverConstraint  # struct
-    from com.sun.star.sheet import XDataPilotTables
-    from com.sun.star.sheet import XGoalSeek
-    from com.sun.star.sheet import XScenario
-    from com.sun.star.sheet import XSheetCellCursor
-    from com.sun.star.table import CellAddress
-    from com.sun.star.table import XCellRange
-    from com.sun.star.util import XSearchable
-    from com.sun.star.util import XSearchDescriptor
-
-    from ooo.dyn.beans.property_value import PropertyValue
-    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
-    from ooo.dyn.table.cell_range_address import CellRangeAddress
-
-    from ooodev.proto.style_obj import StyleT
-    from ooodev.units import UnitT
-    from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
-    from .calc_doc import CalcDoc
-    from .calc_charts import CalcCharts
-    from .spreadsheet_draw_page import SpreadsheetDrawPage
-
+from ooodev.mock import mock_g
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.lo_events import event_ctx
@@ -62,6 +40,28 @@ from . import calc_table_row as mCalcTableRow
 from .partial import sheet_cell_partial as mSheetCellPartial
 from .partial.calc_doc_prop_partial import CalcDocPropPartial
 from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+
+if TYPE_CHECKING:
+    from com.sun.star.sheet import SolverConstraint  # struct
+    from com.sun.star.sheet import XDataPilotTables
+    from com.sun.star.sheet import XGoalSeek
+    from com.sun.star.sheet import XScenario
+    from com.sun.star.sheet import XSheetCellCursor
+    from com.sun.star.table import CellAddress
+    from com.sun.star.table import XCellRange
+    from com.sun.star.util import XSearchable
+    from com.sun.star.util import XSearchDescriptor
+
+    from ooo.dyn.beans.property_value import PropertyValue
+    from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
+    from ooo.dyn.table.cell_range_address import CellRangeAddress
+
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.units import UnitT
+    from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
+    from .calc_doc import CalcDoc
+    from .calc_charts import CalcCharts
+    from .spreadsheet_draw_page import SpreadsheetDrawPage
 
 
 class CalcSheet(
@@ -3882,6 +3882,7 @@ class CalcSheet(
         Returns:
             SpreadsheetDrawPage: Draw Page
         """
+        # pylint: disable=import-outside-toplevel
         if self._draw_page is None:
             from .spreadsheet_draw_page import SpreadsheetDrawPage
 
@@ -3898,6 +3899,7 @@ class CalcSheet(
         Returns:
             CalcCharts: Calc Charts
         """
+        # pylint: disable=import-outside-toplevel
         if self._charts is None:
             from .calc_charts import CalcCharts
 
@@ -3905,3 +3907,8 @@ class CalcSheet(
         return self._charts
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from .spreadsheet_draw_page import SpreadsheetDrawPage
+    from .calc_charts import CalcCharts

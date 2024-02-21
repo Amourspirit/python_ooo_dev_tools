@@ -3,6 +3,7 @@ from typing import Any, TYPE_CHECKING, List, TypeVar, Generic
 import uno
 from com.sun.star.chart2.data import XDataSource
 
+from ooodev.mock import mock_g
 from ooodev.adapter.chart2.data_series_comp import DataSeriesComp
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.exceptions import ex as mEx
@@ -284,3 +285,8 @@ class ChartDataSeries(
     def owner(self) -> _T:
         """Owner"""
         return self._owner
+
+
+if mock_g.FULL_IMPORT:
+    from .chart_data_point import ChartDataPoint
+    from .data.data_source import DataSource
