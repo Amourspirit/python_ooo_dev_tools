@@ -8,13 +8,14 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
     from .write_forms import WriteForms
 
 
-class WriteForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial):
+class WriteForm(LoInstPropsPartial, DataFormComp, WriteDocPropPartial, QiPartial, FormPartial):
     """Writer Form"""
 
     def __init__(self, owner: WriteForms, component: Form, lo_inst: LoInst | None = None) -> None:
@@ -29,6 +30,7 @@ class WriteForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial):
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)
         self._owner = owner
         DataFormComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)

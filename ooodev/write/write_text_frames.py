@@ -12,6 +12,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.adapter.text.text_frames import TextFramesComp
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from .write_text_frame import WriteTextFrame
 
 if TYPE_CHECKING:
@@ -20,10 +21,9 @@ if TYPE_CHECKING:
     from ooodev.proto.style_obj import StyleT
     from ooodev.utils.color import Color
     from .write_doc import WriteDoc  # circular import if not TYPE_CHECKING
-    from .write_text_cursor import WriteTextCursor
 
 
-class WriteTextFrames(LoInstPropsPartial, TextFramesComp, QiPartial, ServicePartial):
+class WriteTextFrames(LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, QiPartial, ServicePartial):
     """
     Class for managing Writer Forms.
 
@@ -41,8 +41,8 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, QiPartial, ServicePart
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)
         TextFramesComp.__init__(self, frames)  # type: ignore
         QiPartial.__init__(self, component=frames, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=frames, lo_inst=self.lo_inst)
@@ -134,7 +134,7 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, QiPartial, ServicePart
             - :py:class:`~.utils.color.StandardColor`
         """
         cursor = self.owner.get_cursor()
-        frame = cursor.add_text_frame(
+        return cursor.add_text_frame(
             text=text,
             ypos=ypos,
             width=width,
@@ -144,7 +144,6 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, QiPartial, ServicePart
             background_color=background_color,
             styles=styles,
         )
-        return frame
 
     # region XIndexAccess overrides
 
@@ -161,7 +160,7 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, QiPartial, ServicePart
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return WriteTextFrame(owner=self.owner, component=result, lo_inst=self.lo_inst)
+        return WriteTextFrame(owner=self.write_doc, component=result, lo_inst=self.lo_inst)
 
     # endregion XIndexAccess overrides
 
@@ -183,7 +182,7 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, QiPartial, ServicePart
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find text frame with name '{name}'")
         result = super().get_by_name(name)
-        return WriteTextFrame(owner=self.owner, component=result, lo_inst=self.lo_inst)
+        return WriteTextFrame(owner=self.write_doc, component=result, lo_inst=self.lo_inst)
 
     # endregion XNameAccess overrides
 
@@ -194,6 +193,6 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, QiPartial, ServicePart
         Returns:
             WriteDoc: Writer Draw Page
         """
-        return self._owner
+        return self.write_doc
 
     # endregion Properties

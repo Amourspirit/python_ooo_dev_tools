@@ -5,12 +5,10 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 from ooodev.loader.lo import Lo
-from ooodev.write import Write
 from ooodev.write import WriteDoc
-from ooodev.utils.gui import GUI
 
 
-def test_num_style(loader):
+def test_search(loader):
     """
     This test requires Write to be visible.
     If not visible then Write.is_anything_selected() will return false every time.
@@ -18,22 +16,21 @@ def test_num_style(loader):
 
     visible = True
     delay = 300
-    doc = WriteDoc(Write.create_doc(loader))
+    doc = WriteDoc.create_doc(loader)
     try:
         if visible:
             doc.set_visible(visible=visible)
 
-        assert doc.is_anything_selected() is False
-        # must be a view cursor and not a text cursor.
-        # text cursor do no make selection at a document level.
-        cursor = doc.get_view_cursor()
+        cursor = doc.get_cursor()
 
         cursor.append_para("The following points are important:")
         cursor.append_para("Have a good breakfast")
-        cursor.go_right(0)
-        cursor.go_left(21, True)
-        assert doc.is_anything_selected()
-        cursor.go_right(21)
+
+        search_desc = doc.create_search_descriptor()
+        search_desc.set_search_string("important")
+        search_desc.search_regular_expression = False
+        first = doc.find_first(search_desc.component)
+        assert first is not None
 
         Lo.delay(delay)
     finally:

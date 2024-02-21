@@ -38,6 +38,7 @@ class IndexContainerComp(ComponentBase, IndexContainerPartial):
     @property
     def component(self) -> XIndexContainer:
         """XIndexContainer Component"""
+        # pylint: disable=no-member
         return cast("XIndexContainer", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

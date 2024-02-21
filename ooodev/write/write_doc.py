@@ -3,7 +3,6 @@ from typing import Any, cast, List, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.beans import XPropertySet
-from com.sun.star.frame import XModel
 from com.sun.star.style import XStyle
 from com.sun.star.text import XTextFramesSupplier
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
@@ -18,6 +17,7 @@ from ooodev.adapter.text.textfield.page_count_comp import PageCountComp
 from ooodev.adapter.text.textfield.page_number_comp import PageNumberComp
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.adapter.util.refresh_events import RefreshEvents
+from ooodev.adapter.util.replaceable_partial import ReplaceablePartial
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -42,7 +42,6 @@ from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.data_type.size import Size
 from ooodev.loader.inst import DocType
-
 from ooodev.loader.inst import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
@@ -51,6 +50,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -86,7 +86,9 @@ if TYPE_CHECKING:
 
 class WriteDoc(
     LoInstPropsPartial,
+    WriteDocPropPartial,
     TextDocumentComp,
+    ReplaceablePartial,
     DocumentEventEvents,
     ModifyEvents,
     PrintJobEvents,
@@ -121,6 +123,7 @@ class WriteDoc(
         Returns:
             None:
         """
+        # pylint: disable=no-member
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
 
@@ -128,8 +131,10 @@ class WriteDoc(
             raise mEx.NotSupportedDocumentError("Document is not a Writer document")
 
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        WriteDocPropPartial.__init__(self, obj=self)
 
         TextDocumentComp.__init__(self, doc)  # type: ignore
+        ReplaceablePartial.__init__(self, component=doc, interface=None)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
@@ -192,7 +197,6 @@ class WriteDoc(
             XController: Controller.
         """
         return self.get_current_controller()
-
 
     # region get_cursor()
     @overload

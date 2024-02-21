@@ -8,10 +8,11 @@ from com.sun.star.text import XWordCursor
 from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from .write_text_cursor import WriteTextCursor
 
 
-class WriteWordCursor(WriteTextCursor, WordCursorPartial, StylePartial):
+class WriteWordCursor(WriteTextCursor, WriteDocPropPartial, WordCursorPartial, StylePartial):
     """Represents a writer word cursor."""
 
     def __init__(self, owner: Any, component: XWordCursor, lo_inst: LoInst | None = None) -> None:
@@ -25,5 +26,8 @@ class WriteWordCursor(WriteTextCursor, WordCursorPartial, StylePartial):
         """
 
         WriteTextCursor.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         WordCursorPartial.__init__(self, component, None)  # type: ignore
         StylePartial.__init__(self, component=component)

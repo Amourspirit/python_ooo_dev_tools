@@ -14,6 +14,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextFrame
@@ -23,6 +24,7 @@ T = TypeVar("T", bound="ComponentT")
 
 class WriteTextFrame(
     ShapeBase,
+    WriteDocPropPartial,
     Generic[T],
     TextFrameComp,
     PropertyChangeImplement,
@@ -46,10 +48,14 @@ class WriteTextFrame(
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         self.__owner = owner
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         # in this case QiPartial needs to be before ShapeBase.
         QiPartial.__init__(self, component=component, lo_inst=lo_inst)  # type: ignore
         ShapeBase.__init__(self, owner=self.__owner, component=component, lo_inst=lo_inst)  # type: ignore
         TextFrameComp.__init__(self, component)  # type: ignore
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

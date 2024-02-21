@@ -8,15 +8,15 @@ from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from . import write_text_portion as mWriteTextPortion
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextPortions(Generic[T], LoInstPropsPartial, EnumerationAccessPartial, QiPartial):
+class WriteTextPortions(Generic[T], LoInstPropsPartial, WriteDocPropPartial, EnumerationAccessPartial, QiPartial):
     """
     Represents writer Text Portions.
 
@@ -36,6 +36,9 @@ class WriteTextPortions(Generic[T], LoInstPropsPartial, EnumerationAccessPartial
             lo_inst = mLo.Lo.current_lo
 
         self._owner = owner
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EnumerationAccessPartial.__init__(self, component=component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
