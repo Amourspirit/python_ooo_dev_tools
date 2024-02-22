@@ -16,6 +16,7 @@ from ooo.dyn.awt.push_button_type import PushButtonType
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
 from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
+from ooodev.mock import mock_g
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.kind.align_kind import AlignKind
@@ -1666,9 +1667,14 @@ class DialogControlsPartial:
             # avoid circular import.
             return self._dialogs_class_instance
         except AttributeError:
+            # pylint: disable=import-outside-toplevel
             from ooodev.dialog import Dialogs
 
             self._dialogs_class_instance = Dialogs
         return self._dialogs_class_instance
 
     # endregion Insert Controls
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog import Dialogs

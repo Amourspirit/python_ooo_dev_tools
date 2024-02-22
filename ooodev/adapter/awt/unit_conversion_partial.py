@@ -89,9 +89,9 @@ class UnitConversionPartial:
         """
         return self.__component.convertSizeToLogic(size, int(target_unit))
 
-    def convertSizeToPixel(self, size: Size, source_unit: int | MeasureUnitEnum) -> Size:
+    def convert_size_to_pixel(self, size: Size, source_unit: int | MeasureUnitEnum) -> Size:
         """
-        converts the given Size, which is specified in the given logical unit, into pixels.
+        Converts the given Size, which is specified in the given logical unit, into pixels.
 
         Raises:
             com.sun.star.lang.IllegalArgumentException: ``IllegalArgumentException``.

@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
-from .partial.draw_page_partial import DrawPagePartial
 from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
@@ -15,6 +14,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from .partial.draw_page_partial import DrawPagePartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage

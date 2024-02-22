@@ -16,5 +16,5 @@ class CalcSheetPropPartial:
 
     @property
     def calc_sheet(self) -> CalcSheet:
-        """Chart Document."""
+        """Calc Sheet."""
         return self.__calc_sheet

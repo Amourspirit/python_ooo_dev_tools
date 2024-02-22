@@ -10,11 +10,14 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextPortion(Generic[T], LoInstPropsPartial, TextPortionComp, QiPartial, PropPartial, StylePartial):
+class WriteTextPortion(
+    Generic[T], LoInstPropsPartial, TextPortionComp, WriteDocPropPartial, QiPartial, PropPartial, StylePartial
+):
     """
     Represents writer paragraph content.
 
@@ -33,6 +36,9 @@ class WriteTextPortion(Generic[T], LoInstPropsPartial, TextPortionComp, QiPartia
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextPortionComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore

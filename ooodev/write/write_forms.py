@@ -10,6 +10,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from .write_form import WriteForm
 
 if TYPE_CHECKING:
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from .write_draw_page import WriteDrawPage
 
 
-class WriteForms(LoInstPropsPartial, FormsComp, QiPartial):
+class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):
     """
     Class for managing Writer Forms.
 
@@ -38,6 +39,7 @@ class WriteForms(LoInstPropsPartial, FormsComp, QiPartial):
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         FormsComp.__init__(self, forms)  # type: ignore
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
 
     def __next__(self) -> WriteForm:

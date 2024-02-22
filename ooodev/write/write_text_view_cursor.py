@@ -4,9 +4,7 @@ import uno
 
 from com.sun.star.text import XTextViewCursor
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextDocument
-
+from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.text_view_cursor_comp import TextViewCursorComp
@@ -25,14 +23,18 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
 from ooodev.write import write_doc as mWriteDoc
 from ooodev.write import WriteNamedEvent
-
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
+
+if TYPE_CHECKING:
+    from com.sun.star.text import XTextDocument
 
 T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextViewCursor(
     LoInstPropsPartial,
+    WriteDocPropPartial,
     TextCursorPartial[T],
     Generic[T],
     TextViewCursorComp,
@@ -59,9 +61,13 @@ class WriteTextViewCursor(
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         TextCursorPartial.__init__(self, owner=owner, component=component, lo_inst=self.lo_inst)
         TextViewCursorComp.__init__(self, component)  # type: ignore
         LineCursorPartial.__init__(self, component, None)  # type: ignore
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -288,3 +294,8 @@ class WriteTextViewCursor(
         return self._owner
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from .export.page_png import PagePng
+    from .export.page_jpg import PageJpg

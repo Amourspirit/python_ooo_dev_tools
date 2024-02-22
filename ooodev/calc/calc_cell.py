@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, overload, Sequence, TYPE_CHECKING
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
@@ -640,3 +641,7 @@ class CalcCell(
         self.set_val(value=value)
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from .calc_cell_text_cursor import CalcCellTextCursor

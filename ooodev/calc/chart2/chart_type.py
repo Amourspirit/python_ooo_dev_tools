@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING, TypeVar, Generic, Tuple
 
+from ooodev.mock import mock_g
 from ooodev.adapter.chart2.chart_type_comp import ChartTypeComp
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
@@ -119,3 +120,7 @@ class ChartType(
         Gets chart type such as ``com.sun.star.chart2.StockBarChart``.
         """
         return self.get_chart_type()
+
+
+if mock_g.FULL_IMPORT:
+    from .chart_data_series import ChartDataSeries

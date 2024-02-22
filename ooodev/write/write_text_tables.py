@@ -9,12 +9,13 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from . import write_text_table as mWriteTextTable
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextTables(Generic[T], LoInstPropsPartial, TextComp, QiPartial):
+class WriteTextTables(Generic[T], LoInstPropsPartial, WriteDocPropPartial, TextComp, QiPartial):
     """
     Represents writer text tables.
 
@@ -34,6 +35,9 @@ class WriteTextTables(Generic[T], LoInstPropsPartial, TextComp, QiPartial):
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         TextComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
 

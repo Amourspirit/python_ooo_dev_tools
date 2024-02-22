@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
 
+from ooodev.mock import mock_g
 from ooodev.adapter.chart2.diagram_comp import DiagramComp
 from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
@@ -243,3 +244,17 @@ class ChartDiagram(
     def diagram_kind(self) -> ChartDiagramKind:
         """Gets the diagram kind."""
         return self._diagram_kind
+
+
+if mock_g.FULL_IMPORT:
+    from com.sun.star.chart2 import XFormattedString
+    from com.sun.star.chart2 import XTitle
+    from com.sun.star.chart2 import XTitled
+    from ooo.dyn.drawing.fill_style import FillStyle
+    from ooo.dyn.drawing.line_style import LineStyle
+    from .chart_floor import ChartFloor
+    from .chart_legend import ChartLegend
+    from .chart_title import ChartTitle
+    from .chart_wall import ChartWall
+    from .coordinate.coordinate_general import CoordinateGeneral
+    from .coordinate.coordinate_system import CoordinateSystem

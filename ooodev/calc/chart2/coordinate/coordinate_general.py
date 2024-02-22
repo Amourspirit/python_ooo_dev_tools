@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
+from ooodev.mock import mock_g
 from ooodev.adapter.chart2.coordinate_system_partial import CoordinateSystemPartial
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
@@ -84,6 +85,7 @@ class CoordinateGeneral(
     @property
     def component(self) -> XCoordinateSystem:
         """Coordinate General Component"""
+        # pylint: disable=no-member
         return self._ComponentBase__get_component()  # type: ignore
 
     @property
@@ -104,3 +106,7 @@ class CoordinateGeneral(
         return self.__chart_type
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ..chart_type import ChartType

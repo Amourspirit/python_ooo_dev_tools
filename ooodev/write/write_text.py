@@ -3,10 +3,6 @@ from typing import TYPE_CHECKING, TypeVar, Generic, overload
 import uno
 from com.sun.star.text import XTextRange
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XText
-    from com.sun.star.text import XTextContent
-
 from ooodev.adapter.text.relative_text_content_insert_partial import RelativeTextContentInsertPartial
 from ooodev.adapter.text.text_comp import TextComp
 from ooodev.format.inner.style_partial import StylePartial
@@ -15,13 +11,26 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from . import write_paragraphs as mWriteParagraphs
 from . import write_text_tables as mWriteTextTables
+
+if TYPE_CHECKING:
+    from com.sun.star.text import XText
+    from com.sun.star.text import XTextContent
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteText(Generic[T], LoInstPropsPartial, TextComp, RelativeTextContentInsertPartial, QiPartial, StylePartial):
+class WriteText(
+    Generic[T],
+    LoInstPropsPartial,
+    WriteDocPropPartial,
+    TextComp,
+    RelativeTextContentInsertPartial,
+    QiPartial,
+    StylePartial,
+):
     """
     Represents writer text content.
 
@@ -41,6 +50,9 @@ class WriteText(Generic[T], LoInstPropsPartial, TextComp, RelativeTextContentIns
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         TextComp.__init__(self, component)  # type: ignore
         RelativeTextContentInsertPartial.__init__(self, component=component, interface=None)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore

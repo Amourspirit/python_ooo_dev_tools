@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Generic, TypeVar
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.draw.shapes import DrawShape
 from ooodev.draw.shapes.const import KNOWN_SHAPES
 from ooodev.proto.component_proto import ComponentT
@@ -28,10 +29,7 @@ class ShapeFactoryPartial(Generic[_T]):
             lo_inst (LoInst | None, optional): Lo Instance. Defaults to None.
         """
         self.__owner = owner
-        if lo_inst is None:
-            self.__lo_inst = mLo.Lo.current_lo
-        else:
-            self.__lo_inst = lo_inst
+        self.__lo_inst = mLo.Lo.current_lo if lo_inst is None else lo_inst
 
     def shape_factory(self, shape: XShape) -> ShapeBase[_T]:
         """
@@ -113,3 +111,18 @@ class ShapeFactoryPartial(Generic[_T]):
         """
         shape_type = shape.getShapeType()
         return shape_type in KNOWN_SHAPES
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.shapes import ClosedBezierShape
+    from ooodev.draw.shapes import ConnectorShape
+    from ooodev.draw.shapes import EllipseShape
+    from ooodev.draw.shapes import GraphicObjectShape
+    from ooodev.draw.shapes import LineShape
+    from ooodev.draw.shapes import OLE2Shape
+    from ooodev.draw.shapes import OpenBezierShape
+    from ooodev.draw.shapes import PolyLineShape
+    from ooodev.draw.shapes import PolyPolygonShape
+    from ooodev.draw.shapes import RectangleShape
+    from ooodev.draw.shapes import TextShape
+    from ooodev.write.write_text_frame import WriteTextFrame

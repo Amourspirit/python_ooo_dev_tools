@@ -2,10 +2,6 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING, TypeVar, Generic
 import uno
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextDocument
-    from com.sun.star.text import XTextCursor
-
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
@@ -20,6 +16,10 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
+
+if TYPE_CHECKING:
+    from com.sun.star.text import XTextDocument
+    from com.sun.star.text import XTextCursor
 
 _T = TypeVar("_T", bound="ComponentT")
 

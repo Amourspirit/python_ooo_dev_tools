@@ -32,6 +32,8 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
     from ooodev.loader.inst import LoInst
 
+# pylint: disable=unused-argument
+
 
 class DrawDoc(
     DrawDocPartial["DrawDoc"],
@@ -78,6 +80,7 @@ class DrawDoc(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self.lo_inst)
         DrawingDocumentComp.__init__(self, doc)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         # ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
@@ -159,8 +162,8 @@ class DrawDoc(
         """
         if idx < 0:
             idx = len(self.slides) + idx
-            if idx < 0:
-                raise IndexError("list index out of range")
+        if idx < 0:
+            raise IndexError("list index out of range")
 
         return super().delete_slide(idx=idx)
 

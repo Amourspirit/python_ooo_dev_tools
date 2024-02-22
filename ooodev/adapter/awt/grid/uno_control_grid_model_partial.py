@@ -137,7 +137,7 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         according to the used font, to display one line of text.
 
         See Also:
-            - ``com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
+            - `com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
         """
         return self.model.ColumnHeaderHeight
 
@@ -331,7 +331,7 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         The value given here is ignored if ``show_row_header`` is ``False``.
 
         See Also:
-            - ``com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
+            - `com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
         """
         return self.model.RowHeaderWidth
 
@@ -347,7 +347,7 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         The height is specified in application font units - see ``MeasureUnit`` below.
 
         See Also:
-            - ``com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
+            - `com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
         """
         return self.model.RowHeight
 

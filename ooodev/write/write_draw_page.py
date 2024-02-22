@@ -3,10 +3,6 @@ from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
 
-if TYPE_CHECKING:
-    from com.sun.star.drawing import XDrawPage
-    from ooodev.draw.shapes.shape_base import ShapeBase
-
 from ooodev.adapter.drawing.generic_draw_page_comp import GenericDrawPageComp
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
@@ -19,13 +15,19 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from .write_forms import WriteForms
+
+if TYPE_CHECKING:
+    from com.sun.star.drawing import XDrawPage
+    from ooodev.draw.shapes.shape_base import ShapeBase
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
 class WriteDrawPage(
     LoInstPropsPartial,
+    WriteDocPropPartial,
     DrawPagePartial[_T],
     Generic[_T],
     GenericDrawPageComp,
@@ -51,6 +53,9 @@ class WriteDrawPage(
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self.lo_inst)
         GenericDrawPageComp.__init__(self, component)  # type: ignore
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore

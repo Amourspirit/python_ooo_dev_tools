@@ -1,11 +1,9 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import uno
 
 from com.sun.star.text import XTextCursor
 
-from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
 from . import text_range_partial as mTextRangeComp
 
 if TYPE_CHECKING:

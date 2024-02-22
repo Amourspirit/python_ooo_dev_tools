@@ -8,6 +8,7 @@ from com.sun.star.drawing import XDrawPage
 from ooo.dyn.awt.point import Point
 from ooo.dyn.drawing.polygon_flags import PolygonFlags
 
+from ooodev.mock import mock_g
 from ooodev.adapter.container.index_container_comp import IndexContainerComp
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
@@ -1034,6 +1035,7 @@ class DrawPagePartial(Generic[_T]):
         See Also:
             :py:meth:`~.draw.Draw.get_ordered_shapes`
         """
+        # pylint: disable=import-outside-toplevel
         shapes = mDraw.Draw.get_shapes(slide=self.component)  # type: ignore
         from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 
@@ -1233,3 +1235,6 @@ from ..shapes import (
     RectangleShape,
     TextShape,
 )
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial

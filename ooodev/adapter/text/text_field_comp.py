@@ -24,7 +24,7 @@ class TextFieldComp(TextContentComp, PropertyChangeImplement, VetoableChangeImpl
         Args:
             component (XTextField): UNO TextField Component that supports ``com.sun.star.text.TextField`` service.
         """
-
+        # pylint: disable=no-member
         TextContentComp.__init__(self, component)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -43,6 +43,7 @@ class TextFieldComp(TextContentComp, PropertyChangeImplement, VetoableChangeImpl
         @property
         def component(self) -> TextField:
             """TextField Component"""
+            # pylint: disable=no-member
             return cast("TextField", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -12,10 +12,6 @@ if TYPE_CHECKING:
 
 class DrawShapePartial:
     def __init__(self, component: XShape, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            self.__lo_inst = mLo.Lo.current_lo
-        else:
-            self.__lo_inst = lo_inst
         self.__component = component
 
     def add_text(self, msg: str, font_size: int = 0, **props) -> None:

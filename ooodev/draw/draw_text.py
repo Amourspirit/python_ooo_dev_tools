@@ -2,10 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
-
-if TYPE_CHECKING:
-    from com.sun.star.text import XText
-
 from ooodev.adapter.drawing.text_comp import TextComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
@@ -16,6 +12,9 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.draw import draw_text_cursor
+
+if TYPE_CHECKING:
+    from com.sun.star.text import XText
 
 _T = TypeVar("_T", bound="ComponentT")
 
