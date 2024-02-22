@@ -3,6 +3,7 @@ from typing import Any, TYPE_CHECKING, TypeVar, Generic
 import uno
 from com.sun.star.drawing import XShapes
 
+from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.draw import DrawNamedEvent
@@ -314,3 +315,7 @@ class DrawPage(
 
 from .shape_collection import ShapeCollection
 from ooodev.draw.shapes import GroupShape
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.export.page_jpg import PageJpg
+    from ooodev.draw.export.page_png import PagePng

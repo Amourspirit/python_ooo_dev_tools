@@ -2,10 +2,6 @@ from __future__ import annotations
 from typing import Any, cast, Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextDocument
-    from com.sun.star.text import XTextCursor
-    from ooodev.proto.style_obj import StyleT
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -24,14 +20,20 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from .write_text import WriteText
 
+if TYPE_CHECKING:
+    from com.sun.star.text import XTextDocument
+    from com.sun.star.text import XTextCursor
+    from ooodev.proto.style_obj import StyleT
 
 T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextCursor(
     LoInstPropsPartial,
+    WriteDocPropPartial,
     TextCursorPartial[T],
     Generic[T],
     TextCursorComp,
@@ -63,11 +65,15 @@ class WriteTextCursor(
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, WriteDocPropPartial):
+            raise TypeError("WriteDocPropPartial is not inherited by owner.")
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         TextCursorPartial.__init__(self, owner=self._owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
         ParagraphCursorPartial.__init__(self, component, None)  # type: ignore
         SentenceCursorPartial.__init__(self, component, None)  # type: ignore
         WordCursorPartial.__init__(self, component, None)  # type: ignore
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

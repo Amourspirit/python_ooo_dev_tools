@@ -155,14 +155,14 @@ class DrawForms(LoInstPropsPartial, FormsComp, QiPartial, ServicePartial):
         Returns:
             DrawForm: Form
         """
-        all_args = [arg for arg in args]
+        all_args = list(args)
         all_args.extend(kwargs.values())
-        if len(all_args) == 0:
+        if not all_args:
             # add a new form at the end
             all_args.append(-1)
 
         if len(all_args) != 1:
-            raise TypeError("add_form() takes 1 argument but {} were given".format(len(all_args)))
+            raise TypeError(f"add_form() takes 1 argument but {len(all_args)} were given")
         arg1 = all_args[0]
         if isinstance(arg1, int):
             idx = self._get_index(arg1, allow_greater=True)

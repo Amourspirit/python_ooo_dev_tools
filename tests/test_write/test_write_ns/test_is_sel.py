@@ -23,7 +23,7 @@ def test_num_style(loader):
         if visible:
             doc.set_visible(visible=visible)
 
-        assert doc.is_anything_selected() == False
+        assert doc.is_anything_selected() is False
         # must be a view cursor and not a text cursor.
         # text cursor do no make selection at a document level.
         cursor = doc.get_view_cursor()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
+from ooodev.mock import mock_g
 from ooodev.adapter.chart2.data.data_provider_comp import DataProviderComp
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
@@ -52,6 +53,7 @@ class DataProvider(LoInstPropsPartial, DataProviderComp, ChartDocPropPartial):
         Returns:
             None:
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.office.chart2 import DataPointLabelTypeKind, DataRoleKind
 
         try:
@@ -73,3 +75,7 @@ class DataProvider(LoInstPropsPartial, DataProviderComp, ChartDocPropPartial):
             raise
         except Exception as e:
             raise mEx.ChartError("Error adding category labels") from e
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.office.chart2 import DataPointLabelTypeKind, DataRoleKind

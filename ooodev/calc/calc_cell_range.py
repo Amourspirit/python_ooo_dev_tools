@@ -6,7 +6,7 @@ from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
-
+from ooodev.mock import mock_g
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
 from ooodev.calc import CalcNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
@@ -931,3 +931,9 @@ class CalcCellRange(
         return GenericUnitSize(UnitMM.from_mm100(sz.Width), UnitMM.from_mm100(sz.Height))
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.office.chart2 import Chart2
+    from ooodev.calc.export.range_jpg import RangeJpg
+    from ooodev.calc.export.range_png import RangePng

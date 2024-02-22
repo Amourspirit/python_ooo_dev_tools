@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Callable, TYPE_CHECKING
 
+from ooodev.mock import mock_g
 from ooodev.draw import DrawNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
@@ -63,6 +64,7 @@ class ExportJpgPartial:
             If ``fnm`` is not specified, the image file name is created based on the document name and page number
             and written to the same folder as the document.
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.draw.export.shape_jpg import ShapeJpg
 
         def on_exporting(source: Any, args: CancelEventArgsExport[ExportJpgT]) -> None:
@@ -132,3 +134,7 @@ class ExportJpgPartial:
         self.__events.remove(DrawNamedEvent.EXPORTED_SHAPE_JPG, callback)
 
     # endregion Events
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.export.shape_jpg import ShapeJpg

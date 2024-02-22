@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Callable, TYPE_CHECKING
 
+from ooodev.mock import mock_g
 from ooodev.draw import DrawNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
@@ -66,6 +67,7 @@ class ExportPngPartial:
             When page is exported as png, such as an impress slide, any images on the will not be exported if filter ``translucent=True``.
             For this reason, the default value for ``translucent`` is ``False``.
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.draw.export.shape_png import ShapePng
 
         def on_exporting(source: Any, args: CancelEventArgsExport[ExportPngT]) -> None:
@@ -135,3 +137,7 @@ class ExportPngPartial:
         self.__events.remove(DrawNamedEvent.EXPORTED_SHAPE_PNG, callback)
 
     # endregion Events
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.export.shape_png import ShapePng

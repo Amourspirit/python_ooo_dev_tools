@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.exceptions import ex as mEx
 from ooodev.adapter.table.table_charts_comp import TableChartsComp
@@ -227,3 +228,7 @@ class CalcCharts(
             names.add(chart.name)
         for name in names:
             self.remove_chart(chart_name=name)
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.office.chart2 import Chart2

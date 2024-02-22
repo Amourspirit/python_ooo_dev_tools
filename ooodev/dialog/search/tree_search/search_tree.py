@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Type, TYPE_CHECKING
+from typing import Any, List, TYPE_CHECKING
 from .rule_proto import RuleT
 
 if TYPE_CHECKING:
