@@ -162,4 +162,15 @@ class SearchDescriptorPartialProps:
         with contextlib.suppress(AttributeError):
             self.__component.SearchWildcard = value
 
+    @property
+    def search_words(self) -> bool:
+        """
+        If ``True``, only complete words will be found.
+        """
+        return self.__component.SearchWords
+
+    @search_words.setter
+    def search_words(self, value: bool) -> None:
+        self.__component.SearchWords = value
+
     # endregion Properties

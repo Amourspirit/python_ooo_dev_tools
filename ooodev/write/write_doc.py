@@ -5,6 +5,8 @@ import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.style import XStyle
 from com.sun.star.text import XTextFramesSupplier
+from com.sun.star.text import XTextRange
+from com.sun.star.uno import XInterface
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 from ooodev.mock import mock_g
@@ -52,6 +54,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
+from ooodev.write.write_text_range import WriteTextRange
 
 # from . import write_draw_page as mWriteDrawPage
 from . import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -79,11 +82,14 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.text import XText
     from com.sun.star.text import XTextDocument
-    from com.sun.star.text import XTextRange
+    from com.sun.star.util import XSearchDescriptor
+    from com.sun.star.util import XSearchable
     from ooo.dyn.view.paper_format import PaperFormat
     from ooodev.proto.style_obj import StyleT
     from ooodev.loader.inst import LoInst
-    from .search.write_search import WriteSearch
+    from .search.write_search_replace import WriteSearchReplace
+    from ooodev.proto.component_proto import ComponentT
+    from ooodev.write.write_text_ranges import WriteTextRanges
 
 
 class WriteDoc(
@@ -202,16 +208,147 @@ class WriteDoc(
 
     # region SearchablePartial Overrides
 
-    def create_search_descriptor(self) -> WriteSearch:
+    def create_search_descriptor(self) -> WriteSearchReplace:
         """
         Creates a Search Descriptor which contains properties that specify a search in this container.
 
-        Returns:
-            WriteSearch: The search descriptor.
-        """
-        from .search.write_search import WriteSearch
+        The ``WriteSearchReplace`` also contains methods to perform the search.
 
-        return WriteSearch(doc=self)
+        Returns:
+            WriteSearchReplace: The search replace instance.
+
+        Example:
+            .. code-block:: python
+
+                >>> search = doc.create_search_descriptor()
+                >>> search.set_search_string("important")
+                >>> first = search_desc.find_first()
+                >>> print(first.get_string())
+                important
+
+        .. versionadded:: 0.30.0
+        """
+        # createSearchDescriptor() or createReplaceDescriptor() will return the same service.
+        # create a descriptor service using createSearchDescriptor() or createReplaceDescriptor().
+        # You receive a service that supports the interface com.sun.star.util.XPropertyReplace> with methods to describe what you are searching for,
+        # what you want to replace with and what attributes you are looking for.
+        # https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Search_and_Replace
+        # pylint: disable=import-outside-toplevel
+        from .search.write_search_replace import WriteSearchReplace
+
+        return WriteSearchReplace(doc=self, desc=self.component.createSearchDescriptor())  # type: ignore
+
+    def create_replace_descriptor(self) -> WriteSearchReplace:
+        """
+        Creates a Search Descriptor which contains properties that specify a search in this container.
+
+        The ``WriteSearchReplace`` also contains methods to perform search and replace.
+
+        Returns:
+            WriteSearchReplace: The search replace instance.
+
+        .. versionadded:: 0.30.0
+        """
+        # createSearchDescriptor() or createReplaceDescriptor() will return the same service.
+        # create a descriptor service using createSearchDescriptor() or createReplaceDescriptor().
+        # You receive a service that supports the interface com.sun.star.util.XPropertyReplace> with methods to describe what you are searching for,
+        # what you want to replace with and what attributes you are looking for.
+        # https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Search_and_Replace
+        # pylint: disable=import-outside-toplevel
+        from .search.write_search_replace import WriteSearchReplace
+
+        return WriteSearchReplace(doc=self, desc=self.component.createReplaceDescriptor())  # type: ignore
+
+    def find_first(self, desc: XSearchDescriptor | WriteSearchReplace) -> WriteTextRange[WriteDoc] | None:
+        """
+        Searches the contained texts for the next occurrence of whatever is specified.
+
+        Args:
+            desc (XSearchDescriptor | WriteSearch | WriteReplace): The search descriptor.
+
+        Returns:
+            WriteTextRange | None: The found occurrence.
+
+        Note:
+            It is recommended to use the ``WriteSearch`` class to perform searches.
+            The :py:meth:`~write_doc.WriteDoc.create_search_descriptor` method creates an instance of ``WriteSearch``.
+
+        .. versionadded:: 0.30.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from .search.write_search_replace import WriteSearchReplace
+
+        if mInfo.Info.is_instance(desc, WriteSearchReplace):
+            desc_comp = cast("XSearchDescriptor", desc.component)
+        else:
+            desc_comp = cast("XSearchDescriptor", desc)
+        searchable = cast("XSearchable", self.component)
+        # result may be a text cursor but can be cast to XTextRange
+        result = mLo.Lo.qi(XTextRange, searchable.findFirst(desc_comp))
+        return None if result is None else WriteTextRange(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
+
+    def find_next(
+        self, start: XInterface | ComponentT, desc: XSearchDescriptor | WriteSearchReplace
+    ) -> WriteTextRange[WriteDoc] | None:
+        """
+        Searches the contained texts for the next occurrence of whatever is specified.
+
+        Args:
+            start (XInterface | ComponentT): The starting point of the search.
+                Any object that supports ``XInterface`` or an object that has a Component that supports ``XInterface``.
+            desc (XSearchDescriptor | WriteSearch | WriteReplace): The search descriptor.
+
+        Note:
+            It is recommended to use the ``WriteSearch`` class to perform searches.
+            The :py:meth:`~write_doc.WriteDoc.create_search_descriptor` method creates an instance of ``WriteSearch``.
+
+        .. versionadded:: 0.30.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from .search.write_search_replace import WriteSearchReplace
+
+        if mLo.Lo.qi(XInterface, start) is None:
+            start_component = cast(XInterface, start.component)  # type: ignore
+        else:
+            start_component = cast(XInterface, start)
+
+        if mInfo.Info.is_instance(desc, WriteSearchReplace):
+            desc_comp = cast("XSearchDescriptor", desc.component)
+        else:
+            desc_comp = cast("XSearchDescriptor", desc)
+
+        searchable = cast("XSearchable", self.component)
+        result = mLo.Lo.qi(XTextRange, searchable.findNext(start_component, desc_comp))
+        return None if result is None else WriteTextRange(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
+
+    def find_all(self, desc: XSearchDescriptor | WriteSearchReplace) -> WriteTextRanges | None:
+        """
+        Searches the contained texts for all occurrences of whatever is specified.
+
+        Args:
+            desc (XSearchDescriptor | WriteSearch | WriteReplace): The search descriptor.
+
+        Returns:
+            WriteTextRange | None: The found occurrences.
+
+        Note:
+            It is recommended to use the ``WriteSearch`` class to perform searches.
+            The :py:meth:`~write_doc.WriteDoc.create_search_descriptor` method creates an instance of ``WriteSearch``.
+
+        .. versionadded:: 0.30.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.write.write_text_ranges import WriteTextRanges
+        from .search.write_search_replace import WriteSearchReplace
+
+        if mInfo.Info.is_instance(desc, WriteSearchReplace):
+            desc_comp = cast("XSearchDescriptor", desc.component)
+        else:
+            desc_comp = cast("XSearchDescriptor", desc)
+
+        searchable = cast("XSearchable", self.component)
+        result = searchable.findAll(desc_comp)
+        return None if result is None else WriteTextRanges(owner=self, component=result)
 
     # endregion SearchablePartial Overrides
 
@@ -1206,4 +1343,5 @@ class WriteDoc(
 
 
 if mock_g.FULL_IMPORT:
-    from .search.write_search import WriteSearch
+    from .search.write_search_replace import WriteSearchReplace
+    from ooodev.write.write_text_ranges import WriteTextRanges

@@ -38,6 +38,17 @@ class ReplaceablePartial(SearchablePartial):
         """
         return ReplaceDescriptorComp(self.__component.createReplaceDescriptor())  # type: ignore
 
+    def set_replace_string(self, replace: str) -> None:
+        """
+        Sets the string to replace the found string with.
+
+        Args:
+            replace (str): The string to replace the found string with.
+        """
+        # not documented in the API
+        # https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Search_and_Replace
+        self.__component.setReplaceString(replace)  # type: ignore
+
     def replace_all(self, desc: XSearchDescriptor) -> int:
         """
         Searches and replace all occurrences of whatever is specified.

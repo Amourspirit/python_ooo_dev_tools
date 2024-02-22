@@ -3,7 +3,7 @@ from typing import cast, TYPE_CHECKING
 import uno
 from com.sun.star.uno import XInterface
 from com.sun.star.text import XTextRange
-from ooodev.adapter.util.search_descriptor_comp import SearchDescriptorComp
+from ooodev.adapter.util.replace_descriptor_comp import ReplaceDescriptorComp
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.write_text_range import WriteTextRange
@@ -13,13 +13,15 @@ from ..write_doc import WriteDoc
 
 if TYPE_CHECKING:
     from com.sun.star.util import XSearchable
+    from com.sun.star.util import XReplaceable
     from ooodev.proto.component_proto import ComponentT
-    from ooodev.adapter.container.index_access_comp import IndexAccessComp
+
+# https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Search_and_Replace
 
 
-class WriteSearch(WriteDocPropPartial, SearchDescriptorComp, LoInstPropsPartial):
+class WriteReplace(WriteDocPropPartial, ReplaceDescriptorComp, LoInstPropsPartial):
     """
-    Represents a writer search.
+    Represents a writer search and replace.
 
     .. versionadded:: 0.30.0
     """
@@ -33,9 +35,9 @@ class WriteSearch(WriteDocPropPartial, SearchDescriptorComp, LoInstPropsPartial)
         """
         WriteDocPropPartial.__init__(self, obj=doc)
         LoInstPropsPartial.__init__(self, lo_inst=self.write_doc.lo_inst)
-        SearchDescriptorComp.__init__(self, component=self.write_doc.component.createSearchDescriptor())  # type: ignore
+        ReplaceDescriptorComp.__init__(self, component=self.write_doc.component.createReplaceDescriptor())  # type: ignore
 
-    def find_first(self) -> WriteTextRange[WriteSearch] | None:
+    def find_first(self) -> WriteTextRange[WriteReplace] | None:
         """
         Finds the first occurrence of the search string.
 
@@ -48,7 +50,7 @@ class WriteSearch(WriteDocPropPartial, SearchDescriptorComp, LoInstPropsPartial)
         result = mLo.Lo.qi(XTextRange, searchable.findFirst(self.component))
         return None if result is None else WriteTextRange(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
-    def find_next(self, start: XInterface | ComponentT) -> WriteTextRange[WriteSearch] | None:
+    def find_next(self, start: XInterface | ComponentT) -> WriteTextRange[WriteReplace] | None:
         """
         Finds the first occurrence of the search string.
 
@@ -60,9 +62,9 @@ class WriteSearch(WriteDocPropPartial, SearchDescriptorComp, LoInstPropsPartial)
             XInterface | None: XInterface or None.
         """
         if mLo.Lo.qi(XInterface, start) is None:
-            start_component = cast("XInterface", start.component)  # type: ignore
+            start_component = cast(XInterface, start.component)  # type: ignore
         else:
-            start_component = cast("XInterface", start)
+            start_component = cast(XInterface, start)
 
         searchable = cast("XSearchable", self.write_doc.component)
         # result may be a text cursor but can be cast to XTextRange
@@ -79,3 +81,13 @@ class WriteSearch(WriteDocPropPartial, SearchDescriptorComp, LoInstPropsPartial)
         searchable = cast("XSearchable", self.write_doc.component)
         result = searchable.findAll(self.component)
         return None if result is None else WriteTextRanges(owner=self, component=result)
+
+    def replace_all(self) -> int:
+        """
+        Searches and replace all occurrences of whatever is specified.
+
+        Returns:
+            int: The number of replacements.
+        """
+        replaceable = cast("XReplaceable", self.write_doc.component)
+        return replaceable.replaceAll(self.component)

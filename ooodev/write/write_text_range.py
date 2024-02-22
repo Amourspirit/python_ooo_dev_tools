@@ -17,6 +17,7 @@ from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
+    from .write_text_cursor import WriteTextCursor
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -60,6 +61,21 @@ class WriteTextRange(
         StylePartial.__init__(self, component=component)
 
     # region Properties
+
+    def get_cursor(self) -> WriteTextCursor[WriteTextRange[T]]:
+        """
+        Gets a cursor for this text range.
+
+        Returns:
+            WriteTextCursor[WriteTextRange[T]]: The cursor.
+        """
+        # pylint: disable=import-outside-toplevel
+        # not concerned about compile import for WriteTextCursor
+        from .write_text_cursor import WriteTextCursor
+
+        cursor = self.write_doc.component.getText().createTextCursorByRange(self.component)
+        return WriteTextCursor(owner=self, component=cursor, lo_inst=self.lo_inst)
+
     @property
     def owner(self) -> T:
         """Owner of this component."""

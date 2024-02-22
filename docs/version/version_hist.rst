@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.30.0
+==============
+
+Added search and replace methods to ``WriteDoc`` and ``WriteTextViewCursor``.
+
+
 Version 0.29.0
 ==============
 

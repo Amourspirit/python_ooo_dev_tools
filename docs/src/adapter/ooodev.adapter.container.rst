@@ -17,6 +17,7 @@ Submodules
    ooodev.adapter.container.element_index_partial
    ooodev.adapter.container.enumeration_access_partial
    ooodev.adapter.container.enumeration_partial
+   ooodev.adapter.container.index_access_comp
    ooodev.adapter.container.index_access_partial
    ooodev.adapter.container.index_access_t
    ooodev.adapter.container.index_container_comp
