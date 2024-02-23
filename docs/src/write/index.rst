@@ -11,4 +11,5 @@ write
     export/index
     filter/index
     partial/index
+    search/index
     style/index

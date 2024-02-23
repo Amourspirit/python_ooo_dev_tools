@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, cast, Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
-
+from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.paragraph_cursor_partial import ParagraphCursorPartial
@@ -21,12 +21,14 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
+from ooodev.events.partial.events_partial import EventsPartial
 from .write_text import WriteText
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextCursor
     from ooodev.proto.style_obj import StyleT
+    from .style.direct.character_styler import CharacterStyler
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -34,6 +36,7 @@ T = TypeVar("T", bound="ComponentT")
 class WriteTextCursor(
     LoInstPropsPartial,
     WriteDocPropPartial,
+    EventsPartial,
     TextCursorPartial[T],
     Generic[T],
     TextCursorComp,
@@ -68,6 +71,7 @@ class WriteTextCursor(
         if not isinstance(owner, WriteDocPropPartial):
             raise TypeError("WriteDocPropPartial is not inherited by owner.")
         WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
+        EventsPartial.__init__(self)
         TextCursorPartial.__init__(self, owner=self._owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
         ParagraphCursorPartial.__init__(self, component, None)  # type: ignore
@@ -80,6 +84,7 @@ class WriteTextCursor(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
+        self._style_direct_character = None
 
     def __len__(self) -> int:
         with LoContext(self.lo_inst):
@@ -180,4 +185,24 @@ class WriteTextCursor(
         """Owner of this component."""
         return self._owner
 
+    @property
+    def style_direct_character(self) -> CharacterStyler:
+        """
+        Direct Character Styler.
+
+        Returns:
+            CharacterStyler: Character Styler
+        """
+        if self._style_direct_character is None:
+            # pylint: disable=import-outside-toplevel
+            from ooodev.write.style.direct.character_styler import CharacterStyler
+
+            self._style_direct_character = CharacterStyler(write_doc=self.write_doc, component=self.component)
+            self._style_direct_character.add_event_observers(self.event_observer)
+        return self._style_direct_character
+
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.write.style.direct.character_styler import CharacterStyler

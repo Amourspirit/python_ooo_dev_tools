@@ -161,10 +161,10 @@ class _event_base(object):
 
     def remove_observer(self, observer: EventObserver) -> bool:
         """
-        Removes an observer
+        Removes an observer.
 
         Args:
-            observer (EventObserver): One or more observers to add.
+            observer (EventObserver): Observers to remove.
 
         Returns:
             bool: ``True`` if observer has been removed; Otherwise, ``False``.

@@ -1263,6 +1263,9 @@ class Write(mSel.Selection):
         # paragraph styles need to capture the current paragraph setting and restore them.
         # other styles are handled by _append_text_style().
 
+        # paragraph break (UNICODE 0x000D). \r
+        # https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Control_Characters
+
         restore = False
 
         style_lst: List[StyleT] = []

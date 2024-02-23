@@ -1,14 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner.style_factory import chart2_position_size_position_factory
 from ooodev.loader import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -27,9 +23,11 @@ class Chart2PositionPartial:
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self.__lo_inst = lo_inst
-        self.__factory_name = factory_name
-        self.__component = component
+        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
+        self.__styler.after_event_name = "after_style_position"
+        self.__styler.before_event_name = "before_style_position"
 
     def style_position(self, x: float | UnitT, y: float | UnitT) -> PositionT | None:
         """
@@ -45,47 +43,7 @@ class Chart2PositionPartial:
         Returns:
             PositionT | None: Position instance or ``None`` if cancelled.
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        cargs = None
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_position.__qualname__)
-            event_data: Dict[str, Any] = {
-                "x": x,
-                "y": y,
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_position", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is True:
-                    return None
-                cargs.set("initial_event", "before_style_position")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style Position has been cancelled.")
-                else:
-                    return None
-            x = cargs.event_data.get("x", x)
-            y = cargs.event_data.get("y", y)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = chart2_position_size_position_factory(factory_name)
-        fe = styler(pos_x=x, pos_y=y)
-
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
-
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_position", EventArgs.from_args(cargs))  # type: ignore
-        return fe
+        return self.__styler.style(factory=chart2_position_size_position_factory, pos_x=x, pos_y=y)
 
     def style_position_get(self) -> PositionT | None:
         """
@@ -97,34 +55,4 @@ class Chart2PositionPartial:
         Returns:
             PositionT | None: Position style or ``None`` if cancelled.
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        cargs = None
-        if isinstance(self, EventsPartial):
-            cargs = CancelEventArgs(self.style_position_get.__qualname__)
-            event_data: Dict[str, Any] = {
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_position_get", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", "before_style_position_get")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
-                else:
-                    return None
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = chart2_position_size_position_factory(factory_name)
-        try:
-            style = styler.from_obj(comp)
-        except mEx.DisabledMethodError:
-            return None
-
-        style.set_update_obj(comp)
-        return style
+        return self.__styler.style_get(factory=chart2_position_size_position_factory)

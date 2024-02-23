@@ -6,7 +6,7 @@ Module for managing character Font position.
 
 # region Import
 from __future__ import annotations
-from typing import Any, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 from enum import Enum
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -16,11 +16,13 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.units import UnitT
 from ooodev.units import UnitPT
 from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
+
+if TYPE_CHECKING:
+    from ooodev.units import UnitT
 
 # endregion Import
 
@@ -58,7 +60,7 @@ class FontScriptKind(Enum):
 
 class FontPosition(StyleBase):
     """
-    Character Font Position
+    Character Font Position.
 
     Any properties starting with ``prop_`` set or get current instance values.
 
@@ -197,6 +199,7 @@ class FontPosition(StyleBase):
         Returns:
             FontPosition: ``FontPosition`` instance that represents ``obj`` font position.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -215,6 +218,7 @@ class FontPosition(StyleBase):
         set_prop("CharRotationIsFitToLine", inst)
         set_prop("CharKerning", inst)
         set_prop("CharAutoKerning", inst)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -636,6 +640,8 @@ class FontPosition(StyleBase):
     @property
     def default(self: _TFontPosition) -> _TFontPosition:  # type: ignore[misc]
         """Gets Font Position default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_instance
         except AttributeError:

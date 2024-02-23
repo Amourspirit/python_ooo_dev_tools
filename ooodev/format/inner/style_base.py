@@ -293,6 +293,20 @@ class StyleBase(metaclass=MetaStyle):
         """
         self._events.remove(event_name, callback)
 
+    def remove_event_observer(self, observer: EventObserver) -> bool:
+        """
+        Removes an observer.
+
+        Args:
+            observer (EventObserver): Observers to remove.
+
+        Returns:
+            bool: ``True`` if observer has been removed; Otherwise, ``False``.
+
+        .. versionadded:: 0.30.1
+        """
+        return self._events.remove_observer(observer)
+
     # endregion Events
 
     # region style property methods

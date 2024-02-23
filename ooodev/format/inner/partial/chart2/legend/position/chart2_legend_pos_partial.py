@@ -2,11 +2,13 @@ from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
+from ooodev.events.style_named_event import StyleNameEvent
 
 from ooodev.mock.mock_g import DOCS_BUILDING
 
@@ -68,6 +70,7 @@ class Chart2LegendPosPartial:
                 "this_component": comp,
             }
             cargs.event_data = event_data
+            self.trigger_event(StyleNameEvent.STYLE_APPLYING, cargs)
             self.trigger_event("before_style_chart2_legend_pos", cargs)
             if cargs.cancel is True:
                 if cargs.handled is not False:
@@ -94,6 +97,14 @@ class Chart2LegendPosPartial:
 
         fe.apply(comp)
         fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_chart2_legend_pos", EventArgs.from_args(cargs))  # type: ignore
+        if cargs is not None:
+            # pylint: disable=no-member
+            event_args = EventArgs.from_args(cargs)
+            event_args.event_data["styler_object"] = fe
+            self.trigger_event("after_style_chart2_legend_pos", event_args)  # type: ignore
+            self.trigger_event(StyleNameEvent.STYLE_APPLIED, event_args)  # type: ignore
         return fe
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.format.inner.direct.chart2.legend.position.position import Position

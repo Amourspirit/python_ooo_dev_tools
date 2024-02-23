@@ -1,17 +1,13 @@
 from __future__ import annotations
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner.style_factory import chart2_area_gradient_factory
 from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.color_range import ColorRange
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
@@ -38,9 +34,11 @@ class ChartFillGradientPartial:
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self.__lo_inst = lo_inst
-        self.__factory_name = factory_name
-        self.__component = component
+        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
+        self.__styler.after_event_name = "after_style_area_gradient"
+        self.__styler.before_event_name = "before_style_area_gradient"
 
     def _ChartFillGradientPartial__get_chart_doc(self) -> XChartDocument:
         if isinstance(self, ChartDocPropPartial):
@@ -92,70 +90,19 @@ class ChartFillGradientPartial:
             - ``Offset`` can be imported from ``ooodev.utils.data_type.offset``
         """
         doc = self._ChartFillGradientPartial__get_chart_doc()
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        cargs = None
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_area_gradient.__qualname__)
-            event_data: Dict[str, Any] = {
-                "style": style,
-                "step_count": step_count,
-                "offset": offset,
-                "angle": angle,
-                "border": border,
-                "grad_color": grad_color,
-                "grad_intensity": grad_intensity,
-                "name": name,
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_area_gradient", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_area_gradient")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Gradient has been cancelled.")
-                    else:
-                        return None
-                else:
-                    return None
-            style = cargs.event_data.get("style", style)
-            step_count = cargs.event_data.get("step_count", step_count)
-            offset = cargs.event_data.get("offset", offset)
-            angle = cargs.event_data.get("angle", angle)
-            border = cargs.event_data.get("border", border)
-            grad_color = cargs.event_data.get("grad_color", grad_color)
-            grad_intensity = cargs.event_data.get("grad_intensity", grad_intensity)
-            name = cargs.event_data.get("name", name)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = chart2_area_gradient_factory(factory_name)
-        fe = styler(
-            chart_doc=doc,
-            style=style,
-            step_count=step_count,
-            offset=offset,
-            angle=angle,
-            border=border,
-            grad_color=grad_color,
-            grad_intensity=grad_intensity,
-            name=name,
-        )
-
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
-
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_area_gradient", EventArgs.from_args(cargs))  # type: ignore
-        return fe
+        factory = chart2_area_gradient_factory
+        kwargs = {
+            "chart_doc": doc,
+            "style": style,
+            "step_count": step_count,
+            "offset": offset,
+            "angle": angle,
+            "border": border,
+            "grad_color": grad_color,
+            "grad_intensity": grad_intensity,
+            "name": name,
+        }
+        return self.__styler.style(factory=factory, **kwargs)
 
     def style_area_gradient_get(self) -> ChartFillGradientT | None:
         """
@@ -168,36 +115,7 @@ class ChartFillGradientPartial:
             ChartFillGradientT | None: Gradient style or ``None`` if cancelled.
         """
         doc = self._ChartFillGradientPartial__get_chart_doc()
-        comp = self.__component
-        factory_name = self.__factory_name
-        cargs = None
-        if isinstance(self, EventsPartial):
-            cargs = CancelEventArgs(self.style_area_gradient_get.__qualname__)
-            event_data: Dict[str, Any] = {
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_area_gradient_get", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", "before_style_area_gradient_get")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
-                else:
-                    return None
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = chart2_area_gradient_factory(factory_name)
-        try:
-            style = styler.from_obj(chart_doc=doc, obj=comp)
-        except mEx.DisabledMethodError:
-            return None
-        style.set_update_obj(comp)
-        return style
+        return self.__styler.style_get(factory=chart2_area_gradient_factory, chart_doc=doc)
 
     def style_area_gradient_from_preset(self, preset: PresetGradientKind) -> ChartFillGradientT | None:
         """
@@ -213,41 +131,14 @@ class ChartFillGradientPartial:
             - ``PresetGradientKind`` can be imported from ``ooodev.format.inner.preset.preset_gradient``
         """
         doc = self._ChartFillGradientPartial__get_chart_doc()
-        cargs = None
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        comp = self.__component
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_area_gradient.__qualname__)
-            event_data: Dict[str, Any] = {
-                "preset": preset,
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_area_gradient_from_preset", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_area_gradient_from_preset")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style Area Gradient has been cancelled.")
-                    else:
-                        return None
-                else:
-                    return None
-            preset = cargs.event_data.get("preset", preset)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
+        fe = self.__styler.style_get(
+            factory=chart2_area_gradient_factory,
+            call_method_name="from_preset",
+            event_name_suffix="_from_preset",
+            obj_arg_name="",
+            chart_doc=doc,
+            preset=preset,
+        )
 
-        styler = chart2_area_gradient_factory(factory_name)
-        fe = styler.from_preset(chart_doc=doc, preset=preset)
-
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_area_gradient_from_preset", EventArgs.from_args(cargs))  # type: ignore
+        self.__styler.style_apply(style=fe, chart_doc=doc, preset=preset)
         return fe

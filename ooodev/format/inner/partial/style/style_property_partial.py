@@ -3,13 +3,14 @@ from typing import Any, Dict
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.events.lo_events import event_ctx
 from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.events.props_named_event import PropsNamedEvent
+from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.events.lo_events import event_ctx
-from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-from ooodev.events.props_named_event import PropsNamedEvent
 
 
 class StylePropertyPartial:
@@ -38,13 +39,11 @@ class StylePropertyPartial:
 
         comp = self.__component
         prop_name = self.__property_name
-        has_events = False
         cancel_set_prop = False
         cargs = None
         prop_val = name
         prop_default = self.__property_default
         if isinstance(self, EventsPartial):
-            has_events = True
             cargs = CancelEventArgs(self.style_by_name.__qualname__)
             event_data: Dict[str, Any] = {
                 "name": prop_val,
@@ -53,6 +52,7 @@ class StylePropertyPartial:
                 "cancel_set_prop": cancel_set_prop,
             }
             cargs.event_data = event_data
+            self.trigger_event(StyleNameEvent.STYLE_NAME_APPLYING, cargs)
             self.trigger_event("before_style_by_name", cargs)
             if cargs.cancel is True:
                 if cargs.handled is True:
@@ -101,8 +101,11 @@ class StylePropertyPartial:
             ):
                 mProps.Props.set(comp, **{prop_name: name})
 
-        if has_events:
-            self.trigger_event("after_style_by_name", EventArgs.from_args(cargs))  # type: ignore
+        if cargs is not None:
+            # pylint: disable=no-member
+            event_args = EventArgs.from_args(cargs)
+            self.trigger_event("after_style_by_name", event_args)  # type: ignore
+            self.trigger_event(StyleNameEvent.STYLE_NAME_APPLIED, event_args)  # type: ignore
 
     def style_by_name_get(self) -> str:
         """
