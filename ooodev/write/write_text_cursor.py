@@ -186,7 +186,7 @@ class WriteTextCursor(
         return self._owner
 
     @property
-    def style_direct_character(self) -> CharacterStyler:
+    def style_direct_char(self) -> CharacterStyler:
         """
         Direct Character Styler.
 

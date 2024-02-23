@@ -1,33 +1,23 @@
 from __future__ import annotations
-from typing import Any
-from abc import ABC
+from typing import Any, Dict
 from ooodev.utils.gen_util import NULL_OBJ
 
-# pylint: disable=protected-access
-# pylint: disable=assigning-non-slot
 
+class TheDict:
+    """A partial class for implementing dictionary values"""
 
-class AbstractEvent(ABC):
-    # https://stackoverflow.com/questions/472000/usage-of-slots
-    __slots__ = ()
+    def __init__(self, values: Dict[str, Any] | None = None) -> None:
+        self._kv_data = values if values is not None else {}
 
-    def __init__(self, source: Any) -> None:
-        """
-        Constructor
+    def __getitem__(self, key: str) -> Any:
+        return self._kv_data.get(key, NULL_OBJ)
 
-        Args:
-            source (Any): Event Source
-        """
-        self.source = source
-        self._event_name = ""
-        self._event_source = None
-        self.event_data = None
-        self._kv_data = None
+    def __setitem__(self, key: str, value: Any) -> None:
+        self._kv_data[key] = value
 
-    source: Any
-    """Gets/Sets Event source"""
-    event_data: Any
-    """Gets/Sets any extra data associated with the event"""
+    def __delitem__(self, key: str) -> None:
+        if key in self._kv_data:
+            del self._kv_data[key]
 
     def get(self, key: str, default: Any = NULL_OBJ) -> Any:
         """
@@ -39,8 +29,6 @@ class AbstractEvent(ABC):
 
         Returns:
             Any: Data for ``key`` if found; Otherwise, if ``default`` is set then ``default``.
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             if default is NULL_OBJ:
@@ -61,8 +49,6 @@ class AbstractEvent(ABC):
 
         Returns:
             bool: ``True`` if values is written; Otherwise, ``False``
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             self._kv_data = {}
@@ -83,8 +69,6 @@ class AbstractEvent(ABC):
 
         Returns:
             bool: ``True`` if key exist; Otherwise ``False``
-
-        .. versionadded:: 0.9.0
         """
         return False if self._kv_data is None else key in self._kv_data
 
@@ -97,8 +81,6 @@ class AbstractEvent(ABC):
 
         Returns:
             bool: ``True`` if key was found and removed; Otherwise, ``False``
-
-        .. versionadded:: 0.9.0
         """
         if self._kv_data is None:
             return False
@@ -107,46 +89,22 @@ class AbstractEvent(ABC):
             return True
         return False
 
-    @property
-    def event_name(self) -> str:
+
+class TheDictionaryPartial:
+    """A partial class for implementing dictionary values"""
+
+    def __init__(self, values: Dict[str, Any] | None = None) -> None:
         """
-        Gets the event name for these args
-        """
-        return self._event_name
-
-    @property
-    def event_source(self) -> Any | None:
-        """
-        Gets the event source for these args
-        """
-        return self._event_source
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}: {self.event_name}>"
-
-
-class EventArgs(AbstractEvent):
-    """
-    Event Arguments Class
-    """
-
-    __slots__ = ("source", "_event_name", "event_data", "_event_source", "_kv_data")
-
-    @staticmethod
-    def from_args(args: AbstractEvent) -> EventArgs:
-        """
-        Gets a new instance from existing instance
+        Constructor
 
         Args:
-            args (AbstractEvent): Existing Instance
-
-        Returns:
-            EventArgs: args
+            values (Dict[str, Any] | None, optional): Dictionary Values. Defaults to None.
         """
-        eargs = EventArgs(source=args.source)
-        eargs._event_name = args.event_name
-        eargs._event_source = args.event_source
-        eargs.event_data = args.event_data
-        if args._kv_data is not None:
-            eargs._kv_data = args._kv_data.copy()
-        return eargs
+        self.__the_dict = None if values is None else TheDict(values)
+
+    @property
+    def extra_data(self) -> TheDict:
+        """Extra Data Key Value Pair Dictionary"""
+        if self.__the_dict is None:
+            self.__the_dict = TheDict()
+        return self.__the_dict

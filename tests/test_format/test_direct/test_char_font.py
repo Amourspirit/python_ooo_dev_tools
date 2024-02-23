@@ -682,8 +682,8 @@ def test_font_only_cursor(loader) -> None:
         Write.end_paragraph(cursor)
 
         if mSi.SysInfo.get_platform() == mSi.SysInfo.PlatformEnum.WINDOWS:
-            # Java Errors are occuring in linux.
-            # looks like xml conifuration of LibreOffice is not properly parsed.
+            # Java Errors are occurring in linux.
+            # looks like xml configuration of LibreOffice is not properly parsed.
             lang = FontLang().english_canada
             fo = FontOnly(name="Liberation Mono", font_style="Bold Italic", size=15.0, lang=lang)
             Write.append(cursor, "World")
