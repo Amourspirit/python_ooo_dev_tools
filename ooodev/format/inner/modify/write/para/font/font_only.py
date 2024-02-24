@@ -18,7 +18,7 @@ class FontOnly(ParaStyleBaseMulti):
 
     .. seealso::
 
-        - :ref:`help_writer_format_modify_para_font_only
+        - :ref:`help_writer_format_modify_para_font_only`
 
     .. versionadded:: 0.9.0
     """

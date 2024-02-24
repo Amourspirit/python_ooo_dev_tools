@@ -157,8 +157,17 @@ class ChartDataSeries(
 
         self._owner = owner
 
-    def __getitem__(self, index: int) -> ChartDataPoint:
-        return self.get_data_point_by_index(index)
+    def __getitem__(self, key: int) -> ChartDataPoint:
+        """
+        Gets the data point at the specified index.
+
+        Args:
+            key (int): The index. When getting by index can be a negative value to get from the end.
+
+        Returns:
+            ChartDataPoint: The sheet with the specified index or name.
+        """
+        return self.get_data_point_by_index(key)
 
     def get_data_points(self) -> List[ChartDataPoint]:
         """ "

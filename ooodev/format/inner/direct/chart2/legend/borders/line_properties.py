@@ -11,7 +11,7 @@ class LineProperties(ChartLineProperties):
     """
     This class represents the line properties of a chart Legend borders line properties.
 
-    .. seealos::
+    .. seealso::
 
         - :ref:`help_chart2_format_direct_legend_borders`
     """

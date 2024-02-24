@@ -31,7 +31,61 @@ class CharacterStyler(
     HighlightPartial,
     TheDictionaryPartial,
 ):
+    """
+    Character Styler class.
+
+    Class set various character properties.
+
+    Events are raises when a style is being applied and when a style has been applied.
+    The ``WriteNamedEvent.CHARACTER_STYLE_APPLYING`` event is raised before a style is applied.
+    The ``WriteNamedEvent.CHARACTER_STYLE_APPLIED`` event is raised after a style has been applied.
+    The event data is a dictionary that contains the following:
+
+    - ``cancel_apply``: If set to ``True`` the style will not be applied. This is only used in the ``CHARACTER_STYLE_APPLYING`` event.
+    - ``this_component``: The component that the style is being applied to. This is the normally same component passed to the constructor. Usually a ``XTextCursor``.
+    - ``styler_object``: The style that is being applied. This is ``None`` when ``CHARACTER_STYLE_APPLYING`` is raised. Is the style that was applied when ``CHARACTER_STYLE_APPLIED`` is raised.
+
+    Other style specific data is also in the dictionary such as the parameter values used to apply the style.
+
+    The ``event_args.event_source`` is the instance of the ``CharacterStyler`` class.
+
+
+    Subscribing to Events:
+
+    .. code-block:: python
+
+        from ooodev.events.write_named_event import WriteNamedEvent
+        # ... other code
+
+        def on_char_style_applied(src: Any, event_args: EventArgs) -> None:
+            styler = cast(CharacterStyler, src)
+            skip = styler.extra_data.get("skip", False)
+            if skip:
+                return
+            cursor = cast("XTextCursor", event_args.event_data.get("this_component", None))
+            if cursor is None:
+                return
+            cursor.gotoEnd(False)
+            styler.clear()
+            event_args.event_source
+
+        doc = WriteDoc.create_doc(visible=True)
+        cursor = doc.get_cursor()
+
+        # subscribe to the event that resets the cursor when a style is applied.
+        cursor.style_direct_char.subscribe_event(WriteNamedEvent.CHARACTER_STYLE_APPLIED, on_char_style_applied)
+        # or alternatively
+        # cursor.subscribe_event(WriteNamedEvent.CHARACTER_STYLE_APPLIED, on_char_style_applied)
+    """
+
     def __init__(self, write_doc: WriteDoc, component: Any) -> None:
+        """
+        Constructor.
+
+        Args:
+            write_doc (WriteDoc): Write Document instance.
+            component (Any): component instance. Usually a ``XTextCursor``.
+        """
         WriteDocPropPartial.__init__(self, obj=write_doc)
         EventsPartial.__init__(self)
 

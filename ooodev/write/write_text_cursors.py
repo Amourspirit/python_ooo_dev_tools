@@ -18,9 +18,6 @@ class WriteTextCursors(
     IndexAccessComp,
     WriteDocPropPartial,
     QiPartial,
-    FontOnlyPartial,
-    FontEffectsPartial,
-    FontPartial,
 ):
     """
     Class for managing Writer Forms.

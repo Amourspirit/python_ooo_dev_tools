@@ -43,15 +43,60 @@ class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
 
     def __next__(self) -> WriteForm:
+        """
+        Gets the next form.
+
+        Returns:
+            WriteForm: The next form.
+        """
         return WriteForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
 
-    def __getitem__(self, index: str | int) -> WriteForm:
-        if isinstance(index, int):
-            return self.get_by_index(index)
-        return self.get_by_name(index)
+    def __getitem__(self, key: str | int) -> WriteForm:
+        """
+        Gets the form at the specified index or name.
+
+        This is short hand for ``get_by_index()`` or ``get_by_name()``.
+
+        Args:
+            key (key, str, int): The index or name of the form. When getting by index can be a negative value to get from the end.
+
+        Returns:
+            WriteForm: The form with the specified index or name.
+
+        See Also:
+            - :py:meth:`~ooodev.write.WriteForms.get_by_index`
+            - :py:meth:`~ooodev.write.WriteForms.get_by_name`
+        """
+        if isinstance(key, int):
+            return self.get_by_index(key)
+        return self.get_by_name(key)
 
     def __len__(self) -> int:
+        """
+        Gets the number of forms in the document.
+
+        Returns:
+            int: Number of forms in the document.
+        """
         return self.component.getCount()
+
+    def __delitem__(self, _item: int | str) -> None:
+        """
+        Removes a form from the document.
+
+        Args:
+            _item (int | str): Index, or name, of the form.
+
+        Raises:
+            TypeError: If the item is not a supported type.
+        """
+        # Delete slide by index, name, or object
+        if isinstance(_item, int):
+            self.remove_by_index(_item)
+        elif isinstance(_item, str):
+            self.remove_by_name(_item)
+
+            raise TypeError(f"Unsupported type: {type(_item)}")
 
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:
         """

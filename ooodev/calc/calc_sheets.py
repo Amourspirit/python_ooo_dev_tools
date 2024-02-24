@@ -91,21 +91,53 @@ class CalcSheets(
         CalcDocPropPartial.__init__(self, obj=owner)
 
     def __next__(self) -> mCalcSheet.CalcSheet:
+        """
+        Gets the next sheet.
+
+        Returns:
+            CalcSheet: The next sheet.
+        """
         return mCalcSheet.CalcSheet(owner=self._owner, sheet=super().__next__(), lo_inst=self.lo_inst)
 
-    def __getitem__(self, index: str | int) -> mCalcSheet.CalcSheet:
-        if isinstance(index, int):
-            if index < 0:
-                index = len(self) + index
-            if index < 0:
-                raise IndexError("list index out of range")
-            return self.get_by_index(index)
-        return self.get_by_name(index)
+    def __getitem__(self, key: str | int) -> mCalcSheet.CalcSheet:
+        """
+        Gets the sheet at the specified index or name.
+
+        This is short hand for ``get_by_index()`` or ``get_by_name()``.
+
+        Args:
+            key (key, str, int): The index or name of the sheet. When getting by index can be a negative value to get from the end.
+
+        Returns:
+            CalcSheet: The sheet with the specified index or name.
+
+        See Also:
+            - :py:meth:`~ooodev.calc.CalcSheets.get_by_index`
+            - :py:meth:`~ooodev.calc.CalcSheets.get_by_name`
+        """
+        if isinstance(key, int):
+            return self.get_by_index(key)
+        return self.get_by_name(key)
 
     def __len__(self) -> int:
+        """
+        Gets the number of sheets in the document.
+
+        Returns:
+            int: Number of sheet in the document.
+        """
         return self.component.getCount()
 
     def __delitem__(self, _item: int | str | mCalcSheet.CalcSheet) -> None:
+        """
+        Removes a sheet from the document.
+
+        Args:
+            _item (int | str, CalcSheet): Index, name, or sheet to remove.
+
+        Raises:
+            TypeError: If the item is not a supported type.
+        """
         # using remove_sheet here instead of remove_by_name. This will force Calc module event to be fired.
         if isinstance(_item, (int, str)):
             self.remove_sheet(_item)

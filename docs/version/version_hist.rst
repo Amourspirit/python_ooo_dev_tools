@@ -2,6 +2,22 @@
 Version History
 ***************
 
+Version 0.30.3
+==============
+
+Minor updates and bug fixes.
+
+Breaking Changes
+----------------
+
+``ooodev.write.WriteText.create_text_cursor()`` now return instance of ``ooodev.write.WriteTextCursor[WriteText]`` instead
+of  ``XTextCursor``. Direct access to  can be done via ``WriteTextCursor.component``. or ``WriteText.component.createTextCursor()``.
+
+``ooodev.write.WriteText.create_text_cursor_by_range()`` now return instance of ``ooodev.write.WriteTextCursor[WriteText]`` instead
+of  ``XTextCursor``. Direct access to  can be done via ``WriteTextCursor.component``. or ``WriteText.component.create_text_cursor_by_range()``.
+
+
+
 Version 0.30.2
 ==============
 

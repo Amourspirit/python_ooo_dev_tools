@@ -69,15 +69,60 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDo
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 
     def __next__(self) -> CalcForm:
+        """
+        Gets the next form.
+
+        Returns:
+            CalcForm: The next form.
+        """
         return CalcForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
 
     def __getitem__(self, index: str | int) -> CalcForm:
+        """
+        Gets the form at the specified index or name.
+
+        This is short hand for ``get_by_index()`` or ``get_by_name()``.
+
+        Args:
+            key (key, str, int): The index or name of the form. When getting by index can be a negative value to get from the end.
+
+        Returns:
+            CalcForm: The form with the specified index or name.
+
+        See Also:
+            - :py:meth:`~ooodev.calc.CalcForms.get_by_index`
+            - :py:meth:`~ooodev.calc.CalcForms.get_by_name`
+        """
         if isinstance(index, int):
             return self.get_by_index(index)
         return self.get_by_name(index)
 
     def __len__(self) -> int:
+        """
+        Gets the number of forms in the document.
+
+        Returns:
+            int: Number of forms in the document.
+        """
         return self.component.getCount()
+
+    def __delitem__(self, _item: int | str) -> None:
+        """
+        Removes a form from the document.
+
+        Args:
+            _item (int | str): Index, or name, of the form.
+
+        Raises:
+            TypeError: If the item is not a supported type.
+        """
+        # Delete slide by index, name, or object
+        if isinstance(_item, int):
+            self.remove_by_index(_item)
+        elif isinstance(_item, str):
+            self.remove_by_name(_item)
+
+            raise TypeError(f"Unsupported type: {type(_item)}")
 
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:
         """

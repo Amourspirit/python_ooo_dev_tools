@@ -15,13 +15,8 @@ The CalcSheets class represents the collection of sheets in a Calc document.
 
 This class contains several python magic methods to make it behave like a collection.
 
-<<<<<<< HEAD
-Getting Number of Pages
-^^^^^^^^^^^^^^^^^^^^^^^
-=======
 Getting Number of Sheets
 ^^^^^^^^^^^^^^^^^^^^^^^^
->>>>>>> 0.18.3
 
 To get the number of pages in a draw document, use the built in ``len()`` method:
 
@@ -34,11 +29,7 @@ To get the number of pages in a draw document, use the built in ``len()`` method
 Getting a sheet
 ^^^^^^^^^^^^^^^
 
-<<<<<<< HEAD
-There are several ways to get a page from a Calc document.
-=======
 There are several ways to get a sheet from a Calc document.
->>>>>>> 0.18.3
 The simplest is to use the ``[]`` method:
 
 Get Sheet by Index.
@@ -109,3 +100,4 @@ Class Declaration
     :undoc-members:
     :show-inheritance:
     :inherited-members:
+    :special-members: __getitem__, __next__,  __len__, __delitem__

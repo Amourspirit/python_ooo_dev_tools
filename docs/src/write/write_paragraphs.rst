@@ -8,3 +8,4 @@ Class WriteParagraphs
     :undoc-members:
     :show-inheritance:
     :inherited-members:
+    :special-members: __next__
