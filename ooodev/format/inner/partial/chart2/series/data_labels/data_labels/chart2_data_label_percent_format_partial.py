@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -151,3 +152,7 @@ class Chart2DataLabelPercentFormatPartial:
 
         style.set_update_obj(comp)
         return style
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.percent_format import PercentFormat

@@ -1,8 +1,9 @@
 # region Import
 from __future__ import annotations
-from typing import Any, Tuple, TypeVar
+from typing import Any, Tuple
 
-
+import uno
+from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
@@ -13,8 +14,6 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
 
-import uno
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 # endregion Import
 

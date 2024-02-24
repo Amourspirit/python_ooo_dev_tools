@@ -13,7 +13,15 @@ if TYPE_CHECKING:
     from com.sun.star.container import XIndexAccess
 
 
-class WriteTextCursors(LoInstPropsPartial, IndexAccessComp, WriteDocPropPartial, QiPartial):
+class WriteTextCursors(
+    LoInstPropsPartial,
+    IndexAccessComp,
+    WriteDocPropPartial,
+    QiPartial,
+    FontOnlyPartial,
+    FontEffectsPartial,
+    FontPartial,
+):
     """
     Class for managing Writer Forms.
 

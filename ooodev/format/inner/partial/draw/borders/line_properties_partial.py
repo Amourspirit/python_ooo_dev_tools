@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
@@ -27,6 +28,8 @@ class LinePropertiesPartial:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         self.__styler = LineProperties(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
 
     def style_border_line(
         self,

@@ -2,13 +2,15 @@ from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 import uno
 
-from ooodev.events.gbl_named_event import GblNamedEvent
-from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.mock import mock_g
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
+from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from ooodev.format.inner.direct.calc.cell_protection.cell_protection import CellProtection
@@ -63,6 +65,7 @@ class CellProtectionPartial:
                 "cancel_apply": cancel_apply,
             }
             cargs.event_data = event_data
+            self.trigger_event(StyleNameEvent.STYLE_APPLYING, cargs)
             self.trigger_event("before_style_cell_protection", cargs)
             if cargs.cancel is True:
                 if cargs.handled is True:
@@ -92,8 +95,12 @@ class CellProtectionPartial:
             else:
                 fe.apply(comp)
         fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_cell_protection", EventArgs.from_args(cargs))  # type: ignore
+        if cargs is not None:
+            # pylint: disable=no-member
+            event_args = EventArgs.from_args(cargs)
+            event_args.event_data["styler_object"] = fe
+            self.trigger_event("after_style_cell_protection", event_args)  # type: ignore
+            self.trigger_event(StyleNameEvent.STYLE_APPLIED, event_args)  # type: ignore
         return fe
 
     def style_protection_get(self) -> CellProtection | None:
@@ -141,3 +148,7 @@ class CellProtectionPartial:
 
         style.set_update_obj(comp)
         return style
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.format.inner.direct.calc.cell_protection.cell_protection import CellProtection

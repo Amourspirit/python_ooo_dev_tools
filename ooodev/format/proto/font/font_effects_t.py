@@ -3,7 +3,7 @@ from typing import Any, overload, TYPE_CHECKING, Type
 import uno
 
 from ooodev.mock.mock_g import DOCS_BUILDING
-from ..style_t import StyleT
+from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self

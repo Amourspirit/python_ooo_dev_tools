@@ -1,10 +1,12 @@
 """
 Write Named Events.
 """
+
 from __future__ import annotations
+from typing import NamedTuple
 
 
-class FormatNamedEvent:
+class FormatNamedEvent(NamedTuple):
     """
     Named events for :py:class:`~.format.style_base.StyleBase` class
     """

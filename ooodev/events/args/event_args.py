@@ -3,6 +3,9 @@ from typing import Any
 from abc import ABC
 from ooodev.utils.gen_util import NULL_OBJ
 
+# pylint: disable=protected-access
+# pylint: disable=assigning-non-slot
+
 
 class AbstractEvent(ABC):
     # https://stackoverflow.com/questions/472000/usage-of-slots

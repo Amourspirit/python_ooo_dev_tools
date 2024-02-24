@@ -31,6 +31,8 @@ if TYPE_CHECKING:
     from ..proto.calc.alignment.text_orientation_t import TextOrientationT as CalcAlignOrientationT
     from ..proto.calc.alignment.properties_t import PropertiesT as CalcAlignPropertiesT
     from ..proto.calc.borders.borders_t import BordersT as CalcBordersT
+    from ..proto.write.char.font.font_position_t import FontPositionT as WriteCharFontPositionT
+    from ..proto.font.highlight_t import HighlightT as WriteCharFontHighlightT
 else:
     FontEffectsT = Any
     FontOnlyT = Any
@@ -57,6 +59,7 @@ else:
     CalcAlignOrientationT = Any
     CalcAlignPropertiesT = Any
     CalcBordersT = Any
+    WriteCharFontPositionT = Any
 
 # pylint: disable=import-outside-toplevel
 
@@ -139,6 +142,15 @@ def font_effects_factory(name: str) -> Type[FontEffectsT]:
         from ooodev.format.inner.direct.calc.char.font.font_effects import FontEffects
 
         return FontEffects
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def font_position_factory(name: str) -> Type[WriteCharFontPositionT]:
+    if name == "ooodev.write.char":
+        from ooodev.format.inner.direct.write.char.font.font_position import FontPosition
+
+        return FontPosition
 
     raise ValueError(f"Invalid name: {name}")
 
@@ -596,5 +608,14 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
         from ooodev.format.inner.direct.chart2.title.borders.line_properties import LineProperties
 
         return LineProperties
+
+    raise ValueError(f"Invalid name: {name}")
+
+
+def font_highlight_factory(name: str) -> Type[WriteCharFontHighlightT]:
+    if name == "ooodev.write.char":
+        from ooodev.format.inner.direct.write.char.highlight.highlight import Highlight
+
+        return Highlight
 
     raise ValueError(f"Invalid name: {name}")

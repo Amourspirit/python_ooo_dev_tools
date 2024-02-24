@@ -136,3 +136,6 @@ class WriteNamedEvent:
         - :py:meth:`WriteTextViewCursor.export_page_jpg() <ooodev.write.WriteTextViewCursor.export_page_jpg>`
         - :py:class:`PageJpg <ooodev.write.export.page_jpg.PageJpg>`
     """
+
+    CHARACTER_STYLE_APPLYING = "write_character_style_applying"
+    CHARACTER_STYLE_APPLIED = "write_character_style_applied"
