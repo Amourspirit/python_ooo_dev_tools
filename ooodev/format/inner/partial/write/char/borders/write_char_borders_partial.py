@@ -61,11 +61,11 @@ class WriteCharBordersPartial:
             - ``BorderLineKind`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Borders`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            ` ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Shadow`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Side`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``side``, can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``side`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Sides`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``ShadowLocation`` can be imported ``from ooo.dyn.table.shadow_location``
 
@@ -162,9 +162,9 @@ class WriteCharBordersPartial:
         Hint:
             - ``BorderLine`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``BorderLine2`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``BorderLineKind`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``BorderLineKind`` can be imported from `216+ `ooodev.format.writer.direct.char.borders``
             - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            ` ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Shadow`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``ShadowLocation`` can be imported ``from ooo.dyn.table.shadow_location``

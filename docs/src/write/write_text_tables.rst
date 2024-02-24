@@ -8,3 +8,4 @@ Class WriteTextTables
     :undoc-members:
     :show-inheritance:
     :inherited-members:
+    :special-members:  __next__

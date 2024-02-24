@@ -19,10 +19,21 @@ else:
 
 class FactoryStyler(FactoryNameBase):
     """
-    Class for Line Properties.
+    Class for Generic Styler.
+
+    This class is generally used as a helper to create partial classes that can style components,
+    such as, ``ooodev.format.inner.partial.font.font_only_partial.FontOnlyPartial``.
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
+        """
+        Constructor.
+
+        Args:
+            factory_name (str): The name that the factory will use to get a style object.
+            component (Any): The component the style will be applied to.
+            lo_inst (LoInst | None, optional): Loader instance. Defaults to None. Used in multi-document environments.
+        """
         super().__init__(factory_name, component, lo_inst)
         self.before_event_name = "before_style_border_line"
         self.after_event_name = "after_style_border_line"
@@ -141,7 +152,15 @@ class FactoryStyler(FactoryNameBase):
         return c_restore_args
 
     def style_apply(self, style: StyleT, **kwargs: Any) -> StyleT | None:
+        """
+        Applies a know style to this component.
 
+        Args:
+            style (StyleT): Style to Apply.
+
+        Returns:
+            StyleT | None: Style that was Applied or None if cancelled.
+        """
         comp = self._component
         factory_name = self._factory_name
         cancel_apply = False

@@ -40,12 +40,34 @@ class WriteTextRanges(LoInstPropsPartial, IndexAccessComp, WriteDocPropPartial, 
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
 
     def __next__(self) -> WriteTextRange:
+        """
+        Gets the next Text Range.
+
+        Returns:
+            WriteTextRange: Text Range instance.
+        """
         return WriteTextRange(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
 
-    def __getitem__(self, index: int) -> WriteTextRange:
-        return self.get_by_index(index)
+    def __getitem__(self, key: int) -> WriteTextRange:
+        """
+        Gets the element at the specified index.
+
+        Args:
+            key (int): The Zero-based index of the element. Key can be a negative value to index from the end of the list.
+                For example, -1 will return the last element.
+
+        Returns:
+            WriteTextRange: The element at the specified index.
+        """
+        return self.get_by_index(key)
 
     def __len__(self) -> int:
+        """
+        Gets the number of Text ranges in this instance.
+
+        Returns:
+            int: Number of Text ranges.
+        """
         return self.component.getCount()
 
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:

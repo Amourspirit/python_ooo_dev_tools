@@ -55,17 +55,53 @@ class CalcCharts(
 
     # region Iterable and Index Access
     def __next__(self) -> TableChart:
+        """
+        Gets the next chart.
+
+        Returns:
+            TableChart: The next chart.
+        """
         return TableChart(owner=self.calc_sheet, component=super().__next__(), lo_inst=self.lo_inst)
 
     def __getitem__(self, index: str | int) -> TableChart:
+        """
+        Gets the chart at the specified index or name.
+
+        This is short hand for ``get_by_index()`` or ``get_by_name()``.
+
+        Args:
+            key (key, str, int): The index or name of the chart. When getting by index can be a negative value to get from the end.
+
+        Returns:
+            TableChart: The chart with the specified index or name.
+
+        See Also:
+            - :py:meth:`~ooodev.calc.CalcCharts.get_by_index`
+            - :py:meth:`~ooodev.calc.CalcCharts.get_by_name`
+        """
         if isinstance(index, int):
             return self.get_by_index(index)
         return self.get_by_name(index)
 
     def __len__(self) -> int:
+        """
+        Gets the number of charts in the document.
+
+        Returns:
+            int: Number of charts in the document.
+        """
         return self.component.getCount()
 
     def __delitem__(self, _item: int | str | TableChart) -> None:
+        """
+        Removes a chart from the document.
+
+        Args:
+            _item (int | str, TableChart): Index, name, or TableChart to remove.
+
+        Raises:
+            TypeError: If the item is not a supported type.
+        """
         # using remove_sheet here instead of remove_by_name. This will force Calc module event to be fired.
         if isinstance(_item, str):
             self.remove_by_name(_item)

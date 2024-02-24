@@ -179,7 +179,10 @@ napoleon_include_init_with_doc = True
 autodoc_typehints = "description"
 
 # https://documentation.help/Sphinx/autodoc.html
-autoclass_content = "init"
+# possible values, "class", "init", "both"
+# class is default
+# see skip() method below
+autoclass_content = "class"
 
 
 # see: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_mock_imports
@@ -187,7 +190,7 @@ autoclass_content = "init"
 # on read the docs I was getting errors WARNING: autodoc: failed to import class - No module named 'uno'
 # solution autodoc_mock_imports, for some reason after adding uno, unohelper I also had to include com.
 # com.sun.star.__init__.py raises an Import error by design.
-autodoc_mock_imports = ["uno", "unohelper", "lxml", "com"]
+autodoc_mock_imports = ["uno", "unohelper", "com"]
 # also note that object can be mocked. See ooodev/utils/uno_enum.py
 
 # autodoc_type_aliases
@@ -315,3 +318,17 @@ intersphinx_mapping = {"odevguiwin": (odevgui_win_url, None)}
 copybutton_prompt_text = r">>> ?|\.\.\. ?|\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
 copybutton_prompt_is_regexp = True
 # endregion copybutton
+
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-python_display_short_literal_types
+python_display_short_literal_types = True
+
+
+def skip(app, what, name, obj, would_skip, options):
+    # https://stackoverflow.com/questions/5599254/how-to-use-sphinxs-autodoc-to-document-a-classs-init-self-method
+    if name == "__init__":
+        return False
+    return would_skip
+
+
+def setup(app):
+    app.connect("autodoc-skip-member", skip)

@@ -56,6 +56,12 @@ class WriteTextTables(Generic[T], LoInstPropsPartial, WriteDocPropPartial, TextC
         return mInfo.Info.support_service(element, "com.sun.star.text.Paragraph")
 
     def __next__(self) -> mWriteTextTable.WriteTextTable[T]:
+        """
+        Gets the next element.
+
+        Returns:
+            WriteTextTable[T]: Next element.
+        """
         result = super().__next__()
         return mWriteTextTable.WriteTextTable(owner=self.owner, component=result, lo_inst=self.lo_inst)
 

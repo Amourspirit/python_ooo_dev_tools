@@ -25,9 +25,9 @@ if TYPE_CHECKING:
 
 class WriteTextFrames(LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, QiPartial, ServicePartial):
     """
-    Class for managing Writer Forms.
+    Class for managing Writer Text Frames.
 
-    This class is Enumerable and returns ``WriteForm`` instance on iteration.
+    This class is Enumerable and returns ``WriteTextFrame[WriteDoc]`` instance on iteration.
     """
 
     def __init__(self, owner: WriteDoc, frames: XNameAccess, lo_inst: LoInst | None = None) -> None:
@@ -36,7 +36,7 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, Q
 
         Args:
             owner (WriteDoc): Owner Component
-            frames (XNameAccess): Forms instance.
+            frames (XNameAccess): Text Frames instance.
             lo_inst (LoInst, optional): Lo instance. Used when creating multiple documents. Defaults to ``None``.
         """
         if lo_inst is None:
@@ -48,14 +48,41 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, Q
         ServicePartial.__init__(self, component=frames, lo_inst=self.lo_inst)
 
     def __next__(self) -> WriteTextFrame[WriteDoc]:
+        """
+        Gets the next Text Frame.
+
+        Returns:
+            WriteTextFrame[WriteDoc]: The next Text Frame.
+        """
         return WriteTextFrame(owner=self.owner, component=super().__next__(), lo_inst=self.lo_inst)
 
     def __getitem__(self, index: str | int) -> WriteTextFrame[WriteDoc]:
+        """
+        Gets the Text Frame at the specified index or name.
+
+        This is short hand for ``get_by_index()`` or ``get_by_name()``.
+
+        Args:
+            key (key, str, int): The index or name of the form. When getting by index can be a negative value to get from the end.
+
+        Returns:
+            WriteTextFrame[WriteDoc]: The from with the specified index or name.
+
+        See Also:
+            - :py:meth:`~ooodev.write.WriteTextFrames.get_by_index`
+            - :py:meth:`~ooodev.write.WriteTextFrames.get_by_name`
+        """
         if isinstance(index, int):
             return self.get_by_index(index)
         return self.get_by_name(index)
 
     def __len__(self) -> int:
+        """
+        Gets the number of Text Frames in the document.
+
+        Returns:
+            int: Number of Text Frames in the document.
+        """
         return self.component.getCount()
 
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:

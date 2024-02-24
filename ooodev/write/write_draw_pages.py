@@ -46,16 +46,48 @@ class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiP
         self._current_index = 0
 
     def __getitem__(self, idx: int) -> WriteDrawPage[WriteDoc]:
+        """
+        Gets the draw page at the specified index.
+
+        This is short hand for ``get_by_index()``.
+
+        Args:
+            idx (int): The index of the draw page. Idx can be a negative value to get from the end of the document.
+
+        Returns:
+            WriteDrawPage[WriteDoc]: The drawpage with the specified index.
+
+        See Also:
+            - :py:meth:`~ooodev.write.WriteDrawPages.get_by_index`
+        """
         return self.get_by_index(idx=idx)
 
     def __len__(self) -> int:
+        """
+        Gets the number of draw pages in the document.
+
+        Returns:
+            int: Number of draw pages in the document.
+        """
         return self.component.getCount()
 
     def __iter__(self):
+        """
+        Iterates through the draw pages.
+
+        Returns:
+            WriteDrawPages: current instance.
+        """
         self._current_index = 0
         return self
 
     def __next__(self) -> WriteDrawPage[WriteDoc]:
+        """
+        Gets the next draw page.
+
+        Returns:
+            WriteDrawPage[WriteDoc]: The next draw page.
+        """
         if self._current_index >= len(self):
             self._current_index = 0
             raise StopIteration
@@ -63,6 +95,15 @@ class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiP
         return self[self._current_index - 1]
 
     def __delitem__(self, _item: int | WriteDrawPage[WriteDoc] | XDrawPage) -> None:
+        """
+        Removes a draw page from the document.
+
+        Args:
+            _item (int | WriteDrawPage[WriteDoc] | XDrawPage): Index, name, or object of the draw page.
+
+        Raises:
+            TypeError: If the item is not a supported type.
+        """
         # Delete slide by index, name, or object
         if mInfo.Info.is_instance(_item, int):
             self.delete_page(_item)

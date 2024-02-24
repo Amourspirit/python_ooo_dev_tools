@@ -17,6 +17,7 @@ from .calc_cell_text_cursor import CalcCellTextCursor as CalcCellTextCursor
 from .calc_doc import CalcDoc as CalcDoc
 from .calc_form import CalcForm as CalcForm
 from .calc_forms import CalcForms as CalcForms
+from .calc_charts import CalcCharts as CalcCharts
 from .calc_sheet import CalcSheet as CalcSheet
 from .calc_sheet_view import CalcSheetView as CalcSheetView
 from .calc_sheets import CalcSheets as CalcSheets
@@ -28,6 +29,7 @@ __all__ = [
     "CalcCellCursor",
     "CalcCellRange",
     "CalcCellTextCursor",
+    "CalcCharts",
     "CalcDoc",
     "CalcForm",
     "CalcForms",

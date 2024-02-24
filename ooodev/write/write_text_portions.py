@@ -58,6 +58,12 @@ class WriteTextPortions(Generic[T], LoInstPropsPartial, WriteDocPropPartial, Enu
         return mInfo.Info.support_service(element, "com.sun.star.text.TextPortion")
 
     def __next__(self) -> mWriteTextPortion.WriteTextPortion[T]:
+        """
+        Gets the next element.
+
+        Returns:
+            WriteTextPortion[T]: Next element.
+        """
         result = super().__next__()
         return mWriteTextPortion.WriteTextPortion(self.owner, result)
 

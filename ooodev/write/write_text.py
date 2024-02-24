@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, TypeVar, Generic, overload
+from typing import cast, TYPE_CHECKING, TypeVar, Generic, overload
 import uno
 from com.sun.star.text import XTextRange
 
@@ -8,6 +8,7 @@ from ooodev.adapter.text.text_comp import TextComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
@@ -17,7 +18,10 @@ from . import write_text_tables as mWriteTextTables
 
 if TYPE_CHECKING:
     from com.sun.star.text import XText
+    from com.sun.star.text import XTextRange
     from com.sun.star.text import XTextContent
+    from .write_text_cursor import WriteTextCursor
+    from .write_text_range import WriteTextRange
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -123,6 +127,44 @@ class WriteText(
             if rng is None:
                 raise TypeError("owner must be XTextRange when rng is None")
         TextComp.insert_text_content(self, rng, content, absorb)
+
+    # region SimpleTextPartial overrides
+    def create_text_cursor(self) -> WriteTextCursor[WriteText]:
+        """
+        Creates a new text cursor.
+
+        Returns:
+            WriteTextCursor[WriteText]: The new text cursor.
+        """
+        # pylint: disable=import-outside-toplevel
+        from .write_text_cursor import WriteTextCursor
+
+        cursor = self.component.createTextCursor()
+        return WriteTextCursor(owner=self, component=cursor, lo_inst=self.lo_inst)
+
+    def create_text_cursor_by_range(self, text_position: WriteTextRange | XTextRange) -> WriteTextCursor[WriteText]:
+        """
+        The initial position is set to ``text_position``.
+
+        Args:
+            text_position (WriteTextRange, XTextRange): The initial position of the new text cursor.
+
+        Returns:
+            WriteTextCursor[WriteText]: The new text cursor.
+        """
+        # pylint: disable=import-outside-toplevel
+        from .write_text_cursor import WriteTextCursor
+        from .write_text_range import WriteTextRange
+
+        if mInfo.Info.is_instance(text_position, WriteTextRange):
+            rng = cast("XTextRange", text_position.component)
+        else:
+            rng = cast("XTextRange", text_position)
+
+        cursor = self.component.createTextCursorByRange(rng)
+        return WriteTextCursor(owner=self, component=cursor, lo_inst=self.lo_inst)
+
+    # endregion SimpleTextPartial overrides
 
     # region Properties
     @property

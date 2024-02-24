@@ -21,7 +21,7 @@ class FontEffects(ParaStyleBaseMulti):
     """
     Style Font Effects
 
-    .. seealos::
+    .. seealso::
 
         - :ref:`help_writer_format_modify_para_font_effects`
 

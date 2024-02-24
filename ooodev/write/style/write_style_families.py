@@ -36,10 +36,7 @@ class WriteStyleFamilies(
             component (Any): UNO object that supports ``com.sun.star.text.Paragraph`` service.
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+        self._lo_inst = mLo.Lo.current_lo if lo_inst is None else lo_inst
         self.__owner = owner
         StyleFamiliesComp.__init__(self, component)
         IndexAccessPartial.__init__(self, component=self.component)  # type: ignore

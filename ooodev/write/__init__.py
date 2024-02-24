@@ -29,9 +29,11 @@ from .write_text import WriteText as WriteText
 from .write_text_content import WriteTextContent as WriteTextContent
 from .write_text_cursor import WriteTextCursor as WriteTextCursor
 from .write_text_frame import WriteTextFrame as WriteTextFrame
+from .write_text_frames import WriteTextFrames as WriteTextFrames
 from .write_text_portion import WriteTextPortion as WriteTextPortion
 from .write_text_portions import WriteTextPortions as WriteTextPortions
 from .write_text_range import WriteTextRange as WriteTextRange
+from .write_text_ranges import WriteTextRanges as WriteTextRanges
 from .write_text_table import WriteTextTable as WriteTextTable
 from .write_text_tables import WriteTextTables as WriteTextTables
 from .write_text_view_cursor import WriteTextViewCursor as WriteTextViewCursor
@@ -52,9 +54,11 @@ __all__ = [
     "WriteTextContent",
     "WriteTextCursor",
     "WriteTextFrame",
+    "WriteTextFrames",
     "WriteTextPortion",
     "WriteTextPortions",
     "WriteTextRange",
+    "WriteTextRanges",
     "WriteTextTable",
     "WriteTextTables",
     "WriteTextViewCursor",
