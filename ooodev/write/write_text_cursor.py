@@ -84,7 +84,7 @@ class WriteTextCursor(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
-        self._style_direct_character = None
+        self._style_direct_char = None
 
     def __len__(self) -> int:
         with LoContext(self.lo_inst):
@@ -193,13 +193,13 @@ class WriteTextCursor(
         Returns:
             CharacterStyler: Character Styler
         """
-        if self._style_direct_character is None:
+        if self._style_direct_char is None:
             # pylint: disable=import-outside-toplevel
             from ooodev.write.style.direct.character_styler import CharacterStyler
 
-            self._style_direct_character = CharacterStyler(write_doc=self.write_doc, component=self.component)
-            self._style_direct_character.add_event_observers(self.event_observer)
-        return self._style_direct_character
+            self._style_direct_char = CharacterStyler(write_doc=self.write_doc, component=self.component)
+            self._style_direct_char.add_event_observers(self.event_observer)
+        return self._style_direct_char
 
     # endregion Properties
 

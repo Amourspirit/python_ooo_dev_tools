@@ -10,6 +10,7 @@ from ooodev.format.inner.partial.calc.font.font_effects_partial import FontEffec
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.format.inner.partial.font.font_partial import FontPartial
 from ooodev.format.inner.partial.font.font_position_partial import FontPositionPartial
+from ooodev.format.inner.partial.font.highlight_partial import HighlightPartial
 from ooodev.format.inner.partial.write.char.borders.write_char_borders_partial import WriteCharBordersPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
@@ -27,6 +28,7 @@ class CharacterStyler(
     FontPartial,
     WriteCharBordersPartial,
     FontPositionPartial,
+    HighlightPartial,
     TheDictionaryPartial,
 ):
     def __init__(self, write_doc: WriteDoc, component: Any) -> None:
@@ -44,6 +46,9 @@ class CharacterStyler(
         )
         WriteCharBordersPartial.__init__(self, component=component)
         FontPositionPartial.__init__(
+            self, factory_name="ooodev.write.char", component=component, lo_inst=self.write_doc.lo_inst
+        )
+        HighlightPartial.__init__(
             self, factory_name="ooodev.write.char", component=component, lo_inst=self.write_doc.lo_inst
         )
         # The dictionary can be used to add extra data to the object. This is useful for event handling.
