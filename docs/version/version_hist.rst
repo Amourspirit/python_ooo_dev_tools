@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.30.2
+==============
+
+Added ``WriteTextViewCursor.style_direct_char`` that allows for direct character styling.
+
+Same as changes for ``WriteTextCursor`` in version ``0.30.1``.
+
 Version 0.30.1
 ==============
 
