@@ -106,6 +106,7 @@ def test_replace_regex(loader):
     delay = 0
     doc = WriteDoc.create_doc(loader)
     try:
+        # https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Control_Characters
         cursor = doc.get_cursor()
 
         cursor.append_para("abc")
@@ -128,13 +129,15 @@ def test_replace_regex2(loader):
     delay = 0
     doc = WriteDoc.create_doc(loader)
     try:
-        # It seems it not possible to replace a newline character.
-        # Although a newline Character can be found via the $ character,
+        # paragraph break (UNICODE 0x000D). \r
+        # It seems it not possible to replace a paragraph character (\r) but newline character is ok.
+        # Although a paragraph Character can be found via the $ character,
         # it cannot be replaced when replace is being called.
-        # This text matches lines that are a single digit that ends with \n.
-        # Because \n is not contained in the found match, it cannot be replaced directly.
+        # This text matches lines that are a single digit that ends with \r.
+        # Because \r is not contained in the found match, it cannot be replaced directly.
         # The solution here is to create a cursor that moves right by one character and then replace the text.
         # See: https://ask.libreoffice.org/t/find-replace-line-end-n-in-a-macro/102467
+        # https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Control_Characters
 
         cursor = doc.get_cursor()
 
@@ -164,6 +167,40 @@ def test_replace_regex2(loader):
             found = desc.find_next(found)
 
         cursor = doc.get_cursor()
+        s = cursor.get_all_text()
+        assert s == "1a\n2b\n3c\n"
+
+        Lo.delay(delay)
+    finally:
+        doc.close_doc()
+
+
+def test_replace_regex3(loader):
+    delay = 0
+    doc = WriteDoc.create_doc(loader)
+    try:
+        # in this test the characters are separated by \n.
+        # This means they can be found and replaced directly unlink \r in test_replace_regex2()
+
+        # Note UNO cursor.getString() replaces the \r with \n automatically even
+        # though \r is the paragraph break character.
+
+        cursor = doc.get_cursor()
+
+        cursor.append_para("1\na\n2\nb\n3\nc")
+
+        desc = doc.create_replace_descriptor()
+        desc.search_regular_expression = True
+
+        # match only lines that are a single digit.
+        desc.search_str = "([0-9])\\n"
+        desc.replace_str = "$1"
+        found = desc.find_first()
+        assert found is not None
+        finds = desc.find_all()
+        assert finds is not None
+        assert len(finds) == 3
+        desc.replace_all()
         s = cursor.get_all_text()
         assert s == "1a\n2b\n3c\n"
 

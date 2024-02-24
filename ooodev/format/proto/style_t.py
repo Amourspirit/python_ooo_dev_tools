@@ -5,6 +5,7 @@ import uno
 from ooodev.mock.mock_g import DOCS_BUILDING
 
 if TYPE_CHECKING or DOCS_BUILDING:
+    from typing_extensions import Protocol
     from com.sun.star.beans import PropertyValue
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
@@ -12,11 +13,6 @@ if TYPE_CHECKING or DOCS_BUILDING:
     from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
     from ooodev.format.inner.kind.format_kind import FormatKind
     from ooodev.proto.event_observer import EventObserver
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
     from ooodev.utils.type_var import EventCallback
 else:
     Protocol = object
@@ -153,6 +149,20 @@ class StyleT(Protocol):
         """
         ...
 
+    def remove_event_observer(self, observer: EventObserver) -> bool:
+        """
+        Removes an observer.
+
+        Args:
+            observer (EventObserver): Observers to remove.
+
+        Returns:
+            bool: ``True`` if observer has been removed; Otherwise, ``False``.
+
+        .. versionadded:: 0.30.1
+        """
+        ...
+
     def support_service(self, *service: str) -> bool:
         """
         Gets if service is supported.
@@ -203,7 +213,7 @@ class StyleT(Protocol):
         """
         ...
 
-    def restore(self, obj: Any, clear: bool = False) -> None:
+    def restore(self, obj: Any, clear: bool = ...) -> None:
         """
         Restores ``obj`` properties from backed up setting if any exist.
 

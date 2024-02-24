@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 
+from ooodev.mock import mock_g
 from ooodev.format.inner.style_factory import font_effects_factory
 from ooodev.loader import lo as mLo
-from ooodev.exceptions import ex as mEx
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
 
@@ -122,6 +122,7 @@ class FontEffectsPartial:
         Hint:
             - ``FontUnderlineEnum`` can be imported from ``ooo.dyn.awt.font_underline``
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
 
         factory = font_effects_factory
@@ -145,3 +146,7 @@ class FontEffectsPartial:
             FontEffectsT | None: Font Effect style or ``None`` if cancelled.
         """
         return self.__styler.style_get(factory=font_effects_factory)
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.format.inner.direct.write.char.font.font_effects import FontLine

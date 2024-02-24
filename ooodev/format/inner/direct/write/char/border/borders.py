@@ -59,7 +59,7 @@ class Borders(StyleMulti):
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             all (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            shadow (BorderShadow | None, optional): Character Shadow
+            shadow (Shadow | None, optional): Character Shadow
             padding (Padding | None, optional): Character padding
 
         Returns:
@@ -82,9 +82,9 @@ class Borders(StyleMulti):
         super().__init__(**init_vals)
 
         if sides.prop_has_attribs:
-            self._set_style("sides", sides, *sides.get_attrs())
+            self._set_style("sides", sides, *sides.get_attrs())  # type: ignore
         if padding is not None:
-            self._set_style("padding", padding, *padding.get_attrs())
+            self._set_style("padding", padding, *padding.get_attrs())  # type: ignore
         if shadow is not None:
             self._set_style("shadow", shadow, *shadow.get_attrs())
 
@@ -312,6 +312,8 @@ class Borders(StyleMulti):
     @property
     def default(self: _TBorders) -> _TBorders:  # type: ignore[misc]
         """Gets Default Border."""
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         try:
             return self._default_inst
         except AttributeError:

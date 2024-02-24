@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -47,6 +48,7 @@ class Chart2DataLabelAttribOptPartial:
             ``PlacementKind``, ``SeparatorKind`` and ``AttribOptions`` can be imported from ``ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options``
 
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options import AttribOptions
 
         comp = self.__component
@@ -88,3 +90,7 @@ class Chart2DataLabelAttribOptPartial:
         if has_events:
             self.trigger_event("after_style_chart2_data_label_attribute_opt", EventArgs.from_args(cargs))  # type: ignore
         return fe
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options import AttribOptions

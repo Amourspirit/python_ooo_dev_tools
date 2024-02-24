@@ -1,18 +1,20 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Callable
+from typing import Any, cast, Dict, TYPE_CHECKING, Callable
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.gbl_named_event import GblNamedEvent
-from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.format.inner.partial.factory_name_base import FactoryNameBase
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.format.proto.style_t import StyleT
 else:
     LoInst = Any
+    StyleT = Any
 
 
 class FactoryStyler(FactoryNameBase):
@@ -25,7 +27,7 @@ class FactoryStyler(FactoryNameBase):
         self.before_event_name = "before_style_border_line"
         self.after_event_name = "after_style_border_line"
 
-    def style(self, factory: Callable[[str], Any], **kwargs) -> Any:
+    def style(self, factory: Callable[[str], Any], **kwargs: Any) -> Any:
         """
         Style Font.
 
@@ -37,47 +39,144 @@ class FactoryStyler(FactoryNameBase):
         """
         comp = self._component
         factory_name = self._factory_name
-        has_events = False
-        cargs = None
-        event_data = kwargs.copy()
         cancel_apply = False
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style.__qualname__)
-            event_data["factory_name"] = factory_name
-            event_data["this_component"] = comp
-            event_data["cancel_apply"] = cancel_apply
 
-            cargs.event_data = event_data
-            self.trigger_event(self.before_event_name, cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", self.before_event_name)
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style has been cancelled.")
-                else:
-                    return None
-            comp = cargs.event_data.pop("this_component", comp)
-            factory_name = cargs.event_data.pop("factory_name", factory_name)
-            cancel_apply = cargs.event_data.pop("cancel_apply", cancel_apply)
-            event_data = cargs.event_data
+        cargs = self._pre_style(**kwargs)
+        if cargs is None:
+            return None
+        event_data = cast(Dict[str, Any], cargs.event_data.copy())
+        comp = event_data.pop("this_component", comp)
+        factory_name = event_data.pop("factory_name", factory_name)
+        cancel_apply = event_data.pop("cancel_apply", cancel_apply)
+        fe = event_data.pop("styler_object", None)
 
         styler = factory(factory_name)
-        fe = styler(**event_data)
+        if fe is None:
+            fe = styler(**event_data)
         # fe.factory_name = factory_name
 
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
-
+        fe.add_event_observer(self.event_observer)  # type: ignore
+        backup = False
         if not cancel_apply:
+            event_data["factory_name"] = factory_name
+            event_data["this_component"] = comp
+            event_data["styler_object"] = fe
+
+            c_backup_args = self._style_backup(fe, event_data)
+            backup = not c_backup_args.cancel
+
             with LoContext(self._lo_inst):
                 fe.apply(comp)
+
+            if backup:
+                _ = self._style_restore(style=fe, event_data=event_data, c_backup_args=c_backup_args)
+
         fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event(self.after_event_name, EventArgs.from_args(cargs))  # type: ignore
+        if cancel_apply is False:
+            event_data["styler_object"] = fe
+            event_data["this_component"] = comp
+            self._post_style(event_data)
         return fe
+
+    def _pre_style(self, **kwargs) -> CancelEventArgs | None:
+        comp = self._component
+        factory_name = self._factory_name
+        event_data = kwargs.copy()
+        cancel_apply = False
+        cargs = CancelEventArgs(self._pre_style.__qualname__)
+        event_data["factory_name"] = factory_name
+        event_data["this_component"] = comp
+        event_data["cancel_apply"] = cancel_apply
+        event_data["styler_object"] = None
+
+        cargs.event_data = event_data
+        self.trigger_event(StyleNameEvent.STYLE_APPLYING, cargs)
+        self.trigger_event(self.before_event_name, cargs)
+        if cargs.cancel is True:
+            if cargs.handled is not False:
+                return None
+            cargs.set("initial_event", self.before_event_name)
+            self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
+            if cargs.handled is False:
+                raise mEx.CancelEventError(cargs, "Style has been cancelled.")
+            else:
+                return None
+        return cargs
+
+    def _post_style(self, event_data: Dict[str, Any]):
+        event_args = EventArgs(source=self._post_style.__qualname__)
+        event_args.event_data = event_data
+        self.trigger_event(self.after_event_name, EventArgs.from_args(event_args))  # type: ignore
+        self.trigger_event(StyleNameEvent.STYLE_APPLIED, EventArgs.from_args(event_args))  # type: ignore
+
+    def _style_backup(self, style: StyleT, event_data: dict[str, Any]) -> CancelEventArgs:
+        comp = event_data["this_component"]
+        c_backup_args = CancelEventArgs(source=self._style_backup.__qualname__, cancel=True)
+
+        c_backup_args.event_data = event_data
+        self.trigger_event(StyleNameEvent.STYLE_BACKING_UP, c_backup_args)
+        self.trigger_event(f"{self.before_event_name}_backup", c_backup_args)
+        backup = not c_backup_args.cancel
+        if backup:
+            with LoContext(self._lo_inst):
+                style.backup(comp)
+            self.trigger_event(StyleNameEvent.STYLE_BACKED_UP, EventArgs.from_args(c_backup_args))
+        return c_backup_args
+
+    def _style_restore(
+        self, style: StyleT, event_data: Dict[str, Any], c_backup_args: CancelEventArgs
+    ) -> CancelEventArgs:
+        clear_on_restore = True
+        comp = event_data["this_component"]
+        event_data["clear_on_restore"] = clear_on_restore
+        c_restore_args = CancelEventArgs(source=self.style.__qualname__, cancel=True)
+        c_restore_args.event_data = event_data
+        self.trigger_event(StyleNameEvent.STYLE_RESTORING, c_restore_args)
+        self.trigger_event(f"{self.before_event_name}_restore", c_backup_args)
+        if c_restore_args.cancel is False:
+            clear_on_restore = c_restore_args.event_data.get("clear_on_restore", clear_on_restore)
+            with LoContext(self._lo_inst):
+                style.restore(comp, clear_on_restore)
+            self.trigger_event(StyleNameEvent.STYLE_RESTORED, EventArgs.from_args(c_restore_args))
+        return c_restore_args
+
+    def style_apply(self, style: StyleT, **kwargs: Any) -> StyleT | None:
+
+        comp = self._component
+        factory_name = self._factory_name
+        cancel_apply = False
+
+        cargs = self._pre_style(**kwargs)
+        if cargs is None:
+            return None
+        event_data = cast(Dict[str, Any], cargs.event_data.copy())
+        comp = event_data.pop("this_component", comp)
+        factory_name = event_data.pop("factory_name", factory_name)
+        cancel_apply = event_data.pop("cancel_apply", cancel_apply)
+
+        style.remove_event_observer(self.event_observer)  # type: ignore
+        style.add_event_observer(self.event_observer)  # type: ignore
+
+        backup = False
+        if not cancel_apply:
+            event_data["factory_name"] = factory_name
+            event_data["this_component"] = comp
+            event_data["styler_object"] = style
+
+            c_backup_args = self._style_backup(style, event_data)
+            backup = not c_backup_args.cancel
+
+            with LoContext(self._lo_inst):
+                style.apply(comp)
+
+            if backup:
+                _ = self._style_restore(style=style, event_data=event_data, c_backup_args=c_backup_args)
+        style.set_update_obj(comp)
+        if cancel_apply is False:
+            event_data["styler_object"] = style
+            event_data["this_component"] = comp
+            self._post_style(event_data)
+        return style
 
     def style_get(
         self,
@@ -85,7 +184,7 @@ class FactoryStyler(FactoryNameBase):
         call_method_name: str = "from_obj",
         event_name_suffix: str = "_get",
         obj_arg_name: str = "obj",
-        **kwargs,
+        **kwargs: Any,
     ) -> Any:
         """
         Gets the Style.
@@ -120,25 +219,24 @@ class FactoryStyler(FactoryNameBase):
         comp = self._component
         factory_name = self._factory_name
         cargs = None
-        if isinstance(self, EventsPartial):
-            cargs = CancelEventArgs(self.style_get.__qualname__)
-            event_data = {
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event(event_name, cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", event_name)
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
-                else:
-                    return None
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
+        cargs = CancelEventArgs(self.style_get.__qualname__)
+        event_data = {
+            "factory_name": factory_name,
+            "this_component": comp,
+        }
+        cargs.event_data = event_data
+        self.trigger_event(event_name, cargs)
+        if cargs.cancel is True:
+            if cargs.handled is not False:
+                return None
+            cargs.set("initial_event", event_name)
+            self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
+            if cargs.handled is False:
+                raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
+            else:
+                return None
+        factory_name = cargs.event_data.get("factory_name", factory_name)
+        comp = cargs.event_data.get("this_component", comp)
 
         styler = factory(factory_name)
         obj = kwargs.pop("obj", comp)

@@ -2,6 +2,33 @@
 Version History
 ***************
 
+Version 0.30.1
+==============
+
+Added ``WriteTextCursor.style_direct_char`` that allows for direct character styling.
+
+Example:
+
+.. code-block:: python
+
+    doc = WriteDoc.create_doc(visible=True)
+
+    cursor = doc.get_cursor()
+    cursor.append("hello")
+    cursor.go_left(5, True)
+    # font 30, bold, italic, underline, blue
+    cursor.style_direct_char.style_font_general(
+        size=30.0,
+        b=True,
+        i=True,
+        u=True,
+        color=StandardColor.BLUE,
+    )
+    cursor.goto_end()
+    # reset the style before adding more text
+    cursor.style_direct_char.clear()
+
+
 Version 0.30.0
 ==============
 

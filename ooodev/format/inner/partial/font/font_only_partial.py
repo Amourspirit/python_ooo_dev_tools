@@ -1,14 +1,10 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner.style_factory import font_only_factory
 from ooodev.loader import lo as mLo
-from ooodev.exceptions import ex as mEx
-from ooodev.utils.context.lo_context import LoContext
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -29,9 +25,11 @@ class FontOnlyPartial:
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self.__lo_inst = lo_inst
-        self.__factory_name = factory_name
-        self.__component = component
+        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
+        self.__styler.after_event_name = "after_style_font_only"
+        self.__styler.before_event_name = "before_style_font_only"
 
     def style_font(
         self,
@@ -58,56 +56,16 @@ class FontOnlyPartial:
         See Also:
             :py:class:`~ooodev.format.inner.direct.write.char.font.font_only.FontLang`
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        cargs = None
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_font.__qualname__)
-            event_data: Dict[str, Any] = {
-                "name": name,
-                "size": size,
-                "font_style": font_style,
-                "lang": lang,
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_font_only", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is True:
-                    return None
-                cargs.set("initial_event", "before_style_font_only")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
-                else:
-                    return None
-            name = cargs.event_data.get("name", name)
-            size = cargs.event_data.get("size", size)
-            font_style = cargs.event_data.get("font_style", font_style)
-            lang = cargs.event_data.get("lang", lang)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = font_only_factory(factory_name)
-        fe = styler(
-            name=name,
-            size=size,
-            font_style=font_style,
-            lang=lang,
-        )
-
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
-
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_font_only", EventArgs.from_args(cargs))  # type: ignore
-        return fe
+        kwargs = {}
+        if name is not None:
+            kwargs["name"] = name
+        if size is not None:
+            kwargs["size"] = size
+        if font_style is not None:
+            kwargs["font_style"] = font_style
+        if lang is not None:
+            kwargs["lang"] = lang
+        return self.__styler.style(factory=font_only_factory, **kwargs)
 
     def style_font_get(self) -> FontOnlyT | None:
         """
@@ -119,34 +77,4 @@ class FontOnlyPartial:
         Returns:
             FontOnlyT | None: Font style or ``None`` if cancelled.
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        cargs = None
-        if isinstance(self, EventsPartial):
-            cargs = CancelEventArgs(self.style_font_get.__qualname__)
-            event_data: Dict[str, Any] = {
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_font_only_get", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is True:
-                    return None
-                cargs.set("initial_event", "before_style_font_only_get")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
-                else:
-                    return None
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = font_only_factory(factory_name)
-        try:
-            style = styler.from_obj(comp)
-        except mEx.DisabledMethodError:
-            return None
-
-        style.set_update_obj(comp)
-        return style
+        return self.__styler.style_get(factory=font_only_factory)

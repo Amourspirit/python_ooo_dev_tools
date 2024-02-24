@@ -1,14 +1,10 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_factory import chart2_axis_pos_interval_factory
 from ooodev.loader import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
+from ooodev.format.inner.partial.factory_styler import FactoryStyler
 
 if TYPE_CHECKING:
     from ooo.dyn.chart.chart_axis_mark_position import ChartAxisMarkPosition
@@ -30,9 +26,11 @@ class Chart2AxisPosIntervalMarksPartial:
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        self.__lo_inst = lo_inst
-        self.__factory_name = factory_name
-        self.__component = component
+        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
+        self.__styler.after_event_name = "after_style_axis_pos_interval_marks"
+        self.__styler.before_event_name = "before_style_axis_pos_interval_marks"
 
     def style_axis_pos_interval_marks(
         self, major: MarkKind | None = None, minor: MarkKind | None = None, pos: ChartAxisMarkPosition | None = None
@@ -55,46 +53,11 @@ class Chart2AxisPosIntervalMarksPartial:
             - ``MarkKind`` can be imported from ``ooodev.format.inner.direct.chart2.axis.positioning.interval_marks``
             - ``ChartAxisMarkPosition`` can be imported from ``ooo.dyn.chart.chart_axis_mark_position``
         """
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        cargs = None
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_axis_pos_interval_marks.__qualname__)
-            event_data: Dict[str, Any] = {
-                "major": major,
-                "minor": minor,
-                "pos": pos,
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_axis_pos_interval_marks", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", "before_style_axis_pos_interval_marks")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style Event has been cancelled.")
-                else:
-                    return None
-            major = cargs.event_data.get("major", major)
-            minor = cargs.event_data.get("minor", minor)
-            pos = cargs.event_data.get("pos", pos)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = chart2_axis_pos_interval_factory(factory_name)
-        fe = styler(major=major, minor=minor, pos=pos)
-
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
-
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_axis_pos_interval_marks", EventArgs.from_args(cargs))  # type: ignore
-        return fe
+        kwargs = {}
+        if major is not None:
+            kwargs["major"] = major
+        if minor is not None:
+            kwargs["minor"] = minor
+        if pos is not None:
+            kwargs["pos"] = pos
+        return self.__styler.style(factory=chart2_axis_pos_interval_factory, **kwargs)

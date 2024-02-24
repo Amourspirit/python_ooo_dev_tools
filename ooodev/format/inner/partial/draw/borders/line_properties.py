@@ -8,7 +8,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.format.inner.style_factory import draw_border_line_factory
-from ooodev.loader import lo as mLo
+from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.utils import color as mColor
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.format.inner.partial.factory_name_base import FactoryNameBase
@@ -77,6 +77,7 @@ class LineProperties(FactoryNameBase):
                 "this_component": comp,
             }
             cargs.event_data = event_data
+            self.trigger_event(StyleNameEvent.STYLE_APPLYING, cargs)
             self.trigger_event(self.before_event_name, cargs)
             if cargs.cancel is True:
                 if cargs.handled is not False:
@@ -109,8 +110,12 @@ class LineProperties(FactoryNameBase):
         with LoContext(self._lo_inst):
             fe.apply(comp)
         fe.set_update_obj(comp)
-        if has_events:
+        if cargs is not None:
+            # pylint: disable=no-member
+            event_args = EventArgs.from_args(cargs)
+            event_args.event_data["styler_object"] = fe
             self.trigger_event(self.after_event_name, EventArgs.from_args(cargs))  # type: ignore
+            self.trigger_event(StyleNameEvent.STYLE_APPLIED, event_args)  # type: ignore
         return fe
 
     def style_get(self) -> LinePropertiesT | None:

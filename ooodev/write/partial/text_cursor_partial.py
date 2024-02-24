@@ -725,6 +725,8 @@ class TextCursorPartial(Generic[_T]):
             - :doc:`ooodev.format.writer.direct.char </src/format/ooodev.format.writer.direct.char>`
             - :doc:`ooodev.format.writer.direct.para </src/format/ooodev.format.writer.direct.para>`
         """
+        # paragraph break (UNICODE 0x000D). \r
+        # https://wiki.documentfoundation.org/Documentation/DevGuide/Text_Documents#Control_Characters
         if styles:
             mWrite.Write.append_para(self.__component, text, styles)
         else:
@@ -758,6 +760,9 @@ class TextCursorPartial(Generic[_T]):
         Returns:
             str: text
         """
+        # Note UNO cursor.getString() replaces the \r with \n automatically even
+        # though \r is the paragraph break character.
+
         self.__component.gotoStart(False)
         self.__component.gotoEnd(True)
         text = self.__component.getString()

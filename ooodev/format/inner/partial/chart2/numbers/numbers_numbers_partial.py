@@ -51,7 +51,7 @@ class NumbersNumbersPartial:
         lang_locale: Locale | None = None,
     ) -> NumbersT | None:
         """
-        Style Axis Line.
+        Style Numbers.
 
         Args:
             num_format (NumberFormatEnum, int, optional): Type of a number format.
@@ -65,7 +65,7 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number`` is cancelled and not handled.
 
         Returns:
-            LinePropertiesT | None: Font Only instance or ``None`` if cancelled.
+            NumbersT | None: Number Style instance or ``None`` if cancelled.
 
         Hint:
             - ``Locale`` can be imported from ``ooo.dyn.lang.locale``
@@ -93,7 +93,7 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number_get`` is cancelled and not handled.
 
         Returns:
-            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+            NumbersT | None: Numbers style or ``None`` if cancelled.
         """
         return self.__styler.style_get(
             factory=style_factory.chart2_series_data_labels_numbers_factory,
@@ -108,7 +108,7 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
 
         Returns:
-            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+            NumbersT | None: Numbers style or ``None`` if cancelled.
         """
         kwargs: Dict[str, Any] = {"index": idx}
         if locale is not None:
@@ -138,7 +138,7 @@ class NumbersNumbersPartial:
             CancelEventError: If the event ``before_style_number_number_from_index`` is cancelled and not handled.
 
         Returns:
-            TransparencyT | None: Area transparency style or ``None`` if cancelled.
+            NumbersT | None: Number style or ``None`` if cancelled.
         """
         kwargs: Dict[str, Any] = {"nf_str": nf_str, "auto_add": auto_add, "source_format": source_format}
         if locale is not None:

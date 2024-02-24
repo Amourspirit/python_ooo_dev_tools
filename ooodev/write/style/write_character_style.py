@@ -3,15 +3,15 @@ from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
 
-if TYPE_CHECKING:
-    from com.sun.star.style import XStyle
-
 from ooodev.adapter.style.character_style_comp import CharacterStyleComp
 from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.loader.inst.lo_inst import LoInst
+
+if TYPE_CHECKING:
+    from com.sun.star.style import XStyle
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -28,10 +28,7 @@ class WriteCharacterStyle(Generic[T], CharacterStyleComp, QiPartial, PropPartial
             component (XStyle): UNO object that supports ``com.sun.star.style.CharacterStyle`` service.
             lo_inst (LoInst, optional): Lo instance. Defaults to ``None``.
         """
-        if lo_inst is None:
-            self._lo_inst = mLo.Lo.current_lo
-        else:
-            self._lo_inst = lo_inst
+        self._lo_inst = mLo.Lo.current_lo if lo_inst is None else lo_inst
         self._owner = owner
         CharacterStyleComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self._lo_inst)  # type: ignore

@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 import uno
 
+
+from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -44,6 +46,7 @@ class Chart2DataLabelOrientationPartial:
             - ``DirectionModeKind`` can be imported from ``ooodev.format.inner.direct.chart2.title.alignment.direction``
             - ``Orientation`` can be imported from ``ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation``
         """
+        # pylint: disable=import-outside-toplevel
         from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation import Orientation
 
         comp = self.__component
@@ -61,13 +64,12 @@ class Chart2DataLabelOrientationPartial:
             cargs.event_data = event_data
             self.trigger_event("before_style_chart2_data_label_orientation", cargs)
             if cargs.cancel is True:
+                if cargs.handled is True:
+                    return None
+                cargs.set("initial_event", "before_style_chart2_data_label_orientation")
+                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
-                    cargs.set("initial_event", "before_style_chart2_data_label_orientation")
-                    self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                    if cargs.handled is False:
-                        raise mEx.CancelEventError(cargs, "Style has been cancelled.")
-                    else:
-                        return None
+                    raise mEx.CancelEventError(cargs, "Style has been cancelled.")
                 else:
                     return None
             angle = cargs.event_data.get("angle", angle)
@@ -89,3 +91,7 @@ class Chart2DataLabelOrientationPartial:
         if has_events:
             self.trigger_event("after_style_chart2_data_label_orientation", EventArgs.from_args(cargs))  # type: ignore
         return fe
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation import Orientation

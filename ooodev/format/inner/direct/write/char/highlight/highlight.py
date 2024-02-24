@@ -36,7 +36,7 @@ class Highlight(StyleBase):
         Constructor
 
         Args:
-            color (:py:data:`~.utils.color.Color`, optional): Highlight Color. A value of ``-1`` Set color to Transparent.
+            color (~ooodev.utils.color.Color, optional): Highlight Color. A value of ``-1`` Set color to Transparent.
 
         Returns:
             None:
@@ -120,6 +120,7 @@ class Highlight(StyleBase):
         Returns:
             Highlight: Highlight that represents ``obj`` Highlight.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -137,7 +138,7 @@ class Highlight(StyleBase):
         Gets copy of instance with color set.
 
         Args:
-            value (int): color value. If value is less than zero it means no color.
+            value (~ooodev.utils.color.Color): color value. If value is less than zero it means no color.
 
         Returns:
             Highlight: Highlight instance
@@ -174,6 +175,8 @@ class Highlight(StyleBase):
     @property
     def empty(self: _THighlight) -> _THighlight:  # type: ignore[misc]
         """Gets Highlight empty."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._empty_inst
         except AttributeError:
