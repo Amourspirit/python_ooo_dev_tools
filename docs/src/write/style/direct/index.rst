@@ -1,6 +1,6 @@
-.. _ns_write_style:
+.. _ns_write_style_direct:
 
-style
+direct
 =====
 
 .. toctree::
@@ -8,4 +8,3 @@ style
     :glob:
 
     *
-    direct/index

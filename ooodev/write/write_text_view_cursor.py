@@ -28,6 +28,7 @@ from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument
+    from .style.direct.character_styler import CharacterStyler
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -75,6 +76,7 @@ class WriteTextViewCursor(
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         EventsPartial.__init__(self)
+        self._style_direct_char = None
 
     def __len__(self) -> int:
         with LoContext(self.lo_inst):
@@ -179,6 +181,9 @@ class WriteTextViewCursor(
         See Also:
             :py:class:`~ooodev.write.export.page_png.PagePng`
         """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=unused-argument
+        # pylint: disable=redefined-outer-name
         if not isinstance(self.owner, mWriteDoc.WriteDoc):
             raise TypeError(f"Owner must be of type {mWriteDoc.WriteDoc.__name__}")
 
@@ -266,6 +271,9 @@ class WriteTextViewCursor(
         See Also:
             :py:class:`~ooodev.write.export.page_jpg.PageJpg`
         """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=unused-argument
+        # pylint: disable=redefined-outer-name
         if not isinstance(self.owner, mWriteDoc.WriteDoc):
             raise TypeError(f"Owner must be of type {mWriteDoc.WriteDoc.__name__}")
 
@@ -293,9 +301,26 @@ class WriteTextViewCursor(
         """Owner of this component."""
         return self._owner
 
+    @property
+    def style_direct_char(self) -> CharacterStyler:
+        """
+        Direct Character Styler.
+
+        Returns:
+            CharacterStyler: Character Styler
+        """
+        if self._style_direct_char is None:
+            # pylint: disable=import-outside-toplevel
+            from ooodev.write.style.direct.character_styler import CharacterStyler
+
+            self._style_direct_char = CharacterStyler(write_doc=self.write_doc, component=self.component)
+            self._style_direct_char.add_event_observers(self.event_observer)
+        return self._style_direct_char
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
+    from ooodev.write.style.direct.character_styler import CharacterStyler
     from .export.page_png import PagePng
     from .export.page_jpg import PageJpg
