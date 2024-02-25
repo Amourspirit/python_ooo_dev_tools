@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.proto.write.char.font.font_position_t
    ooodev.format.proto.write.char.font.font_t
 
 Module contents

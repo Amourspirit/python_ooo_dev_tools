@@ -14,6 +14,8 @@ Subpackages
    ooodev.format.inner.partial.font
    ooodev.format.inner.partial.numbers
    ooodev.format.inner.partial.position_size
+   ooodev.format.inner.partial.style
+   ooodev.format.inner.partial.write
 
 Submodules
 ----------

@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.30.4
+==============
+
+Minor updates. Better support for compiled script via the ``oooscript`` command line tool.
+
 Version 0.30.3
 ==============
 
