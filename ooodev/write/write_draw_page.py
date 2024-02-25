@@ -67,13 +67,34 @@ class WriteDrawPage(
         self._forms = None
 
     def __len__(self) -> int:
+        """
+        Gets the number of shapes in the draw page.
+
+        Returns:
+            int: Number of shapes in the draw page.
+        """
         return self.get_count()
 
-    def __getitem__(self, index: int) -> ShapeBase[WriteDrawPage[_T]]:
-        shape = self.component.getByIndex(index)  # type: ignore
+    def __getitem__(self, idx: int) -> ShapeBase[WriteDrawPage[_T]]:
+        """
+        Gets the shape at the specified index.
+
+        Args:
+            idx (int): The index of the shape.
+
+        Returns:
+            ShapeBase[WriteDrawPage[_T]]: _description_
+        """
+        shape = self.component.getByIndex(idx)  # type: ignore
         return self.shape_factory(shape)
 
     def __next__(self) -> ShapeBase[WriteDrawPage[_T]]:
+        """
+        Gets the next shape in the draw page.
+
+        Returns:
+            ShapeBase[WriteDrawPage[_T]]: The next shape in the draw page.
+        """
         shape = super().__next__()
         return self.shape_factory(shape)
 

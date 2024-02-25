@@ -15,7 +15,7 @@ DOCS_BUILDING = ON_RTD or LOCAL_DOCS_BUILDING
 
 FULL_IMPORT = os.environ.get("SCRIPT_MERGE_ENVIRONMENT", None) == "1"
 """
-This is True if ``oooscriptmerge`` is compiling the script and all late imports should be imported while this set; Otherwise, False.
+This is True if ``oooscript`` is compiling the script and all late imports should be imported while this set; Otherwise, False.
 
 Requires oooscript version 1.1.4 or later.
 
