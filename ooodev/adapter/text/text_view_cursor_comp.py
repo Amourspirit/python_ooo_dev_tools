@@ -1,14 +1,14 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 
 # from .text_cursor_comp import TextCursorComp
-from . import text_view_cursor_partial as mTextViewCursorPartial
-from .page_cursor_partial import PageCursorPartial
+from ooodev.adapter.text import text_view_cursor_partial as mTextViewCursorPartial
+from ooodev.adapter.text.page_cursor_partial import PageCursorPartial
 from ooodev.adapter.view.screen_cursor_partial import ScreenCursorPartial
 
 # from .word_cursor_partial import WordCursorPartial
 
-from .text_range_comp import TextRangeComp
+from ooodev.adapter.text.text_range_comp import TextRangeComp
 
 # from .text_cursor_partial import TextCursorPartial
 # from .sentence_cursor_partial import SentenceCursorPartial
@@ -57,6 +57,7 @@ class TextViewCursorComp(
         @property
         def component(self) -> TextViewCursor:
             """Sheet Cell Cursor Component"""
+            # pylint: disable=no-member
             return cast("TextViewCursor", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

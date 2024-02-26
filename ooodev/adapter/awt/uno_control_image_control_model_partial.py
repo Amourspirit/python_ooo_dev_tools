@@ -6,7 +6,7 @@ from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
-from .uno_control_model_partial import UnoControlModelPartial
+from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic

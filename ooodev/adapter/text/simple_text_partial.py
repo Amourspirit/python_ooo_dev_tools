@@ -1,14 +1,11 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import uno
 
-# com.sun.star.text.ControlCharacter
+from com.sun.star.text import XSimpleText
 from ooo.dyn.text.control_character import ControlCharacterEnum
 
-from com.sun.star.text import XSimpleText
-from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from .text_range_partial import TextRangePartial
+from ooodev.adapter.text.text_range_partial import TextRangePartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor

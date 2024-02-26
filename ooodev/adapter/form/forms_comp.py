@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter.component_base import ComponentBase
-from .forms_partial import FormsPartial
+from ooodev.adapter.form.forms_partial import FormsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form import Forms
@@ -38,6 +38,7 @@ class FormsComp(ComponentBase, FormsPartial):
     @property
     def component(self) -> Forms:
         """Forms Component"""
+        # pylint: disable=no-member
         return cast("Forms", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

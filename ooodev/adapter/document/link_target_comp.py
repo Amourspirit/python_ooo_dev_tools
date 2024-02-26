@@ -24,6 +24,7 @@ class LinkTargetComp(ComponentBase, PropertyChangeImplement, VetoableChangeImple
             component (Any): UNO component that supports ``com.sun.star.document.LinkTarget`` service.
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -38,6 +39,7 @@ class LinkTargetComp(ComponentBase, PropertyChangeImplement, VetoableChangeImple
     @property
     def component(self) -> LinkTarget:
         """LinkTarget Component"""
+        # pylint: disable=no-member
         return cast("LinkTarget", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

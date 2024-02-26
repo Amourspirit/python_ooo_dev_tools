@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.drawing import XDrawPage
 
-from .shapes_partial import ShapesPartial
+from ooodev.adapter.drawing.shapes_partial import ShapesPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

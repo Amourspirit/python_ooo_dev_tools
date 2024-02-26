@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
-from .tree_edit_listener import TreeEditListener
+from ooodev.adapter.awt.tree.tree_edit_listener import TreeEditListener
 
 # pylint: disable=useless-import-alias, unused-import
-from .tree_edit_listener import NodeEditedArgs as NodeEditedArgs
+from ooodev.adapter.awt.tree.tree_edit_listener import NodeEditedArgs as NodeEditedArgs
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tree import XTreeControl

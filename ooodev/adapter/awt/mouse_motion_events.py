@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from .mouse_motion_listener import MouseMotionListener
+from ooodev.adapter.awt.mouse_motion_listener import MouseMotionListener
 
 if TYPE_CHECKING:
     from com.sun.star.presentation import XSlideShowView

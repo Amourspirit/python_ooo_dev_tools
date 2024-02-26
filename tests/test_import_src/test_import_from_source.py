@@ -20,3 +20,7 @@ def test_dummy() -> None:
 @pytest.mark.parametrize("module", get_modules("ooodev"))
 def test_eval(module: str):
     _test_imports_from_source(module)
+
+
+def test_eval2():
+    _test_imports_from_source("ooodev.write.style.write_style_family")

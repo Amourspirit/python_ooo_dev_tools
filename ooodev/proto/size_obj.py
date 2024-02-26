@@ -35,4 +35,7 @@ class SizeClass(Protocol):
         raise NotImplementedError()
 
 
-SizeObj = Union[SizeStruct, SizeClass]
+if TYPE_CHECKING:
+    SizeObj = Union[SizeStruct, SizeClass]
+else:
+    SizeObj = object

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 import uno
 
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
-from ..text_field_comp import TextFieldComp
+from ooodev.adapter.text.text_field_comp import TextFieldComp
 
 if TYPE_CHECKING:
     from com.sun.star.text.textfield import PageNumber  # service
@@ -83,6 +83,7 @@ class PageNumberComp(TextFieldComp):
         @property
         def component(self) -> PageNumber:
             """PageNumber Component"""
+            # pylint: disable=no-member
             return cast("PageNumber", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

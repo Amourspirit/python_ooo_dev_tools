@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.frame import XDesktop2
 
-from .dispatch_provider_partial import DispatchProviderPartial
-from .dispatch_provider_interception_partial import DispatchProviderInterceptionPartial
-from .frames_supplier_partial import FramesSupplierPartial
-from .desktop_partial import DesktopPartial
-from .component_loader_partial import ComponentLoaderPartial
+from ooodev.adapter.frame.dispatch_provider_partial import DispatchProviderPartial
+from ooodev.adapter.frame.dispatch_provider_interception_partial import DispatchProviderInterceptionPartial
+from ooodev.adapter.frame.frames_supplier_partial import FramesSupplierPartial
+from ooodev.adapter.frame.desktop_partial import DesktopPartial
+from ooodev.adapter.frame.component_loader_partial import ComponentLoaderPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

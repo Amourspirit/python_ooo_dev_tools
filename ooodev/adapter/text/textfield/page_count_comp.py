@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 import uno
 
 # com.sun.star.style.NumberingType
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
-from ..text_field_comp import TextFieldComp
+from ooodev.adapter.text.text_field_comp import TextFieldComp
 
 if TYPE_CHECKING:
     from com.sun.star.text.textfield import PageCount  # service
@@ -51,6 +51,7 @@ class PageCountComp(TextFieldComp):
         @property
         def component(self) -> PageCount:
             """PageCount Component"""
+            # pylint: disable=no-member
             return cast("PageCount", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

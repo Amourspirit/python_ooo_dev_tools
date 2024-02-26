@@ -4,7 +4,7 @@ from typing import Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from typing_extensions import Protocol
     from ooodev.events.args.event_args_t import EventArgsT
-    from ..utils.type_var import EventCallback
+    from ooodev.utils.type_var import EventCallback
 else:
     Protocol = object
     EventArgsT = Any

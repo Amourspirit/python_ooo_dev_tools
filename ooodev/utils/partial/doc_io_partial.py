@@ -9,7 +9,6 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from ooodev.loader.inst import Service as LoService
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo

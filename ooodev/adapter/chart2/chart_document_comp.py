@@ -3,9 +3,9 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.style.style_families_supplier_partial import StyleFamiliesSupplierPartial
 from ooodev.adapter.util.number_formats_supplier_partial import NumberFormatsSupplierPartial
-from .chart_document_partial import ChartDocumentPartial
-from .data.data_receiver_partial import DataReceiverPartial
-from .titled_partial import TitledPartial
+from ooodev.adapter.chart2.chart_document_partial import ChartDocumentPartial
+from ooodev.adapter.chart2.data.data_receiver_partial import DataReceiverPartial
+from ooodev.adapter.chart2.titled_partial import TitledPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import ChartDocument  # service
@@ -49,6 +49,7 @@ class ChartDocumentComp(
     @property
     def component(self) -> ChartDocument:
         """ChartDocument Component"""
+        # pylint: disable=no-member
         return cast("ChartDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

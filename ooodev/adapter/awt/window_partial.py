@@ -6,7 +6,7 @@ from com.sun.star.awt import XWindow
 from ooo.dyn.awt.pos_size import PosSize
 
 from ooodev.utils.type_var import UnoInterface
-from .control_partial import ControlPartial
+from ooodev.adapter.awt.control_partial import ControlPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XFocusListener

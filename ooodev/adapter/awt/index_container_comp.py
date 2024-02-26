@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 
 from ooodev.adapter.component_base import ComponentBase
-from .uno_control_dialog_partial import UnoControlDialogPartial
+from ooodev.adapter.awt.uno_control_dialog_partial import UnoControlDialogPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog

@@ -5,7 +5,7 @@ import uno
 from com.sun.star.container import XIndexReplace
 
 from ooodev.utils.type_var import UnoInterface
-from .index_access_partial import IndexAccessPartial
+from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 
 
 class IndexReplacePartial(IndexAccessPartial):

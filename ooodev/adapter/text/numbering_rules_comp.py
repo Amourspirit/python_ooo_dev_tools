@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.index_replace_partial import IndexReplacePartial
 
@@ -37,6 +37,7 @@ class NumberingRulesComp(ComponentBase, IndexReplacePartial):
     @property
     def component(self) -> NumberingRules:
         """Sheet Cell Cursor Component"""
+        # pylint: disable=no-member
         return cast("NumberingRules", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

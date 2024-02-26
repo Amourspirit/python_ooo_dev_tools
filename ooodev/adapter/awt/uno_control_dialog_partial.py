@@ -4,10 +4,10 @@ import uno
 
 from com.sun.star.awt import XUnoControlDialog
 from ooodev.adapter.container.control_container_partial import ControlContainerPartial
-from .dialog2_partial import Dialog2Partial
-from .control_partial import ControlPartial
-from .window_partial import WindowPartial
-from .top_window_partial import TopWindowPartial
+from ooodev.adapter.awt.dialog2_partial import Dialog2Partial
+from ooodev.adapter.awt.control_partial import ControlPartial
+from ooodev.adapter.awt.window_partial import WindowPartial
+from ooodev.adapter.awt.top_window_partial import TopWindowPartial
 
 
 if TYPE_CHECKING:

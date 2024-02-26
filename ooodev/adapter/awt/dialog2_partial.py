@@ -3,7 +3,7 @@ from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.awt import XDialog2
-from .dialog_partial import DialogPartial
+from ooodev.adapter.awt.dialog_partial import DialogPartial
 
 
 if TYPE_CHECKING:

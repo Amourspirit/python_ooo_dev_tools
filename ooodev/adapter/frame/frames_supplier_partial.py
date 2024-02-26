@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.frame import XFramesSupplier
 
-from .frame_partial import FramePartial
+from ooodev.adapter.frame.frame_partial import FramePartial
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XFrame

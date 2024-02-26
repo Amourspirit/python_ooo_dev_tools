@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
-from . import text_range_partial as mTextRangePartial
+from ooodev.adapter.text import text_range_partial as mTextRangePartial
 
 
 if TYPE_CHECKING:

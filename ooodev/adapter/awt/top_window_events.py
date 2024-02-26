@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.awt import XExtendedToolkit
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.loader import lo as mLo
-from .top_window_listener import TopWindowListener
+from ooodev.adapter.awt.top_window_listener import TopWindowListener
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT

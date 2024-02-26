@@ -13,7 +13,7 @@ from ooodev.write.style.write_style import WriteStyle
 from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
-    from ..write_doc import WriteDoc
+    from ooodev.write.write_doc import WriteDoc
 
 T = TypeVar("T", bound="ComponentT")
 

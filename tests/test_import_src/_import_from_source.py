@@ -52,12 +52,17 @@ class _ImportFromSourceChecker(NodeVisitor):
 
         self._module = module if is_pkg else ".".join(module.split(".")[:-1])
         self._top_level_module = self._module.split(".")[0]
+        if module_spec is not None and hasattr(module_spec, "origin"):
+            self._module_file = module_spec.origin  # type: ignore
+        else:
+            self._module_file = ""
 
     def visit_ImportFrom(self, node: ImportFrom) -> Any:
         # Check that there are no relative imports that attempt to read from a parent module. We've found that there
         # generally is no good reason to have such imports.
         if node.level >= 2:
             raise ValueError(
+                f"{self._module_file} "
                 f"Import in {self._module} attempts to import from parent module using relative import. Please "
                 f"switch to absolute import instead."
             )
@@ -98,6 +103,7 @@ class _ImportFromSourceChecker(NodeVisitor):
             # matches the place we *should* import from.
             should_import_from = self._get_module_should_import(module_to_import=attribute_module)
             assert module_to_import == should_import_from, (
+                f"{self._module_file} "
                 f"Imported {alias.name} from {module_to_import}, which is not the public module where this object "
                 f"is defined. Please import from {should_import_from} instead."
             )

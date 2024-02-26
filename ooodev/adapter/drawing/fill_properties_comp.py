@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 
-from .fill_properties_partial import FillPropertiesPartial
+from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties  # service
@@ -37,6 +37,7 @@ class FillPropertiesComp(ComponentBase, FillPropertiesPartial):
     @property
     def component(self) -> FillProperties:
         """FillProperties Component"""
+        # pylint: disable=no-member
         return cast("FillProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

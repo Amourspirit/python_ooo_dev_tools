@@ -35,6 +35,7 @@ class DataSourceComp(ComponentBase, DataSourcePartial):
     @property
     def component(self) -> DataSource:
         """DataSource Component"""
+        # pylint: disable=no-member
         return cast("DataSource", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

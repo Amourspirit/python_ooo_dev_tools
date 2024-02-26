@@ -3,7 +3,7 @@ import contextlib
 from typing import TYPE_CHECKING
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
-from .uno_control_model_partial import UnoControlModelPartial
+from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlContainerModel  # Service

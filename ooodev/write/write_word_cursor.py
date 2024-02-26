@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
 
-from ooodev.mock import mock_g
 from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial

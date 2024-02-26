@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.container.named_partial import NamedPartial
@@ -27,6 +27,7 @@ class TextFrameComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
         """
 
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -43,6 +44,7 @@ class TextFrameComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
     @property
     def component(self) -> TextFrame:
         """TextFrame Component"""
+        # pylint: disable=no-member
         return cast("TextFrame", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

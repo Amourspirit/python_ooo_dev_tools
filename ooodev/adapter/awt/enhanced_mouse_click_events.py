@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from .enhanced_mouse_click_handler import EnhancedMouseClickHandler
+from ooodev.adapter.awt.enhanced_mouse_click_handler import EnhancedMouseClickHandler
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XEnhancedMouseClickBroadcaster

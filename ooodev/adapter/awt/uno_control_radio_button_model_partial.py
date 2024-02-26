@@ -12,8 +12,8 @@ from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.kind.state_kind import StateKind
 from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
-from .uno_control_model_partial import UnoControlModelPartial
-from .font_descriptor_comp import FontDescriptorComp
+from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
+from ooodev.adapter.awt.font_descriptor_comp import FontDescriptorComp
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlRadioButtonModel  # Service

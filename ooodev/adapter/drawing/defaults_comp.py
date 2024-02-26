@@ -33,6 +33,7 @@ class DefaultsComp(ComponentBase):
     @property
     def component(self) -> Defaults:
         """Defaults Component"""
+        # pylint: disable=no-member
         return cast("Defaults", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

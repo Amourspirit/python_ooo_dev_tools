@@ -44,8 +44,8 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.data_type.size import Size
-from ooodev.loader.inst import DocType
-from ooodev.loader.inst import Service as LoService
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -86,7 +86,7 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchable
     from ooo.dyn.view.paper_format import PaperFormat
     from ooodev.proto.style_obj import StyleT
-    from ooodev.loader.inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.write.search.write_search_replace import WriteSearchReplace
     from ooodev.proto.component_proto import ComponentT
     from ooodev.write.write_text_ranges import WriteTextRanges

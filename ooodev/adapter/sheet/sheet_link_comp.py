@@ -26,6 +26,7 @@ class SheetLinkComp(ComponentBase, RefreshEvents, PropertyChangeImplement, Vetoa
             component (SheetLink): UNO Sheet Link Component
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         RefreshEvents.__init__(self, trigger_args=generic_args, cb=self._on_sheet_link_events_add_remove)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -49,6 +50,7 @@ class SheetLinkComp(ComponentBase, RefreshEvents, PropertyChangeImplement, Vetoa
     @property
     def component(self) -> SheetLink:
         """Sheet Link Component"""
+        # pylint: disable=no-member
         return cast("SheetLink", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

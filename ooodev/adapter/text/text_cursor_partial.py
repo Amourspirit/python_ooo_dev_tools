@@ -4,7 +4,7 @@ import uno
 
 from com.sun.star.text import XTextCursor
 
-from . import text_range_partial as mTextRangeComp
+from ooodev.adapter.text import text_range_partial as mTextRangeComp
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextRange

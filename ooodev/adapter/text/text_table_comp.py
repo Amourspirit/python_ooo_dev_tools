@@ -5,7 +5,7 @@ from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeE
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.table.cell_comp import CellComp
 from ooodev.adapter.container.named_partial import NamedPartial
-from .text_content_comp import TextContentComp
+from ooodev.adapter.text.text_content_comp import TextContentComp
 
 
 if TYPE_CHECKING:
@@ -29,6 +29,7 @@ class TextTableComp(TextContentComp, ChartDataChangeEventEvents, NamedPartial):
         """
 
         TextContentComp.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ChartDataChangeEventEvents.__init__(
             self, trigger_args=generic_args, cb=self._on_chart_data_change_event_add_remove
@@ -99,6 +100,7 @@ class TextTableComp(TextContentComp, ChartDataChangeEventEvents, NamedPartial):
         @property
         def component(self) -> TextTable:
             """TextTable Component"""
+            # pylint: disable=no-member
             return cast("TextTable", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

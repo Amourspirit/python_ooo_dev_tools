@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
-from .form_comp import FormComp
-from ..reset_partial import ResetPartial
-from ..loadable_partial import LoadablePartial
-from ..load_events import LoadEvents
+from ooodev.adapter.form.component.form_comp import FormComp
+from ooodev.adapter.form.reset_partial import ResetPartial
+from ooodev.adapter.form.loadable_partial import LoadablePartial
+from ooodev.adapter.form.load_events import LoadEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.sdbc.result_set_update_partial import ResultSetUpdatePartial
 from ooodev.adapter.sdbcx.delete_rows_partial import DeleteRowsPartial
@@ -46,6 +46,7 @@ class DataFormComp(
         DeleteRowsPartial.__init__(self, component=self.component, interface=None)
         ResultSetAccessPartial.__init__(self, component=self.component, interface=None)
         ParametersSupplierPartial.__init__(self, component=self.component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         LoadEvents.__init__(self, trigger_args=generic_args, cb=self._on_event_load_add_remove)
 
@@ -72,6 +73,7 @@ class DataFormComp(
         @property
         def component(self) -> DataForm:
             """DataForm Component"""
+            # pylint: disable=no-member
             return cast("DataForm", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

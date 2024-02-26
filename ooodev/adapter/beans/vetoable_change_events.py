@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from .vetoable_change_listener import VetoableChangeListener
+from ooodev.adapter.beans.vetoable_change_listener import VetoableChangeListener
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT

@@ -38,6 +38,7 @@ class ErrorBarComp(
             component = lo_inst.create_instance_mcf(XPropertySet, "com.sun.star.chart2.ErrorBar", raise_err=True)
         LinePropertiesComp.__init__(self, component)  # type: ignore
         PropertySetPartial.__init__(self, component=component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
@@ -52,6 +53,7 @@ class ErrorBarComp(
     @property
     def component(self) -> ErrorBar:
         """ErrorBar Component"""
+        # pylint: disable=no-member
         return cast("ErrorBar", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

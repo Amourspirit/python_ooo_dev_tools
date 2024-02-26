@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
-from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
 
 
@@ -38,6 +37,7 @@ class StyleFamilyComp(ComponentBase, NameAccessPartial):
     @property
     def component(self) -> StyleFamily:
         """StyleFamily Component"""
+        # pylint: disable=no-member
         return cast("StyleFamily", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

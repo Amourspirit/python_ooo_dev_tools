@@ -3,10 +3,10 @@ from typing import Dict, TypedDict
 import uno
 from com.sun.star.beans import XPropertySet
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 
 # from .property_change_listener import PropertyChangeListener
-from .property_change_events import PropertyChangeEvents
+from ooodev.adapter.beans.property_change_events import PropertyChangeEvents
 
 
 class _PropertyDict(TypedDict):

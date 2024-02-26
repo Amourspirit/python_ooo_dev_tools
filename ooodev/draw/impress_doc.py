@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
     from com.sun.star.presentation import XPresentation2
     from com.sun.star.presentation import XSlideShowController
-    from ooodev.loader.inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class ImpressDoc(

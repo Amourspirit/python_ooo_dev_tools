@@ -3,7 +3,7 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.document.office_document_comp import OfficeDocumentComp
-from .spreadsheet_document_settings_comp import SpreadsheetDocumentSettingsComp
+from ooodev.adapter.sheet.spreadsheet_document_settings_comp import SpreadsheetDocumentSettingsComp
 
 
 if TYPE_CHECKING:
@@ -25,6 +25,7 @@ class SpreadsheetDocumentComp(OfficeDocumentComp, PropertyChangeImplement, Vetoa
             component (SpreadsheetDocument): UNO Spreadsheet Document Component
         """
         OfficeDocumentComp.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

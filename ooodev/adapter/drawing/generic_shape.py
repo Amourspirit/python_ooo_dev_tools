@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import Any, TypeVar, Generic
+from typing import TypeVar, Generic
 from ooodev.adapter.component_base import ComponentBase
-from .shape_partial import ShapePartial
-from .shape_descriptor_partial import ShapeDescriptorPartial
+from ooodev.adapter.drawing.shape_partial import ShapePartial
+from ooodev.adapter.drawing.shape_descriptor_partial import ShapeDescriptorPartial
 from ooodev.adapter.text.text_partial import TextPartial
 
 
@@ -44,6 +44,7 @@ class GenericShapeComp(
     @property
     def component(self) -> T:
         """ClosedBezierShape Component"""
+        # pylint: disable=no-member
         return self._ComponentBase__get_component()  # type: ignore
 
     # endregion Properties

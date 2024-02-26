@@ -1,5 +1,4 @@
 from __future__ import annotations
-import contextlib
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.awt.tab_controller_model_partial import TabControllerModelPartial
 from ooodev.adapter.beans.property_bag_partial import PropertyBagPartial
@@ -65,6 +64,7 @@ class FormComp(
         EventAttacherManagerPartial.__init__(self, component=component, interface=None)
         TabControllerModelPartial.__init__(self, component=component, interface=None)
         FormPartial.__init__(self, component=component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         EventEvents.__init__(self, trigger_args=generic_args, cb=self._on_event_events_add_remove)
         ContainerEvents.__init__(self, trigger_args=generic_args, cb=self._on_container_events_add_remove)
@@ -96,6 +96,7 @@ class FormComp(
     @property
     def component(self) -> Form:
         """Form Component"""
+        # pylint: disable=no-member
         return cast("Form", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

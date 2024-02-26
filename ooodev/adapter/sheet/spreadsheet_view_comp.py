@@ -11,15 +11,15 @@ from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
 from ooodev.adapter.view.selection_supplier_partial import SelectionSupplierPartial
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from .activation_broadcaster_partial import ActivationBroadcasterPartial
-from .activation_event_events import ActivationEventEvents
-from .enhanced_mouse_click_broadcaster_partial import EnhancedMouseClickBroadcasterPartial
-from .range_selection_change_events import RangeSelectionChangeEvents
-from .range_selection_partial import RangeSelectionPartial
-from .spreadsheet_view_pane_comp import SpreadsheetViewPaneComp
-from .spreadsheet_view_partial import SpreadsheetViewPartial
-from .view_freezable_partial import ViewFreezablePartial
-from .view_splitable_partial import ViewSplitablePartial
+from ooodev.adapter.sheet.activation_broadcaster_partial import ActivationBroadcasterPartial
+from ooodev.adapter.sheet.activation_event_events import ActivationEventEvents
+from ooodev.adapter.sheet.enhanced_mouse_click_broadcaster_partial import EnhancedMouseClickBroadcasterPartial
+from ooodev.adapter.sheet.range_selection_change_events import RangeSelectionChangeEvents
+from ooodev.adapter.sheet.range_selection_partial import RangeSelectionPartial
+from ooodev.adapter.sheet.spreadsheet_view_pane_comp import SpreadsheetViewPaneComp
+from ooodev.adapter.sheet.spreadsheet_view_partial import SpreadsheetViewPartial
+from ooodev.adapter.sheet.view_freezable_partial import ViewFreezablePartial
+from ooodev.adapter.sheet.view_splitable_partial import ViewSplitablePartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
@@ -68,6 +68,7 @@ class SpreadsheetViewComp(
         SpreadsheetViewPartial.__init__(self, component=component, interface=None)
         ViewFreezablePartial.__init__(self, component=component, interface=None)
         ViewSplitablePartial.__init__(self, component=component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ActivationEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_activation_events_add_remove)
         EnhancedMouseClickEvents.__init__(self, trigger_args=generic_args, cb=self._on_enhanced_mouse_click_add_remove)
@@ -126,6 +127,7 @@ class SpreadsheetViewComp(
         @property
         def component(self) -> SpreadsheetView:
             """Spreadsheet View Component"""
+            # pylint: disable=no-member
             return cast("SpreadsheetView", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

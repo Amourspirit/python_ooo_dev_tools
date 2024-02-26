@@ -5,7 +5,7 @@ import uno
 from ooodev.adapter.component_base import ComponentBase
 
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
-from .text_partial import TextPartial
+from ooodev.adapter.text.text_partial import TextPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import Text
@@ -45,6 +45,7 @@ class TextComp(ComponentBase, EnumerationAccessPartial, TextPartial):
     @property
     def component(self) -> Text:
         """Text Component"""
+        # pylint: disable=no-member
         return cast("Text", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

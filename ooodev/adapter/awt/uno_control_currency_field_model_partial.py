@@ -10,8 +10,8 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
-from .uno_control_model_partial import UnoControlModelPartial
-from .font_descriptor_comp import FontDescriptorComp
+from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
+from ooodev.adapter.awt.font_descriptor_comp import FontDescriptorComp
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlCurrencyFieldModel  # Service
@@ -74,7 +74,7 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
     def background_color(self) -> Color:
         """
         Gets/Set the background color of the control.
-        
+
         Returns:
             ~ooodev.utils.color.Color: Color
         """
@@ -111,7 +111,7 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         For instance, usually a border with 3D effect will ignore the border_color setting.
 
         **optional**
-        
+
         Returns:
             ~ooodev.utils.color.Color | None: Color or None if not set.
         """
@@ -362,7 +362,7 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
     def text_color(self) -> Color:
         """
         Gets/Sets the text color of the control.
-        
+
         Returns:
             ~ooodev.utils.color.Color: Color
         """
@@ -376,7 +376,7 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
     def text_line_color(self) -> Color:
         """
         Gets/Sets the text line color of the control.
-        
+
         Returns:
             ~ooodev.utils.color.Color: Color
         """

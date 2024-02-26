@@ -24,6 +24,7 @@ class DataPointCustomLabelFieldComp(ComponentBase, PropertyChangeImplement, Veto
             component (DataPointCustomLabelField): UNO Chart2 DataPointCustomLabelField Component.
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -38,6 +39,7 @@ class DataPointCustomLabelFieldComp(ComponentBase, PropertyChangeImplement, Veto
     @property
     def component(self) -> DataPointCustomLabelField:
         """DataPointCustomLabelField Component"""
+        # pylint: disable=no-member
         return cast("DataPointCustomLabelField", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

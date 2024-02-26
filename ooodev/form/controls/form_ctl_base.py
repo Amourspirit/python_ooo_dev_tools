@@ -9,7 +9,7 @@ from com.sun.star.container import XNamed
 from ooo.dyn.form.form_component_type import FormComponentType
 
 # from ooodev.adapter.lang.event_events import EventEvents
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.awt.focus_events import FocusEvents
 from ooodev.adapter.awt.key_events import KeyEvents
 from ooodev.adapter.awt.mouse_events import MouseEvents

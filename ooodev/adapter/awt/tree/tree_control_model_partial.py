@@ -4,7 +4,7 @@ import uno  # pylint: disable=unused-import
 from ooo.dyn.view.selection_type import SelectionType
 from ooodev.units import UnitPX
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
-from ..uno_control_model_partial import UnoControlModelPartial
+from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tree import TreeControlModel  # Service

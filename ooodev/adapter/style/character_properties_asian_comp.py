@@ -33,6 +33,7 @@ class CharacterPropertiesAsianComp(ComponentBase):
     @property
     def component(self) -> CharacterPropertiesAsian:
         """CharacterPropertiesAsian Component"""
+        # pylint: disable=no-member
         return cast("CharacterPropertiesAsian", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

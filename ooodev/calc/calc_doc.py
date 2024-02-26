@@ -55,7 +55,7 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCellRange
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
-    from ooodev.loader.inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any

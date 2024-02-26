@@ -1,12 +1,13 @@
 from __future__ import annotations
 import contextlib
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import uno
-from ...events.args.event_args import EventArgs as EventArgs
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
-
 from com.sun.star.awt import XMouseClickHandler
+
+from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.adapter.adapter_base import AdapterBase
+from ooodev.events.args.generic_args import GenericArgs
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

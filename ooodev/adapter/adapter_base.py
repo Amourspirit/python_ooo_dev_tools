@@ -1,12 +1,12 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 # pylint: disable=unused-import, useless-import-alias
 import uno
-from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.event_args import AbstractEvent
-from ooodev.events.lo_events import Events, EventCallback
-from ooodev.events.args.generic_args import GenericArgs as GenericArgs
+from ooodev.events.lo_events import Events
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.mock import mock_g
 from ooodev.events.partial.events_partial import EventsPartial
 
@@ -14,6 +14,11 @@ if mock_g.DOCS_BUILDING:
     from ooodev.mock import unohelper
 else:
     import unohelper
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import EventCallback
+else:
+    EventCallback = Any
 
 
 class AdapterBase(unohelper.Base, EventsPartial):  # type: ignore

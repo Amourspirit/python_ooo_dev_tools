@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.frame.model_partial import ModelPartial
 
@@ -36,6 +36,7 @@ class GenericTextDocumentComp(ComponentBase, ModelPartial):
     @property
     def component(self) -> GenericTextDocument:
         """Sheet Cell Cursor Component"""
+        # pylint: disable=no-member
         return cast("GenericTextDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-from ..style.style_comp import StyleComp
-from .numbering_rules_comp import NumberingRulesComp
+from ooodev.adapter.style.style_comp import StyleComp
+from ooodev.adapter.text.numbering_rules_comp import NumberingRulesComp
 from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
 
 if TYPE_CHECKING:
@@ -23,6 +23,7 @@ class NumberingStyleComp(NumberingRulesComp, StyleComp, PropertiesChangeImplemen
         """
         StyleComp.__init__(self, component)
         NumberingRulesComp.__init__(self, component=component)  # type: ignore
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
@@ -38,6 +39,7 @@ class NumberingStyleComp(NumberingRulesComp, StyleComp, PropertiesChangeImplemen
         @property
         def component(self) -> NumberingStyle:
             """NumberingStyle Component"""
+            # pylint: disable=no-member
             return cast("NumberingStyle", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

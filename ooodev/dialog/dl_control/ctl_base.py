@@ -10,7 +10,7 @@ from com.sun.star.awt import XWindow
 from com.sun.star.beans import XPropertySet
 from ooo.dyn.awt.pos_size import PosSize
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.awt.focus_events import FocusEvents
 from ooodev.adapter.awt.key_events import KeyEvents
 from ooodev.adapter.awt.mouse_events import MouseEvents

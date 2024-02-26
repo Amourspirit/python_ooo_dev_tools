@@ -1,16 +1,6 @@
 from __future__ import annotations
 
-# DataAwareControlModel
-
-from typing import Any, cast, TYPE_CHECKING
-from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeEventEvents
-from ooodev.adapter.component_base import ComponentBase
-from ooodev.adapter.util.modify_events import ModifyEvents
-from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.component_base import ComponentBase
-
+from typing import cast, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from com.sun.star.form import DataAwareControlModel  # service

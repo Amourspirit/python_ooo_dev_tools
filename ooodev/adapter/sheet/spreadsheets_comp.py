@@ -3,7 +3,7 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
-from .spreadsheets_partial import SpreadsheetsPartial
+from ooodev.adapter.sheet.spreadsheets_partial import SpreadsheetsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import Spreadsheets  # service
@@ -39,6 +39,7 @@ class SpreadsheetsComp(ComponentBase, SpreadsheetsPartial, IndexAccessPartial, E
     @property
     def component(self) -> Spreadsheets:
         """Spreadsheets Component"""
+        # pylint: disable=no-member
         return cast("Spreadsheets", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

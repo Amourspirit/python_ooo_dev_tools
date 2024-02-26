@@ -35,6 +35,7 @@ class TextComp(ComponentBase, TextPartial):
     @property
     def component(self) -> Text:
         """Text Component"""
+        # pylint: disable=no-member
         return cast("Text", self._ComponentBase__get_component())  # type: ignore
 
         # endregion Properties

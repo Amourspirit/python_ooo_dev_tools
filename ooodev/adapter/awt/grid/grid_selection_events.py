@@ -4,10 +4,11 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.awt.grid import XGridRowSelection
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from .grid_selection_listener import GridSelectionListener
+from ooodev.adapter.awt.grid.grid_selection_listener import GridSelectionListener
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT

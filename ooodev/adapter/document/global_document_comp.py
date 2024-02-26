@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
-from ooodev.events.args.listener_event_args import ListenerEventArgs
+from typing import cast, TYPE_CHECKING
 from ooodev.adapter.text.generic_text_document_comp import GenericTextDocumentComp
 
 
@@ -35,6 +34,7 @@ class GlobalDocumentComp(GenericTextDocumentComp):
     @property
     def component(self) -> GlobalDocument:
         """GlobalDocumentComp Component"""
+        # pylint: disable=no-member
         return cast("GlobalDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

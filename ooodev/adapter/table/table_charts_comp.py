@@ -3,7 +3,7 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
-from .table_charts_partial import TableChartsPartial
+from ooodev.adapter.table.table_charts_partial import TableChartsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.table import TableCharts  # service
@@ -42,6 +42,7 @@ class TableChartsComp(ComponentBase, TableChartsPartial, EnumerationAccessPartia
     @property
     def component(self) -> TableCharts:
         """TableCharts Component"""
+        # pylint: disable=no-member
         return cast("TableCharts", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

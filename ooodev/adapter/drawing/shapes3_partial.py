@@ -34,7 +34,7 @@ class Shapes3Partial:
         Args:
             comparator (Any): Desired order of the shapes
         """
-        sequence = uno.Any(f"[]long", sort_order)  # type: ignore
+        sequence = uno.Any("[]long", sort_order)  # type: ignore
         uno.invoke(self.__component, "sort", sequence)
 
     # endregion XShapes3

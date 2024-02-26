@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 from com.sun.star.util import XReplaceable
-from .searchable_partial import SearchablePartial
-from .replace_descriptor_comp import ReplaceDescriptorComp
+from ooodev.adapter.util.searchable_partial import SearchablePartial
+from ooodev.adapter.util.replace_descriptor_comp import ReplaceDescriptorComp
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

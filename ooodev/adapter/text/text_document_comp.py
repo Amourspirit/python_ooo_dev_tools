@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-from .generic_text_document_comp import GenericTextDocumentComp
+from ooodev.adapter.text.generic_text_document_comp import GenericTextDocumentComp
 
 
 if TYPE_CHECKING:

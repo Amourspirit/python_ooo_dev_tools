@@ -3,7 +3,7 @@ from typing import cast, TYPE_CHECKING
 import contextlib
 
 from ooodev.adapter.component_base import ComponentBase
-from .data_provider_partial import DataProviderPartial
+from ooodev.adapter.chart2.data.data_provider_partial import DataProviderPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2.data import DataProvider  # service
@@ -37,6 +37,7 @@ class DataProviderComp(ComponentBase, DataProviderPartial):
     @property
     def component(self) -> DataProvider:
         """DataProvider Component"""
+        # pylint: disable=no-member
         return cast("DataProvider", self._ComponentBase__get_component())  # type: ignore
 
     @property

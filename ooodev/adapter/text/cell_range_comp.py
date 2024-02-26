@@ -27,6 +27,7 @@ class CellRangeComp(ComponentBase, ChartDataChangeEventEvents):
         """
 
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ChartDataChangeEventEvents.__init__(
             self, trigger_args=generic_args, cb=self._on_chart_data_change_event_add_remove
@@ -51,6 +52,7 @@ class CellRangeComp(ComponentBase, ChartDataChangeEventEvents):
     @property
     def component(self) -> CellRange:
         """CellRange Component"""
+        # pylint: disable=no-member
         return cast("CellRange", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

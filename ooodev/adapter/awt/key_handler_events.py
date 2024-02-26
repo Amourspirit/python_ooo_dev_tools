@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from .key_handler import KeyHandler
+from ooodev.adapter.awt.key_handler import KeyHandler
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XUserInputInterception

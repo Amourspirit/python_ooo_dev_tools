@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.util import XPropertyReplace
 
-from .replace_descriptor_partial import ReplaceDescriptorPartial
+from ooodev.adapter.util.replace_descriptor_partial import ReplaceDescriptorPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

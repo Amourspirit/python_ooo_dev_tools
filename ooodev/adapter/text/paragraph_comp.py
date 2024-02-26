@@ -42,6 +42,7 @@ class ParagraphComp(ComponentBase, ElementAccessPartial):
     @property
     def component(self) -> Paragraph:
         """Paragraph Component"""
+        # pylint: disable=no-member
         return cast("Paragraph", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

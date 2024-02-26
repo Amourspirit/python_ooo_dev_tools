@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.util import XChangesNotifier
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.loader import lo as mLo

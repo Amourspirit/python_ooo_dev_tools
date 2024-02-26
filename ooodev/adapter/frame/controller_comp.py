@@ -6,8 +6,8 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.awt.key_handler_events import KeyHandlerEvents
 from ooodev.adapter.awt.mouse_click_events import MouseClickEvents
 from ooodev.adapter.view.selection_change_events import SelectionChangeEvents
-from .controller_partial import ControllerPartial
-from .dispatch_provider_partial import DispatchProviderPartial
+from ooodev.adapter.frame.controller_partial import ControllerPartial
+from ooodev.adapter.frame.dispatch_provider_partial import DispatchProviderPartial
 
 
 if TYPE_CHECKING:
@@ -38,6 +38,7 @@ class ControllerComp(
         ComponentBase.__init__(self, component)
         ControllerPartial.__init__(self, component=component, interface=None)
         DispatchProviderPartial.__init__(self, component=component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         KeyHandlerEvents.__init__(self, trigger_args=generic_args, cb=self._on_key_handler_events_add_remove)
         MouseClickEvents.__init__(self, trigger_args=generic_args, cb=self._on_mouse_events_add_remove)
@@ -71,6 +72,7 @@ class ControllerComp(
     @property
     def component(self) -> Controller:
         """Controller Component"""
+        # pylint: disable=no-member
         return cast("Controller", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

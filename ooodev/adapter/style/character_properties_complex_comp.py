@@ -33,6 +33,7 @@ class CharacterPropertiesComplexComp(ComponentBase):
     @property
     def component(self) -> CharacterPropertiesComplex:
         """CharacterPropertiesComplex Component"""
+        # pylint: disable=no-member
         return cast("CharacterPropertiesComplex", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

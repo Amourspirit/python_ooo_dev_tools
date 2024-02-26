@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
 from ooodev.adapter.component_base import ComponentBase
-from .index_container_partial import IndexContainerPartial
+from ooodev.adapter.container.index_container_partial import IndexContainerPartial
 
 if TYPE_CHECKING:
     from com.sun.star.container import XIndexContainer
