@@ -3,18 +3,17 @@ Module for Fill Transparency.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
 from typing import cast
 import uno
 
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ooodev.format.inner.direct.write.frame.frame_type.size import (
-    Size as InnerSize,
-    RelativeSize as RelativeSize,
-    AbsoluteSize as AbsoluteSize,
-)
+from ooodev.format.inner.direct.write.frame.frame_type.size import AbsoluteSize
+from ooodev.format.inner.direct.write.frame.frame_type.size import RelativeSize
+from ooodev.format.inner.direct.write.frame.frame_type.size import Size as InnerSize
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 
 # endregion Imports
 

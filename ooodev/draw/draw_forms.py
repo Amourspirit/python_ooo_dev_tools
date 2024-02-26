@@ -11,11 +11,11 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from .draw_form import DrawForm
+from ooodev.draw.draw_form import DrawForm
 
 if TYPE_CHECKING:
     from com.sun.star.form import XForms
-    from .draw_page import DrawPage
+    from ooodev.draw.draw_page import DrawPage
 
 
 class DrawForms(LoInstPropsPartial, FormsComp, QiPartial, ServicePartial):

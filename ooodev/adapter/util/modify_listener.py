@@ -7,7 +7,8 @@ from com.sun.star.util import XModifyBroadcaster
 
 from ooodev.loader import lo as mLo
 
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

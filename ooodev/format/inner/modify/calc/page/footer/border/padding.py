@@ -1,10 +1,10 @@
 # region Import
 from __future__ import annotations
 
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind
 from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ...header.border.padding import Padding as HeaderPadding
+from ooodev.format.inner.modify.calc.page.header.border.padding import Padding as HeaderPadding
 
 # endregion Import
 

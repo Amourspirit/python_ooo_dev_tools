@@ -8,7 +8,7 @@ from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class LineProperties(LineProps):

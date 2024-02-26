@@ -3,6 +3,7 @@ Draw Fill Transparency Gradient.
 
 .. versionadded:: 0.17.9
 """
+
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
 import uno
@@ -17,7 +18,7 @@ from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
 
 if TYPE_CHECKING:
-    from ooodev.units import Angle
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.intensity import Intensity
 
 

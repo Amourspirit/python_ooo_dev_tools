@@ -3,7 +3,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
-from .export_base import ExportBase
+from ooodev.draw.export.export_base import ExportBase
 
 
 class ShapeExportBase(LoInstPropsPartial, ExportBase, EventsPartial):

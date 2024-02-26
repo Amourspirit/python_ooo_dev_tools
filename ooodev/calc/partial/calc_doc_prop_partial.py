@@ -1,9 +1,8 @@
 from __future__ import annotations
-
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..calc_doc import CalcDoc
+    from ooodev.calc.calc_doc import CalcDoc
 else:
     CalcDoc = Any
 

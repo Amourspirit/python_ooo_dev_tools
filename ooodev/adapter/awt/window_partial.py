@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XPaintListener
     from com.sun.star.awt import XWindowListener
     from com.sun.star.awt import Rectangle  # Struct
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class WindowPartial(ControlPartial):

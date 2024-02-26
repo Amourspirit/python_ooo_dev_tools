@@ -4,12 +4,12 @@ from typing import Any, cast, Type, TypeVar
 import uno
 from com.sun.star.awt import XBitmap
 
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
-from ...page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 
 # endregion Import
 

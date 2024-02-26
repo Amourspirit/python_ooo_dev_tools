@@ -7,22 +7,22 @@ Module for Fill Gradient Color.
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload, TYPE_CHECKING
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import color as mColor
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps
+from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
-from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps
+from ooodev.loader import lo as mLo
+from ooodev.units.angle import Angle
+from ooodev.utils import color as mColor
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
 
 if TYPE_CHECKING:
     from ooo.dyn.awt.gradient import Gradient as UNOGradient

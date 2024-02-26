@@ -1,19 +1,17 @@
 # region Import
 from __future__ import annotations
-from typing import Any, Tuple
+from typing import Any, Tuple, TYPE_CHECKING
 
 import uno
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_location import ShadowLocation
 
-from ooodev.utils.color import Color, StandardColor
-from ooodev.units import UnitT
+from ooodev.utils.color import Color
+from ooodev.utils.color import StandardColor
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-
-
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import uuid
 from abc import ABC, abstractmethod
 
-from ..utils import paths
+from ooodev.utils import paths
 
 
 class ConnectorBase(ABC):

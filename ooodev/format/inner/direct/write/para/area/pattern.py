@@ -1,18 +1,18 @@
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
+import uno
+from com.sun.star.awt import XBitmap
+from ooo.dyn.style.graphic_location import GraphicLocation
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
 
-from com.sun.star.awt import XBitmap
-
-from ooo.dyn.style.graphic_location import GraphicLocation
 
 _TPattern = TypeVar(name="_TPattern", bound="Pattern")
 
@@ -74,7 +74,7 @@ class Pattern(StyleMulti):
 
         super().__init__(**init_vars)
         fp._prop_parent = self
-        self._set_style("fill_props", fp, *fp.get_attrs())
+        self._set_style("fill_props", fp, *fp.get_attrs())  # type: ignore
 
     # region Overrides
 
@@ -156,6 +156,7 @@ class Pattern(StyleMulti):
         Returns:
             Pattern: Instance from preset.
         """
+        # pylint: disable=protected-access
         fp = InnerPattern.from_preset(preset)
         bitmap = fp._get("FillBitmap")
         name = str(preset)
@@ -186,10 +187,13 @@ class Pattern(StyleMulti):
         Returns:
             Pattern: ``Pattern`` instance that represents ``obj`` fill pattern.
         """
+        # pylint: disable=protected-access
         fp = InnerPattern.from_obj(obj)
         bitmap = fp._get("FillBitmap")
         name = fp._get("FillBitmapName")
-        return cls(bitmap=bitmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
+        result = cls(bitmap=bitmap, name=name, tile=True, stretch=False, auto_name=False, **kwargs)
+        result.set_update_obj(obj)
+        return result
 
     # endregion from_obj()
 

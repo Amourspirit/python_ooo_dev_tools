@@ -3,26 +3,28 @@ Module for ``Gradient`` struct.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
 import json
 import uno
 from ooo.dyn.awt.gradient import Gradient
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.structs.struct_base import StructBase
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_gradient
 from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+from ooodev.units.angle import Angle
 from ooodev.utils import props as mProps
-from ooodev.utils.color import Color, RGB
-from ooodev.units import Angle as Angle
+from ooodev.utils.color import Color
+from ooodev.utils.color import RGB
 from ooodev.utils.data_type.color_range import ColorRange
-from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
-from .struct_base import StructBase
 
 
 # endregion Import
@@ -239,13 +241,11 @@ class GradientStruct(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient) -> _TGradientStruct:
-        ...
+    def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient) -> _TGradientStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
-        ...
+    def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TGradientStruct], value: Gradient, **kwargs) -> _TGradientStruct:
@@ -276,13 +276,11 @@ class GradientStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: Any) -> _TGradientStruct:
-        ...
+    def from_obj(cls: Type[_TGradientStruct], obj: Any) -> _TGradientStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradientStruct], obj: Any, **kwargs) -> _TGradientStruct:
-        ...
+    def from_obj(cls: Type[_TGradientStruct], obj: Any, **kwargs) -> _TGradientStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TGradientStruct], obj: Any, **kwargs) -> _TGradientStruct:
@@ -314,13 +312,11 @@ class GradientStruct(StructBase):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind) -> _TGradientStruct:
-        ...
+    def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind) -> _TGradientStruct: ...
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind, **kwargs) -> _TGradientStruct:
-        ...
+    def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind, **kwargs) -> _TGradientStruct: ...
 
     @classmethod
     def from_preset(cls: Type[_TGradientStruct], preset: PresetGradientKind, **kwargs) -> _TGradientStruct:

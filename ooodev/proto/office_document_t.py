@@ -12,10 +12,7 @@ from ooodev.utils.partial.qi_partial_t import QiPartialT
 from ooodev.utils.partial.service_partial_t import ServicePartialT
 
 if TYPE_CHECKING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

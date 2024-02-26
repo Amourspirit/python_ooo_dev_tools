@@ -3,7 +3,7 @@ from typing import Any, cast, Callable, TYPE_CHECKING
 import uno
 from com.sun.star.frame import XStorable
 
-from ooodev.calc import CalcNamedEvent
+from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.calc.calc_cell_range import CalcCellRange
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
@@ -16,7 +16,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
 
-from .export_base import ExportBase
+from ooodev.calc.export.export_base import ExportBase
 
 if TYPE_CHECKING:
     from ooodev.calc.filter.export_png import ExportPngT

@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ooodev.utils.color import Color, StandardColor
 from ooodev.format.inner.direct.write.char.highlight.highlight import Highlight as InnerHighlight
-from ..char_style_base_multi import CharStyleBaseMulti
+from ooodev.format.inner.modify.write.char.char_style_base_multi import CharStyleBaseMulti
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
+from ooodev.utils.color import Color
+from ooodev.utils.color import StandardColor
 
 # endregion Imports
 

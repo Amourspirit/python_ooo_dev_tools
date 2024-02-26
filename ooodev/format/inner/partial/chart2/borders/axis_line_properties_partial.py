@@ -10,7 +10,7 @@ from ooodev.format.inner.partial.draw.borders.line_properties import LinePropert
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.format.proto.borders.line_properties_t import LinePropertiesT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.data_type.intensity import Intensity
 else:
     LoInst = Any

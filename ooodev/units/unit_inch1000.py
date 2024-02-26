@@ -3,10 +3,11 @@ import contextlib
 from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
 from ooodev.utils.decorator import enforce
-from .unit_convert import UnitConvert, UnitLength
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitLength
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 _TUnitInch1000 = TypeVar(name="_TUnitInch1000", bound="UnitInch1000")
 

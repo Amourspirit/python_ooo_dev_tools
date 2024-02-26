@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ooodev.utils import color as mColor
-from ...chart.area.color import Color as ChartColor
+from ooodev.format.inner.direct.chart2.chart.area.color import Color as ChartColor
 
 
 class Color(ChartColor):

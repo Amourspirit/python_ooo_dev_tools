@@ -9,14 +9,14 @@ from ooodev.adapter.sheet.spreadsheet_draw_page_comp import SpreadsheetDrawPageC
 from ooodev.draw.partial.draw_page_partial import DrawPagePartial
 from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .calc_forms import CalcForms
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.calc_forms import CalcForms
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage

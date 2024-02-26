@@ -2,12 +2,12 @@
 from __future__ import annotations
 from typing import Any, cast, Type, TypeVar
 import uno
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.common.props.transparent_transparency_props import TransparentTransparencyProps
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as InnerTransparency
-from ...page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.utils.data_type.intensity import Intensity
 
 # endregion Import
 

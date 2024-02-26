@@ -9,13 +9,13 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.adapter.chart2.data.data_sink_partial import DataSinkPartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySet
     from ooodev.loader.inst.lo_inst import LoInst
-    from .chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_doc import ChartDoc
 
 
 class ChartErrorBar(

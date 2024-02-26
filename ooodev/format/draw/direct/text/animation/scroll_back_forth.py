@@ -7,7 +7,7 @@ from ooodev.format.inner.direct.draw.shape.text.animation.scroll_back_forth impo
 
 if TYPE_CHECKING:
     from ooo.dyn.drawing.text_animation_direction import TextAnimationDirection
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class ScrollBackForth(TextScrollBackForth):

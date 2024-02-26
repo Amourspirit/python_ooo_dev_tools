@@ -9,7 +9,7 @@ from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from .ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlSpinButton  # service

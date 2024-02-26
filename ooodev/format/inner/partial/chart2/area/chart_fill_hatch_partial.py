@@ -4,23 +4,18 @@ import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle
 
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner.style_factory import chart2_area_hatch_factory
 from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
-from ooodev.utils.context.lo_context import LoContext
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
     from ooodev.format.proto.chart2.area.chart_fill_hatch_t import ChartFillHatchT
-    from ooodev.units import UnitT
-    from ooodev.units import Angle
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.units.angle import Angle
     from ooodev.loader.inst.lo_inst import LoInst
 else:
     XChartDocument = Any

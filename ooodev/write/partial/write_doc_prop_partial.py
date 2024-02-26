@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..write_doc import WriteDoc
+    from ooodev.write.write_doc import WriteDoc
 else:
     WriteDoc = Any
 

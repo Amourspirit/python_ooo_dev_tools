@@ -4,7 +4,8 @@ from typing import ByteString
 import uno
 from com.sun.star.awt import XBitmap
 
-from ooodev.utils.images_lo import ImagesLo, BitmapArgs
+from ooodev.utils.images_lo import BitmapArgs
+from ooodev.utils.images_lo import ImagesLo
 
 
 # region Enum

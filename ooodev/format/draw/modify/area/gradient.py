@@ -1,4 +1,5 @@
 """Module for Draw Style Fill Coloring."""
+
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
@@ -17,7 +18,7 @@ from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
 from ooodev.utils.color import Color
 
 if TYPE_CHECKING:
-    from ooodev.units import Angle as Angle
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.intensity import Intensity
 
 # endregion Import

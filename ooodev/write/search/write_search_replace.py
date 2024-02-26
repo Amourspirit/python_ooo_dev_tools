@@ -9,7 +9,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.write_text_range import WriteTextRange
 from ooodev.write.write_text_ranges import WriteTextRanges
 from ooodev.loader import lo as mLo
-from ..write_doc import WriteDoc
+from ooodev.write.write_doc import WriteDoc
 
 if TYPE_CHECKING:
     from com.sun.star.util import XSearchable

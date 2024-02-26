@@ -6,14 +6,14 @@ from ooodev.loader import lo as mLo
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from ooodev.loader.inst.lo_inst import LoInst
-    from .chart_shape import ChartShape
+    from ooodev.calc.chart2.chart_shape import ChartShape
 
 
 class ChartImage(LoInstPropsPartial, GraphicComp, QiPartial, ServicePartial, CalcDocPropPartial, CalcSheetPropPartial):

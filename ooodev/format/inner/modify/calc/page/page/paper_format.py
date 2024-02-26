@@ -1,12 +1,12 @@
 # region Import
 from __future__ import annotations
 from typing import cast
-from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
-from ooodev.format.inner.preset.preset_paper_format import PaperFormatKind as PaperFormatKind
-from ooodev.format.inner.direct.write.page.page.paper_format import PaperFormat as InnerPaperFormat
-from ...cell_style_base_multi import CellStyleBaseMulti
 
+from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.inner.direct.write.page.page.paper_format import PaperFormat as InnerPaperFormat
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.inner.preset.preset_paper_format import PaperFormatKind
+from ooodev.utils.data_type.size_mm import SizeMM
 
 # endregion Import
 

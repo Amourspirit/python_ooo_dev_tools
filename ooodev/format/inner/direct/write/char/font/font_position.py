@@ -12,17 +12,17 @@ from enum import Enum
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.units import UnitPT
-from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
+from ooodev.loader import lo as mLo
+from ooodev.units.angle import Angle
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_pt import UnitPT
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.intensity import Intensity
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 

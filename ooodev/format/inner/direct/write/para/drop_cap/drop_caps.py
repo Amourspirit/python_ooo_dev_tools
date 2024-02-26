@@ -11,14 +11,14 @@ from typing import Any, Tuple, cast, Type, TypeVar, overload
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitConvert
+from ooodev.format.inner.direct.structs.drop_cap_struct import DropCapStruct
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.writer.style.char.kind import StyleCharKind as StyleCharKind
-from ooodev.format.inner.direct.structs.drop_cap_struct import DropCapStruct
+from ooodev.format.writer.style.char.kind import StyleCharKind
+from ooodev.loader import lo as mLo
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_obj import UnitT
+from ooodev.utils import props as mProps
 
 # endregion Imports
 
@@ -69,6 +69,7 @@ class DropCaps(StyleMulti):
 
             - :ref:`help_writer_format_direct_para_drop_caps`
         """
+        # pylint: disable=unexpected-keyword-arg
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
 
         # if count == -1 then do not include DropCapStruct. only update style
@@ -218,6 +219,7 @@ class DropCaps(StyleMulti):
         Returns:
             DropCaps: ``DropCaps`` instance that represents ``obj`` Drop Caps.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -230,6 +232,7 @@ class DropCaps(StyleMulti):
             inst._set("DropCapWholeWord", whole_word)
         if style is not None:
             inst._set("DropCapCharStyleName", style)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

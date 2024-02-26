@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as InnerTransparency
 
 # endregion Imports

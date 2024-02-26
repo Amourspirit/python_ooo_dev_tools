@@ -5,11 +5,8 @@ from ooodev.mock.mock_g import DOCS_BUILDING
 from ooodev.format.proto.chart2.position_size.position_t import PositionT as ChartPositionT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
-    from ooodev.units import UnitT
+    from typing_extensions import Protocol
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 else:
     Protocol = object

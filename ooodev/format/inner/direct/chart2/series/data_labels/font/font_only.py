@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Tuple, TYPE_CHECKING
 import uno
-from ooodev.format.inner.direct.write.char.font.font_only import FontLang, FontOnly as CharFontOnly
+from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as CharFontOnly
 from ooodev.units.unit_obj import UnitT
 from ooodev.units.unit_pt import UnitPT
 

@@ -8,16 +8,16 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
 from enum import Enum
 
-from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
-from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum as ParagraphVertAlignEnum
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
+from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
+from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from .writing_mode import WritingMode as WritingMode
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
 
 _TAlignment = TypeVar(name="_TAlignment", bound="Alignment")
 

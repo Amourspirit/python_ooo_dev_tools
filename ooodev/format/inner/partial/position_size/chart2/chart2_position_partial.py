@@ -9,7 +9,7 @@ from ooodev.loader import lo as mLo
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.format.proto.chart2.position_size.position_t import PositionT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 else:
     PositionT = Any
     UnitT = Any

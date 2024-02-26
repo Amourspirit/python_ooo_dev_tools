@@ -5,12 +5,12 @@ import uno
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import props as mProps
 from ooodev.utils.kind.graphic_arrow_style_kind import GraphicArrowStyleKind
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 _TArrowStyles = TypeVar(name="_TArrowStyles", bound="ArrowStyles")
 
@@ -64,13 +64,11 @@ class ArrowStyles(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TArrowStyles], obj: object) -> _TArrowStyles:
-        ...
+    def from_obj(cls: Type[_TArrowStyles], obj: object) -> _TArrowStyles: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TArrowStyles], obj: object, **kwargs) -> _TArrowStyles:
-        ...
+    def from_obj(cls: Type[_TArrowStyles], obj: object, **kwargs) -> _TArrowStyles: ...
 
     @classmethod
     def from_obj(cls: Type[_TArrowStyles], obj: Any, **kwargs) -> _TArrowStyles:

@@ -11,9 +11,9 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.loader import lo as mLo
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.exceptions import ex as mEx
-from .. import table_helper as mTb
+from ooodev.utils import table_helper as mTb
 from ooodev.office import calc as mCalc
-from ..decorator import enforce
+from ooodev.utils.decorator import enforce
 
 
 if TYPE_CHECKING:
@@ -745,7 +745,7 @@ class RangeObj:
     # endregion properties
 
 
-from . import row_obj as mRowObj
-from . import col_obj as mColObj
-from . import cell_obj as mCellObj
-from . import range_values as mRngValues
+from ooodev.utils.data_type import row_obj as mRowObj
+from ooodev.utils.data_type import col_obj as mColObj
+from ooodev.utils.data_type import cell_obj as mCellObj
+from ooodev.utils.data_type import range_values as mRngValues

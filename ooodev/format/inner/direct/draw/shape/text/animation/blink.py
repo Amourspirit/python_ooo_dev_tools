@@ -4,12 +4,13 @@ import uno
 from ooo.dyn.drawing.text_animation_kind import TextAnimationKind
 
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitPX, UnitMM
+from ooodev.units.unit_px import UnitPX
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import props as mProps
-from .no_effect import NoEffect
+from ooodev.format.inner.direct.draw.shape.text.animation.no_effect import NoEffect
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 _TBlink = TypeVar("_TBlink", bound="Blink")
 
@@ -64,13 +65,11 @@ class Blink(NoEffect):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBlink], obj: object) -> _TBlink:
-        ...
+    def from_obj(cls: Type[_TBlink], obj: object) -> _TBlink: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TBlink], obj: object, **kwargs) -> _TBlink:
-        ...
+    def from_obj(cls: Type[_TBlink], obj: object, **kwargs) -> _TBlink: ...
 
     @classmethod
     def from_obj(cls: Type[_TBlink], obj: Any, **kwargs) -> _TBlink:

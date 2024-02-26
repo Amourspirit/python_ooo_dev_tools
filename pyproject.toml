@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.30.4"
+version = "0.30.5"
 
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
@@ -61,6 +61,7 @@ pyright = ">=1.1.343"
 pytest-dotenv = "^0.5.2"
 sphobjinv = "^2.3.1"
 ooo-dev-odh = "^0.1.4"
+pydeps = "^1.12.18"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -147,3 +148,16 @@ exclude = [
 ]
 line-length = 119
 target-version = "py38"
+
+[tool.pydeps]
+max_bacon = 2
+no_show = true
+verbose = 0
+pylib = false
+exclude = [
+    "os",
+    "re",
+    "sys",
+    "collections",
+    "__future__",
+]

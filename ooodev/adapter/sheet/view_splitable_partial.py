@@ -5,7 +5,7 @@ from com.sun.star.sheet import XViewSplitable
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

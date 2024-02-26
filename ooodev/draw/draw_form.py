@@ -12,7 +12,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
-    from .draw_forms import DrawForms
+    from ooodev.draw.draw_forms import DrawForms
 
 
 class DrawForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, ServicePartial):

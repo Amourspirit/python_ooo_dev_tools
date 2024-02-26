@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
-from .key_val_args import AbstractKeyValArgs
-from .cancel_event_args import AbstractCancelEventArgs
+from ooodev.events.args.key_val_args import AbstractKeyValArgs
+from ooodev.events.args.cancel_event_args import AbstractCancelEventArgs
 
 
 class AbstractKeyValueArgs(AbstractKeyValArgs, AbstractCancelEventArgs):

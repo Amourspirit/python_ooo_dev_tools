@@ -6,9 +6,9 @@ from shutil import copytree
 import shutil
 import tempfile
 from typing import Tuple
-from ..utils.type_var import PathOrStr
-from ..utils import sys_info
-from ..cfg import config
+from ooodev.utils.type_var import PathOrStr
+from ooodev.utils import sys_info
+from ooodev.cfg import config
 
 
 class Cache:

@@ -25,6 +25,17 @@ from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.beans.property import Property
 
 
+from ooodev.utils import gen_util as gUtil
+from ooodev.utils import info as mInfo
+from ooodev.loader import lo as mLo
+from ooodev.events.args.key_val_args import KeyValArgs
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.event_singleton import _Events
+from ooodev.events.props_named_event import PropsNamedEvent
+from ooodev.exceptions import ex as mEx
+
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySetInfo
     from com.sun.star.beans import XMultiPropertySet
@@ -33,17 +44,6 @@ if TYPE_CHECKING:
     # https://stackoverflow.com/questions/22187279/python-circular-importing
     #
     # using lazy loading: https://snarky.ca/lazy-importing-in-python-3-7/
-from . import gen_util as gUtil
-from . import info as mInfo
-from ooodev.loader import lo as mLo
-from ..events.args.key_val_args import KeyValArgs
-from ..events.args.key_val_cancel_args import KeyValCancelArgs
-from ..events.args.event_args import EventArgs
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.event_singleton import _Events
-from ..events.props_named_event import PropsNamedEvent
-from ..exceptions import ex as mEx
-
 # endregion Imports
 
 

@@ -46,29 +46,6 @@ from com.sun.star.table import XTableChart
 from com.sun.star.table import XTableChartsSupplier
 from com.sun.star.util import XNumberFormatsSupplier
 
-from ooodev.events.event_singleton import _Events
-
-
-from . import calc as mCalc
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.args.event_args import EventArgs
-from ..events.chart2_named_event import Chart2NamedEvent
-from ..exceptions import ex as mEx
-from ..units import Angle as Angle
-from ..utils import color as mColor
-from ..utils import file_io as mFileIo
-from ..utils import gui as mGui
-from ..utils import images_lo as mImgLo
-from ..utils import info as mInfo
-from ooodev.loader import lo as mLo
-from ..utils import props as mProps
-from ..utils.kind.axis_kind import AxisKind as AxisKind
-from ..utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
-from ..utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
-from ..utils.kind.curve_kind import CurveKind as CurveKind
-from ..utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKind
-from ..utils.kind.line_style_name_kind import LineStyleNameKind as LineStyleNameKind
-
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.chart.chart_data_row_source import ChartDataRowSource
 from ooo.dyn.chart.error_bar_style import ErrorBarStyle
@@ -80,10 +57,32 @@ from ooo.dyn.drawing.line_style import LineStyle as LineStyle
 from ooo.dyn.lang.locale import Locale
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 
+from ooodev.events.event_singleton import _Events
+from ooodev.office import calc as mCalc
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.chart2_named_event import Chart2NamedEvent
+from ooodev.exceptions import ex as mEx
+from ooodev.units import Angle as Angle
+from ooodev.utils import color as mColor
+from ooodev.utils import file_io as mFileIo
+from ooodev.utils import gui as mGui
+from ooodev.utils import images_lo as mImgLo
+from ooodev.utils import info as mInfo
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils.kind.axis_kind import AxisKind as AxisKind
+from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind as DataRoleKind
+from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypeNameBase, ChartTypes as ChartTypes
+from ooodev.utils.kind.curve_kind import CurveKind as CurveKind
+from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind as DataPointLabelTypeKind
+from ooodev.utils.kind.line_style_name_kind import LineStyleNameKind as LineStyleNameKind
+
+
 if TYPE_CHECKING:
     from com.sun.star.drawing import OLE2Shape
     from com.sun.star.chart2 import DataPointLabel
-    from ..proto.style_obj import StyleT
+    from ooodev.proto.style_obj import StyleT
 else:
     StyleT = Any
 # endregion Imports

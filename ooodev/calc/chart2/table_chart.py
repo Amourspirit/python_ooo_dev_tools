@@ -15,16 +15,16 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
-from .chart_doc import ChartDoc
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.chart2.chart_doc import ChartDoc
 
 
 if TYPE_CHECKING:
     from ooodev.calc import CalcSheet
     from ooodev.loader.inst.lo_inst import LoInst
-    from .chart_draw_page import ChartDrawPage
-    from .chart_shape import ChartShape
+    from ooodev.calc.chart2.chart_draw_page import ChartDrawPage
+    from ooodev.calc.chart2.chart_shape import ChartShape
 
 
 class TableChart(

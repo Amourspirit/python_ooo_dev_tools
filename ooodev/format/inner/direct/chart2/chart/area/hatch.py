@@ -13,8 +13,8 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_hatch as mPreset
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.units import UnitMM
-from ooodev.units import UnitT
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_obj import UnitT
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.loader import lo as mLo
 from ooodev.utils.color import Color

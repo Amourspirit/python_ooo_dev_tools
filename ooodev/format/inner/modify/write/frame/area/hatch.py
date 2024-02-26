@@ -1,15 +1,18 @@
 # region Imports
 from __future__ import annotations
-from typing import cast
+from typing import cast, TYPE_CHECKING
 import uno
-from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
-from ooodev.units import Angle as Angle
-from ooodev.units import UnitT
-from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
+from ooo.dyn.drawing.hatch_style import HatchStyle
+
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
+from ooodev.units.angle import Angle
 from ooodev.utils.color import Color
-from ..frame_style_base_multi import FrameStyleBaseMulti
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Imports
 
@@ -51,14 +54,14 @@ class Hatch(FrameStyleBaseMulti):
         Returns:
             None:
         """
-
+        # pylint: disable=unexpected-keyword-arg
         direct = InnerHatch(
             style=style, color=color, space=space, angle=angle, bg_color=bg_color, _cattribs=self._get_inner_cattribs()  # type: ignore
         )
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct, *direct.get_attrs())  # type: ignore
 
     def _get_inner_cattribs(self) -> dict:
         return {"_supported_services_values": self._supported_services(), "_format_kind_prop": self.prop_format_kind}
@@ -82,6 +85,8 @@ class Hatch(FrameStyleBaseMulti):
         Returns:
             Hatch: ``Hatch`` instance from style properties.
         """
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerHatch.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         direct._prop_parent = inst
@@ -106,6 +111,7 @@ class Hatch(FrameStyleBaseMulti):
         Returns:
             Hatch: ``Hatch`` instance from style properties.
         """
+        # pylint: disable=protected-access
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerHatch.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
         direct._prop_parent = inst
@@ -135,6 +141,8 @@ class Hatch(FrameStyleBaseMulti):
 
     @prop_inner.setter
     def prop_inner(self, value: InnerHatch) -> None:
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         if not isinstance(value, InnerHatch):
             raise TypeError(f'Expected type of InnerHatch, got "{type(value).__name__}"')
         inst = value.__class__(
@@ -146,6 +154,6 @@ class Hatch(FrameStyleBaseMulti):
             _cattribs=self._get_inner_cattribs(),  # type: ignore
         )
         self._del_attribs("_direct_inner")
-        self._set_style("direct", inst, *inst.get_attrs())
+        self._set_style("direct", inst, *inst.get_attrs())  # type: ignore
 
     # endregion Properties

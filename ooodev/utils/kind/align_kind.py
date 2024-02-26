@@ -1,5 +1,5 @@
 from enum import IntEnum
-from . import kind_helper
+from ooodev.utils.kind import kind_helper
 
 
 class AlignKind(IntEnum):

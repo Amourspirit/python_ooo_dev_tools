@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import Any, Tuple
 
-from .format_table_item import FormatTableItem
-from .table_item_kind import TableItemKind
+from ooodev.formatters.format_table_item import FormatTableItem
+from ooodev.formatters.table_item_kind import TableItemKind
 
 
 class TableItemProcessor:

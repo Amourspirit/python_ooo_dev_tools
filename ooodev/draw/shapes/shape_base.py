@@ -8,9 +8,8 @@ from com.sun.star.drawing import XShape
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
-from ooodev.proto.component_proto import ComponentT
-from ooodev.units import Angle
-from ooodev.units import UnitMM
+from ooodev.units.angle import Angle
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import gen_util as gUtil
 from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
@@ -20,10 +19,10 @@ from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-
-from .partial.export_jpg_partial import ExportJpgPartial
-from .partial.export_png_partial import ExportPngPartial
-from .shape_text_cursor import ShapeTextCursor
+from ooodev.draw.shapes.partial.export_jpg_partial import ExportJpgPartial
+from ooodev.draw.shapes.partial.export_png_partial import ExportPngPartial
+from ooodev.draw.shapes.shape_text_cursor import ShapeTextCursor
+from ooodev.proto.component_proto import ComponentT
 
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -40,7 +39,7 @@ if TYPE_CHECKING:
     from ooo.dyn.drawing.line_style import LineStyle
     from ooodev.events.lo_events import Events
     from ooodev.proto.size_obj import SizeObj
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils import color as mColor
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.size import Size

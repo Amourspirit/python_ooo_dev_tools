@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
     from ooodev.utils.color import Color
     from ooodev.utils.data_type.intensity import Intensity
-    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.format.proto.font.font_effects_t import FontEffectsT
 
 

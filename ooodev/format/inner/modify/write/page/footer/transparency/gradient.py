@@ -4,12 +4,12 @@ from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.transparency.gradient import Gradient as HeaderGradient
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.units.angle import Angle
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
-from ooodev.units import Angle
-from ...header.transparency.gradient import Gradient as HeaderGradient
 
 
 class Gradient(HeaderGradient):

@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
+import uno
+from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
@@ -9,8 +11,6 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_factory import area_transparency_gradient_factory
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
-
-from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
 

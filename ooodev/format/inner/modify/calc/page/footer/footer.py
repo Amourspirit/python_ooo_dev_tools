@@ -1,9 +1,9 @@
 from __future__ import annotations
 import uno
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind
 from ooodev.format.inner.common.props.hf_props import HfProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ..header.header import Header
+from ooodev.format.inner.modify.calc.page.header.header import Header
 
 
 class Footer(Header):

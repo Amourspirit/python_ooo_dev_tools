@@ -3,12 +3,12 @@ from typing import cast, overload
 from typing import Any, Tuple, Type, TypeVar
 
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.units import Angle as Angle
+from ooodev.format.inner.common.props.image_rotation_props import ImageRotationProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.inner.common.props.image_rotation_props import ImageRotationProps
+from ooodev.loader import lo as mLo
+from ooodev.units.angle import Angle
+from ooodev.utils import props as mProps
 
 _TRotation = TypeVar(name="_TRotation", bound="Rotation")
 

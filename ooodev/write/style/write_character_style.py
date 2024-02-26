@@ -4,11 +4,11 @@ import uno
 
 
 from ooodev.adapter.style.character_style_comp import CharacterStyleComp
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.style import XStyle

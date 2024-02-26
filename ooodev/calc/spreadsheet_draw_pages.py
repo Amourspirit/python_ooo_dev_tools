@@ -15,8 +15,8 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.proto.component_proto import ComponentT
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .spreadsheet_draw_page import SpreadsheetDrawPage
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
 
 if TYPE_CHECKING:

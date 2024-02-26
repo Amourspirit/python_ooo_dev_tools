@@ -4,11 +4,11 @@ from dataclasses import dataclass, field
 from weakref import ref
 import numbers
 
-from .. import table_helper as mTb
-from ..validation import check
+from ooodev.utils import table_helper as mTb
+from ooodev.utils.validation import check
 
 if TYPE_CHECKING:
-    from . import cell_obj as mCell
+    from ooodev.utils.data_type import cell_obj as mCell
 
 
 @dataclass(frozen=True)

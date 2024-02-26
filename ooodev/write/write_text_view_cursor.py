@@ -12,7 +12,6 @@ from ooodev.adapter.view.line_cursor_partial import LineCursorPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import write as mWrite
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
@@ -22,13 +21,14 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
 from ooodev.write import write_doc as mWriteDoc
-from ooodev.write import WriteNamedEvent
+from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument
-    from .style.direct.character_styler import CharacterStyler
+    from ooodev.write.style.direct.character_styler import CharacterStyler
 
 T = TypeVar("T", bound="ComponentT")
 

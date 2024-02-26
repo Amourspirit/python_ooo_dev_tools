@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Tuple
 
-from .coordinate_general import CoordinateGeneral
+from ooodev.calc.chart2.coordinate.coordinate_general import CoordinateGeneral
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XCoordinateSystem
     from ooodev.loader.inst.lo_inst import LoInst
-    from ..chart_diagram import ChartDiagram
-    from ..chart_type import ChartType
-    from ..chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_diagram import ChartDiagram
+    from ooodev.calc.chart2.chart_type import ChartType
+    from ooodev.calc.chart2.chart_doc import ChartDoc
 
 
 class CoordinateSystem(CoordinateGeneral):

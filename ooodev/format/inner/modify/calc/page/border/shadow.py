@@ -1,16 +1,17 @@
 # region Imports
 from __future__ import annotations
-from typing import Tuple, cast
+from typing import Tuple, cast, TYPE_CHECKING
 import uno
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.units import UnitT
 from ooodev.utils.color import StandardColor, Color
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
-from ...cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 # endregion Imports
 
 

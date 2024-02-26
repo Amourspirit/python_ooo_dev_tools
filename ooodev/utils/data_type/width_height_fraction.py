@@ -1,8 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from ..validation import check
-from ..decorator import enforce
 import math
+from ooodev.utils.validation import check
+from ooodev.utils.decorator import enforce
 
 
 # Note that from __future__ import annotations converts annotations to string.

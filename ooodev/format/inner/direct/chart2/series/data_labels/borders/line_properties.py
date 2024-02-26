@@ -9,7 +9,7 @@ from ooodev.format.inner.direct.chart2.series.data_series.borders.line_propertie
     _LinePropertiesProps,
 )
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity

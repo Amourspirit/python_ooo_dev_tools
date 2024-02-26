@@ -2,11 +2,11 @@ from __future__ import annotations
 from typing import NamedTuple, TYPE_CHECKING
 
 import uno
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
-
 from com.sun.star.awt.tree import XTreeEditListener
 from com.sun.star.awt.tree import XTreeNode
+
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

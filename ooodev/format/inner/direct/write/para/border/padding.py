@@ -3,6 +3,7 @@ Module for managing paragraph padding.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Tuple, TypeVar
 
@@ -69,6 +70,8 @@ class Padding(AbstractPadding):
     @property
     def default(self: _TPadding) -> _TPadding:  # type: ignore[misc]
         """Gets BorderPadding default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:

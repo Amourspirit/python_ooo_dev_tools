@@ -2,18 +2,18 @@
 from __future__ import annotations
 from typing import Any, Tuple
 
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
-from ooodev.format.inner.style_base import StyleMulti
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils import gen_util as gUtil
-from ooodev.loader import lo as mLo
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.format.inner.style_base import StyleMulti
+from ooodev.loader import lo as mLo
+from ooodev.units.angle import Angle
+from ooodev.utils import gen_util as gUtil
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
 
 # endregion Imports
 
@@ -55,7 +55,7 @@ class Gradient(StyleMulti):
         fg = InnerGradient(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
         super().__init__()
         self._set("ParaBackColor", gUtil.NULL_OBJ)
-        self._set_style("fill_grad", fg, *fg.get_attrs())
+        self._set_style("fill_grad", fg, *fg.get_attrs())  # type: ignore
 
     # region Overrides
 

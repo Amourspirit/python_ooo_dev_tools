@@ -9,18 +9,19 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
-from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
-from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
-from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
+from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
+from ooo.dyn.awt.font_underline import FontUnderlineEnum
+from ooo.dyn.style.case_map import CaseMapEnum
+from ooo.dyn.awt.font_relief import FontReliefEnum
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.utils.color import Color, StandardColor
-from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
+from ooodev.utils import props as mProps
+from ooodev.utils.color import Color
+from ooodev.utils.color import StandardColor
+from ooodev.utils.data_type.intensity import Intensity
 
 # endregion Imports
 

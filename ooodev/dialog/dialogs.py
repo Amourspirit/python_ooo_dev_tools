@@ -36,47 +36,47 @@ from ooo.dyn.view.selection_type import SelectionType as SelectionType
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment
 from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
-from ..exceptions import ex as mEx
+from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from ..utils import info as mInfo
-from ..utils.date_time_util import DateUtil
-from ..utils.kind.align_kind import AlignKind as AlignKind
-from ..utils.kind.border_kind import BorderKind as BorderKind
-from ..utils.kind.date_format_kind import DateFormatKind as DateFormatKind
-from ..utils.kind.dialog_control_kind import DialogControlKind
-from ..utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ..utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
-from ..utils.kind.orientation_kind import OrientationKind as OrientationKind
-from ..utils.kind.state_kind import StateKind as StateKind
-from ..utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
-from ..utils.kind.tri_state_kind import TriStateKind as TriStateKind
-from .dl_control.ctl_base import DialogControlBase
-from .dl_control import CtlButton
-from .dl_control import CtlCheckBox
-from .dl_control import CtlComboBox
-from .dl_control import CtlCurrencyField
-from .dl_control import CtlDateField
-from .dl_control import CtlDialog
-from .dl_control import CtlFile
-from .dl_control import CtlFixedLine
-from .dl_control import CtlFixedText
-from .dl_control import CtlFormattedField
-from .dl_control import CtlGrid
-from .dl_control import CtlGroupBox
-from .dl_control import CtlHyperlinkFixed
-from .dl_control import CtlImage
-from .dl_control import CtlListBox
-from .dl_control import CtlNumericField
-from .dl_control import CtlPatternField
-from .dl_control import CtlProgressBar
-from .dl_control import CtlRadioButton
-from .dl_control import CtlScrollBar
-from .dl_control import CtlSpinButton
-from .dl_control import CtlTabPage
-from .dl_control import CtlTabPageContainer
-from .dl_control import CtlTextEdit
-from .dl_control import CtlTimeField
-from .dl_control import CtlTree
+from ooodev.utils import info as mInfo
+from ooodev.utils.date_time_util import DateUtil
+from ooodev.utils.kind.align_kind import AlignKind as AlignKind
+from ooodev.utils.kind.border_kind import BorderKind as BorderKind
+from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
+from ooodev.utils.kind.dialog_control_kind import DialogControlKind
+from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
+from ooodev.utils.kind.horz_ver_kind import HorzVertKind as HorzVertKind
+from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
+from ooodev.utils.kind.state_kind import StateKind as StateKind
+from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
+from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control import CtlButton
+from ooodev.dialog.dl_control import CtlCheckBox
+from ooodev.dialog.dl_control import CtlComboBox
+from ooodev.dialog.dl_control import CtlCurrencyField
+from ooodev.dialog.dl_control import CtlDateField
+from ooodev.dialog.dl_control import CtlDialog
+from ooodev.dialog.dl_control import CtlFile
+from ooodev.dialog.dl_control import CtlFixedLine
+from ooodev.dialog.dl_control import CtlFixedText
+from ooodev.dialog.dl_control import CtlFormattedField
+from ooodev.dialog.dl_control import CtlGrid
+from ooodev.dialog.dl_control import CtlGroupBox
+from ooodev.dialog.dl_control import CtlHyperlinkFixed
+from ooodev.dialog.dl_control import CtlImage
+from ooodev.dialog.dl_control import CtlListBox
+from ooodev.dialog.dl_control import CtlNumericField
+from ooodev.dialog.dl_control import CtlPatternField
+from ooodev.dialog.dl_control import CtlProgressBar
+from ooodev.dialog.dl_control import CtlRadioButton
+from ooodev.dialog.dl_control import CtlScrollBar
+from ooodev.dialog.dl_control import CtlSpinButton
+from ooodev.dialog.dl_control import CtlTabPage
+from ooodev.dialog.dl_control import CtlTabPageContainer
+from ooodev.dialog.dl_control import CtlTextEdit
+from ooodev.dialog.dl_control import CtlTimeField
+from ooodev.dialog.dl_control import CtlTree
 
 
 if TYPE_CHECKING:
@@ -137,7 +137,10 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import PathOrStr
 # endregion Imports
 
-ControlT = TypeVar("ControlT", bound=DialogControlBase)
+if TYPE_CHECKING:
+    ControlT = TypeVar("ControlT", bound=DialogControlBase)
+else:
+    ControlT = Any
 
 
 class Dialogs:
@@ -2564,7 +2567,7 @@ class Dialogs:
 
         Returns:
             CtlTree: Tree Control.
-        
+
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
@@ -2653,7 +2656,7 @@ class Dialogs:
 
         Returns:
             CtlTimeField: Time field control.
-        
+
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
             - ``TimeFormatKind`` can be imported from ``ooodev.utils.kind.time_format_kind``.

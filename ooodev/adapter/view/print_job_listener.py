@@ -1,14 +1,11 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import uno
-from com.sun.star.frame import XModel
 from com.sun.star.view import XPrintJobListener
-from com.sun.star.view import XSelectionSupplier
 
-from ooodev.loader import lo as mLo
-
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
     from com.sun.star.view import PrintJobEvent

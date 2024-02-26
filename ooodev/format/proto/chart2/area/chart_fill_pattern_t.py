@@ -2,13 +2,10 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 
 from ooodev.mock.mock_g import DOCS_BUILDING
-from ...area.fill_pattern_t import FillPatternT
+from ooodev.format.proto.area.fill_pattern_t import FillPatternT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from com.sun.star.chart2 import XChartDocument
     from com.sun.star.awt import XBitmap
     from ooodev.format.inner.preset.preset_pattern import PresetPatternKind

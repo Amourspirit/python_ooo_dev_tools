@@ -6,25 +6,25 @@ import uno
 from ooodev.adapter.table.table_column_comp import TableColumnComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
-from ooodev.units import UnitMM100
+from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
     from com.sun.star.table import TableColumn  # service
     from com.sun.star.table import XCellRange
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.cell_values import CellValues
     from ooodev.utils.data_type.range_obj import RangeObj
-    from .calc_sheet import CalcSheet
+    from ooodev.calc.calc_sheet import CalcSheet
 
 
 class CalcTableCol(

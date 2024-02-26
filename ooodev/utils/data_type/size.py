@@ -3,9 +3,9 @@ import contextlib
 from typing import TypeVar, Type
 import uno
 from ooo.dyn.awt.size import Size as UnoSize
-from ...proto.size_obj import SizeObj
+from ooodev.proto.size_obj import SizeObj
 
-from .generic_size import GenericSize
+from ooodev.utils.data_type.generic_size import GenericSize
 
 _TSize = TypeVar(name="_TSize", bound="Size")
 

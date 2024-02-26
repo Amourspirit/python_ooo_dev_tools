@@ -2,9 +2,9 @@
 from __future__ import annotations
 from typing import Any, Tuple
 
-from ooodev.utils import info as mInfo
-from ooodev.loader import lo as mLo
 from ooodev.format.inner.style_base import StyleModifyMulti
+from ooodev.loader import lo as mLo
+from ooodev.utils import info as mInfo
 
 # endregion Imports
 

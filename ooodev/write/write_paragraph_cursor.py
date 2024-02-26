@@ -8,7 +8,7 @@ from ooodev.adapter.text.paragraph_cursor_partial import ParagraphCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from .write_text_cursor import WriteTextCursor
+from ooodev.write.write_text_cursor import WriteTextCursor
 
 
 class WriteParagraphCursor(WriteTextCursor, WriteDocPropPartial, ParagraphCursorPartial, StylePartial):

@@ -7,10 +7,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

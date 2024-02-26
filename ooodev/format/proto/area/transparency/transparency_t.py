@@ -2,15 +2,11 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 import uno
 
-from ...style_multi_t import StyleMultiT
+from ooodev.format.proto.style_multi_t import StyleMultiT
 from ooodev.mock.mock_g import DOCS_BUILDING
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
-
+    from typing_extensions import Protocol
     from ooodev.utils.data_type.intensity import Intensity
 else:
     Protocol = object

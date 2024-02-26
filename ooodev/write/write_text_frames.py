@@ -1,9 +1,7 @@
 from __future__ import annotations
-from typing import overload, Sequence, TYPE_CHECKING
+from typing import Sequence, TYPE_CHECKING
 import uno
-from com.sun.star.form import XForm
 
-from ooodev.adapter.form.forms_comp import FormsComp
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.loader import lo as mLo
@@ -13,14 +11,14 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.adapter.text.text_frames import TextFramesComp
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from .write_text_frame import WriteTextFrame
+from ooodev.write.write_text_frame import WriteTextFrame
 
 if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.proto.style_obj import StyleT
     from ooodev.utils.color import Color
-    from .write_doc import WriteDoc  # circular import if not TYPE_CHECKING
+    from ooodev.write.write_doc import WriteDoc  # circular import if not TYPE_CHECKING
 
 
 class WriteTextFrames(LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, QiPartial, ServicePartial):

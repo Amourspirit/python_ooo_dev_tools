@@ -8,7 +8,7 @@ import colorsys
 from typing import Union, NamedTuple, overload, NewType
 import numbers
 
-from ..utils import gen_util as mGenUtil
+from ooodev.utils import gen_util as mGenUtil
 import random
 
 # ref: https://gist.github.com/mathebox/e0805f72e7db3269ec22

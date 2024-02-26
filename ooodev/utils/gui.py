@@ -38,29 +38,29 @@ from com.sun.star.ui import XUIConfigurationManagerSupplier
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
 
-
-if TYPE_CHECKING:
-    from com.sun.star.frame import XController
-    from com.sun.star.ui import XUIElement
-
-from ..dialog import input as mInput
-from ..exceptions import ex as mEx
-from ..utils import file_io as mFileIO
-from ..utils import info as mInfo
-from ooodev.loader import lo as mLo
-from ..utils import props as mProps
-from ..utils import sys_info as m_sys_info
-from .data_type.window_info import WindowInfo as GuiWindowInfo
-from .decorator.deprecated import deprecated
-from .kind.special_windows_kind import SpecialWindowsKind
-from .kind.tool_bar_name_kind import ToolBarNameKind
-from .kind.window_subtype_kind import WindowSubtypeKind
-from .kind.zoom_kind import ZoomKind
-
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.awt.window_descriptor import WindowDescriptor
 from ooo.dyn.awt.window_class import WindowClass
 
+from ooodev.dialog import input as mInput
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import file_io as mFileIO
+from ooodev.utils import info as mInfo
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils import sys_info as m_sys_info
+from ooodev.utils.data_type.window_info import WindowInfo as GuiWindowInfo
+from ooodev.utils.decorator.deprecated import deprecated
+from ooodev.utils.kind.special_windows_kind import SpecialWindowsKind
+from ooodev.utils.kind.tool_bar_name_kind import ToolBarNameKind
+from ooodev.utils.kind.window_subtype_kind import WindowSubtypeKind
+from ooodev.utils.kind.zoom_kind import ZoomKind
+
+
+
+if TYPE_CHECKING:
+    from com.sun.star.frame import XController
+    from com.sun.star.ui import XUIElement
 # endregion Imports
 
 SysInfo = m_sys_info.SysInfo

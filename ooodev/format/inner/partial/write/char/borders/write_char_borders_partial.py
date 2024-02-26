@@ -15,7 +15,7 @@ from ooodev.utils.color import StandardColor
 if TYPE_CHECKING:
     from ooodev.format.writer.direct.char.borders import Borders, Side, Shadow, Padding
     from ooodev.utils.color import Color
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class WriteCharBordersPartial:

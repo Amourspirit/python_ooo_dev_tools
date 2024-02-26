@@ -151,6 +151,7 @@ class Hyphenation(StyleBase):
         Returns:
             Hyphenation: ``Hyphenation`` instance that represents ``obj`` hyphenation properties.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -166,7 +167,7 @@ class Hyphenation(StyleBase):
         set_prop("ParaHyphenationMaxTrailingChars", inst)
         set_prop("ParaHyphenationNoCaps", inst)
         set_prop("ParaHyphenationMaxHyphens", inst)
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -340,6 +341,8 @@ class Hyphenation(StyleBase):
     @property
     def default(self: _THyphenation) -> _THyphenation:
         """Gets ``Hyphenation`` default. Static Property."""
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         try:
             return self._default_inst
         except AttributeError:

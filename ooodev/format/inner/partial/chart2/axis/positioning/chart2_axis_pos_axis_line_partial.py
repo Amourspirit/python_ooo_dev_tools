@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from ooodev.format.proto.chart2.axis.positioning.axis_line_t import AxisLineT
     from ooodev.utils.gen_util import TNullObj
 else:
+    LoInst = Any
     AxisLineT = Any
     TNullObj = Any
 

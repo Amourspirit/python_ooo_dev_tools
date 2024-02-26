@@ -3,24 +3,25 @@ Module for Shadow format (``LineSpacing``) struct.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 
-from typing import Any, Dict, Tuple, Type, TypeVar, cast, overload
+from typing import Any, Dict, Tuple, Type, TypeVar, cast, overload, TYPE_CHECKING
 from enum import Enum
-from numbers import Real
 
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 
-from .struct_base import StructBase
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.format_named_event import FormatNamedEvent
+from ooodev.format.inner.direct.structs.struct_base import StructBase
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.units import UnitT
 from ooodev.units.unit_convert import UnitConvert, UnitLength
 from ooodev.utils import props as mProps
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 # endregion Import
 
 _TLineSpacingStruct = TypeVar(name="_TLineSpacingStruct", bound="LineSpacingStruct")
@@ -173,12 +174,10 @@ class LineSpacingStruct(StructBase):
 
     # region copy()
     @overload
-    def copy(self: _TLineSpacingStruct) -> _TLineSpacingStruct:
-        ...
+    def copy(self: _TLineSpacingStruct) -> _TLineSpacingStruct: ...
 
     @overload
-    def copy(self: _TLineSpacingStruct, **kwargs) -> _TLineSpacingStruct:
-        ...
+    def copy(self: _TLineSpacingStruct, **kwargs) -> _TLineSpacingStruct: ...
 
     def copy(self: _TLineSpacingStruct, **kwargs) -> _TLineSpacingStruct:
         nu = self.__class__(mode=self._mode, height=self._value, **kwargs)  # type: ignore
@@ -191,12 +190,10 @@ class LineSpacingStruct(StructBase):
     # region apply()
 
     @overload
-    def apply(self, obj: Any, *, keys: Dict[str, str]) -> None:
-        ...
+    def apply(self, obj: Any, *, keys: Dict[str, str]) -> None: ...
 
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -252,13 +249,13 @@ class LineSpacingStruct(StructBase):
     # region from_line_spacing()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing) -> _TLineSpacingStruct:
-        ...
+    def from_uno_struct(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing) -> _TLineSpacingStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:
-        ...
+    def from_uno_struct(
+        cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs
+    ) -> _TLineSpacingStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TLineSpacingStruct], ln_spacing: UnoLineSpacing, **kwargs) -> _TLineSpacingStruct:

@@ -1,13 +1,12 @@
 # region Imports
 from __future__ import annotations
-from typing import NamedTuple
 import uno
 
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
-from ...cell_style_base import CellStyleBase
-from .scale_reduce_enlarge import ScaleProps
+from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.inner.modify.calc.cell_style_base import CellStyleBase
+from ooodev.format.inner.modify.calc.page.sheet.scale_reduce_enlarge import ScaleProps
 
 # endregion Imports
 

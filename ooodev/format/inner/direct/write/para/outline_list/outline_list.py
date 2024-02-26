@@ -7,16 +7,19 @@ Module for managing paragraph Outline and List.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, TypeVar, overload
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.format.inner.style_base import StyleMulti
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.write.para.outline_list.line_num import LineNum
+from ooodev.format.inner.direct.write.para.outline_list.list_style import ListStyle as ParaListStyle
+from ooodev.format.inner.direct.write.para.outline_list.outline import LevelKind
+from ooodev.format.inner.direct.write.para.outline_list.outline import Outline as InnerOutline
 from ooodev.format.inner.kind.format_kind import FormatKind
-from .outline import Outline as InnerOutline, LevelKind as LevelKind
-from .list_style import ListStyle as ParaListStyle, StyleListKind as StyleListKind
-from .line_num import LineNum as LineNum
+from ooodev.format.inner.style_base import StyleMulti
+from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
 
 _TOutlineList = TypeVar(name="_TOutlineList", bound="OutlineList")
 
@@ -75,14 +78,14 @@ class OutlineList(StyleMulti):
         super().__init__()
         if ol_level is not None:
             ol = InnerOutline(level=ol_level)
-            self._set_style("outline", ol, *ol.get_attrs())
+            self._set_style("outline", ol, *ol.get_attrs())  # type: ignore
 
         ls = ParaListStyle(list_style=ls_style, num_start=ls_num)
         if ls.prop_has_attribs:
-            self._set_style("list_style", ls, *ls.get_attrs())
+            self._set_style("list_style", ls, *ls.get_attrs())  # type: ignore
         if ln_num is not None:
             ln = LineNum(ln_num)
-            self._set_style("line_num", ln, *ln.get_attrs())
+            self._set_style("line_num", ln, *ln.get_attrs())  # type: ignore
 
     # endregion init
 
@@ -105,13 +108,11 @@ class OutlineList(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOutlineList], obj: Any) -> _TOutlineList:
-        ...
+    def from_obj(cls: Type[_TOutlineList], obj: Any) -> _TOutlineList: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TOutlineList], obj: Any, **kwargs) -> _TOutlineList:
-        ...
+    def from_obj(cls: Type[_TOutlineList], obj: Any, **kwargs) -> _TOutlineList: ...
 
     @classmethod
     def from_obj(cls: Type[_TOutlineList], obj: Any, **kwargs) -> _TOutlineList:
@@ -127,6 +128,7 @@ class OutlineList(StyleMulti):
         Returns:
             OutlineList: ``OutlineList`` instance that represents ``obj`` Outline and List.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -139,6 +141,7 @@ class OutlineList(StyleMulti):
         ln = LineNum.from_obj(obj)
         if ln.prop_has_attribs:
             inst._set_style("line_num", ln, *ln.get_attrs())
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -185,6 +188,8 @@ class OutlineList(StyleMulti):
     @property
     def default(self: _TOutlineList) -> _TOutlineList:
         """Gets ``OutlineList`` default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:
@@ -201,9 +206,9 @@ class OutlineList(StyleMulti):
             else:
                 ls = self.prop_inner_list_style.default
             inst = self.__class__(_cattribs=self._get_internal_cattribs())
-            inst._set_style("outline", ol, *ol.get_attrs())
-            inst._set_style("list_style", ls, *ls.get_attrs())
-            inst._set_style("line_num", ln, *ln.get_attrs())
+            inst._set_style("outline", ol, *ol.get_attrs())  # type: ignore
+            inst._set_style("list_style", ls, *ls.get_attrs())  # type: ignore
+            inst._set_style("line_num", ln, *ln.get_attrs())  # type: ignore
             inst._is_default_inst = True
             self._default_inst = inst
         return self._default_inst

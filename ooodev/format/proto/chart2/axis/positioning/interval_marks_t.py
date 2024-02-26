@@ -5,10 +5,7 @@ from ooodev.mock.mock_g import DOCS_BUILDING
 from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from ooodev.format.inner.direct.chart2.axis.positioning.interval_marks import MarkKind
     from ooo.dyn.chart.chart_axis_mark_position import ChartAxisMarkPosition
 else:

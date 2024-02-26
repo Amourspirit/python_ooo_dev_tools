@@ -4,10 +4,7 @@ from typing import Type, Literal, overload, TYPE_CHECKING, Optional, TypeVar
 T = TypeVar("T")
 
 if TYPE_CHECKING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

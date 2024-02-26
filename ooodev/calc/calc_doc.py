@@ -1,6 +1,7 @@
-# pylint: wrong-import-position
 from __future__ import annotations
 from typing import Any, cast, List, Tuple, overload, Sequence, TYPE_CHECKING
+
+# pylint: wrong-import-position
 import uno
 
 from com.sun.star.drawing import XDrawPagesSupplier
@@ -39,11 +40,11 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from . import calc_sheet as mCalcSheet
-from . import calc_sheets as mCalcSheets
-from . import calc_sheet_view as mCalcSheetView
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .spreadsheet_draw_pages import SpreadsheetDrawPages
+from ooodev.calc import calc_sheet as mCalcSheet
+from ooodev.calc import calc_sheets as mCalcSheets
+from ooodev.calc import calc_sheet_view as mCalcSheetView
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue

@@ -18,7 +18,6 @@ from ooodev.format.inner.direct.write.fill.area.img import (
     OffsetRow,
     ImgStyleKind,
 )
-from ooodev.format.inner.preset.preset_image import PresetImageKind
 from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
 from ooodev.meta.disabled_method import DisabledMethod
 from ooodev.format.inner.direct.write.para.area.img import Img as ParaImg

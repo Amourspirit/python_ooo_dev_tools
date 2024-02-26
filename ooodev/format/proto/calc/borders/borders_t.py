@@ -7,12 +7,8 @@ from ooodev.format.proto.style_multi_t import StyleMultiT
 
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
-    from ooodev.units import UnitT
+    from typing_extensions import Protocol
+    from ooodev.units.unit_obj import UnitT
     from ooodev.format.inner.direct.structs.side import Side as Side
     from ooodev.format.inner.direct.structs.table_border_struct import TableBorderStruct
     from ooodev.format.inner.direct.calc.border.padding import Padding

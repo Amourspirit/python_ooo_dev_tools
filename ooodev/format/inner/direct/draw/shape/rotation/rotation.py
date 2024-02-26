@@ -5,11 +5,11 @@ import uno
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import Angle100
+from ooodev.units.angle100 import Angle100
 from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
-    from ooodev.units import AngleUnitT
+    from ooodev.units.angle_unit_obj import AngleUnitT
 
 _TRotation = TypeVar(name="_TRotation", bound="Rotation")
 
@@ -56,13 +56,11 @@ class Rotation(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TRotation], obj: object) -> _TRotation:
-        ...
+    def from_obj(cls: Type[_TRotation], obj: object) -> _TRotation: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation:
-        ...
+    def from_obj(cls: Type[_TRotation], obj: object, **kwargs) -> _TRotation: ...
 
     @classmethod
     def from_obj(cls: Type[_TRotation], obj: Any, **kwargs) -> _TRotation:

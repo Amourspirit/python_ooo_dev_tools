@@ -1,5 +1,4 @@
 from ooodev.mock import mock_g
-from ..mock import mock_g
 
 # sourcery skip: remove-pass-body
 try:

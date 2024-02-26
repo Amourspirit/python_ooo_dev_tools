@@ -1,14 +1,17 @@
 # region Imports
 from __future__ import annotations
-from typing import cast
+from typing import cast, TYPE_CHECKING
 import uno
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_location import ShadowLocation
 
-from ooodev.units import UnitT
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
-from ooodev.utils.color import StandardColor, Color
-from ..frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.utils.color import Color
+from ooodev.utils.color import StandardColor
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Imports
 
@@ -45,6 +48,8 @@ class Shadow(FrameStyleBaseMulti):
         Returns:
             None:
         """
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
 
         direct = InnerShadow(
             location=location, color=color, transparent=transparent, width=width, _cattribs=self._get_inner_cattribs()  # type: ignore
@@ -52,7 +57,7 @@ class Shadow(FrameStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct, *direct.get_attrs())  # type: ignore
 
     # endregion Init
 
@@ -75,6 +80,7 @@ class Shadow(FrameStyleBaseMulti):
         Returns:
             Shadow: ``Shadow`` instance from style properties.
         """
+        # pylint: disable=protected-access
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerShadow.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         inst._set_style("direct", direct, *direct.get_attrs())

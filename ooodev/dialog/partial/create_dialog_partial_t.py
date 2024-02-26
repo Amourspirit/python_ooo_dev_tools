@@ -4,14 +4,10 @@ from typing import overload, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ooodev.dialog import Dialog
-    from ooodev.dialog.msgbox import MessageBoxType
-    from ooodev.dialog.msgbox import MessageBoxButtonsEnum
-    from ooodev.dialog.msgbox import MessageBoxResultsEnum
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from ooo.dyn.awt.message_box_type import MessageBoxType
+    from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum
+    from ooo.dyn.awt.message_box_results import MessageBoxResultsEnum
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

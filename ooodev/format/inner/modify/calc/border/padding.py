@@ -1,8 +1,11 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import uno
 
 from ooodev.format.inner.direct.calc.border.padding import Padding as DirectPadding
-from ooodev.units.unit_obj import UnitT
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 
 class Padding(DirectPadding):

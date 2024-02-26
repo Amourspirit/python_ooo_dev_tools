@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.format.proto.font.font_lang_t import FontLangT
     from ooodev.format.proto.font.font_only_t import FontOnlyT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 else:
     FontLangT = Any
     FontOnlyT = Any

@@ -7,12 +7,12 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.adapter.drawing.text_shape_comp import TextShapeComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.loader import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ..partial.draw_shape_partial import DrawShapePartial
-from .partial.styled_shape_partial import StyledShapePartial
-from .shape_base import ShapeBase, _T
+from ooodev.draw.partial.draw_shape_partial import DrawShapePartial
+from ooodev.draw.shapes.partial.styled_shape_partial import StyledShapePartial
+from ooodev.draw.shapes.shape_base import ShapeBase
+from ooodev.draw.shapes.shape_base import _T
 
 
 if TYPE_CHECKING:

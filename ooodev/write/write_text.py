@@ -13,15 +13,15 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from . import write_paragraphs as mWriteParagraphs
-from . import write_text_tables as mWriteTextTables
+from ooodev.write import write_paragraphs as mWriteParagraphs
+from ooodev.write import write_text_tables as mWriteTextTables
 
 if TYPE_CHECKING:
     from com.sun.star.text import XText
     from com.sun.star.text import XTextRange
     from com.sun.star.text import XTextContent
-    from .write_text_cursor import WriteTextCursor
-    from .write_text_range import WriteTextRange
+    from ooodev.write.write_text_cursor import WriteTextCursor
+    from ooodev.write.write_text_range import WriteTextRange
 
 T = TypeVar("T", bound="ComponentT")
 

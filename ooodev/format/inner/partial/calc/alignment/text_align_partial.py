@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from ooodev.format.inner.direct.calc.alignment.text_align import HoriAlignKind
 
     from ooodev.format.proto.calc.alignment.text_align_t import TextAlignT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 else:
     TextAlignT = Any
     LoInst = Any

@@ -2,10 +2,10 @@
 from __future__ import annotations
 from typing import Any, cast
 import uno
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
+from ooodev.format.writer.style.para.kind import StyleParaKind
 from ooodev.utils import color as mColor
 from ooodev.format.inner.direct.write.para.area.color import Color as InnerColor
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 
 # endregion Import
 

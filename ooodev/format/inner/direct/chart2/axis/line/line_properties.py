@@ -6,10 +6,10 @@ from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
-from ...chart.borders.line_properties import LineProperties as ChartLineProperties
+from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties as ChartLineProperties
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class LineProperties(ChartLineProperties):

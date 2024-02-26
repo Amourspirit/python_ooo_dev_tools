@@ -3,10 +3,10 @@ from typing import Any, TYPE_CHECKING
 import contextlib
 
 import uno
-from ...events.args.event_args import EventArgs as EventArgs
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
-
 from com.sun.star.awt import XActionListener
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
+
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

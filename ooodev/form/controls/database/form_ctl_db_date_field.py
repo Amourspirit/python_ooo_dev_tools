@@ -6,7 +6,7 @@ from ooodev.adapter.form.data_aware_control_model_partial import DataAwareContro
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.adapter.form.update_events import UpdateEvents
 
-from ..form_ctl_date_field import FormCtlDateField
+from ooodev.form.controls.form_ctl_date_field import FormCtlDateField
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseDateField as ControlModel  # service

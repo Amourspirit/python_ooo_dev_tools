@@ -3,10 +3,11 @@ Module for managing paragraph Writing Mode.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import TypeVar
 
-from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
+from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 from ooodev.format.inner.common.abstract.abstract_writing_mode import AbstractWritingMode
 
 

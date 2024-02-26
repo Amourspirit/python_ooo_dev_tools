@@ -12,7 +12,7 @@ from ooodev.format.chart2.direct.title.alignment import DirectionModeKind
 if TYPE_CHECKING:
     from ooodev.format.inner.direct.chart2.title.alignment.orientation import Orientation
     from ooodev.format.inner.direct.chart2.title.alignment.direction import Direction
-    from ooodev.units import Angle
+    from ooodev.units.angle import Angle
 
 
 class Chart2TitleOrientationPartial:

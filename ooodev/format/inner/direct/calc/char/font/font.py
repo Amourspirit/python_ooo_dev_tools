@@ -10,9 +10,9 @@ from ooo.dyn.table.shadow_format import ShadowFormat
 from ooodev.format.inner.direct.write.char.font.font import Font as CharFont
 from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
-from ooodev.units import UnitT
+from ooodev.units.angle import Angle
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils.color import Color
-from ooodev.units import Angle
 
 
 class Font(CharFont):

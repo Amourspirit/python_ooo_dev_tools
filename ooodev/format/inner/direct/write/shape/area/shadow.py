@@ -4,20 +4,20 @@ from typing import Any, Tuple, Type, TypeVar, cast, overload, TYPE_CHECKING
 from enum import Enum
 
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.common.props.shape_shadow_props import ShapeShadowProps
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.style_base import StyleBase
 from ooodev.loader import lo as mLo
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_pt import UnitPT
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ooodev.units import UnitMM
-from ooodev.units import UnitPT
-from ooodev.units import UnitConvert
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.inner.common.props.shape_shadow_props import ShapeShadowProps
 
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Imports
 
@@ -234,6 +234,7 @@ class Shadow(StyleBase):
         Returns:
             Shadow: Instance that represents Shadow settings.
         """
+        # pylint: disable=protected-access
         # this nu is only used to get Property Name
 
         inst = cls(**kwargs)
@@ -242,6 +243,7 @@ class Shadow(StyleBase):
         for prop in inst._props:
             inst._set(prop, mProps.Props.get(obj, prop))
         inst._location = inst._get_location_from_props()
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

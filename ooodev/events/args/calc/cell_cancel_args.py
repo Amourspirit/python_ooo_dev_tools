@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
-from .cell_args import AbstractCellArgs
-from ..cancel_event_args import AbstractCancelEventArgs
+from ooodev.events.args.calc.cell_args import AbstractCellArgs
+from ooodev.events.args.cancel_event_args import AbstractCancelEventArgs
 
 
 class AbstractCellCancelArgs(AbstractCancelEventArgs, AbstractCellArgs):

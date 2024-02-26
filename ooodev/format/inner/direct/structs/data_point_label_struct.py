@@ -8,8 +8,8 @@ from ooo.dyn.chart2.data_point_label import DataPointLabel
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ...common.props.struct_data_point_label_props import StructDataPointLabelProps
-from .struct_base import StructBase
+from ooodev.format.inner.common.props.struct_data_point_label_props import StructDataPointLabelProps
+from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion Import
 
@@ -152,13 +152,13 @@ class DataPointLabelStruct(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TDataPointLabelStruct], value: DataPointLabel) -> _TDataPointLabelStruct:
-        ...
+    def from_uno_struct(cls: Type[_TDataPointLabelStruct], value: DataPointLabel) -> _TDataPointLabelStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TDataPointLabelStruct], value: DataPointLabel, **kwargs) -> _TDataPointLabelStruct:
-        ...
+    def from_uno_struct(
+        cls: Type[_TDataPointLabelStruct], value: DataPointLabel, **kwargs
+    ) -> _TDataPointLabelStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TDataPointLabelStruct], value: DataPointLabel, **kwargs) -> _TDataPointLabelStruct:
@@ -182,13 +182,11 @@ class DataPointLabelStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any) -> _TDataPointLabelStruct:
-        ...
+    def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any) -> _TDataPointLabelStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any, **kwargs) -> _TDataPointLabelStruct:
-        ...
+    def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any, **kwargs) -> _TDataPointLabelStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TDataPointLabelStruct], obj: Any, **kwargs) -> _TDataPointLabelStruct:

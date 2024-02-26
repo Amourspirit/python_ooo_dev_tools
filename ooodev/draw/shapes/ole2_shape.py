@@ -9,8 +9,9 @@ from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ..partial.draw_shape_partial import DrawShapePartial
-from .shape_base import ShapeBase, _T
+from ooodev.draw.partial.draw_shape_partial import DrawShapePartial
+from ooodev.draw.shapes.shape_base import ShapeBase
+from ooodev.draw.shapes.shape_base import _T
 
 
 if TYPE_CHECKING:
@@ -35,6 +36,7 @@ class OLE2Shape(
         ShapeBase.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
         OLE2ShapeComp.__init__(self, component)
         ShapePartialProps.__init__(self, component=component)  # type: ignore
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

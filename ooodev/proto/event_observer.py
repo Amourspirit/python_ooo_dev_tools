@@ -2,10 +2,7 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from ooodev.events.args.event_args_t import EventArgsT
     from ..utils.type_var import EventCallback
 else:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import List, Set, Any, Tuple, TYPE_CHECKING
-from .table_rule_kind import TableRuleKind as TableRuleKind
-from .format_table_item import FormatTableItem as FormatTableItem
-from .format_string import FormatString as FormatString
-from .table_item_processor import TableItemProcessor
+from ooodev.formatters.table_rule_kind import TableRuleKind as TableRuleKind
+from ooodev.formatters.format_table_item import FormatTableItem as FormatTableItem
+from ooodev.formatters.format_string import FormatString as FormatString
+from ooodev.formatters.table_item_processor import TableItemProcessor
 
 if TYPE_CHECKING:
     from ..utils.type_var import Row

@@ -12,7 +12,7 @@ from ooodev.format.inner.common.format_types.size_percent import SizePercent
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 from ooodev.utils.data_type.offset import Offset
 from ooodev.utils.data_type.size_mm import SizeMM
-from ...chart.area.img import Img as ChartImg
+from ooodev.format.inner.direct.chart2.chart.area.img import Img as ChartImg
 
 # endregion Imports
 

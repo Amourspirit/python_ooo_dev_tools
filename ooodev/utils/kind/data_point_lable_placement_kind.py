@@ -4,7 +4,9 @@ This module is DEPRECATED in version 0.27.0 It is no longer recommended for use 
 Use :ref:`ooodev.utils.kind.data_point_label_placement_kind` instead.
 """
 
-from .data_point_label_placement_kind import DataPointLabelPlacementKind as DataPointLabelPlacementKind
+from ooodev.utils.kind.data_point_label_placement_kind import (
+    DataPointLabelPlacementKind as DataPointLabelPlacementKind,
+)
 import warnings
 
 warnings.warn(

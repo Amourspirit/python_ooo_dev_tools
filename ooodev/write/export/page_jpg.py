@@ -4,8 +4,8 @@ from pathlib import Path
 import uno
 from com.sun.star.frame import XStorable
 
-from ooodev.units import UnitInch
-from ooodev.write import WriteDoc
+from ooodev.units.unit_inch import UnitInch
+from ooodev.write.write_doc import WriteDoc
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
 from ooodev.utils import file_io as mFile
 from ooodev.events.partial.events_partial import EventsPartial

@@ -20,7 +20,7 @@ from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImp
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.units import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint

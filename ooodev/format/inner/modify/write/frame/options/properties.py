@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import cast
 
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ooodev.format.inner.direct.write.frame.options.properties import TextDirectionKind as TextDirectionKind
 from ooodev.format.inner.direct.write.frame.options.properties import Properties as InnerProperties
+from ooodev.format.inner.direct.write.frame.options.properties import TextDirectionKind
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 
 
 class Properties(FrameStyleBaseMulti):

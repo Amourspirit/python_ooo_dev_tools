@@ -9,11 +9,11 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
-    from .calc_forms import CalcForms
+    from ooodev.calc.calc_forms import CalcForms
 
 
 class CalcForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, ServicePartial, CalcDocPropPartial):

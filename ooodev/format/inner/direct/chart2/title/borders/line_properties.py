@@ -2,7 +2,7 @@ from __future__ import annotations
 import uno
 from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties as ChartLineProperties
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 

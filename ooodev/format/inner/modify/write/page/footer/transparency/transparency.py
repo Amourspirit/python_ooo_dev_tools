@@ -2,9 +2,9 @@ from __future__ import annotations
 import uno
 from ooodev.format.inner.common.props.transparent_transparency_props import TransparentTransparencyProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.transparency.transparency import Transparency as HeaderTransparency
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.utils.data_type.intensity import Intensity
-from ...header.transparency.transparency import Transparency as HeaderTransparency
 
 
 class Transparency(HeaderTransparency):

@@ -29,36 +29,36 @@ from com.sun.star.reflection import XIdlReflection
 from com.sun.star.style import XStyleFamiliesSupplier
 from com.sun.star.util import XChangesBatch
 
-from ooodev.utils.decorator.deprecated import deprecated
-
-
-if TYPE_CHECKING:
-    from com.sun.star.awt import FontDescriptor
-    from com.sun.star.beans import XPropertyContainer
-    from com.sun.star.document import XDocumentProperties
-    from com.sun.star.reflection import XIdlMethod
-
 
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from ooo.dyn.beans.the_introspection import theIntrospection
 from ooo.dyn.lang.locale import Locale  # struct
 
+from ooodev.utils.decorator.deprecated import deprecated
 from ooodev.loader.inst.service import Service as LoService
-from . import date_time_util as mDate
-from . import file_io as mFileIO
+from ooodev.utils import date_time_util as mDate
+from ooodev.utils import file_io as mFileIO
 from ooodev.loader import lo as mLo
-from . import props as mProps
-from ..units import unit_convert as mConvert
-from ..events.args.event_args import EventArgs
-from ..events.event_singleton import _Events
-from ..events.lo_named_event import LoNamedEvent
-from ..exceptions import ex as mEx
-from ..meta.static_meta import StaticProperty, classproperty
-from .kind.info_paths_kind import InfoPathsKind as InfoPathsKind
-from .sys_info import SysInfo
-from .type_var import PathOrStr
+from ooodev.utils import props as mProps
+from ooodev.units import unit_convert as mConvert
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.event_singleton import _Events
+from ooodev.events.lo_named_event import LoNamedEvent
+from ooodev.exceptions import ex as mEx
+from ooodev.meta.static_meta import StaticProperty, classproperty
+from ooodev.utils.kind.info_paths_kind import InfoPathsKind as InfoPathsKind
+from ooodev.utils.sys_info import SysInfo
 from ooodev.proto import uno_proto
+
+if TYPE_CHECKING:
+    from com.sun.star.awt import FontDescriptor
+    from com.sun.star.beans import XPropertyContainer
+    from com.sun.star.document import XDocumentProperties
+    from com.sun.star.reflection import XIdlMethod
+    from .type_var import PathOrStr
+else:
+    PathOrStr = Any
 
 if sys.version_info >= (3, 10):
     from typing import TypeGuard, TypeAlias

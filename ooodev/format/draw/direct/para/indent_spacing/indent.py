@@ -4,7 +4,7 @@ from ooodev.format.inner.direct.write.para.indent_space.indent import Indent as 
 
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class Indent(WriteIndent):

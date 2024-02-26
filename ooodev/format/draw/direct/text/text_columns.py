@@ -3,13 +3,14 @@ Module for working with text columns of a UNO object that supports ``com.sun.sta
 
 .. versionadded:: 0.17.8
 """
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ooodev.format.inner.direct.draw.shape.text.text_columns import TextColumns as ShapeTextColumns
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class TextColumns(ShapeTextColumns):

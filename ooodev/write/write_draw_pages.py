@@ -14,12 +14,12 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from .write_draw_page import WriteDrawPage
+from ooodev.write.write_draw_page import WriteDrawPage
 
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
-    from .write_doc import WriteDoc
+    from ooodev.write.write_doc import WriteDoc
 
 
 class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiPartial):

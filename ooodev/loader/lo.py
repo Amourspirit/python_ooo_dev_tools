@@ -30,17 +30,16 @@ from ooodev.loader.inst.doc_type import DocType as LoDocType, DocTypeStr as LoDo
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.loader.inst.clsid import CLSID as LoClsid
 from ooodev.conn.connect import ConnectBase
-from .inst import lo_inst
+from ooodev.loader.inst import lo_inst
 
-from ..conn import cache as mCache
-from ..conn import connectors
-from ..events.event_singleton import _Events
-from ..events.lo_named_event import LoNamedEvent
-from ..events.gbl_named_event import GblNamedEvent
-from ..formatters.formatter_table import FormatterTable
-from ..meta.static_meta import StaticProperty, classproperty
-from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
-from ..mock import mock_g
+from ooodev.conn import cache as mCache
+from ooodev.conn import connectors
+from ooodev.events.event_singleton import _Events
+from ooodev.events.lo_named_event import LoNamedEvent
+from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.formatters.formatter_table import FormatterTable
+from ooodev.meta.static_meta import StaticProperty, classproperty
+from ooodev.mock import mock_g
 
 
 if TYPE_CHECKING:
@@ -62,6 +61,15 @@ if TYPE_CHECKING:
     from ooodev.loader.comp.the_desktop import TheDesktop
     from ooodev.loader.comp.the_global_event_broadcaster import TheGlobalEventBroadcaster
     from ooodev.events.args.event_args import EventArgs
+    from ooodev.utils.type_var import PathOrStr
+    from ooodev.utils.type_var import UnoInterface
+    from ooodev.utils.type_var import T
+    from ooodev.utils.type_var import Table
+else:
+    PathOrStr = Any
+    UnoInterface = Any
+    T = Any
+    Table = Any
 
 
 # PathOrStr = type_var.PathOrStr

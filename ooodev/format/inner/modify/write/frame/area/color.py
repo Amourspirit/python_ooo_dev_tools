@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor as InnerColor
 from ooodev.utils import color as mColor
 from ooodev.utils.color import StandardColor

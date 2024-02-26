@@ -4,17 +4,17 @@ import uno
 from com.sun.star.drawing import XShape
 from ooo.dyn.awt.size import Size as UnoSize
 
-from ooodev.loader import lo as mLo
-from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
-from ooodev.utils.data_type.size import Size as OooDevSize
-from ooodev.utils.data_type.point import Point as OooDevPoint
-from ooodev.format.inner.direct.chart2.position_size.size import Size as ShapeSize
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.chart2.position_size.size import Size as ShapeSize
+from ooodev.format.inner.direct.draw.shape.position_size.position import Position
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
-from .position import Position
+from ooodev.utils.data_type.point import Point as OooDevPoint
+from ooodev.utils.data_type.size import Size as OooDevSize
+from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 def calculate_x_and_y_from_point_kind(

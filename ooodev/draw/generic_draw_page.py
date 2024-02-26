@@ -7,14 +7,14 @@ from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
 from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from .partial.draw_page_partial import DrawPagePartial
+from ooodev.draw.partial.draw_page_partial import DrawPagePartial
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage

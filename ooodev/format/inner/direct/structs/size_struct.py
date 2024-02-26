@@ -6,12 +6,12 @@ from ooo.dyn.awt.size import Size
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
+from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ...common.props.struct_size_props import StructSizeProps
-from .struct_base import StructBase
+from ooodev.format.inner.common.props.struct_size_props import StructSizeProps
+from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion Import
 
@@ -137,13 +137,11 @@ class SizeStruct(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TSizeStruct], value: Size) -> _TSizeStruct:
-        ...
+    def from_uno_struct(cls: Type[_TSizeStruct], value: Size) -> _TSizeStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TSizeStruct], value: Size, **kwargs) -> _TSizeStruct:
-        ...
+    def from_uno_struct(cls: Type[_TSizeStruct], value: Size, **kwargs) -> _TSizeStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TSizeStruct], value: Size, **kwargs) -> _TSizeStruct:
@@ -166,13 +164,11 @@ class SizeStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: Any) -> _TSizeStruct:
-        ...
+    def from_obj(cls: Type[_TSizeStruct], obj: Any) -> _TSizeStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSizeStruct], obj: Any, **kwargs) -> _TSizeStruct:
-        ...
+    def from_obj(cls: Type[_TSizeStruct], obj: Any, **kwargs) -> _TSizeStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TSizeStruct], obj: Any, **kwargs) -> _TSizeStruct:

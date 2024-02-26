@@ -12,7 +12,7 @@ from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
-    from .write_forms import WriteForms
+    from ooodev.write.write_forms import WriteForms
 
 
 class WriteForm(LoInstPropsPartial, DataFormComp, WriteDocPropPartial, QiPartial, FormPartial):

@@ -2,11 +2,11 @@
 from __future__ import annotations
 import uno
 from typing import Any, Tuple, cast, Type, TypeVar
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
 from ooodev.format.inner.common.props.hf_props import HfProps
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 
 # endregion Import
 
@@ -104,7 +104,7 @@ class Header(PageStyleBaseMulti):
         See Also:
             - :ref:`help_writer_format_modify_page_header_header`
         """
-
+        # pylint: disable=unexpected-keyword-arg
         direct = InnerStyle(
             on=on,
             shared=shared,
@@ -120,7 +120,7 @@ class Header(PageStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct, *direct.get_attrs())  # type: ignore
 
     # region Internal Methods
     def _get_inner_props(self) -> HfProps:

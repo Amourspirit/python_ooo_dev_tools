@@ -10,8 +10,9 @@ if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Protocol
     from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
     from ooodev.format.inner.direct.write.char.font.font_position import FontScriptKind
-    from ooodev.units import UnitT, UnitPT
-    from ooodev.units import Angle
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.units.unit_pt import UnitPT
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.intensity import Intensity
 else:
     Protocol = object

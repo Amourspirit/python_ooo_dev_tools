@@ -15,7 +15,7 @@ from com.sun.star.container import XNameContainer
 from ooodev.mock import mock_g
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
-from ..dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     # Avoid circular import by creating a property in class instance for Dialogs
     from ooodev.dialog import Dialogs
     from ooodev.dialog.dialogs import ControlT
-    from ..dl_control import CtlRadioButton
+    from ooodev.dialog.dl_control import CtlRadioButton
 # endregion Imports
 
 

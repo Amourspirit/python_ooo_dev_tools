@@ -10,7 +10,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import props as mProps
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
-from ..form_ctl_list_box import FormCtlListBox
+from ooodev.form.controls.form_ctl_list_box import FormCtlListBox
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl

@@ -3,15 +3,15 @@ from typing import Any
 
 # pylint: disable=unused-import, useless-import-alias
 import uno
-from ..events.args.event_args import EventArgs as EventArgs
-from ..events.args.event_args import AbstractEvent
-from ..events.lo_events import Events, EventCallback
-from ..events.args.generic_args import GenericArgs as GenericArgs
-from ..mock import mock_g
+from ooodev.events.args.event_args import EventArgs as EventArgs
+from ooodev.events.args.event_args import AbstractEvent
+from ooodev.events.lo_events import Events, EventCallback
+from ooodev.events.args.generic_args import GenericArgs as GenericArgs
+from ooodev.mock import mock_g
 from ooodev.events.partial.events_partial import EventsPartial
 
 if mock_g.DOCS_BUILDING:
-    from ..mock import unohelper
+    from ooodev.mock import unohelper
 else:
     import unohelper
 

@@ -6,7 +6,7 @@ from ooodev.mock import mock_g
 from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from .write_text_cursor import WriteTextCursor
+from ooodev.write.write_text_cursor import WriteTextCursor
 
 if TYPE_CHECKING:
     from com.sun.star.text import XWordCursor

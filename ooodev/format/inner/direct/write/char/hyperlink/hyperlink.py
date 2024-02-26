@@ -7,6 +7,7 @@ Module for creating hyperlinks
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, overload, Type, TypeVar
@@ -15,7 +16,8 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.hyperlink_props import HyperlinkProps
-from ...frame.hyperlink.link_to import LinkTo, TargetKind as TargetKind
+from ooodev.format.inner.direct.write.frame.hyperlink.link_to import LinkTo
+from ooodev.format.inner.direct.write.frame.hyperlink.link_to import TargetKind
 
 # endregion Import
 
@@ -78,13 +80,11 @@ class Hyperlink(LinkTo):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyperlink], obj: Any) -> _THyperlink:
-        ...
+    def from_obj(cls: Type[_THyperlink], obj: Any) -> _THyperlink: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THyperlink], obj: Any, **kwargs) -> _THyperlink:
-        ...
+    def from_obj(cls: Type[_THyperlink], obj: Any, **kwargs) -> _THyperlink: ...
 
     @classmethod
     def from_obj(cls: Type[_THyperlink], obj: Any, **kwargs) -> _THyperlink:
@@ -160,6 +160,8 @@ class Hyperlink(LinkTo):
     @property
     def empty(self: _THyperlink) -> _THyperlink:  # type: ignore[misc]
         """Gets Highlight empty."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._empty_inst
         except AttributeError:

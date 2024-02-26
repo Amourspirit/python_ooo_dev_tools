@@ -1,4 +1,5 @@
 """Module for Draw Style Fill Coloring."""
+
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
@@ -15,7 +16,7 @@ from ooodev.units import Angle
 
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 

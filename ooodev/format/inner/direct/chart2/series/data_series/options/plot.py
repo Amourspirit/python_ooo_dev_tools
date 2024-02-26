@@ -5,7 +5,7 @@ from ooo.dyn.chart.missing_value_treatment import MissingValueTreatment
 from com.sun.star.chart2 import XChartDocument
 
 from enum import IntEnum
-from .plot_simple import PlotSimple
+from ooodev.format.inner.direct.chart2.series.data_series.options.plot_simple import PlotSimple
 
 
 class MissingValueKind(IntEnum):

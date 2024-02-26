@@ -11,12 +11,12 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .calc_form import CalcForm
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.calc_form import CalcForm
 
 if TYPE_CHECKING:
     from com.sun.star.form import XForms
-    from .spreadsheet_draw_page import SpreadsheetDrawPage
+    from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
 
 class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDocPropPartial):

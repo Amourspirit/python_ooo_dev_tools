@@ -9,7 +9,7 @@ from ..uno_control_model_partial import UnoControlModelPartial
 if TYPE_CHECKING:
     from com.sun.star.awt.tree import TreeControlModel  # Service
     from com.sun.star.awt.tree import XTreeDataModel
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class TreeControlModelPartial(UnoControlModelPartial):

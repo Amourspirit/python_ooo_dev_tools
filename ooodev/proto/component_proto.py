@@ -3,10 +3,7 @@ from typing import Any, TYPE_CHECKING, Union
 from ooodev.loader.inst.lo_inst import LoInst
 
 if TYPE_CHECKING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 
@@ -31,6 +28,9 @@ class ComponentInstClassT(ComponentClassT, Protocol):
         raise NotImplementedError()
 
 
-ComponentT = Union[ComponentStructT, ComponentClassT]
-
-ComponentInstT = Union[ComponentInstStructT, ComponentInstClassT]
+if TYPE_CHECKING:
+    ComponentT = Union[ComponentStructT, ComponentClassT]
+    ComponentInstT = Union[ComponentInstStructT, ComponentInstClassT]
+else:
+    ComponentT = Any
+    ComponentInstT = Any

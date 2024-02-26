@@ -2,19 +2,19 @@
 from __future__ import annotations
 from typing import Any, cast
 import uno
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
-from ooodev.utils.color import Color, StandardColor
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.color_range import ColorRange as ColorRange
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.preset import preset_gradient
-from ooodev.format.inner.preset.preset_gradient import PresetGradientKind as PresetGradientKind
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as InnerGradient
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.preset import preset_gradient
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.units.angle import Angle
+from ooodev.utils.color import StandardColor
+from ooodev.utils.data_type.color_range import ColorRange
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
 
 # endregion Import
 

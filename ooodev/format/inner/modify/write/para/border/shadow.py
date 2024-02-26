@@ -1,16 +1,17 @@
 # region Import
 from __future__ import annotations
-from typing import Any, cast
+from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_location import ShadowLocation
 
-from ooodev.units import UnitT
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
-from ooodev.utils.color import StandardColor, Color
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.utils.color import Color
+from ooodev.utils.color import StandardColor
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 # endregion Import
 
 

@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 import uno
 from ooo.dyn.drawing.text_animation_kind import TextAnimationKind
 from ooo.dyn.drawing.text_animation_direction import TextAnimationDirection
-from .scroll_in import ScrollIn
+from ooodev.format.inner.direct.draw.shape.text.animation.scroll_in import ScrollIn
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class ScrollBackForth(ScrollIn):

@@ -16,7 +16,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from . import write_text_portions as mWriteTextPortions
+from ooodev.write import write_text_portions as mWriteTextPortions
 
 if TYPE_CHECKING:
     from com.sun.star.container import XEnumerationAccess

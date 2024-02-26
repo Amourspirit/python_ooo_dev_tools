@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, TypeVar, cast, overload
 
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase

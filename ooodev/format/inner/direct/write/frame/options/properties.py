@@ -122,6 +122,8 @@ class TextDirectionMode(WritingMode):
     @property
     def default(self) -> TextDirectionMode:  # type: ignore[misc]
         """Gets ``WritingMode`` default."""
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         try:
             return self._default_inst
         except AttributeError:
@@ -161,6 +163,8 @@ class Properties(StyleMulti):
 
     # region internal methods
     def _set_txt_direction_mode(self, txt_direction: TextDirectionKind | None) -> None:
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         self._remove_style("text_mode")
         self._del_attribs("_inner_writing_mode")
         if txt_direction is None:
@@ -173,7 +177,7 @@ class Properties(StyleMulti):
             },
         )
         mode._prop_parent = self
-        self._set_style("text_mode", mode, *mode.get_attrs())
+        self._set_style("text_mode", mode, *mode.get_attrs())  # type: ignore
 
     # endregion internal methods
 
@@ -221,6 +225,7 @@ class Properties(StyleMulti):
         Returns:
             Properties: Instance that represents Frame Option Properties.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')

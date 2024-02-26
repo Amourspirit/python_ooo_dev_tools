@@ -3,15 +3,11 @@ from typing import Any, TYPE_CHECKING
 
 import uno
 from ooodev.mock.mock_g import DOCS_BUILDING
-from .abstract_fill_color_t import AbstractFillColor
+from ooodev.format.proto.area.abstract_fill_color_t import AbstractFillColor
 
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
     Self = Any

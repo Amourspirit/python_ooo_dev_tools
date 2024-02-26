@@ -8,7 +8,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.exceptions import ex as mEx
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.format.writer.style import FamilyNamesKind
+from ooodev.format.writer.style.family_names_kind import FamilyNamesKind
 from ooodev.loader.inst.lo_inst import LoInst
 from .write_style_family import WriteStyleFamily
 

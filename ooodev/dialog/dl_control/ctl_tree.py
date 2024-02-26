@@ -24,7 +24,7 @@ from ooodev.dialog.search.tree_search import (
     RuleTextSensitive,
     RuleTextInsensitive,
 )
-from .ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:

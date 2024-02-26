@@ -8,7 +8,7 @@ import os
 
 _ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
 if _ON_RTD:
-    from ..mock import unohelper
+    from ooodev.mock import unohelper
 else:
     import unohelper
 

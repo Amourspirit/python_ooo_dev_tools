@@ -1,5 +1,5 @@
 from __future__ import annotations
-from ooodev.units import UnitInch
+from ooodev.units.unit_inch import UnitInch
 
 
 class ExportBase:

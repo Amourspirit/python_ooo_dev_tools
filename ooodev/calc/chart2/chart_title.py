@@ -31,9 +31,9 @@ from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import C
 from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
 
 from ooodev.format.inner.partial.position_size.chart2.chart2_position_partial import Chart2PositionPartial
-from .kind.chart_title_kind import ChartTitleKind
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.chart2.kind.chart_title_kind import ChartTitleKind
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 # from ooodev.format.inner.partial.position_size.draw.position_partial import PositionPartial
 
@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
     from ooodev.events.args.cancel_event_args import CancelEventArgs
-    from .chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_doc import ChartDoc
 
 _T = TypeVar("_T", bound="ComponentT")
 

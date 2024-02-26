@@ -9,10 +9,10 @@ from ooodev.format.inner.common.format_types.size_percent import SizePercent
 from ooodev.format.inner.common.props.area_img_props import AreaImgProps
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.area.img import Img as HeaderImg
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ...header.area.img import Img as HeaderImg
+from ooodev.utils.data_type.offset import Offset
+from ooodev.utils.data_type.size_mm import SizeMM
 
 
 class Img(HeaderImg):

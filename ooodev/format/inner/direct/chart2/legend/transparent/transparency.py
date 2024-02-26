@@ -2,7 +2,9 @@ from __future__ import annotations
 import uno
 
 from ooodev.utils.data_type.intensity import Intensity
-from ...chart.transparent.transparency import Transparency as ChartTransparentTransparency
+from ooodev.format.inner.direct.chart2.chart.transparent.transparency import (
+    Transparency as ChartTransparentTransparency,
+)
 
 
 class Transparency(ChartTransparentTransparency):

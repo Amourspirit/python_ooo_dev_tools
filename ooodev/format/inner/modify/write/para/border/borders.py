@@ -2,12 +2,12 @@
 from __future__ import annotations
 from typing import Any, cast
 import uno
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
-from ooodev.format.inner.direct.write.para.border.shadow import Shadow
-from ooodev.format.inner.direct.write.para.border.padding import Padding
+from ooodev.format.inner.direct.structs.side import Side
 from ooodev.format.inner.direct.write.para.border.borders import Borders as InnerBorders
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.direct.write.para.border.padding import Padding
+from ooodev.format.inner.direct.write.para.border.shadow import Shadow
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.writer.style.para.kind import StyleParaKind
 
 # endregion Import
 

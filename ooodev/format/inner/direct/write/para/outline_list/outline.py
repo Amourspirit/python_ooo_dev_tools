@@ -138,12 +138,14 @@ class Outline(StyleBase):
         Returns:
             Outline: ``Outline`` instance that represents ``obj`` break properties.
         """
+        # pylint: disable=protected-access
         inst = cls(level=LevelKind.TEXT_BODY, **kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         level = int(mProps.Props.get(obj, "OutlineLevel"))
         inst._set("OutlineLevel", level)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -269,6 +271,8 @@ class Outline(StyleBase):
     @property
     def default(self: _TOutline) -> _TOutline:
         """Gets ``Outline`` default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:

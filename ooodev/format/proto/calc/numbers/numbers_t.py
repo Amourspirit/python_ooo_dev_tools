@@ -7,11 +7,7 @@ from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from com.sun.star.lang import XComponent
     from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
     from ooo.dyn.lang.locale import Locale

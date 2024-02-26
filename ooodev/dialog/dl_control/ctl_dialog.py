@@ -13,7 +13,7 @@ from ooodev.loader import lo as mLo
 from ooodev.adapter.awt.index_container_comp import UnoControlDialogComp
 from ooodev.adapter.awt.unit_conversion_partial import UnitConversionPartial
 
-from .ctl_base import CtlListenerBase
+from ooodev.dialog.dl_control.ctl_base import CtlListenerBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl

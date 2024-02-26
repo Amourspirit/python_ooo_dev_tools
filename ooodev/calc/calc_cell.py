@@ -21,7 +21,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.office import calc as mCalc
 from ooodev.units import UnitMM
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
@@ -32,8 +32,8 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.type_var import Row, Table
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import Point
@@ -46,11 +46,11 @@ if TYPE_CHECKING:
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.format.calc.style import StyleCellKind
     from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-    from .calc_sheet import CalcSheet
-    from . import calc_cell_cursor as mCalcCellCursor
-    from .calc_cell_text_cursor import CalcCellTextCursor
+    from ooodev.calc.calc_sheet import CalcSheet
+    from ooodev.calc import calc_cell_cursor as mCalcCellCursor
+    from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
 else:
-    XSheetAnnotation = object
+    XSheetAnnotation = Any
 
 
 class CalcCell(

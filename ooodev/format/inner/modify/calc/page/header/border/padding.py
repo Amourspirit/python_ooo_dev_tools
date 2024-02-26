@@ -2,11 +2,11 @@
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
-from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.calc.style.page.kind import CalcStylePageKind
 from ooodev.format.inner.common.abstract.abstract_padding import AbstractPadding
 from ooodev.format.inner.common.props.border_props import BorderProps
-from ....cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 

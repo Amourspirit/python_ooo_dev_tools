@@ -12,9 +12,10 @@ from ooodev.utils import gen_util as gUtil
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.draw.shapes.const import KNOWN_SHAPES
-from ..partial.draw_shape_partial import DrawShapePartial
-from .partial.styled_shape_partial import StyledShapePartial
-from .shape_base import ShapeBase, _T
+from ooodev.draw.partial.draw_shape_partial import DrawShapePartial
+from ooodev.draw.shapes.partial.styled_shape_partial import StyledShapePartial
+from ooodev.draw.shapes.shape_base import ShapeBase
+from ooodev.draw.shapes.shape_base import _T
 
 
 if TYPE_CHECKING:
@@ -40,6 +41,7 @@ class DrawShape(
         # QiPartial needs to be before ShapeComp in this case.
         QiPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         ShapeComp.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

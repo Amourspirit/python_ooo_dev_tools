@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .theme import ThemeBase
+from ooodev.theme.theme import ThemeBase
 
 
 class ThemeDraw(ThemeBase):

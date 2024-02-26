@@ -3,6 +3,7 @@ Draw Style Shadow.
 
 .. versionadded:: 0.17.12
 """
+
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
 import uno
@@ -13,7 +14,7 @@ from ooodev.format.inner.modify.draw.fill_properties_style_base_multi import Fil
 from ooodev.format.draw.direct.shadow import Shadow as InnerShadow
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.color import Color
     from ooodev.format.inner.direct.write.shape.area.shadow import ShadowLocationKind

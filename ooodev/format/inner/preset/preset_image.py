@@ -2,12 +2,10 @@ from __future__ import annotations
 from enum import Enum
 from typing import ByteString
 import uno
+from com.sun.star.awt import XBitmap
 
 from ooodev.utils.images_lo import ImagesLo, BitmapArgs
 from ooodev.utils.data_type.point import Point
-
-
-from com.sun.star.awt import XBitmap
 
 
 # region Enum

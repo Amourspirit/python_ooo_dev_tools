@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from ..event_args import AbstractEvent
+from ooodev.events.args.event_args import AbstractEvent
 
 
 if TYPE_CHECKING:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from numbers import Real
-from ..format.inner.kind.format_kind import FormatKind as FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind as FormatKind
 
 if TYPE_CHECKING:
     try:

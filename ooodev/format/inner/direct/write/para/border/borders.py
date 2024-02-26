@@ -10,16 +10,14 @@ from typing import Any, Tuple, overload, cast, Type, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
+from ooodev.format.inner.direct.structs.side import Side
+from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding
+from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
+from ooodev.format.inner.direct.write.para.border.sides import Sides
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-
-# from ..structs.shadow import Shadow
-from .shadow import Shadow as InnerShadow
-from ooodev.format.inner.direct.structs.side import Side as Side
-from .padding import Padding as InnerPadding
-from .sides import Sides
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
 
 # endregion imports
 
@@ -95,7 +93,7 @@ class Borders(StyleMulti):
 
         if sides.prop_has_attribs:
             sides._prop_parent = self
-            self._set_style("sides", sides, *sides.get_attrs())
+            self._set_style("sides", sides, *sides.get_attrs())  # type: ignore
         if padding is not None:
             self._set_style("padding", padding, *padding.get_attrs())
         if shadow is not None:
@@ -119,7 +117,7 @@ class Borders(StyleMulti):
             sides = self.prop_inner_sides.fmt_border_side(value)
         else:
             sides = self._get_sides_type()(all=value)
-        cp._set_style("sides", sides, *sides.get_attrs())
+        cp._set_style("sides", sides, *sides.get_attrs())  # type: ignore
         return cp
 
     def fmt_left(self: _TBorders, value: Side | None) -> _TBorders:
@@ -137,7 +135,7 @@ class Borders(StyleMulti):
             sides = self.prop_inner_sides.fmt_left(value)
         else:
             sides = self._get_sides_type()(left=value)
-        cp._set_style("sides", sides, *sides.get_attrs())
+        cp._set_style("sides", sides, *sides.get_attrs())  # type: ignore
         return cp
 
     def fmt_right(self: _TBorders, value: Side | None) -> _TBorders:
@@ -155,7 +153,7 @@ class Borders(StyleMulti):
             sides = self.prop_inner_sides.fmt_right(value)
         else:
             sides = self._get_sides_type()(right=value)
-        cp._set_style("sides", sides, *sides.get_attrs())
+        cp._set_style("sides", sides, *sides.get_attrs())  # type: ignore
         return cp
 
     def fmt_top(self: _TBorders, value: Side | None) -> _TBorders:
@@ -173,7 +171,7 @@ class Borders(StyleMulti):
             sides = self.prop_inner_sides.fmt_top(value)
         else:
             sides = self._get_sides_type()(top=value)
-        cp._set_style("sides", sides, *sides.get_attrs())
+        cp._set_style("sides", sides, *sides.get_attrs())  # type: ignore
         return cp
 
     def fmt_bottom(self: _TBorders, value: Side | None) -> _TBorders:
@@ -191,7 +189,7 @@ class Borders(StyleMulti):
             sides = self.prop_inner_sides.fmt_bottom(value)
         else:
             sides = self._get_sides_type()(bottom=value)
-        cp._set_style("sides", sides, *sides.get_attrs())
+        cp._set_style("sides", sides, *sides.get_attrs())  # type: ignore
         return cp
 
     def fmt_shadow(self: _TBorders, value: InnerShadow | None) -> _TBorders:
@@ -204,6 +202,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp = self.copy()
         if value is None:
             cp._remove_style("shadow")
@@ -221,6 +220,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp = self.copy()
         if value is None:
             cp._remove_style("padding")
@@ -301,6 +301,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: ``Borders`` instance that represents the ``obj`` borders.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.ServiceNotSupported(inst._supported_services()[0])
@@ -312,6 +313,7 @@ class Borders(StyleMulti):
         inst._set_style("sides", inst_sides, *inst_sides.get_attrs())
         inst._set_style("padding", inst_padding, *inst_padding.get_attrs())
         inst._set_style("shadow", inst_shadow, *inst_shadow.get_attrs())
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -358,6 +360,7 @@ class Borders(StyleMulti):
     @property
     def default(self: _TBorders) -> _TBorders:  # type: ignore[misc]
         """Gets Default Border."""
+        # pylint: disable=protected-access
         try:
             return self._default_inst
         except AttributeError:

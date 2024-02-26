@@ -2,8 +2,8 @@ from __future__ import annotations
 import uno
 from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.border.padding import Padding as HeaderPadding
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
-from ...header.border.padding import Padding as HeaderPadding
 
 
 class Padding(HeaderPadding):

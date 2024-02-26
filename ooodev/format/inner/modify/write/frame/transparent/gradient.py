@@ -2,15 +2,15 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils.data_type.offset import Offset as Offset
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
+from ooodev.units.angle import Angle
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
 
 # endregion Imports
 

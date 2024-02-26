@@ -4,10 +4,10 @@ from com.sun.star.chart2 import XChartDocument
 
 from ooo.dyn.drawing.hatch_style import HatchStyle
 
-from ooodev.units import UnitT
+from ooodev.units.angle import Angle
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils.color import Color
-from ooodev.units import Angle
-from ...chart.area.hatch import Hatch as ChartHatch
+from ooodev.format.inner.direct.chart2.chart.area.hatch import Hatch as ChartHatch
 
 
 class Hatch(ChartHatch):

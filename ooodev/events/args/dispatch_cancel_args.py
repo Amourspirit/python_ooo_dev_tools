@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
-from .dispatch_args import AbstractDispatchArgs
-from .cancel_event_args import AbstractCancelEventArgs
+from ooodev.events.args.dispatch_args import AbstractDispatchArgs
+from ooodev.events.args.cancel_event_args import AbstractCancelEventArgs
 
 
 class AbstractDispatchCancelArgs(AbstractDispatchArgs, AbstractCancelEventArgs):

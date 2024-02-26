@@ -16,13 +16,11 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.kind.zoom_kind import ZoomKind
-from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.lo_events import observe_events
-
-from .. import draw_page as mDrawPage
-from .. import master_draw_page as mMasterDrawPage
-from ..shapes import draw_shape as mDrawShape
+from ooodev.draw import draw_page as mDrawPage
+from ooodev.draw import master_draw_page as mMasterDrawPage
+from ooodev.draw.shapes import draw_shape as mDrawShape
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -34,7 +32,7 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XController
     from com.sun.star.lang import XComponent
     from ooodev.utils.data_type.size import Size
-    from ..draw_doc import DrawDoc
+    from ooodev.draw.draw_doc import DrawDoc
 
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -120,8 +118,7 @@ class DrawDocPartial(Generic[_T]):
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
-        result = self.__lo_inst.close(closeable=self.component, deliver_ownership=deliver_ownership)  # type: ignore
-        return result
+        return self.__lo_inst.close(closeable=self.__component, deliver_ownership=deliver_ownership)
 
     def combine_shape(self, shapes: XShapes, combine_op: ShapeCombKind) -> mDrawShape.DrawShape[_T]:
         """
@@ -206,8 +203,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             int: Zero based index if found; Otherwise ``-1``
         """
-        result = mDraw.Draw.find_slide_idx_by_name(self.__component, name)
-        return result
+        return mDraw.Draw.find_slide_idx_by_name(self.__component, name)
 
     def get_controller(self) -> XController:
         """
@@ -262,8 +258,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             XLayerManager: Layer Manager
         """
-        result = mDraw.Draw.get_layer_manager(self.__component)
-        return result
+        return mDraw.Draw.get_layer_manager(self.__component)
 
     def get_master_page(self, idx: int) -> mMasterDrawPage.MasterDrawPage[_T]:
         """
@@ -368,8 +363,7 @@ class DrawDocPartial(Generic[_T]):
             - :py:meth:`~.draw.Draw.get_shapes`
             - :py:meth:`~.draw.Draw.get_ordered_shapes`
         """
-        result = mDraw.Draw.get_shapes_text(doc=self.__component)
-        return result
+        return mDraw.Draw.get_shapes_text(doc=self.__component)
 
     # region get_slide()
     @overload
@@ -460,8 +454,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             int: Slide Number.
         """
-        result = mDraw.Draw.get_slide_number(xdraw_view=xdraw_view)
-        return result
+        return mDraw.Draw.get_slide_number(xdraw_view=xdraw_view)
 
     def get_slide_size(self) -> Size:
         """
@@ -473,8 +466,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             ~ooodev.utils.data_type.size.Size: Size struct.
         """
-        result = mDraw.Draw.get_slide_size(self.__component)  # type: ignore
-        return result
+        return mDraw.Draw.get_slide_size(self.__component)  # type: ignore
 
     def get_slides(self) -> mDrawPages.DrawPages:
         """

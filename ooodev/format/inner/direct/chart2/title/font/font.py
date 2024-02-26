@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Tuple, cast
 import uno
-from ooodev.format.inner.direct.write.char.font.font import Font as CharFont
 
 from ooo.dyn.awt.char_set import CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum
@@ -11,10 +10,11 @@ from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
 from ooo.dyn.awt.font_weight import FontWeightEnum
 from ooo.dyn.table.shadow_format import ShadowFormat
 
+from ooodev.format.inner.direct.write.char.font.font import Font as CharFont
 from ooodev.utils.color import Color
-from ooodev.units import Angle
-from ooodev.units import UnitT
-from ooodev.units import UnitPT
+from ooodev.units.angle import Angle
+from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_pt import UnitPT
 from ooodev.format.inner.direct.write.char.font.font import FontLine
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
 

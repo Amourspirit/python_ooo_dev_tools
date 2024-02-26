@@ -8,7 +8,7 @@ from ooodev.format.inner.direct.write.shape.area.shadow import Shadow as ShapeLi
 from ooodev.format.inner.direct.write.shape.area.shadow import ShadowLocationKind
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Imports
 

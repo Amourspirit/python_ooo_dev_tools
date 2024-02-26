@@ -10,10 +10,8 @@ from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartia
 from ooodev.utils.context.lo_context import LoContext
 
 if TYPE_CHECKING:
-    from com.sun.star.chart2.data import XDataSource
     from ooodev.loader.inst.lo_inst import LoInst
-    from ..chart_data_series import ChartDataSeries
-    from ..chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_doc import ChartDoc
 
 
 class DataProvider(LoInstPropsPartial, DataProviderComp, ChartDocPropPartial):

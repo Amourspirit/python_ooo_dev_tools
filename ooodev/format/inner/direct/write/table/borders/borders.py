@@ -10,7 +10,7 @@ from typing import Any, Type, overload, cast, Tuple, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
@@ -84,6 +84,7 @@ class Borders(StyleMulti):
         See Also:
             - :ref:`help_writer_format_direct_table_borders`
         """
+        # pylint: disable=unexpected-keyword-arg
         super().__init__()
 
         if shadow is None:
@@ -230,6 +231,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: ``Borders`` instance that represents ``obj`` border properties.
         """
+
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -240,6 +242,7 @@ class Borders(StyleMulti):
         inst._set_style("border_table", tbl_border)
         inst._set_style("padding", tbl_border_distance)
         inst._set_style("shadow", shadow_fmt)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

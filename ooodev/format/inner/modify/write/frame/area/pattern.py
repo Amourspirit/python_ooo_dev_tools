@@ -4,9 +4,9 @@ from typing import cast
 import uno
 from com.sun.star.awt import XBitmap
 
-from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
 
 # endregion Imports
@@ -50,7 +50,8 @@ class Pattern(FrameStyleBaseMulti):
             If ``auto_name`` is ``False`` then a bitmap for a given name is only required the first call.
             All subsequent call of the same name will retrieve the bitmap form the LibreOffice Bitmap Table.
         """
-
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         direct = InnerPattern(
             bitmap=bitmap,
             name=name,
@@ -63,7 +64,7 @@ class Pattern(FrameStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct, *direct.get_attrs())
+        self._set_style("direct", direct, *direct.get_attrs())  # type: ignore
 
     # endregion Init
 
@@ -92,6 +93,7 @@ class Pattern(FrameStyleBaseMulti):
         Returns:
             Pattern: ``Pattern`` instance from style properties.
         """
+        # pylint: disable=protected-access
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerPattern.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         direct._prop_parent = inst

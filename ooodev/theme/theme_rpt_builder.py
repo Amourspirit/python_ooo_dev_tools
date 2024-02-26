@@ -1,6 +1,6 @@
 from __future__ import annotations
-from .theme import ThemeBase
-from ..utils.info import Info
+from ooodev.theme.theme import ThemeBase
+from ooodev.utils.info import Info
 
 
 class ThemeRptBuilder(ThemeBase):

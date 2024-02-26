@@ -3,6 +3,7 @@ Module for managing shape paragraph spacing.
 
 .. versionadded:: 0.17.8
 """
+
 # region Import
 from __future__ import annotations
 from typing import TYPE_CHECKING
@@ -10,7 +11,7 @@ from ooodev.format.inner.direct.write.para.indent_space.spacing import Spacing a
 
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import contextlib
 from enum import Enum
-from . import kind_helper
+from ooodev.utils.kind import kind_helper
 
 
 class DialogControlNamedKind(Enum):

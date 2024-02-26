@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Tuple
-from typing import Any
-from .table_item_kind import TableItemKind as TableItemKind
+from ooodev.formatters.table_item_kind import TableItemKind as TableItemKind
 
 
 # if include indexes are available but exclude is not then apply to all includes only

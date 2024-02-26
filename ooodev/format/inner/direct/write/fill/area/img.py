@@ -13,24 +13,24 @@ from enum import Enum
 from com.sun.star.awt import XBitmap
 
 from ooo.dyn.drawing.bitmap_mode import BitmapMode
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
-from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
+from ooo.dyn.drawing.fill_style import FillStyle
+from ooo.dyn.drawing.rectangle_point import RectanglePoint
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
-from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
-from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
+from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
+from ooodev.format.inner.common.format_types.offset_row import OffsetRow
+from ooodev.format.inner.common.format_types.size_percent import SizePercent
 from ooodev.format.inner.common.props.area_img_props import AreaImgProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_image as mImage
-from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units.unit_convert import UnitConvert
 from ooodev.loader import lo as mLo
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.utils import props as mProps
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
+from ooodev.utils.data_type.offset import Offset
+from ooodev.utils.data_type.size_mm import SizeMM
 
 # endregion Imports
 

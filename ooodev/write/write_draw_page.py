@@ -16,7 +16,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from .write_forms import WriteForms
+from ooodev.write.write_forms import WriteForms
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage

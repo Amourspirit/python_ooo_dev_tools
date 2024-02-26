@@ -1,6 +1,9 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
-
+import uno
+from ooo.dyn.awt.message_box_type import MessageBoxType
+from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum
+from ooo.dyn.awt.message_box_results import MessageBoxResultsEnum
 from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.lo_events import event_ctx
@@ -8,12 +11,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.gui_partial import GuiPartial
-from ooodev.dialog.msgbox import (
-    MsgBox,
-    MessageBoxType,
-    MessageBoxButtonsEnum,
-    MessageBoxResultsEnum,
-)
+from ooodev.dialog.msgbox import MsgBox
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst

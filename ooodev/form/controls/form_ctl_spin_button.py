@@ -1,17 +1,15 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-
+import uno
+from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum as MouseWheelBehaviorEnum
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
 from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
 
-# from com.sun.star.awt.MouseWheelBehavior
-from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum as MouseWheelBehaviorEnum
-
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl

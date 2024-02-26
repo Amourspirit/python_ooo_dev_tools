@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 from weakref import ref
 import numbers
-from ..validation import check
-from .base_int_value import BaseIntValue
+from ooodev.utils.validation import check
+from ooodev.utils.data_type.base_int_value import BaseIntValue
 
 if TYPE_CHECKING:
-    from . import cell_obj as mCell
+    from ooodev.utils.data_type import cell_obj as mCell
 
 
 @dataclass(unsafe_hash=True)

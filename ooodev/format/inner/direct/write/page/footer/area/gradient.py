@@ -4,7 +4,7 @@ from typing import Tuple
 import uno
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
-from ...header.area.gradient import Gradient as HeaderGradient
+from ooodev.format.inner.direct.write.page.header.area.gradient import Gradient as HeaderGradient
 
 # endregion Import
 

@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from com.sun.star.table import BorderLine
     from com.sun.star.table import ShadowFormat  # struct
     from com.sun.star.util import Color  # type def
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class ParagraphPropertiesPartial:
@@ -590,7 +590,7 @@ class ParagraphPropertiesPartial:
     def para_first_line_indent(self) -> int | None:
         """
         Gets/Sets the indent for the first line.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -605,7 +605,7 @@ class ParagraphPropertiesPartial:
     def para_hyphenation_max_hyphens(self) -> int | None:
         """
         Gets/Sets the maximum number of consecutive hyphens.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -624,8 +624,8 @@ class ParagraphPropertiesPartial:
 
         Note:
             Confusingly it is named Max but specifies a minimum.
-        
-        
+
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -677,7 +677,7 @@ class ParagraphPropertiesPartial:
         Specifies whether words written in CAPS will be hyphenated.
 
         Setting to true will disable hyphenation of words written in CAPS for this paragraph.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -735,7 +735,7 @@ class ParagraphPropertiesPartial:
     def para_is_auto_first_line_indent(self) -> bool | None:
         """
         Gets/Sets if the first line should be indented automatically.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -753,7 +753,7 @@ class ParagraphPropertiesPartial:
         Gets/Sets if borders set at a paragraph are merged with the next paragraph.
 
         Borders are only merged if they are identical.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -780,7 +780,7 @@ class ParagraphPropertiesPartial:
     def para_is_numbering_restart(self) -> bool | None:
         """
         Gets/Sets if the numbering rules restart, counting at the current paragraph.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -800,7 +800,7 @@ class ParagraphPropertiesPartial:
         Setting this property to ``True`` prevents page or column breaks between this and the following paragraph.
 
         This feature is useful for preventing title paragraphs to be the last line on a page or column.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -842,7 +842,7 @@ class ParagraphPropertiesPartial:
     def para_line_number_count(self) -> bool | None:
         """
         Gets/Sets if the paragraph is included in the line numbering.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -858,7 +858,7 @@ class ParagraphPropertiesPartial:
     def para_line_number_start_value(self) -> int | None:
         """
         Gets/Sets the start value for the line numbering.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -874,7 +874,7 @@ class ParagraphPropertiesPartial:
     def para_line_spacing(self) -> LineSpacing | None:
         """
         Gets/Sets the type of the line spacing of a paragraph.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -890,7 +890,7 @@ class ParagraphPropertiesPartial:
     def para_orphans(self) -> int | None:
         """
         Gets/Sets the minimum number of lines of the paragraph that have to be at bottom of a page if the paragraph is spread over more than one page.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -909,7 +909,7 @@ class ParagraphPropertiesPartial:
 
         Note:
             Register mode is only used if the register mode property of the page style is switched on.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -938,7 +938,7 @@ class ParagraphPropertiesPartial:
     def para_shadow_format(self) -> ShadowFormat | None:
         """
         Gets/Sets the type, color, and size of the shadow.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -953,7 +953,7 @@ class ParagraphPropertiesPartial:
     def para_split(self) -> bool | None:
         """
         Gets/Sets - Setting this property to ``False`` prevents the paragraph from getting split into two pages or columns.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -969,7 +969,7 @@ class ParagraphPropertiesPartial:
     def para_style_name(self) -> str | None:
         """
         Gets/Sets the name of the current paragraph style.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -1006,7 +1006,7 @@ class ParagraphPropertiesPartial:
         They will be saved to and restored from automatic styles inside xml files.
 
         Can be set with ``XNameContainer`` or ``NameContainerComp``.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -1027,7 +1027,7 @@ class ParagraphPropertiesPartial:
         Gets/Set the vertical alignment of a paragraph.
 
         When setting the value, it can be either an integer or an instance of ``ParagraphVertAlignEnum``.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -1043,7 +1043,7 @@ class ParagraphPropertiesPartial:
     def para_widows(self) -> int | None:
         """
         Gets/Sets the minimum number of lines of the paragraph that have to be at top of a page if the paragraph is spread over more than one page.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -1059,7 +1059,7 @@ class ParagraphPropertiesPartial:
     def right_border(self) -> BorderLine | None:
         """
         Gets/Sets the right border of the object.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -1077,7 +1077,7 @@ class ParagraphPropertiesPartial:
         Gets/Sets the distance from the right border to the object.
 
         When setting the value, it can be either an float or an instance of ``UnitT``.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -1093,7 +1093,7 @@ class ParagraphPropertiesPartial:
     def top_border(self) -> BorderLine | None:
         """
         Gets/Sets the top border of the object.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
@@ -1111,7 +1111,7 @@ class ParagraphPropertiesPartial:
         Gets/Sets the distance from the top border to the object.
 
         When setting the value, it can be either an float or an instance of ``UnitT``.
-        
+
         **optional**
         """
         with contextlib.suppress(AttributeError):

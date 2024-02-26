@@ -1,10 +1,11 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
+from ooodev.format.inner.common.abstract.abstract_line_number import AbstractLineNumber
+from ooodev.format.inner.common.abstract.abstract_line_number import LineNumberProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.common.abstract.abstract_line_number import AbstractLineNumber, LineNumberProps
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.writer.style.para.kind import StyleParaKind
 
 # endregion Import
 

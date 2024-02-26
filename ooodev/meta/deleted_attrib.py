@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # https://stackoverflow.com/questions/23181442/how-to-hide-remove-some-methods-in-inherited-class-in-python
-from ..exceptions import ex as mEx
+from ooodev.exceptions import ex as mEx
 
 
 class DeletedAttrib:

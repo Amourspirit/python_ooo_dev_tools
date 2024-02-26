@@ -3,6 +3,7 @@ Module for Image Crop (``GraphicCrop``) struct
 
 .. versionadded:: 0.9.0
 """
+
 # region imports
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar
@@ -13,7 +14,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.struct_cell_protection_props import StructCellProtectionProps
-from .struct_base import StructBase
+from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion imports
 
@@ -141,13 +142,13 @@ class CellProtectionStruct(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TCellProtectionStruct], value: CellProtection) -> _TCellProtectionStruct:
-        ...
+    def from_uno_struct(cls: Type[_TCellProtectionStruct], value: CellProtection) -> _TCellProtectionStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TCellProtectionStruct], value: CellProtection, **kwargs) -> _TCellProtectionStruct:
-        ...
+    def from_uno_struct(
+        cls: Type[_TCellProtectionStruct], value: CellProtection, **kwargs
+    ) -> _TCellProtectionStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TCellProtectionStruct], value: CellProtection, **kwargs) -> _TCellProtectionStruct:
@@ -172,13 +173,11 @@ class CellProtectionStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCellProtectionStruct], obj: Any) -> _TCellProtectionStruct:
-        ...
+    def from_obj(cls: Type[_TCellProtectionStruct], obj: Any) -> _TCellProtectionStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCellProtectionStruct], obj: Any, **kwargs) -> _TCellProtectionStruct:
-        ...
+    def from_obj(cls: Type[_TCellProtectionStruct], obj: Any, **kwargs) -> _TCellProtectionStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TCellProtectionStruct], obj: Any, **kwargs) -> _TCellProtectionStruct:

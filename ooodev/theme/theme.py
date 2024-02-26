@@ -1,7 +1,7 @@
 from __future__ import annotations
-from ..utils.info import Info
 from abc import ABC
 from enum import Enum
+from ooodev.utils.info import Info
 
 
 class ThemeKind(Enum):

@@ -10,15 +10,15 @@ from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
+from ooodev.loader import lo as mLo
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 # endregion Import
 
 
@@ -143,6 +143,7 @@ class Spacing(StyleBase):
         Returns:
             Spacing: ``Spacing`` instance that represents ``obj`` spacing.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -156,6 +157,7 @@ class Spacing(StyleBase):
         set_prop("ParaTopMargin", inst)
         set_prop("ParaBottomMargin", inst)
         set_prop("ParaContextMargin", inst)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -274,6 +276,8 @@ class Spacing(StyleBase):
     @property
     def default(self: _TSpacing) -> _TSpacing:
         """Gets ``Spacing`` default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:

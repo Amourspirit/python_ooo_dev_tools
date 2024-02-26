@@ -1,18 +1,18 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, overload, TypeVar, Type, Any, Tuple
+import contextlib
 import uno
 from com.sun.star.text import XTextColumns
 
-import contextlib
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitMM
+from ooodev.loader import lo as mLo
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from com.sun.star.text import TextColumns as UnoTextColumns
 
 _TTextColumns = TypeVar("_TTextColumns", bound="TextColumns")

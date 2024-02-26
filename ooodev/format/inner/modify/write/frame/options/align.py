@@ -2,10 +2,10 @@
 from __future__ import annotations
 from typing import cast
 
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ooodev.format.inner.direct.write.frame.options.align import VertAdjustKind as VertAdjustKind
 from ooodev.format.inner.direct.write.frame.options.align import Align as InnerAlign
+from ooodev.format.inner.direct.write.frame.options.align import VertAdjustKind
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 
 # endregion Imports
 

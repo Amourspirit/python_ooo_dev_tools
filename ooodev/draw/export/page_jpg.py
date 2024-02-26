@@ -15,7 +15,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
-from .export_base import ExportBase
+from ooodev.draw.export.export_base import ExportBase
 
 if TYPE_CHECKING:
     from ooodev.draw.filter.export_jpg import ExportJpgT

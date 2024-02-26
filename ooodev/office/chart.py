@@ -24,9 +24,6 @@ from com.sun.star.table import XTableChartsSupplier
 from com.sun.star.text import XTextContent
 from com.sun.star.text import XTextDocument
 
-from ..utils.kind.chart_diagram_kind import ChartDiagramKind as ChartDiagramKind
-from ..utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
-
 from ooo.dyn.awt.rectangle import Rectangle
 from ooo.dyn.chart.chart_data_caption import ChartDataCaptionEnum as ChartDataCaptionEnum
 from ooo.dyn.chart.chart_regression_curve_type import ChartRegressionCurveType as ChartRegressionCurveType
@@ -38,12 +35,15 @@ from ooo.dyn.text.hori_orientation import HoriOrientation
 from ooo.dyn.text.vert_orientation import VertOrientation
 from ooo.dyn.awt.size import Size as UnoSize
 
-from . import draw as mDraw
-from ..exceptions import ex as mEx
-from ..utils import info as mInfo
+
+from ooodev.utils.kind.chart_diagram_kind import ChartDiagramKind as ChartDiagramKind
+from ooodev.utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
+from ooodev.office import draw as mDraw
+from ooodev.exceptions import ex as mEx
+from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
-from ..utils import props as mProps
-from ..utils.data_type.intensity import Intensity as Intensity
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.intensity import Intensity as Intensity
 
 
 # endregion Imports

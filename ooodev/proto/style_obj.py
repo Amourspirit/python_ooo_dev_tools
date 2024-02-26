@@ -1,14 +1,11 @@
 from __future__ import annotations
 from typing import Tuple, TYPE_CHECKING, Any
-from ..format.inner.kind.format_kind import FormatKind as FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind as FormatKind
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
 
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

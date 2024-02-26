@@ -14,10 +14,10 @@ from ooodev.loader import lo as mLo
 from ooodev.format.inner.kind.border_kind import BorderKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.structs.side import Side as Side
-from .padding import Padding as InnerPadding
-from .shadow import Shadow as InnerShadow
-from .sides import Sides
+from ooodev.format.inner.direct.structs.side import Side
+from ooodev.format.inner.direct.write.char.border.padding import Padding as InnerPadding
+from ooodev.format.inner.direct.write.char.border.shadow import Shadow as InnerShadow
+from ooodev.format.inner.direct.write.char.border.sides import Sides
 
 # endregion Import
 

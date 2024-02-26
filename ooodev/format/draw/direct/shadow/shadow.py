@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from ooodev.format.writer.direct.shape.shadow import Shadow as ShapeShadow
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.color import Color
     from ooodev.format.inner.direct.write.shape.area.shadow import ShadowLocationKind

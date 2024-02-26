@@ -2,10 +2,10 @@ from __future__ import annotations
 import uno
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.area.color import Color as HeaderColor
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.utils import color as mColor
 from ooodev.utils.color import StandardColor
-from ...header.area.color import Color as HeaderColor
 
 
 class Color(HeaderColor):

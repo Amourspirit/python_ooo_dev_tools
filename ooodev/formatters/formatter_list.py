@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import List, Any, Tuple
 from dataclasses import dataclass, field
-from ..utils.validation import check
-from .only_ignore_kind import OnlyIgnoreKind as OnlyIgnoreKind
-from .format_list_item import FormatListItem as FormatListItem
+from ooodev.utils.validation import check
+from ooodev.formatters.only_ignore_kind import OnlyIgnoreKind as OnlyIgnoreKind
+from ooodev.formatters.format_list_item import FormatListItem as FormatListItem
 
 
 @dataclass

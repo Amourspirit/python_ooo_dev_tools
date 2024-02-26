@@ -13,18 +13,19 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.data_type.range_obj import RangeObj
-from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
+from ooodev.utils.kind.chart2_types import ChartTypes as ChartTypes
 from ooodev.office import chart2 as mCharts
 from ooodev.utils.color import CommonColor
-from .chart2.table_chart import TableChart
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.chart2.table_chart import TableChart
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.table import XTableCharts
     from ooodev.utils.color import Color
-    from .calc_sheet import CalcSheet
+    from ooodev.calc.calc_sheet import CalcSheet
+    from ooodev.utils.kind.chart2_types import ChartTemplateBase
 
 
 class CalcCharts(

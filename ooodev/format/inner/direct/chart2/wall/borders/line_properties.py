@@ -2,12 +2,14 @@ from __future__ import annotations
 import uno
 from typing import Any, Tuple
 
+from ooodev.format.inner.direct.chart2.chart.borders.line_properties import (
+    LineProperties as ChartBordersLineProperties,
+)
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
-from ooodev.units import UnitT
 from ooodev.loader import lo as mLo
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ...chart.borders.line_properties import LineProperties as ChartBordersLineProperties
 
 
 class LineProperties(ChartBordersLineProperties):

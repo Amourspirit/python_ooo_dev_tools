@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Tuple
 
-from .draw_style_base_multi import DrawStyleBaseMulti
+from ooodev.format.inner.modify.draw.draw_style_base_multi import DrawStyleBaseMulti
 
 # endregion Imports
 

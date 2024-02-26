@@ -1,11 +1,12 @@
 # region Import
 from __future__ import annotations
-from typing import Any, cast
-from ooodev.units import UnitT
-from ooodev.format.writer.style.page.kind import WriterStylePageKind as WriterStylePageKind
+from typing import Any, cast, TYPE_CHECKING
+from ooodev.format.writer.style.page.kind import WriterStylePageKind
 from ooodev.format.inner.direct.write.page.page.margins import Margins as InnerMargins
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 # endregion Import
 
 

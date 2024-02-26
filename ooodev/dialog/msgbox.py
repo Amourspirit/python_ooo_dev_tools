@@ -13,7 +13,6 @@ from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.event_singleton import _Events
 from ooodev.exceptions import ex as mEx
-
 from ooodev.loader import lo as mLo
 
 

@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 
 import uno
 from com.sun.star.awt.tree import XTreeDataModelListener
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 
 if TYPE_CHECKING:

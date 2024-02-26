@@ -4,9 +4,9 @@ import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils.color import Color, StandardColor
-from ...structs.shadow_struct import ShadowStruct
+from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
 
 
 class Shadow(ShadowStruct):

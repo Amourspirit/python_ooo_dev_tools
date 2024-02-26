@@ -3,20 +3,19 @@ from __future__ import annotations
 from typing import cast
 import uno
 from com.sun.star.awt import XBitmap
-from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
+from ooo.dyn.drawing.rectangle_point import RectanglePoint
 
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.utils.data_type.offset import Offset as Offset
-from ..fill_style_base_multi import FillStyleBaseMulti
-from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
-from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
-from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
-from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn as OffsetColumn
-from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRow
-from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
-from ooodev.format.draw.style.kind import DrawStyleFamilyKind as DrawStyleFamilyKind
+from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
+from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
+from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn
+from ooodev.format.inner.direct.write.fill.area.img import OffsetRow
+from ooodev.format.inner.direct.write.fill.area.img import SizeMM
+from ooodev.format.inner.direct.write.fill.area.img import SizePercent
+from ooodev.format.inner.modify.write.fill.fill_style_base_multi import FillStyleBaseMulti
+from ooodev.format.inner.preset.preset_image import PresetImageKind
+from ooodev.utils.data_type.offset import Offset as Offset
 
 # endregion Imports
 

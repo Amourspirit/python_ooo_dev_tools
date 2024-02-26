@@ -7,7 +7,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.color import Color
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.format.inner.direct.structs.side import Side as Side

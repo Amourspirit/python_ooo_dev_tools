@@ -1,5 +1,5 @@
 from enum import Enum
-from .style_para_kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 
 class StyleParaIndexKind(Enum):

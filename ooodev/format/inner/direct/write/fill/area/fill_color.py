@@ -10,10 +10,10 @@ Module for Fill Properties Fill Color.
 from __future__ import annotations
 from typing import Any, Tuple, TypeVar
 
-from ooodev.loader import lo as mLo
-from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
 
 

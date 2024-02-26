@@ -2,10 +2,10 @@
 from __future__ import annotations
 from typing import cast
 import uno
-from ooo.dyn.text.wrap_text_mode import WrapTextMode as WrapTextMode
+from ooo.dyn.text.wrap_text_mode import WrapTextMode
 
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 from ooodev.format.inner.direct.write.frame.wrap.settings import Settings as InnerSettings
 
 # endregion Imports

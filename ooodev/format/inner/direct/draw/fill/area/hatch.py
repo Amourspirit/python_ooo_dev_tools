@@ -1,15 +1,15 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
-from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as FillHatch
-
 from ooo.dyn.drawing.hatch_style import HatchStyle
 from ooodev.utils.color import StandardColor
 
+from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as FillHatch
+
 if TYPE_CHECKING:
     from ooodev.utils.color import Color
-    from ooodev.units import Angle
-    from ooodev.units import UnitT
+    from ooodev.units.angle import Angle
+    from ooodev.units.unit_obj import UnitT
 
 
 class Hatch(FillHatch):

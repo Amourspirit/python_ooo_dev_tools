@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.form import XChangeListener
 
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 
 if TYPE_CHECKING:

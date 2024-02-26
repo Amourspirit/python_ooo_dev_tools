@@ -1,9 +1,13 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import uno
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_location import ShadowLocation
+
 from ooodev.utils.color import Color, StandardColor
 from ooodev.format.inner.direct.calc.border.shadow import Shadow as DirectShadow
-from ooodev.units import UnitT
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 
 class Shadow(DirectShadow):

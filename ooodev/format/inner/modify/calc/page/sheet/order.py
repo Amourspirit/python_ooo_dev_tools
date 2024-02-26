@@ -3,11 +3,10 @@ from __future__ import annotations
 from typing import NamedTuple
 import uno
 
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
-from ...cell_style_base import CellStyleBase
+from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.inner.modify.calc.cell_style_base import CellStyleBase
+from ooodev.utils import props as mProps
 
 # endregion Imports
 

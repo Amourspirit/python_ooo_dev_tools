@@ -5,7 +5,7 @@ from com.sun.star.awt import XBitmap
 from com.sun.star.chart2 import XChartDocument
 
 from ooodev.loader import lo as mLo
-from ...chart.area.pattern import Pattern as ChartAreaPattern
+from ooodev.format.inner.direct.chart2.chart.area.pattern import Pattern as ChartAreaPattern
 
 
 class Pattern(ChartAreaPattern):

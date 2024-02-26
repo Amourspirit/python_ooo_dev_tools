@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from ..validation import check
-from ...utils.color import Color
+from ooodev.utils.validation import check
+from ooodev.utils.color import Color
 
 
 @dataclass(frozen=True)

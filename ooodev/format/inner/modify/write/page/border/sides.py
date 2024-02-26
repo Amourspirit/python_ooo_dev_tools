@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.format.inner.direct.structs.side import Side
 from ooodev.format.inner.direct.write.para.border.sides import Sides as InnerSides
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
 
 # endregion Imports
 

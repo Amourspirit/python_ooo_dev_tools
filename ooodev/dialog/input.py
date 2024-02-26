@@ -3,6 +3,7 @@ import uno  # pylint: disable=unused-import
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
+from ooo.dyn.awt.font_descriptor import FontDescriptor
 
 from ooodev.dialog import Dialogs, BorderKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -10,6 +11,7 @@ from ooodev.events.event_singleton import _Events
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.utils import info as mInfo
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XFrame
@@ -87,6 +89,18 @@ class Input:
         cancel_lbl = cast(str, cargs.event_data["cancel_lbl"])
         is_password = cast(bool, cargs.event_data["is_password"])
 
+        # get or set a font descriptor. This helps to keep the font consistent across different platforms.
+        fd = mInfo.Info.get_font_descriptor("Liberation Serif", "Regular")
+        if fd is None:
+            fd = FontDescriptor(
+                CharacterWidth=100.0,
+                Kerning=True,
+                WordLineMode=False,
+                Pitch=2,
+                Weight=100,
+            )
+        fd.Height = 10
+
         width = 450
         height = 120
         btn_width = 100
@@ -105,6 +119,7 @@ class Input:
         ctl_lbl = Dialogs.insert_label(
             dialog_ctrl=dialog.control, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
         )
+        ctl_lbl.set_font_descriptor(fd)
         sz = ctl_lbl.view.getPosSize()
         if is_password:
             txt_input = Dialogs.insert_password_field(
@@ -126,6 +141,7 @@ class Input:
                 height=sz.Height,
                 border=border_kind,
             )
+        txt_input.set_font_descriptor(fd)
         ctl_btn_cancel = Dialogs.insert_button(
             dialog_ctrl=dialog.control,
             label=cancel_lbl,
@@ -135,8 +151,10 @@ class Input:
             height=btn_height,
             btn_type=PushButtonType.CANCEL,
         )
+        ctl_btn_cancel.set_font_descriptor(fd)
+        ctl_btn_cancel.font_descriptor.height = 12
         sz = ctl_btn_cancel.view.getPosSize()
-        _ = Dialogs.insert_button(
+        ctl_btn_ok = Dialogs.insert_button(
             dialog_ctrl=dialog.control,
             label=ok_lbl,
             x=sz.X - sz.Width - margin,
@@ -146,6 +164,7 @@ class Input:
             btn_type=PushButtonType.OK,
             DefaultButton=True,
         )
+        ctl_btn_ok.set_font_descriptor(ctl_btn_cancel.font_descriptor.component)
 
         frame = cast("XFrame", cargs.event_data["frame"])
         if frame is not None:

@@ -1,10 +1,13 @@
 # region Import
 from __future__ import annotations
-from typing import cast
-from ooodev.units import UnitT
+from typing import cast, TYPE_CHECKING
+
 from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.calc.page.page.margins import Margins as InnerMargins
-from ...cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 

@@ -9,26 +9,26 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, TypeVar
 import contextlib
 import uno
-from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
-from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
-from ooo.dyn.awt.font_slant import FontSlant as FontSlant
-from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
-from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
-from ooo.dyn.awt.font_weight import FontWeightEnum as FontWeightEnum
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
+from ooo.dyn.awt.char_set import CharSetEnum
+from ooo.dyn.awt.font_family import FontFamilyEnum
+from ooo.dyn.awt.font_slant import FontSlant
+from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
+from ooo.dyn.awt.font_underline import FontUnderlineEnum
+from ooo.dyn.awt.font_weight import FontWeightEnum
+from ooo.dyn.table.shadow_format import ShadowFormat
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import info as mInfo
-from ooodev.loader import lo as mLo
-from ooodev.utils.color import Color
-from ooodev.units import Angle as Angle
-from ooodev.units import UnitT
-from ooodev.units import UnitPT
-from ooodev.units import UnitConvert
+from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
+from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from .font_position import CharSpacingKind as CharSpacingKind
-from .font_effects import FontLine as FontLine
+from ooodev.loader import lo as mLo
+from ooodev.units.angle import Angle
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_pt import UnitPT
+from ooodev.utils import info as mInfo
+from ooodev.utils.color import Color
 
 # endregion Import
 

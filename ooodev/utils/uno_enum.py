@@ -4,7 +4,7 @@ import os
 from typing import Any
 import uno
 
-from ..mock import mock_g
+from ooodev.mock import mock_g
 
 if mock_g.DOCS_BUILDING:
     # mock class

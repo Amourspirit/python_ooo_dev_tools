@@ -7,11 +7,10 @@ from typing import TYPE_CHECKING
 import contextlib
 from weakref import ref, ReferenceType
 from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union, Tuple
-from . import event_singleton
-
-from ..utils.type_var import EventCallback as EventCallback
-from .args.event_args_t import EventArgsT
-from .args.generic_args import GenericArgs as GenericArgs
+from ooodev.events import event_singleton
+from ooodev.utils.type_var import EventCallback as EventCallback
+from ooodev.events.args.event_args_t import EventArgsT
+from ooodev.events.args.generic_args import GenericArgs as GenericArgs
 
 if TYPE_CHECKING:
     from ooodev.proto.event_observer import EventObserver

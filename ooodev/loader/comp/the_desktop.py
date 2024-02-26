@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
 from ooodev.adapter.frame.the_desktop_comp import TheDesktopComp
-from .components import Components
+from ooodev.loader.comp.components import Components
 
 
 class TheDesktop(TheDesktopComp):

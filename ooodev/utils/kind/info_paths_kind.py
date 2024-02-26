@@ -1,5 +1,5 @@
 from enum import Enum
-from . import kind_helper
+from ooodev.utils.kind import kind_helper
 
 # these are helper lookups
 

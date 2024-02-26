@@ -1,17 +1,18 @@
 # region Imports
 from __future__ import annotations
-from typing import cast
+from typing import cast, TYPE_CHECKING
 import uno
 
-from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ..char_style_base_multi import CharStyleBaseMulti
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.units import Angle as Angle
-from ooodev.units import UnitT
+from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
 from ooodev.format.inner.direct.write.char.font.font_position import FontPosition as InnerFontPosition
-from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind as CharSpacingKind
-from ooodev.format.inner.direct.write.char.font.font_position import FontScriptKind as FontScriptKind
+from ooodev.format.inner.direct.write.char.font.font_position import FontScriptKind
+from ooodev.format.inner.modify.write.char.char_style_base_multi import CharStyleBaseMulti
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
+from ooodev.units.angle import Angle
+from ooodev.utils.data_type.intensity import Intensity
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 # endregion Imports
 
 

@@ -3,6 +3,7 @@ Font Only Style for Draw Documents
 
 .. versionadded:: 0.17.9
 """
+
 # region Imports
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
@@ -15,7 +16,7 @@ from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Imports
 

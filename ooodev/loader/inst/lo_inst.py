@@ -44,7 +44,7 @@ from ooodev.mock import mock_g
 
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
-from .lo_loader import LoLoader
+from ooodev.loader.inst.lo_loader import LoLoader
 from ooodev.adapter.lang.event_listener import EventListener
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
@@ -70,7 +70,6 @@ from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
 from ooodev.utils.factory.doc_factory import doc_factory
-from ooodev.utils.type_var import PathOrStr, UnoInterface, T, Table
 
 
 if TYPE_CHECKING:
@@ -92,7 +91,15 @@ if TYPE_CHECKING:
     from ooodev.proto.event_observer import EventObserver
     from ooodev.proto.office_document_t import OfficeDocumentT
     from com.sun.star.document import DocumentEvent
-
+    from ooodev.utils.type_var import PathOrStr
+    from ooodev.utils.type_var import UnoInterface
+    from ooodev.utils.type_var import T
+    from ooodev.utils.type_var import Table
+else:
+    PathOrStr = Any
+    UnoInterface = Any
+    T = Any
+    Table = Any
     # from ooodev.events.events_t import EventsT
 
 

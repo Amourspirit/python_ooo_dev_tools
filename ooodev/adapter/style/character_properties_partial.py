@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.table import BorderLine2  # struct
     from com.sun.star.table import ShadowFormat  # struct
     from com.sun.star.util import Color  # type def
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class CharacterPropertiesPartial:

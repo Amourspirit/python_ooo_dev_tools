@@ -8,7 +8,7 @@ from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.utils.kind.state_kind import StateKind as StateKind
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import RadioButton as ControlModel  # service

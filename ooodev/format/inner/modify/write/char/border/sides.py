@@ -4,10 +4,10 @@ from typing import cast
 
 import uno
 
-from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ..char_style_base_multi import CharStyleBaseMulti
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
+from ooodev.format.inner.modify.write.char.char_style_base_multi import CharStyleBaseMulti
 from ooodev.format.inner.direct.write.char.border.sides import Sides as InnerSides
-from ooodev.format.inner.direct.structs.side import Side as Side, LineSize as LineSize
+from ooodev.format.inner.direct.structs.side import Side
 
 # endregion Imports
 

@@ -25,10 +25,10 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.draw_doc_partial import DrawDocPartial
-from . import impress_page as mImpressPage
-from . import master_draw_page as mMasterDrawPage
-from .impress_pages import ImpressPages
+from ooodev.draw.partial.draw_doc_partial import DrawDocPartial
+from ooodev.draw import impress_page as mImpressPage
+from ooodev.draw import master_draw_page as mMasterDrawPage
+from ooodev.draw.impress_pages import ImpressPages
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage

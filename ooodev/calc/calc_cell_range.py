@@ -35,9 +35,9 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
-from . import calc_cell as mCalcCell
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc import calc_cell as mCalcCell
 
 
 if TYPE_CHECKING:
@@ -55,9 +55,9 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row, PathOrStr
     from ooodev.format.calc.style import StyleCellKind
     from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-    from . import calc_cell_cursor as mCalcCellCursor
-    from .calc_sheet import CalcSheet
-    from .chart2.table_chart import TableChart
+    from ooodev.calc import calc_cell_cursor as mCalcCellCursor
+    from ooodev.calc.calc_sheet import CalcSheet
+    from ooodev.calc.chart2.table_chart import TableChart
 else:
     CellRangeAddress = Any
     ImgExportT = Any

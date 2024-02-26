@@ -8,30 +8,32 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 
 from ooo.dyn.drawing.fill_style import FillStyle
-from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
+from ooo.dyn.drawing.hatch_style import HatchStyle
 from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
+from ooodev.format.inner.common.props.fill_color_props import FillColorProps
+from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
+from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.preset import preset_hatch as mPreset
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.loader import lo as mLo
+from ooodev.units.angle import Angle
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
-from ooodev.units import Angle as Angle
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.preset import preset_hatch as mPreset
-from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
-from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
-from ooodev.format.inner.common.props.fill_color_props import FillColorProps
-from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
-from .fill_color import FillColor
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
+
+# pylint: disable=unexpected-keyword-arg
 
 _THatch = TypeVar(name="_THatch", bound="Hatch")
 
