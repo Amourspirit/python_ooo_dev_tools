@@ -17,6 +17,9 @@ import pytest
 # https://github.com/mitmproxy/pdoc/blob/main/pdoc/doc_ast.py
 
 
+IF_IGNORE_ATTRIBUTES = {"TYPE_CHECKING", "DOCS_BUILDING"}
+
+
 @contextmanager
 def patch(object_, attribute_name, value):
     old_value = getattr(object_, attribute_name)
@@ -203,7 +206,7 @@ def _parse_ast_remove_type_checking_from_imports(mod: ast.Module) -> None:
             and isinstance(node.test.value, ast.Name)
             # some folks do "import typing as t", the accuracy with just TYPE_CHECKING is good enough.
             # and node.test.value.id == "typing"
-            and node.test.attr == "TYPE_CHECKING"
+            and node.test.attr in IF_IGNORE_ATTRIBUTES
         ):
             parse_typing_block(node)
 

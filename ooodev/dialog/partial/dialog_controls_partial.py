@@ -59,7 +59,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
     # Avoid circular import by creating a property in class instance for Dialogs
-    from ooodev.dialog import Dialogs
+    from ooodev.dialog.dialogs import Dialogs
 # endregion Imports
 
 
@@ -1677,4 +1677,4 @@ class DialogControlsPartial:
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.dialog.dialog import Dialogs
+    from ooodev.dialog.dialogs import Dialogs
