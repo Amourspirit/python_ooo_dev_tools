@@ -7,7 +7,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.format.chart2.direct.title.alignment import DirectionModeKind
+from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind
 
 if TYPE_CHECKING:
     from ooodev.format.inner.direct.chart2.title.alignment.orientation import Orientation

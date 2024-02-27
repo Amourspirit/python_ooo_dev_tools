@@ -9,7 +9,7 @@ from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.direct.write.page.page.layout_settings import LayoutSettings as InnerLayoutSettings
 from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
-from ooodev.format.writer.style.page.kind import WriterStylePageKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps

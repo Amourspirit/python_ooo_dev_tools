@@ -67,7 +67,7 @@ class CoordinateGeneral(
             Tuple[ChartType, ...]: A tuple of chart types.
         """
         try:
-            from ..chart_type import ChartType
+            from ooodev.calc.chart2.chart_type import ChartType
 
             c_types = super().get_chart_types()
             if not c_types:
@@ -109,4 +109,4 @@ class CoordinateGeneral(
 
 
 if mock_g.FULL_IMPORT:
-    from ..chart_type import ChartType
+    from ooodev.calc.chart2.chart_type import ChartType

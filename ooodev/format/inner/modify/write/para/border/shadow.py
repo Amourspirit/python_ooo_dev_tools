@@ -6,7 +6,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
 

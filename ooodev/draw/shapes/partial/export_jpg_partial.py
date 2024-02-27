@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, Callable, TYPE_CHECKING
 
 from ooodev.mock import mock_g
-from ooodev.draw import DrawNamedEvent
+from ooodev.events.draw_named_event import DrawNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.utils.type_var import PathOrStr

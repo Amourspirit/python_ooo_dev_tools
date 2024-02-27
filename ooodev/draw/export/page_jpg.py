@@ -3,8 +3,8 @@ from typing import Any, cast, Callable, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.drawing.graphic_export_filter_implement import GraphicExportFilterImplement
-from ooodev.draw import DrawNamedEvent
-from ooodev.draw import DrawPage
+from ooodev.events.draw_named_event import DrawNamedEvent
+from ooodev.draw.draw_page import DrawPage
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.events.partial.events_partial import EventsPartial

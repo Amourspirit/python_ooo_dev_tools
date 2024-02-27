@@ -6,7 +6,7 @@ from ooo.dyn.text.writing_mode2 import WritingMode2Enum as WritingMode2Enum
 from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind as LastLineKind
 from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode as WritingMode
 from ooodev.format.inner.modify.write.para.align.alignment import Alignment as Alignment
-from ooodev.format.inner.modify.write.para.align.alignment import InnerAlignment as InnerAlignment
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
+from ooodev.format.inner.direct.write.para.align.alignment import Alignment as InnerAlignment
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 
 __all__ = ["Alignment"]

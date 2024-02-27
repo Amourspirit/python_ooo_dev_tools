@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 

@@ -20,8 +20,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.office import calc as mCalc
-from ooodev.units import UnitMM
-from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
@@ -49,8 +48,10 @@ if TYPE_CHECKING:
     from ooodev.calc.calc_sheet import CalcSheet
     from ooodev.calc import calc_cell_cursor as mCalcCellCursor
     from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
+    from ooodev.units.unit_obj import UnitT
 else:
     XSheetAnnotation = Any
+    UnitT = Any
 
 
 class CalcCell(

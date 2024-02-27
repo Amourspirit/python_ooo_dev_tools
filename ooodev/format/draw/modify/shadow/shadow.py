@@ -11,7 +11,7 @@ import uno
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
 from ooodev.format.inner.modify.draw.fill_properties_style_base_multi import FillPropertiesStyleBaseMulti
-from ooodev.format.draw.direct.shadow import Shadow as InnerShadow
+from ooodev.format.draw.direct.shadow.shadow import Shadow as InnerShadow
 
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT

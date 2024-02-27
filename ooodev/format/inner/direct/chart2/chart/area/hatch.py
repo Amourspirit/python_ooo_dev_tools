@@ -18,8 +18,7 @@ from ooodev.units.unit_obj import UnitT
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.loader import lo as mLo
 from ooodev.utils.color import Color
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.units.angle import Angle
 
 
 class Hatch(StyleMulti):

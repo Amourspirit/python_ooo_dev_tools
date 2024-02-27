@@ -6,7 +6,7 @@ from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.utils.color import StandardColor, Color
-from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct
 from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 

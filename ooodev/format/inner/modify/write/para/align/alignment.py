@@ -9,7 +9,7 @@ from ooodev.format.inner.direct.write.para.align.alignment import Alignment as I
 from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind
 from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 # endregion Import
 

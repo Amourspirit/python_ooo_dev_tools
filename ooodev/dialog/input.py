@@ -5,7 +5,8 @@ from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 from ooo.dyn.awt.font_descriptor import FontDescriptor
 
-from ooodev.dialog import Dialogs, BorderKind
+from ooodev.utils.kind.border_kind import BorderKind
+from ooodev.dialog.dialogs import Dialogs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.event_singleton import _Events
 from ooodev.events.gbl_named_event import GblNamedEvent

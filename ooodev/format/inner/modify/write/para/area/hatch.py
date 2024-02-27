@@ -8,7 +8,7 @@ from ooodev.format.inner.direct.write.para.area.hatch import Hatch as InnerHatch
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 from ooodev.format.inner.preset import preset_hatch
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.units.angle import Angle
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor

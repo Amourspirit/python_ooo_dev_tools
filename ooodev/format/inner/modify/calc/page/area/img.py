@@ -5,7 +5,7 @@ from com.sun.star.awt import XBitmap
 from ooo.dyn.drawing.rectangle_point import RectanglePoint
 from ooodev.format.inner.kind.format_kind import FormatKind
 
-from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow
 from ooodev.format.inner.common.format_types.size_percent import SizePercent

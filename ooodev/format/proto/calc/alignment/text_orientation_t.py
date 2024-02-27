@@ -7,7 +7,7 @@ from ooodev.format.proto.style_t import StyleT
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Protocol
     from ooodev.format.inner.direct.calc.alignment.text_orientation import EdgeKind
-    from ooodev.units import Angle
+    from ooodev.units.angle import Angle
 else:
     Protocol = object
     EdgeKind = Any

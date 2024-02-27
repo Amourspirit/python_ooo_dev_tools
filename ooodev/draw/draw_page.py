@@ -6,7 +6,7 @@ from com.sun.star.drawing import XShapes
 from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.draw import DrawNamedEvent
+from ooodev.events.draw_named_event import DrawNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.office import draw as mDraw
 from ooodev.units.unit_mm import UnitMM
@@ -322,7 +322,7 @@ class DrawPage(
 
 
 from ooodev.draw.shape_collection import ShapeCollection
-from ooodev.draw.shapes import GroupShape
+from ooodev.draw.shapes.group_shape import GroupShape
 
 if mock_g.FULL_IMPORT:
     from ooodev.draw.export.page_jpg import PageJpg

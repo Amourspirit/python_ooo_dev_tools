@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ooodev.format.inner.modify.write.fill.area.img import Img as FillImg
 from typing import TYPE_CHECKING
 import uno
 
-from ooodev.format.inner.direct.write.fill.area.img import SizeMM
+from ooodev.format.inner.modify.write.fill.area.img import Img as FillImg
+from ooodev.utils.data_type.size_mm import SizeMM
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics

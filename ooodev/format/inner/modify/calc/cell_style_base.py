@@ -5,7 +5,7 @@ import uno
 from com.sun.star.beans import XPropertySet
 
 from ooodev.exceptions import ex as mEx
-from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.loader import lo as mLo

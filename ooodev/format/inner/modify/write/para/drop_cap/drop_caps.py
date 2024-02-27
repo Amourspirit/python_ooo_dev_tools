@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 
-from ooodev.format.writer.style.para.kind import StyleParaKind
-from ooodev.format.writer.style.char.kind import StyleCharKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
 from ooodev.format.inner.direct.write.para.drop_cap.drop_caps import DropCaps as InnerDropCaps
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 

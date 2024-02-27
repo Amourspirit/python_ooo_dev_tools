@@ -15,7 +15,7 @@ from ooodev.dialog.msgbox import MsgBox
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.dialog import Dialog
+    from ooodev.dialog.dialog import Dialog
     from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 
@@ -48,7 +48,7 @@ class CreateDialogPartial:
             Dialog: An empty dialog. The dialog contains methods for adding controls.
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.dialog import Dialog
+        from ooodev.dialog.dialog import Dialog
 
         dlg = Dialog(x=x, y=y, width=width, height=height, title=title, lo_inst=self.__lo_inst)
         return dlg
@@ -250,5 +250,5 @@ class CreateDialogPartial:
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.dialog import Dialog
+    from ooodev.dialog.dialog import Dialog
     from ooodev.dialog.input import Input

@@ -13,11 +13,11 @@ from ooodev.exceptions import ex as mEx
 from ooodev.units.unit_obj import UnitT
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
+from ooodev.format.inner.common.props.border_props import BorderProps
 
 # endregion Imports
 _TAbstractPadding = TypeVar(name="_TAbstractPadding", bound="AbstractPadding")

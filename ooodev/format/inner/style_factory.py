@@ -80,17 +80,17 @@ def font_only_factory(name: str) -> Type[FontOnlyT]:
         return FontOnly2
 
     if name == "ooodev.chart2.title":
-        from ooodev.format.chart2.direct.title.font import FontOnly as FontOnly3
+        from ooodev.format.inner.direct.chart2.title.font.font_only import FontOnly as FontOnly3
 
         return FontOnly3
 
     if name == "ooodev.chart2.series.data_labels":
-        from ooodev.format.chart2.direct.series.data_labels.font import FontOnly as FontOnly4
+        from ooodev.format.inner.direct.chart2.series.data_labels.font.font_only import FontOnly as FontOnly4
 
         return FontOnly4
 
     if name == "ooodev.chart2.legend":
-        from ooodev.format.chart2.direct.legend.font import FontOnly as FontOnly5
+        from ooodev.format.inner.direct.chart2.legend.font.font_only import FontOnly as FontOnly5
 
         return FontOnly5
 
@@ -127,17 +127,17 @@ def font_effects_factory(name: str) -> Type[FontEffectsT]:
         return FontEffects2
 
     if name == "ooodev.chart2.title":
-        from ooodev.format.chart2.direct.title.font import FontEffects as FontEffects3
+        from ooodev.format.inner.direct.chart2.title.font.font_effects import FontEffects as FontEffects3
 
         return FontEffects3
 
     if name == "ooodev.chart2.series.data_labels":
-        from ooodev.format.chart2.direct.series.data_labels.font import FontEffects as FontEffects4
+        from ooodev.format.inner.direct.chart2.series.data_labels.font.font_effects import FontEffects as FontEffects4
 
         return FontEffects4
 
     if name == "ooodev.chart2.legend":
-        from ooodev.format.chart2.direct.legend.font import FontEffects as FontEffects5
+        from ooodev.format.inner.direct.chart2.legend.font.font_effects import FontEffects as FontEffects5
 
         return FontEffects5
 
@@ -247,7 +247,7 @@ def chart2_series_data_labels_numbers_factory(name: str) -> Type[Chart2SeriesDat
 
 def area_color_factory(name: str) -> Type[FillColorT]:
     if name == "ooodev.chart2.general":
-        from ooodev.format.chart2.direct.general.area import Color as Color1
+        from ooodev.format.inner.direct.chart2.chart.area.color import Color as Color1
 
         return Color1
 
@@ -284,17 +284,17 @@ def area_transparency_transparency_factory(name: str) -> Type[TransparencyTransp
 
         return Transparency1
     if name == "ooodev.write.para.transparency":
-        from ooodev.format.writer.direct.para.transparency import Transparency as Transparency2
+        from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as Transparency2
 
         return Transparency2
 
     if name == "ooodev.write.shape.area.transparency":
-        from ooodev.format.writer.direct.shape.transparency import Transparency as Transparency3
+        from ooodev.format.writer.direct.shape.transparency.transparency import Transparency as Transparency3
 
         return Transparency3
 
     if name == "ooodev.chart2.general":
-        from ooodev.format.chart2.direct.general.transparency import Transparency as Transparency4
+        from ooodev.format.inner.direct.chart2.chart.transparent.transparency import Transparency as Transparency4
 
         return Transparency4
 
@@ -324,12 +324,12 @@ def area_transparency_gradient_factory(name: str) -> Type[TransparencyGradientT]
         return Gradient1
 
     if name == "ooodev.write.shape.area.transparency":
-        from ooodev.format.writer.direct.shape.transparency import Gradient as Gradient2
+        from ooodev.format.writer.direct.shape.transparency.gradient import Gradient as Gradient2
 
         return Gradient2
 
     if name == "ooodev.chart2.general":
-        from ooodev.format.chart2.direct.general.transparency import Gradient as Gradient3
+        from ooodev.format.inner.direct.chart2.chart.transparent.gradient import Gradient as Gradient3
 
         return Gradient3
 
@@ -353,7 +353,7 @@ def area_transparency_gradient_factory(name: str) -> Type[TransparencyGradientT]
 
 # def area_gradient_factory(name: str) -> Type[FillGradientT]:
 #     if name == "ooodev.chart2.general":
-#         # from ooodev.format.chart2.direct.general.area import Gradient
+#         # from ooodev.format.inner.direct.chart2.chart.area.color import Gradient
 #         from ooodev.format.inner.direct.chart2.chart.area.gradient import Gradient
 
 #         return Gradient
@@ -582,7 +582,7 @@ def draw_border_line_factory(name: str) -> Type[BorderLinePropertiesT]:
         return LineProperties31
 
     if name == "ooodev.chart2.axis.line":
-        from ooodev.format.chart2.direct.axis.line import LineProperties as LineProperties32
+        from ooodev.format.inner.direct.chart2.axis.line.line_properties import LineProperties as LineProperties32
 
         return LineProperties32
 
@@ -635,17 +635,17 @@ def font_highlight_factory(name: str) -> Type[WriteCharFontHighlightT]:
 if mock_g.FULL_IMPORT:
     from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as FontOnly1
     from ooodev.format.inner.direct.chart2.axis.font.font_only import FontOnly as FontOnly2
-    from ooodev.format.chart2.direct.title.font import FontOnly as FontOnly3
-    from ooodev.format.chart2.direct.series.data_labels.font import FontOnly as FontOnly4
-    from ooodev.format.chart2.direct.legend.font import FontOnly as FontOnly5
+    from ooodev.format.inner.direct.chart2.title.font.font_only import FontOnly as FontOnly3
+    from ooodev.format.inner.direct.chart2.series.data_labels.font.font_only import FontOnly as FontOnly4
+    from ooodev.format.inner.direct.chart2.legend.font.font_only import FontOnly as FontOnly5
     from ooodev.format.inner.direct.calc.char.font.font_only import FontOnly as FontOnly6
     from ooodev.format.inner.direct.write.char.font.font import Font as Font1
     from ooodev.format.inner.direct.general_style.text.font import Font as Font2
     from ooodev.format.inner.direct.write.char.font.font_effects import FontEffects as FontEffects1
     from ooodev.format.inner.direct.chart2.axis.font.font_effects import FontEffects as FontEffects2
-    from ooodev.format.chart2.direct.title.font import FontEffects as FontEffects3
-    from ooodev.format.chart2.direct.series.data_labels.font import FontEffects as FontEffects4
-    from ooodev.format.chart2.direct.legend.font import FontEffects as FontEffects5
+    from ooodev.format.inner.direct.chart2.title.font.font_effects import FontEffects as FontEffects3
+    from ooodev.format.inner.direct.chart2.series.data_labels.font.font_effects import FontEffects as FontEffects4
+    from ooodev.format.inner.direct.chart2.legend.font.font_effects import FontEffects as FontEffects5
     from ooodev.format.inner.direct.calc.char.font.font_effects import FontEffects as FontEffects6
     from ooodev.format.inner.direct.write.char.font.font_position import FontPosition as FontPosition1
     from ooodev.format.inner.direct.calc.alignment.text_align import TextAlign as TextAlign1
@@ -658,24 +658,24 @@ if mock_g.FULL_IMPORT:
         NumberFormat as NumberFormat1,
     )
     from ooodev.format.inner.direct.chart2.axis.numbers.numbers import Numbers as NumberFormat2
-    from ooodev.format.chart2.direct.general.area import Color as Color1
+    from ooodev.format.inner.direct.chart2.chart.area.color import Color as Color1
     from ooodev.format.inner.direct.chart2.legend.area.color import Color as Color2
     from ooodev.format.inner.direct.chart2.wall.area.color import Color as Color3
     from ooodev.format.inner.direct.chart2.series.data_series.area.color import Color as Color4
     from ooodev.format.inner.direct.chart2.title.area.color import Color as Color5
     from ooodev.format.inner.direct.calc.background.color import Color as Color6
     from ooodev.format.draw.direct.transparency.transparency import Transparency as Transparency1
-    from ooodev.format.writer.direct.para.transparency import Transparency as Transparency2
-    from ooodev.format.writer.direct.shape.transparency import Transparency as Transparency3
-    from ooodev.format.chart2.direct.general.transparency import Transparency as Transparency4
+    from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as Transparency2
+    from ooodev.format.writer.direct.shape.transparency.transparency import Transparency as Transparency3
+    from ooodev.format.inner.direct.chart2.chart.transparent.transparency import Transparency as Transparency4
     from ooodev.format.inner.direct.chart2.legend.transparent.transparency import Transparency as Transparency5
     from ooodev.format.inner.direct.chart2.wall.transparent.transparency import Transparency as Transparency6
     from ooodev.format.inner.direct.chart2.series.data_series.transparent.transparency import (
         Transparency as Transparency7,
     )
     from ooodev.format.draw.direct.transparency.gradient import Gradient as Gradient1
-    from ooodev.format.writer.direct.shape.transparency import Gradient as Gradient2
-    from ooodev.format.chart2.direct.general.transparency import Gradient as Gradient3
+    from ooodev.format.writer.direct.shape.transparency.gradient import Gradient as Gradient2
+    from ooodev.format.inner.direct.chart2.chart.transparent.gradient import Gradient as Gradient3
     from ooodev.format.inner.direct.chart2.legend.transparent.gradient import Gradient as Gradient4
     from ooodev.format.inner.direct.chart2.wall.transparent.gradient import Gradient as Gradient5
     from ooodev.format.inner.direct.chart2.series.data_series.transparent.gradient import Gradient as Gradient6
@@ -711,7 +711,7 @@ if mock_g.FULL_IMPORT:
     from ooodev.format.draw.direct.position_size.position_size.protect import Protect as Protect30
     from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties as LineProperties30
     from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties as LineProperties31
-    from ooodev.format.chart2.direct.axis.line import LineProperties as LineProperties32
+    from ooodev.format.inner.direct.chart2.axis.line.line_properties import LineProperties as LineProperties32
     from ooodev.format.inner.direct.chart2.grid.line_properties import LineProperties as LineProperties33
     from ooodev.format.inner.direct.chart2.legend.borders.line_properties import LineProperties as LineProperties34
     from ooodev.format.inner.direct.chart2.wall.borders.line_properties import LineProperties as LineProperties35

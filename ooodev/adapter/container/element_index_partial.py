@@ -1,10 +1,12 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING
-from ooodev.adapter.container.name_index_t import NameIndexT
 
 if TYPE_CHECKING:
     from com.sun.star.container import XNamed
+    from ooodev.adapter.container.name_index_t import NameIndexT
+else:
+    NameIndexT = object
 
 
 class ElementIndexPartial:

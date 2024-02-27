@@ -52,7 +52,8 @@ class DataProvider(LoInstPropsPartial, DataProviderComp, ChartDocPropPartial):
             None:
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.office.chart2 import DataPointLabelTypeKind, DataRoleKind
+        from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind
+        from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind
 
         try:
             dp = self.component
@@ -76,4 +77,5 @@ class DataProvider(LoInstPropsPartial, DataProviderComp, ChartDocPropPartial):
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.office.chart2 import DataPointLabelTypeKind, DataRoleKind
+    from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind
+    from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind

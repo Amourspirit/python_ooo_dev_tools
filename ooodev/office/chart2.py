@@ -63,7 +63,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.chart2_named_event import Chart2NamedEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.units import Angle as Angle
+from ooodev.units.angle import Angle as Angle
 from ooodev.utils import color as mColor
 from ooodev.utils import file_io as mFileIo
 from ooodev.utils import gui as mGui

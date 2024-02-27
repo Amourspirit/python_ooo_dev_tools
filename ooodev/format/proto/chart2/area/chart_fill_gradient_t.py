@@ -10,7 +10,7 @@ if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Protocol
     from com.sun.star.chart2 import XChartDocument
     from ooo.dyn.awt.gradient_style import GradientStyle
-    from ooodev.units import Angle
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.color_range import ColorRange
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.intensity_range import IntensityRange

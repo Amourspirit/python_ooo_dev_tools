@@ -4,7 +4,7 @@ from typing import Any, cast
 from ooodev.format.inner.direct.write.page.page.paper_format import PaperFormat as InnerPaperFormat
 from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
 from ooodev.format.inner.preset.preset_paper_format import PaperFormatKind
-from ooodev.format.writer.style.page.kind import WriterStylePageKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.utils.data_type.size_mm import SizeMM
 
 # endregion Import

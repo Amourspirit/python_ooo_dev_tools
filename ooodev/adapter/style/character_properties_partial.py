@@ -4,7 +4,7 @@ import contextlib
 import uno
 
 from ooo.dyn.awt.font_underline import FontUnderlineEnum
-from ooodev.units import UnitPT
+from ooodev.units.unit_pt import UnitPT
 from ooodev.utils import info as mInfo
 from ooodev.adapter.container.name_container_comp import NameContainerComp
 

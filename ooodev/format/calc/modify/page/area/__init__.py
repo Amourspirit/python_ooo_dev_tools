@@ -7,7 +7,7 @@ from ooodev.format.inner.common.format_types.size_percent import SizePercent as 
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.modify.calc.page.area.color import InnerColor as InnerColor
 from ooodev.format.inner.modify.calc.page.area.color import Color as Color

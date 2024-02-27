@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ooodev.format.writer.direct.shape.shadow import Shadow as ShapeShadow
+from ooodev.format.inner.direct.write.shape.area.shadow import Shadow as ShapeShadow
 
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT

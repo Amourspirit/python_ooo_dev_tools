@@ -1,9 +1,9 @@
 import uno
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.units import Angle as Angle
+from ooodev.units.angle import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind

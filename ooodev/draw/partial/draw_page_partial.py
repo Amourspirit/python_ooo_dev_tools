@@ -1215,22 +1215,19 @@ class DrawPagePartial(Generic[_T]):
 # pylint: disable=wrong-import-position
 # ruff: noqa: E402
 
-from .. import draw_text as mDrawText
-
-from ..shapes import (
-    OpenBezierShape,
-    ClosedBezierShape,
-    DrawShape,
-    ConnectorShape,
-    EllipseShape,
-    OLE2Shape,
-    GraphicObjectShape,
-    LineShape,
-    PolyLineShape,
-    PolyPolygonShape,
-    RectangleShape,
-    TextShape,
-)
+from ooodev.draw import draw_text as mDrawText
+from ooodev.draw.shapes.open_bezier_shape import OpenBezierShape
+from ooodev.draw.shapes.closed_bezier_shape import ClosedBezierShape
+from ooodev.draw.shapes.draw_shape import DrawShape
+from ooodev.draw.shapes.connector_shape import ConnectorShape
+from ooodev.draw.shapes.ellipse_shape import EllipseShape
+from ooodev.draw.shapes.ole2_shape import OLE2Shape
+from ooodev.draw.shapes.graphic_object_shape import GraphicObjectShape
+from ooodev.draw.shapes.line_shape import LineShape
+from ooodev.draw.shapes.poly_line_shape import PolyLineShape
+from ooodev.draw.shapes.poly_polygon_shape import PolyPolygonShape
+from ooodev.draw.shapes.rectangle_shape import RectangleShape
+from ooodev.draw.shapes.text_shape import TextShape
 
 if mock_g.FULL_IMPORT:
     from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial

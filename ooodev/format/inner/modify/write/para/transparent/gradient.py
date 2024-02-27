@@ -6,7 +6,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.units.angle import Angle
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange

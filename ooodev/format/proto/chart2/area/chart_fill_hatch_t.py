@@ -9,9 +9,9 @@ if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Protocol
     from com.sun.star.chart2 import XChartDocument
     from ooodev.utils.color import Color
-    from ooodev.units import Angle as Angle
+    from ooodev.units.angle import Angle as Angle
     from ooodev.units.unit_obj import UnitT
-    from ooodev.units import UnitMM
+    from ooodev.units.unit_mm import UnitMM
     from ooo.dyn.drawing.hatch_style import HatchStyle
     from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
 else:

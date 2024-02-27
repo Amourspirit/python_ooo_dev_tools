@@ -4,7 +4,7 @@ import contextlib
 import uno
 
 
-from ooodev.units import UnitMM100
+from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.utils import info as mInfo
 from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.adapter.container.index_replace_comp import IndexReplaceComp

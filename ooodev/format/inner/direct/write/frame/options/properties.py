@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, overload
+from typing import cast, overload, TYPE_CHECKING
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 from ooo.dyn.text.writing_mode2 import WritingMode2
@@ -8,9 +8,13 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode, WritingMode2Enum, _TWritingMode
+from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode
+from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 from ooodev.meta.deleted_attrib import DeletedAttrib
 from ooodev.format.inner.common.props.frame_options_properties import FrameOptionsProperties
+
+if TYPE_CHECKING:
+    from ooodev.format.inner.direct.write.para.align.writing_mode import _TWritingMode
 
 _TProperties = TypeVar(name="_TProperties", bound="Properties")
 

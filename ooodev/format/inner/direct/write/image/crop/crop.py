@@ -16,7 +16,6 @@ from ooodev.format.inner.common.props.image_crop_props import ImageCropProps
 from ooodev.format.inner.direct.structs.crop_struct import CropStruct
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.proto.size_obj import SizeObj
 from ooodev.utils import images_lo as mImg
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.size import Size
@@ -24,6 +23,10 @@ from ooodev.utils.data_type.size_mm import SizeMM
 
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
+    from ooodev.proto.size_obj import SizeObj
+else:
+    SizeObj = Any
+    UnitT = Any
 
 _TImageCrop = TypeVar(name="_TImageCrop", bound="ImageCrop")
 

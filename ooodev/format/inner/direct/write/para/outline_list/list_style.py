@@ -16,7 +16,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.list_style_props import ListStyleProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.writer.style.lst import StyleListKind
+from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 

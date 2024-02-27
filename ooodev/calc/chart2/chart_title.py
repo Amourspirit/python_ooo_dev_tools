@@ -15,7 +15,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
 from ooodev.proto.component_proto import ComponentT
-from ooodev.units import Angle
+from ooodev.units.angle import Angle
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial

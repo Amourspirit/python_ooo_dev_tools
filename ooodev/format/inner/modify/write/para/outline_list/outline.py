@@ -6,7 +6,7 @@ import uno
 from ooodev.format.inner.direct.write.para.outline_list.outline import LevelKind
 from ooodev.format.inner.direct.write.para.outline_list.outline import Outline as InnerOutline
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 # endregion Import
 

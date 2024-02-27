@@ -4,7 +4,7 @@ from typing import cast
 import uno
 
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind as StyleCharKind
-from ..char_style_base_multi import CharStyleBaseMulti
+from ooodev.format.inner.modify.write.char.char_style_base_multi import CharStyleBaseMulti
 from ooodev.format.inner.direct.write.char.font.font_effects import FontEffects as InnerFontEffects
 from ooodev.format.inner.direct.write.char.font.font_effects import FontLine as FontLine
 from ooodev.utils.data_type.intensity import Intensity as Intensity

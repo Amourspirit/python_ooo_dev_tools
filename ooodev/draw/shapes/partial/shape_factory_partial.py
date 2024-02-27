@@ -3,7 +3,7 @@ from typing import cast, TYPE_CHECKING, Generic, TypeVar
 import uno
 
 from ooodev.mock import mock_g
-from ooodev.draw.shapes import DrawShape
+from ooodev.draw.shapes.draw_shape import DrawShape
 from ooodev.draw.shapes.const import KNOWN_SHAPES
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
@@ -49,47 +49,47 @@ class ShapeFactoryPartial(Generic[_T]):
             raise ValueError("shape has no ShapeType property")
         shape_type = cast(str, getattr(shape, "ShapeType"))
         if shape_type == "com.sun.star.drawing.ClosedBezierShape":
-            from ooodev.draw.shapes import ClosedBezierShape
+            from ooodev.draw.shapes.closed_bezier_shape import ClosedBezierShape
 
             return ClosedBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.ConnectorShape":
-            from ooodev.draw.shapes import ConnectorShape
+            from ooodev.draw.shapes.connector_shape import ConnectorShape
 
             return ConnectorShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.EllipseShape":
-            from ooodev.draw.shapes import EllipseShape
+            from ooodev.draw.shapes.ellipse_shape import EllipseShape
 
             return EllipseShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.GraphicObjectShape":
-            from ooodev.draw.shapes import GraphicObjectShape
+            from ooodev.draw.shapes.graphic_object_shape import GraphicObjectShape
 
             return GraphicObjectShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.LineShape":
-            from ooodev.draw.shapes import LineShape
+            from ooodev.draw.shapes.line_shape import LineShape
 
             return LineShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.OLE2Shape":
-            from ooodev.draw.shapes import OLE2Shape
+            from ooodev.draw.shapes.ole2_shape import OLE2Shape
 
             return OLE2Shape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.OpenBezierShape":
-            from ooodev.draw.shapes import OpenBezierShape
+            from ooodev.draw.shapes.open_bezier_shape import OpenBezierShape
 
             return OpenBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.PolyLineShape":
-            from ooodev.draw.shapes import PolyLineShape
+            from ooodev.draw.shapes.poly_line_shape import PolyLineShape
 
             return PolyLineShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.PolyPolygonShape":
-            from ooodev.draw.shapes import PolyPolygonShape
+            from ooodev.draw.shapes.poly_polygon_shape import PolyPolygonShape
 
             return PolyPolygonShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.RectangleShape":
-            from ooodev.draw.shapes import RectangleShape
+            from ooodev.draw.shapes.rectangle_shape import RectangleShape
 
             return RectangleShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "com.sun.star.drawing.TextShape":
-            from ooodev.draw.shapes import TextShape
+            from ooodev.draw.shapes.text_shape import TextShape
 
             return TextShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
         if shape_type == "FrameShape":
@@ -114,15 +114,15 @@ class ShapeFactoryPartial(Generic[_T]):
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.draw.shapes import ClosedBezierShape
-    from ooodev.draw.shapes import ConnectorShape
-    from ooodev.draw.shapes import EllipseShape
-    from ooodev.draw.shapes import GraphicObjectShape
-    from ooodev.draw.shapes import LineShape
-    from ooodev.draw.shapes import OLE2Shape
-    from ooodev.draw.shapes import OpenBezierShape
-    from ooodev.draw.shapes import PolyLineShape
-    from ooodev.draw.shapes import PolyPolygonShape
-    from ooodev.draw.shapes import RectangleShape
-    from ooodev.draw.shapes import TextShape
+    from ooodev.draw.shapes.closed_bezier_shape import ClosedBezierShape
+    from ooodev.draw.shapes.connector_shape import ConnectorShape
+    from ooodev.draw.shapes.ellipse_shape import EllipseShape
+    from ooodev.draw.shapes.graphic_object_shape import GraphicObjectShape
+    from ooodev.draw.shapes.line_shape import LineShape
+    from ooodev.draw.shapes.ole2_shape import OLE2Shape
+    from ooodev.draw.shapes.open_bezier_shape import OpenBezierShape
+    from ooodev.draw.shapes.poly_line_shape import PolyLineShape
+    from ooodev.draw.shapes.poly_polygon_shape import PolyPolygonShape
+    from ooodev.draw.shapes.rectangle_shape import RectangleShape
+    from ooodev.draw.shapes.text_shape import TextShape
     from ooodev.write.write_text_frame import WriteTextFrame

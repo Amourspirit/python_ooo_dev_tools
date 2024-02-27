@@ -1,11 +1,13 @@
 from __future__ import annotations
-import contextlib
-from typing import TypeVar, Type
+
+from typing import TypeVar, Type, TYPE_CHECKING
 import uno
 from ooo.dyn.awt.size import Size as UnoSize
-from ooodev.proto.size_obj import SizeObj
-
 from ooodev.utils.data_type.generic_size import GenericSize
+
+if TYPE_CHECKING:
+    from ooodev.proto.size_obj import SizeObj
+
 
 _TSize = TypeVar(name="_TSize", bound="Size")
 

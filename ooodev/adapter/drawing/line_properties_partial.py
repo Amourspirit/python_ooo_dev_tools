@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import contextlib
 import uno
 
-from ooodev.units import UnitMM100
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import LineDash  # Struct

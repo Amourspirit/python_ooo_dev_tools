@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.direct.calc.page.page.margins import Margins as InnerMargins
 from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 

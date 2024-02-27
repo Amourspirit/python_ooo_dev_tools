@@ -57,7 +57,6 @@ from ooodev.utils.kind.window_subtype_kind import WindowSubtypeKind
 from ooodev.utils.kind.zoom_kind import ZoomKind
 
 
-
 if TYPE_CHECKING:
     from com.sun.star.frame import XController
     from com.sun.star.ui import XUIElement
@@ -141,6 +140,7 @@ class GUI:
             item_name (str): item name.
             im_fnm (str): image file path.
         """
+        # pylint: disable=import-outside-toplevel
         from com.sun.star.graphic import XGraphicProvider
 
         def load_graphic_file(im_fnm: str):
@@ -314,7 +314,7 @@ class GUI:
         # this also means may not work on windows when virtual environment
         # is set to LibreOffice python.exe
         with contextlib.suppress(ImportError):
-            from ..dialog.tk_input import Window
+            from ooodev.dialog.tk_input import Window
 
             pass_inst = Window(title=title, input_msg=input_msg, is_password=True)
             return pass_inst.get_input()

@@ -8,7 +8,7 @@ from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as Inne
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 from ooodev.format.inner.preset import preset_gradient
 from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.units.angle import Angle
 from ooodev.utils.color import StandardColor
 from ooodev.utils.data_type.color_range import ColorRange

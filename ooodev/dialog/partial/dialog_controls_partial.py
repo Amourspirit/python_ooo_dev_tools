@@ -26,31 +26,31 @@ from ooodev.utils.kind.horz_ver_kind import HorzVertKind
 from ooodev.utils.kind.orientation_kind import OrientationKind
 from ooodev.utils.kind.time_format_kind import TimeFormatKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind
-from ooodev.dialog.dl_control import CtlButton
-from ooodev.dialog.dl_control import CtlCheckBox
-from ooodev.dialog.dl_control import CtlComboBox
-from ooodev.dialog.dl_control import CtlCurrencyField
-from ooodev.dialog.dl_control import CtlDateField
-from ooodev.dialog.dl_control import CtlFile
-from ooodev.dialog.dl_control import CtlFixedLine
-from ooodev.dialog.dl_control import CtlFixedText
-from ooodev.dialog.dl_control import CtlFormattedField
-from ooodev.dialog.dl_control import CtlGrid
-from ooodev.dialog.dl_control import CtlGroupBox
-from ooodev.dialog.dl_control import CtlHyperlinkFixed
-from ooodev.dialog.dl_control import CtlImage
-from ooodev.dialog.dl_control import CtlListBox
-from ooodev.dialog.dl_control import CtlNumericField
-from ooodev.dialog.dl_control import CtlPatternField
-from ooodev.dialog.dl_control import CtlProgressBar
-from ooodev.dialog.dl_control import CtlRadioButton
-from ooodev.dialog.dl_control import CtlScrollBar
-from ooodev.dialog.dl_control import CtlSpinButton
-from ooodev.dialog.dl_control import CtlTabPage
-from ooodev.dialog.dl_control import CtlTabPageContainer
-from ooodev.dialog.dl_control import CtlTextEdit
-from ooodev.dialog.dl_control import CtlTimeField
-from ooodev.dialog.dl_control import CtlTree
+from ooodev.dialog.dl_control.ctl_button import CtlButton
+from ooodev.dialog.dl_control.ctl_check_box import CtlCheckBox
+from ooodev.dialog.dl_control.ctl_combo_box import CtlComboBox
+from ooodev.dialog.dl_control.ctl_currency_field import CtlCurrencyField
+from ooodev.dialog.dl_control.ctl_date_field import CtlDateField
+from ooodev.dialog.dl_control.ctl_file import CtlFile
+from ooodev.dialog.dl_control.ctl_fixed_line import CtlFixedLine
+from ooodev.dialog.dl_control.ctl_fixed_text import CtlFixedText
+from ooodev.dialog.dl_control.ctl_formatted_field import CtlFormattedField
+from ooodev.dialog.dl_control.ctl_grid import CtlGrid
+from ooodev.dialog.dl_control.ctl_group_box import CtlGroupBox
+from ooodev.dialog.dl_control.ctl_hyperlink_fixed import CtlHyperlinkFixed
+from ooodev.dialog.dl_control.ctl_image import CtlImage
+from ooodev.dialog.dl_control.ctl_list_box import CtlListBox
+from ooodev.dialog.dl_control.ctl_numeric_field import CtlNumericField
+from ooodev.dialog.dl_control.ctl_pattern_field import CtlPatternField
+from ooodev.dialog.dl_control.ctl_progress_bar import CtlProgressBar
+from ooodev.dialog.dl_control.ctl_radio_button import CtlRadioButton
+from ooodev.dialog.dl_control.ctl_scroll_bar import CtlScrollBar
+from ooodev.dialog.dl_control.ctl_spin_button import CtlSpinButton
+from ooodev.dialog.dl_control.ctl_tab_page import CtlTabPage
+from ooodev.dialog.dl_control.ctl_tab_page_container import CtlTabPageContainer
+from ooodev.dialog.dl_control.ctl_text_edit import CtlTextEdit
+from ooodev.dialog.dl_control.ctl_time_field import CtlTimeField
+from ooodev.dialog.dl_control.ctl_tree import CtlTree
 
 
 if TYPE_CHECKING:
@@ -1668,7 +1668,7 @@ class DialogControlsPartial:
             return self._dialogs_class_instance
         except AttributeError:
             # pylint: disable=import-outside-toplevel
-            from ooodev.dialog import Dialogs
+            from ooodev.dialog.dialogs import Dialogs
 
             self._dialogs_class_instance = Dialogs
         return self._dialogs_class_instance
@@ -1677,4 +1677,4 @@ class DialogControlsPartial:
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.dialog import Dialogs
+    from ooodev.dialog.dialog import Dialogs

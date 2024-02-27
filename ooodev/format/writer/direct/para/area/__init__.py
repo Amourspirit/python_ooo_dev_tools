@@ -3,7 +3,7 @@ from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
-from ooodev.units import Angle as Angle
+from ooodev.units.angle import Angle as Angle
 from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
@@ -16,11 +16,11 @@ from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHat
 from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
-from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
-from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
-from ooodev.format.inner.direct.write.fill.area.img import Offset as Offset
-from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn as OffsetColumn
-from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRow
+from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
+from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
+from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
+from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
 from ooodev.format.inner.direct.write.para.area.img import Img as Img
 from ooodev.format.inner.direct.write.para.area.hatch import Hatch as Hatch
 

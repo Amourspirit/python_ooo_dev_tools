@@ -1,7 +1,7 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from ooodev.format.writer.style.page.kind import WriterStylePageKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.format.inner.direct.write.page.page.margins import Margins as InnerMargins
 from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
 

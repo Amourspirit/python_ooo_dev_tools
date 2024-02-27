@@ -69,7 +69,7 @@ from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.meta.static_meta import classproperty
-from ooodev.proto.style_obj import StyleT, FormatKind
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.units import UnitT
 from ooodev.utils import file_io as mFileIO
 from ooodev.utils import gen_util as mUtil
@@ -81,9 +81,7 @@ from ooodev.utils import selection as mSel
 from ooodev.utils.color import CommonColor, Color
 from ooodev.utils.data_type.size import Size
 from ooodev.utils.table_helper import TableHelper
-from ooodev.utils.type_var import PathOrStr, Table, DocOrCursor
 
-from ooodev.mock import mock_g
 
 if TYPE_CHECKING:
     # from com.sun.star.beans import PropertyValue
@@ -98,6 +96,10 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XLinguServiceManager2
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.utils.type_var import PathOrStr
+    from ooodev.utils.type_var import Table
+    from ooodev.utils.type_var import DocOrCursor
 
 
 # endregion Imports

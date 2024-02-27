@@ -7,7 +7,7 @@ from ooodev.format.inner.direct.write.para.border.borders import Borders as Inne
 from ooodev.format.inner.direct.write.para.border.padding import Padding
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 # endregion Import
 

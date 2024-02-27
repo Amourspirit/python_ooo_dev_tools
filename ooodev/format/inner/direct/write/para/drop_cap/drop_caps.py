@@ -14,7 +14,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.direct.structs.drop_cap_struct import DropCapStruct
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.writer.style.char.kind import StyleCharKind
+from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
 from ooodev.loader import lo as mLo
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.units.unit_obj import UnitT

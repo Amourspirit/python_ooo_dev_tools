@@ -5,7 +5,7 @@ import uno
 from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
 from ooodev.format.inner.direct.write.para.indent_space.line_spacing import LineSpacing as InnerLineSpacing
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT

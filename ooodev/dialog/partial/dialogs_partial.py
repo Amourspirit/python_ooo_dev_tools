@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
     # Avoid circular import by creating a property in class instance for Dialogs
-    from ooodev.dialog import Dialogs
+    from ooodev.dialog.dialogs import Dialogs
     from ooodev.dialog.dialogs import ControlT
     from ooodev.dialog.dl_control import CtlRadioButton
 # endregion Imports
@@ -206,11 +206,11 @@ class DialogsPartial:
             return self._DialogsPartial_dialogs_class_instance
         except AttributeError:
             # pylint: disable=import-outside-toplevel
-            from ooodev.dialog import Dialogs
+            from ooodev.dialog.dialogs import Dialogs
 
             self._DialogsPartial_dialogs_class_instance = Dialogs
         return self._DialogsPartial_dialogs_class_instance
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.dialog import Dialogs
+    from ooodev.dialog.dialogs import Dialogs

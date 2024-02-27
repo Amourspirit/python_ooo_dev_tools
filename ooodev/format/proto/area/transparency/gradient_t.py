@@ -10,7 +10,7 @@ if TYPE_CHECKING or DOCS_BUILDING:
     from ooo.dyn.awt.gradient_style import GradientStyle
 
     from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
-    from ooodev.units import Angle
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.intensity_range import IntensityRange
     from ooodev.utils.data_type.offset import Offset

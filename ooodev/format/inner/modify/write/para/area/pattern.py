@@ -7,7 +7,7 @@ from com.sun.star.awt import XBitmap
 from ooodev.format.inner.direct.write.para.area.pattern import Pattern as InnerPattern
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 # endregion Import
 

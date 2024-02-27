@@ -1,6 +1,10 @@
 import sys
+import inspect
+import typing
+import ast
+from contextlib import contextmanager
 from ast import parse, NodeVisitor, ImportFrom
-from importlib import util as import_util, import_module
+from importlib import util as import_util, import_module, reload
 from importlib.machinery import ModuleSpec
 from os import path
 from pkgutil import iter_modules
@@ -10,6 +14,40 @@ import pytest
 
 # https://medium.com/brexeng/avoiding-circular-imports-in-python-7c35ec8145ed
 # https://github.com/amenck/circular_import_refactor
+# https://github.com/mitmproxy/pdoc/blob/main/pdoc/doc_ast.py
+
+
+@contextmanager
+def patch(object_, attribute_name, value):
+    old_value = getattr(object_, attribute_name)
+    try:
+        setattr(object_, attribute_name, value)
+        yield
+    finally:
+        setattr(object_, attribute_name, old_value)
+
+
+def detect_type_checking_mode_modules_names(module_name):
+    # https://stackoverflow.com/questions/54764937/detecting-modules-that-get-imported-on-condition
+    # this method loads the module as default (Type checking false). Gets then module vars,
+    # then turns on type checking and reloads the module to get the type checked vars.
+    module = import_module(module_name)
+    default_module_names = set(vars(module))
+
+    with patch(typing, "TYPE_CHECKING", True):
+        # reloading since ``importlib.import_module``
+        # will return previously cached entry
+        reload(module)
+    type_checked_module_namespace = dict(vars(module))
+
+    # resetting to "default" mode
+    reload(module)
+
+    return {
+        name
+        for name, content in type_checked_module_namespace.items()
+        if name not in default_module_names and inspect.ismodule(content)
+    }
 
 
 def _is_test_module(module_name: str) -> bool:
@@ -86,7 +124,7 @@ class _ImportFromSourceChecker(NodeVisitor):
         # Actually import the module and iterate through all the objects potentially exported by it.
         module = import_module(module_to_import)
         for alias in node.names:
-            assert hasattr(module, alias.name)
+            assert hasattr(module, alias.name), f"No alias name attr: {self._module_file}"
             attr = getattr(module, alias.name)
 
             # For some objects (pretty much everything except for classes and functions), we are not able to figure
@@ -132,9 +170,42 @@ def _apply_visitor(module: str, visitor: NodeVisitor) -> None:
     assert module_spec.origin is not None
 
     with open(module_spec.origin, "r") as source_file:
-        ast = parse(source=source_file.read(), filename=module_spec.origin)
+        ast_mod = parse(source=source_file.read(), filename=module_spec.origin)
 
-    visitor.visit(ast)
+    # remove any imports that are guarded by type checking.
+    # Without this a lot of issues will be reported that are not relevant.
+    _parse_ast_remove_type_checking_from_imports(ast_mod)
+    visitor.visit(ast_mod)
+
+
+def _parse_ast_remove_type_checking_from_imports(mod: ast.Module) -> None:
+    """
+    Walks the abstract syntax tree for `mod` and removes all from imports statements guarded by TYPE_CHECKING blocks.
+    """
+
+    def parse_typing_block(if_node: ast.If) -> None:
+        remove_indexes = [i for i, node in enumerate(if_node.body) if isinstance(node, ast.ImportFrom)]
+        remove_indexes.reverse()
+        for i in remove_indexes:
+            if_node.body.pop(i)
+
+        # remove_indexes = [i for i, node in enumerate(if_node.orelse) if isinstance(node, ast.ImportFrom)]
+        # remove_indexes.reverse()
+        # for i in remove_indexes:
+        #     if_node.orelse.pop(i)
+
+    for node in mod.body:
+        if isinstance(node, ast.If) and isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
+            parse_typing_block(node)
+        if (
+            isinstance(node, ast.If)
+            and isinstance(node.test, ast.Attribute)
+            and isinstance(node.test.value, ast.Name)
+            # some folks do "import typing as t", the accuracy with just TYPE_CHECKING is good enough.
+            # and node.test.value.id == "typing"
+            and node.test.attr == "TYPE_CHECKING"
+        ):
+            parse_typing_block(node)
 
 
 def _test_imports_from_source(module: str) -> None:
@@ -171,26 +242,3 @@ def add_module_organization_tests(module_name: str) -> None:
 def get_modules(module_name: str) -> List[str]:
     module_root = module_name.split(".")[0]
     return list(_recurse_modules(module_root, ignore_tests=True, packages_only=False))
-
-
-def add_module_organization_tests2(module_name: str) -> None:
-    """
-    This function dynamically generates a set of python tests which can be used to ensure that all modules follow
-    the convention "classes and functions should always be imported from the module they are defined in (or the
-    closest public module to that)".
-
-    Let's say that you have a package "foo", and want to use this function. In that case, go into your test module
-    (probably "foo.tests") and create a test file that imports and calls `add_module_organization_tests(__name__)`.
-    Once this is defined, you can use pytest to run your tests, and note that a unique test has been generated for
-    each file in your project. The tests will scan each file and look for cases of imports that do not follow the
-    convention above. If the test finds any violations, it will error out with a message similar to:
-
-    AssertionError: Imported Child from objects, which is not the public module where this object is defined. Please
-        import from objects.child instead.
-    """
-    module_root = module_name.split(".")[0]
-    lst = list(_recurse_modules(module_root, ignore_tests=True, packages_only=False))
-
-    @pytest.mark.parametrize("module", lst)
-    def _test_eval(module: str):
-        _test_imports_from_source(module)

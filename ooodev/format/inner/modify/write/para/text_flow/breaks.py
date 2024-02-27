@@ -4,7 +4,7 @@ from typing import Any, cast
 import uno
 from ooo.dyn.style.break_type import BreakType
 
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.format.inner.direct.write.para.text_flow.breaks import Breaks as InnerBreaks
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 

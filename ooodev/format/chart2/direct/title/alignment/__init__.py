@@ -1,6 +1,6 @@
 import uno
 
-from ooodev.units import Angle as Angle
+from ooodev.units.angle import Angle as Angle
 from ooodev.format.inner.direct.chart2.title.alignment.direction import (
     Direction as Direction,
     DirectionModeKind as DirectionModeKind,

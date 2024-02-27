@@ -5,7 +5,7 @@ import uno
 from ooo.dyn.style.page_style_layout import PageStyleLayout
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 
-from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.direct.calc.page.page.layout_settings import LayoutSettings as InnerLayoutSettings
 from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind

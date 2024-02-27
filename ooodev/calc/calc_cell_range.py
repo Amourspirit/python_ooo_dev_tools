@@ -8,7 +8,7 @@ from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 from ooodev.mock import mock_g
 from ooodev.adapter.sheet.sheet_cell_range_comp import SheetCellRangeComp
-from ooodev.calc import CalcNamedEvent
+from ooodev.events.calc_named_event import CalcNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
@@ -25,7 +25,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.office import calc as mCalc
-from ooodev.units import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import file_io as mFile
 from ooodev.utils.color import CommonColor
 from ooodev.utils.context.lo_context import LoContext

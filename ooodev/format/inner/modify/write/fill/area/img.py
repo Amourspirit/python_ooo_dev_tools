@@ -9,13 +9,13 @@ from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
 from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
-from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn
-from ooodev.format.inner.direct.write.fill.area.img import OffsetRow
-from ooodev.format.inner.direct.write.fill.area.img import SizeMM
-from ooodev.format.inner.direct.write.fill.area.img import SizePercent
+from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
+from ooodev.format.inner.common.format_types.offset_row import OffsetRow
+from ooodev.utils.data_type.size_mm import SizeMM
+from ooodev.format.inner.common.format_types.size_percent import SizePercent
 from ooodev.format.inner.modify.write.fill.fill_style_base_multi import FillStyleBaseMulti
 from ooodev.format.inner.preset.preset_image import PresetImageKind
-from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.utils.data_type.offset import Offset
 
 # endregion Imports
 

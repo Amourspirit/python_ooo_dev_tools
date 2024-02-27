@@ -4,7 +4,7 @@ from typing import NamedTuple
 import uno
 
 from ooodev.exceptions import ex as mEx
-from ooodev.format.calc.style.page.kind import CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.modify.calc.cell_style_base import CellStyleBase
 from ooodev.utils import props as mProps
 

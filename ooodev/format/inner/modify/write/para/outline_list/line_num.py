@@ -5,7 +5,7 @@ from ooodev.format.inner.common.abstract.abstract_line_number import AbstractLin
 from ooodev.format.inner.common.abstract.abstract_line_number import LineNumberProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.writer.style.para.kind import StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 # endregion Import
 
