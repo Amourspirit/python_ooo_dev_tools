@@ -6,21 +6,12 @@ if __name__ == "__main__":
 # from tests.test_import_src._import_from_source import _test_imports_from_source, get_modules
 from ._import_from_source import _test_imports_from_source, get_modules
 
-# tests.test_calc.test_build_table
-# add_module_organization_tests(__name__)
-# add_module_organization_tests2("ooodev")
-
-
-def test_dummy() -> None:
-    print("Dummy test")
-    # add_module_organization_tests("ooodev")
-    assert True
-
 
 @pytest.mark.parametrize("module", get_modules("ooodev"))
-def test_eval(module: str):
+def test_ooodev_modules(module):
     _test_imports_from_source(module)
 
 
-def test_eval2():
-    _test_imports_from_source("ooodev.listeners.x_top_window_adapter")
+# def test_ooodev_imports_single():
+#     # this method can be use for specific debugging.
+#     _test_imports_from_source("ooodev.listeners.x_top_window_adapter")

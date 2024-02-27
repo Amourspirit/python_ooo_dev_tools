@@ -6,17 +6,16 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.format.writer.direct.para.alignment import (
-    Alignment,
-    ParagraphAdjust,
-    ParagraphVertAlignEnum,
-    LastLineKind,
-    WritingMode,
-    WritingMode2Enum,
-)
-from ooodev.utils.gui import GUI
+
+from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
+from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum
+from ooo.dyn.text.writing_mode2 import WritingMode2Enum
+from ooodev.format.inner.direct.write.para.align.alignment import Alignment
+from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind
+from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
+from ooodev.utils.gui import GUI
 
 
 if TYPE_CHECKING:

@@ -100,7 +100,8 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import PathOrStr
     from ooodev.utils.type_var import Table
     from ooodev.utils.type_var import DocOrCursor
-
+else:
+    StyleT = Any
 
 # endregion Imports
 

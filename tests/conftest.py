@@ -44,6 +44,33 @@ else:
 # NOTE: No success running a portable version on windows from virtual environment.
 
 
+# region deferred import testing
+# https://docs.pytest.org/en/7.2.x/example/parametrize.html#deferring-the-setup-of-parametrized-resources
+
+
+# def pytest_generate_tests(metafunc):
+#     if "db" in metafunc.fixturenames:
+#         metafunc.parametrize("importer", ["ooodev"], indirect=True)
+
+
+# class IMPORT1:
+#     "one database object"
+#     pass
+
+
+# @pytest.fixture
+# def importer(request):
+#     if request.param == "ooodev":
+#         return IMPORT1()
+#     # elif request.param == "d2":
+#     #     return DB2()
+#     else:
+#         raise ValueError("importer - invalid internal test config")
+
+
+# endregion deferred import testing
+
+
 def remove_readonly(func, path, excinfo):
     try:
         os.chmod(path, stat.S_IWRITE)
