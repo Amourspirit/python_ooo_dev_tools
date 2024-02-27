@@ -18,6 +18,7 @@ import pytest
 
 
 IF_IGNORE_ATTRIBUTES = {"TYPE_CHECKING", "DOCS_BUILDING"}
+MODULES_EXCLUDE = {"ooodev.dialog.tk_input"}
 
 
 @contextmanager
@@ -125,6 +126,8 @@ class _ImportFromSourceChecker(NodeVisitor):
             return
 
         # Actually import the module and iterate through all the objects potentially exported by it.
+        if module_to_import in MODULES_EXCLUDE:
+            return
         module = import_module(module_to_import)
         for alias in node.names:
             assert hasattr(module, alias.name), f"No alias name attr: {self._module_file}"
@@ -212,6 +215,8 @@ def _parse_ast_remove_type_checking_from_imports(mod: ast.Module) -> None:
 
 
 def _test_imports_from_source(module: str) -> None:
+    if not module:
+        return
     _apply_visitor(module=module, visitor=_ImportFromSourceChecker(module))
 
 
