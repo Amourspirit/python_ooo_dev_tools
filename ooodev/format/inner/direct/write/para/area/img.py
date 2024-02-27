@@ -5,26 +5,24 @@ from typing import Any, Tuple, cast, overload, Type, TypeVar
 from com.sun.star.awt import XBitmap
 
 from ooo.dyn.style.graphic_location import GraphicLocation
-from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
+from ooo.dyn.drawing.rectangle_point import RectanglePoint
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
+from ooodev.format.inner.common.format_types.offset_row import OffsetRow
+from ooodev.format.inner.common.format_types.size_percent import SizePercent
+from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
+from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.preset.preset_image import PresetImageKind
+from ooodev.format.inner.style_base import StyleMulti
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.format.inner.style_base import StyleMulti
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.format.inner.direct.write.fill.area.img import (
-    Img as InnerImg,
-    SizeMM as SizeMM,
-    SizePercent as SizePercent,
-    OffsetColumn as OffsetColumn,
-    OffsetRow as OffsetRow,
-    ImgStyleKind as ImgStyleKind,
-)
-from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.events.format_named_event import FormatNamedEvent
-from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
+from ooodev.utils.data_type.offset import Offset
+from ooodev.utils.data_type.size_mm import SizeMM
 
 # endregion Imports
 
@@ -101,7 +99,7 @@ class Img(StyleMulti):
             init_vars[self._props.back_graphic] = b_map
 
         super().__init__(**init_vars)
-        self._set_style("fill_image", img, *img.get_attrs())
+        self._set_style("fill_image", img, *img.get_attrs())  # type: ignore
         img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
         img.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
 
@@ -221,6 +219,7 @@ class Img(StyleMulti):
         Returns:
             Img: Instance from preset.
         """
+        # pylint: disable=protected-access
         fill_img = InnerImg.from_preset(preset)
 
         inst = cls(**kwargs)
@@ -259,6 +258,7 @@ class Img(StyleMulti):
         Returns:
             Img: ``Img`` instance that represents ``obj`` fill image.
         """
+        # pylint: disable=protected-access
         fill_img = InnerImg.from_obj(obj)
         inst = cls(**kwargs)
         bitmap = fill_img._get(fill_img._props.bitmap)
@@ -271,6 +271,7 @@ class Img(StyleMulti):
         inst._set_style("fill_image", fill_img, *fill_img.get_attrs())
         fill_img.add_event_listener(FormatNamedEvent.STYLE_PROPERTY_APPLYING, _on_fill_img_prop_setting)
         fill_img.add_event_listener(FormatNamedEvent.STYLE_BACKING_UP, _on_fill_img_prop_backup)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -309,6 +310,7 @@ class Img(StyleMulti):
 
 
 def _on_fill_img_prop_setting(source: Any, event_args: KeyValCancelArgs, *args, **kwargs) -> None:
+    # pylint: disable=protected-access
     # Fill images do not support setting of FillBitmapMode in Write
     img = cast(InnerImg, event_args.event_source)
     if event_args.key == img._props.mode:

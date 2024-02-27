@@ -8,14 +8,17 @@ from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.format.writer.direct.char.borders import BorderLineKind, LineSize
+from ooodev.format.inner.direct.structs.side import LineSize
+from ooodev.format.inner.direct.structs.side import BorderLineKind
 from ooodev.mock import mock_g
 from ooodev.utils.color import StandardColor
 
 if TYPE_CHECKING:
-    from ooodev.format.writer.direct.char.borders import Borders, Side, Shadow, Padding
+    from ooodev.format.inner.direct.write.char.border.padding import Shadow, Padding
+    from ooodev.format.inner.direct.structs.side import Side
+    from ooodev.format.inner.direct.write.char.border.borders import Borders
     from ooodev.utils.color import Color
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class WriteCharBordersPartial:
@@ -71,7 +74,7 @@ class WriteCharBordersPartial:
 
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.writer.direct.char.borders import Borders
+        from ooodev.format.inner.direct.write.char.border.borders import Borders
 
         comp = self.__component
         has_events = False
@@ -171,7 +174,7 @@ class WriteCharBordersPartial:
 
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.writer.direct.char.borders import Side
+        from ooodev.format.inner.direct.structs.side import Side
 
         side = Side(line=line, color=color, width=width)
         return self.style_borders(
@@ -208,11 +211,13 @@ class WriteCharBordersPartial:
 
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.writer.direct.char.borders import Padding
+        from ooodev.format.inner.direct.write.char.border.padding import Padding
 
         padding = Padding(left=left, right=right, top=top, bottom=bottom, all=all_sides)
         return self.style_borders(padding=padding)
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.format.writer.direct.char.borders import Borders, Side, Padding
+    from ooodev.format.inner.direct.write.char.border.padding import Padding
+    from ooodev.format.inner.direct.structs.side import Side
+    from ooodev.format.inner.direct.write.char.border.borders import Borders

@@ -29,6 +29,7 @@ class SheetCellCursorComp(
             component (SheetCellCursor): UNO Sheet Cell Cursor Component
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         ChartDataChangeEventEvents.__init__(
@@ -60,6 +61,7 @@ class SheetCellCursorComp(
     @property
     def component(self) -> SheetCellCursor:
         """Sheet Cell Cursor Component"""
+        # pylint: disable=no-member
         return cast("SheetCellCursor", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

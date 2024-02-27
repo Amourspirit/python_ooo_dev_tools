@@ -6,12 +6,10 @@ from ooodev.mock.mock_g import DOCS_BUILDING
 from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 
-    from ooodev.units import UnitT, UnitMM
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.units.unit_mm import UnitMM
 else:
     Protocol = object
     UnitT = Any

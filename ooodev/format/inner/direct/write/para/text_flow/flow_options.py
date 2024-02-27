@@ -153,6 +153,7 @@ class FlowOptions(StyleBase):
         Returns:
             WritingMode: ``FlowOptions`` instance that represents ``obj`` writing mode.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -167,6 +168,7 @@ class FlowOptions(StyleBase):
         set_prop("ParaWidows", inst)
         set_prop("ParaKeepTogether", inst)
         set_prop("ParaSplit", inst)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -332,6 +334,8 @@ class FlowOptions(StyleBase):
     @property
     def default(self: _TFlowOptions) -> _TFlowOptions:
         """Gets ``FlowOptions`` default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:

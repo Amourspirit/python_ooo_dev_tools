@@ -2,10 +2,7 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

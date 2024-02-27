@@ -22,22 +22,22 @@ from com.sun.star.gallery import XGalleryThemeProvider
 from com.sun.star.graphic import XGraphic
 
 
-from . import file_io as mFileIo
+from ooodev.utils import file_io as mFileIo
 from ooodev.loader import lo as mLo
-from . import props as mProps
-from . import info as mInfo
-from ..exceptions import ex as mEx
-from .kind.search_match_kind import SearchMatchKind as SearchMatchKind
-from .kind.gallery_kind import GalleryKind as GalleryKind
-from .kind.gallery_search_by_kind import SearchByKind as SearchByKind
+from ooodev.utils import props as mProps
+from ooodev.utils import info as mInfo
+from ooodev.exceptions import ex as mEx
+from ooodev.utils.kind.search_match_kind import SearchMatchKind as SearchMatchKind
+from ooodev.utils.kind.gallery_kind import GalleryKind as GalleryKind
+from ooodev.utils.kind.gallery_search_by_kind import SearchByKind as SearchByKind
 
-from ..events.event_singleton import _Events
-from ..events.lo_named_event import LoNamedEvent
+from ooodev.events.event_singleton import _Events
+from ooodev.events.lo_named_event import LoNamedEvent
 
 from ooo.dyn.gallery.gallery_item_type import GalleryItemTypeEnum as GalleryItemTypeEnum
 from ooo.lo.gallery.gallery_item_type import GalleryItemType as GalleryItemType
 
-from ..meta.static_meta import StaticProperty, classproperty
+from ooodev.meta.static_meta import StaticProperty, classproperty
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

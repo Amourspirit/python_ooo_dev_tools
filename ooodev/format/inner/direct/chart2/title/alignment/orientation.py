@@ -5,7 +5,7 @@ import uno
 from ooodev.format.inner.common.props.title_alignment_orientation_props import TitleAlignmentOrientationProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import Angle
+from ooodev.units.angle import Angle
 
 _TOrientation = TypeVar("_TOrientation", bound="Orientation")
 

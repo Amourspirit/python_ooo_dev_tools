@@ -64,6 +64,7 @@ class TableColumnsComp(ComponentBase, NameAccessPartial, EnumerationAccessPartia
     @property
     def component(self) -> TableColumns:
         """Cell Component"""
+        # pylint: disable=no-member
         return cast("TableColumns", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

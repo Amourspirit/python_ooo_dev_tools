@@ -17,13 +17,13 @@ from ooodev.adapter.drawing.shape_collection_comp import ShapeCollectionComp
 from ooodev.adapter.lang.component_partial import ComponentPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.events.partial.events_partial import EventsPartial
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
     from ooodev.draw.shapes.shape_base import ShapeBase
-    from .table_chart import TableChart
+    from ooodev.calc.chart2.table_chart import TableChart
 
 
 class ChartDrawPage(

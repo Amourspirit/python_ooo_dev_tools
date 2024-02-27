@@ -8,11 +8,11 @@ This module is for the purpose of sharing events between classes internally
 from __future__ import annotations
 import contextlib
 from weakref import ref, ReferenceType
-from .args.event_args import EventArgs
-from .args.event_args_t import EventArgsT
 from typing import List, Dict, Union
-from ..utils import type_var
-from ..proto import event_observer
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.args.event_args_t import EventArgsT
+from ooodev.utils import type_var
+from ooodev.proto import event_observer
 
 
 class _Events:

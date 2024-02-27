@@ -7,11 +7,7 @@ from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from ooo.dyn.awt.font_underline import FontUnderlineEnum
     from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
     from ooo.dyn.style.case_map import CaseMapEnum

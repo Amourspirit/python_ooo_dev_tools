@@ -15,7 +15,7 @@ from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.writer.style.page.kind import WriterStylePageKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs

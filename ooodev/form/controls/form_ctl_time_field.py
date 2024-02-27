@@ -11,7 +11,7 @@ from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import TimeField as ControlModel  # service

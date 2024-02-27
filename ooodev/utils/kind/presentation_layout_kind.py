@@ -1,5 +1,5 @@
 from enum import IntEnum, unique
-from . import kind_helper
+from ooodev.utils.kind import kind_helper
 
 
 @unique

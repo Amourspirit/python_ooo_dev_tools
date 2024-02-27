@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import uno
-from .search_descriptor_comp import SearchDescriptorComp
-from .replace_descriptor_partial import ReplaceDescriptorPartial
+from ooodev.adapter.util.search_descriptor_comp import SearchDescriptorComp
+from ooodev.adapter.util.replace_descriptor_partial import ReplaceDescriptorPartial
 
 
 if TYPE_CHECKING:

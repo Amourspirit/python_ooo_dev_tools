@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-from .text_range_comp import TextRangeComp
-from .text_cursor_partial import TextCursorPartial
+from ooodev.adapter.text.text_range_comp import TextRangeComp
+from ooodev.adapter.text.text_cursor_partial import TextCursorPartial
 
 
 if TYPE_CHECKING:
@@ -43,6 +43,7 @@ class TextCursorComp(
         @property
         def component(self) -> TextCursor:
             """Sheet Cell Cursor Component"""
+            # pylint: disable=no-member
             return cast("TextCursor", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

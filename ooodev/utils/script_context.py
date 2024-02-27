@@ -5,14 +5,14 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 import os
+from com.sun.star.script.provider import XScriptContext
+from ooodev.mock import mock_g
 
-_ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
-if _ON_RTD:
-    from ..mock import unohelper
+if mock_g.DOCS_BUILDING:
+    from ooodev.mock import unohelper
 else:
     import unohelper
 
-from com.sun.star.script.provider import XScriptContext
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XDesktop

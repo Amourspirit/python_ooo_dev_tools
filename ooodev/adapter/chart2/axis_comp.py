@@ -6,7 +6,7 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.drawing.line_properties_partial import LinePropertiesPartial
 from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
-from .axis_partial import AxisPartial
+from ooodev.adapter.chart2.axis_partial import AxisPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Axis  # service
@@ -38,6 +38,7 @@ class AxisComp(
         LinePropertiesPartial.__init__(self, component=component)
         CharacterPropertiesPartial.__init__(self, component=component)
         AxisPartial.__init__(self, component=component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -53,6 +54,7 @@ class AxisComp(
     @property
     def component(self) -> Axis:
         """Axis Component"""
+        # pylint: disable=no-member
         return cast("Axis", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

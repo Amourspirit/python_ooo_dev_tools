@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar
 import uno
 
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.format.inner.direct.structs.side import Side as Side
-from ooodev.format.inner.direct.write.char.border.sides import Sides as DirectSides
 from ooodev.format.inner.common.props.border_props import BorderProps
-from ...page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.direct.structs.side import Side
+from ooodev.format.inner.direct.write.char.border.sides import Sides as DirectSides
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 
 # endregion Import
 

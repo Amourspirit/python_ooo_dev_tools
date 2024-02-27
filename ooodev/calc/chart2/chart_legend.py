@@ -22,16 +22,16 @@ from ooodev.format.inner.partial.chart2.area.chart_fill_pattern_partial import C
 from ooodev.format.inner.partial.chart2.area.chart_fill_hatch_partial import ChartFillHatchPartial
 from ooodev.format.inner.partial.chart2.borders.border_line_properties_partial import BorderLinePropertiesPartial
 from ooodev.format.inner.partial.chart2.legend.position.chart2_legend_pos_partial import Chart2LegendPosPartial
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Legend  # service
     from com.sun.star.chart2 import XChartDocument
     from ooodev.loader.inst.lo_inst import LoInst
-    from .chart_diagram import ChartDiagram
-    from .chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_diagram import ChartDiagram
+    from ooodev.calc.chart2.chart_doc import ChartDoc
 
 
 class ChartLegend(

@@ -3,20 +3,20 @@ from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_format import ShadowFormat
+from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitMM100
-from ooodev.units import UnitConvert
+from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_mm100 import UnitMM100
+from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from .struct_base import StructBase
+from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion Import
 
@@ -385,6 +385,8 @@ class ShadowStruct(StructBase):
         try:
             return self._empty_inst
         except AttributeError:
+            # pylint: disable=unexpected-keyword-arg
+            # pylint: disable=protected-access
             self._empty_inst = self.__class__(
                 location=ShadowLocation.NONE,
                 transparent=False,

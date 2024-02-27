@@ -3,8 +3,8 @@ from typing import Any, cast, Callable, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.drawing.graphic_export_filter_implement import GraphicExportFilterImplement
-from ooodev.draw import DrawNamedEvent
-from ooodev.draw import DrawPage
+from ooodev.events.draw_named_event import DrawNamedEvent
+from ooodev.draw.draw_page import DrawPage
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.events.partial.events_partial import EventsPartial
@@ -15,7 +15,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
-from .export_base import ExportBase
+from ooodev.draw.export.export_base import ExportBase
 
 if TYPE_CHECKING:
     from ooodev.draw.filter.export_png import ExportPngT

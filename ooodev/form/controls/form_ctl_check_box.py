@@ -8,7 +8,7 @@ from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import CheckBox as ControlModel  # service

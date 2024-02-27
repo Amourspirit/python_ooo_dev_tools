@@ -1,9 +1,10 @@
 """Module for Draw Style Fill Coloring."""
+
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 from ooodev.format.inner.modify.write.fill.fill_style_base_multi import FillStyleBaseMulti
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics

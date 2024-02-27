@@ -3,6 +3,7 @@ Draw Style Line Spacing.
 
 .. versionadded:: 0.17.12
 """
+
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
 import uno
@@ -14,7 +15,7 @@ from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
 from ooodev.format.inner.modify.draw.para_style_base_multi import ParaStyleBaseMulti
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class LineSpacing(ParaStyleBaseMulti):

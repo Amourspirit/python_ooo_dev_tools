@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import Tuple, cast
 import uno
 
-from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
-from ....direct.structs.cell_protection_struct import CellProtectionStruct
+from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind
+from ooodev.format.inner.direct.structs.cell_protection_struct import CellProtectionStruct
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ..cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports
 

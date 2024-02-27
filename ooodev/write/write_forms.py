@@ -11,11 +11,11 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from .write_form import WriteForm
+from ooodev.write.write_form import WriteForm
 
 if TYPE_CHECKING:
     from com.sun.star.form import XForms
-    from .write_draw_page import WriteDrawPage
+    from ooodev.write.write_draw_page import WriteDrawPage
 
 
 class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):

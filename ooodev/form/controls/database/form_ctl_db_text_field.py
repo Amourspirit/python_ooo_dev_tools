@@ -6,7 +6,7 @@ from ooodev.adapter.form.data_aware_control_model_partial import DataAwareContro
 from ooodev.adapter.form.update_events import UpdateEvents
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
-from ..form_ctl_text_field import FormCtlTextField
+from ooodev.form.controls.form_ctl_text_field import FormCtlTextField
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseTextField as ControlModel  # service

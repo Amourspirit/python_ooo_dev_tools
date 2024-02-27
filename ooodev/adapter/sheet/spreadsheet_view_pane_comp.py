@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
-from .cell_range_referrer_partial import CellRangeReferrerPartial
-from .view_pane_partial import ViewPanePartial
+from ooodev.adapter.sheet.cell_range_referrer_partial import CellRangeReferrerPartial
+from ooodev.adapter.sheet.view_pane_partial import ViewPanePartial
 
 
 if TYPE_CHECKING:
@@ -39,6 +39,7 @@ class SpreadsheetViewPaneComp(ComponentBase, ViewPanePartial, CellRangeReferrerP
     @property
     def component(self) -> SpreadsheetViewPane:
         """Volatile Result Component"""
+        # pylint: disable=no-member
         return cast("SpreadsheetViewPane", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -15,7 +15,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import color as mColor
 from ooodev.utils.color import StandardColor
 from ooodev.format.inner.style_base import StyleBase
-from ..props.fill_color_props import FillColorProps
+from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 
 # endregion Import
 

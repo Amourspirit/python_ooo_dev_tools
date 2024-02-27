@@ -1,13 +1,13 @@
 # region Import
 from __future__ import annotations
 import uno
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_location import ShadowLocation
 
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.units.unit_obj import UnitT
 from ooodev.utils.color import StandardColor, Color
-from ...header.border.shadow import Shadow as HeaderShadow
+from ooodev.format.inner.modify.calc.page.header.border.shadow import Shadow as HeaderShadow
 
 # endregion Import
 

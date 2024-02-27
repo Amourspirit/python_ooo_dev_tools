@@ -3,7 +3,7 @@
 # See Also: https:#fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
 from enum import IntEnum
-from ..office import calc as mCalc
+from ooodev.office import calc as mCalc
 from ooodev.loader import lo as mLo
 
 

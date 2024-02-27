@@ -13,8 +13,8 @@ from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartia
 if TYPE_CHECKING:
     from ooo.dyn.util.number_format import NumberFormatEnum
     from ooo.dyn.lang.locale import Locale
-    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.percent_format import PercentFormat
     from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.percent_format import PercentFormat
 
 
 class Chart2DataLabelPercentFormatPartial:

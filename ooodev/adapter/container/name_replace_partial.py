@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 from com.sun.star.container import XNameReplace
-from .name_access_partial import NameAccessPartial
+from ooodev.adapter.container.name_access_partial import NameAccessPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

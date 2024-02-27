@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from ..validation import check
-from .point import Point
+from ooodev.utils.validation import check
+from ooodev.utils.data_type.point import Point
 
 
 @dataclass(frozen=True)

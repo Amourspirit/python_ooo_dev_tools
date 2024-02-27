@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
-from .result_events import ResultEvents
+from ooodev.adapter.sheet.result_events import ResultEvents
 
 
 if TYPE_CHECKING:
@@ -24,6 +24,7 @@ class VolatileResultComp(ComponentBase, ResultEvents):
             component (VolatileResult): UNO Volatile Result Component
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ResultEvents.__init__(self, trigger_args=generic_args, cb=self._on_result_events_add_remove)
 
@@ -45,6 +46,7 @@ class VolatileResultComp(ComponentBase, ResultEvents):
     @property
     def component(self) -> VolatileResult:
         """Volatile Result Component"""
+        # pylint: disable=no-member
         return cast("VolatileResult", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

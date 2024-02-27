@@ -1,14 +1,17 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle
 
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.area.hatch import Hatch as HeaderHatch
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
-from ooodev.units import UnitT
+from ooodev.units.angle import Angle
 from ooodev.utils.color import Color, StandardColor
-from ooodev.units import Angle
-from ...header.area.hatch import Hatch as HeaderHatch
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 
 class Hatch(HeaderHatch):

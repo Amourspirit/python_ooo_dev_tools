@@ -6,21 +6,21 @@ from com.sun.star.drawing import XShapes
 from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.draw import DrawNamedEvent
+from ooodev.events.draw_named_event import DrawNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.office import draw as mDraw
-from ooodev.proto.component_proto import ComponentT
-from ooodev.units import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.type_var import PathOrStr
-from .generic_draw_page import GenericDrawPage
-from .draw_forms import DrawForms
+from ooodev.draw.generic_draw_page import GenericDrawPage
+from ooodev.draw.draw_forms import DrawForms
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.draw.shapes.shape_base import ShapeBase
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -51,6 +51,7 @@ class DrawPage(
             lo_inst = mLo.Lo.current_lo
         GenericDrawPage.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
         self.__owner = owner
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -76,7 +77,6 @@ class DrawPage(
         Returns:
             GroupShape: Grouped shapes.
         """
-        self.get_shapes
         group = super().group(shapes)
         return GroupShape(component=group, lo_inst=self.lo_inst)
 
@@ -155,6 +155,7 @@ class DrawPage(
         def on_exported(source: Any, args: Any) -> None:
             self.trigger_event(DrawNamedEvent.EXPORTED_PAGE_JPG, args)
 
+        # pylint: disable=import-outside-toplevel
         from ooodev.draw.export.page_jpg import PageJpg
 
         exporter = PageJpg(owner=self)
@@ -198,6 +199,7 @@ class DrawPage(
         def on_exported(source: Any, args: Any) -> None:
             self.trigger_event(DrawNamedEvent.EXPORTED_PAGE_PNG, args)
 
+        # pylint: disable=import-outside-toplevel
         from ooodev.draw.export.page_png import PagePng
 
         exporter = PagePng(owner=self)
@@ -251,6 +253,7 @@ class DrawPage(
 
     @width.setter
     def width(self, value: UnitT | float) -> None:
+        # pylint: disable=protected-access
         self.component.Width = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
 
     @property
@@ -262,6 +265,7 @@ class DrawPage(
 
     @height.setter
     def height(self, value: UnitT | float) -> None:
+        # pylint: disable=protected-access
         self.component.Height = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
 
     # region    borders
@@ -274,6 +278,7 @@ class DrawPage(
 
     @border_left.setter
     def border_left(self, value: UnitT | float) -> None:
+        # pylint: disable=protected-access
         self.component.BorderLeft = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
 
     @property
@@ -285,6 +290,7 @@ class DrawPage(
 
     @border_right.setter
     def border_right(self, value: UnitT | float) -> None:
+        # pylint: disable=protected-access
         self.component.BorderRight = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
 
     @property
@@ -296,6 +302,7 @@ class DrawPage(
 
     @border_top.setter
     def border_top(self, value: UnitT | float) -> None:
+        # pylint: disable=protected-access
         self.component.BorderTop = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
 
     @property
@@ -307,14 +314,15 @@ class DrawPage(
 
     @border_bottom.setter
     def border_bottom(self, value: UnitT | float) -> None:
+        # pylint: disable=protected-access
         self.component.BorderBottom = mDraw.Draw._get_mm100_obj_from_mm(value, 0).value
 
     # endregion borders
     # endregion Properties
 
 
-from .shape_collection import ShapeCollection
-from ooodev.draw.shapes import GroupShape
+from ooodev.draw.shape_collection import ShapeCollection
+from ooodev.draw.shapes.group_shape import GroupShape
 
 if mock_g.FULL_IMPORT:
     from ooodev.draw.export.page_jpg import PageJpg

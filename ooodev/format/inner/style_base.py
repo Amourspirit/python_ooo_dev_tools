@@ -30,7 +30,8 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.events.format_named_event import FormatNamedEvent as FormatNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.prop_pair import PropPair
-from ooodev.units import UnitT, UnitMM100
+from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue

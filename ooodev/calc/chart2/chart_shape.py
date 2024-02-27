@@ -8,8 +8,8 @@ from ooodev.exceptions import ex as mEx
 from ooodev.draw.shapes.ole2_shape import OLE2Shape
 from ooodev.format.inner.partial.position_size.draw.position_partial import PositionPartial
 from ooodev.format.inner.partial.position_size.draw.size_partial import SizePartial
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 # Line Properties not supported by OLE2Shape
 # from ooodev.format.inner.partial.borders.draw.line_properties_partial import LinePropertiesPartial
@@ -17,8 +17,8 @@ from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
     from ooodev.loader.inst.lo_inst import LoInst
-    from .table_chart import TableChart
-    from .chart_image import ChartImage
+    from ooodev.calc.chart2.table_chart import TableChart
+    from ooodev.calc.chart2.chart_image import ChartImage
 else:
     TableChart = Any
 

@@ -7,16 +7,17 @@ Module for managing paragraph Line Spacing.
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
-
+import uno
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
+
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.direct.structs import line_spacing_struct as mLs
-from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind as ModeKind
+from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.units import UnitT
 from ooodev.loader import lo as mLo
+from ooodev.units.unit_obj import UnitT
 from ooodev.utils import props as mProps
 
 # endregion Import
@@ -68,6 +69,7 @@ class LineSpacing(StyleMulti):
 
             - :ref:`help_writer_format_direct_para_indent_spacing`
         """
+        # pylint: disable=unexpected-keyword-arg
         # https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1style_1_1ParagraphProperties-members.html
         super().__init__()
 
@@ -83,7 +85,7 @@ class LineSpacing(StyleMulti):
             self._set("ParaRegisterModeActive", active_ln_spacing)
 
         if ls is not None:
-            self._set_style("line_spacing", ls, *ls.get_attrs())
+            self._set_style("line_spacing", ls, *ls.get_attrs())  # type: ignore
 
     # endregion init
 
@@ -163,6 +165,7 @@ class LineSpacing(StyleMulti):
         Returns:
             LineSpacing: ``LineSpacing`` instance that represents ``obj`` line spacing.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -182,6 +185,7 @@ class LineSpacing(StyleMulti):
         )
         if ls is not None:
             inst._set_style("line_spacing", ls, *ls.get_attrs())
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -232,6 +236,8 @@ class LineSpacing(StyleMulti):
     @property
     def default(self: _TLineSpacing) -> _TLineSpacing:
         """Gets ``LineSpacing`` default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:

@@ -10,7 +10,7 @@ from typing import Any, Type, overload, cast, Tuple, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
@@ -19,8 +19,8 @@ from ooodev.format.inner.common.props.prop_pair import PropPair
 from ooodev.format.inner.common.props.struct_border_table_props import StructBorderTableProps
 from ooodev.format.inner.direct.structs.side import Side as Side
 from ooodev.format.inner.direct.structs.table_border_struct import TableBorderStruct
-from .padding import Padding as Padding
-from .shadow import Shadow as Shadow
+from ooodev.format.inner.direct.calc.border.padding import Padding as Padding
+from ooodev.format.inner.direct.calc.border.shadow import Shadow as Shadow
 
 
 # endregion imports

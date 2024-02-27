@@ -13,12 +13,12 @@ from typing import Any, Tuple, overload, Type, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
+from ooodev.format.inner.common.props.list_style_props import ListStyleProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.writer.style.lst import StyleListKind as StyleListKind
-from ooodev.format.inner.common.props.list_style_props import ListStyleProps
+from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 
@@ -151,6 +151,7 @@ class ListStyle(StyleBase):
         Returns:
             ListStyle: ``ListStyle`` instance that represents ``obj`` properties.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -164,7 +165,7 @@ class ListStyle(StyleBase):
         set_prop(inst._props.name, inst)
         set_prop(inst._props.value, inst)
         set_prop(inst._props.restart, inst)
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

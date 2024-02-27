@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from com.sun.star.form import XForm
-from .form_component_partial import FormComponentPartial
+from ooodev.adapter.form.form_component_partial import FormComponentPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

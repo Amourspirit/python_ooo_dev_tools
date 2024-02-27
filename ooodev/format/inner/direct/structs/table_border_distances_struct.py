@@ -5,13 +5,13 @@ from typing import Any, Tuple, Type, cast, overload, TypeVar
 from ooo.dyn.table.table_border_distances import TableBorderDistances
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
-from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.struct_table_border_distances_props import StructTableBorderDistancesProps
-from .struct_base import StructBase
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_obj import UnitT
+from ooodev.utils import props as mProps
 
 # endregion Import
 
@@ -162,15 +162,13 @@ class TableBorderDistancesStruct(StructBase):
     @classmethod
     def from_uno_struct(
         cls: Type[_TTableBorderDistancesStruct], value: TableBorderDistances
-    ) -> _TTableBorderDistancesStruct:
-        ...
+    ) -> _TTableBorderDistancesStruct: ...
 
     @overload
     @classmethod
     def from_uno_struct(
         cls: Type[_TTableBorderDistancesStruct], value: TableBorderDistances, **kwargs
-    ) -> _TTableBorderDistancesStruct:
-        ...
+    ) -> _TTableBorderDistancesStruct: ...
 
     @classmethod
     def from_uno_struct(
@@ -201,13 +199,11 @@ class TableBorderDistancesStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any) -> _TTableBorderDistancesStruct:
-        ...
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any) -> _TTableBorderDistancesStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any, **kwargs) -> _TTableBorderDistancesStruct:
-        ...
+    def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any, **kwargs) -> _TTableBorderDistancesStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TTableBorderDistancesStruct], obj: Any, **kwargs) -> _TTableBorderDistancesStruct:

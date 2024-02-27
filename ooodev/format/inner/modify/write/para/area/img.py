@@ -3,18 +3,18 @@ from __future__ import annotations
 from typing import Any, cast
 import uno
 from com.sun.star.awt import XBitmap
+from ooo.dyn.drawing.rectangle_point import RectanglePoint
 
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.utils.data_type.offset import Offset as Offset
-from ...para.para_style_base_multi import ParaStyleBaseMulti
-from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.format.inner.direct.write.fill.area.img import SizeMM as SizeMM
-from ooodev.format.inner.direct.write.fill.area.img import SizePercent as SizePercent
-from ooodev.format.inner.direct.write.fill.area.img import OffsetColumn as OffsetColumn
-from ooodev.format.inner.direct.write.fill.area.img import OffsetRow as OffsetRow
-from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
 from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
-from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
+from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
+from ooodev.format.inner.common.format_types.offset_row import OffsetRow
+from ooodev.utils.data_type.size_mm import SizeMM
+from ooodev.format.inner.common.format_types.size_percent import SizePercent
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.preset.preset_image import PresetImageKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
+from ooodev.utils.data_type.offset import Offset
 
 # endregion Import
 

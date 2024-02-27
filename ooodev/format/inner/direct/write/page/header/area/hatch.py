@@ -2,13 +2,10 @@
 from __future__ import annotations
 from typing import Tuple
 import uno
-from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ooodev.units import Angle as Angle
 
 # endregion Import
 

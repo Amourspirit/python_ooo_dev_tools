@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
-from .shape_comp import ShapeComp
-from .shape_group_partial import ShapeGroupPartial
-from .shapes_partial import ShapesPartial
+from ooodev.adapter.drawing.shape_comp import ShapeComp
+from ooodev.adapter.drawing.shape_group_partial import ShapeGroupPartial
+from ooodev.adapter.drawing.shapes_partial import ShapesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import GroupShape  # service

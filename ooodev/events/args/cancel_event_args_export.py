@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Generic, TypeVar
 from ooodev.utils.type_var import PathOrStr
-from .event_args_export import EventArgsExport
+from ooodev.events.args.event_args_export import EventArgsExport
 
 _T = TypeVar("_T")
 

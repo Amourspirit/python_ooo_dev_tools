@@ -3,8 +3,10 @@ from typing import TYPE_CHECKING
 
 import uno
 from com.sun.star.document import XStorageChangeListener
+
 from ooodev.events.args.event_args import EventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
     from com.sun.star.uno import XInterface

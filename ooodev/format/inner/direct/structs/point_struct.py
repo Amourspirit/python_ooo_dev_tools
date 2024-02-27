@@ -6,13 +6,10 @@ import uno
 from ooo.dyn.awt.point import Point
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
+from ooodev.format.inner.common.props.struct_size_props import StructSizeProps
+from ooodev.format.inner.direct.structs.struct_base import StructBase
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ...common.props.struct_size_props import StructSizeProps
-from .struct_base import StructBase
+from ooodev.utils import props as mProps
 
 # endregion Import
 
@@ -127,13 +124,11 @@ class PointStruct(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TPointStruct], value: Point) -> _TPointStruct:
-        ...
+    def from_uno_struct(cls: Type[_TPointStruct], value: Point) -> _TPointStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TPointStruct], value: Point, **kwargs) -> _TPointStruct:
-        ...
+    def from_uno_struct(cls: Type[_TPointStruct], value: Point, **kwargs) -> _TPointStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TPointStruct], value: Point, **kwargs) -> _TPointStruct:
@@ -156,13 +151,11 @@ class PointStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPointStruct], obj: Any) -> _TPointStruct:
-        ...
+    def from_obj(cls: Type[_TPointStruct], obj: Any) -> _TPointStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPointStruct], obj: Any, **kwargs) -> _TPointStruct:
-        ...
+    def from_obj(cls: Type[_TPointStruct], obj: Any, **kwargs) -> _TPointStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TPointStruct], obj: Any, **kwargs) -> _TPointStruct:

@@ -3,18 +3,20 @@ Module for managing paragraph Indents and Spacing.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, overload, TypeVar
 from numbers import Real
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.units import UnitT
+from ooodev.format.inner.direct.write.para.indent_space.indent import Indent
+from ooodev.format.inner.direct.write.para.indent_space.line_spacing import LineSpacing
+from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
+from ooodev.format.inner.direct.write.para.indent_space.spacing import Spacing
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from .indent import Indent
-from .line_spacing import LineSpacing, ModeKind as ModeKind
-from .spacing import Spacing
+from ooodev.units.unit_obj import UnitT
 
 _TIndentSpacing = TypeVar(name="_TIndentSpacing", bound="IndentSpacing")
 
@@ -81,11 +83,11 @@ class IndentSpacing(StyleMulti):
 
         super().__init__()
         if ls.prop_has_attribs:
-            self._set_style("line_spacing", ls, *ls.get_attrs())
+            self._set_style("line_spacing", ls, *ls.get_attrs())  # type: ignore
         if spc.prop_has_attribs:
-            self._set_style("spacing", spc, *spc.get_attrs())
+            self._set_style("spacing", spc, *spc.get_attrs())  # type: ignore
         if indent.prop_has_attribs:
-            self._set_style("indent", indent, *indent.get_attrs())
+            self._set_style("indent", indent, *indent.get_attrs())  # type: ignore
 
     # endregion init
 
@@ -109,13 +111,11 @@ class IndentSpacing(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndentSpacing], obj: Any) -> _TIndentSpacing:
-        ...
+    def from_obj(cls: Type[_TIndentSpacing], obj: Any) -> _TIndentSpacing: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TIndentSpacing], obj: Any, **kwargs) -> _TIndentSpacing:
-        ...
+    def from_obj(cls: Type[_TIndentSpacing], obj: Any, **kwargs) -> _TIndentSpacing: ...
 
     @classmethod
     def from_obj(cls: Type[_TIndentSpacing], obj: Any, **kwargs) -> _TIndentSpacing:
@@ -144,6 +144,7 @@ class IndentSpacing(StyleMulti):
         indent = Indent.from_obj(obj)
         if indent.prop_has_attribs:
             inst._set_style("indent", indent, *indent.get_attrs())
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

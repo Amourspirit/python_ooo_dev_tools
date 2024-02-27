@@ -4,13 +4,13 @@ from typing import Tuple, cast
 import uno
 from ooo.dyn.drawing.fill_style import FillStyle
 
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
+from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 from ooodev.utils import color as mColor
 from ooodev.utils.color import StandardColor
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
-from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
-from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports
 

@@ -6,7 +6,7 @@ from ooodev.adapter.form.data_aware_control_model_partial import DataAwareContro
 from ooodev.adapter.form.update_events import UpdateEvents
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
-from ..form_ctl_currency_field import FormCtlCurrencyField
+from ooodev.form.controls.form_ctl_currency_field import FormCtlCurrencyField
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import DatabaseCurrencyField as ControlModel  # service

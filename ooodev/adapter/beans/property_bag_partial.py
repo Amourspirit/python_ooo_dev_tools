@@ -6,9 +6,9 @@ from com.sun.star.beans import XPropertyBag
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from .property_set_partial import PropertySetPartial
-from .property_container_partial import PropertyContainerPartial
-from .property_access_partial import PropertyAccessPartial
+from ooodev.adapter.beans.property_set_partial import PropertySetPartial
+from ooodev.adapter.beans.property_container_partial import PropertyContainerPartial
+from ooodev.adapter.beans.property_access_partial import PropertyAccessPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

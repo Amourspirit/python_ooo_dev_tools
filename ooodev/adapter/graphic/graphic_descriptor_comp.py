@@ -1,11 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+import contextlib
 import uno
 from ooo.dyn.awt.size import Size
-import contextlib
 
 from ooodev.adapter.beans.property_set_comp import PropertySetComp
-from ooodev.units import SizeMM100, SizePX
+from ooodev.units.size_mm100 import SizeMM100
+from ooodev.units.size_px import SizePX
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import GraphicDescriptor  # service
@@ -37,6 +38,7 @@ class GraphicDescriptorComp(PropertySetComp):
     @property
     def component(self) -> GraphicDescriptor:
         """GraphicDescriptor Component"""
+        # pylint: disable=no-member
         return cast("GraphicDescriptor", self._ComponentBase__get_component())  # type: ignore
 
     @property

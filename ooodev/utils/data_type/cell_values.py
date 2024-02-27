@@ -1,12 +1,12 @@
 from __future__ import annotations
 import contextlib
 from dataclasses import dataclass
-
-from .. import table_helper as mTb
-from ...office import calc as mCalc
-from ..decorator import enforce
-
+import uno
 from ooo.dyn.table.cell_address import CellAddress
+
+from ooodev.utils import table_helper as mTb
+from ooodev.office import calc as mCalc
+from ooodev.utils.decorator import enforce
 
 
 @enforce.enforce_types
@@ -92,4 +92,4 @@ class CellValues:
         return CellValues(col=col, row=row, sheet_idx=idx)
 
 
-from . import cell_obj as mCellObj
+from ooodev.utils.data_type import cell_obj as mCellObj

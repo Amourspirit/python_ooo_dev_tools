@@ -14,7 +14,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.type_var import PathOrStr
-from .shape_export_png_base import ShapeExportPngBase
+from ooodev.draw.export.shape_export_png_base import ShapeExportPngBase
 
 
 class ShapePng(ShapeExportPngBase):

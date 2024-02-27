@@ -4,7 +4,7 @@ import uno
 
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl

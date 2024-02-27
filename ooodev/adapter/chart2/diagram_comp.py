@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import contextlib
 from ooodev.adapter.component_base import ComponentBase
-from .diagram_partial import DiagramPartial
-from .coordinate_system_container_partial import CoordinateSystemContainerPartial
-from .titled_partial import TitledPartial
+from ooodev.adapter.chart2.diagram_partial import DiagramPartial
+from ooodev.adapter.chart2.coordinate_system_container_partial import CoordinateSystemContainerPartial
+from ooodev.adapter.chart2.titled_partial import TitledPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Diagram  # service
@@ -41,6 +41,7 @@ class DiagramComp(ComponentBase, DiagramPartial, CoordinateSystemContainerPartia
     @property
     def component(self) -> Diagram:
         """Diagram Component"""
+        # pylint: disable=no-member
         return cast("Diagram", self._ComponentBase__get_component())  # type: ignore
 
     @property

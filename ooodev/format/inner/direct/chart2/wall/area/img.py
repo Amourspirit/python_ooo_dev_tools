@@ -13,7 +13,7 @@ from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.offset import Offset
 from ooodev.utils.data_type.size_mm import SizeMM
-from ...chart.area.img import Img as ChartAreaImg
+from ooodev.format.inner.direct.chart2.chart.area.img import Img as ChartAreaImg
 
 # endregion Imports
 

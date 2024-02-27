@@ -1,29 +1,30 @@
 # coding: utf-8
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ByteString, Tuple, cast, overload
+from typing import Any, TYPE_CHECKING, ByteString, Tuple, cast, overload
 import base64
 import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 from com.sun.star.document import XMimeTypeInfo
 from com.sun.star.graphic import XGraphicProvider
-from ..utils.data_type.width_height_fraction import WidthHeightFraction
+from ooo.dyn.awt.size import Size as UnoSize
+
+from ooodev.utils.data_type.width_height_fraction import WidthHeightFraction
+from ooodev.exceptions import ex as mEx
+from ooodev.units.unit_convert import UnitConvert, UnitLength
+from ooodev.utils import file_io as mFileIO
+from ooodev.utils import info as mInfo
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.size import Size
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.awt import XBitmap
-
-from ooo.dyn.awt.size import Size as UnoSize
-
-from ..exceptions import ex as mEx
-from ..units.unit_convert import UnitConvert, UnitLength
-from ..utils import file_io as mFileIO
-from ..utils import info as mInfo
-from ooodev.loader import lo as mLo
-from ..utils import props as mProps
-from ..utils.data_type.size import Size
-from ..utils.type_var import PathOrStr
+    from ooodev.utils.type_var import PathOrStr
+else:
+    PathOrStr = Any
 
 # see Also: https://ask.libreoffice.org/t/graphicurl-no-longer-works-in-6-1-0-3/35459/3
 # see Also: https://tomazvajngerl.blogspot.com/2018/03/improving-image-handling-in-libreoffice.html

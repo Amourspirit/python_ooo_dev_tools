@@ -33,6 +33,7 @@ class ShadowPropertiesComp(ComponentBase):
     @property
     def component(self) -> ShadowProperties:
         """ShadowProperties Component"""
+        # pylint: disable=no-member
         return cast("ShadowProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -11,16 +11,17 @@ from typing import Any, Tuple, cast, Type, TypeVar, overload
 
 import uno
 from com.sun.star.beans import XPropertySet
-from ooo.dyn.style.tab_align import TabAlign as TabAlign
+from ooo.dyn.style.tab_align import TabAlign
 from ooo.dyn.style.tab_stop import TabStop
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.format.inner.direct.structs.tab_stop_struct import FillCharKind
+from ooodev.format.inner.direct.structs.tab_stop_struct import TabStopStruct
+from ooodev.loader import lo as mLo
 from ooodev.meta.static_prop import static_prop
 from ooodev.units.unit_obj import UnitT
-from ooodev.utils import props as mProps
 from ooodev.utils import info as mInfo
-from ooodev.loader import lo as mLo
-from ooodev.format.inner.direct.structs.tab_stop_struct import TabStopStruct, FillCharKind as FillCharKind
+from ooodev.utils import props as mProps
 
 # endregion Import
 
@@ -120,6 +121,8 @@ class Tabs(TabStopStruct):
         Returns:
             Tab | None: ``Tab`` instance if found; Otherwise, ``None``
         """
+        # pylint: disable=protected-access
+        # pylint: disable=no-member
         nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             return None
@@ -143,7 +146,7 @@ class Tabs(TabStopStruct):
 
         if match == -1:
             return None
-        ts = tss[match]
+        ts = tss[match]  # type: ignore
         return cls.from_uno_struct(ts, **kwargs)
 
     # endregion find()
@@ -170,6 +173,7 @@ class Tabs(TabStopStruct):
         Returns:
             bool: ``True`` if a Tab Stop has been removed; Otherwise, ``False``
         """
+        # pylint: disable=protected-access
         tb = cls.find(obj, position, **kwargs)
         if tb is None:
             return False
@@ -189,11 +193,12 @@ class Tabs(TabStopStruct):
         Returns:
             None:
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         tss = cast(Tuple[TabStop, ...], mProps.Props.get(obj, inst._get_property_name()))
         if tss is None:
             return False
-        lst = [ts for ts in tss if position != ts.Position]
+        lst = [ts for ts in tss if position != ts.Position]  # type: ignore
         if len(lst) == len(tss):
             return False
         inst._set_obj_tabs(obj, lst)
@@ -222,6 +227,7 @@ class Tabs(TabStopStruct):
         Returns:
             bool: ``True`` if a Tab has been removed; Otherwise, ``False``
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             return False
@@ -249,6 +255,7 @@ class Tabs(TabStopStruct):
         Args:
             obj (object): UNO Object.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             return
@@ -283,6 +290,7 @@ class Tabs(TabStopStruct):
     @static_prop
     def default() -> Tabs:  # type: ignore[misc]
         """Gets ``Tabs`` default. Static Property."""
+        # pylint: disable=protected-access
         try:
             return Tabs._DEFAULT_INST  # type: ignore
         except AttributeError:

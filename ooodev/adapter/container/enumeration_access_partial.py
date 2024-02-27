@@ -1,14 +1,13 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
-
 from com.sun.star.container import XEnumerationAccess
+
+from ooodev.utils.type_var import UnoInterface
+from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 
 if TYPE_CHECKING:
     from com.sun.star.container import XEnumeration
-
-from ooodev.utils.type_var import UnoInterface
-from .element_access_partial import ElementAccessPartial
 
 
 class EnumerationAccessPartial(ElementAccessPartial):

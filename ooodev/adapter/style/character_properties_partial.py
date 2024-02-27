@@ -4,7 +4,7 @@ import contextlib
 import uno
 
 from ooo.dyn.awt.font_underline import FontUnderlineEnum
-from ooodev.units import UnitPT
+from ooodev.units.unit_pt import UnitPT
 from ooodev.utils import info as mInfo
 from ooodev.adapter.container.name_container_comp import NameContainerComp
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.table import BorderLine2  # struct
     from com.sun.star.table import ShadowFormat  # struct
     from com.sun.star.util import Color  # type def
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class CharacterPropertiesPartial:

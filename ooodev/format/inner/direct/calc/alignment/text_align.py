@@ -8,9 +8,9 @@ from ooo.dyn.table.cell_hori_justify import CellHoriJustify
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitConvert
-from ooodev.units import UnitPT
-from ooodev.units import UnitT
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_pt import UnitPT
+from ooodev.units.unit_obj import UnitT
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.cell_text_align_props import CellTextAlignProps

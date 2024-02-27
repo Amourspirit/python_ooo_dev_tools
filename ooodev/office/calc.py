@@ -66,6 +66,45 @@ from com.sun.star.util import XProtectable
 from com.sun.star.view import XPrintable
 
 
+from ooo.dyn.awt.point import Point
+from ooo.dyn.beans.property_value import PropertyValue
+from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
+from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
+from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
+from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
+from ooo.dyn.sheet.fill_date_mode import FillDateMode as FillDateMode
+from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
+from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
+from ooo.dyn.table.cell_content_type import CellContentType
+from ooo.dyn.table.cell_hori_justify import CellHoriJustify
+from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
+
+from ooodev.exceptions import ex as mEx
+from ooodev.formatters.formatter_table import FormatterTable
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.utils import gui as mGui
+from ooodev.utils import info as mInfo
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
+from ooodev.utils import table_helper as mTblHelper
+from ooodev.utils import view_state as mViewState
+from ooodev.utils.color import CommonColor, Color
+from ooodev.utils.data_type import cell_obj as mCellObj
+from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.data_type import range_values as mRngValues
+from ooodev.utils.data_type.size import Size
+from ooodev.utils.gen_util import ArgsHelper, Util as GenUtil
+from ooodev.utils.kind.zoom_kind import ZoomKind
+from ooodev.utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
+from ooodev.events.args.calc.cell_args import CellArgs
+from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
+from ooodev.events.args.calc.sheet_args import SheetArgs
+from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.calc_named_event import CalcNamedEvent
+from ooodev.events.event_singleton import _Events
+
 if TYPE_CHECKING:
     from com.sun.star.frame import XComponentLoader
     from com.sun.star.frame import XController
@@ -84,64 +123,26 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchable
     from com.sun.star.util import XSearchDescriptor
     from com.sun.star.util import CellProtection
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.proto.style_obj import StyleT
 else:
-    XComponentLoader = object
-    XController = object
-    XFrame = object
-    FunctionArgument = object
-    XDataPilotTables = object
-    XGoalSeek = object
-    XSheetAnnotation = object
-    XSheetCellCursor = object
-    XSolver = object
-    CellAddress = object
-    CellRangeAddress = object
-    XText = object
-    XSearchable = object
-    XSearchDescriptor = object
-    CellProtection = object
-
-from ooo.dyn.awt.point import Point
-from ooo.dyn.beans.property_value import PropertyValue
-from ooo.dyn.lang.illegal_argument_exception import IllegalArgumentException
-from ooo.dyn.sheet.cell_delete_mode import CellDeleteMode
-from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
-from ooo.dyn.sheet.cell_insert_mode import CellInsertMode
-from ooo.dyn.sheet.fill_date_mode import FillDateMode as FillDateMode
-from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
-from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
-from ooo.dyn.table.cell_content_type import CellContentType
-from ooo.dyn.table.cell_hori_justify import CellHoriJustify
-from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
-
-from ..exceptions import ex as mEx
-from ..formatters.formatter_table import FormatterTable
-from ..proto.style_obj import StyleT
-from ..units import UnitConvert
-from ..units import UnitT
-from ..utils import gui as mGui
-from ..utils import info as mInfo
-from ooodev.loader import lo as mLo
-from ..utils import props as mProps
-from ..utils import table_helper as mTblHelper
-from ..utils import view_state as mViewState
-from ..utils.color import CommonColor, Color
-from ..utils.data_type import cell_obj as mCellObj
-from ..utils.data_type import range_obj as mRngObj
-from ..utils.data_type import range_values as mRngValues
-from ..utils.data_type.size import Size
-from ..utils.gen_util import ArgsHelper, Util as GenUtil
-from ..utils.kind.zoom_kind import ZoomKind
-from ..utils.type_var import PathOrStr, Row, Column, Table, TupleArray, FloatList, FloatTable
-
-from ..events.args.calc.cell_args import CellArgs
-from ..events.args.calc.cell_cancel_args import CellCancelArgs
-from ..events.args.calc.sheet_args import SheetArgs
-from ..events.args.calc.sheet_cancel_args import SheetCancelArgs
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.args.event_args import EventArgs
-from ..events.calc_named_event import CalcNamedEvent
-from ..events.event_singleton import _Events
+    XComponentLoader = Any
+    XController = Any
+    XFrame = Any
+    FunctionArgument = Any
+    XDataPilotTables = Any
+    XGoalSeek = Any
+    XSheetAnnotation = Any
+    XSheetCellCursor = Any
+    XSolver = Any
+    CellAddress = Any
+    CellRangeAddress = Any
+    XText = Any
+    XSearchable = Any
+    XSearchDescriptor = Any
+    CellProtection = Any
+    UnitT = Any
+    StyleT = Any
 
 NameVal = ArgsHelper.NameValue
 # endregion Imports

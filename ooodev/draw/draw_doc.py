@@ -25,12 +25,12 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .draw_pages import DrawPages
-from .partial.draw_doc_partial import DrawDocPartial
+from ooodev.draw.draw_pages import DrawPages
+from ooodev.draw.partial.draw_doc_partial import DrawDocPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
-    from ooodev.loader.inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 # pylint: disable=unused-argument
 

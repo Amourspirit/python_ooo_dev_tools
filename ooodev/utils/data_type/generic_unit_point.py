@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Union
-from ooodev.units import UnitT
-from .generic_point import GenericPoint
+from ooodev.units.unit_obj import UnitT
+from ooodev.utils.data_type.generic_point import GenericPoint
 
 _T = TypeVar("_T", bound=UnitT)
 

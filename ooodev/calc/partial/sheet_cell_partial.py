@@ -11,8 +11,8 @@ from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import cell_obj as mCellObj
 from ooodev.loader.inst.lo_inst import LoInst
 
-from .. import calc_cell as mCalcCell
-from .. import calc_sheet as mCalcSheet
+from ooodev.calc import calc_cell as mCalcCell
+from ooodev.calc import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress

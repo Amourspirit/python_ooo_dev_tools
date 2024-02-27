@@ -21,10 +21,11 @@ Usage:
         msg = DisabledMethod()
         foo_ness = DisabledMethod()
 """
+
 from __future__ import annotations
 
 # https://stackoverflow.com/questions/231839/python-inheritance-how-to-disable-a-function
-from ..exceptions import ex as mEx
+from ooodev.exceptions import ex as mEx
 
 
 class DisabledMethod:

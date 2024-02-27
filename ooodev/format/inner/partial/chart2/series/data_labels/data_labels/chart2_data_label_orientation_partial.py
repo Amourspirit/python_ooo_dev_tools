@@ -12,8 +12,8 @@ from ooodev.exceptions import ex as mEx
 
 if TYPE_CHECKING:
     from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.orientation import Orientation
-    from ooodev.units import Angle
     from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind
+    from ooodev.units.angle import Angle
 
 
 class Chart2DataLabelOrientationPartial:

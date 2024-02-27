@@ -7,14 +7,10 @@ from ooodev.format.proto.style_multi_t import StyleMultiT
 
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from ooo.dyn.awt.gradient_style import GradientStyle
     from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-    from ooodev.units import Angle
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.intensity_range import IntensityRange
     from ooodev.utils.data_type.offset import Offset as Offset

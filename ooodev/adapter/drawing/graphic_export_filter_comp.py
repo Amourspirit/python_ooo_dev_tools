@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 
-from .graphic_export_filter_partial import GraphicExportFilterPartial
+from ooodev.adapter.drawing.graphic_export_filter_partial import GraphicExportFilterPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import GraphicExportFilter  # service
@@ -35,6 +35,7 @@ class GraphicExportFilterComp(ComponentBase, GraphicExportFilterPartial):
     @property
     def component(self) -> GraphicExportFilter:
         """GraphicExportFilter Component"""
+        # pylint: disable=no-member
         return cast("GraphicExportFilter", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

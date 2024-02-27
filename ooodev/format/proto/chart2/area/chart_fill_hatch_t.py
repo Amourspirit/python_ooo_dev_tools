@@ -3,18 +3,15 @@ from typing import Any, overload, TYPE_CHECKING
 import uno
 
 from ooodev.mock.mock_g import DOCS_BUILDING
-from ...style_multi_t import StyleMultiT
+from ooodev.format.proto.style_multi_t import StyleMultiT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from com.sun.star.chart2 import XChartDocument
     from ooodev.utils.color import Color
-    from ooodev.units import Angle as Angle
-    from ooodev.units import UnitT
-    from ooodev.units import UnitMM
+    from ooodev.units.angle import Angle as Angle
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.units.unit_mm import UnitMM
     from ooo.dyn.drawing.hatch_style import HatchStyle
     from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
 else:

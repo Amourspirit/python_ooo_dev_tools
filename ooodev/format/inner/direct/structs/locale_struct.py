@@ -3,22 +3,25 @@ Module for ``LocaleStruct`` struct.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
 import uno
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.format.inner.kind.format_kind import FormatKind
-from .struct_base import StructBase
-from ooodev.events.format_named_event import FormatNamedEvent
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-
 from ooo.dyn.lang.locale import Locale
 
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.format_named_event import FormatNamedEvent
+from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.utils import props as mProps
+
+
 # endregion Import
+# pylint: disable=unexpected-keyword-arg
 
 _TLocaleStruct = TypeVar(name="_TLocaleStruct", bound="LocaleStruct")
 
@@ -90,8 +93,7 @@ class LocaleStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
     def apply(self, obj: Any, keys: Dict[str, str]) -> None:  # type: ignore
@@ -153,13 +155,11 @@ class LocaleStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLocaleStruct], obj: Any) -> _TLocaleStruct:
-        ...
+    def from_obj(cls: Type[_TLocaleStruct], obj: Any) -> _TLocaleStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TLocaleStruct], obj: Any, **kwargs) -> _TLocaleStruct:
-        ...
+    def from_obj(cls: Type[_TLocaleStruct], obj: Any, **kwargs) -> _TLocaleStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TLocaleStruct], obj: Any, **kwargs) -> _TLocaleStruct:
@@ -191,13 +191,11 @@ class LocaleStruct(StructBase):
     # region from_locale()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale) -> _TLocaleStruct:
-        ...
+    def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale) -> _TLocaleStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:
-        ...
+    def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TLocaleStruct], locale: Locale, **kwargs) -> _TLocaleStruct:

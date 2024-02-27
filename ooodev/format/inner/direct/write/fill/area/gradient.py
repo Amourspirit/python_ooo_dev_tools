@@ -3,6 +3,7 @@ Module for Paragraph Gradient Color.
 
 .. versionadded:: 0.9.0
 """
+
 # pylint: disable=wrong-import-order
 # pylint: disable=wrong-import-position
 # pylint: disable=unused-import
@@ -18,21 +19,19 @@ from ooo.dyn.awt.gradient import Gradient as UNOGradient
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
+from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.preset import preset_gradient
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+from ooodev.format.inner.style_base import StyleMulti
+from ooodev.units.angle import Angle
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
-from ooodev.units import Angle as Angle
 from ooodev.utils.data_type.color_range import ColorRange as ColorRange
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
 from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.preset import preset_gradient
-from ooodev.format.inner.preset.preset_gradient import (
-    PresetGradientKind as PresetGradientKind,
-)
-from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
-from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 
 # endregion Import
 
@@ -238,12 +237,10 @@ class Gradient(StyleMulti):
 
     # region copy()
     @overload
-    def copy(self: _TGradient) -> _TGradient:
-        ...
+    def copy(self: _TGradient) -> _TGradient: ...
 
     @overload
-    def copy(self: _TGradient, **kwargs) -> _TGradient:
-        ...
+    def copy(self: _TGradient, **kwargs) -> _TGradient: ...
 
     def copy(self: _TGradient, **kwargs) -> _TGradient:
         """Gets a copy of instance as a new instance"""
@@ -259,13 +256,11 @@ class Gradient(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: Any) -> _TGradient:
-        ...
+    def from_obj(cls: Type[_TGradient], obj: Any) -> _TGradient: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
-        ...
+    def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient: ...
 
     @classmethod
     def from_obj(cls: Type[_TGradient], obj: Any, **kwargs) -> _TGradient:
@@ -332,13 +327,11 @@ class Gradient(StyleMulti):
     # region from_preset()
     @overload
     @classmethod
-    def from_preset(cls: Type[_TGradient], preset: PresetGradientKind) -> _TGradient:
-        ...
+    def from_preset(cls: Type[_TGradient], preset: PresetGradientKind) -> _TGradient: ...
 
     @overload
     @classmethod
-    def from_preset(cls: Type[_TGradient], preset: PresetGradientKind, **kwargs) -> _TGradient:
-        ...
+    def from_preset(cls: Type[_TGradient], preset: PresetGradientKind, **kwargs) -> _TGradient: ...
 
     @classmethod
     def from_preset(cls: Type[_TGradient], preset: PresetGradientKind, **kwargs) -> _TGradient:

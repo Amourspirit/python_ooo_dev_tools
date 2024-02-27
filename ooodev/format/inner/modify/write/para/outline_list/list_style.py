@@ -4,13 +4,13 @@ from typing import Any, cast, Tuple, overload, Type, TypeVar
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.style_base import StyleBase
+from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.writer.style.lst import StyleListKind as StyleListKind
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ..para_style_base_multi import ParaStyleBaseMulti
 
 # endregion Import
 

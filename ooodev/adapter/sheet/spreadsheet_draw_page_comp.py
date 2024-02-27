@@ -39,6 +39,7 @@ class SpreadsheetDrawPageComp(ComponentBase, DrawPagePartial, ShapeGrouperPartia
     @property
     def component(self) -> SpreadsheetDrawPage:
         """SpreadsheetDrawPage Component"""
+        # pylint: disable=no-member
         return cast("SpreadsheetDrawPage", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

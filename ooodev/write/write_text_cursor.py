@@ -22,13 +22,13 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
-from .write_text import WriteText
+from ooodev.write.write_text import WriteText
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument
     from com.sun.star.text import XTextCursor
     from ooodev.proto.style_obj import StyleT
-    from .style.direct.character_styler import CharacterStyler
+    from ooodev.write.style.direct.character_styler import CharacterStyler
 
 T = TypeVar("T", bound="ComponentT")
 

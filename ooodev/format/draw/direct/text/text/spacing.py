@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from ooodev.format.inner.direct.draw.shape.text.text.spacing import Spacing as TextSpacing
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class Spacing(TextSpacing):

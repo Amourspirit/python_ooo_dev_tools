@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-from .generic_drawing_document_comp import GenericDrawingDocumentComp
+from ooodev.adapter.drawing.generic_drawing_document_comp import GenericDrawingDocumentComp
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import DrawingDocument  # service

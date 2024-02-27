@@ -10,14 +10,13 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
 
 if TYPE_CHECKING:
-    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options import (
-        PlacementKind,
-        SeparatorKind,
-        AttribOptions,
-    )
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options import PlacementKind
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options import SeparatorKind
+    from ooodev.format.inner.direct.chart2.series.data_labels.data_labels.attrib_options import AttribOptions
 else:
     PlacementKind = Any
     SeparatorKind = Any
+    AttribOptions = Any
 
 
 class Chart2DataLabelAttribOptPartial:

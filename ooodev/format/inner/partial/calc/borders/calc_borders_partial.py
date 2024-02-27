@@ -1,16 +1,17 @@
 from __future__ import annotations
 from typing import Any, cast, Dict, TYPE_CHECKING
 
+from ooodev.mock import mock_g
 from ooodev.format.inner.style_factory import calc_borders_factory
 from ooodev.loader import lo as mLo
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.color import Color
     from ooodev.events.args.cancel_event_args import CancelEventArgs
-    from ooodev.format.inner.direct.structs.side import Side as Side
+    from ooodev.format.inner.direct.structs.side import Side
     from ooodev.format.inner.direct.calc.border.padding import Padding
     from ooodev.format.inner.direct.calc.border.shadow import Shadow
     from ooodev.loader.inst.lo_inst import LoInst
@@ -178,7 +179,7 @@ class CalcBordersPartial:
             - ``LineSize`` can be imported from ``ooodev.format.calc.direct.cell.borders``
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.calc.direct.cell.borders import Side
+        from ooodev.format.inner.direct.structs.side import Side
         from ooodev.format.inner.direct.structs.side import BorderLineKind
         from ooodev.format.inner.direct.structs.side import LineSize
 
@@ -222,3 +223,9 @@ class CalcBordersPartial:
             BordersT | None: border style or ``None`` if cancelled.
         """
         return self.__styler.style_get(factory=calc_borders_factory)
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.format.inner.direct.structs.side import Side
+    from ooodev.format.inner.direct.structs.side import BorderLineKind
+    from ooodev.format.inner.direct.structs.side import LineSize

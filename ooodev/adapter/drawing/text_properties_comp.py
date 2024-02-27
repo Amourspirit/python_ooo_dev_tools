@@ -33,6 +33,7 @@ class TextPropertiesComp(ComponentBase):
     @property
     def component(self) -> TextProperties:
         """TextProperties Component"""
+        # pylint: disable=no-member
         return cast("TextProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

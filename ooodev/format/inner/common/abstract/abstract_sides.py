@@ -7,14 +7,14 @@ Module for managing character border side.
 # region imports
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
-
+import uno
+from ooo.dyn.table.border_line2 import BorderLine2
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.direct.structs.side import Side as Side
 from ooodev.format.inner.style_base import StyleMulti
-from ..props.border_props import BorderProps as BorderProps
+from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
 
-from ooo.dyn.table.border_line2 import BorderLine2
 
 # endregion imports
 

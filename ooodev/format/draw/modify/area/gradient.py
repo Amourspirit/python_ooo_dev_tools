@@ -1,23 +1,24 @@
 """Module for Draw Style Fill Coloring."""
+
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.modify.write.fill.fill_style_base_multi import FillStyleBaseMulti
+from ooo.dyn.awt.gradient_style import GradientStyle
+
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as InnerGradient
-from ooo.dyn.awt.gradient_style import GradientStyle
-
+from ooodev.format.inner.modify.write.fill.fill_style_base_multi import FillStyleBaseMulti
+from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
+from ooodev.utils.color import Color
 from ooodev.utils.data_type.color_range import ColorRange
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
-from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
-from ooodev.utils.color import Color
 
 if TYPE_CHECKING:
-    from ooodev.units import Angle as Angle
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.intensity import Intensity
 
 # endregion Import

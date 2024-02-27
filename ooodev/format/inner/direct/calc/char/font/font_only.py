@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import uno
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as CharFontOnly
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 
 if TYPE_CHECKING:
     from ooodev.format.proto.font.font_lang_t import FontLangT

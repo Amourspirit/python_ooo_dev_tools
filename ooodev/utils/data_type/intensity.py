@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 from dataclasses import dataclass
-from ..validation import check
-from ..decorator import enforce
-from .base_int_value import BaseIntValue
+from ooodev.utils.validation import check
+from ooodev.utils.decorator import enforce
+from ooodev.utils.data_type.base_int_value import BaseIntValue
 
 
 # Note that from __future__ import annotations converts annotations to string.

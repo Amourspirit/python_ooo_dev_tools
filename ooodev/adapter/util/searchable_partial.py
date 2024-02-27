@@ -5,7 +5,7 @@ from com.sun.star.util import XSearchable
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from .search_descriptor_comp import SearchDescriptorComp
+from ooodev.adapter.util.search_descriptor_comp import SearchDescriptorComp
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

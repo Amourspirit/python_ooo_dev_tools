@@ -2,17 +2,16 @@
 from __future__ import annotations
 from typing import Any, cast
 import uno
-from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum as FontStrikeoutEnum
-from ooo.dyn.awt.font_underline import FontUnderlineEnum as FontUnderlineEnum
-from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
-from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
+from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
+from ooo.dyn.style.case_map import CaseMapEnum
+from ooo.dyn.awt.font_relief import FontReliefEnum
 
-from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.direct.write.char.font.font_effects import FontLine as FontLine
 from ooodev.format.inner.direct.write.char.font.font_effects import FontEffects as InnerFontEffects
-from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.utils.color import Color
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.utils.data_type.intensity import Intensity
 
 # endregion Import
 

@@ -1,8 +1,11 @@
 from __future__ import annotations
-from .options import Options
+from ooodev.loader.inst.options import Options
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
-from ooodev.conn.connect import ConnectBase, LoPipeStart, LoSocketStart, LoDirectStart
+from ooodev.conn.connect import ConnectBase
+from ooodev.conn.connect import LoPipeStart
+from ooodev.conn.connect import LoSocketStart
+from ooodev.conn.connect import LoDirectStart
 from ooodev.exceptions import ex as mEx
 
 

@@ -8,10 +8,7 @@ if TYPE_CHECKING:
     from com.sun.star.view import XControlAccess
     from com.sun.star.view import XSelectionSupplier
 
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

@@ -3,18 +3,15 @@ from typing import Any, overload, TYPE_CHECKING
 import uno
 
 from ooodev.mock.mock_g import DOCS_BUILDING
-from ..style_t import StyleT
+from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from ooo.dyn.awt.gradient import Gradient
     from ooo.dyn.awt.gradient_style import GradientStyle
     from ooodev.format.inner.preset.preset_gradient import PresetGradientKind
     from ooodev.utils.color import Color
-    from ooodev.units import Angle
+    from ooodev.units.angle import Angle
     from ooodev.utils.data_type.intensity import Intensity
 else:
     Protocol = object

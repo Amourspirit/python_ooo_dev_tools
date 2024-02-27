@@ -30,7 +30,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.format.writer.style import FamilyNamesKind
+from ooodev.format.writer.style.family_names_kind import FamilyNamesKind
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
 from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
@@ -44,8 +44,8 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.data_type.size import Size
-from ooodev.loader.inst import DocType
-from ooodev.loader.inst import Service as LoService
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -57,25 +57,25 @@ from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.write_text_range import WriteTextRange
 
 # from . import write_draw_page as mWriteDrawPage
-from . import write_paragraph_cursor as mWriteParagraphCursorCursor
-from . import write_paragraphs as mWriteParagraphs
-from . import write_sentence_cursor as mWriteSentenceCursor
-from . import write_text as mWriteText
-from . import write_text_content as mWriteTextContent
-from . import write_text_cursor as mWriteTextCursor
-from . import write_text_range as mWriteTextRange
-from . import write_text_view_cursor as mWriteTextViewCursor
-from . import write_word_cursor as mWriteWordCursor
-from .style import write_cell_style as mWriteCellStyle
-from .style import write_character_style as mWriteCharacterStyle
-from .style import write_numbering_style as mWriteNumberingStyle
-from .style import write_page_style as mWritePageStyle
-from .style import write_paragraph_style as mWriteParagraphStyle
-from .style import write_style as mWriteStyle
-from .style import write_style_families as mWriteStyleFamilies
-from .write_draw_page import WriteDrawPage
-from .write_draw_pages import WriteDrawPages
-from .write_text_frames import WriteTextFrames
+from ooodev.write import write_paragraph_cursor as mWriteParagraphCursorCursor
+from ooodev.write import write_paragraphs as mWriteParagraphs
+from ooodev.write import write_sentence_cursor as mWriteSentenceCursor
+from ooodev.write import write_text as mWriteText
+from ooodev.write import write_text_content as mWriteTextContent
+from ooodev.write import write_text_cursor as mWriteTextCursor
+from ooodev.write import write_text_range as mWriteTextRange
+from ooodev.write import write_text_view_cursor as mWriteTextViewCursor
+from ooodev.write import write_word_cursor as mWriteWordCursor
+from ooodev.write.style import write_cell_style as mWriteCellStyle
+from ooodev.write.style import write_character_style as mWriteCharacterStyle
+from ooodev.write.style import write_numbering_style as mWriteNumberingStyle
+from ooodev.write.style import write_page_style as mWritePageStyle
+from ooodev.write.style import write_paragraph_style as mWriteParagraphStyle
+from ooodev.write.style import write_style as mWriteStyle
+from ooodev.write.style import write_style_families as mWriteStyleFamilies
+from ooodev.write.write_draw_page import WriteDrawPage
+from ooodev.write.write_draw_pages import WriteDrawPages
+from ooodev.write.write_text_frames import WriteTextFrames
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XController
@@ -86,8 +86,8 @@ if TYPE_CHECKING:
     from com.sun.star.util import XSearchable
     from ooo.dyn.view.paper_format import PaperFormat
     from ooodev.proto.style_obj import StyleT
-    from ooodev.loader.inst import LoInst
-    from .search.write_search_replace import WriteSearchReplace
+    from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.write.search.write_search_replace import WriteSearchReplace
     from ooodev.proto.component_proto import ComponentT
     from ooodev.write.write_text_ranges import WriteTextRanges
 

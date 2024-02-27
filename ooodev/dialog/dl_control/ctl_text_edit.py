@@ -15,7 +15,7 @@ from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.adapter.awt.uno_control_edit_model_partial import UnoControlEditModelPartial
 
-from .ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlEdit  # service

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind
 
     from ooodev.format.proto.calc.alignment.properties_t import PropertiesT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 else:
     TextAlignT = Any
     LoInst = Any

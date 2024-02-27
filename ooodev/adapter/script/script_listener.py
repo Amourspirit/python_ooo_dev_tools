@@ -4,10 +4,9 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.script import XScriptListener
 
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

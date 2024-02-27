@@ -10,20 +10,20 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
-from .kind.chart_title_kind import ChartTitleKind
-from .kind.chart_diagram_kind import ChartDiagramKind
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.chart2.kind.chart_title_kind import ChartTitleKind
+from ooodev.calc.chart2.kind.chart_diagram_kind import ChartDiagramKind
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
-    from .chart_doc import ChartDoc
-    from .coordinate.coordinate_general import CoordinateGeneral
-    from .chart_title import ChartTitle
-    from .chart_legend import ChartLegend
-    from .chart_wall import ChartWall
-    from .chart_floor import ChartFloor
+    from ooodev.calc.chart2.chart_doc import ChartDoc
+    from ooodev.calc.chart2.coordinate.coordinate_general import CoordinateGeneral
+    from ooodev.calc.chart2.chart_title import ChartTitle
+    from ooodev.calc.chart2.chart_legend import ChartLegend
+    from ooodev.calc.chart2.chart_wall import ChartWall
+    from ooodev.calc.chart2.chart_floor import ChartFloor
 
 
 class ChartDiagram(

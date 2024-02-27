@@ -25,6 +25,7 @@ class CellRangeListSourceComp(ComponentBase, ListEntryEvents, EventEvents):
             component (CellRangeListSource): UNO table CellRangeListSource Component.
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ListEntryEvents.__init__(self, trigger_args=generic_args, cb=self._on_list_entry_add_remove)
         EventEvents.__init__(self, trigger_args=generic_args, cb=self._on_event_add_remove)
@@ -52,6 +53,7 @@ class CellRangeListSourceComp(ComponentBase, ListEntryEvents, EventEvents):
     @property
     def component(self) -> CellRangeListSource:
         """CellRangeListSource Component"""
+        # pylint: disable=no-member
         return cast("CellRangeListSource", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

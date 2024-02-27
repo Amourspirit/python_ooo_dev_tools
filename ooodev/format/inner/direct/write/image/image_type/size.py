@@ -6,22 +6,23 @@ Module for Fill Transparency.
 
 from __future__ import annotations
 import dataclasses
-from typing import Any, Tuple, Type, TypeVar, overload
+from typing import Any, Tuple, Type, TypeVar, overload, TYPE_CHECKING
 from enum import Enum
 import math
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
-from ooodev.utils.validation import check
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.common.props.frame_type_size_props import FrameTypeSizeProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.loader import lo as mLo
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.utils import props as mProps
+from ooodev.utils.validation import check
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 _TSize = TypeVar(name="_TSize", bound="Size")
 

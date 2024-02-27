@@ -6,9 +6,9 @@ from com.sun.star.form.submission import XSubmissionVetoListener
 
 from ooo.dyn.util.veto_exception import VetoException
 
-from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 
 if TYPE_CHECKING:

@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from typing import cast, overload
 
 from ooodev.loader import lo as mLo
-from .. import table_helper as mTb
-from ...office import calc as mCalc
-from ..decorator import enforce
+from ooodev.utils import table_helper as mTb
+from ooodev.office import calc as mCalc
+from ooodev.utils.decorator import enforce
 
 import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
@@ -89,12 +89,10 @@ class RangeValues:
     # region Math
     # region add_rows()
     @overload
-    def add_rows(self, num: int) -> RangeValues:
-        ...
+    def add_rows(self, num: int) -> RangeValues: ...
 
     @overload
-    def add_rows(self, num: int, to_end: bool) -> RangeValues:
-        ...
+    def add_rows(self, num: int, to_end: bool) -> RangeValues: ...
 
     def add_rows(self, num: int, to_end: bool = True) -> RangeValues:
         """
@@ -139,12 +137,10 @@ class RangeValues:
 
     # region subtract_rows()
     @overload
-    def subtract_rows(self, num: int) -> RangeValues:
-        ...
+    def subtract_rows(self, num: int) -> RangeValues: ...
 
     @overload
-    def subtract_rows(self, num: int, from_end: bool) -> RangeValues:
-        ...
+    def subtract_rows(self, num: int, from_end: bool) -> RangeValues: ...
 
     def subtract_rows(self, num: int, from_end: bool = True) -> RangeValues:
         """
@@ -190,12 +186,10 @@ class RangeValues:
     # endregion subtract_rows()
     # region add_cols()
     @overload
-    def add_cols(self, num: int) -> RangeValues:
-        ...
+    def add_cols(self, num: int) -> RangeValues: ...
 
     @overload
-    def add_cols(self, num: int, to_end: bool) -> RangeValues:
-        ...
+    def add_cols(self, num: int, to_end: bool) -> RangeValues: ...
 
     def add_cols(self, num: int, to_end: bool = True) -> RangeValues:
         """
@@ -239,12 +233,10 @@ class RangeValues:
     # endregion add_cols()
     # region subtract_cols()
     @overload
-    def subtract_cols(self, num: int) -> RangeValues:
-        ...
+    def subtract_cols(self, num: int) -> RangeValues: ...
 
     @overload
-    def subtract_cols(self, num: int, from_end: bool) -> RangeValues:
-        ...
+    def subtract_cols(self, num: int, from_end: bool) -> RangeValues: ...
 
     def subtract_cols(self, num: int, from_end: bool = True) -> RangeValues:
         """
@@ -293,18 +285,15 @@ class RangeValues:
     # region from_range()
     @overload
     @staticmethod
-    def from_range(range_val: CellRangeAddress) -> RangeValues:
-        ...
+    def from_range(range_val: CellRangeAddress) -> RangeValues: ...
 
     @overload
     @staticmethod
-    def from_range(range_val: mRngObj.RangeObj) -> RangeValues:
-        ...
+    def from_range(range_val: mRngObj.RangeObj) -> RangeValues: ...
 
     @overload
     @staticmethod
-    def from_range(range_val: str) -> RangeValues:
-        ...
+    def from_range(range_val: str) -> RangeValues: ...
 
     @staticmethod
     def from_range(range_val: str | mRngObj.RangeObj | CellRangeAddress) -> RangeValues:
@@ -407,20 +396,16 @@ class RangeValues:
     # region contains()
 
     @overload
-    def contains(self, cell_obj: mCellObj.CellObj) -> bool:
-        ...
+    def contains(self, cell_obj: mCellObj.CellObj) -> bool: ...
 
     @overload
-    def contains(self, cell_addr: CellAddress) -> bool:
-        ...
+    def contains(self, cell_addr: CellAddress) -> bool: ...
 
     @overload
-    def contains(self, cell_vals: mCellVals.CellValues) -> bool:
-        ...
+    def contains(self, cell_vals: mCellVals.CellValues) -> bool: ...
 
     @overload
-    def contains(self, cell_name: str) -> bool:
-        ...
+    def contains(self, cell_name: str) -> bool: ...
 
     def contains(self, *args, **kwargs) -> bool:
         """
@@ -498,6 +483,6 @@ class RangeValues:
     # endregion contains()
 
 
-from . import cell_obj as mCellObj
-from . import cell_values as mCellVals
-from . import range_obj as mRngObj
+from ooodev.utils.data_type import cell_obj as mCellObj
+from ooodev.utils.data_type import cell_values as mCellVals
+from ooodev.utils.data_type import range_obj as mRngObj

@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from enum import IntEnum, IntFlag
 from typing import Any, cast, Type, TypeVar
-from ...utils import gen_util as mGenUtil
+from ooodev.utils import gen_util as mGenUtil
 
 T = TypeVar("T")
 

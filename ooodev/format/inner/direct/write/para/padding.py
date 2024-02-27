@@ -3,6 +3,7 @@ Module for managing paragraph padding.
 
 .. versionadded:: 0.9.0
 """
+
 # region Imports
 from __future__ import annotations
 from typing import Any, Tuple, Type, TypeVar, overload
@@ -46,13 +47,11 @@ class Padding(AbstractPadding):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: Any) -> _TPadding:
-        ...
+    def from_obj(cls: Type[_TPadding], obj: Any) -> _TPadding: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TPadding], obj: Any, **kwargs) -> _TPadding:
-        ...
+    def from_obj(cls: Type[_TPadding], obj: Any, **kwargs) -> _TPadding: ...
 
     @classmethod
     def from_obj(cls: Type[_TPadding], obj: Any, **kwargs) -> _TPadding:
@@ -68,6 +67,7 @@ class Padding(AbstractPadding):
         Returns:
             Padding: Padding that represents ``obj`` padding.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -76,7 +76,7 @@ class Padding(AbstractPadding):
         inst._set(inst._props.right, int(mProps.Props.get(obj, inst._props.right)))
         inst._set(inst._props.top, int(mProps.Props.get(obj, inst._props.top)))
         inst._set(inst._props.bottom, int(mProps.Props.get(obj, inst._props.bottom)))
-
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

@@ -9,8 +9,6 @@ from ooodev.loader import lo as mLo
 if TYPE_CHECKING:
     from com.sun.star.awt import XKeyHandler
     from com.sun.star.awt import XMouseClickHandler
-    from com.sun.star.awt import XKeyHandler
-    from com.sun.star.awt import XMouseClickHandler
     from ooodev.utils.type_var import UnoInterface
 
 

@@ -4,7 +4,7 @@ import uno
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
-from ...header.area.pattern import Pattern as HeaderPattern
+from ooodev.format.inner.direct.write.page.header.area.pattern import Pattern as HeaderPattern
 
 # endregion Import
 

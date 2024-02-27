@@ -25,6 +25,7 @@ class PropertyPoolComp(ComponentBase, PropertiesChangeImplement, PropertyChangeI
             component (PropertyPool): UNO Chart2 PropertyPool Component.
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -40,6 +41,7 @@ class PropertyPoolComp(ComponentBase, PropertiesChangeImplement, PropertyChangeI
     @property
     def component(self) -> PropertyPool:
         """PropertyPool Component"""
+        # pylint: disable=no-member
         return cast("PropertyPool", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

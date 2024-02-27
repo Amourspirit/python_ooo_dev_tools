@@ -2,10 +2,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from ...events.args.event_args import EventArgs as EventArgs
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
-
 from com.sun.star.awt import XWindowListener
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

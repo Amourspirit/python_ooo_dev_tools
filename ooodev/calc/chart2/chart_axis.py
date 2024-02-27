@@ -35,16 +35,16 @@ from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_positio
 )
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
 from ooodev.format.inner.partial.chart2.grid.chart2_grid_line_partial import Chart2GridLinePartial
-from .kind.chart_axis_kind import ChartAxisKind
-from .kind.chart_title_kind import ChartTitleKind
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.chart2.kind.chart_axis_kind import ChartAxisKind
+from ooodev.calc.chart2.kind.chart_title_kind import ChartTitleKind
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
-    from .chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_doc import ChartDoc
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.style_obj import StyleT
-    from .chart_title import ChartTitle
+    from ooodev.calc.chart2.chart_title import ChartTitle
 
 
 class ChartAxis(

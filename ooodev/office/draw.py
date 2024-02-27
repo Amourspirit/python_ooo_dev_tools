@@ -68,47 +68,49 @@ from ooo.dyn.container.no_such_element_exception import NoSuchElementException
 from ooo.dyn.lang.index_out_of_bounds_exception import IndexOutOfBoundsException
 
 
-from ..cfg.config import Config  # singleton class.
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.draw_named_event import DrawNamedEvent
-from ..events.event_singleton import _Events
-from ..exceptions import ex as mEx
-from ..units import Angle as Angle
-from ..units import UnitMM100, UnitPT, UnitMM
-from ..utils import color as mColor
-from ..utils import file_io as mFileIO
-from ..utils import gen_util as gUtil
-from ..utils import gui as mGui
-from ..utils import images_lo as mImgLo
-from ..utils import info as mInfo
+from ooodev.cfg.config import Config  # singleton class.
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.draw_named_event import DrawNamedEvent
+from ooodev.events.event_singleton import _Events
+from ooodev.exceptions import ex as mEx
+from ooodev.units.angle import Angle as Angle
+from ooodev.units.unit_mm100 import UnitMM100
+from ooodev.units.unit_pt import UnitPT
+from ooodev.units.unit_mm import UnitMM
+from ooodev.utils import color as mColor
+from ooodev.utils import file_io as mFileIO
+from ooodev.utils import gen_util as gUtil
+from ooodev.utils import gui as mGui
+from ooodev.utils import images_lo as mImgLo
+from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
-from ..utils import props as mProps
-from ..utils import table_helper as mTableHelper
-from ..utils.data_type.image_offset import ImageOffset as ImageOffset
-from ..utils.data_type.intensity import Intensity as Intensity
-from ..utils.data_type.poly_sides import PolySides as PolySides
-from ..utils.data_type.size import Size
-from ..utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
+from ooodev.utils import props as mProps
+from ooodev.utils import table_helper as mTableHelper
+from ooodev.utils.data_type.image_offset import ImageOffset as ImageOffset
+from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.utils.data_type.poly_sides import PolySides as PolySides
+from ooodev.utils.data_type.size import Size
+from ooodev.utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
 from ooodev.loader.inst import lo_inst as mLoInst
-from ..utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
-from ..utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
-from ..utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
-from ..utils.kind.drawing_layer_kind import DrawingLayerKind as DrawingLayerKind
-from ..utils.kind.drawing_name_space_kind import DrawingNameSpaceKind as DrawingNameSpaceKind
-from ..utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
-from ..utils.kind.drawing_slide_show_kind import DrawingSlideShowKind as DrawingSlideShowKind
-from ..utils.kind.form_control_kind import FormControlKind as FormControlKind
-from ..utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
-from ..utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
-from ..utils.kind.presentation_kind import PresentationKind as PresentationKind
-from ..utils.kind.presentation_layout_kind import PresentationLayoutKind as PresentationLayoutKind
-from ..utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
-from ..utils.type_var import PathOrStr
+from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
+from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
+from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
+from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind as DrawingLayerKind
+from ooodev.utils.kind.drawing_name_space_kind import DrawingNameSpaceKind as DrawingNameSpaceKind
+from ooodev.utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
+from ooodev.utils.kind.drawing_slide_show_kind import DrawingSlideShowKind as DrawingSlideShowKind
+from ooodev.utils.kind.form_control_kind import FormControlKind as FormControlKind
+from ooodev.utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
+from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
+from ooodev.utils.kind.presentation_kind import PresentationKind as PresentationKind
+from ooodev.utils.kind.presentation_layout_kind import PresentationLayoutKind as PresentationLayoutKind
+from ooodev.utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
+from ooodev.utils.type_var import PathOrStr
 
 if TYPE_CHECKING:
-    from ..proto.dispatch_shape import DispatchShape
-    from ..proto.size_obj import SizeObj
-    from ooodev.units import UnitT
+    from ooodev.proto.dispatch_shape import DispatchShape
+    from ooodev.proto.size_obj import SizeObj
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Imports
 

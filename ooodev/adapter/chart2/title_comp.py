@@ -7,8 +7,7 @@ from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
 from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 from ooodev.adapter.drawing.line_properties_partial import LinePropertiesPartial
-
-from .title_partial import TitlePartial
+from ooodev.adapter.chart2.title_partial import TitlePartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import Title  # service
@@ -42,6 +41,7 @@ class TitleComp(
         ParagraphPropertiesPartial.__init__(self, component=component)
         FillPropertiesPartial.__init__(self, component=component)
         LinePropertiesPartial.__init__(self, component=component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertiesChangeImplement.__init__(self, component=component, trigger_args=generic_args)
         PropertyChangeImplement.__init__(self, component=component, trigger_args=generic_args)
@@ -57,6 +57,7 @@ class TitleComp(
     @property
     def component(self) -> Title:
         """Title Component"""
+        # pylint: disable=no-member
         return cast("Title", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

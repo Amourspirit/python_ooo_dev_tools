@@ -3,6 +3,7 @@ Draw Style Indent.
 
 .. versionadded:: 0.17.12
 """
+
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
 import uno
@@ -13,7 +14,7 @@ from ooodev.format.inner.modify.draw.para_style_base_multi import ParaStyleBaseM
 from ooodev.format.inner.direct.write.para.indent_space.indent import Indent as InnerIndent
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class Indent(ParaStyleBaseMulti):

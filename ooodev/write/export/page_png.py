@@ -5,12 +5,12 @@ import uno
 from com.sun.star.frame import XStorable
 
 
-from ooodev.units import UnitInch
-from ooodev.write import WriteDoc
+from ooodev.units.unit_inch import UnitInch
+from ooodev.write.write_doc import WriteDoc
 from ooodev.utils.type_var import PathOrStr  # , EventCallback
 from ooodev.utils import file_io as mFile
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.write import WriteNamedEvent
+from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport

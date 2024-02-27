@@ -6,7 +6,7 @@ from ooodev.adapter.form.submission.submission_veto_events import SubmissionVeto
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import SubmitButton as ControlModel  # service

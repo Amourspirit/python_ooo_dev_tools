@@ -17,7 +17,7 @@ from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.table_helper import TableHelper
 from ooodev.utils.type_var import Table
 from ooodev.adapter.awt.grid.uno_control_grid_model_partial import UnoControlGridModelPartial
-from .ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:

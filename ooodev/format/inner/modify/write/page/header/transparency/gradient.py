@@ -2,17 +2,17 @@
 from __future__ import annotations
 from typing import Any, cast, Type, TypeVar
 import uno
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.common.props.transparent_gradient_props import TransparentGradientProps
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils.data_type.offset import Offset as Offset
-from ...page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.units.angle import Angle
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
 
 # endregion Import
 

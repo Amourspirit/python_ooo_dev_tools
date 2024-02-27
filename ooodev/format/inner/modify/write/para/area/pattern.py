@@ -4,15 +4,10 @@ from typing import Any, cast
 import uno
 from com.sun.star.awt import XBitmap
 
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.color_range import ColorRange as ColorRange
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
 from ooodev.format.inner.direct.write.para.area.pattern import Pattern as InnerPattern
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 # endregion Import
 

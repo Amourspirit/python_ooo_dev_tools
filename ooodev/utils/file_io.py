@@ -9,7 +9,7 @@ import tempfile
 import datetime
 import zipfile
 from pathlib import Path
-from typing import Generator, List, TYPE_CHECKING, overload
+from typing import Any, Generator, List, TYPE_CHECKING, overload
 
 import uno
 from com.sun.star.io import XActiveDataSink
@@ -20,14 +20,18 @@ from com.sun.star.uno import RuntimeException as UnoRuntimeException
 
 from ooo.dyn.util.the_macro_expander import theMacroExpander
 
+from ooodev.loader import lo as mLo
+from ooodev.exceptions import ex as mEx
+
+
 if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.io import XInputStream
-
-from ooodev.loader import lo as mLo
-from ..exceptions import ex as mEx
-
-from .type_var import PathOrStr, Table
+    from ooodev.utils.type_var import PathOrStr
+    from ooodev.utils.type_var import Table
+else:
+    PathOrStr = Any
+    Table = Any
 
 # if sys.version_info >= (3, 10):
 #     from typing import Union

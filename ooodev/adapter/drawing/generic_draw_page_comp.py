@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
-from .shapes_partial import ShapesPartial
-from .shape_grouper_partial import ShapeGrouperPartial
+from ooodev.adapter.drawing.shapes_partial import ShapesPartial
+from ooodev.adapter.drawing.shape_grouper_partial import ShapeGrouperPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import GenericDrawPage  # service
@@ -39,6 +39,7 @@ class GenericDrawPageComp(ComponentBase, ShapesPartial, ShapeGrouperPartial):
     @property
     def component(self) -> GenericDrawPage:
         """GenericDrawPage Component"""
+        # pylint: disable=no-member
         return cast("GenericDrawPage", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

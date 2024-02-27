@@ -6,7 +6,7 @@ from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
-from ...header.area.hatch import Hatch as HeaderHatch
+from ooodev.format.inner.direct.write.page.header.area.hatch import Hatch as HeaderHatch
 
 # endregion Import
 

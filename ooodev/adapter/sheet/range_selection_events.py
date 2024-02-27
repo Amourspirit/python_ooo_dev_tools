@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from .range_selection_listener import RangeSelectionListener
+from ooodev.adapter.sheet.range_selection_listener import RangeSelectionListener
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XRangeSelection

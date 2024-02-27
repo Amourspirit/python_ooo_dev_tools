@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Tuple, overload, Any, TYPE_CHECKING, TypeVar, Type
+from typing import Tuple, overload, Any, TypeVar, Type
 import uno
 
 from ooo.dyn.drawing.line_joint import LineJoint
@@ -10,8 +10,6 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.utils import props as mProps
 
-if TYPE_CHECKING:
-    from ooodev.units import UnitT
 
 _TCornerCaps = TypeVar(name="_TCornerCaps", bound="CornerCaps")
 
@@ -49,13 +47,11 @@ class CornerCaps(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCornerCaps], obj: object) -> _TCornerCaps:
-        ...
+    def from_obj(cls: Type[_TCornerCaps], obj: object) -> _TCornerCaps: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCornerCaps], obj: object, **kwargs) -> _TCornerCaps:
-        ...
+    def from_obj(cls: Type[_TCornerCaps], obj: object, **kwargs) -> _TCornerCaps: ...
 
     @classmethod
     def from_obj(cls: Type[_TCornerCaps], obj: Any, **kwargs) -> _TCornerCaps:

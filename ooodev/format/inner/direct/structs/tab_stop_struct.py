@@ -1,25 +1,27 @@
 # region Import
 from __future__ import annotations
-from typing import Any, Dict, Iterable, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Dict, Iterable, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 from enum import Enum
 
 import uno
 from com.sun.star.beans import XPropertySet
 
-from ooo.dyn.style.tab_align import TabAlign as TabAlign
+from ooo.dyn.style.tab_align import TabAlign
 from ooo.dyn.style.tab_stop import TabStop
 
-from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.events.format_named_event import FormatNamedEvent
-from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from .struct_base import StructBase
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.format_named_event import FormatNamedEvent
+from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.loader import lo as mLo
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.utils import props as mProps
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 
@@ -233,6 +235,9 @@ class TabStopStruct(StructBase):
         """
         # sourcery skip: raise-from-previous-error
         # this nu is only used to get Property Name
+        # pylint: disable=protected-access
+        # pylint: disable=raise-missing-from
+        # pylint: disable=unsubscriptable-object
         nu = cls(**kwargs)
         prop_name = nu._get_property_name()
         try:
@@ -266,6 +271,7 @@ class TabStopStruct(StructBase):
         Returns:
             Tab: Tab set with Tab Stop properties
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         inst._set("FillChar", ts.FillChar)
         inst._set("Alignment", ts.Alignment)

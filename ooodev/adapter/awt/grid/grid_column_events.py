@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from .grid_column_listener import GridColumnListener
+from ooodev.adapter.awt.grid.grid_column_listener import GridColumnListener
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT

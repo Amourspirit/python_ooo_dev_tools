@@ -11,22 +11,23 @@ from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum, IntEnum
 
 import uno
-from ooo.dyn.table.border_line import BorderLine as BorderLine
+from ooo.dyn.table.border_line import BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyle
-from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
+from ooo.dyn.table.border_line2 import BorderLine2
 
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.format.inner.common import border_width_impl as mBwi
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.meta.deleted_enum_meta import DeletedUnoConstEnumMeta
+from ooodev.mock import mock_g
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitLength
+from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_pt import UnitPT
 from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.color import StandardColor
-from ooodev.units import UnitT
-from ooodev.units import UnitPT
-from ooodev.units import UnitConvert, UnitLength
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.mock import mock_g
-from ...common import border_width_impl as mBwi
-from .struct_base import StructBase
 
 # endregion Import
 
@@ -427,12 +428,10 @@ class Side(StructBase):
 
     # region copy()
     @overload
-    def copy(self: _TSide) -> _TSide:
-        ...
+    def copy(self: _TSide) -> _TSide: ...
 
     @overload
-    def copy(self: _TSide, **kwargs) -> _TSide:
-        ...
+    def copy(self: _TSide, **kwargs) -> _TSide: ...
 
     def copy(self: _TSide, **kwargs) -> _TSide:
         """Gets a copy of instance as a new instance"""
@@ -481,13 +480,11 @@ class Side(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSide], obj: Any) -> _TSide:
-        ...
+    def from_obj(cls: Type[_TSide], obj: Any) -> _TSide: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSide], obj: Any, **kwargs) -> _TSide:
-        ...
+    def from_obj(cls: Type[_TSide], obj: Any, **kwargs) -> _TSide: ...
 
     @classmethod
     def from_obj(cls: Type[_TSide], obj: Any, **kwargs) -> _TSide:
@@ -511,13 +508,11 @@ class Side(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TSide], border: BorderLine2) -> _TSide:
-        ...
+    def from_uno_struct(cls: Type[_TSide], border: BorderLine2) -> _TSide: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:
-        ...
+    def from_uno_struct(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TSide], border: BorderLine2, **kwargs) -> _TSide:

@@ -1,3 +1,4 @@
+import ooodev.draw.shapes.shape_base
 from .closed_bezier_shape import ClosedBezierShape as ClosedBezierShape
 from .connector_shape import ConnectorShape as ConnectorShape
 from .draw_shape import DrawShape as DrawShape

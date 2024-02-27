@@ -4,7 +4,7 @@ import uno
 
 from com.sun.star.container import XIndexAccess
 
-from .element_access_partial import ElementAccessPartial
+from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

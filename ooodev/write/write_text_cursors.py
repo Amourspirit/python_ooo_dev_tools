@@ -7,7 +7,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
-from .write_text_cursor import WriteTextCursor
+from ooodev.write.write_text_cursor import WriteTextCursor
 
 if TYPE_CHECKING:
     from com.sun.star.container import XIndexAccess

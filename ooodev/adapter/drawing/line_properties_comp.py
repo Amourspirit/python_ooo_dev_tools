@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 
-from .line_properties_partial import LinePropertiesPartial
+from ooodev.adapter.drawing.line_properties_partial import LinePropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import LineProperties  # service
@@ -36,6 +36,7 @@ class LinePropertiesComp(ComponentBase, LinePropertiesPartial):
     @property
     def component(self) -> LineProperties:
         """LineProperties Component"""
+        # pylint: disable=no-member
         return cast("LineProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

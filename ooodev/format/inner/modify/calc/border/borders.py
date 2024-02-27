@@ -4,20 +4,16 @@ from typing import Any, Tuple, cast, TypeVar, Type, overload
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
-from ooodev.format.calc.style.cell.kind.style_cell_kind import (
-    StyleCellKind as StyleCellKind,
-)
+from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind
 
-from ooodev.format.inner.direct.calc.border.padding import Padding as Padding
-from ooodev.format.inner.direct.calc.border.shadow import Shadow as Shadow
-from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
-from ooodev.format.inner.common.props.cell_style_borders_props import (
-    CellStyleBordersProps,
-)
-from ....direct.structs.side import Side as Side
+from ooodev.format.inner.direct.calc.border.padding import Padding
+from ooodev.format.inner.direct.calc.border.shadow import Shadow
+from ooodev.format.inner.common.props.border_props import BorderProps
+from ooodev.format.inner.common.props.cell_style_borders_props import CellStyleBordersProps
+from ooodev.format.inner.direct.structs.side import Side
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ..cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Imports
 

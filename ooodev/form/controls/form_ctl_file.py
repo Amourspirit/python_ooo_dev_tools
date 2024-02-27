@@ -6,7 +6,7 @@ from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.adapter.form.reset_events import ResetEvents
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import FileControl as ControlModel  # service

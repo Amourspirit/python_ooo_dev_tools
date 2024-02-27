@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Tuple
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.chart import X3DDefaultSetter
@@ -8,8 +8,6 @@ from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import XPropertySet
-    from com.sun.star.chart2 import ScaleData  # Struct
     from ooodev.utils.type_var import UnoInterface
 
 

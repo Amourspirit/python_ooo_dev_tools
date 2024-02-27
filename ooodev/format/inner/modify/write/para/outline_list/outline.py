@@ -3,11 +3,10 @@ from __future__ import annotations
 from typing import Any, cast
 import uno
 
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.writer.style.char.kind import StyleCharKind as StyleCharKind
+from ooodev.format.inner.direct.write.para.outline_list.outline import LevelKind
 from ooodev.format.inner.direct.write.para.outline_list.outline import Outline as InnerOutline
-from ooodev.format.inner.direct.write.para.outline_list.outline import LevelKind as LevelKind
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 # endregion Import
 

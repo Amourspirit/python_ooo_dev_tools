@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from ..component_base import ComponentBase
-from .draw_pages_partial import DrawPagesPartial
+from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.drawing.draw_pages_partial import DrawPagesPartial
 
 
 if TYPE_CHECKING:
@@ -38,6 +38,7 @@ class DrawPagesComp(ComponentBase, DrawPagesPartial):
     @property
     def component(self) -> DrawPages:
         """DrawPages Component"""
+        # pylint: disable=no-member
         return cast("DrawPages", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

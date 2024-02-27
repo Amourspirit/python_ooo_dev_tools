@@ -18,13 +18,14 @@ Usage Example.
             def _get_deleted_attribs() -> Tuple[str]:
                 return ("AT_FRAME",)
 """
+
 from __future__ import annotations
 from typing import Any
 import uno
 from ooo.helper.enum_helper import UnoEnumMeta
 from ooo.helper.enum_helper import ConstEnumMeta
 
-from ..exceptions import ex as mEx
+from ooodev.exceptions import ex as mEx
 
 
 class DeletedUnoEnumMeta(UnoEnumMeta):

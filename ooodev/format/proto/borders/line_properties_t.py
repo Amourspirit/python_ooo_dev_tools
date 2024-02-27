@@ -2,15 +2,13 @@ from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
 
 from ooodev.mock.mock_g import DOCS_BUILDING
-from ..style_t import StyleT
+from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from ooodev.format.inner.preset.preset_border_line import BorderLineKind
-    from ooodev.units import UnitT, UnitMM
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.units.unit_mm import UnitMM
     from ooodev.utils.color import Color
     from ooodev.utils.data_type.intensity import Intensity
 else:

@@ -1,12 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict, TypedDict
+from typing import Dict, TypedDict
 import uno
 from com.sun.star.beans import XPropertySet
 
-from ooodev.adapter.adapter_base import GenericArgs
-
-# from .property_change_listener import PropertyChangeListener
-from .vetoable_change_events import VetoableChangeEvents
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.beans.vetoable_change_events import VetoableChangeEvents
 
 
 class _PropertyDict(TypedDict):

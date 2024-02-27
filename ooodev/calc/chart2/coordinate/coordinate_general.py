@@ -12,9 +12,9 @@ from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartia
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XCoordinateSystem
     from ooodev.loader.inst.lo_inst import LoInst
-    from ..chart_diagram import ChartDiagram
-    from ..chart_type import ChartType
-    from ..chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_diagram import ChartDiagram
+    from ooodev.calc.chart2.chart_type import ChartType
+    from ooodev.calc.chart2.chart_doc import ChartDoc
 
 
 class CoordinateGeneral(
@@ -67,7 +67,7 @@ class CoordinateGeneral(
             Tuple[ChartType, ...]: A tuple of chart types.
         """
         try:
-            from ..chart_type import ChartType
+            from ooodev.calc.chart2.chart_type import ChartType
 
             c_types = super().get_chart_types()
             if not c_types:
@@ -109,4 +109,4 @@ class CoordinateGeneral(
 
 
 if mock_g.FULL_IMPORT:
-    from ..chart_type import ChartType
+    from ooodev.calc.chart2.chart_type import ChartType

@@ -6,11 +6,11 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.common.props.page_margin_props import PageMarginProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitT
+from ooodev.units.unit_obj import UnitT
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_convert import UnitConvert
 
 _TMargins = TypeVar(name="_TMargins", bound="Margins")
 

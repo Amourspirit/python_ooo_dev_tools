@@ -5,7 +5,7 @@ from com.sun.star.awt.tree import XTreeDataModel
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
-from .tree_data_model_events import TreeDataModelEvents
+from ooodev.adapter.tree.tree_data_model_events import TreeDataModelEvents
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -26,6 +26,7 @@ class TreeDataModelComp(ComponentBase, TreeDataModelEvents):
             component (XTreeDataModel): Tree Data Model Component
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         TreeDataModelEvents.__init__(self, trigger_args=generic_args, cb=self._on_tree_model_listener_add_remove)
 
@@ -49,6 +50,7 @@ class TreeDataModelComp(ComponentBase, TreeDataModelEvents):
     @property
     def component(self) -> XTreeDataModel:
         """Tree Data Model Component"""
+        # pylint: disable=no-member
         return cast("XTreeDataModel", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

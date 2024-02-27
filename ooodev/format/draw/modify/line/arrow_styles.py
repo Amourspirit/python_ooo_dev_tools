@@ -3,6 +3,7 @@ Modify Draw Style Arrows.
 
 .. versionadded:: 0.17.13
 """
+
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
 import uno
@@ -13,7 +14,7 @@ from ooodev.format.inner.modify.draw.line_properties_style_base_multi import Lin
 from ooodev.format.inner.direct.draw.shape.line.arrow_styles import ArrowStyles as InnerLineArrowStyles
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.kind.graphic_arrow_style_kind import GraphicArrowStyleKind
 
 

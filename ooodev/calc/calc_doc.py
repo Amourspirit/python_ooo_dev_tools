@@ -1,6 +1,7 @@
-# pylint: wrong-import-position
 from __future__ import annotations
 from typing import Any, cast, List, Tuple, overload, Sequence, TYPE_CHECKING
+
+# pylint: wrong-import-position
 import uno
 
 from com.sun.star.drawing import XDrawPagesSupplier
@@ -29,8 +30,8 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.loader.inst import DocType
-from ooodev.loader.inst import Service as LoService
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
@@ -39,11 +40,11 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from . import calc_sheet as mCalcSheet
-from . import calc_sheets as mCalcSheets
-from . import calc_sheet_view as mCalcSheetView
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .spreadsheet_draw_pages import SpreadsheetDrawPages
+from ooodev.calc import calc_sheet as mCalcSheet
+from ooodev.calc import calc_sheets as mCalcSheets
+from ooodev.calc import calc_sheet_view as mCalcSheetView
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -54,7 +55,7 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCellRange
     from ooo.dyn.sheet.general_function import GeneralFunction
     from ooo.dyn.table.cell_range_address import CellRangeAddress
-    from ooodev.loader.inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 else:
     CellRangeAddress = Any
     SpreadsheetDocument = Any

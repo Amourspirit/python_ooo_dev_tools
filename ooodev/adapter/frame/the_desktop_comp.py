@@ -3,9 +3,9 @@ from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
-from .desktop2_partial import Desktop2Partial
-from .terminate_events import TerminateEvents
-from .frame_action_events import FrameActionEvents
+from ooodev.adapter.frame.desktop2_partial import Desktop2Partial
+from ooodev.adapter.frame.terminate_events import TerminateEvents
+from ooodev.adapter.frame.frame_action_events import FrameActionEvents
 
 if TYPE_CHECKING:
     from com.sun.star.frame import theDesktop  # singleton
@@ -27,6 +27,7 @@ class TheDesktopComp(ComponentBase, Desktop2Partial, TerminateEvents, FrameActio
         """
         ComponentBase.__init__(self, component)
         Desktop2Partial.__init__(self, component=component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         TerminateEvents.__init__(self, trigger_args=generic_args, cb=self._on_key_terminate_events_add_remove)
         FrameActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_frame_action_events_add_remove)
@@ -54,6 +55,7 @@ class TheDesktopComp(ComponentBase, Desktop2Partial, TerminateEvents, FrameActio
     @property
     def component(self) -> theDesktop:
         """theDesktop Component"""
+        # pylint: disable=no-member
         return cast("theDesktop", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

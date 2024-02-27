@@ -19,8 +19,8 @@ if TYPE_CHECKING:
 
     from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
     from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
-    from ooodev.units import Angle
-    from ooodev.units import UnitT
+    from ooodev.units.angle import Angle
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.color import Color
 else:
     FontT = Any

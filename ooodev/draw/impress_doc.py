@@ -14,8 +14,8 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
-from ooodev.loader.inst import DocType
-from ooodev.loader.inst import Service as LoService
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.office import draw as mDraw
 from ooodev.utils import info as mInfo
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
@@ -25,10 +25,10 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.draw_doc_partial import DrawDocPartial
-from . import impress_page as mImpressPage
-from . import master_draw_page as mMasterDrawPage
-from .impress_pages import ImpressPages
+from ooodev.draw.partial.draw_doc_partial import DrawDocPartial
+from ooodev.draw import impress_page as mImpressPage
+from ooodev.draw import master_draw_page as mMasterDrawPage
+from ooodev.draw.impress_pages import ImpressPages
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
     from com.sun.star.presentation import XPresentation2
     from com.sun.star.presentation import XSlideShowController
-    from ooodev.loader.inst import LoInst
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class ImpressDoc(

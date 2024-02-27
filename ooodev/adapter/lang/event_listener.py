@@ -7,8 +7,8 @@ from com.sun.star.lang import XEventListener
 
 # pylint: disable=useless-import-alias
 # pylint: disable=unused-import
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 
 if TYPE_CHECKING:

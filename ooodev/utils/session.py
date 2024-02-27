@@ -11,12 +11,12 @@ import uno
 from com.sun.star.util import XStringSubstitution
 from ooo.dyn.uno.deployment_exception import DeploymentException
 
-from ..meta.static_meta import StaticProperty, classproperty
-from ..events.args.event_args import EventArgs
-from ..events.lo_named_event import LoNamedEvent
-from ..events.event_singleton import _Events
+from ooodev.meta.static_meta import StaticProperty, classproperty
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.lo_named_event import LoNamedEvent
+from ooodev.events.event_singleton import _Events
 from ooodev.loader import lo as mLo
-from ..exceptions import ex as mEx
+from ooodev.exceptions import ex as mEx
 
 
 # com.sun.star.uno.DeploymentException

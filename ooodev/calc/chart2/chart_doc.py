@@ -27,11 +27,11 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .kind.chart_axis_kind import ChartAxisKind
-from .kind.chart_title_kind import ChartTitleKind
-from .kind.chart_diagram_kind import ChartDiagramKind
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.chart2.kind.chart_axis_kind import ChartAxisKind
+from ooodev.calc.chart2.kind.chart_title_kind import ChartTitleKind
+from ooodev.calc.chart2.kind.chart_diagram_kind import ChartDiagramKind
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -44,16 +44,16 @@ if TYPE_CHECKING:
     from ooodev.utils.kind.chart2_types import ChartTypeNameBase
     from ooodev.utils.kind.curve_kind import CurveKind
     from ooodev.utils.kind.data_point_label_type_kind import DataPointLabelTypeKind
-    from .chart_axis import ChartAxis
-    from .chart_data_series import ChartDataSeries
-    from .chart_diagram import ChartDiagram
-    from .chart_error_bar import ChartErrorBar
-    from .chart_title import ChartTitle
-    from .chart_type import ChartType
-    from .table_chart import TableChart
-    from .coordinate.coordinate_general import CoordinateGeneral
-    from .regression_curve.regression_curve import RegressionCurve
-    from .data.data_provider import DataProvider
+    from ooodev.calc.chart2.chart_axis import ChartAxis
+    from ooodev.calc.chart2.chart_data_series import ChartDataSeries
+    from ooodev.calc.chart2.chart_diagram import ChartDiagram
+    from ooodev.calc.chart2.chart_error_bar import ChartErrorBar
+    from ooodev.calc.chart2.chart_title import ChartTitle
+    from ooodev.calc.chart2.chart_type import ChartType
+    from ooodev.calc.chart2.table_chart import TableChart
+    from ooodev.calc.chart2.coordinate.coordinate_general import CoordinateGeneral
+    from ooodev.calc.chart2.regression_curve.regression_curve import RegressionCurve
+    from ooodev.calc.chart2.data.data_provider import DataProvider
 else:
     CoordinateGeneral = Any
     StyleT = Any

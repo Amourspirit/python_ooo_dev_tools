@@ -10,7 +10,6 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import draw_page as mDrawPage
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
@@ -18,6 +17,7 @@ from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages

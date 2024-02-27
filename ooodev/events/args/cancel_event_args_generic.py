@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Generic, TypeVar
-from .event_args_generic import EventArgsGeneric
+from ooodev.events.args.event_args_generic import EventArgsGeneric
 
 _T = TypeVar("_T")
 

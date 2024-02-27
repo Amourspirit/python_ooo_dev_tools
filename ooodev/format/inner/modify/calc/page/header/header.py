@@ -2,13 +2,14 @@
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
 import uno
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
 from ooodev.format.inner.common.props.hf_props import HfProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 from ooodev.meta.deleted_attrib import DeletedAttrib
 from ooodev.meta.disabled_method import DisabledMethod
-from ...cell_style_base_multi import CellStyleBaseMulti
 
 # endregion Import
 

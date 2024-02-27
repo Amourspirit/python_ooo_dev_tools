@@ -1,12 +1,10 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import uno
 
 from com.sun.star.text import XTextViewCursor
 
-from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from . import text_cursor_partial as mTextCursorPartial
+from ooodev.adapter.text import text_cursor_partial as mTextCursorPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import Point

@@ -3,20 +3,24 @@ Module for ``DropCapFormat`` struct.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
-from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
 from ooo.dyn.style.drop_cap_format import DropCapFormat
 
-from .struct_base import StructBase
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.byte import Byte
-from ooodev.units import UnitT
-from ooodev.units.unit_mm100 import UnitMM100
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.style_base import EventArgs, CancelEventArgs, FormatNamedEvent
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 _TDropCapStruct = TypeVar(name="_TDropCapStruct", bound="DropCapStruct")
 
@@ -89,12 +93,10 @@ class DropCapStruct(StructBase):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, keys: Dict[str, str]) -> None:
-        ...
+    def apply(self, obj: Any, keys: Dict[str, str]) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:  # type: ignore
         """
@@ -155,13 +157,11 @@ class DropCapStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCapStruct], obj: Any) -> _TDropCapStruct:
-        ...
+    def from_obj(cls: Type[_TDropCapStruct], obj: Any) -> _TDropCapStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TDropCapStruct], obj: Any, **kwargs) -> _TDropCapStruct:
-        ...
+    def from_obj(cls: Type[_TDropCapStruct], obj: Any, **kwargs) -> _TDropCapStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TDropCapStruct], obj: Any, **kwargs) -> _TDropCapStruct:
@@ -193,13 +193,11 @@ class DropCapStruct(StructBase):
     # region from_drop_cap_format()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct:
-        ...
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat) -> _TDropCapStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:
-        ...
+    def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TDropCapStruct], dcf: DropCapFormat, **kwargs) -> _TDropCapStruct:

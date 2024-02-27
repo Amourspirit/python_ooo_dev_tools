@@ -3,14 +3,17 @@ Module for managing character padding.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
-from typing import Tuple, TypeVar
+from typing import Tuple, TypeVar, TYPE_CHECKING
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_padding import AbstractPadding
 from ooodev.format.inner.common.props.border_props import BorderProps
-from ooodev.units.unit_obj import UnitT
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 
@@ -103,6 +106,8 @@ class Padding(AbstractPadding):
     @property
     def default(self: _TPadding) -> _TPadding:  # type: ignore[misc]
         """Gets BorderPadding default."""
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         try:
             return self._default_inst
         except AttributeError:

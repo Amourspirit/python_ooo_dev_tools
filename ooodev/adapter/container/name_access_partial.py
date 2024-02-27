@@ -5,7 +5,7 @@ import uno
 from com.sun.star.container import XNameAccess
 
 from ooodev.utils.type_var import UnoInterface
-from .element_access_partial import ElementAccessPartial
+from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 
 
 class NameAccessPartial(ElementAccessPartial):

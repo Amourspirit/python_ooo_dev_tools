@@ -7,10 +7,12 @@ Module for managing paragraph line numbers.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.common.abstract.abstract_line_number import AbstractLineNumber, LineNumberProps
+from ooodev.format.inner.common.abstract.abstract_line_number import AbstractLineNumber
+from ooodev.format.inner.common.abstract.abstract_line_number import LineNumberProps
 
 
 class LineNum(AbstractLineNumber):

@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
-from typing import Union, cast, overload
-from typing import Any, Tuple, Type, TypeVar, NamedTuple, Union
+from typing import Any, Tuple, Type, TypeVar, NamedTuple, Union, cast, overload
 from enum import Enum
 import math
 from ooo.dyn.text.hori_orientation import HoriOrientation
@@ -12,8 +11,8 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.data_type.size import Size
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
+from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_mm import UnitMM
 from ooodev.format.inner.common.abstract.abstract_document import AbstractDocument
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
@@ -323,10 +322,12 @@ class _SharedAuto(AbstractDocument):
         Returns:
             Options: Instance that represents Frame Wrap Settings.
         """
+        # pylint: disable=protected-access
         inst = clazz(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{clazz.__name__}"')
         inst._set_props_from_obj(obj)
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

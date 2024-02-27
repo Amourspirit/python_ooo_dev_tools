@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno
-from ooodev.adapter.component_base import ComponentBase
 
-from .paragraph_properties_partial import ParagraphPropertiesPartial
+from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.style import ParagraphProperties  # service
@@ -36,6 +36,7 @@ class ParagraphPropertiesComp(ComponentBase, ParagraphPropertiesPartial):
     @property
     def component(self) -> ParagraphProperties:
         """ParagraphProperties Component"""
+        # pylint: disable=no-member
         return cast("ParagraphProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -7,14 +7,10 @@ from ooodev.format.proto.style_multi_t import StyleMultiT
 
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self
-
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from ooodev.format.proto.font.font_lang_t import FontLangT
-    from ooodev.units import UnitT
-    from ooodev.units import UnitPT
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.units.unit_pt import UnitPT
 else:
     Protocol = object
     Self = Any

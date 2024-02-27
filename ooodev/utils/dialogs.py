@@ -3,10 +3,11 @@ This module is DEPRECATED since version 0.13 It is no longer recommended for use
 
 Use :ref:`ooodev.dialog.Dialogs` instead.
 """
+
 # Use the following instead:
 # from ooodev.dialog import Dialogs
 
-from ooodev.dialog import Dialogs as Dialogs
+from ooodev.dialog.dialogs import Dialogs as Dialogs
 import warnings
 
 warnings.warn(

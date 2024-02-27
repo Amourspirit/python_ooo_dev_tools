@@ -9,8 +9,8 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
-from .uno_control_model_partial import UnoControlModelPartial
-from .font_descriptor_comp import FontDescriptorComp
+from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
+from ooodev.adapter.awt.font_descriptor_comp import FontDescriptorComp
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFileControlModel  # Service

@@ -2,18 +2,18 @@
 from __future__ import annotations
 from typing import cast
 from com.sun.star.awt import XBitmap
-from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
+from ooo.dyn.drawing.rectangle_point import RectanglePoint
 
-from ooodev.format.inner.preset.preset_image import PresetImageKind as PresetImageKind
-from ooodev.utils.data_type.offset import Offset as Offset
-from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ooodev.format.inner.common.format_types.size_percent import SizePercent as SizePercent
-from ooodev.format.inner.common.format_types.offset_row import OffsetRow as OffsetRow
-from ooodev.format.inner.common.format_types.offset_column import OffsetColumn as OffsetColumn
-from ..frame_style_base_multi import FrameStyleBaseMulti
-from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
-from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind as ImgStyleKind
+from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
+from ooodev.format.inner.common.format_types.offset_row import OffsetRow
+from ooodev.format.inner.common.format_types.size_percent import SizePercent
 from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
+from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
+from ooodev.format.inner.preset.preset_image import PresetImageKind
+from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind
+from ooodev.utils.data_type.offset import Offset
+from ooodev.utils.data_type.size_mm import SizeMM
 
 # endregion Imports
 
@@ -58,7 +58,8 @@ class Img(FrameStyleBaseMulti):
         Returns:
             None:
         """
-
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         direct = InnerImg(
             bitmap=bitmap,
             name=name,
@@ -103,6 +104,7 @@ class Img(FrameStyleBaseMulti):
         Returns:
             Img: ``Img`` instance from style properties.
         """
+        # pylint: disable=protected-access
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerImg.from_obj(obj=inst.get_style_props(doc), _cattribs=inst._get_inner_cattribs())
         direct._prop_parent = inst
@@ -127,6 +129,7 @@ class Img(FrameStyleBaseMulti):
         Returns:
             Img: ``Img`` instance from preset.
         """
+        # pylint: disable=protected-access
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerImg.from_preset(preset=preset, _cattribs=inst._get_inner_cattribs())
         direct._prop_parent = inst

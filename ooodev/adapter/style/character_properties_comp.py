@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
-from .character_properties_partial import CharacterPropertiesPartial
+from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
 
 
 if TYPE_CHECKING:
@@ -35,6 +35,7 @@ class CharacterPropertiesComp(ComponentBase, CharacterPropertiesPartial):
     @property
     def component(self) -> CharacterProperties:
         """CharacterProperties Component"""
+        # pylint: disable=no-member
         return cast("CharacterProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

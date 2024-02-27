@@ -8,7 +8,7 @@ from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
 
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl

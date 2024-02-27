@@ -24,6 +24,7 @@ class CandleStickChartTypeComp(ComponentBase, PropertyChangeImplement, VetoableC
             component (CandleStickChartType): UNO Chart2 CandleStickChartType Component.
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -38,6 +39,7 @@ class CandleStickChartTypeComp(ComponentBase, PropertyChangeImplement, VetoableC
     @property
     def component(self) -> CandleStickChartType:
         """CandleStickChartType Component"""
+        # pylint: disable=no-member
         return cast("CandleStickChartType", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.util import XRefreshListener
 
-from ..adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
+from ooodev.events.args.generic_args import GenericArgs
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

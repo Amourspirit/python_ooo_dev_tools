@@ -9,7 +9,7 @@ from com.sun.star.beans import XPropertySet
 # from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.dialog.partial.dialog_controls_partial import DialogControlsPartial
 from ooodev.dialog.partial.dialogs_partial import DialogsPartial
-from ooodev.dialog.dl_control import CtlDialog
+from ooodev.dialog.dl_control.ctl_dialog import CtlDialog
 from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.utils.context.lo_context import LoContext
@@ -17,7 +17,7 @@ from ooodev.utils.context.lo_context import LoContext
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog  # service
     from ooodev.loader.inst.lo_inst import LoInst
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):

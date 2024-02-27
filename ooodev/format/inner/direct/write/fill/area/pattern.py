@@ -9,17 +9,17 @@ import contextlib
 from typing import Any, Tuple, overload, Type, TypeVar, TYPE_CHECKING
 import uno
 
-from ooo.dyn.drawing.fill_style import FillStyle as FillStyle
+from ooo.dyn.drawing.fill_style import FillStyle
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
+from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_pattern as mPattern
-from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
+from ooodev.format.inner.preset.preset_pattern import PresetPatternKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
+from ooodev.loader import lo as mLo
+from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XBitmap

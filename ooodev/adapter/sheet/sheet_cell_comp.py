@@ -28,6 +28,7 @@ class SheetCellComp(ComponentBase, TextPartial, ModifyEvents, PropertyChangeImpl
         """
         ComponentBase.__init__(self, component)
         TextPartial.__init__(self, component=component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -51,6 +52,7 @@ class SheetCellComp(ComponentBase, TextPartial, ModifyEvents, PropertyChangeImpl
     @property
     def component(self) -> SheetCell:
         """Sheet Cell Component"""
+        # pylint: disable=no-member
         return cast("SheetCell", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

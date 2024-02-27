@@ -16,7 +16,7 @@ from ooodev.format.inner.partial.factory_name_base import FactoryNameBase
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.format.proto.borders.line_properties_t import LinePropertiesT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.data_type.intensity import Intensity
 else:
     LoInst = Any

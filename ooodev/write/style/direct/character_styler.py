@@ -14,10 +14,10 @@ from ooodev.format.inner.partial.font.highlight_partial import HighlightPartial
 from ooodev.format.inner.partial.write.char.borders.write_char_borders_partial import WriteCharBordersPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
-from ooodev.format.writer.style import Char
+from ooodev.format.writer.style.char.char import Char
 
 if TYPE_CHECKING:
-    from ...write_doc import WriteDoc
+    from ooodev.write.write_doc import WriteDoc
 
 
 class CharacterStyler(

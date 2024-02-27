@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-from .generic_shape import GenericShapeComp
+from ooodev.adapter.drawing.generic_shape import GenericShapeComp
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ClosedBezierShape  # service

@@ -3,20 +3,23 @@ Module for Image Crop (``GraphicCrop``) struct
 
 .. versionadded:: 0.9.0
 """
+
 # region imports
 from __future__ import annotations
-from typing import Any, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
 from ooo.dyn.text.graphic_crop import GraphicCrop
 
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert
-from ooodev.format.inner.kind.format_kind import FormatKind
-from .struct_base import StructBase
 from ooodev.format.inner.common.props.struct_crop_props import StructCropProps
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.utils import props as mProps
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion imports
 
@@ -155,13 +158,11 @@ class CropStruct(StructBase):
     # region from_uno_struct()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop) -> _TCropStruct:
-        ...
+    def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop) -> _TCropStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop, **kwargs) -> _TCropStruct:
-        ...
+    def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop, **kwargs) -> _TCropStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_TCropStruct], value: GraphicCrop, **kwargs) -> _TCropStruct:
@@ -186,13 +187,11 @@ class CropStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: Any) -> _TCropStruct:
-        ...
+    def from_obj(cls: Type[_TCropStruct], obj: Any) -> _TCropStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TCropStruct], obj: Any, **kwargs) -> _TCropStruct:
-        ...
+    def from_obj(cls: Type[_TCropStruct], obj: Any, **kwargs) -> _TCropStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TCropStruct], obj: Any, **kwargs) -> _TCropStruct:

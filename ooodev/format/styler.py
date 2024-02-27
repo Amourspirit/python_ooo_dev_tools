@@ -3,10 +3,11 @@ Module for managing the applying of styles.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any
 
-from ..proto import style_obj
+from ooodev.proto import style_obj
 
 
 class Styler:

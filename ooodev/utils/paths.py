@@ -7,7 +7,7 @@ import shutil
 import __main__
 from pathlib import Path
 from typing import overload
-from .sys_info import SysInfo
+from ooodev.utils.sys_info import SysInfo
 
 # do not import from type_var here.
 # this module is used by uno_lnk.py and type_var imports uno
@@ -271,13 +271,11 @@ def get_virtual_env_site_packages_path() -> str:
 
 
 @overload
-def mkdirp(dest_dir: str) -> None:
-    ...
+def mkdirp(dest_dir: str) -> None: ...
 
 
 @overload
-def mkdirp(dest_dir: Path) -> None:
-    ...
+def mkdirp(dest_dir: Path) -> None: ...
 
 
 def mkdirp(dest_dir: Union[str, os.PathLike]) -> None:

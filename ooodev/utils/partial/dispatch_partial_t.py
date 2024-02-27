@@ -6,10 +6,7 @@ if TYPE_CHECKING:
     from com.sun.star.frame import XFrame
     from com.sun.star.beans import PropertyValue  # struct
 
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 else:
     Protocol = object
 

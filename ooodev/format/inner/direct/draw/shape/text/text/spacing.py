@@ -4,11 +4,11 @@ import contextlib
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 _TSpacing = TypeVar("_TSpacing", bound="Spacing")
 
@@ -60,13 +60,11 @@ class Spacing(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSpacing], obj: object) -> _TSpacing:
-        ...
+    def from_obj(cls: Type[_TSpacing], obj: object) -> _TSpacing: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSpacing], obj: object, **kwargs) -> _TSpacing:
-        ...
+    def from_obj(cls: Type[_TSpacing], obj: object, **kwargs) -> _TSpacing: ...
 
     @classmethod
     def from_obj(cls: Type[_TSpacing], obj: Any, **kwargs) -> _TSpacing:

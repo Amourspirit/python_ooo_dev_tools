@@ -1,4 +1,4 @@
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.modify.calc.page.sheet.order import Order as Order
 from ooodev.format.inner.modify.calc.page.sheet.printing import Printing as Printing
 from ooodev.format.inner.modify.calc.page.sheet.scale_reduce_enlarge import ScaleReduceEnlarge as ScaleReduceEnlarge

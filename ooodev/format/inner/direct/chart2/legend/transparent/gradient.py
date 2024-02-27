@@ -4,15 +4,13 @@ from typing import Any
 import uno
 from com.sun.star.chart2 import XChartDocument
 
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils.data_type.offset import Offset as Offset
-
-
-from ...chart.transparent.gradient import Gradient as ChartTransparentGradient
+from ooodev.units.angle import Angle
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
+from ooodev.format.inner.direct.chart2.chart.transparent.gradient import Gradient as ChartTransparentGradient
 
 # endregion Import
 

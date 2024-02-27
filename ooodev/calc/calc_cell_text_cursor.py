@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
 
@@ -13,14 +13,14 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
-    from .calc_cell import CalcCell
+    from ooodev.calc.calc_cell import CalcCell
 else:
-    XSheetCellCursor = object
+    XSheetCellCursor = Any
 
 
 class CalcCellTextCursor(

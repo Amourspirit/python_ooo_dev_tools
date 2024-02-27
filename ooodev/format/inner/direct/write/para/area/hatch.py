@@ -3,24 +3,24 @@ from __future__ import annotations
 from typing import Any, Tuple, overload, cast, Type, TypeVar
 
 from ooo.dyn.drawing.fill_style import FillStyle
-from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
+from ooo.dyn.drawing.hatch_style import HatchStyle
 from ooo.dyn.drawing.hatch import Hatch as UnoHatch
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
-from ooodev.utils.color import Color, StandardColor
-from ooodev.units import Angle as Angle
-from ooodev.units import UnitT
-from ooodev.units import UnitConvert
+from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
+from ooodev.format.inner.direct.write.para.area.color import Color as FillColor
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset import preset_hatch as mPreset
-from ooodev.format.inner.preset.preset_hatch import PresetHatchKind as PresetHatchKind
+from ooodev.format.inner.preset.preset_hatch import PresetHatchKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.structs.hatch_struct import HatchStruct
-from .color import Color as FillColor
+from ooodev.loader import lo as mLo
+from ooodev.units.angle import Angle
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_obj import UnitT
+from ooodev.utils import props as mProps
+from ooodev.utils.color import Color, StandardColor
 
 # endregion Import
 
@@ -106,7 +106,7 @@ class Hatch(StyleMulti):
         in_hatch = self._get_inner_hatch()(style=style, color=color, distance=space, angle=angle)
         self._set_fill_hatch(in_hatch, False)
 
-        self._set_style("fill_color", bk_color, *bk_color.get_attrs())
+        self._set_style("fill_color", bk_color, *bk_color.get_attrs())  # type: ignore
 
     # region Internal Methods
     def _get_inner_hatch(self) -> Type[HatchStruct]:
@@ -226,6 +226,7 @@ class Hatch(StyleMulti):
 
     def copy(self: _THatch, **kwargs) -> _THatch:
         """Gets a copy of instance as a new instance"""
+        # pylint: disable=protected-access
         cp = super().copy(**kwargs)
         cp._name = self._name
         cp._is_preset = self._is_preset
@@ -318,6 +319,7 @@ class Hatch(StyleMulti):
         Returns:
             Hatch: ``Hatch`` instance that represents ``obj`` hatch pattern.
         """
+        # pylint: disable=protected-access
         nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError("Object is not support to convert to Hatch")
@@ -325,7 +327,7 @@ class Hatch(StyleMulti):
         hatch = cast(UnoHatch, mProps.Props.get(obj, "FillHatch"))
         fc = FillColor.from_obj(obj)
 
-        return cls(
+        result = cls(
             style=hatch.Style,
             color=hatch.Color,  # type: ignore
             space=UnitConvert.convert_mm100_mm(hatch.Distance),
@@ -335,6 +337,8 @@ class Hatch(StyleMulti):
             auto_name=False,
             **kwargs,
         )
+        result.set_update_obj(obj)
+        return result
 
     # endregion from_obj()
 

@@ -3,9 +3,7 @@ import uno
 from com.sun.star.awt import XBitmap
 from com.sun.star.chart2 import XChartDocument
 
-from ooodev.format.inner.preset.preset_pattern import PresetPatternKind as PresetPatternKind
-
-from ...chart.area.pattern import Pattern as ChartPattern
+from ooodev.format.inner.direct.chart2.chart.area.pattern import Pattern as ChartPattern
 
 
 class Pattern(ChartPattern):

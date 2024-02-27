@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import cast
 import uno
 
-from ..cell_style_base_multi import CellStyleBaseMulti
-from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
-from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind as TextDirectionKind
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind
+from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind
 from ooodev.format.inner.direct.calc.alignment.properties import Properties as InnerProperties
 
 # endregion Imports
@@ -58,7 +58,7 @@ class Properties(CellStyleBaseMulti):
         super().__init__()
         self._style_name = str(style_name)
         self._style_family_name = style_family
-        self._set_style("direct", direct)
+        self._set_style("direct", direct)  # type: ignore
 
     # endregion Init
 
@@ -84,7 +84,7 @@ class Properties(CellStyleBaseMulti):
         """
         inst = cls(style_name=style_name, style_family=style_family)
         direct = InnerProperties.from_obj(obj=inst.get_style_props(doc))
-        inst._set_style("direct", direct)
+        inst._set_style("direct", direct)  # type: ignore
         return inst
 
     # endregion Static Methods

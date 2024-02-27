@@ -7,7 +7,8 @@ from ooo.dyn.style.case_map import CaseMapEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
-from ooodev.format.inner.direct.write.char.font.font_effects import FontEffects as CharFontEffects, FontLine
+from ooodev.format.inner.direct.write.char.font.font_effects import FontEffects as CharFontEffects
+from ooodev.format.inner.direct.write.char.font.font_effects import FontLine
 
 # endregion Imports
 

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.frame import XStorable2
 
-from .storable_partial import StorablePartial
+from ooodev.adapter.frame.storable_partial import StorablePartial
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue

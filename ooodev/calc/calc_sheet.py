@@ -32,14 +32,14 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 
 
-from . import calc_cell_range as mCalcCellRange
-from . import calc_cell as mCalcCell
-from . import calc_cell_cursor as mCalcCellCursor
-from . import calc_table_col as mCalcTableCol
-from . import calc_table_row as mCalcTableRow
-from .partial import sheet_cell_partial as mSheetCellPartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc import calc_cell_range as mCalcCellRange
+from ooodev.calc import calc_cell as mCalcCell
+from ooodev.calc import calc_cell_cursor as mCalcCellCursor
+from ooodev.calc import calc_table_col as mCalcTableCol
+from ooodev.calc import calc_table_row as mCalcTableRow
+from ooodev.calc.partial import sheet_cell_partial as mSheetCellPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SolverConstraint  # struct
@@ -57,11 +57,11 @@ if TYPE_CHECKING:
     from ooo.dyn.table.cell_range_address import CellRangeAddress
 
     from ooodev.proto.style_obj import StyleT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils.type_var import Row, Column, Table, TupleArray, FloatTable
-    from .calc_doc import CalcDoc
-    from .calc_charts import CalcCharts
-    from .spreadsheet_draw_page import SpreadsheetDrawPage
+    from ooodev.calc.calc_doc import CalcDoc
+    from ooodev.calc.calc_charts import CalcCharts
+    from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
 
 class CalcSheet(

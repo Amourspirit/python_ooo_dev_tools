@@ -5,12 +5,13 @@ from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
 from com.sun.star.drawing import XShape
 
+
+from ooodev.mock import mock_g
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
-from ooodev.proto.component_proto import ComponentT
-from ooodev.units import Angle
-from ooodev.units import UnitMM
+from ooodev.units.angle import Angle
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import gen_util as gUtil
 from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
@@ -20,10 +21,9 @@ from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-
-from .partial.export_jpg_partial import ExportJpgPartial
-from .partial.export_png_partial import ExportPngPartial
-from .shape_text_cursor import ShapeTextCursor
+from ooodev.draw.shapes.partial.export_jpg_partial import ExportJpgPartial
+from ooodev.draw.shapes.partial.export_png_partial import ExportPngPartial
+from ooodev.proto.component_proto import ComponentT
 
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from ooo.dyn.drawing.line_style import LineStyle
     from ooodev.events.lo_events import Events
     from ooodev.proto.size_obj import SizeObj
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.utils import color as mColor
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.size import Size
@@ -63,6 +63,7 @@ class ShapeBase(
 
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EventsPartial.__init__(self)
+        # pylint: disable=no-member
         events = cast("Events", self._EventsPartial__events)  # type: ignore
         ExportJpgPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
         ExportPngPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
@@ -79,8 +80,8 @@ class ShapeBase(
         """
         try:
             page = self.__owner.component
-        except AttributeError:
-            raise mEx.NotSupportedError("Owner must be a draw page")
+        except AttributeError as e:
+            raise mEx.NotSupportedError("Owner must be a draw page") from e
 
         old_shape = self.__component
         pt = old_shape.getPosition()
@@ -90,8 +91,8 @@ class ShapeBase(
         shape.setSize(sz)
         try:
             page.add(shape)
-        except Exception:
-            raise mEx.NotSupportedError("Owner must be a draw page")
+        except Exception as exc:
+            raise mEx.NotSupportedError("Owner must be a draw page") from exc
         return shape
 
     def _generate_shape_name(self) -> str:
@@ -121,6 +122,11 @@ class ShapeBase(
         Returns:
             ShapeTextCursor: Cursor.
         """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        # avoid a circular import
+        from ooodev.draw.shapes.shape_text_cursor import ShapeTextCursor
+
         lo = self.get_lo_inst()
         xtext = lo.qi(XText, self.__component, True)
         return ShapeTextCursor(owner=self.__owner, component=xtext.createTextCursor())
@@ -739,3 +745,7 @@ class ShapeBase(
         return self.__component.ShapeType  # type: ignore
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.shapes.shape_text_cursor import ShapeTextCursor

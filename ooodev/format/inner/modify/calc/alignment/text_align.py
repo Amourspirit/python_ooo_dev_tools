@@ -1,14 +1,16 @@
 # region Imports
 from __future__ import annotations
-from typing import cast
+from typing import cast, TYPE_CHECKING
 import uno
 
-from ..cell_style_base_multi import CellStyleBaseMulti
-from ooodev.units import UnitT
-from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind as StyleCellKind
-from ooodev.format.inner.direct.calc.alignment.text_align import VertAlignKind as VertAlignKind
-from ooodev.format.inner.direct.calc.alignment.text_align import HoriAlignKind as HoriAlignKind
+from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
+from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind
+from ooodev.format.inner.direct.calc.alignment.text_align import VertAlignKind
+from ooodev.format.inner.direct.calc.alignment.text_align import HoriAlignKind
 from ooodev.format.inner.direct.calc.alignment.text_align import TextAlign as InnerTextAlign
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Imports
 

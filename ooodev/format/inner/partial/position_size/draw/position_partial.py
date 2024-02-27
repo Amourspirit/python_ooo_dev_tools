@@ -10,7 +10,7 @@ from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.format.proto.draw.position_size.position_t import PositionT
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 else:
     PositionT = Any
     UnitT = Any

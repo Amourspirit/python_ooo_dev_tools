@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 import uno
 
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
@@ -42,6 +42,7 @@ class TextContentComp(ComponentBase, TextContentPartial):
     @property
     def component(self) -> TextContent:
         """Sheet Cell Cursor Component"""
+        # pylint: disable=no-member
         return cast("TextContent", self._ComponentBase__get_component())  # type: ignore
 
     @property

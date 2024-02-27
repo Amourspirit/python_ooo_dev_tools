@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import contextlib
 import uno
 
-from ooodev.units import UnitMM100
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import LineDash  # Struct
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.drawing.LineJoint import LineJointProto  # type: ignore
     from com.sun.star.drawing.LineStyle import LineStyleProto  # type: ignore
     from com.sun.star.util import Color  # type def
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class LinePropertiesPartial:

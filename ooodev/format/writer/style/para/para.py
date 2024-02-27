@@ -6,7 +6,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.meta.static_prop import static_prop
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleName
-from .kind import StyleParaKind as StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
 
 # endregion Import
 

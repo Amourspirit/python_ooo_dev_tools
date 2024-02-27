@@ -11,7 +11,7 @@ from ooodev.utils.type_var import PathOrStr
 from ooodev.adapter.awt.uno_control_button_model_partial import UnoControlButtonModelPartial
 
 
-from .ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlButton  # service

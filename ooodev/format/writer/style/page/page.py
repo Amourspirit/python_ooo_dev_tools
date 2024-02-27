@@ -8,7 +8,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleName
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx
-from .kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 
 # endregion Import
 
@@ -52,12 +52,10 @@ class Page(StyleName):
 
     # region Copy()
     @overload
-    def copy(self) -> Page:
-        ...
+    def copy(self) -> Page: ...
 
     @overload
-    def copy(self, **kwargs) -> Page:
-        ...
+    def copy(self, **kwargs) -> Page: ...
 
     def copy(self, **kwargs) -> Page:
         """Gets a copy of instance as a new instance"""
@@ -103,13 +101,11 @@ class Page(StyleName):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls, obj: Any) -> Page:
-        ...
+    def from_obj(cls, obj: Any) -> Page: ...
 
     @overload
     @classmethod
-    def from_obj(cls, obj: Any, **kwargs) -> Page:
-        ...
+    def from_obj(cls, obj: Any, **kwargs) -> Page: ...
 
     @classmethod
     def from_obj(cls, obj: Any, **kwargs) -> Page:

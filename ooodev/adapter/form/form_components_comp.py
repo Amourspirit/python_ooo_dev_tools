@@ -53,6 +53,7 @@ class FormComponentsComp(
     @property
     def component(self) -> FormComponents:
         """FormComponents Component"""
+        # pylint: disable=no-member
         return cast("FormComponents", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

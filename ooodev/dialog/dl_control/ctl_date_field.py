@@ -13,7 +13,7 @@ from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 # pylint: disable=useless-import-alias
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
-from .ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDateField  # service

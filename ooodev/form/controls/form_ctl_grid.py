@@ -14,13 +14,12 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.loader import lo as mLo
 
-
-from .form_ctl_base import FormCtlBase
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import GridControl as ControlModel  # service
     from com.sun.star.form.control import GridControl as ControlView  # service
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from ooodev.loader.inst.lo_inst import LoInst
 
 

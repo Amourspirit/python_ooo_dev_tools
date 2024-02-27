@@ -2,12 +2,12 @@ from __future__ import annotations
 from typing import Dict, TYPE_CHECKING
 import uno
 from com.sun.star.beans import XPropertySet
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.loader import lo as mLo
-from .vetoable_change_collection import VetoableChangeCollection
-from .vetoable_change_events import VetoableChangeEvents
+from ooodev.adapter.beans.vetoable_change_collection import VetoableChangeCollection
+from ooodev.adapter.beans.vetoable_change_events import VetoableChangeEvents
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT

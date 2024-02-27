@@ -1,11 +1,13 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+import uno
+from ooo.dyn.sheet.spreadsheet_view_objects_mode import SpreadsheetViewObjectsModeEnum
+from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 
-from ooo.dyn.sheet.spreadsheet_view_objects_mode import SpreadsheetViewObjectsModeEnum
-from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetViewSettings  # service
@@ -32,6 +34,7 @@ class SpreadsheetViewSettingsComp(
             component (SpreadsheetView): UNO Component that supports ``com.sun.star.sheet.SpreadsheetViewSettings`` service.
         """
         ComponentBase.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
@@ -47,6 +50,7 @@ class SpreadsheetViewSettingsComp(
     @property
     def component(self) -> SpreadsheetViewSettings:
         """Spreadsheet View Component"""
+        # pylint: disable=no-member
         return cast("SpreadsheetViewSettings", self._ComponentBase__get_component())  # type: ignore
 
     @property

@@ -17,14 +17,12 @@ from ooodev.loader import lo as mLo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.adapter.awt.tree.tree_control_model_partial import TreeControlModelPartial
-from ooodev.dialog.search.tree_search import (
-    SearchTree,
-    RuleDataCompare,
-    RuleDataInsensitive,
-    RuleTextSensitive,
-    RuleTextInsensitive,
-)
-from .ctl_base import DialogControlBase
+from ooodev.dialog.search.tree_search.search_tree import SearchTree
+from ooodev.dialog.search.tree_search.rule_data_compare import RuleDataCompare
+from ooodev.dialog.search.tree_search.rule_data_insensitive import RuleDataInsensitive
+from ooodev.dialog.search.tree_search.rule_text_sensitive import RuleTextSensitive
+from ooodev.dialog.search.tree_search.rule_text_insensitive import RuleTextInsensitive
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:

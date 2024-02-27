@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any
-from .event_args import AbstractEvent
+from ooodev.events.args.event_args import AbstractEvent
 
 
 class AbstractKeyValArgs(AbstractEvent):

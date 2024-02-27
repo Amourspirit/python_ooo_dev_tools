@@ -11,16 +11,16 @@ import uno
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.chart2 import XChartDocument
 
-from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
+from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.loader import lo as mLo
 from ooodev.format.inner.direct.structs.gradient_struct import GradientStruct
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as WriteGradient
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRange
-from ooodev.utils.data_type.offset import Offset as Offset
+from ooodev.units.angle import Angle
+from ooodev.utils.data_type.intensity import Intensity
+from ooodev.utils.data_type.intensity_range import IntensityRange
+from ooodev.utils.data_type.offset import Offset
 from ooodev.meta.disabled_method import DisabledMethod
 from ooodev.meta.deleted_attrib import DeletedAttrib
 

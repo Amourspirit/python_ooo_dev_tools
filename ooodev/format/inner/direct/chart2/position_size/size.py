@@ -8,10 +8,12 @@ from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.units import UnitConvert, UnitMM, UnitMM100
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from typing_extensions import Self
 else:
     Self = Any

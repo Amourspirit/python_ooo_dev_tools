@@ -5,8 +5,8 @@ import uno
 
 from ooodev.adapter.component_base import ComponentBase
 
-from .text_range_comp import TextRangeComp
-from .text_portion_type_kind import TextPortionTypeKind
+from ooodev.adapter.text.text_range_comp import TextRangeComp
+from ooodev.adapter.text.text_portion_type_kind import TextPortionTypeKind
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
@@ -61,6 +61,7 @@ class TextPortionComp(TextRangeComp):
         @property
         def component(self) -> TextPortion:
             """Sheet Cell Cursor Component"""
+            # pylint: disable=no-member
             return cast("TextPortion", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

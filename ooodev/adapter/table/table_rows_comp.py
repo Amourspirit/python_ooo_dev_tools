@@ -40,6 +40,7 @@ class TableRowsComp(ComponentBase, TableRowsPartial, EnumerationAccessPartial):
     @property
     def component(self) -> TableRows:
         """TableRows Component"""
+        # pylint: disable=no-member
         return cast("TableRows", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

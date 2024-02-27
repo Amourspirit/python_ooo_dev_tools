@@ -4,8 +4,8 @@ import uno
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from .search_descriptor_partial_props import SearchDescriptorPartialProps
-from .search_descriptor_partial import SearchDescriptorPartial
+from ooodev.adapter.util.search_descriptor_partial_props import SearchDescriptorPartialProps
+from ooodev.adapter.util.search_descriptor_partial import SearchDescriptorPartial
 
 
 if TYPE_CHECKING:

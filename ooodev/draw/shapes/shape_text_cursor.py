@@ -8,13 +8,13 @@ from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImpleme
 from ooodev.adapter.drawing.shape_partial_props import ShapePartialProps
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument

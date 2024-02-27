@@ -1,9 +1,9 @@
 # coding: utf-8
 from __future__ import annotations
 from typing import Any, List, TYPE_CHECKING
-from ..utils.type_var import PathOrStr
 
 if TYPE_CHECKING:
+    from ooodev.utils.type_var import PathOrStr
     from ooodev.events.args.event_args_t import EventArgsT
 
 

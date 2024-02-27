@@ -60,30 +60,28 @@ from ooo.dyn.text.page_number_type import PageNumberType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 from ooo.dyn.view.paper_format import PaperFormat as PaperFormat
 
-from ..events.args.cancel_event_args import CancelEventArgs
-from ..events.args.event_args import EventArgs
-from ..events.args.key_val_args import KeyValArgs
-from ..events.args.key_val_cancel_args import KeyValCancelArgs
-from ..events.event_singleton import _Events
-from ..events.gbl_named_event import GblNamedEvent
-from ..events.write_named_event import WriteNamedEvent
-from ..exceptions import ex as mEx
-from ..meta.static_meta import classproperty
-from ..proto.style_obj import StyleT, FormatKind
-from ..units import UnitT
-from ..utils import file_io as mFileIO
-from ..utils import gen_util as mUtil
-from ..utils import images_lo as mImgLo
-from ..utils import info as mInfo
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.args.key_val_args import KeyValArgs
+from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
+from ooodev.events.event_singleton import _Events
+from ooodev.events.gbl_named_event import GblNamedEvent
+from ooodev.events.write_named_event import WriteNamedEvent
+from ooodev.exceptions import ex as mEx
+from ooodev.meta.static_meta import classproperty
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.units import UnitT
+from ooodev.utils import file_io as mFileIO
+from ooodev.utils import gen_util as mUtil
+from ooodev.utils import images_lo as mImgLo
+from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
-from ..utils import props as mProps
-from ..utils import selection as mSel
-from ..utils.color import CommonColor, Color
-from ..utils.data_type.size import Size
-from ..utils.table_helper import TableHelper
-from ..utils.type_var import PathOrStr, Table, DocOrCursor
+from ooodev.utils import props as mProps
+from ooodev.utils import selection as mSel
+from ooodev.utils.color import CommonColor, Color
+from ooodev.utils.data_type.size import Size
+from ooodev.utils.table_helper import TableHelper
 
-from ..mock import mock_g
 
 if TYPE_CHECKING:
     # from com.sun.star.beans import PropertyValue
@@ -98,7 +96,12 @@ if TYPE_CHECKING:
     from com.sun.star.linguistic2 import XLinguServiceManager2
     from com.sun.star.linguistic2 import XThesaurus
     from com.sun.star.text import XTextCursor
-
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.utils.type_var import PathOrStr
+    from ooodev.utils.type_var import Table
+    from ooodev.utils.type_var import DocOrCursor
+else:
+    StyleT = Any
 
 # endregion Imports
 

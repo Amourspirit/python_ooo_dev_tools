@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..mock import mock_g
+import uno
+from com.sun.star.awt import XTopWindowListener
+from ooodev.mock import mock_g
 
 if mock_g.DOCS_BUILDING:
-    from ..mock import unohelper
+    from ooodev.mock import unohelper
 else:
     import unohelper
 
-from com.sun.star.awt import XTopWindowListener
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

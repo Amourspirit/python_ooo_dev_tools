@@ -2,11 +2,10 @@ from __future__ import annotations
 import uno
 from com.sun.star.awt import XBitmap
 
-
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.area.pattern import Pattern as HeaderPattern
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
-from ...header.area.pattern import Pattern as HeaderPattern
 
 
 class Pattern(HeaderPattern):

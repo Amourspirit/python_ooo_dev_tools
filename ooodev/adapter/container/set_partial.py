@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 from com.sun.star.container import XSet
-from .enumeration_access_partial import EnumerationAccessPartial
+from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface

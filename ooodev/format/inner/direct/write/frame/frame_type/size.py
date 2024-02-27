@@ -3,6 +3,7 @@ Module for Fill Transparency.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, Type, TypeVar, cast, overload
 from ooo.dyn.text.size_type import SizeTypeEnum
@@ -10,12 +11,9 @@ from ooo.dyn.text.size_type import SizeTypeEnum
 from ooodev.utils import props as mProps
 from ooodev.format.inner.common.props.frame_type_size_props import FrameTypeSizeProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.direct.write.image.image_type.size import (
-    Size as ImageSize,
-    RelativeSize as RelativeSize,
-    AbsoluteSize as AbsoluteSize,
-)
-
+from ooodev.format.inner.direct.write.image.image_type.size import Size as ImageSize
+from ooodev.format.inner.direct.write.image.image_type.size import RelativeSize
+from ooodev.format.inner.direct.write.image.image_type.size import AbsoluteSize
 
 _TSize = TypeVar(name="_TSize", bound="Size")
 
@@ -95,12 +93,10 @@ class Size(ImageSize):
 
     # region copy()
     @overload
-    def copy(self: _TSize) -> _TSize:
-        ...
+    def copy(self: _TSize) -> _TSize: ...
 
     @overload
-    def copy(self: _TSize, **kwargs) -> _TSize:
-        ...
+    def copy(self: _TSize, **kwargs) -> _TSize: ...
 
     def copy(self: _TSize, **kwargs) -> _TSize:
         """Gets a copy of instance as a new instance"""
@@ -118,13 +114,11 @@ class Size(ImageSize):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: Any) -> _TSize:
-        ...
+    def from_obj(cls: Type[_TSize], obj: Any) -> _TSize: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:
-        ...
+    def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize: ...
 
     @classmethod
     def from_obj(cls: Type[_TSize], obj: Any, **kwargs) -> _TSize:

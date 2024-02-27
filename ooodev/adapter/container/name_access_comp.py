@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
 from ooodev.adapter.component_base import ComponentBase
-from .name_access_partial import NameAccessPartial
+from ooodev.adapter.container.name_access_partial import NameAccessPartial
 
 if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
@@ -38,6 +38,7 @@ class NameAccessComp(ComponentBase, NameAccessPartial):
     @property
     def component(self) -> XNameAccess:
         """XNameAccess Component"""
+        # pylint: disable=no-member
         return cast("XNameAccess", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

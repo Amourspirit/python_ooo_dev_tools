@@ -2,22 +2,22 @@ from __future__ import annotations
 from typing import Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
-if TYPE_CHECKING:
-    from com.sun.star.text import XTextContent
-    from com.sun.star.text import XTextCursor
-    from ooo.dyn.text.control_character import ControlCharacterEnum
-    from ooodev.proto.style_obj import StyleT
-    from ooodev.units import UnitT
-    from ooodev.utils.type_var import PathOrStr, Table
-
 from ooodev.adapter.drawing.graphic_object_shape_comp import GraphicObjectShapeComp
 from ooodev.office import write as mWrite
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.color import Color, CommonColor
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.proto.component_proto import ComponentT
+
+if TYPE_CHECKING:
+    from com.sun.star.text import XTextContent
+    from com.sun.star.text import XTextCursor
+    from ooo.dyn.text.control_character import ControlCharacterEnum
+    from ooodev.proto.style_obj import StyleT
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.utils.type_var import PathOrStr, Table
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -991,6 +991,6 @@ class TextCursorPartial(Generic[_T]):
 
 # avoid circular imports
 
-from .. import write_text_content as mWriteTextContent
-from .. import write_text_table as mWriteTextTable
-from .. import write_text_frame as mWriteTextFrame
+from ooodev.write import write_text_content as mWriteTextContent
+from ooodev.write import write_text_table as mWriteTextTable
+from ooodev.write import write_text_frame as mWriteTextFrame

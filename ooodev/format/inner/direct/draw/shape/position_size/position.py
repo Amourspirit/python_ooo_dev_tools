@@ -5,18 +5,18 @@ from com.sun.star.drawing import XShape
 from com.sun.star.awt import Rectangle
 
 from ooo.dyn.awt.point import Point as UnoPoint
-from ooodev.utils.data_type.point import Point as OooDevPoint
-from ooodev.loader import lo as mLo
-from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
-from ooodev.utils.data_type.size import Size
-from ooodev.format.inner.direct.chart2.position_size.position import Position as ShapePosition
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
+from ooodev.format.inner.direct.chart2.position_size.position import Position as ShapePosition
+from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.point import Point as OooDevPoint
+from ooodev.utils.data_type.size import Size
+from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
     from com.sun.star.drawing import DrawPage
 else:
     DrawPage = Any

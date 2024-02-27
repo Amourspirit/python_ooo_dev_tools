@@ -4,13 +4,10 @@ import uno
 
 
 from ooodev.mock.mock_g import DOCS_BUILDING
-from ..style_t import StyleT
+from ooodev.format.proto.style_t import StyleT
 
 if TYPE_CHECKING or DOCS_BUILDING:
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
 
     from com.sun.star.awt import XBitmap
     from ooo.dyn.drawing.rectangle_point import RectanglePoint

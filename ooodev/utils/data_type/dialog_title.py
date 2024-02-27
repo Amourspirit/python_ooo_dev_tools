@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from .window_title import WindowTitle
+from ooodev.utils.data_type.window_title import WindowTitle
 
 
 @dataclass(frozen=True)

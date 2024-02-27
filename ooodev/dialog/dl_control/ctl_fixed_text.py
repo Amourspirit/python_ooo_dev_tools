@@ -7,7 +7,7 @@ from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.adapter.awt.uno_control_fixed_text_model_partial import UnoControlFixedTextModelPartial
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from .ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFixedText  # service

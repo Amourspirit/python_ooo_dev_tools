@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, overload
+from typing import cast, overload, TYPE_CHECKING
 from typing import Any, Tuple, Type, TypeVar
 from enum import Enum
 from ooo.dyn.text.writing_mode2 import WritingMode2
@@ -8,9 +8,13 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode, WritingMode2Enum, _TWritingMode
+from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode
+from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 from ooodev.meta.deleted_attrib import DeletedAttrib
 from ooodev.format.inner.common.props.frame_options_properties import FrameOptionsProperties
+
+if TYPE_CHECKING:
+    from ooodev.format.inner.direct.write.para.align.writing_mode import _TWritingMode
 
 _TProperties = TypeVar(name="_TProperties", bound="Properties")
 
@@ -122,6 +126,8 @@ class TextDirectionMode(WritingMode):
     @property
     def default(self) -> TextDirectionMode:  # type: ignore[misc]
         """Gets ``WritingMode`` default."""
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         try:
             return self._default_inst
         except AttributeError:
@@ -161,6 +167,8 @@ class Properties(StyleMulti):
 
     # region internal methods
     def _set_txt_direction_mode(self, txt_direction: TextDirectionKind | None) -> None:
+        # pylint: disable=unexpected-keyword-arg
+        # pylint: disable=protected-access
         self._remove_style("text_mode")
         self._del_attribs("_inner_writing_mode")
         if txt_direction is None:
@@ -173,7 +181,7 @@ class Properties(StyleMulti):
             },
         )
         mode._prop_parent = self
-        self._set_style("text_mode", mode, *mode.get_attrs())
+        self._set_style("text_mode", mode, *mode.get_attrs())  # type: ignore
 
     # endregion internal methods
 
@@ -221,6 +229,7 @@ class Properties(StyleMulti):
         Returns:
             Properties: Instance that represents Frame Option Properties.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')

@@ -6,10 +6,16 @@ import contextlib
 import re
 import sys
 import string
-from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar, NamedTuple
+from typing import Callable, Iterable, Sequence, List, Any, Tuple, overload, TypeVar, NamedTuple, TYPE_CHECKING
 
-from . import gen_util as gUtil
-from .type_var import DictTable, Table
+from ooodev.utils import gen_util as gUtil
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import DictTable
+    from ooodev.utils.type_var import Table
+else:
+    DictTable = Any
+    Table = Any
 
 T = TypeVar("T")
 
@@ -714,13 +720,11 @@ class TableHelper:
 
     @overload
     @staticmethod
-    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int) -> List[List[T]]:
-        ...
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int) -> List[List[T]]: ...
 
     @overload
     @staticmethod
-    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int, empty_cell_val: Any) -> List[List[T]]:
-        ...
+    def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int, empty_cell_val: Any) -> List[List[T]]: ...
 
     @staticmethod
     def convert_1d_to_2d(seq_obj: Sequence[T], col_count: int, empty_cell_val: Any = gUtil.NULL_OBJ) -> List[List[T]]:

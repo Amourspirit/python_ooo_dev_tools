@@ -1,13 +1,15 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.awt import XDialog2
-from .dialog_partial import DialogPartial
+from ooodev.adapter.awt.dialog_partial import DialogPartial
 
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
+else:
+    UnoInterface = Any
 
 
 class Dialog2Partial(DialogPartial):

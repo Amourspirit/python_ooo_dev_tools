@@ -1,14 +1,13 @@
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, Type, TypeVar, overload
-from ooo.dyn.text.wrap_text_mode import WrapTextMode as WrapTextMode
+from ooo.dyn.text.wrap_text_mode import WrapTextMode
 
 from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-from ooodev.utils import props as mProps
+from ooodev.format.inner.common.props.frame_wrap_settings_props import FrameWrapSettingsProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
-from ooodev.format.inner.common.props.frame_wrap_settings_props import FrameWrapSettingsProps
+from ooodev.utils import props as mProps
 
 # endregion Import
 

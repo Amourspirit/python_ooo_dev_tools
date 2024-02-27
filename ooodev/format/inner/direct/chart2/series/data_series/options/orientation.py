@@ -8,7 +8,7 @@ from com.sun.star.chart import XAxisYSupplier
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.loader import lo as mLo
-from ooodev.units import Angle
+from ooodev.units.angle import Angle
 
 _TOrientation = TypeVar("_TOrientation", bound="Orientation")
 

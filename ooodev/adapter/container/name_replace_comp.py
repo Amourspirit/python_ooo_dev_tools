@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
 from ooodev.adapter.component_base import ComponentBase
-from .name_replace_partial import NameReplacePartial
+from ooodev.adapter.container.name_replace_partial import NameReplacePartial
 
 if TYPE_CHECKING:
     from com.sun.star.container import XNameReplace
@@ -36,6 +36,7 @@ class NameReplaceComp(ComponentBase, NameReplacePartial):
     @property
     def component(self) -> XNameReplace:
         """XNameReplace Component"""
+        # pylint: disable=no-member
         return cast("XNameReplace", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

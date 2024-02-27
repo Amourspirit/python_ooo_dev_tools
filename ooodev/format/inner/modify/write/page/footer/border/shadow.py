@@ -1,12 +1,13 @@
 from __future__ import annotations
 import uno
-from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
+from ooo.dyn.table.shadow_location import ShadowLocation
 
-from ooodev.units import UnitT
-from ooodev.utils.color import StandardColor, Color
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ...header.border.shadow import Shadow as HeaderShadow
+from ooodev.format.inner.modify.write.page.header.border.shadow import Shadow as HeaderShadow
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.units.unit_obj import UnitT
+from ooodev.utils.color import Color
+from ooodev.utils.color import StandardColor
 
 
 class Shadow(HeaderShadow):

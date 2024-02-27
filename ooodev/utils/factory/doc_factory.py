@@ -7,6 +7,8 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.proto.office_document_t import OfficeDocumentT
 
+# pylint: disable=import-outside-toplevel
+
 
 def is_known_doc(doc: Any, lo_inst: LoInst) -> bool:
     """
@@ -56,19 +58,19 @@ def doc_factory(doc: Any, lo_inst: LoInst) -> OfficeDocumentT:
     if not identifier:
         raise ValueError("No identifier found.")
     if identifier == "com.sun.star.drawing.DrawingDocument":
-        from ooodev.draw import DrawDoc
+        from ooodev.draw.draw_doc import DrawDoc
 
         return DrawDoc(doc, lo_inst)
     if identifier == "com.sun.star.presentation.PresentationDocument":
-        from ooodev.draw import ImpressDoc
+        from ooodev.draw.impress_doc import ImpressDoc
 
         return ImpressDoc(doc, lo_inst)
     if identifier == "com.sun.star.sheet.SpreadsheetDocument":
-        from ooodev.calc import CalcDoc
+        from ooodev.calc.calc_doc import CalcDoc
 
         return CalcDoc(doc, lo_inst)
     if identifier == "com.sun.star.text.TextDocument":
-        from ooodev.write import WriteDoc
+        from ooodev.write.write_doc import WriteDoc
 
         return WriteDoc(doc, lo_inst)
     raise ValueError(f"Unknown identifier: {identifier}")

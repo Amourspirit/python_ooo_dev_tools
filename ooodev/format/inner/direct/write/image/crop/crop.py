@@ -3,25 +3,30 @@ Module for Image Crop.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
-from typing import Any, Tuple, Type, cast, TypeVar, overload
+from typing import Any, Tuple, Type, cast, TypeVar, overload, TYPE_CHECKING
 import math
 
 from ooo.dyn.text.graphic_crop import GraphicCrop
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.size_obj import SizeObj
-from ooodev.units import UnitT
-from ooodev.utils import props as mProps
-from ooodev.utils import images_lo as mImg
-from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
-from ooodev.utils.data_type.size import Size as Size
+from ooodev.format.inner.common.props.image_crop_props import ImageCropProps
+from ooodev.format.inner.direct.structs.crop_struct import CropStruct
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
-from ooodev.format.inner.direct.structs.crop_struct import CropStruct
-from ooodev.format.inner.common.props.image_crop_props import ImageCropProps
+from ooodev.utils import images_lo as mImg
+from ooodev.utils import props as mProps
+from ooodev.utils.data_type.size import Size
+from ooodev.utils.data_type.size_mm import SizeMM
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.proto.size_obj import SizeObj
+else:
+    SizeObj = Any
+    UnitT = Any
 
 _TImageCrop = TypeVar(name="_TImageCrop", bound="ImageCrop")
 
@@ -292,12 +297,10 @@ class ImageCrop(StyleMulti):
 
     # region Copy()
     @overload
-    def copy(self: _TImageCrop) -> _TImageCrop:
-        ...
+    def copy(self: _TImageCrop) -> _TImageCrop: ...
 
     @overload
-    def copy(self: _TImageCrop, **kwargs) -> _TImageCrop:
-        ...
+    def copy(self: _TImageCrop, **kwargs) -> _TImageCrop: ...
 
     def copy(self: _TImageCrop, **kwargs) -> _TImageCrop:
         """Gets a copy of instance as a new instance"""
@@ -310,12 +313,10 @@ class ImageCrop(StyleMulti):
 
     # region apply()
     @overload
-    def apply(self, obj: Any) -> None:
-        ...
+    def apply(self, obj: Any) -> None: ...
 
     @overload
-    def apply(self, obj: Any, **kwargs) -> None:
-        ...
+    def apply(self, obj: Any, **kwargs) -> None: ...
 
     def apply(self, obj: Any, **kwargs) -> None:
         """
@@ -360,13 +361,11 @@ class ImageCrop(StyleMulti):
     # region reset_to_original_size()
     @overload
     @classmethod
-    def reset_image_original_size(cls, obj: object) -> None:
-        ...
+    def reset_image_original_size(cls, obj: object) -> None: ...
 
     @overload
     @classmethod
-    def reset_image_original_size(cls, obj: object, **kwargs) -> None:
-        ...
+    def reset_image_original_size(cls, obj: object, **kwargs) -> None: ...
 
     @classmethod
     def reset_image_original_size(cls, obj: object, **kwargs) -> None:
@@ -392,13 +391,11 @@ class ImageCrop(StyleMulti):
 
     @overload
     @classmethod
-    def get_image_original_size(cls, obj: object) -> Size:
-        ...
+    def get_image_original_size(cls, obj: object) -> Size: ...
 
     @overload
     @classmethod
-    def get_image_original_size(cls, obj: object, **kwargs) -> Size:
-        ...
+    def get_image_original_size(cls, obj: object, **kwargs) -> Size: ...
 
     @classmethod
     def get_image_original_size(cls, obj: object, **kwargs) -> Size:
@@ -425,13 +422,11 @@ class ImageCrop(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImageCrop], obj: object) -> _TImageCrop:
-        ...
+    def from_obj(cls: Type[_TImageCrop], obj: object) -> _TImageCrop: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TImageCrop], obj: object, **kwargs) -> _TImageCrop:
-        ...
+    def from_obj(cls: Type[_TImageCrop], obj: object, **kwargs) -> _TImageCrop: ...
 
     @classmethod
     def from_obj(cls: Type[_TImageCrop], obj: object, **kwargs) -> _TImageCrop:

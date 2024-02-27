@@ -5,9 +5,9 @@ from dataclasses import dataclass, field
 from typing import overload
 from weakref import ref
 from ooodev.loader import lo as mLo
-from .. import table_helper as mTb
-from ...office import calc as mCalc
-from ..validation import check
+from ooodev.utils import table_helper as mTb
+from ooodev.office import calc as mCalc
+from ooodev.utils.validation import check
 
 from ooo.dyn.table.cell_address import CellAddress
 
@@ -398,7 +398,7 @@ class CellObj:
     # endregion properties
 
 
-from . import cell_values as mCellVals
-from . import col_obj as mCol
-from . import range_obj as mRngObj
-from . import row_obj as mRow
+from ooodev.utils.data_type import cell_values as mCellVals
+from ooodev.utils.data_type import col_obj as mCol
+from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.data_type import row_obj as mRow

@@ -8,7 +8,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import gui as mGui
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.gui_partial import GuiPartial
-from .shapes_partial import ShapesPartial
+from ooodev.adapter.drawing.shapes_partial import ShapesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ShapeCollection  # service
@@ -71,6 +71,7 @@ class ShapeCollectionComp(
     @property
     def component(self) -> ShapeCollection:
         """ShapeCollection Component"""
+        # pylint: disable=no-member
         return cast("ShapeCollection", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

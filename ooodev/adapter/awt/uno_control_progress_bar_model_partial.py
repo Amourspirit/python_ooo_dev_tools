@@ -5,7 +5,7 @@ import uno  # pylint: disable=unused-import
 from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.utils.kind.border_kind import BorderKind
-from .uno_control_model_partial import UnoControlModelPartial
+from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlProgressBarModel  # Service

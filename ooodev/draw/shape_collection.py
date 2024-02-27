@@ -6,13 +6,13 @@ from com.sun.star.drawing import XShape
 
 from ooodev.adapter.drawing.shape_collection_comp import ShapeCollectionComp
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.component_proto import ComponentT
-from ooodev.units import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.loader import lo as mLo
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from ooodev.draw import DrawPage
@@ -152,5 +152,5 @@ class ShapeCollection(LoInstPropsPartial, ShapeCollectionComp, QiPartial):
         return self._owner
 
 
-from ooodev.draw.shapes import GroupShape
-from ooodev.draw.shapes import DrawShape
+from ooodev.draw.shapes.group_shape import GroupShape
+from ooodev.draw.shapes.draw_shape import DrawShape

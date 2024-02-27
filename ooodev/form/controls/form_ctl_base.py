@@ -9,7 +9,7 @@ from com.sun.star.container import XNamed
 from ooo.dyn.form.form_component_type import FormComponentType
 
 # from ooodev.adapter.lang.event_events import EventEvents
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.awt.focus_events import FocusEvents
 from ooodev.adapter.awt.key_events import KeyEvents
 from ooodev.adapter.awt.mouse_events import MouseEvents
@@ -20,7 +20,7 @@ from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImp
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.units import UnitMM
+from ooodev.units.unit_mm import UnitMM
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint

@@ -9,10 +9,10 @@ from ooodev.format.inner.direct.write.image.image_type.size import AbsoluteSize 
 from ooodev.format.inner.direct.write.image.image_type.size import RelativeKind as RelativeKind
 from ooodev.format.inner.direct.write.image.image_type.size import RelativeSize as RelativeSize
 from ooodev.format.inner.modify.write.frame.frame_type.anchor import Anchor as Anchor
-from ooodev.format.inner.modify.write.frame.frame_type.anchor import InnerAnchor as InnerAnchor
-from ooodev.format.inner.modify.write.frame.frame_type.position import InnerPosition as InnerPosition
+from ooodev.format.inner.direct.write.frame.frame_type.anchor import Anchor as InnerAnchor
+from ooodev.format.inner.direct.write.frame.frame_type.position import Position as InnerPosition
 from ooodev.format.inner.modify.write.frame.frame_type.position import Position as Position
-from ooodev.format.inner.modify.write.frame.frame_type.size import InnerSize as InnerSize
+from ooodev.format.inner.direct.write.frame.frame_type.size import Size as InnerSize
 from ooodev.format.inner.modify.write.frame.frame_type.size import Size as Size
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind as StyleFrameKind
 

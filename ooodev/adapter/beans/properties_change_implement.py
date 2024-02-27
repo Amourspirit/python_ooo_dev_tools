@@ -4,15 +4,16 @@ from typing import Iterable, List, TYPE_CHECKING
 import uno
 from com.sun.star.beans import XMultiPropertySet
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.loader import lo as mLo
-from .properties_change_events import PropertiesChangeEvents
-from .properties_change_listener import PropertiesChangeListener
+from ooodev.adapter.beans.properties_change_events import PropertiesChangeEvents
+from ooodev.adapter.beans.properties_change_listener import PropertiesChangeListener
 
 if TYPE_CHECKING:
-    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+    from ooodev.utils.type_var import EventArgsCallbackT
+    from ooodev.utils.type_var import ListenerEventCallbackT
 
 
 class PropertiesChangeImplement:

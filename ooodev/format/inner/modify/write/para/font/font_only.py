@@ -1,14 +1,15 @@
 # region Import
 from __future__ import annotations
-from typing import Any, cast
+from typing import Any, cast, TYPE_CHECKING
 import uno
 
-from ooodev.units import UnitT
-from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
+from ooodev.format.inner.direct.write.char.font.font_only import FontLang
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as InnerFontOnly
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 # endregion Import
 
 

@@ -4,11 +4,11 @@ import uno
 from ooo.dyn.drawing.text_horizontal_adjust import TextHorizontalAdjust
 from ooo.dyn.drawing.text_vertical_adjust import TextVerticalAdjust
 
-from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.utils import props as mProps
+from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 
 
 _TTextAnchor = TypeVar("_TTextAnchor", bound="TextAnchor")
@@ -149,13 +149,11 @@ class TextAnchor(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextAnchor], obj: object) -> _TTextAnchor:
-        ...
+    def from_obj(cls: Type[_TTextAnchor], obj: object) -> _TTextAnchor: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextAnchor], obj: object, **kwargs) -> _TTextAnchor:
-        ...
+    def from_obj(cls: Type[_TTextAnchor], obj: object, **kwargs) -> _TTextAnchor: ...
 
     @classmethod
     def from_obj(cls: Type[_TTextAnchor], obj: Any, **kwargs) -> _TTextAnchor:

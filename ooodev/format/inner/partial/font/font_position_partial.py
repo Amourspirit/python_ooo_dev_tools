@@ -13,7 +13,8 @@ if TYPE_CHECKING:
     from ooodev.format.writer.direct.char.font import CharSpacingKind
     from ooodev.format.writer.direct.char.font import FontScriptKind
     from ooodev.utils.data_type.intensity import Intensity
-    from ooodev.units import Angle, UnitT
+    from ooodev.units.angle import Angle
+    from ooodev.units.unit_obj import UnitT
 
 
 class FontPositionPartial:

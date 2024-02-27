@@ -1,14 +1,16 @@
 # region Import
 from __future__ import annotations
-from typing import Any, cast
+from typing import Any, cast, TYPE_CHECKING
 import uno
 
-from ooo.dyn.style.tab_align import TabAlign as TabAlign
-from ooodev.units import UnitT
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
-from ooodev.format.inner.direct.structs.tab_stop_struct import FillCharKind as FillCharKind
+from ooo.dyn.style.tab_align import TabAlign
+from ooodev.format.inner.direct.structs.tab_stop_struct import FillCharKind
 from ooodev.format.inner.direct.write.para.tabs.tabs import Tabs as InnerTabs
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 

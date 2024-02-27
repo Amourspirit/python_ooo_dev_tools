@@ -7,10 +7,7 @@ from ooodev.format.proto.chart2.numbers.numbers_t import NumbersT as ChartNumber
 if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Self
 
-    try:
-        from typing import Protocol
-    except ImportError:
-        from typing_extensions import Protocol
+    from typing_extensions import Protocol
     from com.sun.star.chart2 import XChartDocument
     from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
     from ooo.dyn.lang.locale import Locale

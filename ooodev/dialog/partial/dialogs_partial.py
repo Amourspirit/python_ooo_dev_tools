@@ -15,7 +15,7 @@ from com.sun.star.container import XNameContainer
 from ooodev.mock import mock_g
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
-from ..dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 
 if TYPE_CHECKING:
@@ -23,9 +23,9 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
     # Avoid circular import by creating a property in class instance for Dialogs
-    from ooodev.dialog import Dialogs
+    from ooodev.dialog.dialogs import Dialogs
     from ooodev.dialog.dialogs import ControlT
-    from ..dl_control import CtlRadioButton
+    from ooodev.dialog.dl_control import CtlRadioButton
 # endregion Imports
 
 
@@ -206,11 +206,11 @@ class DialogsPartial:
             return self._DialogsPartial_dialogs_class_instance
         except AttributeError:
             # pylint: disable=import-outside-toplevel
-            from ooodev.dialog import Dialogs
+            from ooodev.dialog.dialogs import Dialogs
 
             self._DialogsPartial_dialogs_class_instance = Dialogs
         return self._DialogsPartial_dialogs_class_instance
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.dialog import Dialogs
+    from ooodev.dialog.dialogs import Dialogs

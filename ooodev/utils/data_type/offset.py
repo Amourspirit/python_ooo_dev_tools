@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from .point_positive import PointPositive
+from ooodev.utils.data_type.point_positive import PointPositive
 
 
 @dataclass(frozen=True)

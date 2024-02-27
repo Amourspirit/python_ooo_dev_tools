@@ -8,7 +8,7 @@ Module for managing paragraph breaks.
 from __future__ import annotations
 from typing import Any, Dict, Tuple, overload, Type, TypeVar
 
-from ooo.dyn.style.break_type import BreakType as BreakType
+from ooo.dyn.style.break_type import BreakType
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
@@ -160,6 +160,7 @@ class Breaks(StyleBase):
         Returns:
             Breaks: ``Breaks`` instance that represents ``obj`` break properties.
         """
+        # pylint: disable=protected-access
         nu = cls(**kwargs)
         if not nu._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -167,7 +168,9 @@ class Breaks(StyleBase):
         t = mProps.Props.get(obj, "BreakType", None)
         style = mProps.Props.get(obj, "PageDescName", None)
         num = mProps.Props.get(obj, "PageNumberOffset", None)
-        return cls(type=t, style=style, num=num, **kwargs)
+        result = cls(type=t, style=style, num=num, **kwargs)
+        result.set_update_obj(obj)
+        return result
 
     # endregion from_obj()
 
@@ -201,6 +204,8 @@ class Breaks(StyleBase):
     @property
     def default(self: _TBreaks) -> _TBreaks:
         """Gets ``Breaks`` default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:

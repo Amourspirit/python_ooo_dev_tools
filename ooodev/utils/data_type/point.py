@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from ..decorator import enforce
+from ooodev.utils.decorator import enforce
 
 
 # Note that from __future__ import annotations converts annotations to string.

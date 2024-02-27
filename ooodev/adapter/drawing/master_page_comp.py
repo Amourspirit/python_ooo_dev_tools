@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-from .generic_draw_page_comp import GenericDrawPageComp
+from ooodev.adapter.drawing.generic_draw_page_comp import GenericDrawPageComp
 
 
 if TYPE_CHECKING:
@@ -37,6 +37,7 @@ class MasterPageComp(GenericDrawPageComp):
         @property
         def component(self) -> MasterPage:
             """MasterPage Component"""
+            # pylint: disable=no-member
             return cast("MasterPage", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

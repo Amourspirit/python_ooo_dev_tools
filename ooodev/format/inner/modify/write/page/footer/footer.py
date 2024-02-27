@@ -2,8 +2,8 @@ from __future__ import annotations
 import uno
 from ooodev.format.inner.common.props.hf_props import HfProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.write.page.header.header import Header
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
-from ..header.header import Header
 
 
 class Footer(Header):

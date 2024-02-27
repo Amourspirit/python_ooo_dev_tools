@@ -46,15 +46,15 @@ from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_da
 from ooodev.format.inner.partial.chart2.series.data_labels.data_labels.chart2_data_label_text_attribute_partial import (
     Chart2DataLabelTextAttributePartial,
 )
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from ooodev.loader.inst.lo_inst import LoInst
-    from .chart_doc import ChartDoc
-    from .chart_data_point import ChartDataPoint
-    from .data.data_source import DataSource
+    from ooodev.calc.chart2.chart_doc import ChartDoc
+    from ooodev.calc.chart2.chart_data_point import ChartDataPoint
+    from ooodev.calc.chart2.data.data_source import DataSource
 
 _T = TypeVar("_T", bound="ComponentT")
 

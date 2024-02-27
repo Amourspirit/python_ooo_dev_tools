@@ -1,12 +1,11 @@
 # region Import
 from __future__ import annotations
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.modify.calc.page.header.area.color import Color as HeaderColor
 from ooodev.utils import color as mColor
 from ooodev.utils.color import StandardColor
-from ...header.area.color import InnerColor as InnerColor
-from ...header.area.color import Color as HeaderColor
 
 # endregion Import
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass
 import math
-from ..validation import check
-from ..decorator import enforce
-from .base_float_value import BaseFloatValue
+from ooodev.utils.validation import check
+from ooodev.utils.decorator import enforce
+from ooodev.utils.data_type.base_float_value import BaseFloatValue
 
 
 @enforce.enforce_types

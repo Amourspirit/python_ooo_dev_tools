@@ -2,11 +2,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from ooodev.events.args.event_args import EventArgs as EventArgs
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
-from ooodev.loader import lo as mLo
-
 from com.sun.star.frame import XTerminateListener
+
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

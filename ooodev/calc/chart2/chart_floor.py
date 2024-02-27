@@ -17,13 +17,13 @@ from ooodev.format.inner.partial.area.transparency.transparency_partial import (
     TransparencyPartial as TransparencyTransparency,
 )
 from ooodev.format.inner.partial.area.transparency.gradient_partial import GradientPartial as TransparencyGradient
-from ..partial.calc_doc_prop_partial import CalcDocPropPartial
-from ..partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
     from ooodev.loader.inst.lo_inst import LoInst
-    from .chart_diagram import ChartDiagram
+    from ooodev.calc.chart2.chart_diagram import ChartDiagram
 
 
 class ChartFloor(

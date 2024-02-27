@@ -3,31 +3,35 @@ Module for table border (``TableBorder2``) struct
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
-from typing import Any, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.table_border2 import TableBorder2
 from ooo.dyn.table.border_line import BorderLine
 from ooo.dyn.table.border_line2 import BorderLine2
 
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.format_named_event import FormatNamedEvent
 from ooodev.events.lo_events import Events
 from ooodev.events.props_named_event import PropsNamedEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.units import UnitConvert, UnitLength
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.style_base import _on_props_setting, _on_props_set
-from ooodev.events.format_named_event import FormatNamedEvent
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.format.inner.common.props.prop_pair import PropPair
 from ooodev.format.inner.common.props.struct_border_table_props import StructBorderTableProps
-from .side import Side as Side
-from .struct_base import StructBase
+from ooodev.format.inner.direct.structs.side import Side
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.format.inner.style_base import _on_props_setting, _on_props_set
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_convert import UnitLength
+from ooodev.units.unit_mm import UnitMM
+from ooodev.utils import props as mProps
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 
 # endregion Import
 
@@ -238,13 +242,11 @@ class TableBorderStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderStruct], obj: Any) -> _TTableBorderStruct:
-        ...
+    def from_obj(cls: Type[_TTableBorderStruct], obj: Any) -> _TTableBorderStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTableBorderStruct], obj: Any, **kwargs) -> _TTableBorderStruct:
-        ...
+    def from_obj(cls: Type[_TTableBorderStruct], obj: Any, **kwargs) -> _TTableBorderStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_TTableBorderStruct], obj: Any, **kwargs) -> _TTableBorderStruct:

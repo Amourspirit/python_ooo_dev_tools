@@ -33,6 +33,7 @@ class MeasurePropertiesComp(ComponentBase):
     @property
     def component(self) -> MeasureProperties:
         """MeasureProperties Component"""
+        # pylint: disable=no-member
         return cast("MeasureProperties", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -3,18 +3,19 @@ Module for managing paragraph Text Flow.
 
 .. versionadded:: 0.9.0
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload
 
-from ooo.dyn.style.break_type import BreakType as BreakType
+from ooo.dyn.style.break_type import BreakType
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.kind.format_kind import FormatKind
-from .breaks import Breaks
-from .hyphenation import Hyphenation
-from .flow_options import FlowOptions
+from ooodev.format.inner.direct.write.para.text_flow.breaks import Breaks
+from ooodev.format.inner.direct.write.para.text_flow.hyphenation import Hyphenation
+from ooodev.format.inner.direct.write.para.text_flow.flow_options import FlowOptions
 
 _TTextFlow = TypeVar(name="_TTextFlow", bound="TextFlow")
 
@@ -91,11 +92,11 @@ class TextFlow(StyleMulti):
 
         super().__init__(**init_vals)
         if hy.prop_has_attribs:
-            self._set_style("hyphenation", hy, *hy.get_attrs())
+            self._set_style("hyphenation", hy, *hy.get_attrs())  # type: ignore
         if brk.prop_has_attribs:
-            self._set_style("breaks", brk, *brk.get_attrs())
+            self._set_style("breaks", brk, *brk.get_attrs())  # type: ignore
         if flo.prop_has_attribs:
-            self._set_style("flow_options", flo, *flo.get_attrs())
+            self._set_style("flow_options", flo, *flo.get_attrs())  # type: ignore
 
     # endregion init
 
@@ -118,13 +119,11 @@ class TextFlow(StyleMulti):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextFlow], obj: Any) -> _TTextFlow:
-        ...
+    def from_obj(cls: Type[_TTextFlow], obj: Any) -> _TTextFlow: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextFlow], obj: Any, **kwargs) -> _TTextFlow:
-        ...
+    def from_obj(cls: Type[_TTextFlow], obj: Any, **kwargs) -> _TTextFlow: ...
 
     @classmethod
     def from_obj(cls: Type[_TTextFlow], obj: Any, **kwargs) -> _TTextFlow:
@@ -140,19 +139,22 @@ class TextFlow(StyleMulti):
         Returns:
             TextFlow: ``TextFlow`` instance that represents ``obj`` Indents and spacing.
         """
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
 
         hy = Hyphenation.from_obj(obj)
         if hy.prop_has_attribs:
-            inst._set_style("hyphenation", hy, *hy.get_attrs())
+            inst._set_style("hyphenation", hy, *hy.get_attrs())  # type: ignore
         brk = Breaks.from_obj(obj)
         if brk.prop_has_attribs:
-            inst._set_style("breaks", brk, *brk.get_attrs())
+            inst._set_style("breaks", brk, *brk.get_attrs())  # type: ignore
         flo = FlowOptions.from_obj(obj)
         if flo.prop_has_attribs:
-            inst._set_style("flow_options", flo, *flo.get_attrs())
+            inst._set_style("flow_options", flo, *flo.get_attrs())  # type: ignore
+
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()
@@ -199,6 +201,8 @@ class TextFlow(StyleMulti):
     @property
     def default(self: _TTextFlow) -> _TTextFlow:
         """Gets ``TextFlow`` default."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:
@@ -215,9 +219,9 @@ class TextFlow(StyleMulti):
             else:
                 flo = self.prop_inner_flow_options.default
             tf = self.__class__()
-            tf._set_style("hyphenation", hy, *hy.get_attrs())
-            tf._set_style("breaks", brk, *brk.get_attrs())
-            tf._set_style("flow_options", flo, *flo.get_attrs())
+            tf._set_style("hyphenation", hy, *hy.get_attrs())  # type: ignore
+            tf._set_style("breaks", brk, *brk.get_attrs())  # type: ignore
+            tf._set_style("flow_options", flo, *flo.get_attrs())  # type: ignore
             tf._is_default_inst = True
             self._default_inst = tf
         return self._default_inst

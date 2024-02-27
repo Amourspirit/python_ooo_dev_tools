@@ -17,7 +17,7 @@ from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
-    from .write_text_cursor import WriteTextCursor
+    from ooodev.write.write_text_cursor import WriteTextCursor
 
 T = TypeVar("T", bound="ComponentT")
 

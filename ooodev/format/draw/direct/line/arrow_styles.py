@@ -6,7 +6,7 @@ from ooodev.utils.kind.graphic_arrow_style_kind import GraphicArrowStyleKind
 from ooodev.format.inner.direct.draw.shape.line.arrow_styles import ArrowStyles as DrawShapeLineArrowStyles
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class ArrowStyles(DrawShapeLineArrowStyles):

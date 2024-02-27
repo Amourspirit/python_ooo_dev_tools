@@ -2,11 +2,11 @@
 from __future__ import annotations
 from typing import Any, cast
 import uno
-from ooo.dyn.style.break_type import BreakType as BreakType
+from ooo.dyn.style.break_type import BreakType
 
-from ooodev.format.writer.style.para.kind import StyleParaKind as StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.format.inner.direct.write.para.text_flow.breaks import Breaks as InnerBreaks
-from ..para_style_base_multi import ParaStyleBaseMulti
+from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti
 
 # endregion Import
 

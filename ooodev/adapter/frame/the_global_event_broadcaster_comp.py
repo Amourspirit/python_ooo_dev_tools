@@ -33,6 +33,7 @@ class TheGlobalEventBroadcasterComp(
         EventsSupplierPartial.__init__(self, component=component, interface=None)
         DocumentEventBroadcasterPartial.__init__(self, component=component, interface=None)
         SetPartial.__init__(self, component=component, interface=None)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
 
@@ -63,6 +64,7 @@ class TheGlobalEventBroadcasterComp(
     @property
     def component(self) -> theGlobalEventBroadcaster:
         """theGlobalEventBroadcaster Component"""
+        # pylint: disable=no-member
         return cast("theGlobalEventBroadcaster", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

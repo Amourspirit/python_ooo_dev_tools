@@ -34,6 +34,7 @@ class ComponentsComp(ComponentBase, EnumerationAccessPartial):
     @property
     def component(self) -> Components:
         """Components Component"""
+        # pylint: disable=no-member
         return cast("Components", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

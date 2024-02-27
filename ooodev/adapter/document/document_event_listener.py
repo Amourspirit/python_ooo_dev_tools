@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING
 import uno
 from com.sun.star.document import XDocumentEventListener
 
-from ooodev.adapter.adapter_base import AdapterBase, GenericArgs as GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
+from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject

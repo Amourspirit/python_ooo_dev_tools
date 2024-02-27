@@ -1,6 +1,6 @@
 import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
-from ooodev.format.calc.style.page.kind import CalcStylePageKind as CalcStylePageKind
+from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind as CalcStylePageKind
 from ooodev.format.inner.direct.structs.side import BorderLineKind as BorderLineKind
 from ooodev.format.inner.direct.structs.side import LineSize as LineSize
 from ooodev.format.inner.direct.structs.side import Side as Side

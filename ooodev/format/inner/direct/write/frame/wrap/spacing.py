@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Tuple
 
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.format.inner.common.props.border_props import BorderProps as BorderProps
+from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.common.abstract.abstract_padding import AbstractPadding
 
 # endregion Import

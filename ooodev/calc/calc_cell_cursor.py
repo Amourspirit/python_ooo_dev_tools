@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, overload
+from typing import Any, TYPE_CHECKING, overload
 import uno
 
 from com.sun.star.table import XCellRange
@@ -14,19 +14,19 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from .partial.calc_sheet_prop_partial import CalcSheetPropPartial
-from . import calc_cell_range as mCalcCellRange
-from . import calc_cell as mCalcCell
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc import calc_cell_range as mCalcCellRange
+from ooodev.calc import calc_cell as mCalcCell
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
     from com.sun.star.sheet import XSheetCellCursor
     from ooodev.utils.data_type import cell_obj as mCellObj
-    from .calc_sheet import CalcSheet
+    from ooodev.calc.calc_sheet import CalcSheet
 else:
-    XSheetCellCursor = object
+    XSheetCellCursor = Any
 
 
 class CalcCellCursor(

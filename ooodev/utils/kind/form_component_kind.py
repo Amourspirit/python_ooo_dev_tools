@@ -1,5 +1,5 @@
 from .kind_base import KindBase
-from . import kind_helper
+from ooodev.utils.kind import kind_helper
 
 
 class FormComponentKind(KindBase):

@@ -5,7 +5,7 @@ from ooodev.format.inner.direct.draw.shape.position_size.position import Positio
 from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 
 if TYPE_CHECKING:
-    from ooodev.units import UnitT
+    from ooodev.units.unit_obj import UnitT
 
 
 class Position(ShapePosition):

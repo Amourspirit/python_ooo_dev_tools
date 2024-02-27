@@ -17,12 +17,12 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from .partial.calc_doc_prop_partial import CalcDocPropPartial
-from . import calc_sheet as mCalcSheet
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheets
-    from .calc_doc import CalcDoc
+    from ooodev.calc.calc_doc import CalcDoc
 
 
 class CalcSheets(

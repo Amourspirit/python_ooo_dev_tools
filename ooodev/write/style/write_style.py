@@ -2,15 +2,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
-if TYPE_CHECKING:
-    from com.sun.star.style import XStyle
-
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.adapter.style.style_comp import StyleComp
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.proto.component_proto import ComponentT
+
+if TYPE_CHECKING:
+    from com.sun.star.style import XStyle
 
 T = TypeVar("T", bound="ComponentT")
 

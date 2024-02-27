@@ -40,6 +40,7 @@ class TextFramesComp(NameAccessComp, IndexAccessPartial):
     @property
     def component(self) -> TextFrames:
         """TextFrames Component"""
+        # pylint: disable=no-member
         return cast("TextFrames", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

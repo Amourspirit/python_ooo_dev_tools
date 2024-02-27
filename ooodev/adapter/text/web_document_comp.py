@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-from .generic_text_document_comp import GenericTextDocumentComp
+from ooodev.adapter.text.generic_text_document_comp import GenericTextDocumentComp
 
 
 if TYPE_CHECKING:
@@ -36,6 +36,7 @@ class WebDocumentComp(GenericTextDocumentComp):
         @property
         def component(self) -> WebDocument:
             """WebDocument Component"""
+            # pylint: disable=no-member
             return cast("WebDocument", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

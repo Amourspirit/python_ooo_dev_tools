@@ -11,14 +11,11 @@ from ooo.dyn.drawing.rectangle_point import RectanglePoint
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.offset import Offset
-from ooodev.format.inner.direct.write.fill.area.img import (
-    SizeMM,
-    SizePercent,
-    OffsetColumn,
-    OffsetRow,
-    ImgStyleKind,
-)
-from ooodev.format.inner.preset.preset_image import PresetImageKind
+from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
+from ooodev.format.inner.common.format_types.offset_row import OffsetRow
+from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
+from ooodev.format.inner.common.format_types.size_percent import SizePercent
+from ooodev.utils.data_type.size_mm import SizeMM
 from ooodev.format.inner.common.props.img_para_area_props import ImgParaAreaProps
 from ooodev.meta.disabled_method import DisabledMethod
 from ooodev.format.inner.direct.write.para.area.img import Img as ParaImg

@@ -1,18 +1,19 @@
 """Connection to LibreOffice/OpenOffice"""
+
 from __future__ import annotations
+from typing import Any, List, TYPE_CHECKING, cast
 import contextlib
 import os
 import time
 from abc import ABC, abstractmethod
 import subprocess
 import signal
-from typing import List, TYPE_CHECKING, cast
 from pathlib import Path
 import uno
 from com.sun.star.connection import NoConnectException  # type: ignore
-from . import connectors
-from . import cache
-from ..utils.sys_info import SysInfo
+from ooodev.conn import connectors
+from ooodev.conn import cache
+from ooodev.utils.sys_info import SysInfo
 
 
 if TYPE_CHECKING:
@@ -25,14 +26,14 @@ if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
     from com.sun.star.bridge import UnoUrlResolver  # service
 else:
-    XConnector = object
-    XBridgeFactory = object
-    XBridge = object
-    XPropertySet = object
-    XMultiComponentFactory = object
-    XComponentContext = object
-    XComponent = object
-    UnoUrlResolver = object
+    XConnector = Any
+    XBridgeFactory = Any
+    XBridge = Any
+    XPropertySet = Any
+    XMultiComponentFactory = Any
+    XComponentContext = Any
+    XComponent = Any
+    UnoUrlResolver = Any
 
 
 class ConnectBase(ABC):
@@ -153,8 +154,7 @@ class LoBridgeCommon(ConnectBase):
         ...
 
     @abstractmethod
-    def _get_bridge(self, local_factory: XMultiComponentFactory, local_ctx: XComponentContext) -> XBridge:
-        ...
+    def _get_bridge(self, local_factory: XMultiComponentFactory, local_ctx: XComponentContext) -> XBridge: ...
 
     def _connect(self):
         # see also: _connect_alternative()

@@ -3,26 +3,27 @@ Module for ``Hatch`` struct.
 
 .. versionadded:: 0.9.0
 """
+
 # region Import
 from __future__ import annotations
-from typing import Any, Tuple, Type, cast, overload, TypeVar
+from typing import Any, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
 import uno
-
-from .struct_base import StructBase
-from ooodev.exceptions import ex as mEx
-from ooodev.utils import props as mProps
-from ooodev.utils.color import Color
-from ooodev.units import Angle as Angle
-from ooodev.utils.data_type.intensity import Intensity as Intensity
-from ooodev.units import UnitT
-from ooodev.units import UnitMM
-from ooodev.format.inner.kind.format_kind import FormatKind
-from ooodev.units.unit_convert import UnitConvert
-
 from ooo.dyn.drawing.hatch import Hatch
 from ooo.dyn.drawing.hatch_style import HatchStyle
 
+from ooodev.exceptions import ex as mEx
+from ooodev.format.inner.direct.structs.struct_base import StructBase
+from ooodev.format.inner.kind.format_kind import FormatKind
+from ooodev.units.angle import Angle
+from ooodev.units.unit_convert import UnitConvert
+from ooodev.units.unit_mm import UnitMM
+from ooodev.utils import props as mProps
+from ooodev.utils.color import Color
+
+
+if TYPE_CHECKING:
+    from ooodev.units.unit_obj import UnitT
 # endregion Import
 
 # see Also:
@@ -147,13 +148,11 @@ class HatchStruct(StructBase):
     # region from_hatch()
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_THatchStruct], value: Hatch) -> _THatchStruct:
-        ...
+    def from_uno_struct(cls: Type[_THatchStruct], value: Hatch) -> _THatchStruct: ...
 
     @overload
     @classmethod
-    def from_uno_struct(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
-        ...
+    def from_uno_struct(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct: ...
 
     @classmethod
     def from_uno_struct(cls: Type[_THatchStruct], value: Hatch, **kwargs) -> _THatchStruct:
@@ -178,13 +177,11 @@ class HatchStruct(StructBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatchStruct], obj: Any) -> _THatchStruct:
-        ...
+    def from_obj(cls: Type[_THatchStruct], obj: Any) -> _THatchStruct: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_THatchStruct], obj: Any, **kwargs) -> _THatchStruct:
-        ...
+    def from_obj(cls: Type[_THatchStruct], obj: Any, **kwargs) -> _THatchStruct: ...
 
     @classmethod
     def from_obj(cls: Type[_THatchStruct], obj: Any, **kwargs) -> _THatchStruct:

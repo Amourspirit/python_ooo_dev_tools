@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ooodev.adapter.adapter_base import GenericArgs
+from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
-from ooodev.loader import lo as mLo
-from .frame_action_listener import FrameActionListener
+from ooodev.adapter.frame.frame_action_listener import FrameActionListener
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XFrame

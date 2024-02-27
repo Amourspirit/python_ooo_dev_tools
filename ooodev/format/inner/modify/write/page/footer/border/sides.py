@@ -2,10 +2,10 @@ from __future__ import annotations
 import uno
 
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
-from ooodev.format.inner.direct.structs.side import Side as Side
+from ooodev.format.inner.direct.structs.side import Side
 from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.kind.format_kind import FormatKind
-from ...header.border.sides import Sides as HeaderSides
+from ooodev.format.inner.modify.write.page.header.border.sides import Sides as HeaderSides
 
 
 class Sides(HeaderSides):

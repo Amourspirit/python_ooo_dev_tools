@@ -2,10 +2,10 @@
 from __future__ import annotations
 from typing import Any, cast
 import uno
-from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind as WriterStylePageKind
-from ooodev.utils.data_type.intensity import Intensity as Intensity
+from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
+from ooodev.utils.data_type.intensity import Intensity
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as InnerTransparency
-from ..page_style_base_multi import PageStyleBaseMulti
+from ooodev.format.inner.modify.write.page.page_style_base_multi import PageStyleBaseMulti
 
 # endregion Import
 

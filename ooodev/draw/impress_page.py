@@ -5,10 +5,10 @@ from com.sun.star.drawing import XDrawPage
 
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
-from .draw_page import DrawPage
+from ooodev.draw.draw_page import DrawPage
+from ooodev.proto.component_proto import ComponentT
 
 
 _T = TypeVar("_T", bound="ComponentT")
