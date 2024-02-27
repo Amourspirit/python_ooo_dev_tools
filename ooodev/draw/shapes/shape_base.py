@@ -5,6 +5,8 @@ from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
 from com.sun.star.drawing import XShape
 
+
+from ooodev.mock import mock_g
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.office import draw as mDraw
@@ -21,7 +23,6 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.draw.shapes.partial.export_jpg_partial import ExportJpgPartial
 from ooodev.draw.shapes.partial.export_png_partial import ExportPngPartial
-from ooodev.draw.shapes.shape_text_cursor import ShapeTextCursor
 from ooodev.proto.component_proto import ComponentT
 
 
@@ -62,6 +63,7 @@ class ShapeBase(
 
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EventsPartial.__init__(self)
+        # pylint: disable=no-member
         events = cast("Events", self._EventsPartial__events)  # type: ignore
         ExportJpgPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
         ExportPngPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
@@ -78,8 +80,8 @@ class ShapeBase(
         """
         try:
             page = self.__owner.component
-        except AttributeError:
-            raise mEx.NotSupportedError("Owner must be a draw page")
+        except AttributeError as e:
+            raise mEx.NotSupportedError("Owner must be a draw page") from e
 
         old_shape = self.__component
         pt = old_shape.getPosition()
@@ -89,8 +91,8 @@ class ShapeBase(
         shape.setSize(sz)
         try:
             page.add(shape)
-        except Exception:
-            raise mEx.NotSupportedError("Owner must be a draw page")
+        except Exception as exc:
+            raise mEx.NotSupportedError("Owner must be a draw page") from exc
         return shape
 
     def _generate_shape_name(self) -> str:
@@ -120,6 +122,11 @@ class ShapeBase(
         Returns:
             ShapeTextCursor: Cursor.
         """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        # avoid a circular import
+        from ooodev.draw.shapes.shape_text_cursor import ShapeTextCursor
+
         lo = self.get_lo_inst()
         xtext = lo.qi(XText, self.__component, True)
         return ShapeTextCursor(owner=self.__owner, component=xtext.createTextCursor())
@@ -738,3 +745,7 @@ class ShapeBase(
         return self.__component.ShapeType  # type: ignore
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.shapes.shape_text_cursor import ShapeTextCursor

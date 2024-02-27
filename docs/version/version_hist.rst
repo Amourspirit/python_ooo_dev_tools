@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.31.0
+==============
+
+Massive refactoring of imports.
+Inspired by `André Menck - Avoiding Circular Imports in Python <https://medium.com/brexeng/avoiding-circular-imports-in-python-7c35ec8145ed>`__ article.
+This version saw then entire library refactored to help avoid circular imports. Over ``1,000`` modules were updated.
+Now objects are always imported from the files where they are defined in. Test have be constructed to ensure this rule.
+
 Version 0.30.4
 ==============
 
