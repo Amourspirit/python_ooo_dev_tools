@@ -119,7 +119,7 @@ class FontDescriptorComp(ComponentBase):
         old_value = self.component.Name
         if old_value != value:
             event_args = KeyValCancelArgs(
-                source="FontDescriptorComp.name",
+                source=self,
                 key="name",
                 value=value,
             )

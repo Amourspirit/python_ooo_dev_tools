@@ -4,6 +4,8 @@ from ooodev.utils.gen_util import NULL_OBJ
 
 _T = TypeVar("_T")
 
+# pylint: disable=protected-access
+
 
 class EventArgsGeneric(Generic[_T]):
     """Generic Event Args"""

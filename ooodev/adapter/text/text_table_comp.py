@@ -6,6 +6,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.table.cell_comp import CellComp
 from ooodev.adapter.container.named_partial import NamedPartial
 from ooodev.adapter.text.text_content_comp import TextContentComp
+from ooodev.adapter.text.text_table_partial import TextTablePartial
 
 
 if TYPE_CHECKING:
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextTable
 
 
-class TextTableComp(TextContentComp, ChartDataChangeEventEvents, NamedPartial):
+class TextTableComp(TextContentComp, TextTablePartial, ChartDataChangeEventEvents, NamedPartial):
     """
     Class for managing TextTable Component.
     """
@@ -29,6 +30,7 @@ class TextTableComp(TextContentComp, ChartDataChangeEventEvents, NamedPartial):
         """
 
         TextContentComp.__init__(self, component)
+        TextTablePartial.__init__(self, component=component, interface=None)
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ChartDataChangeEventEvents.__init__(

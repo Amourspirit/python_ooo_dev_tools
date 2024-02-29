@@ -221,7 +221,7 @@ class Side(StructBase):
         if color < 0:
             raise ValueError("color must be a positive value")
         if self._pts < 0.0:
-            raise ValueError("width must be a postivie value")
+            raise ValueError("width must be a positive value")
         if self._pts > 9.0000001:
             raise ValueError("Maximum width allowed is 9pt")
 

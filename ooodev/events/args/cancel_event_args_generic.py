@@ -3,6 +3,8 @@ from typing import Any, Generic, TypeVar
 from ooodev.events.args.event_args_generic import EventArgsGeneric
 
 _T = TypeVar("_T")
+# pylint: disable=protected-access
+# pylint: disable=assigning-non-slot
 
 
 class CancelEventArgsGeneric(EventArgsGeneric[_T], Generic[_T]):

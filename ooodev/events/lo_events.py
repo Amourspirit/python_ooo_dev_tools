@@ -205,7 +205,7 @@ class Events(_event_base):
             source (Any | None, optional): Source can be class or any object.
                 The value of ``source`` is the value assigned to the ``EventArgs.event_source`` property.
                 Defaults to current instance of this class.
-            event_args (GenericArgs, optional): Args that are passed to events when they are triggered.
+            trigger_args (GenericArgs, optional): Args that are passed to events when they are triggered.
         """
         super().__init__()
         self._source = source

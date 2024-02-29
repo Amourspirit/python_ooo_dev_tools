@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Any
 from ooodev.events.args.event_args import AbstractEvent
 
+# pylint: disable=protected-access
+
 
 class AbstractKeyValArgs(AbstractEvent):
     # https://stackoverflow.com/questions/472000/usage-of-slots
@@ -17,6 +19,7 @@ class AbstractKeyValArgs(AbstractEvent):
             value (Any: Value
         """
         super().__init__(source)
+        # pylint: disable=assigning-non-slot
         self.key = key
         self.value = value
         self.default = False

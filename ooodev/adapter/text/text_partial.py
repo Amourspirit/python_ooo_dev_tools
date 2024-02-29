@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import uno
 
 from com.sun.star.text import XText
-from .simple_text_partial import SimpleTextPartial
+from ooodev.adapter.text.simple_text_partial import SimpleTextPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextContent

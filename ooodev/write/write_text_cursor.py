@@ -11,7 +11,6 @@ from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import write as mWrite
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
@@ -23,6 +22,7 @@ from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.write.write_text import WriteText
+from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextDocument

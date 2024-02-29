@@ -4,6 +4,8 @@ from ooodev.utils.type_var import PathOrStr
 from ooodev.events.args.event_args_export import EventArgsExport
 
 _T = TypeVar("_T")
+# pylint: disable=protected-access
+# pylint: disable=assigning-non-slot
 
 
 class CancelEventArgsExport(EventArgsExport[_T], Generic[_T]):

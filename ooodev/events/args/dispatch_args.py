@@ -2,6 +2,9 @@ from __future__ import annotations
 from typing import Any
 from ooodev.events.args.event_args import AbstractEvent
 
+# pylint: disable=protected-access
+# pylint: disable=assigning-non-slot
+
 
 class AbstractDispatchArgs(AbstractEvent):
     # https://stackoverflow.com/questions/472000/usage-of-slots
