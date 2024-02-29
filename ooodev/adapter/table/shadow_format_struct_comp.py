@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
 
 
-class ShadowFormatComp(ComponentBase):
+class ShadowFormatStructComp(ComponentBase):
     """
     Shadow Format Struct.
 

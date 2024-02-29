@@ -8,7 +8,7 @@ from ooodev.adapter.component_base import ComponentBase
 from ooodev.events.events import Events
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.args.key_val_args import KeyValArgs
-from ooodev.adapter.table.border_line_comp import BorderLineComp
+from ooodev.adapter.table.border_line_struct_comp import BorderLineStructComp
 from ooodev.utils import info as mInfo
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
 
 
-class TableBorderComp(ComponentBase):
+class TableBorderStructComp(ComponentBase):
     """
     Table Border Struct
 
@@ -133,7 +133,7 @@ class TableBorderComp(ComponentBase):
         self._ComponentBase__set_component(self._copy(src=value))  # type: ignore
 
     @property
-    def top_line(self) -> BorderLineComp:
+    def top_line(self) -> BorderLineStructComp:
         """
         Gets/Set the line style at the top edge.
 
@@ -148,18 +148,18 @@ class TableBorderComp(ComponentBase):
         key = "top_line"
         prop = self._props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.component.TopLine, key, self._events)
+            prop = BorderLineStructComp(self.component.TopLine, key, self._events)
             self._props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @top_line.setter
-    def top_line(self, value: BorderLineComp | BorderLine) -> None:
+    def top_line(self, value: BorderLineStructComp | BorderLine) -> None:
         key = "top_line"
         old_value = self.component.TopLine
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             new_value = value.copy()
         else:
-            comp = BorderLineComp(cast(BorderLine, value), key)
+            comp = BorderLineStructComp(cast(BorderLine, value), key)
             new_value = comp.copy()
 
         event_args = KeyValCancelArgs(
@@ -177,7 +177,7 @@ class TableBorderComp(ComponentBase):
         struct = self._copy()
         struct.TopLine = event_args.value
         self.component = struct
-        self._props[key] = BorderLineComp(self.component.TopLine, key, self._events)
+        self._props[key] = BorderLineStructComp(self.component.TopLine, key, self._events)
         self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
@@ -208,7 +208,7 @@ class TableBorderComp(ComponentBase):
                 self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
-    def bottom_line(self) -> BorderLineComp:
+    def bottom_line(self) -> BorderLineStructComp:
         """
         Gets/Set the line style at the bottom edge.
 
@@ -223,18 +223,18 @@ class TableBorderComp(ComponentBase):
         key = "bottom_line"
         prop = self._props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.component.BottomLine, key, self._events)
+            prop = BorderLineStructComp(self.component.BottomLine, key, self._events)
             self._props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @bottom_line.setter
-    def bottom_line(self, value: BorderLineComp | BorderLine) -> None:
+    def bottom_line(self, value: BorderLineStructComp | BorderLine) -> None:
         key = "bottom_line"
         old_value = self.component.BottomLine
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             new_value = value.copy()
         else:
-            comp = BorderLineComp(cast(BorderLine, value), key)
+            comp = BorderLineStructComp(cast(BorderLine, value), key)
             new_value = comp.copy()
 
         event_args = KeyValCancelArgs(
@@ -252,7 +252,7 @@ class TableBorderComp(ComponentBase):
         struct = self._copy()
         struct.BottomLine = event_args.value
         self.component = struct
-        self._props[key] = BorderLineComp(self.component.BottomLine, key, self._events)
+        self._props[key] = BorderLineStructComp(self.component.BottomLine, key, self._events)
         self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
@@ -283,7 +283,7 @@ class TableBorderComp(ComponentBase):
                 self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
-    def left_line(self) -> BorderLineComp:
+    def left_line(self) -> BorderLineStructComp:
         """
         Gets/Set the line style at the left edge.
 
@@ -298,18 +298,18 @@ class TableBorderComp(ComponentBase):
         key = "left_line"
         prop = self._props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.component.LeftLine, key, self._events)
+            prop = BorderLineStructComp(self.component.LeftLine, key, self._events)
             self._props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @left_line.setter
-    def left_line(self, value: BorderLineComp | BorderLine) -> None:
+    def left_line(self, value: BorderLineStructComp | BorderLine) -> None:
         key = "left_line"
         old_value = self.component.LeftLine
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             new_value = value.copy()
         else:
-            comp = BorderLineComp(cast(BorderLine, value), key)
+            comp = BorderLineStructComp(cast(BorderLine, value), key)
             new_value = comp.copy()
 
         event_args = KeyValCancelArgs(
@@ -327,7 +327,7 @@ class TableBorderComp(ComponentBase):
         struct = self._copy()
         struct.LeftLine = event_args.value
         self.component = struct
-        self._props[key] = BorderLineComp(self.component.LeftLine, key, self._events)
+        self._props[key] = BorderLineStructComp(self.component.LeftLine, key, self._events)
         self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
@@ -358,7 +358,7 @@ class TableBorderComp(ComponentBase):
                 self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
-    def right_line(self) -> BorderLineComp:
+    def right_line(self) -> BorderLineStructComp:
         """
         Gets/Set the line style at the right edge.
 
@@ -373,18 +373,18 @@ class TableBorderComp(ComponentBase):
         key = "right_line"
         prop = self._props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.component.RightLine, key, self._events)
+            prop = BorderLineStructComp(self.component.RightLine, key, self._events)
             self._props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @right_line.setter
-    def right_line(self, value: BorderLineComp | BorderLine) -> None:
+    def right_line(self, value: BorderLineStructComp | BorderLine) -> None:
         key = "right_line"
         old_value = self.component.RightLine
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             new_value = value.copy()
         else:
-            comp = BorderLineComp(cast(BorderLine, value), key)
+            comp = BorderLineStructComp(cast(BorderLine, value), key)
             new_value = comp.copy()
 
         event_args = KeyValCancelArgs(
@@ -402,7 +402,7 @@ class TableBorderComp(ComponentBase):
         struct = self._copy()
         struct.RightLine = event_args.value
         self.component = struct
-        self._props[key] = BorderLineComp(self.component.RightLine, key, self._events)
+        self._props[key] = BorderLineStructComp(self.component.RightLine, key, self._events)
         self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
@@ -433,7 +433,7 @@ class TableBorderComp(ComponentBase):
                 self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
-    def horizontal_line(self) -> BorderLineComp:
+    def horizontal_line(self) -> BorderLineStructComp:
         """
         Gets/Set the horizontal line style edge.
 
@@ -448,18 +448,18 @@ class TableBorderComp(ComponentBase):
         key = "horizontal_line"
         prop = self._props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.component.HorizontalLine, key, self._events)
+            prop = BorderLineStructComp(self.component.HorizontalLine, key, self._events)
             self._props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @horizontal_line.setter
-    def horizontal_line(self, value: BorderLineComp | BorderLine) -> None:
+    def horizontal_line(self, value: BorderLineStructComp | BorderLine) -> None:
         key = "horizontal_line"
         old_value = self.component.HorizontalLine
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             new_value = value.copy()
         else:
-            comp = BorderLineComp(cast(BorderLine, value), key)
+            comp = BorderLineStructComp(cast(BorderLine, value), key)
             new_value = comp.copy()
 
         event_args = KeyValCancelArgs(
@@ -477,7 +477,7 @@ class TableBorderComp(ComponentBase):
         struct = self._copy()
         struct.HorizontalLine = event_args.value
         self.component = struct
-        self._props[key] = BorderLineComp(self.component.HorizontalLine, key, self._events)
+        self._props[key] = BorderLineStructComp(self.component.HorizontalLine, key, self._events)
         self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
@@ -508,7 +508,7 @@ class TableBorderComp(ComponentBase):
                 self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property
-    def vertical_line(self) -> BorderLineComp:
+    def vertical_line(self) -> BorderLineStructComp:
         """
         Gets/Set the vertical line style edge.
 
@@ -523,18 +523,18 @@ class TableBorderComp(ComponentBase):
         key = "vertical_line"
         prop = self._props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.component.VerticalLine, key, self._events)
+            prop = BorderLineStructComp(self.component.VerticalLine, key, self._events)
             self._props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @vertical_line.setter
-    def vertical_line(self, value: BorderLineComp | BorderLine) -> None:
+    def vertical_line(self, value: BorderLineStructComp | BorderLine) -> None:
         key = "vertical_line"
         old_value = self.component.VerticalLine
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             new_value = value.copy()
         else:
-            comp = BorderLineComp(cast(BorderLine, value), key)
+            comp = BorderLineStructComp(cast(BorderLine, value), key)
             new_value = comp.copy()
 
         event_args = KeyValCancelArgs(
@@ -552,7 +552,7 @@ class TableBorderComp(ComponentBase):
         struct = self._copy()
         struct.VerticalLine = event_args.value
         self.component = struct
-        self._props[key] = BorderLineComp(self.component.VerticalLine, key, self._events)
+        self._props[key] = BorderLineStructComp(self.component.VerticalLine, key, self._events)
         self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
 
     @property

@@ -14,12 +14,12 @@ from ooodev.units.angle100 import Angle100
 from ooodev.utils import info as mInfo
 
 from ooodev.adapter.container.name_container_comp import NameContainerComp
-from ooodev.adapter.table.border_line_comp import BorderLineComp
-from ooodev.adapter.table.border_line2_comp import BorderLine2Comp
-from ooodev.adapter.table.table_border_comp import TableBorderComp
-from ooodev.adapter.table.table_border2_comp import TableBorder2Comp
-from ooodev.adapter.util.cell_protection_comp import CellProtectionComp
-from ooodev.adapter.table.shadow_format_comp import ShadowFormatComp
+from ooodev.adapter.table.border_line_struct_comp import BorderLineStructComp
+from ooodev.adapter.table.border_line2_struct_comp import BorderLine2StructComp
+from ooodev.adapter.table.table_border_struct_comp import TableBorderStructComp
+from ooodev.adapter.table.table_border2_struct_comp import TableBorder2StructComp
+from ooodev.adapter.util.cell_protection_struct_comp import CellProtectionStructComp
+from ooodev.adapter.table.shadow_format_struct_comp import ShadowFormatStructComp
 from ooodev.events.events import Events
 
 
@@ -122,7 +122,7 @@ class CellPropertiesPartialProps:
             self.__component.AsianVerticalMode = value
 
     @property
-    def bottom_border(self) -> BorderLineComp:
+    def bottom_border(self) -> BorderLineStructComp:
         """
         Gets/Sets a description of the bottom border line of each cell.
 
@@ -137,21 +137,21 @@ class CellPropertiesPartialProps:
         key = "BottomBorder"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.__component.BottomBorder, key, self.__event_provider)
+            prop = BorderLineStructComp(self.__component.BottomBorder, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @bottom_border.setter
-    def bottom_border(self, value: BorderLine | BorderLineComp) -> None:
+    def bottom_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "BottomBorder"
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             self.__component.BottomBorder = value.component
         else:
             self.__component.BottomBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineComp(self.__component.BottomBorder, key, self.__event_provider)
+        self.__props[key] = BorderLineStructComp(self.__component.BottomBorder, key, self.__event_provider)
 
     @property
-    def bottom_border2(self) -> BorderLine2Comp | None:
+    def bottom_border2(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets a description of the bottom border line of each cell.
 
@@ -172,20 +172,20 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLine2Comp(self.__component.BottomBorder2, key, self.__event_provider)
+            prop = BorderLine2StructComp(self.__component.BottomBorder2, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLine2Comp, prop)
+        return cast(BorderLine2StructComp, prop)
 
     @bottom_border2.setter
-    def bottom_border2(self, value: BorderLine2 | BorderLine2Comp) -> None:
+    def bottom_border2(self, value: BorderLine2 | BorderLine2StructComp) -> None:
         key = "BottomBorder2"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLine2Comp):
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
             self.__component.BottomBorder2 = value.component
         else:
             self.__component.BottomBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2Comp(self.__component.BottomBorder2, key, self.__event_provider)
+        self.__props[key] = BorderLine2StructComp(self.__component.BottomBorder2, key, self.__event_provider)
 
     @property
     def cell_back_color(self) -> Color:
@@ -202,7 +202,7 @@ class CellPropertiesPartialProps:
         self.__component.CellBackColor = value  # type: ignore
 
     @property
-    def cell_protection(self) -> CellProtectionComp:
+    def cell_protection(self) -> CellProtectionStructComp:
         """
         Gets/Sets a description of the cell protection.
 
@@ -211,18 +211,18 @@ class CellPropertiesPartialProps:
         key = "CellProtection"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = CellProtectionComp(self.__component.CellProtection, key, self.__event_provider)
+            prop = CellProtectionStructComp(self.__component.CellProtection, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(CellProtectionComp, prop)
+        return cast(CellProtectionStructComp, prop)
 
     @cell_protection.setter
-    def cell_protection(self, value: CellProtection | CellProtectionComp) -> None:
+    def cell_protection(self, value: CellProtection | CellProtectionStructComp) -> None:
         key = "CellProtection"
-        if mInfo.Info.is_instance(value, CellProtectionComp):
+        if mInfo.Info.is_instance(value, CellProtectionStructComp):
             self.__component.CellProtection = value.component
         else:
             self.__component.CellProtection = cast("CellProtection", value)
-        self.__props[key] = CellProtectionComp(self.__component.CellProtection, key, self.__event_provider)
+        self.__props[key] = CellProtectionStructComp(self.__component.CellProtection, key, self.__event_provider)
 
     @property
     def cell_style(self) -> str:
@@ -236,7 +236,7 @@ class CellPropertiesPartialProps:
         self.__component.CellStyle = value
 
     @property
-    def diagonal_bltr(self) -> BorderLineComp | None:
+    def diagonal_bltr(self) -> BorderLineStructComp | None:
         """
         Gets/Sets a description of the bottom left to top right diagonal line of each cell.
 
@@ -255,23 +255,23 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.__component.DiagonalBLTR, key, self.__event_provider)
+            prop = BorderLineStructComp(self.__component.DiagonalBLTR, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @diagonal_bltr.setter
-    def diagonal_bltr(self, value: BorderLine | BorderLineComp) -> None:
+    def diagonal_bltr(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "DiagonalBLTR"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             self.__component.DiagonalBLTR = value.component
         else:
             self.__component.DiagonalBLTR = cast("BorderLine", value)
-        self.__props[key] = BorderLineComp(self.__component.DiagonalBLTR, key, self.__event_provider)
+        self.__props[key] = BorderLineStructComp(self.__component.DiagonalBLTR, key, self.__event_provider)
 
     @property
-    def diagonal_bltr2(self) -> BorderLine2Comp | None:
+    def diagonal_bltr2(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets a description of the bottom left to top right diagonal line of each cell.
 
@@ -292,23 +292,23 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLine2Comp(self.__component.DiagonalBLTR2, key, self.__event_provider)
+            prop = BorderLine2StructComp(self.__component.DiagonalBLTR2, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLine2Comp, prop)
+        return cast(BorderLine2StructComp, prop)
 
     @diagonal_bltr2.setter
-    def diagonal_bltr2(self, value: BorderLine2 | BorderLine2Comp) -> None:
+    def diagonal_bltr2(self, value: BorderLine2 | BorderLine2StructComp) -> None:
         key = "DiagonalBLTR2"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLine2Comp):
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
             self.__component.DiagonalBLTR2 = value.component
         else:
             self.__component.DiagonalBLTR2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2Comp(self.__component.DiagonalBLTR2, key, self.__event_provider)
+        self.__props[key] = BorderLine2StructComp(self.__component.DiagonalBLTR2, key, self.__event_provider)
 
     @property
-    def diagonal_tlbr(self) -> BorderLineComp | None:
+    def diagonal_tlbr(self) -> BorderLineStructComp | None:
         """
         Gets/Sets a description of the top left to bottom right diagonal line of each cell.
 
@@ -327,23 +327,23 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.__component.DiagonalTLBR, key, self.__event_provider)
+            prop = BorderLineStructComp(self.__component.DiagonalTLBR, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @diagonal_tlbr.setter
-    def diagonal_tlbr(self, value: BorderLine | BorderLineComp) -> None:
+    def diagonal_tlbr(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "DiagonalTLBR"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             self.__component.DiagonalTLBR = value.component
         else:
             self.__component.DiagonalTLBR = cast("BorderLine", value)
-        self.__props[key] = BorderLineComp(self.__component.DiagonalTLBR, key, self.__event_provider)
+        self.__props[key] = BorderLineStructComp(self.__component.DiagonalTLBR, key, self.__event_provider)
 
     @property
-    def diagonal_tlbr2(self) -> BorderLine2Comp | None:
+    def diagonal_tlbr2(self) -> BorderLine2StructComp | None:
         """
         contains a description of the top left to bottom right diagonal line of each cell.
 
@@ -362,20 +362,20 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLine2Comp(self.__component.DiagonalTLBR2, key, self.__event_provider)
+            prop = BorderLine2StructComp(self.__component.DiagonalTLBR2, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLine2Comp, prop)
+        return cast(BorderLine2StructComp, prop)
 
     @diagonal_tlbr2.setter
-    def diagonal_tlbr2(self, value: BorderLine2 | BorderLine2Comp) -> None:
+    def diagonal_tlbr2(self, value: BorderLine2 | BorderLine2StructComp) -> None:
         key = "DiagonalTLBR2"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLine2Comp):
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
             self.__component.DiagonalTLBR2 = value.component
         else:
             self.__component.DiagonalTLBR2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2Comp(self.__component.DiagonalTLBR2, key, self.__event_provider)
+        self.__props[key] = BorderLine2StructComp(self.__component.DiagonalTLBR2, key, self.__event_provider)
 
     @property
     def hori_justify(self) -> CellHoriJustify:
@@ -419,7 +419,7 @@ class CellPropertiesPartialProps:
         self.__component.IsTextWrapped = value
 
     @property
-    def left_border(self) -> BorderLineComp:
+    def left_border(self) -> BorderLineStructComp:
         """
         Gets/Sets a description of the left border line of each cell.
 
@@ -434,21 +434,21 @@ class CellPropertiesPartialProps:
         key = "LeftBorder"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.__component.LeftBorder, key, self.__event_provider)
+            prop = BorderLineStructComp(self.__component.LeftBorder, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @left_border.setter
-    def left_border(self, value: BorderLine | BorderLineComp) -> None:
+    def left_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "LeftBorder"
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             self.__component.LeftBorder = value.component
         else:
             self.__component.LeftBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineComp(self.__component.LeftBorder, key, self.__event_provider)
+        self.__props[key] = BorderLineStructComp(self.__component.LeftBorder, key, self.__event_provider)
 
     @property
-    def left_border2(self) -> BorderLine2Comp | None:
+    def left_border2(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets a description of the left border line of each cell.
 
@@ -469,20 +469,20 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLine2Comp(self.__component.LeftBorder2, key, self.__event_provider)
+            prop = BorderLine2StructComp(self.__component.LeftBorder2, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLine2Comp, prop)
+        return cast(BorderLine2StructComp, prop)
 
     @left_border2.setter
-    def left_border2(self, value: BorderLine2 | BorderLine2Comp) -> None:
+    def left_border2(self, value: BorderLine2 | BorderLine2StructComp) -> None:
         key = "LeftBorder2"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLine2Comp):
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
             self.__component.LeftBorder2 = value.component
         else:
             self.__component.LeftBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2Comp(self.__component.LeftBorder2, key, self.__event_provider)
+        self.__props[key] = BorderLine2StructComp(self.__component.LeftBorder2, key, self.__event_provider)
 
     @property
     def number_format(self) -> int:
@@ -534,7 +534,7 @@ class CellPropertiesPartialProps:
         self.__component.ParaIndent = val.value
 
     @property
-    def right_border(self) -> BorderLineComp:
+    def right_border(self) -> BorderLineStructComp:
         """
         Gets/Sets a description of the right border line of each cell.
 
@@ -549,21 +549,21 @@ class CellPropertiesPartialProps:
         key = "RightBorder"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.__component.RightBorder, key, self.__event_provider)
+            prop = BorderLineStructComp(self.__component.RightBorder, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @right_border.setter
-    def right_border(self, value: BorderLine | BorderLineComp) -> None:
+    def right_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "RightBorder"
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             self.__component.RightBorder = value.component
         else:
             self.__component.RightBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineComp(self.__component.RightBorder, key, self.__event_provider)
+        self.__props[key] = BorderLineStructComp(self.__component.RightBorder, key, self.__event_provider)
 
     @property
-    def right_border2(self) -> BorderLine2Comp | None:
+    def right_border2(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets a description of the right border line of each cell.
 
@@ -584,20 +584,20 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLine2Comp(self.__component.RightBorder2, key, self.__event_provider)
+            prop = BorderLine2StructComp(self.__component.RightBorder2, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLine2Comp, prop)
+        return cast(BorderLine2StructComp, prop)
 
     @right_border2.setter
-    def right_border2(self, value: BorderLine2 | BorderLine2Comp) -> None:
+    def right_border2(self, value: BorderLine2 | BorderLine2StructComp) -> None:
         key = "RightBorder2"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLine2Comp):
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
             self.__component.RightBorder2 = value.component
         else:
             self.__component.RightBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2Comp(self.__component.RightBorder2, key, self.__event_provider)
+        self.__props[key] = BorderLine2StructComp(self.__component.RightBorder2, key, self.__event_provider)
 
     @property
     def rotate_angle(self) -> Angle100:
@@ -632,25 +632,25 @@ class CellPropertiesPartialProps:
         self.__component.RotateReference = val.value
 
     @property
-    def shadow_format(self) -> ShadowFormatComp:
+    def shadow_format(self) -> ShadowFormatStructComp:
         """
         Gets/Sets a description of the shadow.
         """
         key = "ShadowFormat"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = ShadowFormatComp(self.__component.ShadowFormat, key, self.__event_provider)
+            prop = ShadowFormatStructComp(self.__component.ShadowFormat, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(ShadowFormatComp, prop)
+        return cast(ShadowFormatStructComp, prop)
 
     @shadow_format.setter
-    def shadow_format(self, value: ShadowFormat | ShadowFormatComp) -> None:
+    def shadow_format(self, value: ShadowFormat | ShadowFormatStructComp) -> None:
         key = "ShadowFormat"
-        if mInfo.Info.is_instance(value, ShadowFormatComp):
+        if mInfo.Info.is_instance(value, ShadowFormatStructComp):
             self.__component.ShadowFormat = value.component
         else:
             self.__component.ShadowFormat = cast("ShadowFormat", value)
-        self.__props[key] = ShadowFormatComp(self.__component.ShadowFormat, key, self.__event_provider)
+        self.__props[key] = ShadowFormatStructComp(self.__component.ShadowFormat, key, self.__event_provider)
 
     @property
     def shrink_to_fit(self) -> bool | None:
@@ -669,7 +669,7 @@ class CellPropertiesPartialProps:
             self.__component.ShrinkToFit = value
 
     @property
-    def table_border(self) -> TableBorderComp:
+    def table_border(self) -> TableBorderStructComp:
         """
         contains a description of the cell or cell range border.
 
@@ -681,21 +681,21 @@ class CellPropertiesPartialProps:
         key = "TableBorder"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = TableBorderComp(self.__component.TableBorder, key, self.__event_provider)
+            prop = TableBorderStructComp(self.__component.TableBorder, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(TableBorderComp, prop)
+        return cast(TableBorderStructComp, prop)
 
     @table_border.setter
-    def table_border(self, value: TableBorder | TableBorderComp) -> None:
+    def table_border(self, value: TableBorder | TableBorderStructComp) -> None:
         key = "TableBorder"
-        if mInfo.Info.is_instance(value, TableBorderComp):
+        if mInfo.Info.is_instance(value, TableBorderStructComp):
             self.__component.TableBorder = value.component
         else:
             self.__component.TableBorder = cast("TableBorder", value)
-        self.__props[key] = TableBorderComp(self.__component.TableBorder, key, self.__event_provider)
+        self.__props[key] = TableBorderStructComp(self.__component.TableBorder, key, self.__event_provider)
 
     @property
-    def table_border2(self) -> TableBorder2Comp | None:
+    def table_border2(self) -> TableBorder2StructComp | None:
         """
         Gets/Seta a description of the cell or cell range border.
 
@@ -710,23 +710,23 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = TableBorder2Comp(self.__component.TableBorder2, key, self.__event_provider)
+            prop = TableBorder2StructComp(self.__component.TableBorder2, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(TableBorder2Comp, prop)
+        return cast(TableBorder2StructComp, prop)
 
     @table_border2.setter
-    def table_border2(self, value: TableBorder2 | TableBorder2Comp) -> None:
+    def table_border2(self, value: TableBorder2 | TableBorder2StructComp) -> None:
         key = "TableBorder2"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, TableBorder2Comp):
+        if mInfo.Info.is_instance(value, TableBorder2StructComp):
             self.__component.TableBorder2 = value.component
         else:
             self.__component.TableBorder2 = cast("TableBorder2", value)
-        self.__props[key] = TableBorder2Comp(self.__component.TableBorder2, key, self.__event_provider)
+        self.__props[key] = TableBorder2StructComp(self.__component.TableBorder2, key, self.__event_provider)
 
     @property
-    def top_border(self) -> BorderLineComp:
+    def top_border(self) -> BorderLineStructComp:
         """
         Gets/Sets a description of the top border line of each cell.
 
@@ -741,21 +741,21 @@ class CellPropertiesPartialProps:
         key = "TopBorder"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLineComp(self.__component.TopBorder, key, self.__event_provider)
+            prop = BorderLineStructComp(self.__component.TopBorder, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLineComp, prop)
+        return cast(BorderLineStructComp, prop)
 
     @top_border.setter
-    def top_border(self, value: BorderLine | BorderLineComp) -> None:
+    def top_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "TopBorder"
-        if mInfo.Info.is_instance(value, BorderLineComp):
+        if mInfo.Info.is_instance(value, BorderLineStructComp):
             self.__component.TopBorder = value.component
         else:
             self.__component.TopBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineComp(self.__component.TopBorder, key, self.__event_provider)
+        self.__props[key] = BorderLineStructComp(self.__component.TopBorder, key, self.__event_provider)
 
     @property
-    def top_border2(self) -> BorderLine2Comp | None:
+    def top_border2(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets a description of the top border line of each cell.
 
@@ -776,20 +776,20 @@ class CellPropertiesPartialProps:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = BorderLine2Comp(self.__component.TopBorder2, key, self.__event_provider)
+            prop = BorderLine2StructComp(self.__component.TopBorder2, key, self.__event_provider)
             self.__props[key] = prop
-        return cast(BorderLine2Comp, prop)
+        return cast(BorderLine2StructComp, prop)
 
     @top_border2.setter
-    def top_border2(self, value: BorderLine2 | BorderLine2Comp) -> None:
+    def top_border2(self, value: BorderLine2 | BorderLine2StructComp) -> None:
         key = "TopBorder2"
         if not hasattr(self.__component, key):
             return
-        if mInfo.Info.is_instance(value, BorderLine2Comp):
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
             self.__component.TopBorder2 = value.component
         else:
             self.__component.TopBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2Comp(self.__component.TopBorder2, key, self.__event_provider)
+        self.__props[key] = BorderLine2StructComp(self.__component.TopBorder2, key, self.__event_provider)
 
     @property
     def user_defined_attributes(self) -> NameContainerComp | None:

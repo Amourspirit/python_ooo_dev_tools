@@ -3,7 +3,7 @@ from typing import cast, TYPE_CHECKING
 import uno
 from ooo.dyn.table.border_line2 import BorderLine2
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum
-from ooodev.adapter.table.border_line_comp import BorderLineComp
+from ooodev.adapter.table.border_line_struct_comp import BorderLineStructComp
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.args.key_val_args import KeyValArgs
 from ooodev.units.unit_mm100 import UnitMM100
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
 
 
-class BorderLine2Comp(BorderLineComp):
+class BorderLine2StructComp(BorderLineStructComp):
     """
     Border2 Line Struct. A border line, extended with line style.
 
