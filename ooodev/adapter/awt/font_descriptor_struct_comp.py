@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 # self.component = fd
 
 
-class FontDescriptorComp(ComponentBase):
+class FontDescriptorStructComp(ComponentBase):
     """
     Font Descriptor Struct
 

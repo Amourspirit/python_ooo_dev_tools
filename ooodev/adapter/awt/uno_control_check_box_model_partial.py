@@ -13,7 +13,7 @@ from ooodev.utils.kind.tri_state_kind import TriStateKind
 from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
-from ooodev.adapter.awt.font_descriptor_comp import FontDescriptorComp
+from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlCheckBoxModel  # Service
@@ -40,7 +40,7 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
 
         event_provider = self if isinstance(self, EventsPartial) else None
         UnoControlModelPartial.__init__(self)
-        self.__font_descriptor = FontDescriptorComp(self.model.FontDescriptor, event_provider)
+        self.__font_descriptor = FontDescriptorStructComp(self.model.FontDescriptor, event_provider)
 
         if event_provider is not None:
 
@@ -65,7 +65,7 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
     # region Properties
 
     @property
-    def font_descriptor(self) -> FontDescriptorComp:
+    def font_descriptor(self) -> FontDescriptorStructComp:
         """
         Gets the Font Descriptor
 
