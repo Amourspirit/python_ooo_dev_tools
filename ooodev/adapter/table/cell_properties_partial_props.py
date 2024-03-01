@@ -126,10 +126,10 @@ class CellPropertiesPartialProps:
         """
         Gets/Sets a description of the bottom border line of each cell.
 
-        Setting value can be done with a ``BorderLine`` or ``BorderLineComp`` object.
+        Setting value can be done with a ``BorderLine`` or ``BorderLineStructComp`` object.
 
         Returns:
-            BorderLineComp: Returns Border Line.
+            BorderLineStructComp: Returns Border Line.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooo.dyn.table.border_line``
@@ -145,10 +145,11 @@ class CellPropertiesPartialProps:
     def bottom_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "BottomBorder"
         if mInfo.Info.is_instance(value, BorderLineStructComp):
-            self.__component.BottomBorder = value.component
+            self.__component.BottomBorder = value.copy()
         else:
             self.__component.BottomBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineStructComp(self.__component.BottomBorder, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def bottom_border2(self) -> BorderLine2StructComp | None:
@@ -157,12 +158,12 @@ class CellPropertiesPartialProps:
 
         Preferred over ``bottom_border``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         **optional**
 
         Returns:
-            BorderLine2Comp | None: Returns BorderLine2 or None if not supported.
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -182,10 +183,11 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLine2StructComp):
-            self.__component.BottomBorder2 = value.component
+            self.__component.BottomBorder2 = value.copy()
         else:
             self.__component.BottomBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2StructComp(self.__component.BottomBorder2, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def cell_back_color(self) -> Color:
@@ -219,10 +221,11 @@ class CellPropertiesPartialProps:
     def cell_protection(self, value: CellProtection | CellProtectionStructComp) -> None:
         key = "CellProtection"
         if mInfo.Info.is_instance(value, CellProtectionStructComp):
-            self.__component.CellProtection = value.component
+            self.__component.CellProtection = value.copy()
         else:
             self.__component.CellProtection = cast("CellProtection", value)
-        self.__props[key] = CellProtectionStructComp(self.__component.CellProtection, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def cell_style(self) -> str:
@@ -240,12 +243,12 @@ class CellPropertiesPartialProps:
         """
         Gets/Sets a description of the bottom left to top right diagonal line of each cell.
 
-        Setting value can be done with a ``BorderLine`` or ``BorderLineComp`` object.
+        Setting value can be done with a ``BorderLine`` or ``BorderLineStructComp`` object.
 
         **optional**
 
         Returns:
-            BorderLineComp: Returns Border Line.
+            BorderLineStructComp: Returns Border Line.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooo.dyn.table.border_line``
@@ -265,10 +268,11 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLineStructComp):
-            self.__component.DiagonalBLTR = value.component
+            self.__component.DiagonalBLTR = value.copy()
         else:
             self.__component.DiagonalBLTR = cast("BorderLine", value)
-        self.__props[key] = BorderLineStructComp(self.__component.DiagonalBLTR, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def diagonal_bltr2(self) -> BorderLine2StructComp | None:
@@ -277,12 +281,12 @@ class CellPropertiesPartialProps:
 
         Preferred over ``diagonal_bltr``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         **optional**
 
         Returns:
-            BorderLine2Comp | None: Returns BorderLine2 or None if not supported.
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -302,22 +306,23 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLine2StructComp):
-            self.__component.DiagonalBLTR2 = value.component
+            self.__component.DiagonalBLTR2 = value.copy()
         else:
             self.__component.DiagonalBLTR2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2StructComp(self.__component.DiagonalBLTR2, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def diagonal_tlbr(self) -> BorderLineStructComp | None:
         """
         Gets/Sets a description of the top left to bottom right diagonal line of each cell.
 
-        Setting value can be done with a ``BorderLine`` or ``BorderLineComp`` object.
+        Setting value can be done with a ``BorderLine`` or ``BorderLineStructComp`` object.
 
         **optional**
 
         Returns:
-            BorderLineComp: Returns BorderLine.
+            BorderLineStructComp: Returns BorderLine.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooo.dyn.table.border_line``
@@ -337,10 +342,11 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLineStructComp):
-            self.__component.DiagonalTLBR = value.component
+            self.__component.DiagonalTLBR = value.copy()
         else:
             self.__component.DiagonalTLBR = cast("BorderLine", value)
-        self.__props[key] = BorderLineStructComp(self.__component.DiagonalTLBR, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def diagonal_tlbr2(self) -> BorderLine2StructComp | None:
@@ -352,7 +358,7 @@ class CellPropertiesPartialProps:
         **optional**
 
         Returns:
-            BorderLine2Comp | None: Returns BorderLine2 or None if not supported.
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -372,10 +378,11 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLine2StructComp):
-            self.__component.DiagonalTLBR2 = value.component
+            self.__component.DiagonalTLBR2 = value.copy()
         else:
             self.__component.DiagonalTLBR2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2StructComp(self.__component.DiagonalTLBR2, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def hori_justify(self) -> CellHoriJustify:
@@ -423,10 +430,10 @@ class CellPropertiesPartialProps:
         """
         Gets/Sets a description of the left border line of each cell.
 
-        Setting value can be done with a ``BorderLine`` or ``BorderLineComp`` object.
+        Setting value can be done with a ``BorderLine`` or ``BorderLineStructComp`` object.
 
         Returns:
-            BorderLineComp: Returns Border Line.
+            BorderLineStructComp: Returns Border Line.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooo.dyn.table.border_line``
@@ -442,10 +449,11 @@ class CellPropertiesPartialProps:
     def left_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "LeftBorder"
         if mInfo.Info.is_instance(value, BorderLineStructComp):
-            self.__component.LeftBorder = value.component
+            self.__component.LeftBorder = value.copy()
         else:
             self.__component.LeftBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineStructComp(self.__component.LeftBorder, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def left_border2(self) -> BorderLine2StructComp | None:
@@ -454,12 +462,12 @@ class CellPropertiesPartialProps:
 
         Preferred over ``left_border``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         **optional**
 
         Returns:
-            BorderLine2Comp | None: Returns BorderLine2 or None if not supported.
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -479,10 +487,11 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLine2StructComp):
-            self.__component.LeftBorder2 = value.component
+            self.__component.LeftBorder2 = value.copy()
         else:
             self.__component.LeftBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2StructComp(self.__component.LeftBorder2, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def number_format(self) -> int:
@@ -538,10 +547,10 @@ class CellPropertiesPartialProps:
         """
         Gets/Sets a description of the right border line of each cell.
 
-        Setting value can be done with a ``BorderLine`` or ``BorderLineComp`` object.
+        Setting value can be done with a ``BorderLine`` or ``BorderLineStructComp`` object.
 
         Returns:
-            BorderLineComp: Returns Border Line.
+            BorderLineStructComp: Returns Border Line.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooo.dyn.table.border_line``
@@ -557,24 +566,25 @@ class CellPropertiesPartialProps:
     def right_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "RightBorder"
         if mInfo.Info.is_instance(value, BorderLineStructComp):
-            self.__component.RightBorder = value.component
+            self.__component.RightBorder = value.copy()
         else:
             self.__component.RightBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineStructComp(self.__component.RightBorder, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def right_border2(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets a description of the right border line of each cell.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         Preferred over ``right_border``.
 
         **optional**
 
         Returns:
-            BorderLine2Comp | None: Returns BorderLine2 or None if not supported.
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -594,10 +604,11 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLine2StructComp):
-            self.__component.RightBorder2 = value.component
+            self.__component.RightBorder2 = value.copy()
         else:
             self.__component.RightBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2StructComp(self.__component.RightBorder2, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def rotate_angle(self) -> Angle100:
@@ -647,10 +658,11 @@ class CellPropertiesPartialProps:
     def shadow_format(self, value: ShadowFormat | ShadowFormatStructComp) -> None:
         key = "ShadowFormat"
         if mInfo.Info.is_instance(value, ShadowFormatStructComp):
-            self.__component.ShadowFormat = value.component
+            self.__component.ShadowFormat = value.copy()
         else:
             self.__component.ShadowFormat = cast("ShadowFormat", value)
-        self.__props[key] = ShadowFormatStructComp(self.__component.ShadowFormat, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def shrink_to_fit(self) -> bool | None:
@@ -675,8 +687,13 @@ class CellPropertiesPartialProps:
 
         If used with a cell range, the top, left, right, and bottom lines are at the edges of the entire range, not at the edges of the individual cell.
 
+        Setting value can be done with a ``TableBorder`` or ``TableBorderStructComp`` object.
+
         Returns:
             TableBorderComp: Table Border.
+
+        Hint:
+            - ``TableBorder`` can be imported from ``ooo.dyn.table.table_border``
         """
         key = "TableBorder"
         prop = self.__props.get(key, None)
@@ -689,10 +706,11 @@ class CellPropertiesPartialProps:
     def table_border(self, value: TableBorder | TableBorderStructComp) -> None:
         key = "TableBorder"
         if mInfo.Info.is_instance(value, TableBorderStructComp):
-            self.__component.TableBorder = value.component
+            self.__component.TableBorder = value.copy()
         else:
             self.__component.TableBorder = cast("TableBorder", value)
-        self.__props[key] = TableBorderStructComp(self.__component.TableBorder, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def table_border2(self) -> TableBorder2StructComp | None:
@@ -703,7 +721,15 @@ class CellPropertiesPartialProps:
 
         If used with a cell range, the top, left, right, and bottom lines are at the edges of the entire range, not at the edges of the individual cell.
 
+        Setting value can be done with a ``TableBorder2`` or ``TableBorder2StructComp`` object.
+
         **optional**
+
+        Returns:
+            TableBorder2StructComp | None: Returns TableBorder2 or None if not supported.
+
+        Hint:
+            - ``TableBorder2`` can be imported from ``ooo.dyn.table.table_border2``
         """
         key = "TableBorder2"
         if not hasattr(self.__component, key):
@@ -720,20 +746,21 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, TableBorder2StructComp):
-            self.__component.TableBorder2 = value.component
+            self.__component.TableBorder2 = value.copy()
         else:
             self.__component.TableBorder2 = cast("TableBorder2", value)
-        self.__props[key] = TableBorder2StructComp(self.__component.TableBorder2, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def top_border(self) -> BorderLineStructComp:
         """
         Gets/Sets a description of the top border line of each cell.
 
-        Setting value can be done with a ``BorderLine`` or ``BorderLineComp`` object.
+        Setting value can be done with a ``BorderLine`` or ``BorderLineStructComp`` object.
 
         Returns:
-            BorderLineComp: Returns Border Line.
+            BorderLineStructComp: Returns Border Line.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooo.dyn.table.border_line``
@@ -749,10 +776,11 @@ class CellPropertiesPartialProps:
     def top_border(self, value: BorderLine | BorderLineStructComp) -> None:
         key = "TopBorder"
         if mInfo.Info.is_instance(value, BorderLineStructComp):
-            self.__component.TopBorder = value.component
+            self.__component.TopBorder = value.copy()
         else:
             self.__component.TopBorder = cast("BorderLine", value)
-        self.__props[key] = BorderLineStructComp(self.__component.TopBorder, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def top_border2(self) -> BorderLine2StructComp | None:
@@ -761,12 +789,12 @@ class CellPropertiesPartialProps:
 
         Preferred over ``top_border``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         **optional**
 
         Returns:
-            BorderLine2Comp | None: Returns BorderLine2 or None if not supported.
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -786,10 +814,11 @@ class CellPropertiesPartialProps:
         if not hasattr(self.__component, key):
             return
         if mInfo.Info.is_instance(value, BorderLine2StructComp):
-            self.__component.TopBorder2 = value.component
+            self.__component.TopBorder2 = value.copy()
         else:
             self.__component.TopBorder2 = cast("BorderLine2", value)
-        self.__props[key] = BorderLine2StructComp(self.__component.TopBorder2, key, self.__event_provider)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def user_defined_attributes(self) -> NameContainerComp | None:

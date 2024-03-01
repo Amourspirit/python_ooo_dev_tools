@@ -4,9 +4,8 @@ import uno
 from ooo.dyn.table.table_border2 import TableBorder2
 from ooo.dyn.table.border_line2 import BorderLine2
 
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.struct_base import StructBase
 from ooodev.events.events import Events
-from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.args.key_val_args import KeyValArgs
 from ooodev.adapter.table.border_line2_struct_comp import BorderLine2StructComp
 from ooodev.utils import info as mInfo
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
 
 
-class TableBorder2StructComp(ComponentBase):
+class TableBorder2StructComp(StructBase[TableBorder2]):
     """
     Table Border2 Struct
 
@@ -40,11 +39,8 @@ class TableBorder2StructComp(ComponentBase):
             prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
             event_provider (EventsT | None): Event Provider.
         """
-        ComponentBase.__init__(self, component)
-        self._event_provider = event_provider
-        self._prop_name = prop_name
+        super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
         self._props = {}
-        self._top_line = cast(BorderLine2StructComp, None)
         self._events = Events(source=self)
 
         # pylint: disable=unused-argument
@@ -58,29 +54,12 @@ class TableBorder2StructComp(ComponentBase):
         self._events.subscribe_event("com_sun_star_table_BorderLine2_changed", self.__fn_on_border_line_changed)
 
     # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        # PropertySetPartial will validate
-        return ()
-
-    # endregion Overrides
 
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_table_TableBorder2_changed"
 
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_table_TableBorder2_changing"
-
-    def _get_prop_name(self) -> str:
-        return self._prop_name
-
-    def _on_property_changing(self, event_args: KeyValCancelArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event(self._get_on_changing_event_name(), event_args)
-
-    def _on_property_changed(self, event_args: KeyValArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event(self._get_on_changed_event_name(), event_args)
 
     def _copy(self, src: TableBorder2 | None = None) -> TableBorder2:
         if src is None:
@@ -113,27 +92,9 @@ class TableBorder2StructComp(ComponentBase):
             IsDistanceValid=src.IsDistanceValid,
         )
 
-    def copy(self) -> TableBorder2:
-        """
-        Makes a copy of the Table Border.
-
-        Returns:
-            TableBorder2: Copied Table Border.
-        """
-        return self._copy()
+    # endregion Overrides
 
     # region Properties
-
-    @property
-    def component(self) -> TableBorder2:
-        """TableBorder2 Component"""
-        # pylint: disable=no-member
-        return cast("TableBorder2", self._ComponentBase__get_component())  # type: ignore
-
-    @component.setter
-    def component(self, value: TableBorder2) -> None:
-        # pylint: disable=no-member
-        self._ComponentBase__set_component(self._copy(src=value))  # type: ignore
 
     @property
     def top_line(self) -> BorderLine2StructComp:
@@ -165,23 +126,12 @@ class TableBorder2StructComp(ComponentBase):
             comp = BorderLine2StructComp(cast(BorderLine2, value), key)
             new_value = comp.copy()
 
-        event_args = KeyValCancelArgs(
-            source=self,
-            key=key,
-            value=new_value,
-        )
-        event_args.event_data = {
-            "old_value": old_value,
-            "prop_name": self._get_prop_name(),
-        }
-        self._on_property_changing(event_args)
-        if event_args.cancel:
+        event_args = self._trigger_cancel_event("TopLine", old_value, new_value)
+        done_args = self._trigger_done_event(event_args)
+        if done_args is None:
             return
-        struct = self._copy()
-        struct.TopLine = event_args.value
-        self.component = struct
-        self._props[key] = BorderLine2StructComp(self.component.TopLine, key, self._events)
-        self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+        if key in self._props:
+            del self._props[key]
 
     @property
     def is_top_line_valid(self) -> bool:
@@ -194,21 +144,8 @@ class TableBorder2StructComp(ComponentBase):
     def is_top_line_valid(self, value: bool) -> None:
         old_value = self.component.IsTopLineValid
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_top_line_valid",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsTopLineValid = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsTopLineValid", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def bottom_line(self) -> BorderLine2StructComp:
@@ -240,23 +177,12 @@ class TableBorder2StructComp(ComponentBase):
             comp = BorderLine2StructComp(cast(BorderLine2, value), key)
             new_value = comp.copy()
 
-        event_args = KeyValCancelArgs(
-            source=self,
-            key=key,
-            value=new_value,
-        )
-        event_args.event_data = {
-            "old_value": old_value,
-            "prop_name": self._get_prop_name(),
-        }
-        self._on_property_changing(event_args)
-        if event_args.cancel:
+        event_args = self._trigger_cancel_event("BottomLine", old_value, new_value)
+        done_args = self._trigger_done_event(event_args)
+        if done_args is None:
             return
-        struct = self._copy()
-        struct.BottomLine = event_args.value
-        self.component = struct
-        self._props[key] = BorderLine2StructComp(self.component.BottomLine, key, self._events)
-        self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+        if key in self._props:
+            del self._props[key]
 
     @property
     def is_bottom_line_valid(self) -> bool:
@@ -269,21 +195,8 @@ class TableBorder2StructComp(ComponentBase):
     def is_bottom_line_valid(self, value: bool) -> None:
         old_value = self.component.IsBottomLineValid
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_bottom_line_valid",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsBottomLineValid = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsBottomLineValid", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def left_line(self) -> BorderLine2StructComp:
@@ -315,23 +228,12 @@ class TableBorder2StructComp(ComponentBase):
             comp = BorderLine2StructComp(cast(BorderLine2, value), key)
             new_value = comp.copy()
 
-        event_args = KeyValCancelArgs(
-            source=self,
-            key=key,
-            value=new_value,
-        )
-        event_args.event_data = {
-            "old_value": old_value,
-            "prop_name": self._get_prop_name(),
-        }
-        self._on_property_changing(event_args)
-        if event_args.cancel:
+        event_args = self._trigger_cancel_event("LeftLine", old_value, new_value)
+        done_args = self._trigger_done_event(event_args)
+        if done_args is None:
             return
-        struct = self._copy()
-        struct.LeftLine = event_args.value
-        self.component = struct
-        self._props[key] = BorderLine2StructComp(self.component.LeftLine, key, self._events)
-        self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+        if key in self._props:
+            del self._props[key]
 
     @property
     def is_left_line_valid(self) -> bool:
@@ -344,21 +246,8 @@ class TableBorder2StructComp(ComponentBase):
     def is_left_line_valid(self, value: bool) -> None:
         old_value = self.component.IsLeftLineValid
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_left_line_valid",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsLeftLineValid = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsLeftLineValid", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def right_line(self) -> BorderLine2StructComp:
@@ -390,23 +279,12 @@ class TableBorder2StructComp(ComponentBase):
             comp = BorderLine2StructComp(cast(BorderLine2, value), key)
             new_value = comp.copy()
 
-        event_args = KeyValCancelArgs(
-            source=self,
-            key=key,
-            value=new_value,
-        )
-        event_args.event_data = {
-            "old_value": old_value,
-            "prop_name": self._get_prop_name(),
-        }
-        self._on_property_changing(event_args)
-        if event_args.cancel:
+        event_args = self._trigger_cancel_event("RightLine", old_value, new_value)
+        done_args = self._trigger_done_event(event_args)
+        if done_args is None:
             return
-        struct = self._copy()
-        struct.RightLine = event_args.value
-        self.component = struct
-        self._props[key] = BorderLine2StructComp(self.component.RightLine, key, self._events)
-        self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+        if key in self._props:
+            del self._props[key]
 
     @property
     def is_right_line_valid(self) -> bool:
@@ -419,21 +297,8 @@ class TableBorder2StructComp(ComponentBase):
     def is_right_line_valid(self, value: bool) -> None:
         old_value = self.component.IsRightLineValid
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_right_line_valid",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsRightLineValid = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsRightLineValid", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def horizontal_line(self) -> BorderLine2StructComp:
@@ -465,23 +330,12 @@ class TableBorder2StructComp(ComponentBase):
             comp = BorderLine2StructComp(cast(BorderLine2, value), key)
             new_value = comp.copy()
 
-        event_args = KeyValCancelArgs(
-            source=self,
-            key=key,
-            value=new_value,
-        )
-        event_args.event_data = {
-            "old_value": old_value,
-            "prop_name": self._get_prop_name(),
-        }
-        self._on_property_changing(event_args)
-        if event_args.cancel:
+        event_args = self._trigger_cancel_event("HorizontalLine", old_value, new_value)
+        done_args = self._trigger_done_event(event_args)
+        if done_args is None:
             return
-        struct = self._copy()
-        struct.HorizontalLine = event_args.value
-        self.component = struct
-        self._props[key] = BorderLine2StructComp(self.component.HorizontalLine, key, self._events)
-        self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+        if key in self._props:
+            del self._props[key]
 
     @property
     def is_horizontal_line_valid(self) -> bool:
@@ -494,21 +348,8 @@ class TableBorder2StructComp(ComponentBase):
     def is_horizontal_line_valid(self, value: bool) -> None:
         old_value = self.component.IsHorizontalLineValid
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_horizontal_line_valid",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsHorizontalLineValid = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsHorizontalLineValid", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def vertical_line(self) -> BorderLine2StructComp:
@@ -540,28 +381,17 @@ class TableBorder2StructComp(ComponentBase):
             comp = BorderLine2StructComp(cast(BorderLine2, value), key)
             new_value = comp.copy()
 
-        event_args = KeyValCancelArgs(
-            source=self,
-            key=key,
-            value=new_value,
-        )
-        event_args.event_data = {
-            "old_value": old_value,
-            "prop_name": self._get_prop_name(),
-        }
-        self._on_property_changing(event_args)
-        if event_args.cancel:
+        event_args = self._trigger_cancel_event("VerticalLine", old_value, new_value)
+        done_args = self._trigger_done_event(event_args)
+        if done_args is None:
             return
-        struct = self._copy()
-        struct.VerticalLine = event_args.value
-        self.component = struct
-        self._props[key] = BorderLine2StructComp(self.component.VerticalLine, key, self._events)
-        self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+        if key in self._props:
+            del self._props[key]
 
     @property
     def is_vertical_line_valid(self) -> bool:
         """
-        Gets/Sets whether the value of ``TableBorder2.HorizontalLine`` is used.
+        Gets/Sets whether the value of ``TableBorder2.VerticalLine`` is used.
         """
         return self.component.IsVerticalLineValid
 
@@ -569,21 +399,8 @@ class TableBorder2StructComp(ComponentBase):
     def is_vertical_line_valid(self, value: bool) -> None:
         old_value = self.component.IsVerticalLineValid
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_vertical_line_valid",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsVerticalLineValid = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsVerticalLineValid", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def distance(self) -> int:
@@ -599,21 +416,8 @@ class TableBorder2StructComp(ComponentBase):
     def distance(self, value: int) -> None:
         old_value = self.component.Distance
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="distance",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.Distance = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Distance", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def is_distance_valid(self) -> bool:
@@ -626,20 +430,7 @@ class TableBorder2StructComp(ComponentBase):
     def is_distance_valid(self, value: bool) -> None:
         old_value = self.component.IsVerticalLineValid
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_distance_valid",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsVerticalLineValid = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsVerticalLineValid", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     # endregion Properties

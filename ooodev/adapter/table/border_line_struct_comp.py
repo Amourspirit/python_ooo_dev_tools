@@ -1,10 +1,8 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import uno
 from ooo.dyn.table.border_line import BorderLine
-from ooodev.adapter.component_base import ComponentBase
-from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-from ooodev.events.args.key_val_args import KeyValArgs
+from ooodev.adapter.struct_base import StructBase
 from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
@@ -16,7 +14,7 @@ if TYPE_CHECKING:
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
 
 
-class BorderLineStructComp(ComponentBase):
+class BorderLineStructComp(StructBase[BorderLine]):
     """
     Border Line Struct
 
@@ -38,34 +36,15 @@ class BorderLineStructComp(ComponentBase):
             prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
             event_provider (EventsT, optional): Event Provider.
         """
-        ComponentBase.__init__(self, component)
-        self._event_provider = event_provider
-        self._prop_name = prop_name
+        super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        # PropertySetPartial will validate
-        return ()
-
-    # endregion Overrides
 
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_table_BorderLine_changed"
 
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_table_BorderLine_changing"
-
-    def _get_prop_name(self) -> str:
-        return self._prop_name
-
-    def _on_property_changing(self, event_args: KeyValCancelArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event(self._get_on_changing_event_name(), event_args)
-
-    def _on_property_changed(self, event_args: KeyValArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event(self._get_on_changed_event_name(), event_args)
 
     def _copy(self, src: BorderLine | None = None) -> BorderLine:
         if src is None:
@@ -77,27 +56,9 @@ class BorderLineStructComp(ComponentBase):
             LineDistance=src.LineDistance,
         )
 
-    def copy(self) -> BorderLine:
-        """
-        Makes a copy of the Border Line.
-
-        Returns:
-            BorderLine: Copied Border Line.
-        """
-        return self._copy()
+    # endregion Overrides
 
     # region Properties
-
-    @property
-    def component(self) -> BorderLine:
-        """BorderLine Component"""
-        # pylint: disable=no-member
-        return cast("BorderLine", self._ComponentBase__get_component())  # type: ignore
-
-    @component.setter
-    def component(self, value: BorderLine) -> None:
-        # pylint: disable=no-member
-        self._ComponentBase__set_component(self._copy(src=value))  # type: ignore
 
     @property
     def color(self) -> Color:
@@ -113,21 +74,8 @@ class BorderLineStructComp(ComponentBase):
     def color(self, value: Color) -> None:
         old_value = self.component.Color
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="color",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.Color = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Color", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def inner_line_width(self) -> UnitMM100:
@@ -140,7 +88,7 @@ class BorderLineStructComp(ComponentBase):
             UnitMM100: Inner Line Width.
 
         Hint:
-            - ``UnitMM100`` can be imported from ``ooodev.units.unit_mm100``.
+            - ``UnitMM100`` can be imported from ``ooodev.units``.
         """
         return UnitMM100(self.component.InnerLineWidth)
 
@@ -150,21 +98,8 @@ class BorderLineStructComp(ComponentBase):
         val = UnitMM100.from_unit_val(value)
         new_value = val.value
         if old_value != new_value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="inner_line_width",
-                value=new_value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.InnerLineWidth = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("InnerLineWidth", old_value, new_value)
+            self._trigger_done_event(event_args)
 
     @property
     def outer_line_width(self) -> UnitMM100:
@@ -177,7 +112,7 @@ class BorderLineStructComp(ComponentBase):
             UnitMM100: Outer Line Width.
 
         Hint:
-            - ``UnitMM100`` can be imported from ``ooodev.units.unit_mm100``.
+            - ``UnitMM100`` can be imported from ``ooodev.units``.
         """
         return UnitMM100(self.component.OuterLineWidth)
 
@@ -187,21 +122,8 @@ class BorderLineStructComp(ComponentBase):
         val = UnitMM100.from_unit_val(value)
         new_value = val.value
         if old_value != new_value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="outer_line_width",
-                value=new_value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.OuterLineWidth = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("OuterLineWidth", old_value, new_value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def line_distance(self) -> UnitMM100:
@@ -214,7 +136,7 @@ class BorderLineStructComp(ComponentBase):
             UnitMM100: Line Distance.
 
         Hint:
-            - ``UnitMM100`` can be imported from ``ooodev.units.unit_mm100``.
+            - ``UnitMM100`` can be imported from ``ooodev.units``.
         """
         return UnitMM100(self.component.LineDistance)
 
@@ -224,20 +146,7 @@ class BorderLineStructComp(ComponentBase):
         val = UnitMM100.from_unit_val(value)
         new_value = val.value
         if old_value != new_value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="line_distance",
-                value=new_value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.LineDistance = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("LineDistance", old_value, new_value)
+            _ = self._trigger_done_event(event_args)
 
     # endregion Properties

@@ -1,11 +1,9 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import uno
 from ooo.dyn.table.shadow_format import ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation
-from ooodev.adapter.component_base import ComponentBase
-from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-from ooodev.events.args.key_val_args import KeyValArgs
+from ooodev.adapter.struct_base import StructBase
 from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
@@ -17,7 +15,7 @@ if TYPE_CHECKING:
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
 
 
-class ShadowFormatStructComp(ComponentBase):
+class ShadowFormatStructComp(StructBase[ShadowFormat]):
     """
     Shadow Format Struct.
 
@@ -39,17 +37,9 @@ class ShadowFormatStructComp(ComponentBase):
             prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
             event_provider (EventsT, optional): Event Provider.
         """
-        ComponentBase.__init__(self, component)
-        self._event_provider = event_provider
-        self._prop_name = prop_name
+        super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        # PropertySetPartial will validate
-        return ()
-
-    # endregion Overrides
 
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_table_ShadowFormat_changed"
@@ -59,14 +49,6 @@ class ShadowFormatStructComp(ComponentBase):
 
     def _get_prop_name(self) -> str:
         return self._prop_name
-
-    def _on_property_changing(self, event_args: KeyValCancelArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event(self._get_on_changing_event_name(), event_args)
-
-    def _on_property_changed(self, event_args: KeyValArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event(self._get_on_changed_event_name(), event_args)
 
     def _copy(self, src: ShadowFormat | None = None) -> ShadowFormat:
         if src is None:
@@ -78,27 +60,9 @@ class ShadowFormatStructComp(ComponentBase):
             Color=src.Color,
         )
 
-    def copy(self) -> ShadowFormat:
-        """
-        Makes a copy of the Shadow Format.
-
-        Returns:
-            ShadowFormat: Copied Shadow Format.
-        """
-        return self._copy()
+    # endregion Overrides
 
     # region Properties
-
-    @property
-    def component(self) -> ShadowFormat:
-        """ShadowFormat Component"""
-        # pylint: disable=no-member
-        return cast("ShadowFormat", self._ComponentBase__get_component())  # type: ignore
-
-    @component.setter
-    def component(self, value: ShadowFormat) -> None:
-        # pylint: disable=no-member
-        self._ComponentBase__set_component(self._copy(src=value))  # type: ignore
 
     @property
     def location(self) -> ShadowLocation:
@@ -117,21 +81,8 @@ class ShadowFormatStructComp(ComponentBase):
     def location(self, value: ShadowLocation) -> None:
         old_value = self.component.Location
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="location",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.Location = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Location", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def shadow_width(self) -> UnitMM100:
@@ -154,21 +105,8 @@ class ShadowFormatStructComp(ComponentBase):
         val = UnitMM100.from_unit_val(value)
         new_value = val.value
         if old_value != new_value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="shadow_width",
-                value=new_value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.ShadowWidth = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("ShadowWidth", old_value, new_value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def is_transparent(self) -> bool:
@@ -184,21 +122,8 @@ class ShadowFormatStructComp(ComponentBase):
     def is_transparent(self, value: bool) -> None:
         old_value = self.component.IsTransparent
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="is_transparent",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.IsTransparent = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("IsTransparent", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def color(self) -> Color:
@@ -214,20 +139,7 @@ class ShadowFormatStructComp(ComponentBase):
     def color(self, value: Color) -> None:
         old_value = self.component.Color
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="color",
-                value=value,
-            )
-            event_args.event_data = {
-                "old_value": old_value,
-                "prop_name": self._get_prop_name(),
-            }
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                struct = self._copy()
-                struct.Color = event_args.value
-                self.component = struct
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Color", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     # endregion Properties

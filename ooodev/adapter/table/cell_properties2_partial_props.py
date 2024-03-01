@@ -38,11 +38,11 @@ class CellProperties2PartialProps(CellPropertiesPartialProps):
 
         Preferred over ``bottom_border``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
 
         Returns:
-            BorderLine2Comp: Returns BorderLine2.
+            BorderLine2StructComp: Returns BorderLine2.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -85,10 +85,10 @@ class CellProperties2PartialProps(CellPropertiesPartialProps):
 
         Preferred over ``diagonal_bltr``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         Returns:
-            BorderLine2Comp: Returns BorderLine2.
+            BorderLine2StructComp: Returns BorderLine2.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -132,7 +132,7 @@ class CellProperties2PartialProps(CellPropertiesPartialProps):
         Preferred over ``diagonal_tlbr``.
 
         Returns:
-            BorderLine2Comp: Returns BorderLine2.
+            BorderLine2StructComp: Returns BorderLine2.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -153,10 +153,10 @@ class CellProperties2PartialProps(CellPropertiesPartialProps):
 
         Preferred over ``left_border``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         Returns:
-            BorderLine2Comp: Returns BorderLine2.
+            BorderLine2StructComp: Returns BorderLine2.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -175,12 +175,12 @@ class CellProperties2PartialProps(CellPropertiesPartialProps):
         """
         Gets/Sets a description of the right border line of each cell.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         Preferred over ``right_border``.
 
         Returns:
-            BorderLine2Comp: Returns BorderLine2.
+            BorderLine2StructComp: Returns BorderLine2.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
@@ -202,6 +202,14 @@ class CellProperties2PartialProps(CellPropertiesPartialProps):
         Preferred over ``table_border``.
 
         If used with a cell range, the top, left, right, and bottom lines are at the edges of the entire range, not at the edges of the individual cell.
+
+        Setting value can be done with a ``TableBorder2`` or ``TableBorder2StructComp`` object.
+
+        Returns:
+            TableBorder2StructComp | None: Returns TableBorder2 or None if not supported.
+
+        Hint:
+            - ``TableBorder2`` can be imported from ``ooo.dyn.table.table_border2``
         """
         comp = super().table_border2
         if comp is None:
@@ -219,10 +227,10 @@ class CellProperties2PartialProps(CellPropertiesPartialProps):
 
         Preferred over ``top_border``.
 
-        Setting value can be done with a ``BorderLine2`` or ``BorderLine2Comp`` object.
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
 
         Returns:
-            BorderLine2Comp: Returns BorderLine2.
+            BorderLine2StructComp: Returns BorderLine2.
 
         Hint:
             - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``

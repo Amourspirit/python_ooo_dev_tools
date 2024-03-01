@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from ooo.dyn.awt.char_set import CharSetEnum
 from ooo.dyn.awt.font_descriptor import FontDescriptor
 from ooo.dyn.awt.font_family import FontFamilyEnum
@@ -8,12 +8,11 @@ from ooo.dyn.awt.font_slant import FontSlant
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
 from ooo.dyn.awt.font_type import FontTypeEnum
 from ooo.dyn.awt.font_underline import FontUnderlineEnum
-from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
-from ooodev.events.args.key_val_args import KeyValArgs
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.struct_base import StructBase
+from ooodev.units.angle10 import Angle10
 
 if TYPE_CHECKING:
-    from ooodev.events.partial.events_partial import EventsPartial
+    from ooodev.events.events_t import EventsT
 
 # It seems that it is necessary to assign the struct to a variable, then change the variable and assign it back to the component.
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
@@ -23,45 +22,36 @@ if TYPE_CHECKING:
 # self.component = fd
 
 
-class FontDescriptorStructComp(ComponentBase):
+class FontDescriptorStructComp(StructBase[FontDescriptor]):
     """
     Font Descriptor Struct
 
     This class raises an event before and after a property is changed if it has been passed an event provider.
 
-    The event raised before the property is changed is called ``font_descriptor_struct_changing``.
-    The event raised after the property is changed is called ``font_descriptor_struct_changed``.
+    The event raised before the property is changed is called ``com_sun_star_awt_FontDescriptor_changing``.
+    The event raised after the property is changed is called ``com_sun_star_awt_FontDescriptor_changed``.
 
     The event args for before the property is changed is of type ``KeyValCancelArgs``.
     The event args for after the property is changed is of type ``KeyValArgs``.
     """
 
-    def __init__(self, component: FontDescriptor, event_provider: EventsPartial | None) -> None:
+    def __init__(self, component: FontDescriptor, prop_name: str, event_provider: EventsT | None = None) -> None:
         """
         Constructor
 
         Args:
             component (FontDescriptor): Font Descriptor.
+            prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
             event_provider (EventsPartial | None): Event Provider.
         """
-        ComponentBase.__init__(self, component)
-        self._event_provider = event_provider
+        super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        # PropertySetPartial will validate
-        return ()
+    def _get_on_changed_event_name(self) -> str:
+        return "com_sun_star_awt_FontDescriptor_changed"
 
-    # endregion Overrides
-
-    def _on_property_changing(self, event_args: KeyValCancelArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event("font_descriptor_struct_changing", event_args)
-
-    def _on_property_changed(self, event_args: KeyValArgs) -> None:
-        if self._event_provider is not None:
-            self._event_provider.trigger_event("font_descriptor_struct_changed", event_args)
+    def _get_on_changing_event_name(self) -> str:
+        return "com_sun_star_awt_FontDescriptor_changing"
 
     def _copy(self, src: FontDescriptor | None = None) -> FontDescriptor:
         if src is None:
@@ -85,27 +75,9 @@ class FontDescriptorStructComp(ComponentBase):
             Type=src.Type,
         )
 
-    def copy(self) -> FontDescriptor:
-        """
-        Makes a copy of the Font Descriptor.
-
-        Returns:
-            FontDescriptor: Copied Font Descriptor.
-        """
-        return self._copy()
+    # endregion Overrides
 
     # region Properties
-
-    @property
-    def component(self) -> FontDescriptor:
-        """FontDescriptor Component"""
-        # pylint: disable=no-member
-        return cast("FontDescriptor", self._ComponentBase__get_component())  # type: ignore
-
-    @component.setter
-    def component(self, value: FontDescriptor) -> None:
-        # pylint: disable=no-member
-        self._ComponentBase__set_component(self._copy(src=value))  # type: ignore
 
     @property
     def name(self) -> str:
@@ -118,18 +90,8 @@ class FontDescriptorStructComp(ComponentBase):
     def name(self, value: str) -> None:
         old_value = self.component.Name
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="name",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                fd = self._copy()
-                fd.Name = event_args.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Name", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def height(self) -> int:
@@ -142,18 +104,8 @@ class FontDescriptorStructComp(ComponentBase):
     def height(self, value: int) -> None:
         old_value = self.component.Height
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="height",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                fd = self._copy()
-                fd.Height = event_args.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Height", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def width(self) -> int:
@@ -166,18 +118,8 @@ class FontDescriptorStructComp(ComponentBase):
     def width(self, value: int) -> None:
         old_value = self.component.Width
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="width",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                fd = self._copy()
-                fd.Width = event_args.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Width", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def style_name(self) -> str:
@@ -190,23 +132,15 @@ class FontDescriptorStructComp(ComponentBase):
     def style_name(self, value: str) -> None:
         old_value = self.component.StyleName
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="style_name",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                fd = self._copy()
-                fd.StyleName = event_args.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("StyleName", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def family(self) -> FontFamilyEnum:
         """
-        specifies the general style of the font.
+        Gets/Sets the general style of the font.
+
+        When setting the value, the value can be an integer or a ``FontFamilyEnum`` object.
 
         Hint:
             - ``FontFamilyEnum`` can be imported from ``oo.dyn.awt.font_family``.
@@ -218,24 +152,15 @@ class FontDescriptorStructComp(ComponentBase):
         old_value = FontFamilyEnum(self.component.Family)
         new_value = FontFamilyEnum(value)
         if old_value.value != new_value.value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="family",
-                value=new_value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(FontFamilyEnum, event_args.value)
-                fd = self._copy()
-                fd.Family = val.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Family", old_value.value, new_value.value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def char_set(self) -> CharSetEnum:
         """
         Gets/Sets the character set which is supported by the font.
+
+        When setting the value, the value can be an integer or a ``CharSetEnum`` object.
 
         Hint:
             - ``CharSetEnum`` can be imported from ``ooo.dyn.awt.char_set``.
@@ -247,24 +172,15 @@ class FontDescriptorStructComp(ComponentBase):
         old_value = CharSetEnum(self.component.CharSet)
         new_value = CharSetEnum(value)
         if old_value.value != new_value.value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="char_set",
-                value=new_value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(CharSetEnum, event_args.value)
-                fd = self._copy()
-                fd.CharSet = val.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("CharSet", old_value.value, new_value.value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def pitch(self) -> FontPitchEnum:
         """
         Gets/Sets the pitch of the font.
+
+        When setting the value, the value can be an integer or a ``FontPitchEnum`` object.
 
         Hint:
             - ``FontPitchEnum`` can be imported from ``ooo.dyn.awt.font_pitch``.
@@ -276,24 +192,13 @@ class FontDescriptorStructComp(ComponentBase):
         old_value = FontPitchEnum(self.component.Pitch)
         new_value = FontPitchEnum(value)
         if old_value.value != new_value.value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="pitch",
-                value=new_value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(FontPitchEnum, event_args.value)
-                fd = self._copy()
-                fd.Pitch = val.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Pitch", old_value.value, new_value.value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def character_width(self) -> float:
         """
-        specifies the character width.
+        Gets/Sets the character width.
 
         Depending on the specified width, a font that supports this width may be selected.
 
@@ -305,18 +210,8 @@ class FontDescriptorStructComp(ComponentBase):
     def character_width(self, value: float) -> None:
         old_value = self.component.CharacterWidth
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="character_width",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                fd = self._copy()
-                fd.CharacterWidth = event_args.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("CharacterWidth", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def weight(self) -> float:
@@ -325,7 +220,7 @@ class FontDescriptorStructComp(ComponentBase):
 
         Depending on the specified weight, a font that supports this thickness may be selected.
 
-        The value is expressed as a percentage.
+        The value is expressed as a percentage. ``150.0`` usually means bold.
         """
         return self.component.Weight
 
@@ -333,18 +228,8 @@ class FontDescriptorStructComp(ComponentBase):
     def weight(self, value: float) -> None:
         old_value = self.component.Weight
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="weight",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                fd = self._copy()
-                fd.Weight = event_args.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Weight", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def slant(self) -> FontSlant:
@@ -360,26 +245,15 @@ class FontDescriptorStructComp(ComponentBase):
     def slant(self, value: FontSlant) -> None:
         old_value = self.component.Slant
         if old_value.value != value.value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="slant",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast("FontSlant", event_args.value)
-                fd = self._copy()
-                fd.Slant = val
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Slant", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def underline(self) -> FontUnderlineEnum:
         """
         Gets/Sets the kind of underlining.
 
-        Use one value out of the constant group com.sun.star.awt.FontUnderline.
+        When setting the value, the value can be an integer or a ``FontUnderlineEnum`` object.
 
         Hint:
             ``FontUnderlineEnum`` can be imported from ``ooo.dyn.awt.font_underline``.
@@ -391,24 +265,15 @@ class FontDescriptorStructComp(ComponentBase):
         old_value = FontUnderlineEnum(self.component.Underline)
         new_value = FontUnderlineEnum(value)
         if old_value.value != new_value.value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="underline",
-                value=new_value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(FontUnderlineEnum, event_args.value)
-                fd = self._copy()
-                fd.Underline = val.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Underline", old_value.value, new_value.value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def strikeout(self) -> FontStrikeoutEnum:
         """
         Gets/Sets the kind of strikeout.
+
+        When setting the value, the value can be an integer or a ``FontStrikeoutEnum`` object.
 
         Hint:
             - ``FontStrikeoutEnum`` can be imported from ``ooo.dyn.awt.font_strikeout``.
@@ -420,46 +285,33 @@ class FontDescriptorStructComp(ComponentBase):
         old_value = FontStrikeoutEnum(self.component.Strikeout)
         new_value = FontStrikeoutEnum(value)
         if old_value.value != new_value.value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="strikeout",
-                value=new_value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(FontStrikeoutEnum, event_args.value)
-                fd = self._copy()
-                fd.Strikeout = val.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Strikeout", old_value.value, new_value.value)
+            _ = self._trigger_done_event(event_args)
 
     @property
-    def orientation(self) -> float:
+    def orientation(self) -> Angle10:
         """
         Gets/Sets the rotation of the font.
 
-        The unit of measure is degrees; 0 is the baseline.
+        The unit of measure is ``1/10 degrees``; ``0`` is the baseline.
+
+        When setting the value, the value can be an float in ``1/10 degrees`` or an ``Angle10`` object.
+
+        Returns:
+            Angle10: Rotation of the font.
         """
-        return self.component.Orientation
+        return Angle10(round(self.component.Orientation * 10))
 
     @orientation.setter
-    def orientation(self, value: float) -> None:
+    def orientation(self, value: float | Angle10) -> None:
         old_value = self.component.Orientation
+        if isinstance(value, Angle10):
+            new_value = 0 if value.value == 0 else value.value / 10
+        else:
+            new_value = 0 if value == 0 else value / 10
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="orientation",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(float, event_args.value)
-                fd = self._copy()
-                fd.Orientation = val
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Orientation", old_value, new_value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def kerning(self) -> bool:
@@ -474,19 +326,8 @@ class FontDescriptorStructComp(ComponentBase):
     def kerning(self, value: bool) -> None:
         old_value = self.component.Kerning
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="kerning",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(bool, event_args.value)
-                fd = self._copy()
-                fd.Kerning = val
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Kerning", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def word_line_mode(self) -> bool:
@@ -503,26 +344,17 @@ class FontDescriptorStructComp(ComponentBase):
     def word_line_mode(self, value: bool) -> None:
         old_value = self.component.WordLineMode
         if old_value != value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="word_line_mode",
-                value=value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(bool, event_args.value)
-                fd = self._copy()
-                fd.WordLineMode = val
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("WordLineMode", old_value, value)
+            _ = self._trigger_done_event(event_args)
 
     @property
     def type(self) -> FontTypeEnum:
         """
-        specifies the technology of the font representation.
+        Gets/Sets the technology of the font representation. Flags Enum.
 
         One or more values out of the constant group ``com.sun.star.awt.FontType`` can be combined by an arithmetical or-operation.
+
+        When setting the value, the value can be an integer or a ``FontTypeEnum`` object.
 
         Hint:
             - ``FontTypeEnum`` can be imported from ``ooo.dyn.awt.font_type``.
@@ -534,18 +366,7 @@ class FontDescriptorStructComp(ComponentBase):
         old_value = FontTypeEnum(self.component.Type)
         new_value = FontTypeEnum(value)
         if old_value.value != new_value.value:
-            event_args = KeyValCancelArgs(
-                source=self,
-                key="type",
-                value=new_value,
-            )
-            event_args.event_data = {"old_value": old_value}
-            self._on_property_changing(event_args)
-            if not event_args.cancel:
-                val = cast(FontTypeEnum, event_args.value)
-                fd = self._copy()
-                fd.Type = val.value
-                self.component = fd
-                self._on_property_changed(KeyValArgs.from_args(event_args))  # type: ignore
+            event_args = self._trigger_cancel_event("Type", old_value.value, new_value.value)
+            _ = self._trigger_done_event(event_args)
 
     # endregion Properties

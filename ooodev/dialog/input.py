@@ -120,7 +120,7 @@ class Input:
         ctl_lbl = Dialogs.insert_label(
             dialog_ctrl=dialog.control, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
         )
-        ctl_lbl.set_font_descriptor(fd)
+        ctl_lbl.font_descriptor = fd
         sz = ctl_lbl.view.getPosSize()
         if is_password:
             txt_input = Dialogs.insert_password_field(
@@ -142,7 +142,7 @@ class Input:
                 height=sz.Height,
                 border=border_kind,
             )
-        txt_input.set_font_descriptor(fd)
+        txt_input.font_descriptor = fd
         ctl_btn_cancel = Dialogs.insert_button(
             dialog_ctrl=dialog.control,
             label=cancel_lbl,
@@ -152,7 +152,7 @@ class Input:
             height=btn_height,
             btn_type=PushButtonType.CANCEL,
         )
-        ctl_btn_cancel.set_font_descriptor(fd)
+        ctl_btn_cancel.font_descriptor = fd
         ctl_btn_cancel.font_descriptor.height = 12
         sz = ctl_btn_cancel.view.getPosSize()
         ctl_btn_ok = Dialogs.insert_button(
@@ -165,7 +165,7 @@ class Input:
             btn_type=PushButtonType.OK,
             DefaultButton=True,
         )
-        ctl_btn_ok.set_font_descriptor(ctl_btn_cancel.font_descriptor.component)
+        ctl_btn_ok.set_font_descriptor(ctl_btn_cancel.font_descriptor)
 
         frame = cast("XFrame", cargs.event_data["frame"])
         if frame is not None:
