@@ -646,6 +646,14 @@ class CellPropertiesPartialProps:
     def shadow_format(self) -> ShadowFormatStructComp:
         """
         Gets/Sets a description of the shadow.
+
+        When setting the value can be an instance of ``ShadowFormatStructComp`` or ``ShadowFormat``.
+
+        Returns:
+            ShadowFormatStructComp: Shadow Format
+
+        Hint:
+            - ``ShadowFormat`` can be imported from ``ooo.dyn.table.shadow_format``
         """
         key = "ShadowFormat"
         prop = self.__props.get(key, None)
@@ -844,6 +852,11 @@ class CellPropertiesPartialProps:
     def vert_justify(self) -> CellVertJustify2Enum:
         """
         Gets/Sets the vertical alignment of the cell contents.
+
+        When setting the value, it can be an integer or an instance of ``CellVertJustify2Enum``.
+
+        Returns:
+            CellVertJustify2Enum: Returns Vertical Justify.
 
         Hint:
             - ``CellVertJustify2Enum`` can be imported from ``ooo.dyn.table.cell_vert_justify2``

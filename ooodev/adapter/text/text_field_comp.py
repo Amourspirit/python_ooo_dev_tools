@@ -26,6 +26,7 @@ class TextFieldComp(TextContentComp, PropertyChangeImplement, VetoableChangeImpl
         """
         # pylint: disable=no-member
         TextContentComp.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

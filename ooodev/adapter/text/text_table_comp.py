@@ -7,6 +7,10 @@ from ooodev.adapter.table.cell_comp import CellComp
 from ooodev.adapter.container.named_partial import NamedPartial
 from ooodev.adapter.text.text_content_comp import TextContentComp
 from ooodev.adapter.text.text_table_partial import TextTablePartial
+from ooodev.adapter.table.cell_range_partial import CellRangePartial
+from ooodev.adapter.table.auto_formattable_partial import AutoFormattablePartial
+from ooodev.adapter.sheet.cell_range_data_partial import CellRangeDataPartial
+from ooodev.adapter.text.text_table_properties_partial import TextTablePropertiesPartial
 
 
 if TYPE_CHECKING:
@@ -14,7 +18,16 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextTable
 
 
-class TextTableComp(TextContentComp, TextTablePartial, ChartDataChangeEventEvents, NamedPartial):
+class TextTableComp(
+    TextContentComp,
+    TextTablePropertiesPartial,
+    TextTablePartial,
+    CellRangePartial,
+    AutoFormattablePartial,
+    CellRangeDataPartial,
+    ChartDataChangeEventEvents,
+    NamedPartial,
+):
     """
     Class for managing TextTable Component.
     """
@@ -30,13 +43,17 @@ class TextTableComp(TextContentComp, TextTablePartial, ChartDataChangeEventEvent
         """
 
         TextContentComp.__init__(self, component)
+        TextTablePropertiesPartial.__init__(self, component=component)  # type: ignore
         TextTablePartial.__init__(self, component=component, interface=None)
+        CellRangePartial.__init__(self, component=component, interface=None)  # type: ignore
+        AutoFormattablePartial.__init__(self, component=component, interface=None)  # type: ignore
+        CellRangeDataPartial.__init__(self, component=component, interface=None)  # type: ignore
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ChartDataChangeEventEvents.__init__(
             self, trigger_args=generic_args, cb=self._on_chart_data_change_event_add_remove
         )
-        NamedPartial.__init__(self, component=self.component)
+        NamedPartial.__init__(self, component=self.component, interface=None)
 
     # region Lazy Listeners
     def _on_chart_data_change_event_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -54,15 +71,7 @@ class TextTableComp(TextContentComp, TextTablePartial, ChartDataChangeEventEvent
     # endregion Overrides
 
     # region Methods
-    def auto_format(self, name: str) -> None:
-        """
-        Applies an AutoFormat to the cell range of the current context.
-
-        Args:
-            name (str): The name of the table style to apply.
-        """
-        self.component.autoFormat(name)
-
+    # region TextTablePartial Overrides
     def get_cell_by_name(self, name: str) -> CellComp:
         """
         Returns the cell with the specified name.
@@ -85,14 +94,7 @@ class TextTableComp(TextContentComp, TextTablePartial, ChartDataChangeEventEvent
         """
         return CellComp(self.component.getCellByName(name))
 
-    def get_cell_names(self) -> tuple[str, ...]:
-        """
-        Returns the names of all cells in the table.
-
-        Returns:
-            tuple[str, ...]: The names of all cells in the table.
-        """
-        return self.component.getCellNames()
+    # endregion TextTablePartial Overrides
 
     # endregion Methods
 

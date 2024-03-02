@@ -3,6 +3,7 @@ import contextlib
 from typing import TYPE_CHECKING, Tuple
 
 from ooodev.adapter.beans.property_set_comp import PropertySetComp
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextTableRow  # service
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
     # from com.sun.star.style.GraphicLocation import GraphicLocationProto  # type: ignore
     from ooo.dyn.style.graphic_location import GraphicLocation
     from ooodev.utils.color import Color
+    from ooodev.units.unit_obj import UnitT
 
 
 class TextTableRowComp(PropertySetComp):
@@ -173,15 +175,29 @@ class TextTableRowComp(PropertySetComp):
             self.component.HasTextChangesOnly = value
 
     @property
-    def height(self) -> int:
+    def height(self) -> UnitMM100:
         """
         Gets/Sets the height of the table row.
+
+
+        When setting the height, the ``is_auto_height`` property must be ``False`` for the height to have an effect.
+        Setting the height can be done with a ``UnitT`` or an integer in ``1/100th mm`` units.
+
+        Returns:
+            UnitMM100: Height
+
+        Note:
+            ``is_auto_height`` must be ``False`` for height to have an effect.
+
+        Hint:
+            - ``UnitMM100`` can be imported from ``ooodev.units``
         """
-        return self.component.Height
+        return UnitMM100(self.component.Height)
 
     @height.setter
-    def height(self, value: int) -> None:
-        self.component.Height = value
+    def height(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
+        self.component.Height = val.value
 
     @property
     def is_auto_height(self) -> bool:

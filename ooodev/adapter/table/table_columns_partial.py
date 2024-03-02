@@ -28,24 +28,24 @@ class TableColumnsPartial(IndexAccessPartial):
         self.__component = component
 
     # region XTableColumns
-    def insert_by_index(self, index: int, count: int) -> None:
+    def insert_by_index(self, idx: int, count: int) -> None:
         """
         Inserts a new column at the specified index.
 
         Args:
-            index (int): The index at which the column will be inserted.
+            idx (int): The index at which the column will be inserted.
             count (int): The number of columns to insert.
         """
-        self.__component.insertByIndex(index, count)
+        self.__component.insertByIndex(idx, count)
 
-    def remove_by_index(self, index: int, count: int) -> None:
+    def remove_by_index(self, idx: int, count: int) -> None:
         """
         Removes columns from the specified index.
 
         Args:
-            index (int): The index at which the column will be removed.
+            idx (int): The index at which the column will be removed.
             count (int): The number of columns to remove.
         """
-        self.__component.removeByIndex(index, count)
+        self.__component.removeByIndex(idx, count)
 
     # endregion XTableColumns

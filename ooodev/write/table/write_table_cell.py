@@ -1,52 +1,47 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.adapter.text.text_table_row_comp import TextTableRowComp
+from ooodev.adapter.text.cell_properties_comp import CellPropertiesComp
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextTableRow  # service
     from ooodev.write.table.write_table_rows import WriteTableRows
+    from ooodev.proto.component_proto import ComponentT
 
 
-class WriteTableRow(
+class WriteTableCell(
     WriteDocPropPartial,
     WriteTablePropPartial,
-    TextTableRowComp,
+    CellPropertiesComp,
     LoInstPropsPartial,
-    PropertyChangeImplement,
-    VetoableChangeImplement,
     PropPartial,
     StylePartial,
 ):
     """Represents writer table rows."""
 
-    def __init__(self, owner: WriteTableRows, component: TextTableRow) -> None:
+    def __init__(self, owner: ComponentT, component: TextTableRow) -> None:
         """
         Constructor
 
         Args:
             component (TextTableRow): UNO object that supports ``om.sun.star.text.TextTableRow`` service.
         """
-        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
+        if not isinstance(owner, WriteTablePropPartial):
+            raise ValueError("owner must be a WriteTablePropPartial instance.")
         WriteTablePropPartial.__init__(self, obj=owner.write_table)
-        LoInstPropsPartial.__init__(self, lo_inst=owner.lo_inst)
-        TextTableRowComp.__init__(self, component=component)  # type: ignore
-        # pylint: disable=no-member
-        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
+        LoInstPropsPartial.__init__(self, lo_inst=self.write_doc.lo_inst)
+        CellPropertiesComp.__init__(self, component=component)  # type: ignore
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
         self._owner = owner
 
     @property
-    def owner(self) -> WriteTableRows:
+    def owner(self) -> ComponentT:
         """Owner of this component."""
         return self._owner

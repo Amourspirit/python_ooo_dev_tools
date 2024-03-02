@@ -24,7 +24,7 @@ class CellRangePartial:
         Constructor
 
         Args:
-            component (XCellRange): UNO Component that implements ``com.sun.star.container.XCellRange`` interface.
+            component (XCellRange): UNO Component that implements ``com.sun.star.table.XCellRange`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XCellRange``.
         """
         self.__interface = interface

@@ -1,15 +1,13 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-from ooodev.adapter.component_base import ComponentBase
-from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
-from ooodev.adapter.table.table_rows_partial import TableRowsPartial
+from ooodev.adapter.container.index_access_comp import IndexAccessComp
 
 if TYPE_CHECKING:
-    from com.sun.star.table import TableRows  # service
+    from com.sun.star.text import TableRows  # service
     from com.sun.star.table import XTableRows
 
 
-class TableRowsComp(ComponentBase, TableRowsPartial, EnumerationAccessPartial):
+class TableRowsComp(IndexAccessComp):
     """
     Class for managing TableRows Component.
 
@@ -23,16 +21,14 @@ class TableRowsComp(ComponentBase, TableRowsPartial, EnumerationAccessPartial):
         Constructor
 
         Args:
-            component (XCell): UNO Component that implements ``com.sun.star.table.TableRows`` service.
+            component (XCell): UNO Component that implements ``com.sun.star.text.TableRows`` service.
         """
-        ComponentBase.__init__(self, component)
-        TableRowsPartial.__init__(self, component=self.component, interface=None)
-        EnumerationAccessPartial.__init__(self, component=self.component, interface=None)
+        IndexAccessComp.__init__(self, component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.table.TableRows",)
+        return ("com.sun.star.text.TableRows",)
 
     # endregion Overrides
 

@@ -1,21 +1,23 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
-from ooodev.adapter.table.table_rows_comp import TableRowsComp
+from ooodev.adapter.text.table_rows_comp import TableRowsComp
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.write.table.write_table_row import WriteTableRow
+from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
+
 
 if TYPE_CHECKING:
     from com.sun.star.table import XTableRows
-    from ooodev.write.write_text_table import WriteTextTable
+    from ooodev.write.table.write_table import WriteTable
 
 
-class WriteTableRows(TableRowsComp, WriteDocPropPartial, LoInstPropsPartial):
+class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp, LoInstPropsPartial):
     """Represents writer table rows."""
 
-    def __init__(self, owner: WriteTextTable, component: XTableRows) -> None:
+    def __init__(self, owner: WriteTable[Any], component: XTableRows) -> None:
         """
         Constructor
 
@@ -23,9 +25,9 @@ class WriteTableRows(TableRowsComp, WriteDocPropPartial, LoInstPropsPartial):
             component (XTableRows): UNO object that supports ``com.sun.star.table.TableRows`` interface.
         """
         WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
+        WriteTablePropPartial.__init__(self, obj=owner)
         LoInstPropsPartial.__init__(self, lo_inst=owner.lo_inst)
         TableRowsComp.__init__(self, component=component)  # type: ignore
-        self._owner = owner
 
     def __next__(self) -> WriteTableRow:
         """
@@ -83,8 +85,3 @@ class WriteTableRows(TableRowsComp, WriteDocPropPartial, LoInstPropsPartial):
         """
         count = len(self)
         return mGenUtil.Util.get_index(idx, count, allow_greater)
-
-    @property
-    def write_text_table(self) -> WriteTextTable:
-        """Owner of this component."""
-        return self._owner

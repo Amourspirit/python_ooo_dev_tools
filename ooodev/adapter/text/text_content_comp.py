@@ -2,15 +2,16 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import uno
 
-from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 
 from ooodev.adapter.component_base import ComponentBase
-from .text_content_partial import TextContentPartial
+from ooodev.adapter.text.text_content_partial import TextContentPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextContent
     from com.sun.star.text import XTextContent
+    from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
+    from ooo.dyn.text.wrap_text_mode import WrapTextMode
 
 
 class TextContentComp(ComponentBase, TextContentPartial):
@@ -29,7 +30,7 @@ class TextContentComp(ComponentBase, TextContentPartial):
         """
 
         ComponentBase.__init__(self, component)
-        TextContentPartial.__init__(self, component)  # type: ignore
+        TextContentPartial.__init__(self, component, interface=None)  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
@@ -47,12 +48,37 @@ class TextContentComp(ComponentBase, TextContentPartial):
 
     @property
     def anchor_type(self) -> TextContentAnchorType:
-        """Returns the anchor type of this text content."""
-        return TextContentAnchorType(self.component.AnchorType)
+        """
+        Gets/Sets the anchor type of this text content.
+
+        Returns:
+            TextContentAnchorType: Anchor Type
+
+        Hint:
+            - ``TextContentAnchorType``can be imported from ``ooo.dyn.text.text_content_anchor_type``.
+        """
+        return self.component.AnchorType  # type: ignore
 
     @anchor_type.setter
     def anchor_type(self, value: TextContentAnchorType) -> None:
         """Sets the anchor type of this text content."""
         self.component.AnchorType = value  # type: ignore
+
+    @property
+    def text_wrap(self) -> WrapTextMode:
+        """
+        Gets/Sets if the text content is a shape and how the text is wrapped around the shape.
+
+        Returns:
+            WrapTextMode: Text Wrap Mode
+
+        Hint:
+            - ``WrapTextMode`` can be imported from ``ooo.dyn.text.wrap_text_mode``
+        """
+        return self.component.TextWrap  # type: ignore
+
+    @text_wrap.setter
+    def text_wrap(self, value: WrapTextMode) -> None:
+        self.component.TextWrap = value  # type: ignore
 
     # endregion Properties

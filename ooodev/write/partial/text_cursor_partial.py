@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextContent
     from com.sun.star.text import XTextCursor
     from ooo.dyn.text.control_character import ControlCharacterEnum
+    from ooodev.write.write_text_table import WriteTextTable
     from ooodev.proto.style_obj import StyleT
     from ooodev.units.unit_obj import UnitT
     from ooodev.utils.type_var import PathOrStr, Table
@@ -383,7 +384,7 @@ class TextCursorPartial(Generic[_T]):
         tbl_fg_color: Color | None = CommonColor.BLACK,
         first_row_header: bool = True,
         styles: Sequence[StyleT] | None = None,
-    ) -> mWriteTextTable.WriteTextTable[_T]:
+    ) -> WriteTextTable[_T]:
         """
         Adds a table.
 
@@ -431,6 +432,9 @@ class TextCursorPartial(Generic[_T]):
         Hint:
             Styles that can be applied are found in :doc:`ooodev.format.writer.direct.table </src/format/ooodev.format.writer.direct.table>` subpackages.
         """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.write.write_text_table import WriteTextTable
+
         with LoContext(self.__lo_inst):
             result = mWrite.Write.add_table(
                 cursor=self.__component,
@@ -442,7 +446,7 @@ class TextCursorPartial(Generic[_T]):
                 first_row_header=first_row_header,
                 styles=styles,
             )
-        return mWriteTextTable.WriteTextTable(self.__owner, result)
+        return WriteTextTable(self.__owner, result)
 
     def add_text_frame(
         self,
@@ -992,5 +996,4 @@ class TextCursorPartial(Generic[_T]):
 # avoid circular imports
 
 from ooodev.write import write_text_content as mWriteTextContent
-from ooodev.write import write_text_table as mWriteTextTable
 from ooodev.write import write_text_frame as mWriteTextFrame

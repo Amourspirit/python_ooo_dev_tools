@@ -87,6 +87,9 @@ class StructBase(ComponentBase, Generic[_T]):
         else:
             return cast(_T, self._ComponentBase__get_component())  # type: ignore
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__} {repr(self.component)}"
+
     @property
     def component(self) -> _T:
         """Struct Component"""

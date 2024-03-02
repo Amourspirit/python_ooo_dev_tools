@@ -34,10 +34,10 @@ from ooodev.write.write_text_portion import WriteTextPortion as WriteTextPortion
 from ooodev.write.write_text_portions import WriteTextPortions as WriteTextPortions
 from ooodev.write.write_text_range import WriteTextRange as WriteTextRange
 from ooodev.write.write_text_ranges import WriteTextRanges as WriteTextRanges
-from ooodev.write.write_text_table import WriteTextTable as WriteTextTable
-from ooodev.write.write_text_tables import WriteTextTables as WriteTextTables
 from ooodev.write.write_text_view_cursor import WriteTextViewCursor as WriteTextViewCursor
 from ooodev.write.write_word_cursor import WriteWordCursor as WriteWordCursor
+from ooodev.write.write_text_table import WriteTextTable as WriteTextTable
+from ooodev.write.write_text_tables import WriteTextTables as WriteTextTables
 
 
 __all__ = [

@@ -3,14 +3,15 @@
 This module is for the purpose of sharing events between classes.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING
 import contextlib
 from weakref import ref, ReferenceType
-from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union, Tuple
+from typing import Any, Dict, List, NamedTuple, Generator, Callable, Union, Tuple, TYPE_CHECKING
 from ooodev.events import event_singleton
-from ooodev.utils.type_var import EventCallback as EventCallback
 from ooodev.events.args.event_args_t import EventArgsT
+from ooodev.utils.type_var import EventCallback as EventCallback
 from ooodev.events.args.generic_args import GenericArgs as GenericArgs
+
+# pylint: disable=protected-access
 
 if TYPE_CHECKING:
     from ooodev.proto.event_observer import EventObserver
