@@ -39,12 +39,11 @@ class BorderLineStructComp(StructBase[BorderLine]):
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
+    def _get_on_changing_event_name(self) -> str:
+        return "com_sun_star_table_BorderLine_changing"
 
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_table_BorderLine_changed"
-
-    def _get_on_changing_event_name(self) -> str:
-        return "com_sun_star_table_BorderLine_changing"
 
     def _copy(self, src: BorderLine | None = None) -> BorderLine:
         if src is None:

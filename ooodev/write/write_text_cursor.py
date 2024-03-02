@@ -7,6 +7,8 @@ from ooodev.adapter.beans.property_change_implement import PropertyChangeImpleme
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.text.paragraph_cursor_partial import ParagraphCursorPartial
 from ooodev.adapter.text.sentence_cursor_partial import SentenceCursorPartial
+from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
+from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp
 from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
 from ooodev.format.inner.style_partial import StylePartial
@@ -43,6 +45,8 @@ class WriteTextCursor(
     ParagraphCursorPartial,
     SentenceCursorPartial,
     WordCursorPartial,
+    CharacterPropertiesPartial,
+    ParagraphPropertiesPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
     PropPartial,
@@ -77,6 +81,8 @@ class WriteTextCursor(
         ParagraphCursorPartial.__init__(self, component, None)  # type: ignore
         SentenceCursorPartial.__init__(self, component, None)  # type: ignore
         WordCursorPartial.__init__(self, component, None)  # type: ignore
+        CharacterPropertiesPartial.__init__(self, component=component)  # type: ignore
+        ParagraphPropertiesPartial.__init__(self, component=component)  # type: ignore
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

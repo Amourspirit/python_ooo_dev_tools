@@ -12,7 +12,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.direct.write.para.indent_space.indent import Indent
 from ooodev.format.inner.direct.write.para.indent_space.line_spacing import LineSpacing
-from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
+from ooodev.utils.kind.line_spacing_mode_kind import ModeKind
 from ooodev.format.inner.direct.write.para.indent_space.spacing import Spacing
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti

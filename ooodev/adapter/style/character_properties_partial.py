@@ -1,22 +1,32 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Tuple
+from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
 import uno
 
 from ooo.dyn.awt.font_underline import FontUnderlineEnum
+from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
+from ooo.dyn.text.ruby_position import RubyPositionEnum
+from ooodev.adapter.table.border_line2_struct_comp import BorderLine2StructComp
+from ooodev.adapter.table.shadow_format_struct_comp import ShadowFormatStructComp
+from ooodev.adapter.container.name_container_comp import NameContainerComp
+from ooodev.events.events import Events
 from ooodev.units.unit_pt import UnitPT
 from ooodev.utils import info as mInfo
-from ooodev.adapter.container.name_container_comp import NameContainerComp
+from ooodev.units.angle10 import Angle10
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
-    from com.sun.star.awt.FontSlant import FontSlantProto  # type: ignore
     from com.sun.star.beans import PropertyValue
     from com.sun.star.container import XNameContainer
     from com.sun.star.lang import Locale
     from com.sun.star.style import CharacterProperties
     from com.sun.star.table import BorderLine2  # struct
     from com.sun.star.table import ShadowFormat  # struct
-    from com.sun.star.util import Color  # type def
+    from ooo.dyn.awt.font_slant import FontSlant
+    from ooodev.events.args.key_val_args import KeyValArgs
+    from ooodev.utils.color import Color  # type def
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.units.angle_t import AngleT
     from ooodev.units.unit_obj import UnitT
 
 
@@ -37,6 +47,22 @@ class CharacterPropertiesPartial:
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``CharacterProperties``.
         """
         self.__component = component
+        self.__event_provider = Events(self)
+        self.__props = {}
+
+        def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
+            prop_name = str(event_args.event_data["prop_name"])
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
+
+        self.__fn_on_comp_struct_changed = on_comp_struct_changed
+        # pylint: disable=no-member
+        self.__event_provider.subscribe_event(
+            "com_sun_star_table_BorderLine2_changed", self.__fn_on_comp_struct_changed
+        )
+        self.__event_provider.subscribe_event(
+            "com_sun_star_table_ShadowFormat_changed", self.__fn_on_comp_struct_changed
+        )
 
     # region CharacterProperties
     @property
@@ -99,15 +125,18 @@ class CharacterPropertiesPartial:
         Get/Sets - This optional property contains the text background color.
 
         **Optional**
+
+        Returns:
+            ~ooodev.utils.color.Color | None: Color or None if not supported.
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharBackColor
+            return self.__component.CharBackColor  # type: ignore
         return None
 
     @char_back_color.setter
     def char_back_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharBackColor = value
+            self.__component.CharBackColor = value  # type: ignore
 
     @property
     def char_back_transparent(self) -> bool | None:
@@ -126,52 +155,76 @@ class CharacterPropertiesPartial:
             self.__component.CharBackTransparent = value
 
     @property
-    def char_border_distance(self) -> int | None:
+    def char_border_distance(self) -> UnitMM100 | None:
         """
         Gets/Sets the distance from the border to the object.
+
+        When setting the value, it can be either a float or an instance of ``UnitT``.
 
         **Optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharBorderDistance
+            return UnitMM100(self.__component.CharBorderDistance)
         return None
 
     @char_border_distance.setter
-    def char_border_distance(self, value: int) -> None:
+    def char_border_distance(self, value: int | UnitT) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharBorderDistance = value
+            self.__component.CharBorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
-    def char_bottom_border(self) -> BorderLine2 | None:
+    def char_bottom_border(self) -> BorderLine2StructComp | None:
         """
         This property contains the bottom border of the object.
 
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
+
         **optional**
+
+        Returns:
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.CharBottomBorder
-        return None
+        key = "CharBottomBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.CharBottomBorder, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @char_bottom_border.setter
-    def char_bottom_border(self, value: BorderLine2) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.CharBottomBorder = value
+    def char_bottom_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "CharBottomBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.CharBottomBorder = value.copy()
+        else:
+            self.__component.CharBottomBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
-    def char_bottom_border_distance(self) -> int | None:
+    def char_bottom_border_distance(self) -> UnitMM100 | None:
         """
         This property contains the distance from the bottom border to the object.
 
+        When setting the value, it can be either a float or an instance of ``UnitT``.
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharBottomBorderDistance
+            return UnitMM100(self.__component.CharBottomBorderDistance)
         return None
 
     @char_bottom_border_distance.setter
-    def char_bottom_border_distance(self, value: int) -> None:
+    def char_bottom_border_distance(self, value: int | UnitT) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharBottomBorderDistance = value
+            self.__component.CharBottomBorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
     def char_case_map(self) -> int | None:
@@ -193,12 +246,15 @@ class CharacterPropertiesPartial:
     def char_color(self) -> Color:
         """
         This property contains the value of the text color.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
-        return self.__component.CharColor
+        return self.__component.CharColor  # type: ignore
 
     @char_color.setter
     def char_color(self, value: Color) -> None:
-        self.__component.CharColor = value
+        self.__component.CharColor = value  # type: ignore
 
     @property
     def char_color_theme(self) -> int | None:
@@ -504,15 +560,18 @@ class CharacterPropertiesPartial:
         Gets/Sets the color of the highlight.
 
         **optional**
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharHighlight
+            return self.__component.CharHighlight  # type: ignore
         return None
 
     @char_highlight.setter
     def char_highlight(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharHighlight = value
+            self.__component.CharHighlight = value  # type: ignore
 
     @property
     def char_keep_together(self) -> bool | None:
@@ -549,36 +608,58 @@ class CharacterPropertiesPartial:
             self.__component.CharKerning = value
 
     @property
-    def char_left_border(self) -> BorderLine2 | None:
+    def char_left_border(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets - This property contains the left border of the object.
 
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
+
         **optional**
+
+        Returns:
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.CharLeftBorder
-        return None
+        key = "CharLeftBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.CharLeftBorder, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @char_left_border.setter
-    def char_left_border(self, value: BorderLine2) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.CharLeftBorder = value
+    def char_left_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "CharLeftBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.CharLeftBorder = value.copy()
+        else:
+            self.__component.CharLeftBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
-    def char_left_border_distance(self) -> int | None:
+    def char_left_border_distance(self) -> UnitMM100 | None:
         """
         Gets/Sets - This property contains the distance from the left border to the object.
 
+        When setting the value, it can be either a float or an instance of ``UnitT``.
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharLeftBorderDistance
+            return UnitMM100(self.__component.CharLeftBorderDistance)
         return None
 
     @char_left_border_distance.setter
-    def char_left_border_distance(self, value: int) -> None:
+    def char_left_border_distance(self, value: int | UnitT) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharLeftBorderDistance = value
+            self.__component.CharLeftBorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
     def char_locale(self) -> Locale:
@@ -626,15 +707,22 @@ class CharacterPropertiesPartial:
             self.__component.CharNoLineBreak = value
 
     @property
-    def char_posture(self) -> FontSlantProto:
+    def char_posture(self) -> FontSlant:
         """
         Gets/Sets - This property contains the value of the posture of the document.
+
+        Returns:
+            FontSlant: Returns FontSlant
+
+        Hint:
+            - ``FontSlant`` can be imported from ``ooo.dyn.awt.font_slant``
         """
-        return self.__component.CharPosture
+        # from ooo.dyn.awt.font_slant import FontSlant
+        return self.__component.CharPosture  # type: ignore
 
     @char_posture.setter
-    def char_posture(self, value: FontSlantProto) -> None:
-        self.__component.CharPosture = value
+    def char_posture(self, value: FontSlant) -> None:
+        self.__component.CharPosture = value  # type: ignore
 
     @property
     def char_relief(self) -> int | None:
@@ -653,54 +741,85 @@ class CharacterPropertiesPartial:
             self.__component.CharRelief = value
 
     @property
-    def char_right_border(self) -> BorderLine2 | None:
+    def char_right_border(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets - This property contains the right border of the object.
 
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
+
         **optional**
+
+        Returns:
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.CharRightBorder
-        return None
+        key = "CharRightBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.CharRightBorder, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @char_right_border.setter
-    def char_right_border(self, value: BorderLine2) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.CharRightBorder = value
+    def char_right_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "CharRightBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.CharRightBorder = value.copy()
+        else:
+            self.__component.CharRightBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
-    def char_right_border_distance(self) -> int | None:
+    def char_right_border_distance(self) -> UnitMM100 | None:
         """
         Gets/Sets - This property contains the distance from the right border to the object.
 
+        When setting the value, it can be either a float or an instance of ``UnitT``.
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharRightBorderDistance
+            return UnitMM100(self.__component.CharRightBorderDistance)
         return None
 
     @char_right_border_distance.setter
-    def char_right_border_distance(self, value: int) -> None:
+    def char_right_border_distance(self, value: int | UnitT) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharRightBorderDistance = value
+            self.__component.CharRightBorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
-    def char_rotation(self) -> int | None:
+    def char_rotation(self) -> Angle10 | None:
         """
         Gets/Sets - This optional property determines the rotation of a character in tenths of a degree.
 
         Depending on the implementation only certain values may be allowed.
 
         **optional**
+
+        Returns:
+            Angle10: Returns Angle10, ``1/10th`` degrees, or None if not supported.
+
+        Hint:
+            - ``Angle10`` can be imported from ``ooodev.units``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharRotation
+            angle = self.__component.CharRotation
+            return Angle10(angle)
         return None
 
     @char_rotation.setter
-    def char_rotation(self, value: int) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.CharRotation = value
+    def char_rotation(self, value: int | AngleT) -> None:
+        if not hasattr(self.__component, "CharRotation"):
+            return
+        val = Angle10.from_unit_val(value)
+        self.__component.CharRotation = val.value
 
     @property
     def char_rotation_is_fit_to_line(self) -> bool | None:
@@ -753,20 +872,40 @@ class CharacterPropertiesPartial:
             self.__component.CharShadingValue = value
 
     @property
-    def char_shadow_format(self) -> ShadowFormat | None:
+    def char_shadow_format(self) -> ShadowFormatStructComp | None:
         """
         Gets/Sets the type, color, and width of the shadow.
 
+        When setting the value can be an instance of ``ShadowFormatStructComp`` or ``ShadowFormat``.
+
         **optional**
+
+        Returns:
+            ShadowFormatStructComp: Shadow Format or None if not supported.
+
+        Hint:
+            - ``ShadowFormat`` can be imported from ``ooo.dyn.table.shadow_format``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.CharShadowFormat
-        return None
+        key = "CharShadowFormat"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = ShadowFormatStructComp(self.__component.CharShadowFormat, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(ShadowFormatStructComp, prop)
 
     @char_shadow_format.setter
-    def char_shadow_format(self, value: ShadowFormat) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.CharShadowFormat = value
+    def char_shadow_format(self, value: ShadowFormat | ShadowFormatStructComp) -> None:
+        key = "ShadowFormat"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, ShadowFormatStructComp):
+            self.__component.CharShadowFormat = value.copy()
+        else:
+            self.__component.CharShadowFormat = cast("ShadowFormat", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def char_shadowed(self) -> bool | None:
@@ -785,20 +924,26 @@ class CharacterPropertiesPartial:
             self.__component.CharShadowed = value
 
     @property
-    def char_strikeout(self) -> int | None:
+    def char_strikeout(self) -> FontStrikeoutEnum | None:
         """
         Gets/Sets - This property determines the type of the strike out of the character.
 
         **optional**
+
+        Returns:
+            FontStrikeoutEnum | None: Returns FontStrikeoutEnum or None if not supported.
+
+        Hint:
+            - ``FontStrikeoutEnum`` can be imported from ``ooo.dyn.awt.font_strikeout``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharStrikeout
+            return FontStrikeoutEnum(self.__component.CharStrikeout)
         return None
 
     @char_strikeout.setter
-    def char_strikeout(self, value: int) -> None:
+    def char_strikeout(self, value: int | FontStrikeoutEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharStrikeout = value
+            self.__component.CharStrikeout = FontStrikeoutEnum(value).value
 
     @property
     def char_style_name(self) -> str | None:
@@ -817,36 +962,58 @@ class CharacterPropertiesPartial:
             self.__component.CharStyleName = value
 
     @property
-    def char_top_border(self) -> BorderLine2 | None:
+    def char_top_border(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets - This property contains the top border of the object.
 
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
+
         **optional**
+
+        Returns:
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.CharTopBorder
-        return None
+        key = "CharTopBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.CharTopBorder, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @char_top_border.setter
-    def char_top_border(self, value: BorderLine2) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.CharTopBorder = value
+    def char_top_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "CharTopBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.CharTopBorder = value.copy()
+        else:
+            self.__component.CharTopBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
-    def char_top_border_distance(self) -> int | None:
+    def char_top_border_distance(self) -> UnitMM100 | None:
         """
         Gets/Sets - This property contains the distance from the top border to the object.
 
+        When setting the value, it can be either a float or an instance of ``UnitT``.
+
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.CharTopBorderDistance
+            return UnitMM100(self.__component.CharTopBorderDistance)
         return None
 
     @char_top_border_distance.setter
-    def char_top_border_distance(self, value: int) -> None:
+    def char_top_border_distance(self, value: int | UnitT) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.CharTopBorderDistance = value
+            self.__component.CharTopBorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
     def char_transparence(self) -> int | None:
@@ -881,12 +1048,15 @@ class CharacterPropertiesPartial:
     def char_underline_color(self) -> Color:
         """
         Gets/Sets the color of the underline for the characters.
+
+        Returns:
+            ~ooodev.utils.color.Color: Color
         """
-        return self.__component.CharUnderlineColor
+        return self.__component.CharUnderlineColor  # type: ignore
 
     @char_underline_color.setter
     def char_underline_color(self, value: Color) -> None:
-        self.__component.CharUnderlineColor = value
+        self.__component.CharUnderlineColor = value  # type: ignore
 
     @property
     def char_underline_has_color(self) -> bool:
@@ -1032,20 +1202,26 @@ class CharacterPropertiesPartial:
             self.__component.RubyIsAbove = value
 
     @property
-    def ruby_position(self) -> int | None:
+    def ruby_position(self) -> RubyPositionEnum | None:
         """
         Gets/Sets - This optional property determines the position of the ruby .
 
         **optional**
+
+        Returns:
+            RubyPositionEnum | None: Returns RubyPositionEnum or None if not supported.
+
+        Hint:
+            - ``RubyPositionEnum`` can be imported from ``ooo.dyn.text.ruby_position``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.RubyPosition
+            return RubyPositionEnum(self.__component.RubyPosition)
         return None
 
     @ruby_position.setter
-    def ruby_position(self, value: int) -> None:
+    def ruby_position(self, value: int | RubyPositionEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.RubyPosition = value
+            self.__component.RubyPosition = RubyPositionEnum(value).value
 
     @property
     def ruby_text(self) -> str | None:
@@ -1076,9 +1252,7 @@ class CharacterPropertiesPartial:
         """
         with contextlib.suppress(AttributeError):
             comp = self.__component.TextUserDefinedAttributes
-            if comp is None:
-                return None
-            return NameContainerComp(comp)
+            return None if comp is None else NameContainerComp(comp)
         return None
 
     @text_user_defined_attributes.setter

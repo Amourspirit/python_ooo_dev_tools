@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 import uno
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
-from .cell_properties_partial_props import CellPropertiesPartialProps
+from ooodev.adapter.text.cell_properties_partial_props import CellPropertiesPartialProps
 
 
 if TYPE_CHECKING:

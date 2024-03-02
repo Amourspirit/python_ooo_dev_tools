@@ -21,7 +21,7 @@ class TableColumnSeparators:
             index = int(event_args.event_data["prop_name"])
             lst = list(self._separators)
             self._props[index] = src
-            lst[index] = src.component
+            lst[index] = src.copy()
             self._component.TableColumnSeparators = tuple(lst)
             self._separators = self._component.TableColumnSeparators
 
@@ -34,10 +34,6 @@ class TableColumnSeparators:
     def __iter__(self):
         for i in range(len(self._separators)):
             yield self[i]
-
-    # def __next__(self) -> TableColumnSeparatorStructComp:
-    #     for i in range(len(self._separators)):
-    #         yield self[i]
 
     def __len__(self) -> int:
         return len(self._separators)

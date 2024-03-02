@@ -148,7 +148,7 @@ class CalcCell(
         .. versionadded:: 0.28.4
         """
         # pylint: disable=import-outside-toplevel
-        from .calc_cell_text_cursor import CalcCellTextCursor
+        from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
 
         cursor = self.component.createTextCursor()
         return CalcCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
@@ -168,7 +168,7 @@ class CalcCell(
         .. versionadded:: 0.28.4
         """
         # pylint: disable=import-outside-toplevel
-        from .calc_cell_text_cursor import CalcCellTextCursor
+        from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
 
         cursor = self.component.createTextCursorByRange(text_position)
         return CalcCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
