@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic
 import uno
+from com.sun.star.lang import IndexOutOfBoundsException
 
 from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -16,6 +17,8 @@ from ooodev.write import write_text_portions as mWriteTextPortions
 from ooodev.write.table.table_column_separators import TableColumnSeparators
 from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
 from ooodev.write.table.write_table_cell import WriteTableCell
+from ooodev.write.table.write_table_cell_range import WriteTableCellRange
+from ooodev.utils.data_type.rng.range_converter import RangeConverter
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextTable
@@ -71,6 +74,7 @@ class WriteTable(
         VetoableChangeImplement.__init__(self, component=component, trigger_args=generic_args)  # type: ignore
         self._cols = None
         self._rows = None
+        self._range_converter = None
 
     def __getitem__(self, _val: Any) -> WriteTableCell:
         if isinstance(_val, tuple):
@@ -134,7 +138,46 @@ class WriteTable(
         Raises:
             com.sun.star.lang.IndexOutOfBoundsException: ``IndexOutOfBoundsException``
         """
-        return WriteTableCell(owner=self, component=self.component.getCellByPosition(column, row))  # type: ignore
+        try:
+            return WriteTableCell(owner=self, component=self.component.getCellByPosition(column, row))  # type: ignore
+        except IndexOutOfBoundsException as e:
+            raise IndexError(f"Index out of range. column={column}, row={row}") from e
+
+    def get_cell_range_by_name(self, rng: str) -> WriteTableCellRange:
+        """
+        Returns a sub-range of cells within the range.
+
+        The sub-range is specified by its name. The format of the range name is dependent of the context of the table.
+        In spreadsheets valid names may be ``A1:C5`` or ``$B$2`` or even defined names for cell ranges such as ``MySpecialCell``.
+        """
+        range_obj = self.range_converter.rng_from_str(rng)
+        return WriteTableCellRange(
+            owner=self,
+            component=self.component.getCellRangeByName(rng),
+            range_obj=range_obj,
+        )
+
+    def get_cell_range_by_position(self, left: int, top: int, right: int, bottom: int) -> WriteTableCellRange:
+        """
+        Returns a sub-range of cells within the range.
+
+        Raises:
+            com.sun.star.lang.IndexOutOfBoundsException: ``IndexOutOfBoundsException``
+        """
+        try:
+            range_obj = self.range_converter.rng_from_position(
+                col_start=left,
+                row_start=top,
+                col_end=right,
+                row_end=bottom,
+            )
+            return WriteTableCellRange(
+                owner=self,
+                component=self.component.getCellRangeByPosition(left, top, right, bottom),
+                range_obj=range_obj,
+            )
+        except IndexOutOfBoundsException as e:
+            raise IndexError(f"Index out of range: left:{left}, top:{top}, right:{right}, bottom:{bottom}") from e
 
     # endregion CellRangePartial Overrides
 
@@ -200,6 +243,13 @@ class WriteTable(
     def table_column_relative_sum(self) -> int:
         """Gets the sum of the relative widths of all columns."""
         return self.component.TableColumnRelativeSum
+
+    @property
+    def range_converter(self) -> RangeConverter:
+        """Gets access to a range converter."""
+        if self._range_converter is None:
+            self._range_converter = RangeConverter(lo_inst=self.lo_inst)
+        return self._range_converter
 
     # endregion Properties
 

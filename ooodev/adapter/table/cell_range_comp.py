@@ -3,13 +3,14 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.table.cell_range_partial import CellRangePartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellRange  # service
 
 
-class CellRangeComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplement):
+class CellRangeComp(ComponentBase, CellRangePartial, PropertyChangeImplement, VetoableChangeImplement):
     """
     Class for managing table CellRange Component.
     """
@@ -24,6 +25,7 @@ class CellRangeComp(ComponentBase, PropertyChangeImplement, VetoableChangeImplem
             component (CellRange): UNO table CellRange Component.
         """
         ComponentBase.__init__(self, component)
+        CellRangePartial.__init__(self, component=component, interface=None)
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

@@ -1,9 +1,8 @@
-data_type
-=========
+rng
+===
 
 .. toctree::
     :titlesonly:
     :glob:
 
     *
-    rng/index

@@ -13,6 +13,7 @@ from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPa
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.data_type.cell_obj import CellObj
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextTableRow  # service
@@ -53,6 +54,7 @@ class WriteTableCell(
         StylePartial.__init__(self, component=component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self._owner = owner
+        self._cell_obj = None
 
     def _set_value(self, value: Any) -> None:
         """Set the cell value."""
@@ -112,6 +114,13 @@ class WriteTableCell(
         return WriteCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
 
     # endregion SimpleTextPartial Overrides
+
+    @property
+    def cell_obj(self) -> CellObj:
+        """Get the cell object."""
+        if self._cell_obj is None:
+            self._cell_obj = self.write_table.range_converter.get_cell_obj_from_str(self.cell_name)
+        return self._cell_obj
 
     @property
     def value(self) -> Any:

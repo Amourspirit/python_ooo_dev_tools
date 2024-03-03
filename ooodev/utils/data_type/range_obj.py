@@ -105,7 +105,7 @@ class RangeObj:
         Gets a ``RangeObj`` from are range name.
 
         Args:
-            range_name (str): Range name such as ``A1:D:34``.
+            range_name (str): Range name such as ``A1:D34``.
 
         Returns:
             RangeObj: Object that represents the name range.

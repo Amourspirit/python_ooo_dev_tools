@@ -3,7 +3,10 @@ from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeEventEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.text.cell_range_partial_props import CellRangePartialProps
+from ooodev.adapter.table.cell_range_comp import CellRangeComp as TableCellRangeComp
+from ooodev.adapter.sheet.cell_range_data_partial import CellRangeDataPartial
+from ooodev.adapter.chart.chart_data_array_partial import ChartDataArrayPartial
 
 
 if TYPE_CHECKING:
@@ -11,7 +14,9 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCellRange
 
 
-class CellRangeComp(ComponentBase, ChartDataChangeEventEvents):
+class CellRangeComp(
+    TableCellRangeComp, CellRangePartialProps, ChartDataArrayPartial, CellRangeDataPartial, ChartDataChangeEventEvents
+):
     """
     Class for managing CellRange Component.
     """
@@ -26,7 +31,10 @@ class CellRangeComp(ComponentBase, ChartDataChangeEventEvents):
             component (XCellRange): UNO Component that support ``com.sun.star.text.CellRange`` service.
         """
 
-        ComponentBase.__init__(self, component)
+        TableCellRangeComp.__init__(self, component)  # type: ignore
+        CellRangePartialProps.__init__(self, component)  # type: ignore
+        CellRangeDataPartial.__init__(self, component=component, interface=None)  # type: ignore
+        ChartDataArrayPartial.__init__(self, component=component, interface=None)  # type: ignore
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ChartDataChangeEventEvents.__init__(
