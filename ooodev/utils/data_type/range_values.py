@@ -1,19 +1,19 @@
 from __future__ import annotations
 import contextlib
-from typing import TYPE_CHECKING
+from typing import cast, overload, TYPE_CHECKING
 from dataclasses import dataclass
-from typing import cast, overload
-
-from ooodev.loader import lo as mLo
-from ooodev.utils import table_helper as mTb
-from ooodev.office import calc as mCalc
-from ooodev.utils.decorator import enforce
-
 import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 
+from ooodev.loader import lo as mLo
+from ooodev.utils import table_helper as mTb
+from ooodev.utils.decorator import enforce
+from ooodev.loader.inst.doc_type import DocType
+
+
 if TYPE_CHECKING:
     from ooo.lo.table.cell_address import CellAddress
+    from ooodev.calc.calc_doc import CalcDoc
 
 
 @enforce.enforce_types
@@ -62,8 +62,11 @@ class RangeValues:
 
         if self.sheet_idx < 0:
             with contextlib.suppress(Exception):
-                if mLo.Lo.is_loaded:
-                    idx = mCalc.Calc.get_sheet_index()
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.get_active_sheet()
+                    idx = sheet.get_sheet_index()
                     object.__setattr__(self, "sheet_idx", idx)
 
     def __eq__(self, other: object) -> bool:
@@ -320,8 +323,12 @@ class RangeValues:
             row_end = parts.row_end - 1
             sheet_idx = -1
             if sheet_name := parts.sheet:
-                sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
-                sheet_idx = mCalc.Calc.get_sheet_index(sheet)
+                with contextlib.suppress(Exception):
+                    # pylint: disable=no-member
+                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                        doc = cast("CalcDoc", mLo.Lo.current_doc)
+                        sheet = doc.get_sheet(sheet_name=sheet_name)
+                        sheet_idx = sheet.get_sheet_index()
         else:
             # CellRange
             col_start = range_val.StartColumn

@@ -1,5 +1,7 @@
 import pytest
 
+# pylint: disable=import-outside-toplevel
+
 if __name__ == "__main__":
     pytest.main([__file__])
 
@@ -64,34 +66,6 @@ def test_get_range_values(loader) -> None:
 
 
 @pytest.mark.parametrize(
-    ("val", "add", "end", "expected"),
-    [
-        (10, 10, True, 20),
-        (0, 5, True, 5),
-        (11, -5, True, 6),
-        (10, 10, False, 0),
-        (6, 5, False, 1),
-        (11, -5, False, 16),
-    ],
-)
-def test_range_values_add_cols(val: int, add: int, end: bool, expected: int) -> None:
-    from ooodev.utils.data_type.range_values import RangeValues
-
-    col_start = 0
-    col_end = 0
-    if end:
-        col_end = val
-    else:
-        col_start = val
-    rv1 = RangeValues(col_start=col_start, col_end=col_end, row_start=0, row_end=0, sheet_idx=0)
-    rv2 = rv1.add_cols(add, end)
-    if end:
-        assert rv2.col_end == expected
-    else:
-        assert rv2.col_start == expected
-
-
-@pytest.mark.parametrize(
     ("start", "end", "add", "to_end", "expected_start", "expected_end"),
     [
         (0, 10, 10, True, 0, 20),
@@ -137,7 +111,7 @@ def test_range_values_add_cols(
 
 
 @pytest.mark.parametrize(
-    ("start", "end", "subt", "to_end", "expected_start", "expected_end"),
+    ("start", "end", "subtract", "to_end", "expected_start", "expected_end"),
     [
         (0, 10, 10, True, 0, 0),
         (0, 5, 0, True, 0, 5),
@@ -149,18 +123,18 @@ def test_range_values_add_cols(
     ],
 )
 def test_range_values_subtract_rows(
-    start: int, end: int, subt: int, to_end: bool, expected_start: int, expected_end: int
+    start: int, end: int, subtract: int, to_end: bool, expected_start: int, expected_end: int
 ) -> None:
     from ooodev.utils.data_type.range_values import RangeValues
 
     rv1 = RangeValues(col_start=0, col_end=0, row_start=start, row_end=end, sheet_idx=0)
-    rv2 = rv1.subtract_rows(subt, to_end)
+    rv2 = rv1.subtract_rows(subtract, to_end)
     assert rv2.row_start == expected_start
     assert rv2.row_end == expected_end
 
 
 @pytest.mark.parametrize(
-    ("start", "end", "subt", "to_end", "expected_start", "expected_end"),
+    ("start", "end", "subtract", "to_end", "expected_start", "expected_end"),
     [
         (10, 10, 10, True, 0, 10),
         (1, 5, 0, True, 1, 5),
@@ -172,12 +146,12 @@ def test_range_values_subtract_rows(
     ],
 )
 def test_range_values_subtract_cols(
-    start: int, end: int, subt: int, to_end: bool, expected_start: int, expected_end: int
+    start: int, end: int, subtract: int, to_end: bool, expected_start: int, expected_end: int
 ) -> None:
     from ooodev.utils.data_type.range_values import RangeValues
 
     rv1 = RangeValues(col_start=start, col_end=end, row_start=0, row_end=0, sheet_idx=0)
-    rv2 = rv1.subtract_cols(subt, to_end)
+    rv2 = rv1.subtract_cols(subtract, to_end)
     assert rv2.col_start == expected_start
     assert rv2.col_end == expected_end
 
@@ -356,49 +330,49 @@ def test_range_obj_is_methods(loader) -> None:
 
         rng_name = "A1:AA1"
         rng = RangeObj.from_range(range_val=rng_name)
-        assert rng.is_single_cell() == False
-        assert rng.is_single_col() == False
-        assert rng.is_single_row() == True
+        assert rng.is_single_cell() is False
+        assert rng.is_single_col() is False
+        assert rng.is_single_row() is True
 
         rng_name = "A1:A77"
         rng = RangeObj.from_range(range_val=rng_name)
-        assert rng.is_single_cell() == False
-        assert rng.is_single_col() == True
-        assert rng.is_single_row() == False
+        assert rng.is_single_cell() is False
+        assert rng.is_single_col() is True
+        assert rng.is_single_row() is False
 
         rng_name = "A1:R17"
         rng = RangeObj.from_range(range_val=rng_name)
         sub_rng = rng.get_start_col()
-        assert sub_rng.is_single_cell() == False
-        assert sub_rng.is_single_col() == True
-        assert sub_rng.is_single_row() == False
+        assert sub_rng.is_single_cell() is False
+        assert sub_rng.is_single_col() is True
+        assert sub_rng.is_single_row() is False
         assert sub_rng.col_start == "A"
         assert sub_rng.col_end == "A"
         assert sub_rng.row_start == 1
         assert sub_rng.row_end == 17
 
         sub_rng = rng.get_end_col()
-        assert sub_rng.is_single_cell() == False
-        assert sub_rng.is_single_col() == True
-        assert sub_rng.is_single_row() == False
+        assert sub_rng.is_single_cell() is False
+        assert sub_rng.is_single_col() is True
+        assert sub_rng.is_single_row() is False
         assert sub_rng.col_start == "R"
         assert sub_rng.col_end == "R"
         assert sub_rng.row_start == 1
         assert sub_rng.row_end == 17
 
         sub_rng = rng.get_start_row()
-        assert sub_rng.is_single_cell() == False
-        assert sub_rng.is_single_col() == False
-        assert sub_rng.is_single_row() == True
+        assert sub_rng.is_single_cell() is False
+        assert sub_rng.is_single_col() is False
+        assert sub_rng.is_single_row() is True
         assert sub_rng.col_start == "A"
         assert sub_rng.col_end == "R"
         assert sub_rng.row_start == 1
         assert sub_rng.row_end == 1
 
         sub_rng = rng.get_end_row()
-        assert sub_rng.is_single_cell() == False
-        assert sub_rng.is_single_col() == False
-        assert sub_rng.is_single_row() == True
+        assert sub_rng.is_single_cell() is False
+        assert sub_rng.is_single_col() is False
+        assert sub_rng.is_single_row() is True
         assert sub_rng.col_start == "A"
         assert sub_rng.col_end == "R"
         assert sub_rng.row_start == 17
@@ -406,9 +380,9 @@ def test_range_obj_is_methods(loader) -> None:
 
         cell = CellObj(col="C", row=10, sheet_idx=0)
         rng = cell.get_range_obj()
-        assert rng.is_single_cell() == True
-        assert rng.is_single_col() == True
-        assert rng.is_single_row() == True
+        assert rng.is_single_cell() is True
+        assert rng.is_single_col() is True
+        assert rng.is_single_row() is True
 
     finally:
         Lo.close_doc(doc)
@@ -447,6 +421,10 @@ def test_range_obj_contains(rng_name: str, cell_name: str, expected: bool, loade
         rng = RangeObj.from_range(rng_name)
         cell = CellObj.from_cell(cell_name)
         assert rng.contains(cell) == expected
+        if expected:
+            assert cell in rng
+        else:
+            assert cell not in rng
     finally:
         Lo.close_doc(doc)
 
@@ -645,7 +623,7 @@ def test_subtract_range_cols_end(rng_name: str, col: str, expected: str) -> None
     from ooodev.utils.data_type.range_obj import RangeObj
 
     # subtracting cols from the end is removing cols from the right of the range.
-    # The overall cols are decreased by removeing from the right of the range.
+    # The overall cols are decreased by removing from the right of the range.
     # the rows are expected to remain the same.
     # the first column is expect to remain the same.
 
@@ -666,7 +644,7 @@ def test_subtract_range_cols_start(rng_name: str, col: str, expected: str) -> No
     from ooodev.utils.data_type.range_obj import RangeObj
 
     # subtracting cols from the start is removing cols from the left of the range.
-    # The overall cols are decreased by removeing from the left of the range.
+    # The overall cols are decreased by removing from the left of the range.
     # the rows are expected to remain the same.
     # the last column is expect to remain the same.
 
@@ -829,7 +807,7 @@ def test_subtract_range_cols_end_col_obj(rng_name: str, col: str, expected: str)
     from ooodev.utils.data_type.col_obj import ColObj
 
     # subtracting cols from the end is removing cols from the right of the range.
-    # The overall cols are decreased by removeing from the right of the range.
+    # The overall cols are decreased by removing from the right of the range.
     # the rows are expected to remain the same.
     # the first column is expect to remain the same.
     co = ColObj(col)
@@ -851,7 +829,7 @@ def test_subtract_range_cols_start_col_obj(rng_name: str, col: str, expected: st
     from ooodev.utils.data_type.col_obj import ColObj
 
     # subtracting cols from the start is removing cols from the left of the range.
-    # The overall cols are decreased by removeing from the left of the range.
+    # The overall cols are decreased by removing from the left of the range.
     # the rows are expected to remain the same.
     # the last column is expect to remain the same.
 
@@ -1007,7 +985,7 @@ def test_combine_errors() -> None:
         _ = "B2" / rng1
 
     with pytest.raises(TypeError):
-        _ = "B2:C4" / "a1:d7" / rng1
+        _ = "B2:C4" / "a1:d7" / rng1  # type: ignore
 
 
 # endregion test RangeObj add/subtract using CellObj

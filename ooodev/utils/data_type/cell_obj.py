@@ -1,15 +1,18 @@
 from __future__ import annotations
 import contextlib
-from typing import cast
+from typing import cast, overload, TYPE_CHECKING
 from dataclasses import dataclass, field
-from typing import overload
 from weakref import ref
+import uno
+from ooo.dyn.table.cell_address import CellAddress
+
 from ooodev.loader import lo as mLo
 from ooodev.utils import table_helper as mTb
-from ooodev.office import calc as mCalc
 from ooodev.utils.validation import check
+from ooodev.loader.inst.doc_type import DocType
 
-from ooo.dyn.table.cell_address import CellAddress
+if TYPE_CHECKING:
+    from ooodev.calc.calc_doc import CalcDoc
 
 
 @dataclass(frozen=True)
@@ -45,8 +48,11 @@ class CellObj:
                     object.__setattr__(self, "sheet_idx", self.range_obj.sheet_idx)
             else:
                 with contextlib.suppress(Exception):
-                    if mLo.Lo.is_loaded:
-                        idx = mCalc.Calc.get_sheet_index()
+                    # pylint: disable=no-member
+                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                        doc = cast("CalcDoc", mLo.Lo.current_doc)
+                        sheet = doc.get_active_sheet()
+                        idx = sheet.get_sheet_index()
                         object.__setattr__(self, "sheet_idx", idx)
 
     # endregion init
@@ -92,10 +98,13 @@ class CellObj:
             # split will cover if a range is passed in, return first cell
             parts = mTb.TableHelper.get_cell_parts(cell_val)
             idx = -1
-            if parts.sheet and mLo.Lo.is_loaded:
+            if parts.sheet:
                 with contextlib.suppress(Exception):
-                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=parts.sheet)
-                    idx = mCalc.Calc.get_sheet_index(sheet=sheet)
+                    # pylint: disable=no-member
+                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                        doc = cast("CalcDoc", mLo.Lo.current_doc)
+                        sheet = sheet = doc.get_sheet(sheet_name=parts.sheet)
+                        idx = sheet.get_sheet_index()
             return CellObj(col=parts.col, row=parts.row, sheet_idx=idx)
 
         cv = mCellVals.CellValues.from_cell(cell_val)
@@ -296,6 +305,7 @@ class CellObj:
     @property
     def col_obj(self) -> mCol.ColObj:
         """Gets Column object"""
+        # pylint: disable=no-member
         try:
             inf = self._col_info  # type: ignore
             if inf() is None:
@@ -309,6 +319,7 @@ class CellObj:
     @property
     def row_obj(self) -> mRow.RowObj:
         """Gets Row object"""
+        # pylint: disable=no-member
         try:
             inf = self._row_info  # type: ignore
             if inf() is None:
@@ -322,6 +333,7 @@ class CellObj:
     @property
     def right(self) -> CellObj:
         """Gets the cell to the right of current cell"""
+        # pylint: disable=no-member
         try:
             co = self._cell_right  # type: ignore
             if co() is None:
@@ -340,6 +352,8 @@ class CellObj:
         Raises:
             IndexError: If cell left is out of range
         """
+        # pylint: disable=no-member
+        # pylint: disable=try-except-raise
         try:
             co = self._cell_left  # type: ignore
             if co() is None:
@@ -360,6 +374,7 @@ class CellObj:
     @property
     def down(self) -> CellObj:
         """Gets the cell below of current cell"""
+        # pylint: disable=no-member
         try:
             co = self._cell_down  # type: ignore
             if co() is None:
@@ -378,6 +393,8 @@ class CellObj:
         Raises:
             IndexError: If cell above is out of range
         """
+        # pylint: disable=no-member
+        # pylint: disable=try-except-raise
         try:
             co = self._cell_up  # type: ignore
             if co() is None:
