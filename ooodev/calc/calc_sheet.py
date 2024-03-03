@@ -915,11 +915,8 @@ class CalcSheet(
         """
         Gets index if sheet
 
-        Args:
-            sheet (XSpreadsheet | None, optional): Spread sheet. Defaults to active sheet.
-
         Returns:
-            int: _description_
+            int: Sheet Index
         """
         return mCalc.Calc.get_sheet_index(self.component)
 
