@@ -31,6 +31,7 @@ class CellValues:
     """
     Sheet index that this cell value belongs to.
     ``-1`` means no sheet is defined for this instance.
+    ``-2`` means no sheet is defined for this instance and not attempt to get the sheet should be made.
     """
 
     def __post_init__(self):
@@ -79,7 +80,7 @@ class CellValues:
         if isinstance(cell_val, str):
             # split will cover if a range is passed in, return first cell
             parts = mTb.TableHelper.get_cell_parts(cell_val)
-            idx = -1
+            idx = -2
             row = parts.row - 1
             col = mTb.TableHelper.col_name_to_int(parts.col, True)
             if parts.sheet:

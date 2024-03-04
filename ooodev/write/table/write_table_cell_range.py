@@ -74,7 +74,19 @@ class WriteTableCellRange(
         Returns the Write Table Cell.
 
         Args:
-            key (Any): Key. can be a Tuple of (col, row) or a string such as "A1" or a CellObj
+            key (Any): Key. can be a Tuple of (col, row) or a string such as "A1" or a CellObj.
+
+        Returns:
+            WriteTableCell: Table Cell Object.
+
+        Example:
+            .. code-block:: python
+
+                >>> table = doc.tables[0]
+                >>> rng = table.get_cell_range_by_name("A1:D10")
+                >>> cell = rng["D3"]
+                >>> print(cell, cell.value)
+                WriteTableCell(cell_name=C4) Sean Connery
 
         See Also:
             - :meth:`get_cell`
@@ -400,7 +412,12 @@ class WriteTableCellRange(
         # if the origin range is A1:C4 and the sub-range is A2:C2, then the cell at A2 is at column 0, row 0
         # There is no GetCellByName so some conversion is needed.
         try:
-            return WriteTableCell(owner=self, component=self.component.getCellByPosition(column, row))  # type: ignore
+            cell_obj = self.write_table.range_converter.get_cell_obj(values=(column, row))
+            return WriteTableCell(
+                owner=self,
+                component=self.component.getCellByPosition(column, row),
+                cell_obj=cell_obj,
+            )
         except IndexOutOfBoundsException as e:
             raise IndexError(f"Index out of range. column={column}, row={row}") from e
 
@@ -498,10 +515,19 @@ class WriteTableCellRange(
 
     @property
     def range_obj(self) -> RangeObj:
-        """Range Object that represents this cell range."""
+        """
+        Range Object that represents this cell range.
+
+        Note:
+            The ``RangeObj`` returned from this property is a sub-range of the parent range or Table.
+            This means the ``RangeObj`` contains relative values to the parent range or table.
+            For this reason the cell names and indexes **do not** match up with the parent range.
+            If a sub-ranges is ``A3:D6`` then ``sub_rng[(0,0)]`` is at column 0, row 0 of the sub-range but has a cell name of ``A3``.
+            The ``RangeObj`` will always start with ``A1`` (column 0 and row 0).
+        """
         return self._range_obj
 
     @property
     def parent(self) -> WriteTableCellRange | None:
-        """Parent of this cell range."""
+        """Parent of this table cell range."""
         return self._parent

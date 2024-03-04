@@ -32,6 +32,9 @@ class RangeObj:
     """
     Range Parts
 
+    .. versionchanged:: 0.32.0
+        Added support for ``__contains__`` and ``__iter__`` methods. If sheet_idx is set to -2 then no attempt is made to get the sheet index or name from spreadsheet.
+
     .. versionadded:: 0.8.2
     """
 
@@ -50,7 +53,11 @@ class RangeObj:
     end: mCellObj.CellObj = field(init=False, repr=False, hash=False)
     """End Cell Object"""
     sheet_idx: int = -1
-    """Sheet index that this range value belongs to"""
+    """
+    Sheet index that this cell value belongs to.
+    If value is ``-1`` then the active spreadsheet, if available, is used to get the sheet index.
+    If the value is ``-2`` then no sheet index is applied and sheet name will always return and empty string.
+    """
 
     def __post_init__(self):
         row_start = self.row_start
@@ -76,7 +83,7 @@ class RangeObj:
 
         object.__setattr__(self, "start", start)
         object.__setattr__(self, "end", end)
-        if self.sheet_idx < 0:
+        if self.sheet_idx == -1:
             with contextlib.suppress(Exception):
                 # pylint: disable=no-member
                 if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
@@ -86,6 +93,8 @@ class RangeObj:
                     name = sheet.name
                     object.__setattr__(self, "sheet_idx", idx)
                     object.__setattr__(self, "_sheet_name", name)
+        if self.sheet_idx < -1:
+            object.__setattr__(self, "_sheet_name", "")
 
     # endregion init
 
@@ -146,8 +155,6 @@ class RangeObj:
             col_end = mTb.TableHelper.make_column_name(rng.col_end, True)
             row_start = rng.row_start + 1
             row_end = rng.row_end + 1
-            if sheet_idx < 0:
-                sheet_idx = rng.sheet_idx
             sheet_idx = rng.sheet_idx
         else:
             parts = mTb.TableHelper.get_range_parts(str(rng))
@@ -156,7 +163,7 @@ class RangeObj:
             row_start = parts.row_start
             row_end = parts.row_end
             sheet_name = parts.sheet
-            if sheet_idx < 0 and sheet_name:
+            if sheet_idx == -1 and sheet_name:
                 with contextlib.suppress(Exception):
                     # pylint: disable=no-member
                     if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:

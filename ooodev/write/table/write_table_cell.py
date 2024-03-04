@@ -16,10 +16,11 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.data_type.cell_obj import CellObj
 
 if TYPE_CHECKING:
-    from com.sun.star.text import TextTableRow  # service
     from com.sun.star.text import XTextRange
+    from com.sun.star.table import XCell
     from ooodev.proto.component_proto import ComponentT
     from ooodev.write.table.write_cell_text_cursor import WriteCellTextCursor
+    from ooodev.write.table.write_table_cell_range import WriteTableCellRange
 
 
 class WriteTableCell(
@@ -35,12 +36,12 @@ class WriteTableCell(
 ):
     """Represents writer table rows."""
 
-    def __init__(self, owner: ComponentT, component: TextTableRow) -> None:
+    def __init__(self, owner: ComponentT, component: XCell, cell_obj: CellObj) -> None:
         """
         Constructor
 
         Args:
-            component (TextTableRow): UNO object that supports ``om.sun.star.text.TextTableRow`` service.
+            component (XCell): UNO object that supports ``com.sun.star.table.XCell`` interface.
         """
         if not isinstance(owner, WriteTablePropPartial):
             raise ValueError("owner must be a WriteTablePropPartial instance.")
@@ -54,7 +55,7 @@ class WriteTableCell(
         StylePartial.__init__(self, component=component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self._owner = owner
-        self._cell_obj = None
+        self._cell_obj = cell_obj
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(cell_name={self.cell_name})"
@@ -81,6 +82,54 @@ class WriteTableCell(
         if t == CellContentType.FORMULA:
             return self.get_formula()
 
+    # region get Other Cell
+
+    def _get_cell_other(self, cell_obj: CellObj) -> WriteTableCell:
+        """Get the cell object. From Table or Range."""
+        # avoiding unnecessary imports for circular imports
+        if type(self.owner).__name__ == "WriteTableCellRange":
+            src = cast("WriteTableCellRange", self.owner)
+        else:
+            src = self.write_table
+        return src.get_cell(cell_obj)
+
+    def get_cell_left(self) -> WriteTableCell:
+        """
+        Get the cell to the left.
+
+        Raises:
+            IndexError: If cell above is out of range
+        """
+        return self._get_cell_other(self.cell_obj.left)
+
+    def get_cell_right(self) -> WriteTableCell:
+        """
+        Get the cell to the right.
+
+        Raises:
+            IndexError: If cell above is out of range
+        """
+        return self._get_cell_other(self.cell_obj.right)
+
+    def get_cell_up(self) -> WriteTableCell:
+        """
+        Get the cell above.
+
+        Raises:
+            IndexError: If cell above is out of range
+        """
+        return self._get_cell_other(self.cell_obj.up)
+
+    def get_cell_down(self) -> WriteTableCell:
+        """
+        Get the cell below.
+
+        Raises:
+            IndexError: If cell above is out of range
+        """
+        return self._get_cell_other(self.cell_obj.down)
+
+    # endregion get Other Cell
     # region SimpleTextPartial Overrides
 
     def create_text_cursor(self) -> WriteCellTextCursor:
@@ -120,9 +169,16 @@ class WriteTableCell(
 
     @property
     def cell_obj(self) -> CellObj:
-        """Get the cell object."""
-        if self._cell_obj is None:
-            self._cell_obj = self.write_table.range_converter.get_cell_obj_from_str(self.cell_name)
+        """
+        Get the cell object.
+
+        Note:
+            The ``CellObj`` returned from this property is a sub-range of the parent range or Table.
+            This means the ``CellObj`` contains relative values to the parent range or table.
+            For this reason the cell name and index **do not** match up with the parent range.
+        """
+        # if self._cell_obj is None:
+        #     self._cell_obj = self.write_table.range_converter.get_cell_obj_from_str(self.cell_name)
         return self._cell_obj
 
     @property

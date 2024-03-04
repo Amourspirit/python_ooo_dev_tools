@@ -1,6 +1,6 @@
 from __future__ import annotations
 import contextlib
-from typing import cast, overload, TYPE_CHECKING
+from typing import Any, cast, overload, TYPE_CHECKING
 from dataclasses import dataclass
 import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
@@ -20,7 +20,10 @@ if TYPE_CHECKING:
 @dataclass(frozen=True)
 class RangeValues:
     """
-    Range Parts. Intended to be zero-based indexes
+    Range Parts. Intended to be zero-based indexes.
+
+    .. versionchanged:: 0.32.0
+        Added support for ``__contains__`` and method. If sheet_idx is set to -2 then no attempt is made to get the sheet index from spreadsheet.
 
     .. versionadded:: 0.8.2
     """
@@ -60,7 +63,7 @@ class RangeValues:
             object.__setattr__(self, "row_start", row_start)
             object.__setattr__(self, "row_end", row_end)
 
-        if self.sheet_idx < 0:
+        if self.sheet_idx == -1:
             with contextlib.suppress(Exception):
                 # pylint: disable=no-member
                 if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
@@ -321,13 +324,13 @@ class RangeValues:
             col_end = mTb.TableHelper.col_name_to_int(parts.col_end, True)
             row_start = parts.row_start - 1
             row_end = parts.row_end - 1
-            sheet_idx = -1
-            if sheet_name := parts.sheet:
+            sheet_idx = -2
+            if parts.sheet:
                 with contextlib.suppress(Exception):
                     # pylint: disable=no-member
                     if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
                         doc = cast("CalcDoc", mLo.Lo.current_doc)
-                        sheet = doc.get_sheet(sheet_name=sheet_name)
+                        sheet = doc.get_sheet(sheet_name=parts.sheet)
                         sheet_idx = sheet.get_sheet_index()
         else:
             # CellRange
@@ -401,6 +404,26 @@ class RangeValues:
         return self.is_single_col() and self.is_single_row()
 
     # region contains()
+    def __contains__(self, value: Any) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            value (CellObj): Cell object
+            value (CellAddress): Cell address
+            value (CellValues): Cell Values
+            value (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+
+        Note:
+            If cell input contains sheet info the it is use in comparison.
+            Otherwise sheet is ignored.
+
+        .. versionadded:: 0.32.0
+        """
+        return self.contains(value)
 
     @overload
     def contains(self, cell_obj: mCellObj.CellObj) -> bool: ...

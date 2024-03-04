@@ -1,12 +1,12 @@
 from __future__ import annotations
-from typing import overload, TYPE_CHECKING, Tuple
+from typing import Any, cast, overload, TYPE_CHECKING, Tuple
+import contextlib
 import uno
 from com.sun.star.container import XNamed
 from com.sun.star.sheet import XCellAddressable
 from com.sun.star.sheet import XCellRangeAddressable
 
 from ooodev.events.args.event_args import EventArgs
-from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.loader.inst.lo_inst import LoInst
@@ -16,6 +16,7 @@ from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.utils.data_type.range_values import RangeValues
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.table_helper import TableHelper
+from ooodev.loader.inst.doc_type import DocType
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellRangeAddress
@@ -23,9 +24,10 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheet
     from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
+    from ooodev.calc.calc_doc import CalcDoc
 
 
-class RangeConverter(LoInstPropsPartial, EventsPartial):
+class RangeConverter(LoInstPropsPartial):
     EVENT_RANGE_CREATING = "range_converter_range_creating"
     EVENT_CELL_CREATING = "range_converter_cell_creating"
 
@@ -33,7 +35,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
-        EventsPartial.__init__(self)
 
     def get_safe_quoted_name(self, name: str) -> str:
         """
@@ -217,7 +218,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
     # endregion Cell Converters to String
 
     # region Cell Convertor to CellObj
-    def _create_cell_obj(self, col: str, row: int, sheet_idx: int = -1, **kwargs) -> CellObj:
+    def _create_cell_obj(self, col: str, row: int, sheet_idx: int = -2) -> CellObj:
         """
         Creates a cell object
 
@@ -229,59 +230,28 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             CellObj: Cell object.
-
-        Note:
-            By Default when a cell object is created it will check for a sheet index when the ``sheet_idx`` is less then 0.
-            In this case we do not want this. This converter may be used in other places such as in a Write Table.
-            For this reason an event is triggered that allows for a sheet index to be set.
-            For the purposes of the method, the sheet index is set to -1. By Default.
-            If the sheet index is less than 0, the sheet index will be set to 0 at creation time to avoid a check for a spreadsheet index.
-            After the cell object is created, the sheet index will be set to -1.
         """
-        args = EventArgs(source=self)
-        event_data = {
-            "col": col,
-            "row": row,
-            "sheet_idx": sheet_idx,
-        }
-        if kwargs:
-            event_data.update(kwargs)
-        args.event_data = event_data
-        self.trigger_event(RangeConverter.EVENT_CELL_CREATING, args)
-        col = args.event_data.get("col", col)
-        row = args.event_data.get("row", row)
-        sheet_idx = args.event_data.get("sheet_idx", sheet_idx)
-
-        idx = max(sheet_idx, 0)
-
-        cell_obj = CellObj(
+        return CellObj(
             col=col,
             row=row,
-            sheet_idx=idx,
+            sheet_idx=sheet_idx,
         )
-        if sheet_idx < 0:
-            object.__setattr__(cell_obj, "sheet_idx", -1)
-        return cell_obj
 
-    def get_cell_obj_from_col_row(self, col: int, row: int, sheet_idx: int = -1) -> CellObj:
+    def get_cell_obj_from_col_row(self, col: int, row: int, sheet_idx: int = -2) -> CellObj:
         """
         Gets the cell as CellObj from column and row.
 
         Args:
             col (int): Column. Zero Based column index.
             row (int): Row. Zero Based row index.
-            sheet_idx (int, optional): Sheet index that this cell value belongs to. Default is ``-1``.
+            sheet_idx (int, optional): Sheet index that this cell value belongs to.
+                A value of ``-1`` means the sheet index is not set and an attempt
+                will be made to discover the sheet index from current document if it is a Calc document.
+                A value of ``-2`` means no attempt is made to discover the sheet index.
+                Default is ``-2``.
 
         Returns:
             CellObj: Cell Object.
-
-        Note:
-            A ``RangeConverter.EVENT_CELL_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col: Column start such as ``A``
-            - row: Row start such as ``1``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is the value of ``sheet_idx``.
         """
         col_str = TableHelper.make_column_name(col=col, zero_index=True)
         return self._create_cell_obj(col=col_str, row=row + 1, sheet_idx=sheet_idx)
@@ -295,14 +265,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             CellObj: Cell Object.
-
-        Note:
-            A ``RangeConverter.EVENT_CELL_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col: Column start such as ``A``
-            - row: Row start such as ``1``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is the value of ``addr.Sheet``.
         """
         col_str = TableHelper.make_column_name(col=addr.Column, zero_index=True)
         return self._create_cell_obj(col=col_str, row=addr.Row + 1, sheet_idx=addr.Sheet)
@@ -316,14 +278,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             CellObj: Cell Object.
-
-        Note:
-            A ``RangeConverter.EVENT_CELL_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col: Column start such as ``A``
-            - row: Row start such as ``1``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to.
         """
         addr = self.get_cell_address_from_cell(cell)
         return self.get_cell_obj_from_addr(addr)
@@ -337,14 +291,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             CellObj: Cell Object.
-
-        Note:
-            A ``RangeConverter.EVENT_CELL_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col: Column start such as ``A``
-            - row: Row start such as ``1``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is the value of ``val.sheet_idx``.
 
         Hint:
             - ``CellValues`` can be imported from ``ooodev.utils.data_type.cell_values``
@@ -362,18 +308,10 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             CellObj: Cell Object.
-
-        Note:
-            A ``RangeConverter.EVENT_CELL_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col: Column start such as ``A``
-            - row: Row start such as ``1``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to.
         """
         col = TableHelper.make_column_name(values[0], True)
         row = values[1] + 1
-        sheet_idx = values[2] if len(values) == 3 else -1
+        sheet_idx = values[2] if len(values) == 3 else -2
         return self._create_cell_obj(col=col, row=row, sheet_idx=sheet_idx)
 
     def get_cell_obj_from_str(self, name: str) -> CellObj:
@@ -385,26 +323,10 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             CellObj: Cell Object.
-
-        Note:
-            If a range name such as ``A23:G45`` or ``Sheet1.A23:G45`` then only the first cell is used.
-
-            A ``RangeConverter.EVENT_CELL_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col: Column start such as ``A``
-            - row: Row start such as ``23``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to.
-            - sheet_name: Sheet name if applicable. May be empty string.
-
-            If a sheet name is present it is passed to the event data in the ``sheet_name`` key.
-            If the sheet name is not present ``sheet_name`` key will be an empty string.
-
-            If there is a sheet name is will not be converted into a sheet index.
-            This must be done manually by setting the ``sheet_idx`` key in the event data.
         """
         parts = TableHelper.get_cell_parts(name)
-        return self._create_cell_obj(col=parts.col, row=parts.row, sheet_idx=-1, sheet_name=parts.sheet)
+        idx = self.get_sheet_index(parts.sheet) if parts.sheet else -2
+        return self._create_cell_obj(col=parts.col, row=parts.row, sheet_idx=idx)
 
     # region get_cell_obj() method
     @overload
@@ -422,14 +344,18 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         ...
 
     @overload
-    def get_cell_obj(self, col: int, row: int, sheet_idx: int = -1) -> CellObj:
+    def get_cell_obj(self, col: int, row: int, sheet_idx: int = ...) -> CellObj:
         """
         Gets the cell as CellObj from column and row.
 
         Args:
             col (int): Column. Zero Based column index.
             row (int): Row. Zero Based row index.
-            sheet_idx (int, optional): Sheet index that this cell value belongs to. Default is ``-1``.
+            sheet_idx (int, optional): Sheet index that this cell value belongs to.
+                A value of ``-1`` means the sheet index is not set and an attempt
+                will be made to discover the sheet index from current document if it is a Calc document.
+                A value of ``-2`` means no attempt is made to discover the sheet index.
+                Default is ``-2``.
 
         Returns:
             CellObj: Cell Object.
@@ -511,27 +437,17 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         Args:
             col (int): Column. Zero Based column index.
             row (int): Row. Zero Based row index.
-            sheet_idx (int, optional): Sheet index that this cell value belongs to. Default is ``-1``.
+            sheet_idx (int, optional): Sheet index that this cell value belongs to. Default is ``-2``.
             addr (CellAddress): Cell Address.
             cell (XCell): Cell.
             val (CellValues): Cell values.
             name (str): Cell name such as as ``A23`` or ``Sheet1.A23``
             cell_obj (CellObj): Cell Object.
+            values (Tuple[int, int], Tuple[int, int, int]): Cell values.
 
 
         Returns:
             CellObj: Cell Object.
-
-        Note:
-            If a range name such as ``A23:G45`` or ``Sheet1.A23:G45`` then only the first cell is used.
-
-            A ``RangeConverter.EVENT_CELL_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col: Column start such as ``A``
-            - row: Row start such as ``23``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to.
-            - sheet_name: Sheet name if applicable. May be empty string. Key may not be present.
         """
         # def get_cell_obj_from_col_row(self, col: int, row: int, sheet_idx: int = -1)
         # def get_cell_obj_from_addr(self, addr: CellAddress)
@@ -573,7 +489,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             kargs[ordered_keys[i]] = arg
 
         if count == 2:
-            return self.get_cell_obj_from_col_row(kargs[1], kargs[2], -1)
+            return self.get_cell_obj_from_col_row(kargs[1], kargs[2], -2)
         if count == 3:
             return self.get_cell_obj_from_col_row(kargs[1], kargs[2], kargs[3])
         arg1 = kargs[1]
@@ -784,7 +700,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
     # region Range Converters to RangeObj
     def _create_range_obj(
-        self, col_start: str, col_end: str, row_start: int, row_end: int, sheet_idx: int = -1, **kwargs
+        self, col_start: str, col_end: str, row_start: int, row_end: int, sheet_idx: int = -2
     ) -> RangeObj:
         """
         Creates a cell range object
@@ -795,49 +711,22 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             row_start (int): Row start such as ``1``
             row_end (int): Row end such as ``125``
             sheet_idx (int, optional): Sheet index that this range value belongs to.
+                A value of ``-1`` means the sheet index is not set and an attempt
+                will be made to discover the sheet index from current document if it is a Calc document.
+                A value of ``-2`` means no attempt is made to discover the sheet index.
+                Default is ``-2``.
             kwargs: Additional arguments to pass to the event data.
 
         Returns:
             RangeObj: Range object.
-
-        Note:
-            By Default when a range object is created it will check for a sheet index when the ``sheet_idx`` is less then 0.
-            In this case we do not want this. This converter may be used in other places such as in a Write Table.
-            For this reason an event is triggered that allows for a sheet index to be set.
-            For the purposes of the method, the sheet index is set to -1. By Default.
-            If the sheet index is less than 0, the sheet index will be set to 0 at creation time to avoid a check for a spreadsheet index.
-            After the range object is created, the sheet index will be set to -1.
         """
-        args = EventArgs(source=self)
-        event_data = {
-            "col_start": col_start,
-            "col_end": col_end,
-            "row_start": row_start,
-            "row_end": row_end,
-            "sheet_idx": sheet_idx,
-        }
-        if kwargs:
-            event_data.update(kwargs)
-        args.event_data = event_data
-        self.trigger_event(RangeConverter.EVENT_RANGE_CREATING, args)
-        col_start = args.event_data.get("col_start", col_start)
-        col_end = args.event_data.get("col_end", col_end)
-        row_start = args.event_data.get("row_start", row_start)
-        row_end = args.event_data.get("row_end", row_end)
-        sheet_idx = args.event_data.get("sheet_idx", sheet_idx)
-
-        idx = max(sheet_idx, 0)
-
-        rng_obj = RangeObj(
+        return RangeObj(
             col_start=col_start,
             col_end=col_end,
             row_start=row_start,
             row_end=row_end,
-            sheet_idx=idx,
+            sheet_idx=sheet_idx,
         )
-        if sheet_idx < 0:
-            object.__setattr__(rng_obj, "sheet_idx", -1)
-        return rng_obj
 
     def rng_from_cell_obj(self, cell_obj: CellObj) -> RangeObj:
         """
@@ -848,16 +737,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             RangeObj: Range object.
-
-        Note:
-            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col_start: Column start such as ``A``
-            - col_end: Column end such as ``C``
-            - row_start: Row start such as ``1``
-            - row_end: Row end such as ``125``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is the value of ``cell_obj.sheet_idx``.
         """
 
         return self._create_range_obj(
@@ -869,7 +748,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         )
 
     def rng_from_position(
-        self, col_start: int, row_start: int, col_end: int, row_end: int, sheet_idx: int = -1
+        self, col_start: int, row_start: int, col_end: int, row_end: int, sheet_idx: int = -2
     ) -> RangeObj:
         """
         Gets a range Object representing a range.
@@ -883,18 +762,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             RangeObj: Range object.
-
-        Note:
-            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col_start: Column start such as ``A``
-            - col_end: Column end such as ``C``
-            - row_start: Row start such as ``1``
-            - row_end: Row end such as ``125``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is -1.
-
-            By default ``sheet_idx`` will be ``-1`` meaning no sheet index is set.
         """
         col_start_str = TableHelper.make_column_name(col=col_start, zero_index=True)
         col_end_str = TableHelper.make_column_name(col=col_end, zero_index=True)
@@ -915,16 +782,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             RangeObj: Range object.
-
-        Note:
-            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col_start: Column start such as ``A``
-            - col_end: Column end such as ``C``
-            - row_start: Row start such as ``1``
-            - row_end: Row end such as ``125``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to.
         """
         col_start = TableHelper.make_column_name(addr.StartColumn, True)
         col_end = TableHelper.make_column_name(addr.EndColumn, True)
@@ -948,16 +805,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             RangeObj: Range object.
-
-        Note:
-            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col_start: Column start such as ``A``
-            - col_end: Column end such as ``C``
-            - row_start: Row start such as ``1``
-            - row_end: Row end such as ``125``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to.
 
         Hint:
             - ``RangeValues`` can be imported from ``ooodev.utils.data_type.range_values``
@@ -984,16 +831,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             RangeObj: Range object.
-
-        Note:
-            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col_start: Column start such as ``A``
-            - col_end: Column end such as ``C``
-            - row_start: Row start such as ``1``
-            - row_end: Row end such as ``125``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to.
         """
         addr = self.get_cell_address_from_cell_range(cell_range)
         return self.rng_from_cell_rng_addr(addr)
@@ -1030,13 +867,14 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         col_end = parts.col_end
         row_start = parts.row_start
         row_end = parts.row_end
-        sheet_name = parts.sheet
+        idx = self.get_sheet_index(parts.sheet) if parts.sheet else -2
+
         return self._create_range_obj(
             col_start=col_start,
             col_end=col_end,
             row_start=row_start,
             row_end=row_end,
-            sheet_name=sheet_name,
+            sheet_idx=idx,
         )
 
     # region get_range_obj() method
@@ -1151,7 +989,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             row_start (int): Zero-based start row index.
             col_end (int): Zero-based end column index.
             row_end (int): Zero-based end row index.
-            sheet_idx (int, optional): Zero-based sheet index that this range value belongs to. Default is -1.
+            sheet_idx (int, optional): Zero-based sheet index that this range value belongs to. Default is ``-2``.
             addr (CellRangeAddress): Cell Range Address.
             rng (RangeValues): Cell Range Values.
             cell_range (XCellRange): Cell Range.
@@ -1161,17 +999,6 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
         Returns:
             RangeObj: Range Object.
-
-        Note:
-            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col_start: Column start such as ``A``
-            - col_end: Column end such as ``C``
-            - row_start: Row start such as ``1``
-            - row_end: Row end such as ``125``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is -1.
-            - sheet_name: Sheet name if applicable. May be empty string. Key may not be present.
         """
         # rng_from_cell_obj(self, cell_obj: CellObj)
         # rng_from_position(self, col_start: int, row_start: int, col_end: int, row_end: int, sheet_idx: int = -1)
@@ -1218,7 +1045,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             kargs[ordered_keys[i]] = arg
 
         if count == 4:
-            return self.rng_from_position(kargs[1], kargs[2], kargs[3], kargs[4], -1)
+            return self.rng_from_position(kargs[1], kargs[2], kargs[3], kargs[4], -2)
         if count == 5:
             return self.rng_from_position(kargs[1], kargs[2], kargs[3], kargs[4], kargs[5])
         arg1 = kargs[1]
@@ -1271,3 +1098,28 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             row_end=row_count,
             sheet_idx=sheet_idx,
         )
+
+    def get_sheet_index(self, key: str | int = -1) -> int:
+        """
+        Gets the sheet index from the current Calc document.
+
+        Args:
+            key (str | int, optional): Sheet name or Sheet index.
+                A value of ``-1`` means get active sheet index. Defaults to ``-1``
+
+        Returns:
+            int: Sheet index or ``-1`` if not found. If current doc is not a Calc doc then ``-2`` is returned.
+        """
+        idx = -1
+        with contextlib.suppress(Exception):
+            # pylint: disable=no-member
+            if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                doc = cast("CalcDoc", mLo.Lo.current_doc)
+                if isinstance(key, str):
+                    sheet = doc.get_sheet(sheet_name=key)
+                else:
+                    sheet = doc.get_active_sheet() if key < 0 else doc.sheets[key]
+                idx = sheet.get_sheet_index()
+            else:
+                idx = -2
+        return idx

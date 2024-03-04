@@ -20,6 +20,9 @@ class CellObj:
     """
     Cell Parts
 
+    .. versionchanged:: 0.32.0
+        If index is set to ``-2`` then no attempt is made to get index from spreadsheet.
+
     .. versionadded:: 0.8.2
     """
 
@@ -30,7 +33,11 @@ class CellObj:
     row: int
     """One based row such as ``125``"""
     sheet_idx: int = -1
-    """Sheet index that this cell value belongs to"""
+    """
+    Sheet index that this cell value belongs to.
+    If value is ``-1`` then the active spreadsheet, if available, is used to get the sheet index.
+    If the value is ``-2`` then no sheet index is applied.
+    """
     range_obj: mRngObj.RangeObj | None = field(repr=False, hash=False, default=None)
     """Range Object that instance is part of"""
 
@@ -42,7 +49,7 @@ class CellObj:
         except ValueError as e:
             raise AssertionError from e
         check(self.row >= 1, f"{self}", f"Expected a row of 1 or greater. Got: {self.row}")
-        if self.sheet_idx < 0:
+        if self.sheet_idx == -1:
             if self.range_obj:
                 if self.range_obj.sheet_idx >= 0:
                     object.__setattr__(self, "sheet_idx", self.range_obj.sheet_idx)
