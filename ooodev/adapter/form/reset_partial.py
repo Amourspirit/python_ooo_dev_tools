@@ -1,7 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from com.sun.star.form import XReset
+
+from ooodev.exceptions import ex as mEx
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from com.sun.star.form import XResetListener
@@ -15,14 +18,22 @@ class ResetPartial:
     This interface does not really provide an own functionality, it is only for easier runtime identification of form components.
     """
 
-    def __init__(self, component: XReset, interface: UnoInterface | None = XReset) -> None:
+    def __init__(self, component: XReset, interface: UnoInterface | None = None) -> None:
         """
         Constructor
 
         Args:
             component (XReset): UNO Component that implements ``com.sun.star.container.XReset``.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XReset``.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``None``.
         """
+
+        def validate(comp: Any, obj_type: Any) -> None:
+            if obj_type is None:
+                return
+            if not mLo.Lo.is_uno_interfaces(comp, obj_type):
+                raise mEx.MissingInterfaceError(obj_type)
+
+        validate(component, interface)
         self.__component = component
 
     # region XReset

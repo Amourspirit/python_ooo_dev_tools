@@ -26,21 +26,15 @@ class ViewSplitablePartial:
             component (XViewSplitable): UNO Component that implements ``com.sun.star.sheet.XViewSplitable``.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XViewSplitable``.
         """
-        self.__interface = interface
-        self.__validate(component)
+
+        def validate(comp: Any, obj_type: Any) -> None:
+            if obj_type is None:
+                return
+            if not mLo.Lo.is_uno_interfaces(comp, obj_type):
+                raise mEx.MissingInterfaceError(obj_type)
+
+        validate(component, interface)
         self.__component = component
-
-    def __validate(self, component: Any) -> None:
-        """
-        Validates the component.
-
-        Args:
-            component (Any): The component to be validated.
-        """
-        if self.__interface is None:
-            return
-        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
-            raise mEx.MissingInterfaceError(self.__interface)
 
     # region XViewSplitable
     def get_is_window_split(self) -> bool:
