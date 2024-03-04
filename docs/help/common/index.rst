@@ -8,3 +8,4 @@ Common Help Topics
 
     format/index
     modules/index
+    ranges/index

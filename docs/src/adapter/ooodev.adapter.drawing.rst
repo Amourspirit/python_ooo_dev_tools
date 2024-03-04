@@ -30,6 +30,8 @@ Submodules
    ooodev.adapter.drawing.graphic_export_filter_partial
    ooodev.adapter.drawing.graphic_object_shape_comp
    ooodev.adapter.drawing.group_shape_comp
+   ooodev.adapter.drawing.hatch_struct_comp
+   ooodev.adapter.drawing.line_dash_struct_comp
    ooodev.adapter.drawing.line_properties_comp
    ooodev.adapter.drawing.line_properties_partial
    ooodev.adapter.drawing.line_shape_comp

@@ -57,6 +57,9 @@ class WriteTextCursor(
     Represents a writer text cursor.
 
     This class implements ``__len__()`` method, which returns the number of characters in the range.
+
+    .. seealso::
+        - :ref:`help_writer_format_direct_cursor_char_styler`
     """
 
     def __init__(self, owner: T, component: XTextCursor, lo_inst: LoInst | None = None) -> None:

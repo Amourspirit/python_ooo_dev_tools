@@ -32,6 +32,10 @@ class RangeObj:
     """
     Range Parts
 
+    ..seealso::
+        - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj`
+        - :ref:`ooodev.utils.data_type.range_obj.RangeObj`
+
     .. versionchanged:: 0.32.0
         Added support for ``__contains__`` and ``__iter__`` methods. If sheet_idx is set to -2 then no attempt is made to get the sheet index or name from spreadsheet.
 
@@ -428,6 +432,9 @@ class RangeObj:
         Note:
             If cell input contains sheet info the it is use in comparison.
             Otherwise sheet is ignored.
+
+        See Also:
+            - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj.contains`
         """
         rv = self.get_range_values()
         return rv.contains(*args, **kwargs)
@@ -539,6 +546,9 @@ class RangeObj:
             If cell input contains sheet info the it is use in comparison.
             Otherwise sheet is ignored.
 
+        See Also:
+            - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj.contains`
+
         .. versionadded:: 0.32.0
         """
         return self.contains(value)
@@ -571,6 +581,9 @@ class RangeObj:
 
         Yields:
             Generator[mCellObj.CellObj, None, None]: Cell Object
+
+        See Also:
+            - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj.__iter__`
 
         .. versionadded:: 0.32.0
         """
@@ -610,6 +623,15 @@ class RangeObj:
         return False
 
     def __add__(self, other: object) -> RangeObj:
+        """
+        Add range to another range.
+
+        Args:
+            other (object): Other Range, Row, Column, Cell or str in range format such as ``A1:C4``
+
+        Returns:
+            RangeObj: _description_
+        """
         if isinstance(other, str):
             # add cols to right of range
             cols = mTb.TableHelper.col_name_to_int(other)

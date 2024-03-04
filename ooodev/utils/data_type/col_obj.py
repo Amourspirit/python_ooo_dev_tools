@@ -16,6 +16,10 @@ class ColObj:
     """
     Column info.
 
+    ..seealso::
+        - :ref:`help_ooodev.utils.data_type.col_obj.ColObj`
+        - :ref:`ooodev.utils.data_type.col_obj.ColObj`
+
     .. versionadded:: 0.8.2
     """
 
@@ -183,8 +187,8 @@ class ColObj:
                 return ColObj.from_int(self.index - oth.index)
             except AssertionError as e:
                 raise IndexError from e
-            except Exception as e:
-                raise NotImplemented from e
+            except Exception:
+                return NotImplemented
         try:
             if isinstance(other, ColObj):
                 return ColObj.from_int(self.index - other.index)
@@ -206,8 +210,8 @@ class ColObj:
                 return ColObj.from_int(oth.index - self.index)
             except AssertionError as e:
                 raise IndexError from e
-            except Exception as e:
-                raise NotImplemented from e
+            except Exception:
+                return NotImplemented
         try:
             i = int(other)  # type: ignore
             return self.from_int(i - self.index - 1)
@@ -289,6 +293,7 @@ class ColObj:
     @property
     def next(self) -> ColObj:
         """Gets the next column"""
+        # pylint: disable=no-member
         try:
             n = self._next  # type: ignore
             if n() is None:
@@ -307,6 +312,7 @@ class ColObj:
         Raises:
             IndexError: If previous column is out of range
         """
+        # pylint: disable=no-member
         try:
             p = self._prev  # type: ignore
             if p() is None:

@@ -20,6 +20,9 @@ class CellObj:
     """
     Cell Parts
 
+    ..seealso::
+        - :ref:`ooodev.utils.data_type.cell_obj.CellObj`
+
     .. versionchanged:: 0.32.0
         If index is set to ``-2`` then no attempt is made to get index from spreadsheet.
 
