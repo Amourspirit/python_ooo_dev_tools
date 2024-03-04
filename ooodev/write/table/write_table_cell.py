@@ -56,6 +56,9 @@ class WriteTableCell(
         self._owner = owner
         self._cell_obj = None
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(cell_name={self.cell_name})"
+
     def _set_value(self, value: Any) -> None:
         """Set the cell value."""
         if isinstance(value, (float, int)):

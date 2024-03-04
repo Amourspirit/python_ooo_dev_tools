@@ -371,7 +371,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             - row: Row start such as ``1``
             - sheet_idx: Sheet index, if applicable, that this range value belongs to.
         """
-        col = TableHelper.make_cell_name(values[0], True)
+        col = TableHelper.make_column_name(values[0], True)
         row = values[1] + 1
         sheet_idx = values[2] if len(values) == 3 else -1
         return self._create_cell_obj(col=col, row=row, sheet_idx=sheet_idx)
@@ -497,7 +497,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         Gets CellObj. Returns the same object.
 
         Args:
-            name (cell_obj): Cell Object
+            cell_obj (CellObj): Cell Object.
 
         Returns:
             CellObj: Cell Object.
@@ -516,6 +516,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             cell (XCell): Cell.
             val (CellValues): Cell values.
             name (str): Cell name such as as ``A23`` or ``Sheet1.A23``
+            cell_obj (CellObj): Cell Object.
 
 
         Returns:
@@ -558,24 +559,28 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
                 return ka
             if "row" in kwargs:
                 ka[2] = kwargs["row"]
+            if count == 2:
+                return ka
             if "sheet_idx" in kwargs:
                 ka[3] = kwargs["sheet_idx"]
             return ka
 
-        if count not in (1, 3):
+        if count not in (1, 2, 3):
             raise TypeError("get_cell_obj() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        if count == 2:
+            return self.get_cell_obj_from_col_row(kargs[1], kargs[2], -1)
         if count == 3:
             return self.get_cell_obj_from_col_row(kargs[1], kargs[2], kargs[3])
         arg1 = kargs[1]
-        if hasattr(arg1, "typeName") and getattr(arg1, "typeName") == "com.sun.star.table.CellAddress":
-            return self.get_cell_obj_from_addr(arg1)
         if mInfo.Info.is_instance(arg1, CellObj):
             return arg1
+        if hasattr(arg1, "typeName") and getattr(arg1, "typeName") == "com.sun.star.table.CellAddress":
+            return self.get_cell_obj_from_addr(arg1)
         if mInfo.Info.is_instance(arg1, tuple):
             return self.get_cell_obj_tuple(arg1)
         if mInfo.Info.is_instance(arg1, CellValues):
@@ -939,7 +944,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         Gets a range Object representing a range from a cell range address.
 
         Args:
-            addr (RangeValues): Cell Range Values.
+            rng (RangeValues): Cell Range Values.
 
         Returns:
             RangeObj: Range object.
@@ -953,6 +958,9 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             - row_start: Row start such as ``1``
             - row_end: Row end such as ``125``
             - sheet_idx: Sheet index, if applicable, that this range value belongs to.
+
+        Hint:
+            - ``RangeValues`` can be imported from ``ooodev.utils.data_type.range_values``
         """
         col_start = TableHelper.make_column_name(rng.col_start, True)
         col_end = TableHelper.make_column_name(rng.col_end, True)
@@ -990,12 +998,12 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
         addr = self.get_cell_address_from_cell_range(cell_range)
         return self.rng_from_cell_rng_addr(addr)
 
-    def rng_from_str(self, rng: str) -> RangeObj:
+    def rng_from_str(self, rng_name: str) -> RangeObj:
         """
         Gets a range Object representing a range.
 
         Args:
-            rng (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
 
         Returns:
             RangeObj: Range object.
@@ -1017,7 +1025,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             If there is a sheet name is will not be converted into a sheet index.
             This must be done manually by setting the ``sheet_idx`` key in the event data.
         """
-        parts = TableHelper.get_range_parts(rng)
+        parts = TableHelper.get_range_parts(rng_name)
         col_start = parts.col_start
         col_end = parts.col_end
         row_start = parts.row_start
@@ -1033,12 +1041,123 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
     # region get_range_obj() method
 
+    @overload
+    def get_range_obj(self, cell_obj: CellObj) -> RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range_obj(self, range_obj: RangeObj) -> RangeObj:
+        """
+        Gets a range object. Returns the same object.
+
+        Args:
+            range_obj (RangeObj): Range Object
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range_obj(
+        self, col_start: int, row_start: int, col_end: int, row_end: int, sheet_idx: int = ...
+    ) -> RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+            sheet_idx (int, optional): Zero-based sheet index that this range value belongs to. Default is -1.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range_obj(self, addr: CellRangeAddress) -> RangeObj:
+        """
+        Gets a range Object representing a range from a cell range address.
+
+        Args:
+            addr (CellRangeAddress): Cell Range Address.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range_obj(self, rng: RangeValues) -> RangeObj:
+        """
+        Gets a range Object representing a range from a cell range address.
+
+        Args:
+            rng (RangeValues): Cell Range Values.
+
+        Returns:
+            RangeObj: Range object.
+
+        Hint:
+            - ``RangeValues`` can be imported from ``ooodev.utils.data_type.range_values``
+        """
+        ...
+
+    @overload
+    def get_range_obj(self, cell_range: XCellRange) -> RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_range (XCellRange): Cell Range.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
+    @overload
+    def get_range_obj(self, rng_name: str) -> RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
     def get_range_obj(self, *args, **kwargs) -> RangeObj:
         """
         Gets the cell as string from a cell.
 
         Args:
-            col (int): Column. Zero Based column index.
+            range_obj (RangeObj): Range Object.
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+            sheet_idx (int, optional): Zero-based sheet index that this range value belongs to. Default is -1.
+            addr (CellRangeAddress): Cell Range Address.
+            rng (RangeValues): Cell Range Values.
+            cell_range (XCellRange): Cell Range.
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
+
+
 
         Returns:
             RangeObj: Range Object.
@@ -1069,7 +1188,7 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = {"cell_obj", "col_start", "addr", "rng", "cell_range"}
+            valid_keys = {"range_obj", "cell_obj", "col_start", "addr", "rng", "cell_range", "rng_name"}
             check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_range_obj() got an unexpected keyword argument")
@@ -1085,23 +1204,28 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
                 ka[3] = kwargs["col_end"]
             if "row_end" in kwargs:
                 ka[4] = kwargs["row_end"]
+            if count == 4:
+                return ka
             if "sheet_idx" in kwargs:
                 ka[5] = kwargs["sheet_idx"]
             return ka
 
-        if count not in (1, 5):
+        if count not in (1, 4, 5):
             raise TypeError("get_range_obj() got an invalid number of arguments")
 
         kargs = get_kwargs()
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
+        if count == 4:
+            return self.rng_from_position(kargs[1], kargs[2], kargs[3], kargs[4], -1)
         if count == 5:
             return self.rng_from_position(kargs[1], kargs[2], kargs[3], kargs[4], kargs[5])
         arg1 = kargs[1]
+        if mInfo.Info.is_instance(arg1, RangeObj):
+            return arg1
         if hasattr(arg1, "typeName") and getattr(arg1, "typeName") == "com.sun.star.table.CellRangeAddress":
             return self.rng_from_cell_rng_addr(arg1)
-
         if mInfo.Info.is_instance(arg1, CellObj):
             return self.rng_from_cell_obj(arg1)
         if mInfo.Info.is_instance(arg1, RangeValues):
@@ -1112,3 +1236,38 @@ class RangeConverter(LoInstPropsPartial, EventsPartial):
 
     # endregion get_range_obj() method
     # endregion Range Converters to RangeObj
+
+    def get_offset_range_obj(self, range_obj: RangeObj) -> RangeObj:
+        """
+        Gets a new range object with an offset from the original range object.
+
+        The returned range will have Start column of ``A``, Start row of ``1``.
+
+        Args:
+            range_obj (RangeObj): Range Object.
+            col_offset (int): Column offset.
+            row_offset (int): Row offset.
+
+        Returns:
+            RangeObj: Range Object.
+
+        Note:
+            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
+            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
+
+            - col_start: Column start such as ``A``
+            - col_end: Column end such as ``C``
+            - row_start: Row start such as ``1``
+            - row_end: Row end such as ``125``
+            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is -1.
+        """
+        row_count = range_obj.row_count  # current_rng.row_end - current_rng.row_start
+        col_count = range_obj.col_count
+        sheet_idx = range_obj.sheet_idx
+        return self._create_range_obj(
+            col_start="A",
+            col_end=TableHelper.make_column_name(col_count),
+            row_start=1,
+            row_end=row_count,
+            sheet_idx=sheet_idx,
+        )

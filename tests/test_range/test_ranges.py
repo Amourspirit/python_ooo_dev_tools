@@ -989,3 +989,64 @@ def test_combine_errors() -> None:
 
 
 # endregion test RangeObj add/subtract using CellObj
+
+
+# region Test RangeObj iterate
+def test_range_obj_iter():
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    rng = RangeObj.from_range("A1:C4")
+
+    expected = (
+        "A1",
+        "B1",
+        "C1",
+        "A2",
+        "B2",
+        "C2",
+        "A3",
+        "B3",
+        "C3",
+        "A4",
+        "B4",
+        "C4",
+    )
+    for i, cell in enumerate(rng):
+        assert str(cell) == expected[i]
+
+
+def test_range_obj_iter_row():
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    rng = RangeObj.from_range("A1:C3")
+    rng_row = rng.get_row(2)
+
+    expected = (
+        "A3",
+        "B3",
+        "C3",
+    )
+    for i, cell in enumerate(rng_row):
+        assert str(cell) == expected[i]
+
+
+def test_range_obj_iter_col():
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    rng = RangeObj.from_range("A1:C3")
+    rng_row = rng.get_col("B")
+
+    expected = (
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+    )
+    for i, cell in enumerate(rng_row):
+        assert str(cell) == expected[i]
+    
+    rng_row = rng.get_col(1)
+    for i, cell in enumerate(rng_row):
+        assert str(cell) == expected[i]
+    
+# endregion Test RangeObj iterate

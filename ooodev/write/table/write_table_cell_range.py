@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, overload, TYPE_CHECKING, Tuple
+from typing import Any, overload, Generator, TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.lang import IndexOutOfBoundsException
 
@@ -16,7 +16,6 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.table.write_table_cell import WriteTableCell
-from ooodev.utils.data_type.rng.range_converter import RangeConverter
 from ooodev.utils.data_type.cell_values import CellValues
 from ooodev.utils.data_type.range_obj import RangeObj
 
@@ -24,7 +23,10 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCellRange
     from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
+    from com.sun.star.table import CellRangeAddress
+    from ooodev.utils.data_type.range_values import RangeValues
     from ooodev.proto.component_proto import ComponentT
+    from ooodev.utils.data_type.cell_obj import CellObj
 
 
 class WriteTableCellRange(
@@ -65,6 +67,7 @@ class WriteTableCellRange(
 
         self._owner = owner
         self._range_obj = range_obj
+        self._parent = None
 
     def __getitem__(self, key: Any) -> WriteTableCell:
         """
@@ -78,6 +81,32 @@ class WriteTableCellRange(
         """
         return self.get_cell(key)
 
+    def __iter__(self) -> Generator[WriteTableCell, Any, Any]:
+        """
+        Iterates through the cells.
+
+        The iteration is done in a column-major order, meaning that the cells are
+        iterated over by column, then by row.
+
+        Example:
+            .. code-block:: python
+
+                >>> rng = table.get_cell_range_by_name("A1:C3")
+                >>> for cell in rng:
+                >>> print(cell, cell.value)
+                WriteTableCell(cell_name=A1) Title
+                WriteTableCell(cell_name=B1) Year
+                WriteTableCell(cell_name=C1) Actor
+                WriteTableCell(cell_name=A2) Dr. No
+                WriteTableCell(cell_name=B2) 1962
+                WriteTableCell(cell_name=C2) Sean Connery
+                WriteTableCell(cell_name=A3) From Russia with Love
+                WriteTableCell(cell_name=B3) 1963
+                WriteTableCell(cell_name=C3) Sean Connery
+        """
+        for cell in self.range_obj:
+            yield self.get_cell(cell)
+
     # region CellRangeDataPartial overrides
     def set_data_array(self, array: Tuple[Tuple[Any, ...], ...]) -> None:
         """
@@ -90,9 +119,22 @@ class WriteTableCellRange(
     # endregion CellRangeDataPartial overrides
     # region get_cell()
     @overload
+    def get_cell(self, cell_obj: CellObj) -> WriteTableCell:
+        """
+        Gets the cell as WriteTableCell.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            WriteTableCell: Cell Object.
+        """
+        ...
+
+    @overload
     def get_cell(self, values: Tuple[int, int]) -> WriteTableCell:
         """
-        Gets the cell as WriteTableCell from CellValues.
+        Gets the cell as WriteTableCell.
 
         Args:
             val (Tuple[int, int]): Cell values.
@@ -175,10 +217,173 @@ class WriteTableCellRange(
 
     def get_cell(self, *args, **kwargs) -> WriteTableCell:
         """Returns a single cell within the range."""
+
         cell_obj = self.write_table.range_converter.get_cell_obj(*args, **kwargs)
-        return self.get_cell_by_position(column=cell_obj.col_obj.index, row=cell_obj.row - 1)
+        col_index = cell_obj.col_obj.index
+        row_index = cell_obj.row - 1
+
+        return self.get_cell_by_position(column=col_index, row=row_index)
 
     # endregion get_cell()
+
+    # region get Table Cell Range
+    @overload
+    def get_cell_range(self, cell_obj: CellObj) -> WriteTableCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        ...
+
+    @overload
+    def get_cell_range(self, range_obj: RangeObj) -> WriteTableCellRange:
+        """
+        Gets a range object. Returns the same object.
+
+        Args:
+            range_obj (RangeObj): Range Object
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        ...
+
+    @overload
+    def get_cell_range(
+        self, col_start: int, row_start: int, col_end: int, row_end: int, sheet_idx: int = ...
+    ) -> WriteTableCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            col_start (int): Zero-based start column index.
+            row_start (int): Zero-based start row index.
+            col_end (int): Zero-based end column index.
+            row_end (int): Zero-based end row index.
+            sheet_idx (int, optional): Zero-based sheet index that this range value belongs to. Default is -1.
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        ...
+
+    @overload
+    def get_cell_range(self, addr: CellRangeAddress) -> WriteTableCellRange:
+        """
+        Gets a range Object representing a range from a cell range address.
+
+        Args:
+            addr (CellRangeAddress): Cell Range Address.
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        ...
+
+    @overload
+    def get_cell_range(self, rng: RangeValues) -> WriteTableCellRange:
+        """
+        Gets a range Object representing a range from a cell range address.
+
+        Args:
+            rng (RangeValues): Cell Range Values.
+
+        Returns:
+            WriteTableCellRange: Range object.
+
+        Hint:
+            - ``RangeValues`` can be imported from ``ooodev.utils.data_type.range_values``
+        """
+        ...
+
+    @overload
+    def get_cell_range(self, rng_name: str) -> WriteTableCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        ...
+
+    def get_cell_range(self, *args, **kwargs) -> WriteTableCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        rng = self.write_table.range_converter.get_range_obj(*args, **kwargs)
+
+        return self.get_cell_range_by_name(str(rng))
+
+    # endregion get Table Cell Range
+
+    # region Get Row or Column
+    @overload
+    def get_column_range(self, col: int) -> WriteTableCellRange:
+        """
+        Returns a sub-range of cells within the range.
+
+        Args:
+            col (int): Column Index. Zero Based.
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        ...
+
+    @overload
+    def get_column_range(self, col: str) -> WriteTableCellRange:
+        """
+        Returns a sub-range of cells within the range.
+
+        Args:
+            col (str): Column Letter such as ``A`` or ``B``.
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        ...
+
+    def get_column_range(self, col: int | str) -> WriteTableCellRange:
+        """
+        Returns a sub-range of cells within the range.
+
+        Args:
+            col (int, str): Zero Based column index or a Colum Letter such as ``A``.
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        col_rng = self.range_obj.get_col(col)
+        return self.get_cell_range_by_name(str(col_rng))
+
+    def get_row_range(self, row: int) -> WriteTableCellRange:
+        """
+        Returns a sub-range of cells within the range for a given row.
+
+        Args:
+            row (int): Row Index. Zero Based.
+
+        Returns:
+            WriteTableCellRange: Range object.
+        """
+        row_rng = self.range_obj.get_row(row)
+        return self.get_cell_range_by_name(str(row_rng))
+
+    # endregion Get Row or Column
 
     # region CellRangePartial Overrides
     def get_cell_by_position(self, column: int, row: int) -> WriteTableCell:
@@ -191,6 +396,9 @@ class WriteTableCellRange(
         Returns:
             WriteTableCell: Cell Object.
         """
+        # in a sub-range of cells within the range. Cell Names and indexes do not match up.
+        # if the origin range is A1:C4 and the sub-range is A2:C2, then the cell at A2 is at column 0, row 0
+        # There is no GetCellByName so some conversion is needed.
         try:
             return WriteTableCell(owner=self, component=self.component.getCellByPosition(column, row))  # type: ignore
         except IndexOutOfBoundsException as e:
@@ -205,13 +413,47 @@ class WriteTableCellRange(
 
         Returns:
             WriteTableCell: Cell Object.
+
+        Note:
+            This method returns a sub range of cells within the range.
+            Sub-ranges cell names and indexes **do not** match up with the parent range.
+            If a sub-ranges is ``A3:D6`` then ``sub_rng["A1"]`` is at column 0, row 0 of the sub-range but has a cell name of ``A3``.
+
+        Example:
+            .. code-block:: python
+
+                >>> rng = table.get_cell_range_by_name("A1:D10")
+                >>> sub1 = rng.get_cell_range_by_name("A3:D6")
+                >>> print("Sub1 cell A1")
+                >>> print(cell, cell.value)
+                Sub1 cell A1
+                WriteTableCell(cell_name=A3) From Russia with Love
+                >>> sub2 = sub1.get_cell_range_by_name("A4:D5")
+                >>> print("Sub1")
+                >>> for cell in sub2:
+                >>>     print(cell, cell.value)
+                Sub2
+                WriteTableCell(cell_name=A4) Goldfinger
+                WriteTableCell(cell_name=B4) 1964
+                WriteTableCell(cell_name=C4) Sean Connery
+                WriteTableCell(cell_name=D4) Guy Hamilton
+                WriteTableCell(cell_name=A5) Thunderball
+                WriteTableCell(cell_name=B5) 1965
+                WriteTableCell(cell_name=C5) Sean Connery
+                WriteTableCell(cell_name=D5) Terence Young
         """
+
+        # pylint: disable=protected-access
+
         rng_obj = self.write_table.range_converter.rng_from_str(rng)
-        return WriteTableCellRange(
+
+        result = WriteTableCellRange(
             owner=self,
             component=self.component.getCellRangeByName(rng),
-            range_obj=rng_obj,
+            range_obj=self.write_table.range_converter.get_offset_range_obj(rng_obj),
         )
+        result._parent = self
+        return result
 
     def get_cell_range_by_position(self, left: int, top: int, right: int, bottom: int) -> WriteTableCellRange:
         """
@@ -222,7 +464,13 @@ class WriteTableCellRange(
 
         Returns:
             WriteTableCell: Cell Object.
+
+        Note:
+            This method returns a sub-range of cells within the range.
+            Sub-ranges cell names and indexes **do not** match up with the parent range.
+            If a sub-ranges is ``A3:D6`` then ``sub_rng[(0,0)]`` is at column 0, row 0 of the sub-range but has a cell name of ``A3``.
         """
+        # pylint: disable=protected-access
         try:
             range_obj = self.write_table.range_converter.rng_from_position(
                 col_start=left,
@@ -230,11 +478,13 @@ class WriteTableCellRange(
                 col_end=right,
                 row_end=bottom,
             )
-            return WriteTableCellRange(
+            result = WriteTableCellRange(
                 owner=self,
                 component=self.component.getCellRangeByPosition(left, top, right, bottom),
-                range_obj=range_obj,
+                range_obj=self.write_table.range_converter.get_offset_range_obj(range_obj),
             )
+            result._parent = self
+            return result
 
         except IndexOutOfBoundsException as e:
             raise IndexError(f"Index out of range: left:{left}, top:{top}, right:{right}, bottom:{bottom}") from e
@@ -250,3 +500,8 @@ class WriteTableCellRange(
     def range_obj(self) -> RangeObj:
         """Range Object that represents this cell range."""
         return self._range_obj
+
+    @property
+    def parent(self) -> WriteTableCellRange | None:
+        """Parent of this cell range."""
+        return self._parent

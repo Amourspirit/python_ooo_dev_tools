@@ -175,13 +175,13 @@ class CellPropertiesPartialProps:
     @property
     def cell_name(self) -> str:
         """
-        Gets/Sets the cell name.
+        Gets the cell name.
         """
         return self.__component.CellName
 
-    @cell_name.setter
-    def cell_name(self, value: str) -> None:
-        self.__component.CellName = value
+    # @cell_name.setter
+    # def cell_name(self, value: str) -> None:
+    #     self.__component.CellName = value
 
     @property
     def is_protected(self) -> bool:

@@ -2,6 +2,82 @@
 Version History
 ***************
 
+Version 0.32.0
+==============
+
+Many classes added for working with Writer Tables.
+
+Other minor updates and bug fixes.
+
+RangeObj Updates
+----------------
+
+Fix for ``RangeObj.get_row()`` returning the wrong row.
+
+Update for ``RangeObj``. Now you can iterate over the cells in a range.
+
+The iteration is done in a row-major order, meaning that the cells are iterated over by row, then by column.
+
+.. code-block:: python
+
+    >>> rng = RangeObj.from_range("A1:C4")
+    >>> for cell in rng:
+    >>>     print(cell)
+    A1
+    B1
+    C1
+    A2
+    B2
+    C2
+    A3
+    B3
+    C3
+    A4
+    B4
+    C4
+
+The iteration can be especially useful when you want iterate over a row or a column in a range.
+
+Iterating over a row in a range:
+
+.. code-block:: python
+
+    >>> rng = RangeObj.from_range("A1:C4")
+    >>> for cell in rng.get_row(1):
+    >>>     print(cell)
+    A2
+    B2
+    C2
+
+Iterating over a column in a range:
+
+.. code-block:: python
+
+    >>> rng = RangeObj.from_range("A1:C4")
+    >>> for cell in rng.get_col("B"):
+    >>>     print(cell)
+    B1
+    B2
+    B3
+    B4
+
+Checking if range contains a cell This is functionally the same as the ``RangeObj.contains()`` method.
+
+.. code-block:: python
+
+    >>> rng = RangeObj.from_range("A1:C4")
+    >>> assert "B2" in rng
+    True
+
+Getting a ``CellObj`` from a ``RangeObj``:
+
+.. code-block:: python
+
+    >>> rng = RangeObj.from_range("A1:C4")
+    >>> cell = rng["B2"] # gets a CellObj instance
+    >>> assert str(cell) == "B2"
+    True
+
 Version 0.31.0
 ==============
 

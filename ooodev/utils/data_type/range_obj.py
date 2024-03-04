@@ -350,8 +350,8 @@ class RangeObj:
         return RangeObj(
             col_start=self.col_start,
             col_end=self.col_end,
-            row_start=row,
-            row_end=row,
+            row_start=row + 1,
+            row_end=row + 1,
             sheet_idx=self.sheet_idx,
         )
 
@@ -540,7 +540,7 @@ class RangeObj:
         """
         Iterates over all cells in the range.
 
-        The iteration is done in a row-major order, meaning that the cells are iterated over by row, then by column.
+        The iteration is done in a column-major order, meaning that the cells are iterated over by column, then by row.
 
         Example:
             .. code-block:: python
