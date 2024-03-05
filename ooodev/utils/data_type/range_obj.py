@@ -128,24 +128,24 @@ class RangeObj:
         Returns:
             RangeObj: Object that represents the name range.
         """
-        cargs = CancelEventArgs("RangeObj.from_range")
-        event_data = {"range_val": range_val, "sheet_index": -1}
-        cargs.event_data = event_data
-        _Events().trigger(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, cargs)
 
-        if cargs.cancel:
-            if cargs.handled is False:
-                cargs.set("initial_event", "before_style_font_effect")
-                _Events().trigger(GblNamedEvent.EVENT_CANCELED, cargs)
+        def handel_event(args: CancelEventArgs, idx: int) -> tuple:
 
-            if cargs.handled is False:
-                raise mEx.CancelEventError(cargs, "Operation canceled")
+            ret_val = None
+            if args.cancel:
+                if args.handled is False:
+                    args.set("initial_event", "before_style_font_effect")
+                    _Events().trigger(GblNamedEvent.EVENT_CANCELED, args)
 
-            if "result" in cargs.event_data:
-                return cargs.event_data["result"]
-            else:
-                raise mEx.CancelEventError(cargs, "Operation canceled, no result data to return.")
-        sheet_idx = int(cargs.event_data.get("sheet_index", -1))
+                if args.handled is False:
+                    raise mEx.CancelEventError(args, "Operation canceled")
+
+                if "result" in args.event_data:
+                    ret_val = args.event_data["result"]
+                else:
+                    raise mEx.CancelEventError(args, "Operation canceled, no result data to return.")
+            sheet_idx = int(cargs.event_data.get("sheet_index", idx))
+            return (sheet_idx, ret_val)
 
         if hasattr(range_val, "typeName") and getattr(range_val, "typeName") == "com.sun.star.table.CellRangeAddress":
             rng = mRngValues.RangeValues.from_range(cast("CellRangeAddress", range_val))
@@ -153,12 +153,22 @@ class RangeObj:
             rng = range_val
 
         # return mTb.TableHelper.get_range_obj(range_name=str(range_val))
+        sheet_idx = -2
+        cargs = CancelEventArgs("RangeObj.from_range")
+        event_data = {"range_val": range_val, "sheet_index": sheet_idx}
+        cargs.event_data = event_data
         if isinstance(rng, mRngValues.RangeValues):
             col_start = mTb.TableHelper.make_column_name(rng.col_start, True)
             col_end = mTb.TableHelper.make_column_name(rng.col_end, True)
             row_start = rng.row_start + 1
             row_end = rng.row_end + 1
-            sheet_idx = rng.sheet_idx
+
+            cargs.event_data["sheet_index"] = rng.sheet_idx
+            _Events().trigger(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, cargs)
+            sheet_idx, result = handel_event(cargs, rng.sheet_idx)
+            if result is not None:
+                return result
+
         else:
             parts = mTb.TableHelper.get_range_parts(str(rng))
             col_start = parts.col_start
@@ -166,13 +176,23 @@ class RangeObj:
             row_start = parts.row_start
             row_end = parts.row_end
             sheet_name = parts.sheet
-            if sheet_idx == -1 and sheet_name:
+            if sheet_name:
+                sheet_idx = -1
+                cargs.event_data["sheet_index"] = sheet_idx
+
+            _Events().trigger(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, cargs)
+            sheet_idx, result = handel_event(cargs, sheet_idx)
+            if result is not None:
+                return result
+
+            if sheet_idx == -1:
                 with contextlib.suppress(Exception):
                     # pylint: disable=no-member
                     if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
                         doc = cast("CalcDoc", mLo.Lo.current_doc)
                         sheet = doc.get_sheet(sheet_name=sheet_name)
                         sheet_idx = sheet.get_sheet_index()
+
         return RangeObj(
             col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end, sheet_idx=sheet_idx
         )

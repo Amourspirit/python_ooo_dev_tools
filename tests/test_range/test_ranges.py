@@ -8,35 +8,48 @@ if __name__ == "__main__":
 
 def test_get_range_values(loader) -> None:
     from ooodev.utils.data_type.range_values import RangeValues
-    from ooodev.loader.lo import Lo
-    from ooodev.office.calc import Calc
+    from ooodev.calc import CalcDoc
 
-    doc = Calc.create_doc()
+    doc = CalcDoc.create_doc()
 
     try:
-
+        sheet = doc.sheets[0]
+        sheet_name = sheet.name
         rng_name = "A2:D6"
         rv1 = RangeValues.from_range(range_val=rng_name)
         assert rv1.col_start == 0
         assert rv1.row_start == 1
         assert rv1.col_end == 3
         assert rv1.row_end == 5
+        assert rv1.sheet_idx == -2
         assert str(rv1) == rng_name
         assert rv1 == rng_name
 
+        rng_cells = "A2:D6"
+        rng_name = f"{sheet_name}.{rng_cells}"
+        rv1 = RangeValues.from_range(range_val=rng_name)
+        assert rv1.col_start == 0
+        assert rv1.row_start == 1
+        assert rv1.col_end == 3
+        assert rv1.row_end == 5
+        assert rv1.sheet_idx == 0
+        assert str(rv1) == rng_cells
+        assert rv1 == rng_cells
+
         rv2 = RangeValues.from_range(rng_name)
-        assert str(rv2) == rng_name
+        assert str(rv2) == rng_cells
         assert rv1 == rv2
         assert rv1 != "Roses are red"
+        assert rv2.sheet_idx == 0
 
         ro = rv2.get_range_obj()
-        assert str(ro) == rng_name
+        assert str(ro) == rng_cells
         assert ro == rv1
         assert rv2 == ro
         assert ro == rng_name
         assert ro != "A1:C3"
         assert ro != "Roses are red"
-        assert ro.sheet_name.startswith("Sheet")
+        assert ro.sheet_name == sheet_name
 
         assert ro.start.col_obj.index == 0
         assert ro.start.col_obj.value == "A"
@@ -62,7 +75,7 @@ def test_get_range_values(loader) -> None:
         assert ro.start.col_obj != ro.end.col_obj
         assert ro.start.row_obj != ro.end.row_obj
     finally:
-        Lo.close_doc(doc)
+        doc.close()
 
 
 @pytest.mark.parametrize(
@@ -187,18 +200,19 @@ def test_range_math_errors() -> None:
 
 def test_get_range_obj(loader) -> None:
     from ooodev.utils.data_type.range_obj import RangeObj
-    from ooodev.loader.lo import Lo
-    from ooodev.office.calc import Calc
+    from ooodev.calc import CalcDoc
 
-    doc = Calc.create_doc()
+    doc = CalcDoc.create_doc()
     try:
-
-        ro1 = RangeObj.from_range("A2:D6")
+        sheet = doc.sheets[0]
+        sheet_name = sheet.name
+        range_name = f"{sheet_name}.A2:D6"
+        ro1 = RangeObj.from_range(range_name)
         assert ro1.col_start == "A"
         assert ro1.row_start == 2
         assert ro1.col_end == "D"
         assert ro1.row_end == 6
-        assert ro1.sheet_name.startswith("Sheet")
+        assert ro1.sheet_name == sheet_name
 
         # test that RangObj assigns itself to CellObj.range_obj
         assert ro1.cell_start.range_obj is ro1
@@ -231,7 +245,8 @@ def test_get_range_obj(loader) -> None:
         assert ro1.cell_start.sheet_idx == ro1.sheet_idx
         assert ro1.cell_end.sheet_idx == ro1.sheet_idx
 
-        ro2 = RangeObj.from_range(range_val="a2:d6")
+        range_name = f"{sheet_name}.a2:d6"
+        ro2 = RangeObj.from_range(range_val=range_name)
         assert ro2.col_start == "A"
         assert ro2.row_start == 2
         assert ro2.col_end == "D"
@@ -241,7 +256,7 @@ def test_get_range_obj(loader) -> None:
         assert ro1.start.col_obj.index == 0
         assert ro1.end.col_obj.index == 3
 
-        ro2 = RangeObj.from_range(range_val="a2:d6")
+        ro2 = RangeObj.from_range(range_val=range_name)
         assert ro2 == ro1
 
         rv1 = ro1.get_range_values()
@@ -260,7 +275,7 @@ def test_get_range_obj(loader) -> None:
         ro3 = RangeObj.from_range(rv2)
         assert ro3 == ro2
     finally:
-        Lo.close_doc(doc)
+        doc.close()
 
 
 def test_get_range_values_cell_address(loader) -> None:
@@ -305,7 +320,7 @@ def test_get_range_obj_cell_address(loader) -> None:
     try:
 
         rng_name = "A2:D6"
-        rv1 = RangeObj.from_range(range_val=rng_name)
+        rv1 = RangeObj(col_start="A", col_end="D", row_start=2, row_end=6, sheet_idx=-1)
         cr1 = rv1.get_cell_range_address()
         addr = Calc.get_address(sheet=sheet, range_name=rng_name)
         assert Calc.is_equal_addresses(cr1, addr)
@@ -1044,9 +1059,10 @@ def test_range_obj_iter_col():
     )
     for i, cell in enumerate(rng_row):
         assert str(cell) == expected[i]
-    
+
     rng_row = rng.get_col(1)
     for i, cell in enumerate(rng_row):
         assert str(cell) == expected[i]
-    
+
+
 # endregion Test RangeObj iterate

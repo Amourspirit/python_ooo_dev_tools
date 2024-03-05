@@ -107,8 +107,8 @@ class CellObj:
         if isinstance(cell_val, str):
             # split will cover if a range is passed in, return first cell
             parts = mTb.TableHelper.get_cell_parts(cell_val)
-            idx = -1
-            if parts.sheet:
+            idx = -1 if parts.sheet else -2
+            if idx == -1:
                 with contextlib.suppress(Exception):
                     # pylint: disable=no-member
                     if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
