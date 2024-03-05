@@ -4,22 +4,22 @@ import uno
 from com.sun.star.lang import IndexOutOfBoundsException
 
 # from ooodev.mock import mock_g
-from ooodev.adapter.text.cell_range_comp import CellRangeComp
 from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
 from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
 from ooodev.adapter.table.cell_partial import CellPartial
-from ooodev.adapter.text.text_partial import TextPartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
-from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
+from ooodev.adapter.text.cell_range_comp import CellRangeComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.write.table.write_table_cell import WriteTableCell
 from ooodev.utils.data_type.cell_values import CellValues
 from ooodev.utils.data_type.range_obj import RangeObj
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
+from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
+from ooodev.write.table.write_table_cell import WriteTableCell
 
 if TYPE_CHECKING:
+    from com.sun.star.text import XTextRange
     from com.sun.star.table import XCellRange
     from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
@@ -34,7 +34,6 @@ class WriteTableCellRange(
     WriteTablePropPartial,
     CellRangeComp,
     CellPartial,
-    TextPartial,
     CharacterPropertiesPartial,
     ParagraphPropertiesPartial,
     LoInstPropsPartial,
@@ -58,7 +57,6 @@ class WriteTableCellRange(
         LoInstPropsPartial.__init__(self, lo_inst=self.write_doc.lo_inst)
         CellRangeComp.__init__(self, component=component)  # type: ignore
         CellPartial.__init__(self, component=component, interface=None)  # type: ignore
-        TextPartial.__init__(self, component=component, interface=None)  # type: ignore
         CharacterPropertiesPartial.__init__(self, component=component)  # type: ignore
         ParagraphPropertiesPartial.__init__(self, component=component)  # type: ignore
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
@@ -118,6 +116,9 @@ class WriteTableCellRange(
         """
         for cell in self.range_obj:
             yield self.get_cell(cell)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(range={self.range_obj})"
 
     # region CellRangeDataPartial overrides
     def set_data_array(self, array: Tuple[Tuple[Any, ...], ...]) -> None:

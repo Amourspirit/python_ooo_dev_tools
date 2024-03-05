@@ -16,5 +16,5 @@ python:
   install:
     - requirements: docs/requirements.txt
 
-formats:
-  - htmlzip
+formats: []
+

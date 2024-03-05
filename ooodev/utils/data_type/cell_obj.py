@@ -20,7 +20,7 @@ class CellObj:
     """
     Cell Parts
 
-    ..seealso::
+    .. seealso::
         - :ref:`ooodev.utils.data_type.cell_obj.CellObj`
 
     .. versionchanged:: 0.32.0

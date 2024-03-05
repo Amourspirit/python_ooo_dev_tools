@@ -16,9 +16,8 @@ class ColObj:
     """
     Column info.
 
-    ..seealso::
-        - :ref:`help_ooodev.utils.data_type.col_obj.ColObj`
-        - :ref:`ooodev.utils.data_type.col_obj.ColObj`
+    .. seealso::
+        - :ref:`help_ooodev.utils.data_type.cell_obj.CellObj`
 
     .. versionadded:: 0.8.2
     """

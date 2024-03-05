@@ -55,6 +55,20 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp, 
         """
         return self.get_by_index(key)
 
+    def __delitem__(self, key: int) -> None:
+        """
+        Removes the row at the specified index.
+
+        This is short hand for ``remove_by_index()``
+
+        Args:
+            key (key, int): The index of the cell. When getting by index can be a negative value to get from the end.
+
+        See Also:
+            - :py:meth:`~ooodev.write.table.write_table_rows.remove_by_index`
+        """
+        self.remove_by_index(key)
+
     # region IndexAccessPartial overrides
     def get_by_index(self, idx: int) -> WriteTableRow:
         """
@@ -85,3 +99,50 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp, 
         """
         count = len(self)
         return mGenUtil.Util.get_index(idx, count, allow_greater)
+
+    # region TableRowsPartial Overrides
+
+    def insert_by_index(self, idx: int, count: int = 1) -> None:
+        """
+        Inserts rows at the specified index.
+
+        Args:
+            idx (int): Index to insert the rows. Idx can be a negative value insert from the end.
+                A value of ``-1`` will insert at the end.
+            count (int, optional): Number of rows to insert. Defaults to ``1``.
+
+        Returns:
+            list[WriteTableRow]: List of inserted rows.
+        """
+        index = self._get_index(idx, allow_greater=True)
+        self.component.insertByIndex(index, count)
+
+    def remove_by_index(self, idx: int, count: int = 1) -> None:
+        """
+        Removes columns from the specified index.
+
+        Args:
+            idx (int): The index at which the column will be removed. Idx can be a negative value insert from the end.
+                A value of ``-1`` will remove from the end.
+            count (int, optional): The number of columns to remove. Default is ``1``.
+        """
+        index = self._get_index(idx)
+        self.component.removeByIndex(index, count)
+
+    # endregion TableRowsPartial Overrides
+
+    def append_rows(self, count=1) -> None:
+        """
+        Appends rows to the table.
+
+        Args:
+            count (int, optional): Number of rows to append. Defaults to ``1``.
+        """
+        self.insert_by_index(-1, count)
+
+    def append_row(self) -> WriteTableRow:
+        """
+        Appends a row to the table.
+        """
+        self.append_rows(1)
+        return self[-1]

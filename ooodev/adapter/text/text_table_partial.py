@@ -33,15 +33,15 @@ class TextTablePartial(TextContentPartial):
         self.__component = component
 
     # region XTextTable
-    def create_cursor_by_cell_name(self, cell_name: str) -> XTextTableCursor:
+    def create_cursor_by_cell_name(self, name: str) -> XTextTableCursor:
         """
         Creates a text table cursor and returns the XTextTableCursor interface.
 
         Initially the cursor is positioned in the cell with the specified name.
         """
-        return self.__component.createCursorByCellName(cell_name)
+        return self.__component.createCursorByCellName(name)
 
-    def get_cell_by_name(self, cell_name: str) -> XCell:
+    def get_cell_by_name(self, name: str) -> XCell:
         """
         Example: The cell in the 4th column and third row has the name ``D3``.
 
@@ -57,7 +57,7 @@ class TextTablePartial(TextContentPartial):
         Example:
             If the cell ``D3`` is horizontally split, it now contains the cells ``D3.1.1`` and ``D3.1.2``.
         """
-        return self.__component.getCellByName(cell_name)
+        return self.__component.getCellByName(name)
 
     def get_cell_names(self) -> Tuple[str, ...]:
         """

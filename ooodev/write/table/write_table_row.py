@@ -44,6 +44,7 @@ class WriteTableRow(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
+
         self._owner = owner
 
     @property

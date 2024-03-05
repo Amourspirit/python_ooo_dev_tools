@@ -10,16 +10,18 @@ from ooodev.adapter.text.text_table_comp import TextTableComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.utils.data_type.range_obj import RangeObj
+from ooodev.utils.data_type.rng.range_converter import RangeConverter
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write import write_text_portions as mWriteTextPortions
-from ooodev.write.table.table_column_separators import TableColumnSeparators
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
+from ooodev.write.table.table_column_separators import TableColumnSeparators
 from ooodev.write.table.write_table_cell import WriteTableCell
 from ooodev.write.table.write_table_cell_range import WriteTableCellRange
-from ooodev.utils.data_type.rng.range_converter import RangeConverter
-from ooodev.utils.data_type.range_obj import RangeObj
+from ooodev.write.table.write_text_table_cursor import WriteTextTableCursor
+
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
@@ -344,6 +346,15 @@ class WriteTable(
     # endregion get Table Cell Range
 
     # region TextTablePartial Overrides
+    def create_cursor_by_cell_name(self, name: str) -> WriteTextTableCursor:
+        """
+        Creates a text table cursor and returns the XTextTableCursor interface.
+
+        Initially the cursor is positioned in the cell with the specified name.
+        """
+        comp = self.component.createCursorByCellName(name)
+        return WriteTextTableCursor(owner=self, cursor=comp)
+
     def get_cell_by_name(self, name: str) -> WriteTableCell:
         """
         Returns the cell with the specified name.

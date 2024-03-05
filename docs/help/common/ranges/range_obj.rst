@@ -289,7 +289,7 @@ Start Range ``F10:H15``
 
 Result ``C10:H15``
 
-.. image:: https://user-images.githubusercontent.com/4193389/213182305-fcc0cbd6-8c3b-42e0-adf5-52f85e112dfa.png)
+.. image:: https://user-images.githubusercontent.com/4193389/213182305-fcc0cbd6-8c3b-42e0-adf5-52f85e112dfa.png
     :alt: Result C10:H15
 
 Adding Columns using ColObj
@@ -685,7 +685,7 @@ Start Range ``F10:H15``
 
 Result ``H10:H15``
 
-.. image:: https://user-images.githubuserc.com/4193389/213189756-f97a388a-dac6-46b1-8021-f75c161f0523.png
+.. image:: https://user-images.githubusercontent.com/4193389/213189756-f97a388a-dac6-46b1-8021-f75c161f0523.png
     :alt: Result H10:H15
 
 Subtracting Columns using ColObj

@@ -6,7 +6,7 @@ Styling with Cursor and CharacterStyler in Writer
 Introduction
 ------------
 
-In version `0.30.1` the :py:class:`ooodev.write.style.WriteCharacterStyle` class was added.
+In version ``0.30.1`` the :py:class:`ooodev.write.style.WriteCharacterStyle` class was added.
 It can be added via :py:attr:`ooodev.write.WriteTextCursor.style_direct_char`.
 
 When styling using a cursor the style set the properties of the current select (text range) range of the cursor.

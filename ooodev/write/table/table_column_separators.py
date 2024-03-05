@@ -32,13 +32,16 @@ class TableColumnSeparators:
         )
 
     def __iter__(self):
+        """Iterates through the separators."""
         for i in range(len(self._separators)):
             yield self[i]
 
     def __len__(self) -> int:
+        """Gets the number of separators."""
         return len(self._separators)
 
     def __getitem__(self, key: int) -> TableColumnSeparatorStructComp:
+        """Gets the separator at the specified index."""
         index = self._get_index(key, True)
         if index in self._props:
             return self._props[index]

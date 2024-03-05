@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
+from ooodev.adapter.table.table_rows_partial import TableRowsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import TableRows  # service
     from com.sun.star.table import XTableRows
 
 
-class TableRowsComp(IndexAccessComp):
+class TableRowsComp(IndexAccessComp, TableRowsPartial):
     """
     Class for managing TableRows Component.
 
@@ -24,6 +25,7 @@ class TableRowsComp(IndexAccessComp):
             component (XCell): UNO Component that implements ``com.sun.star.text.TableRows`` service.
         """
         IndexAccessComp.__init__(self, component)
+        TableRowsPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

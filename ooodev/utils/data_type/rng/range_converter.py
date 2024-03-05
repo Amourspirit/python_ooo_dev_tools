@@ -840,35 +840,25 @@ class RangeConverter(LoInstPropsPartial):
         Gets a range Object representing a range.
 
         Args:
-            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``.
+                Cell name is also valid such as ``A1``.
 
         Returns:
             RangeObj: Range object.
-
-        Note:
-            A ``RangeConverter.EVENT_RANGE_CREATING`` event is triggered that allows for a sheet index to be set and any other range object args to be set.
-            The ``EventArgs.event_data`` is a dictionary and contains the following keys:
-
-            - col_start: Column start such as ``A``
-            - col_end: Column end such as ``C``
-            - row_start: Row start such as ``1``
-            - row_end: Row end such as ``125``
-            - sheet_idx: Sheet index, if applicable, that this range value belongs to. Default is -1.
-            - sheet_name: Sheet name if applicable. May be empty string.
-
-            If a sheet name is present it is passed to the event data in the ``sheet_name`` key.
-            If the sheet name is not present ``sheet_name`` key will be an empty string.
-
-            If there is a sheet name is will not be converted into a sheet index.
-            This must be done manually by setting the ``sheet_idx`` key in the event data.
         """
-        parts = TableHelper.get_range_parts(rng_name)
-        col_start = parts.col_start
-        col_end = parts.col_end
-        row_start = parts.row_start
-        row_end = parts.row_end
+        if self.is_cell_range_name(rng_name):
+            parts = TableHelper.get_range_parts(rng_name)
+            col_start = parts.col_start
+            col_end = parts.col_end
+            row_start = parts.row_start
+            row_end = parts.row_end
+        else:
+            parts = TableHelper.get_cell_parts(rng_name)
+            col_start = parts.col
+            col_end = parts.col
+            row_start = parts.row
+            row_end = parts.row
         idx = self.get_sheet_index(parts.sheet) if parts.sheet else -2
-
         return self._create_range_obj(
             col_start=col_start,
             col_end=col_end,
@@ -1123,3 +1113,57 @@ class RangeConverter(LoInstPropsPartial):
             else:
                 idx = -2
         return idx
+
+    def is_cell_range_name(self, s: str) -> bool:
+        """
+        Gets if is a cell name or a cell range.
+
+        Args:
+            s (str): cell name such as 'A1' or range name such as 'B3:E7'
+
+        Returns:
+            bool: True if range name; Otherwise, False
+        """
+        return ":" in s
+
+    def is_single_cell_range(self, cr_addr: CellRangeAddress) -> bool:
+        """
+        Gets if a cell address is a single cell or a range.
+
+        Args:
+            cr_addr (CellRangeAddress): cell range address
+
+        Returns:
+            bool: ``True`` if single cell; Otherwise, ``False``
+        """
+        return cr_addr.StartColumn == cr_addr.EndColumn and cr_addr.StartRow == cr_addr.EndRow
+
+    def is_single_column_range(self, cr_addr: CellRangeAddress) -> bool:
+        """
+        Gets if a cell address is a single column or multi-column.
+
+        Args:
+            cr_addr (CellRangeAddress): cell range address
+
+        Returns:
+            bool: ``True`` if single column; Otherwise, ``False``
+
+        Note:
+            If ``cr_addr`` is a single cell address then ``True`` is returned.
+        """
+        return cr_addr.StartColumn == cr_addr.EndColumn
+
+    def is_single_row_range(self, cr_addr: CellRangeAddress) -> bool:
+        """
+        Gets if a cell address is a single row or multi-row.
+
+        Args:
+            cr_addr (CellRangeAddress): cell range address
+
+        Returns:
+            bool: ``True`` if single row; Otherwise, ``False``
+
+        Note:
+            If ``cr_addr`` is a single cell address then ``True`` is returned.
+        """
+        return cr_addr.StartRow == cr_addr.EndRow

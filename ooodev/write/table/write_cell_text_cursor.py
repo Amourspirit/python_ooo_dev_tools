@@ -19,9 +19,7 @@ from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPa
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextCursor
-    from ooodev.write.table.write_table_cell import WriteTableCell
-else:
-    XSheetCellCursor = Any
+    from ooodev.proto.component_proto import ComponentT
 
 
 class WriteCellTextCursor(
@@ -39,10 +37,15 @@ class WriteCellTextCursor(
 ):
     """Represents writer table text cursor."""
 
-    def __init__(self, owner: WriteTableCell, cursor: XTextCursor, lo_inst: LoInst | None = None) -> None:
+    def __init__(self, owner: ComponentT, cursor: XTextCursor, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
+        if not isinstance(owner, WriteTablePropPartial):
+            raise TypeError("Owner must be an instance of WriteTablePropPartial.")
+
+        WriteDocPropPartial.__init__(self, obj=owner.write_table.write_doc)
+        WriteTablePropPartial.__init__(self, obj=owner.write_table)
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextCursorComp.__init__(self, cursor)  # type: ignore
         QiPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
@@ -51,11 +54,9 @@ class WriteCellTextCursor(
         CharacterPropertiesPartial.__init__(self, component=cursor)  # type: ignore
         ParagraphPropertiesPartial.__init__(self, component=cursor)  # type: ignore
         ServicePartial.__init__(self, component=cursor, lo_inst=self.lo_inst)
-        WriteDocPropPartial.__init__(self, obj=owner.write_doc)
-        WriteTablePropPartial.__init__(self, obj=owner.write_table)
         StylePartial.__init__(self, component=cursor)
 
     @property
-    def owner(self) -> WriteTableCell:
+    def owner(self) -> ComponentT:
         """Owner of this component."""
         return self._owner

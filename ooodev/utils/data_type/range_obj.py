@@ -32,9 +32,8 @@ class RangeObj:
     """
     Range Parts
 
-    ..seealso::
+    .. seealso::
         - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj`
-        - :ref:`ooodev.utils.data_type.range_obj.RangeObj`
 
     .. versionchanged:: 0.32.0
         Added support for ``__contains__`` and ``__iter__`` methods. If sheet_idx is set to -2 then no attempt is made to get the sheet index or name from spreadsheet.
