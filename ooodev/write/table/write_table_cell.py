@@ -14,6 +14,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.data_type.cell_obj import CellObj
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
@@ -21,11 +22,13 @@ if TYPE_CHECKING:
     from ooodev.proto.component_proto import ComponentT
     from ooodev.write.table.write_cell_text_cursor import WriteCellTextCursor
     from ooodev.write.table.write_table_cell_range import WriteTableCellRange
+    from ooodev.write.style.direct.table.cell_styler import CellStyler
 
 
 class WriteTableCell(
     WriteDocPropPartial,
     WriteTablePropPartial,
+    EventsPartial,
     CellPropertiesComp,
     CellPartial,
     TextPartial,
@@ -48,6 +51,7 @@ class WriteTableCell(
         WriteTablePropPartial.__init__(self, obj=owner.write_table)
         WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         LoInstPropsPartial.__init__(self, lo_inst=self.write_doc.lo_inst)
+        EventsPartial.__init__(self)
         CellPropertiesComp.__init__(self, component=component)  # type: ignore
         CellPartial.__init__(self, component=component, interface=None)  # type: ignore
         TextPartial.__init__(self, component=component, interface=None)  # type: ignore
@@ -56,6 +60,7 @@ class WriteTableCell(
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self._owner = owner
         self._cell_obj = cell_obj
+        self._style_direct_cell = None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(cell_name={self.cell_name})"
@@ -196,6 +201,23 @@ class WriteTableCell(
         """Owner of this component."""
         return self._owner
 
+    @property
+    def style_direct_cell(self) -> CellStyler:
+        """
+        Direct Cell Styler.
+
+        Returns:
+            CellStyler: Character Styler
+        """
+        if self._style_direct_cell is None:
+            # pylint: disable=import-outside-toplevel
+            from ooodev.write.style.direct.table.cell_styler import CellStyler
+
+            self._style_direct_cell = CellStyler(owner=self.write_table, component=self.component)
+            self._style_direct_cell.add_event_observers(self.event_observer)
+        return self._style_direct_cell
+
 
 if mock_g.FULL_IMPORT:
     from ooodev.write.table.write_cell_text_cursor import WriteCellTextCursor
+    from ooodev.write.style.direct.table.cell_styler import CellStyler

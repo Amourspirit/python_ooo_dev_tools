@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
 
 from ooodev.adapter.style.style_comp import StyleComp
 from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
