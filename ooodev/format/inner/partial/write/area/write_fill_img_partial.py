@@ -25,5 +25,7 @@ class WriteFillImgPartial(WriteTableFillImgPartial):
         Returns:
             FillImgT | None: Area image style or ``None`` if cancelled.
         """
-        styler = self._get_styler()
+        # mangled name
+        # pylint: disable=no-member
+        styler = self._WriteFillImgPartial__styler  # type: ignore
         return styler.style_get(factory=write_area_img_factory)

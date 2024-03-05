@@ -14,7 +14,8 @@ from ooodev.mock import mock_g
 from ooodev.utils.color import StandardColor
 
 if TYPE_CHECKING:
-    from ooodev.format.inner.direct.write.char.border.padding import Shadow, Padding
+    from ooodev.format.inner.direct.write.char.border.padding import Padding
+    from ooodev.format.inner.direct.write.char.border.shadow import Shadow
     from ooodev.format.inner.direct.structs.side import Side
     from ooodev.format.inner.direct.write.char.border.borders import Borders
     from ooodev.utils.color import Color
@@ -49,8 +50,8 @@ class WriteCharBordersPartial:
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            shadow (Shadow | None, optional): Character Shadow
-            padding (Padding | None, optional): Character padding
+            shadow (~ooodev.format.inner.direct.write.char.border.shadow.Shadow | None, optional): Character Shadow
+            padding (~ooodev.format.inner.direct.write.char.border.padding.Padding | None, optional): Character padding
 
         Raises:
             CancelEventError: If the event ``before_style_char_borders`` is cancelled and not handled.
@@ -65,7 +66,7 @@ class WriteCharBordersPartial:
             - ``Borders`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``Shadow`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.write.char.border.shadow``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Side`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``side`` can be imported from ``ooodev.format.writer.direct.char.borders``

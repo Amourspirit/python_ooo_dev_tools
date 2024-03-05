@@ -1,11 +1,10 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.format.inner.partial.factory_styler import FactoryStyler
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner.style_factory import area_color_factory
-from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -20,15 +19,15 @@ class FillColorPartial:
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-
-        styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
-        styler.after_event_name = "after_style_area_color"
-        styler.before_event_name = "before_style_area_color"
+        self.__styler = DefaultFactoryStyler(
+            factory_name=factory_name,
+            component=component,
+            before_event="before_style_area_color",
+            after_event="after_style_area_color",
+            lo_inst=lo_inst,
+        )
         if isinstance(self, EventsPartial):
-            styler.add_event_observers(self.event_observer)
-        self.__styler = styler
+            self.__styler.add_event_observers(self.event_observer)
 
     def style_area_color(self, color: mColor.Color = mColor.StandardColor.AUTO_COLOR) -> FillColorT | None:
         """
@@ -43,6 +42,7 @@ class FillColorPartial:
         Returns:
             FillColorT | None: FillColor instance or ``None`` if cancelled.
         """
+
         return self.__styler.style(factory=area_color_factory, color=color)
 
     def style_area_color_get(self) -> FillColorT | None:

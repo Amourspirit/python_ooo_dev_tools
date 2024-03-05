@@ -3,9 +3,9 @@ from typing import Any, cast, Dict, TYPE_CHECKING
 
 from ooodev.mock import mock_g
 from ooodev.format.inner.style_factory import calc_borders_factory
-from ooodev.loader import lo as mLo
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.format.inner.partial.factory_styler import FactoryStyler
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
+
 
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
@@ -26,13 +26,15 @@ class CalcBordersPartial:
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        self.__styler = DefaultFactoryStyler(
+            factory_name=factory_name,
+            component=component,
+            before_event="before_style_calc_borders",
+            after_event="after_style_calc_borders",
+            lo_inst=lo_inst,
+        )
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_calc_borders"
-        self.__styler.before_event_name = "before_style_calc_borders"
 
     def style_borders_clear(self) -> None:
         """
@@ -44,10 +46,12 @@ class CalcBordersPartial:
             # not critical but style is being applied later via style.empty.update()
             events.event_data["cancel_apply"] = True
 
+        styler = self.__styler
         factory = calc_borders_factory
         if isinstance(self, EventsPartial):
-            self.subscribe_event(event_name=self.__styler.before_event_name, callback=on_style)
-        style = cast("BordersT", self.__styler.style(factory=factory))
+            # on_style will automatically removed when it is out of scope.
+            self.subscribe_event(event_name=styler.before_event_name, callback=on_style)
+        style = cast("BordersT", styler.style(factory=factory))
         if style is not None:
             empty = style.empty
             if not empty.has_update_obj():
@@ -67,10 +71,12 @@ class CalcBordersPartial:
             # not critical but style is being applied later via style.empty.update()
             events.event_data["cancel_apply"] = True
 
+        styler = self.__styler
         factory = calc_borders_factory
         if isinstance(self, EventsPartial):
-            self.subscribe_event(event_name=self.__styler.before_event_name, callback=on_style)
-        style = cast("BordersT", self.__styler.style(factory=factory))
+            # on_style will automatically removed when it is out of scope.
+            self.subscribe_event(event_name=styler.before_event_name, callback=on_style)
+        style = cast("BordersT", styler.style(factory=factory))
         if style is None:
             return None
 
@@ -124,6 +130,7 @@ class CalcBordersPartial:
             - ``BorderLineKind`` can be imported from ``ooodev.format.calc.direct.cell.borders``
             - ``LineSize`` can be imported from ``ooodev.format.calc.direct.cell.borders``
         """
+        styler = self.__styler
         factory = calc_borders_factory
         kwargs: Dict[str, Any] = {
             "right": right,
@@ -139,7 +146,7 @@ class CalcBordersPartial:
             "shadow": shadow,
             "padding": padding,
         }
-        return self.__styler.style(factory=factory, **kwargs)
+        return styler.style(factory=factory, **kwargs)
 
     def style_borders_sides(
         self,
@@ -183,6 +190,8 @@ class CalcBordersPartial:
         from ooodev.format.inner.direct.structs.side import BorderLineKind
         from ooodev.format.inner.direct.structs.side import LineSize
 
+        styler = self.__styler
+
         side_args = {}
         if line is None:
             side_args["line"] = BorderLineKind.SOLID
@@ -210,7 +219,7 @@ class CalcBordersPartial:
             kwargs["horizontal"] = border_side
         if vert:
             kwargs["vertical"] = border_side
-        return self.__styler.style(factory=factory, **kwargs)
+        return styler.style(factory=factory, **kwargs)
 
     def style_borders_get(self) -> BordersT | None:
         """

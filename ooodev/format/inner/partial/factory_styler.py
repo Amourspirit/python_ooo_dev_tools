@@ -35,8 +35,8 @@ class FactoryStyler(FactoryNameBase):
             lo_inst (LoInst | None, optional): Loader instance. Defaults to None. Used in multi-document environments.
         """
         super().__init__(factory_name, component, lo_inst)
-        self.before_event_name = "before_style_border_line"
-        self.after_event_name = "after_style_border_line"
+        # self.before_event_name = "before_style_border_line"
+        # self.after_event_name = "after_style_border_line"
 
     def style(self, factory: Callable[[str], Any], **kwargs: Any) -> Any:
         """

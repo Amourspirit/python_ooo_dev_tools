@@ -1,13 +1,11 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
-from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner.style_factory import write_area_img_factory
-from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.offset import Offset
-from ooodev.format.inner.partial.factor_styler_base import FactoryStylerBase
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XBitmap
@@ -32,20 +30,21 @@ else:
 # same as write_fill_img_partial.WriteFillImgPartial except no get method
 
 
-class WriteTableFillImgPartial(FactoryStylerBase):
+class WriteTableFillImgPartial:
     """
     Partial class for Write Fill Image.
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        FactoryStylerBase.__init__(
-            self,
+        self.__styler = DefaultFactoryStyler(
             factory_name=factory_name,
             component=component,
             before_event="before_style_area_img",
             after_event="after_style_area_img",
             lo_inst=lo_inst,
         )
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
 
     def style_area_image(
         self,
@@ -90,7 +89,6 @@ class WriteTableFillImgPartial(FactoryStylerBase):
             - ``OffsetRow`` can be imported from ``ooodev.format.inner.common.format_types.offset_row``
             - ``Offset`` can be imported from ``ooodev.utils.data_type.offset``
         """
-        styler = self._get_styler()
         factory = write_area_img_factory
         kwargs = {"mode": mode, "auto_name": auto_name}
         if bitmap is not None:
@@ -106,7 +104,7 @@ class WriteTableFillImgPartial(FactoryStylerBase):
         if tile_offset is not None:
             kwargs["tile_offset"] = tile_offset
 
-        return styler.style(factory=factory, **kwargs)
+        return self.__styler.style(factory=factory, **kwargs)
 
     def style_area_image_from_preset(self, preset: PresetImageKind) -> FillImgT | None:
         """
@@ -121,13 +119,12 @@ class WriteTableFillImgPartial(FactoryStylerBase):
         Hint:
             - ``PresetImageKind`` can be imported from ``ooodev.format.inner.preset.preset_image``
         """
-        styler = self._get_styler()
-        fe = styler.style_get(
+        fe = self.__styler.style_get(
             factory=write_area_img_factory,
             call_method_name="from_preset",
             event_name_suffix="_from_preset",
             obj_arg_name="",
             preset=preset,
         )
-        styler.style_apply(style=fe, preset=preset)
+        self.__styler.style_apply(style=fe, preset=preset)
         return fe
