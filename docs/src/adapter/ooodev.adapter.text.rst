@@ -51,6 +51,8 @@ Submodules
    ooodev.adapter.text.text_section_comp
    ooodev.adapter.text.text_section_partial
    ooodev.adapter.text.text_table_comp
+   ooodev.adapter.text.text_table_cursor_comp
+   ooodev.adapter.text.text_table_cursor_partial
    ooodev.adapter.text.text_table_partial
    ooodev.adapter.text.text_table_properties_partial
    ooodev.adapter.text.text_table_row_comp

@@ -23,6 +23,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.inner.partial.default_factor_styler
    ooodev.format.inner.partial.factory_name_base
    ooodev.format.inner.partial.factory_styler
 

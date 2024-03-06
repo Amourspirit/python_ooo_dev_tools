@@ -103,6 +103,46 @@ class RangeObj:
 
     # region methods
 
+    def set_sheet_index(self, idx: int | None = None) -> RangeObj:
+        """
+        Set the sheet index for the range.
+
+        If ``idx`` is ``None`` then the active sheet index is used.
+
+        Setting the sheet index to -2 will cause the sheet name to always return an empty string.
+
+        Changing the sheet index will cause the sheet name to be re-evaluated.
+
+        Args:
+            idx (int, optional): Sheet index, Default ``None``.
+
+        Returns:
+            RangeObj: Self
+
+        .. versionadded:: 0.32.0
+        """
+        if idx is None:
+            try:
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.get_active_sheet()
+                    idx = sheet.get_sheet_index()
+                    name = sheet.name
+                    object.__setattr__(self, "sheet_idx", idx)
+                    object.__setattr__(self, "_sheet_name", name)
+            except Exception:
+                object.__setattr__(self, "sheet_idx", -1)
+                if hasattr(self, "_sheet_name"):
+                    object.__delattr__(self, "_sheet_name")
+            return self
+
+        if idx != self.sheet_idx:
+            object.__setattr__(self, "sheet_idx", idx)
+            if hasattr(self, "_sheet_name"):
+                object.__delattr__(self, "_sheet_name")
+        return self
+
     # region from_range()
 
     @overload

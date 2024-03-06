@@ -25,6 +25,7 @@ def test_cell_obj(loader) -> None:
 
         name = "r75"
         cell = CellObj.from_cell(name)
+        cell.set_sheet_index()
         assert cell.col == "R"
         assert cell.row == 75
         assert cell.col_obj.value == "R"
@@ -35,6 +36,7 @@ def test_cell_obj(loader) -> None:
         assert cell == "r75"
 
         rng = RangeObj.from_range("a1:r75")
+        rng.set_sheet_index()
         assert rng.cell_end == cell
 
         addr = cell.get_cell_address()

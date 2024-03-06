@@ -69,6 +69,36 @@ class CellObj:
 
     # region static methods
 
+    def set_sheet_index(self, idx: int | None = None) -> CellObj:
+        """
+        Set the sheet index for the cell.
+
+        If ``idx`` is ``None`` then the active sheet index is used.
+
+        Args:
+            idx (int, optional): Sheet index, Default ``None``.
+
+        Returns:
+            RangeObj: Self
+
+        .. versionadded:: 0.32.0
+        """
+        if idx is None:
+            try:
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.get_active_sheet()
+                    idx = sheet.get_sheet_index()
+                    object.__setattr__(self, "sheet_idx", idx)
+            except Exception:
+                object.__setattr__(self, "sheet_idx", -1)
+            return self
+
+        if idx != self.sheet_idx:
+            object.__setattr__(self, "sheet_idx", idx)
+        return self
+
     # region from_cell()
 
     @overload
