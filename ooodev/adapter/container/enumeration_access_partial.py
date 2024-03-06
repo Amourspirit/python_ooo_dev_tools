@@ -57,7 +57,9 @@ class EnumerationAccessPartial(ElementAccessPartial):
             next_element = self.__enumeration.nextElement()
             if self._is_next_element_valid(next_element):
                 return next_element
-            return self.__next__()
+            # this method may be overridden in child classes and called with super()
+            # Call recursively using EnumerationAccessPartial
+            return EnumerationAccessPartial.__next__(self)
         self.__enumeration = None
         raise StopIteration
 

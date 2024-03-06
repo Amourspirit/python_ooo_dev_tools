@@ -202,7 +202,7 @@ class WriteTableCell(
         return self._owner
 
     @property
-    def style_direct_cell(self) -> CellStyler:
+    def style_direct(self) -> CellStyler:
         """
         Direct Cell Styler.
 

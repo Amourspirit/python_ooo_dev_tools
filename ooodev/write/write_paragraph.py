@@ -4,12 +4,11 @@ import uno
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.adapter.text.text_range_partial import TextRangePartial
 
+from ooodev.adapter.text.text_range_partial import TextRangePartial
 from ooodev.adapter.text.paragraph_comp import ParagraphComp
 from ooodev.adapter.text.text_content_comp import TextContentComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -20,6 +19,7 @@ from ooodev.write import write_text_portions as mWriteTextPortions
 
 if TYPE_CHECKING:
     from com.sun.star.container import XEnumerationAccess
+    from ooodev.proto.component_proto import ComponentT
 
 T = TypeVar("T", bound="ComponentT")
 

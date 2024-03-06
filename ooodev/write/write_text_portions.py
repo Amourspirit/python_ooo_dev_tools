@@ -1,10 +1,9 @@
 from __future__ import annotations
-from typing import Any, TypeVar, Generic
+from typing import Any, TypeVar, Generic, TYPE_CHECKING
 import uno
 from com.sun.star.container import XEnumerationAccess
 
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -12,6 +11,9 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write import write_text_portion as mWriteTextPortion
+
+if TYPE_CHECKING:
+    from ooodev.proto.component_proto import ComponentT
 
 T = TypeVar("T", bound="ComponentT")
 

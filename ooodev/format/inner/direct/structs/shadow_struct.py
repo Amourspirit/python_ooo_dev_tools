@@ -183,7 +183,7 @@ class ShadowStruct(StructBase):
             None:
         """
         # sourcery skip: dict-assign-update-to-union
-        keys = {"prop": self._get_property_name()}
+        keys = {"prop": self.property_name}
         if "keys" in kwargs:
             keys.update(kwargs["keys"])
 
@@ -226,7 +226,7 @@ class ShadowStruct(StructBase):
 
         nu = cls(**kwargs)
 
-        shadow = cast(ShadowFormat, mProps.Props.get(obj, nu._get_property_name()))
+        shadow = cast(ShadowFormat, mProps.Props.get(obj, nu.property_name))
         if shadow is None:
             return nu.empty.copy()
 
@@ -378,6 +378,19 @@ class ShadowStruct(StructBase):
             self._width = value.get_value_mm100()  # type: ignore
         except AttributeError:
             self._width = UnitConvert.convert_mm_mm100(value)  # type: ignore
+
+    @property
+    def property_name(self) -> str:
+        """
+        Gets/Sets property name
+
+        This is the name of the property that the side should be applied to. Such as ``LeftBorder``, ``RightBorder`` etc.
+        """
+        return self._get_property_name()
+
+    @property_name.setter
+    def property_name(self, value: str) -> None:
+        self._set_property_name(value)
 
     @property
     def empty(self: _TShadowStruct) -> _TShadowStruct:  # type: ignore[misc]

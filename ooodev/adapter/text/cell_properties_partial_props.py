@@ -9,6 +9,7 @@ from ooodev.adapter.table.border_line2_struct_comp import BorderLine2StructComp
 from ooodev.adapter.text.text_comp import TextComp
 from ooodev.events.events import Events
 from ooodev.utils import info as mInfo
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import CellProperties  # service
     from ooodev.events.args.key_val_args import KeyValArgs
     from ooodev.utils.color import Color
+    from ooodev.units.unit_obj import UnitT
 
 
 class CellPropertiesPartialProps:
@@ -162,15 +164,21 @@ class CellPropertiesPartialProps:
             del self.__props[key]
 
     @property
-    def bottom_border_distance(self) -> int:
+    def bottom_border_distance(self) -> UnitMM100:
         """
         Gets/Sets the distance of the bottom border.
+
+        When setting the value, it can be an integer (in ``1/100mm`` units) or a ``UnitT`` object.
+
+        Returns:
+            UnitMM100: Returns the distance of the bottom border.
         """
-        return self.__component.BottomBorderDistance
+        return UnitMM100(self.__component.BottomBorderDistance)
 
     @bottom_border_distance.setter
-    def bottom_border_distance(self, value: int) -> None:
-        self.__component.BottomBorderDistance = value
+    def bottom_border_distance(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
+        self.__component.BottomBorderDistance = val.value
 
     @property
     def cell_name(self) -> str:
@@ -225,15 +233,21 @@ class CellPropertiesPartialProps:
             del self.__props[key]
 
     @property
-    def left_border_distance(self) -> int:
+    def left_border_distance(self) -> UnitMM100:
         """
         Gets/Sets the distance of the left border.
+
+        When setting the value, it can be an integer (in ``1/100mm`` units) or a ``UnitT`` object.
+
+        Returns:
+            UnitMM100: Returns the distance of the left border.
         """
-        return self.__component.LeftBorderDistance
+        return UnitMM100(self.__component.LeftBorderDistance)
 
     @left_border_distance.setter
-    def left_border_distance(self, value: int) -> None:
-        self.__component.LeftBorderDistance = value
+    def left_border_distance(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
+        self.__component.LeftBorderDistance = val.value
 
     @property
     def number_format(self) -> int:
@@ -292,15 +306,21 @@ class CellPropertiesPartialProps:
             del self.__props[key]
 
     @property
-    def right_border_distance(self) -> int:
+    def right_border_distance(self) -> UnitMM100:
         """
         Gets/Sets the distance of the right border.
+
+        When setting the value, it can be an integer (in ``1/100mm`` units) or a ``UnitT`` object.
+
+        Returns:
+            UnitMM100: Returns the distance of the right border.
         """
-        return self.__component.RightBorderDistance
+        return UnitMM100(self.__component.RightBorderDistance)
 
     @right_border_distance.setter
-    def right_border_distance(self, value: int) -> None:
-        self.__component.RightBorderDistance = value
+    def right_border_distance(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
+        self.__component.RightBorderDistance = val.value
 
     @property
     def text_section(self) -> TextSectionComp | None:
@@ -341,15 +361,21 @@ class CellPropertiesPartialProps:
             del self.__props[key]
 
     @property
-    def top_border_distance(self) -> int:
+    def top_border_distance(self) -> UnitMM100:
         """
         Gets/Sets the distance of the top border.
+
+        When setting the value, it can be an integer (in ``1/100mm`` units) or a ``UnitT`` object.
+
+        Returns:
+            UnitMM100: Returns the distance of the bottom border.
         """
-        return self.__component.TopBorderDistance
+        return UnitMM100(self.__component.TopBorderDistance)
 
     @top_border_distance.setter
     def top_border_distance(self, value: int) -> None:
-        self.__component.TopBorderDistance = value
+        val = UnitMM100.from_unit_val(value)
+        self.__component.TopBorderDistance = val.value
 
     @property
     def vert_orient(self) -> VertOrientationEnum:

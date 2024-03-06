@@ -59,7 +59,7 @@ class WriteTableRow(
         return self._owner
 
     @property
-    def style_direct_row(self) -> RowStyler:
+    def style_direct(self) -> RowStyler:
         """
         Direct Cell Styler.
 

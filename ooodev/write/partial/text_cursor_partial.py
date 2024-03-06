@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Sequence, overload, TYPE_CHECKING, TypeVar, Generic
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.adapter.drawing.graphic_object_shape_comp import GraphicObjectShapeComp
 from ooodev.office import write as mWrite
 from ooodev.loader import lo as mLo
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from com.sun.star.text import XTextContent
     from com.sun.star.text import XTextCursor
     from ooo.dyn.text.control_character import ControlCharacterEnum
-    from ooodev.write.write_text_table import WriteTextTable
+    from ooodev.write.table.write_table import WriteTable
     from ooodev.proto.style_obj import StyleT
     from ooodev.units.unit_obj import UnitT
     from ooodev.utils.type_var import PathOrStr, Table
@@ -378,29 +379,31 @@ class TextCursorPartial(Generic[_T]):
     def add_table(
         self,
         table_data: Table,
-        header_bg_color: Color | None = CommonColor.DARK_BLUE,
-        header_fg_color: Color | None = CommonColor.WHITE,
-        tbl_bg_color: Color | None = CommonColor.LIGHT_BLUE,
-        tbl_fg_color: Color | None = CommonColor.BLACK,
+        *,
+        name="",
+        header_bg_color: Color | None = None,
+        header_fg_color: Color | None = None,
+        tbl_bg_color: Color | None = None,
+        tbl_fg_color: Color | None = None,
         first_row_header: bool = True,
         styles: Sequence[StyleT] | None = None,
-    ) -> WriteTextTable[_T]:
+    ) -> WriteTable[_T]:
         """
         Adds a table.
 
         Each row becomes a row of the table. The first row is treated as a header.
 
         Args:
-            cursor (XTextCursor): Text Cursor.
             table_data (Table): 2D Table with the the first row containing column names.
+            name (str, optional): Table name.
             header_bg_color (:py:data:`~.utils.color.Color`, optional): Table header background color.
-                Set to None to ignore header color. Defaults to ``CommonColor.DARK_BLUE``.
+                Set to None to ignore header color. Defaults to ``None``.
             header_fg_color (:py:data:`~.utils.color.Color`, optional): Table header foreground color.
-                Set to None to ignore header color. Defaults to ``CommonColor.WHITE``.
+                Set to None to ignore header color. Defaults to `Defaults to ``None``.
             tbl_bg_color (:py:data:`~.utils.color.Color`, optional): Table background color.
-                Set to None to ignore background color. Defaults to ``CommonColor.LIGHT_BLUE``.
+                Set to None to ignore background color. Defaults to ``None``.
             tbl_fg_color (:py:data:`~.utils.color.Color`, optional): Table background color.
-                Set to None to ignore background color. Defaults to ``CommonColor.BLACK``.
+                Set to None to ignore background color. Defaults to ``None``.
             first_row_header (bool, optional): If ``True`` First row is treated as header data. Default ``True``.
             styles (Sequence[StyleT], optional): One or more styles to apply to frame.
                 Only styles that support ``com.sun.star.text.TextTable`` service are applied.
@@ -412,7 +415,7 @@ class TextCursorPartial(Generic[_T]):
             Exception: If unable to add table
 
         Returns:
-            WriteTextTable: Table that is added to document.
+            WriteTable: Table that is added to document.
 
         :events:
             .. cssclass:: lo_event
@@ -433,7 +436,7 @@ class TextCursorPartial(Generic[_T]):
             Styles that can be applied are found in :doc:`ooodev.format.writer.direct.table </src/format/ooodev.format.writer.direct.table>` subpackages.
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.write.write_text_table import WriteTextTable
+        from ooodev.write.table.write_table import WriteTable
 
         with LoContext(self.__lo_inst):
             result = mWrite.Write.add_table(
@@ -446,7 +449,10 @@ class TextCursorPartial(Generic[_T]):
                 first_row_header=first_row_header,
                 styles=styles,
             )
-        return WriteTextTable(self.__owner, result)
+        tbl = WriteTable(self.__owner, result)
+        if name:
+            tbl.name = name
+        return tbl
 
     def add_text_frame(
         self,
@@ -997,3 +1003,6 @@ class TextCursorPartial(Generic[_T]):
 
 from ooodev.write import write_text_content as mWriteTextContent
 from ooodev.write import write_text_frame as mWriteTextFrame
+
+if mock_g.FULL_IMPORT:
+    from ooodev.write.table.write_table import WriteTable

@@ -14,13 +14,13 @@ from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.utils.data_type.rng.range_converter import RangeConverter
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.write import write_text_portions as mWriteTextPortions
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
 from ooodev.write.table.table_column_separators import TableColumnSeparators
 from ooodev.write.table.write_table_cell import WriteTableCell
 from ooodev.write.table.write_table_cell_range import WriteTableCellRange
 from ooodev.write.table.write_text_table_cursor import WriteTextTableCursor
+from ooodev.events.partial.events_partial import EventsPartial
 
 
 if TYPE_CHECKING:
@@ -29,12 +29,12 @@ if TYPE_CHECKING:
     from com.sun.star.table import XCell
     from com.sun.star.text import XTextTable
     from ooodev.utils.data_type.cell_obj import CellObj
-    from com.sun.star.container import XEnumerationAccess
     from ooodev.proto.component_proto import ComponentT
     from ooodev.utils.data_type.range_values import RangeValues
     from ooodev.utils.data_type.cell_values import CellValues
     from ooodev.write.table.write_table_rows import WriteTableRows
     from ooodev.write.table.write_table_columns import WriteTableColumns
+    from ooodev.write.style.direct.table.table_styler import TableStyler
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -42,6 +42,7 @@ T = TypeVar("T", bound="ComponentT")
 class WriteTable(
     Generic[T],
     WriteTablePropPartial,
+    EventsPartial,
     LoInstPropsPartial,
     WriteDocPropPartial,
     TextTableComp,
@@ -71,6 +72,7 @@ class WriteTable(
         self._owner = owner
         WriteTablePropPartial.__init__(self, obj=self)
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        EventsPartial.__init__(self)
         if not isinstance(owner, WriteDocPropPartial):
             raise TypeError("WriteDocPropPartial is not inherited by owner.")
         WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
@@ -84,6 +86,7 @@ class WriteTable(
         self._cols = None
         self._rows = None
         self._range_converter = None
+        self._style_direct = None
 
     def __getitem__(self, key: Any) -> WriteTableCell:
         """
@@ -107,12 +110,6 @@ class WriteTable(
             - :meth:`get_cell`
         """
         return self.get_cell(key)
-
-    def get_text_portions(self) -> mWriteTextPortions.WriteTextPortions[T]:
-        """Returns the text portions of this paragraph."""
-        return mWriteTextPortions.WriteTextPortions(
-            owner=self.owner, component=cast("XEnumerationAccess", self.component), lo_inst=self.lo_inst
-        )
 
     # region TextTablePartial overrides
     def get_columns(self) -> WriteTableColumns:
@@ -448,11 +445,17 @@ class WriteTable(
 
     @property
     def name(self) -> str:
+        """
+        Get/Sets the name of the table.
+
+        When setting the name, it will be converted to a valid name by replacing spaces with underscores and removing leading and trailing spaces.
+        """
         return self.component.getName()
 
     @name.setter
     def name(self, name: str) -> None:
-        self.component.setName(name)
+        s = name.strip().replace(" ", "_")
+        self.component.setName(s)
 
     @property
     def columns(self) -> WriteTableColumns:
@@ -510,9 +513,26 @@ class WriteTable(
             self._range_converter = RangeConverter(lo_inst=self.lo_inst)
         return self._range_converter
 
+    @property
+    def style_direct(self) -> TableStyler:
+        """
+        Direct Cell Styler.
+
+        Returns:
+            CellStyler: Character Styler
+        """
+        if self._style_direct is None:
+            # pylint: disable=import-outside-toplevel
+            from ooodev.write.style.direct.table.table_styler import TableStyler
+
+            self._style_direct = TableStyler(owner=self, component=self.component)
+            self._style_direct.add_event_observers(self.event_observer)
+        return self._style_direct
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
     from ooodev.write.table.write_table_rows import WriteTableRows
     from ooodev.write.table.write_table_columns import WriteTableColumns
+    from ooodev.write.style.direct.table.table_styler import TableStyler

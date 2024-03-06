@@ -7,7 +7,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
 from ooodev.format.inner.partial.write.area.write_table_fill_img_partial import WriteTableFillImgPartial
-from ooodev.format.inner.partial.write.table.write_table_cell_borders_partial import WriteTableCellBordersPartial
+from ooodev.format.inner.partial.write.table.write_table_borders_partial import WriteTableBordersPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
@@ -19,14 +19,14 @@ if TYPE_CHECKING:
     from ooodev.write.table.write_table import WriteTable
 
 
-class CellStyler(
+class TableStyler(
     WriteDocPropPartial,
     WriteTablePropPartial,
     EventsPartial,
     LoInstPropsPartial,
     FillColorPartial,
     WriteTableFillImgPartial,
-    WriteTableCellBordersPartial,
+    WriteTableBordersPartial,
     TheDictionaryPartial,
 ):
     """
@@ -69,7 +69,7 @@ class CellStyler(
         WriteTableFillImgPartial.__init__(
             self, factory_name="ooodev.write.table.background", component=component, lo_inst=self.write_doc.lo_inst
         )
-        WriteTableCellBordersPartial.__init__(self, component=component)
+        WriteTableBordersPartial.__init__(self, component=component)
 
         # The dictionary can be used to add extra data to the object. This is useful for event handling.
         TheDictionaryPartial.__init__(self)

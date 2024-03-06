@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TypeVar, Generic
+from typing import Any, TypeVar, Generic, Sequence, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.text.text_tables_comp import TextTablesComp
@@ -11,7 +11,12 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.write_table import WriteTable
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.component_proto import ComponentT
+from ooodev.utils.color import Color, CommonColor
+
+if TYPE_CHECKING:
+    from ooodev.proto.component_proto import ComponentT
+    from ooodev.utils.type_var import Table
+    from ooodev.proto.style_obj import StyleT
 
 T = TypeVar("T", bound="ComponentT")
 
@@ -21,6 +26,27 @@ class WriteTables(Generic[T], LoInstPropsPartial, WriteDocPropPartial, TextTable
     Represents writer text tables.
 
     Contains Enumeration Access.
+
+    A table can be added to a document using a cursor.
+
+    Example:
+
+    .. code-block:: python
+
+        doc = WriteDoc.create_doc(loader=loader, visible=True)
+        tbl_data = read_table(fnm) # get the table data from a file.
+        cursor = doc.get_cursor()
+        cursor.append_para("Table of Bond Movies")
+        cursor.append_para('The following table comes form "bondMovies.txt"\n')
+
+        # with doc locks the controllers while the table is being added to the document.
+        with doc:
+            cursor.add_table(table_data=tbl_data))
+            cursor.end_paragraph()
+
+        my_table = doc.tables[-1] # get the last table added to the document.
+        cell = my_table["D3"]
+        # ...
     """
 
     def __init__(self, owner: T, component: Any, lo_inst: LoInst | None = None) -> None:

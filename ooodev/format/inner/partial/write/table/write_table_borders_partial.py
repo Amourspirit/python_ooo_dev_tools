@@ -17,17 +17,17 @@ from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
-    from ooodev.format.inner.direct.write.char.border.padding import Padding
-    from ooodev.format.inner.direct.write.char.border.shadow import Shadow
+    from ooodev.format.inner.direct.calc.border.padding import Padding
+    from ooodev.format.inner.direct.calc.border.shadow import Shadow
     from ooodev.format.inner.direct.structs.side import Side
-    from ooodev.format.inner.direct.write.char.border.borders import Borders
+    from ooodev.format.inner.direct.write.table.borders.borders import Borders
     from ooodev.utils.color import Color
     from ooodev.units.unit_obj import UnitT
 
 
-class WriteCharBordersPartial:
+class WriteTableBordersPartial:
     """
-    Partial class for Write Char Borders.
+    Partial class for Write Table Borders.
     """
 
     def __init__(self, component: Any) -> None:
@@ -41,23 +41,32 @@ class WriteCharBordersPartial:
         top: Side | None = None,
         bottom: Side | None = None,
         border_side: Side | None = None,
+        vertical: Side | None = None,
+        horizontal: Side | None = None,
+        distance: float | UnitT | None = None,
         shadow: Shadow | None = None,
         padding: Padding | None = None,
+        merge_adjacent: bool | None = None,
     ) -> Borders | None:
         """
         Style Write Character Borders.
 
         Args:
-            left (Side | None, optional): Determines the line style at the left edge.
-            right (Side | None, optional): Determines the line style at the right edge.
-            top (Side | None, optional): Determines the line style at the top edge.
-            bottom (Side | None, optional): Determines the line style at the bottom edge.
-            border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            shadow (~ooodev.format.inner.direct.write.char.border.shadow.Shadow | None, optional): Character Shadow
-            padding (~ooodev.format.inner.direct.write.char.border.padding.Padding | None, optional): Character padding
+            left (Side,, optional): Specifies the line style at the left edge.
+            right (Side, optional): Specifies the line style at the right edge.
+            top (Side, optional): Specifies the line style at the top edge.
+            bottom (Side, optional): Specifies the line style at the bottom edge.
+            border_side (Side, optional): Specifies the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
+            horizontal (Side, optional): Specifies the line style of horizontal lines for the inner part of a cell range.
+            vertical (Side, optional): Specifies the line style of vertical lines for the inner part of a cell range.
+            distance (float, UnitT, optional): Contains the distance between the lines and other contents in ``mm`` units or :ref:`proto_unit_obj`.
+            shadow (~ooodev.format.inner.direct.calc.border.shadow.Shadow | None, optional): Cell Shadow.
+            padding (~ooodev.format.inner.direct.calc.border.padding.Padding | None, optional): Cell padding.
+            merge_adjacent (bool, optional): Specifies if adjacent line style are to be merged.
+
 
         Raises:
-            CancelEventError: If the event ``before_style_char_borders`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_table_borders`` is cancelled and not handled.
 
         Returns:
             Borders | None: Attribute Options Style instance or ``None`` if cancelled.
@@ -68,8 +77,8 @@ class WriteCharBordersPartial:
             - ``BorderLineKind`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Borders`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.write.char.border.shadow``
+            - ``Padding`` can be imported from ``ooodev.format.inner.direct.calc.border.padding``
+            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.calc.border.shadow.Shadow``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Side`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``side`` can be imported from ``ooodev.format.writer.direct.char.borders``
@@ -78,7 +87,7 @@ class WriteCharBordersPartial:
 
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.inner.direct.write.char.border.borders import Borders
+        from ooodev.format.inner.direct.write.table.borders.borders import Borders
 
         comp = self.__component
         has_events = False
@@ -91,18 +100,22 @@ class WriteCharBordersPartial:
                 "left": left,
                 "top": top,
                 "bottom": bottom,
+                "vertical": vertical,
+                "horizontal": horizontal,
+                "distance": distance,
                 "border_side": border_side,
                 "shadow": shadow,
                 "padding": padding,
+                "merge_adjacent": merge_adjacent,
                 "this_component": comp,
             }
             cargs.event_data = event_data
             self.trigger_event(StyleNameEvent.STYLE_APPLYING, cargs)
-            self.trigger_event("before_style_char_borders", cargs)
+            self.trigger_event("before_style_table_borders", cargs)
             if cargs.cancel is True:
                 if cargs.handled is True:
                     return None
-                cargs.set("initial_event", "before_style_char_borders")
+                cargs.set("initial_event", "before_style_table_borders")
                 self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
                 if cargs.handled is False:
                     raise mEx.CancelEventError(cargs, "Style has been cancelled.")
@@ -113,8 +126,12 @@ class WriteCharBordersPartial:
             top = cargs.event_data.get("top", top)
             bottom = cargs.event_data.get("bottom", bottom)
             border_side = cargs.event_data.get("border_side", border_side)
+            vertical = cargs.event_data.get("vertical", vertical)
+            horizontal = cargs.event_data.get("horizontal", horizontal)
+            distance = cargs.event_data.get("distance", distance)
             shadow = cargs.event_data.get("shadow", shadow)
             padding = cargs.event_data.get("padding", padding)
+            merge_adjacent = cargs.event_data.get("merge_adjacent", merge_adjacent)
 
             comp = cargs.event_data.get("this_component", comp)
 
@@ -123,9 +140,13 @@ class WriteCharBordersPartial:
             left=left,
             top=top,
             bottom=bottom,
-            all=border_side,
+            border_side=border_side,
+            vertical=vertical,
+            horizontal=horizontal,
+            distance=distance,
             shadow=shadow,
             padding=padding,
+            merge_adjacent=merge_adjacent,
         )
 
         if has_events:
@@ -143,7 +164,7 @@ class WriteCharBordersPartial:
             # pylint: disable=no-member
             event_args = EventArgs.from_args(cargs)
             event_args.event_data["styler_object"] = fe
-            self.trigger_event("after_style_char_borders", event_args)  # type: ignore
+            self.trigger_event("after_style_table_borders", event_args)  # type: ignore
             self.trigger_event(StyleNameEvent.STYLE_APPLIED, event_args)  # type: ignore
         return fe
 
@@ -163,22 +184,22 @@ class WriteCharBordersPartial:
             line (BorderLineStyleEnum, optional): Line Style of the border. Default ``BorderLineKind.SOLID``.
             color (:py:data:`~.utils.color.Color`, optional): Color of the border. Default ``StandardColor.BLACK``
             width (LineSize, float, UnitT, optional): Contains the width in of a single line or the width of outer part of a double line (in ``pt`` units) or :ref:`proto_unit_obj`. If this value is zero, no line is drawn. Default ``LineSize.THIN``
-            shadow (Shadow | None, optional): Character Shadow
-            padding (Padding | None, optional): Character padding
+            shadow (~ooodev.format.inner.direct.calc.border.shadow.Shadow | None, optional): Cell Shadow.
+            padding (~ooodev.format.inner.direct.calc.border.padding.Padding | None, optional): Cell padding.
 
         Raises:
-            CancelEventError: If the event ``before_style_char_borders`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_table_borders`` is cancelled and not handled.
 
         Returns:
             Borders | None: Borders Style instance or ``None`` if cancelled.
 
         Hint:
-            - ``BorderLine`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``BorderLine2`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``BorderLineKind`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``Shadow`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
+            - ``BorderLine`` can be imported from ``ooo.dyn.table.border_line``
+            - ``BorderLineKind`` can be imported from ``ooodev.format.inner.direct.structs.side``
+            - ``LineSize`` can be imported from ``ooodev.format.inner.direct.structs.side``
+            - ``Padding`` can be imported from ``ooodev.format.inner.direct.calc.border.padding``
+            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.calc.border.shadow.Shadow``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``ShadowLocation`` can be imported ``from ooo.dyn.table.shadow_location``
 
@@ -214,20 +235,20 @@ class WriteCharBordersPartial:
                 If argument is present then ``left``, ``right``, ``top``, and ``bottom`` arguments are ignored.
 
         Raises:
-            CancelEventError: If the event ``before_style_char_borders`` is cancelled and not handled.
+            CancelEventError: If the event ``before_style_table_borders`` is cancelled and not handled.
 
         Returns:
             Borders | None: Borders Style instance or ``None`` if cancelled.
 
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.inner.direct.write.char.border.padding import Padding
+        from ooodev.format.inner.direct.calc.border.padding import Padding
 
         padding = Padding(left=left, right=right, top=top, bottom=bottom, all=all_sides)
         return self.style_borders(padding=padding)
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.format.inner.direct.write.char.border.padding import Padding
+    from ooodev.format.inner.direct.calc.border.padding import Padding
     from ooodev.format.inner.direct.structs.side import Side
-    from ooodev.format.inner.direct.write.char.border.borders import Borders
+    from ooodev.format.inner.direct.write.table.borders.borders import Borders
